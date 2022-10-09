@@ -54,51 +54,6 @@ main
 				StopY
 				StopZ
 				Step_Cycle
-			Circ_Prep_Next
-				toggleOCx
-		SetCircleVals
-			Multi_Axis_Enable
-			CalcRadius
-				abs
-				sqrt
-					frexp
-					ldexp
-			CalcCircCenter
-			Calc_Angle
-				atan2
-					fabs
-					atan
-						fabs
-						eval_poly
-			Quadrant
-			NextCords
-				cos
-					sin
-						floor
-						eval_poly
-				sin
-			CalcI_J_FromEndPos
-			TestQuadrnt
-				abs
-			CircDir
-			CalcDivisor
-		Cir_Interpolation
-			CalcStep
-			NextCords
-			SerialPrint
-				strlen
-				memset
-				sprintf
-					_doprntf
-						isdigit
-						scale
-						fround
-				strncpy
-				strncat
-				UART2_Write_Text
-					UART2_Write
-			Circ_Tick
-				disableOCx
 	ResetSteppers
 		DisableStepper
 StepA
@@ -109,24 +64,28 @@ StepA
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
-	Circ_Prep_Next
 Timer1Interrupt
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
-	Circ_Prep_Next
 Timer8Interrupt
 StepX
 	SingleStepX
 		StopX
 		Step_Cycle
-	Circ_Prep_Next
+	ClockPulse
+	XY_Interpolate
+	XZ_Interpolate
+	YZ_Interpolate
 StepY
 	SingleStepY
 		StopY
 		Step_Cycle
-	Circ_Prep_Next
+	ClockPulse
+	XY_Interpolate
+	XZ_Interpolate
+	YZ_Interpolate
 StepZ
 	SingleStepZ
 		StopZ
@@ -135,7 +94,6 @@ StepZ
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
-	Circ_Prep_Next
 DMA_CH1_ISR
 DMA_CH0_ISR
 	__CC2DW

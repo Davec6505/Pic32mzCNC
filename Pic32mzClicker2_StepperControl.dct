@@ -9621,12 +9621,6 @@ cal8
 cal8_bit
 cal9
 cal9_bit
-calc_angle
-calccirccenter
-calcdivisor
-calci_j_fromendpos
-calcradius
-calcstep
 calcsteps
 can1ie
 can1ie
@@ -14024,14 +14018,6 @@ chtaif_dch4int_bit
 chtaif_dch5int_bit
 chtaif_dch6int_bit
 chtaif_dch7int_bit
-cir_end
-cir_interpolation
-cir_next
-cir_start
-circ
-circ_prep_next
-circ_tick
-circdir
 cke
 cke
 cke
@@ -23146,13 +23132,6 @@ debug1_ubadevcfg0_bit
 dec
 dec2bcd
 dec2bcd16
-deg
-deg
-degf
-degreedeg
-degreeradians
-degs
-degt
 delay_100ms
 delay_10ms
 delay_10us
@@ -23492,7 +23471,6 @@ digen4_bit
 digen7
 digen7
 digen7_bit
-dir
 dir_step_pindira
 dir_step_pindirx
 dir_step_pindiry
@@ -23609,7 +23587,6 @@ disslw_i2c3con_bit
 disslw_i2c4con_bit
 disslw_i2c5con_bit
 div
-divisor
 divspllrdy
 divspllrdy
 divspllrdy
@@ -33356,8 +33333,6 @@ hugefrm
 hugefrm_bit
 hugefrm_emacxcfg2_bit
 i
-i
-i_end
 i2c1add
 i2c1addbits
 i2c1addclr
@@ -36167,7 +36142,6 @@ id8
 id8_bit
 id9
 id9_bit
-idivisor
 idle
 idle
 idle
@@ -37932,8 +37906,6 @@ iwcol_i2c2stat_bit
 iwcol_i2c3stat_bit
 iwcol_i2c4stat_bit
 iwcol_i2c5stat_bit
-j
-j_end
 jtagen
 jtagen
 jtagen
@@ -37983,8 +37955,6 @@ lanemode0
 lanemode0_bit
 lanemode1
 lanemode1_bit
-lastx
-lasty
 lata
 lata0
 lata0
@@ -40111,7 +40081,6 @@ mwtd8_emacxmwtd_bit
 mwtd9
 mwtd9_bit
 mwtd9_emacxmwtd_bit
-n
 nak
 nak
 nak_bit
@@ -40196,8 +40165,6 @@ nb2bipktgp25_emacxipgr_bit
 nb2bipktgp26
 nb2bipktgp26_bit
 nb2bipktgp26_emacxipgr_bit
-newdeg
-nextcords
 nmicnt
 nmicnt
 nmicnt
@@ -46085,9 +46052,6 @@ pwrconsetbits
 px
 py
 pz
-quadrant
-quadrant
-quadrants
 r_w
 r_w
 r_w
@@ -46263,7 +46227,6 @@ raddr8
 raddr8_bit
 raddr9
 raddr9_bit
-radius
 rambits
 rambits0
 rambits0_bit
@@ -56345,7 +56308,6 @@ seq2
 seq2bits
 seq3
 seq3bits
-serialprint
 serrie
 serrie
 serrie
@@ -56378,7 +56340,6 @@ sessrqif
 sessrqif
 sessrqif_bit
 set_performance_mode
-setcirclevals
 setend
 setend
 setend_bit
@@ -60968,7 +60929,6 @@ step27
 step27_bit
 stepa
 stepperconstants
-steps
 stepx
 stepy
 stepz
@@ -62859,7 +62819,6 @@ testpause
 testpause
 testpause_bit
 testpause_emacxtest_bit
-testquadrnt
 tgate
 tgate
 tgate
@@ -81353,20 +81312,9 @@ wtid2
 wtid2_bit
 wtid3
 wtid3_bit
-x
-x_next
-xcenter
-xfin
-xlaststep
-xstart
-xstep
 xtoi
-xy
 xy_interpolate
 xz_interpolate
-y
-y_next
-ycenter
 year01
 year01
 year01
@@ -81391,8 +81339,4 @@ year102
 year102_bit
 year103
 year103_bit
-yfin
-ylaststep
-ystart
-ystep
 yz_interpolate

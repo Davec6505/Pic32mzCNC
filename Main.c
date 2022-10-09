@@ -1,3 +1,11 @@
+/*
+* Check on CalcStep in Kinematics for redundant quadrant checking
+*
+*
+*/
+
+
+
 #include "Config.h"
 
 
@@ -50,13 +58,10 @@ int xyz_ = 0;
          if(!SW2){
                Toggle  = 0;
                disableOCx();
-               Circ.cir_start = 0;
-               Circ.cir_end   = 0;
-               Circ.cir_next  = 0;
          }
 
          if((!SW1)&&(!Toggle)){
-            a = 7;
+            a = 0;
             LED1 = 0;
             Toggle = 1;
             disable_steps = 0;
@@ -123,19 +128,7 @@ void Temp_Move(int a){
                  speed_cntr_Move(STPS[A].mmToTravel, 25000,A);
                  SingleAxisStep(STPS[A].mmToTravel,A);
              break;
-       case 7:
-               if(!Circ.cir_start){
-                  SetCircleVals(450.00,250.00,486.00,386.00,-100.00,100.00,280.00,CW);
-                  Circ.cir_start = 1;
-               }
-               if(Circ.cir_start){
-                  //LED1 = Circ.cir_next;
-                  if(!Circ.cir_next){
-                      Circ.cir_next = 1;
-                      Cir_Interpolation();
-                  }
-               }
-             break;
+
         default: a = 0;
               break;
     }

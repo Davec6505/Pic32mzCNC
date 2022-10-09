@@ -119,131 +119,11 @@ extern sfr sbit FLT_Step_PinDirA;
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 13 "c:/users/git/pic32mzcnc/kinematics.h"
-extern void (*AxisPulse[3])();
-
-struct degs{
-double degS;
-double degF;
-double degT;
-double deg;
-double degreeDeg;
-double degreeRadians;
-double newdeg;
-};
-
-struct X_Y{
- double X;
- double Y;
-};
-
-
-typedef struct{
-char cir_start: 1;
-char cir_end: 1;
-char cir_next: 1;
-char x_next: 1;
-char y_next: 1;
-double divisor;
-double I;
-double J;
-double I_end;
-double J_end;
-double N;
-double radius;
-int dir;
-int quadrantS;
-int quadrant;
-unsigned int steps;
-unsigned int Idivisor;
-double xCenter;
-double yCenter;
-double xStart;
-double yStart;
-double xStep;
-double yStep;
-double xFin;
-double yFin;
-double xLastStep;
-double yLastStep;
-double lastX;
-double lastY;
-struct degs Deg;
-struct X_Y XY;
-}Circle;
-extern Circle Circ;
+#line 18 "c:/users/git/pic32mzcnc/kinematics.h"
+extern volatile void (*AxisPulse[3])();
 
 
 
-
-
-void DualAxisStep(long newx,long newy,int axis_combo);
-void SingleAxisStep(long newxyz,int axis_No);
-
-void SetCircleVals(double curX,double curY,double finX,double finY,double i,double j, double deg,int dir);
-void CalcRadius();
-void CalcCircCenter();
-void CalcI_J_FromEndPos();
-double Calc_Angle(double i, double j);
-int Quadrant(double i,double j);
-double TestQuadrnt();
-int CircDir(int dir);
-void CalcDivisor();
-void CalcStep();
-void NextCords();
-void CirInterpolation();
-void Cir_Interpolation();
-void Circ_Tick();
-void Circ_Prep_Next();
-
-void SerialPrint();
-#line 15 "c:/users/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
-#line 59 "c:/users/git/pic32mzcnc/stepper.h"
-extern unsigned int Toggle;
-
-
-
-typedef struct genVars{
- int Single_Dual;
- UInt8_t running: 1;
- UInt8_t startPulses: 1;
- int Tog;
- int AxisNo;
- long i;
- long d2;
- long dx;
- long dy;
- long dz;
- long da;
- long px;
- long py;
- long pz;
- long pa;
- long psingle;
- long over;
- long acc;
- long dec;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
-}sVars;
-extern sVars SV;
-
-typedef struct STPT {
-
- long uSec;
-
- int axisTosample;
-
- int howManyOCxRunning;
-
- int compOCxRunning;
-}StepTmr;
-extern StepTmr STmr;
 
 typedef struct Steps{
 
@@ -289,6 +169,62 @@ typedef struct Steps{
  signed long mmToTravel;
 }STP;
 extern STP STPS[ 6 ];
+
+
+
+
+
+
+void DualAxisStep(long newx,long newy,int axis_combo);
+void SingleAxisStep(long newxyz,int axis_No);
+#line 15 "c:/users/git/pic32mzcnc/stepper.h"
+typedef unsigned short UInt8_t;
+#line 58 "c:/users/git/pic32mzcnc/stepper.h"
+extern unsigned int Toggle;
+
+
+
+typedef struct genVars{
+ int Single_Dual;
+ UInt8_t running: 1;
+ UInt8_t startPulses: 1;
+ int Tog;
+ int AxisNo;
+ long i;
+ long d2;
+ long dx;
+ long dy;
+ long dz;
+ long da;
+ long px;
+ long py;
+ long pz;
+ long pa;
+ long psingle;
+ long over;
+ long acc;
+ long dec;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
+}sVars;
+extern sVars SV;
+
+typedef struct STPT {
+
+ long uSec;
+
+ int axisTosample;
+
+ int howManyOCxRunning;
+
+ int compOCxRunning;
+}StepTmr;
+extern StepTmr STmr;
+
 
 
 
