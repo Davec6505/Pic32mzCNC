@@ -1,4 +1,4 @@
-0	1	mikroCPIC32.exe -MSF -DBG -pP32MZ2048EFH100 -HEAP 8000 -RA -C -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111115 -fo200 -N"C:\Users\Git\Pic32mzCNC\Pic32mzClicker2_StepperControl.mcp32" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Uses\" -SP"C:\Users\Git\Pic32mzCNC\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Uses\" -IP"C:\Users\Git\Pic32mzCNC\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\" "Main.c" "Config.c" "Stepper.c" "Steptodistance.c" "Timers.c" "Kinematics.c" "Pins.c" "Serial_Dma.c" "__Lib_CP0.emcl" "__Lib_Math.emcl" "__Lib_MathDouble_MZ_EF.emcl" "__Lib_System_MZ_EF.emcl" "__Lib_SoftResetDma.emcl" "__Lib_Delays.emcl" "__Lib_CType.emcl" "__Lib_CString.emcl" "__Lib_CStdlib_EF.emcl" "__Lib_CMath_EF.emcl" "__Lib_Conversions_EF.emcl" "__Lib_Sprintf_EF.emcl" "__Lib_Sprinti.emcl" "__Lib_Sprintl.emcl" "__Lib_FLASH_MZ.emcl" "__Lib_UART_123456_MZ.emcl" "__Lib_PPS_P32MZ_100CAN.emcl" "__Lib_FFT.emcl" "__Lib_TwiddleFactors.emcl" "DEFINES.pld"	 
+0	1	mikroCPIC32.exe -MSF -DBG -pP32MZ2048EFH100 -HEAP 8000 -RA -C -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS32 -O11111115 -fo200 -N"C:\Users\Git\Pic32mzCNC\Pic32mzClicker2_StepperControl.mcp32" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Uses\" -SP"C:\Users\Git\Pic32mzCNC\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Uses\" -IP"C:\Users\Git\Pic32mzCNC\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\" "Main.c" "Config.c" "Stepper.c" "Steptodistance.c" "Timers.c" "Kinematics.c" "Pins.c" "Serial_Dma.c" "__Lib_CP0.emcl" "__Lib_Math.emcl" "__Lib_MathDouble_MZ_EF.emcl" "__Lib_System_MZ_EF.emcl" "__Lib_SoftResetDma.emcl" "__Lib_Delays.emcl" "__Lib_CType.emcl" "__Lib_CString.emcl" "__Lib_CStdlib_EF.emcl" "__Lib_CMath_EF.emcl" "__Lib_Conversions_EF.emcl" "__Lib_Sprintf_EF.emcl" "__Lib_Sprinti.emcl" "__Lib_Sprintl.emcl" "__Lib_FLASH_MZ.emcl" "__Lib_UART_123456_MZ.emcl" "__Lib_PPS_P32MZ_100CAN.emcl" "__Lib_FFT.emcl" "__Lib_TwiddleFactors.emcl" "DEFINES.pld"	 
 diagnostics: 0	122	Compilation Started	P32MZ2048EFH100.c
 diagnostics: 65825	123	Compiled Successfully	P32MZ2048EFH100.c
 diagnostics: 0	122	Compilation Started	__Lib_Delays.c
@@ -52,13 +52,13 @@ hint: 0	1004	interrupt handler (DMA_CH1_ISR at 0x0087)	Serial_Dma.c
 hint: 125	1163	Variable 'ptrAdd' has been declared, but not used	Serial_Dma.c
 diagnostics: 140	123	Compiled Successfully	Serial_Dma.c
 hint: 124	1164	Variable 'ptr' has been eliminated by optimizer	Serial_Dma.c
-diagnostics: 0	127	All files Compiled in 1063 ms	 
+diagnostics: 0	127	All files Compiled in 844 ms	 
 hint: 0	1144	Used RX: 22 (69%)   Free RX: 10 (31%)	Used RX: 22 (69%)   Free RX: 10 (31%)
-hint: 0	1144	Static RAM (bytes): 932   Dynamic RAM (bytes): 515345	Static RAM (bytes): 932   Dynamic RAM (bytes): 515345
+hint: 0	1144	Static RAM (bytes): 932   Dynamic RAM (bytes): 515233	Static RAM (bytes): 932   Dynamic RAM (bytes): 515233
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 38072 (2%)  Free ROM (bytes): 2059080 (98%)	Used ROM (bytes): 38072 (2%)  Free ROM (bytes): 2059080 (98%)
+hint: 0	1144	Used ROM (bytes): 38136 (2%)  Free ROM (bytes): 2059016 (98%)	Used ROM (bytes): 38136 (2%)  Free ROM (bytes): 2059016 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 890 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3765 ms	 
-diagnostics: 0	103	Finished successfully: 08 Sep 2022, 22:56:31	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 860 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3391 ms	 
+diagnostics: 0	103	Finished successfully: 09 Oct 2022, 19:32:31	Pic32mzClicker2_StepperControl.mcp32

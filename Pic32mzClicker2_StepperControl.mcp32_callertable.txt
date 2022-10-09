@@ -24,6 +24,8 @@ main
 	disableOCx
 	EnStepperX
 	EnStepperY
+	EnStepperZ
+	EnStepperA
 	Temp_Move
 		calcSteps
 		speed_cntr_Move

@@ -478,16 +478,16 @@ int xyz_ = 0;
  disable_steps = 0;
  EnStepperX();
  EnStepperY();
-
-
+ EnStepperZ();
+ EnStepperA();
 
  }
 
  if(Toggle){
- if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)||!Circ.cir_next){
+ if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
  Temp_Move(a);
- a=7;
- if(a > 7)a=0;
+ a++;
+ if(a > 6)a=0;
  }
  }
 
