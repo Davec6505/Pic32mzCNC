@@ -344,8 +344,10 @@ abf2seq2bits
 abf2seq3
 abf2seq3bits
 abs
+absolute_mode
 acc
 accdec
+acceleration
 ackdt
 ackdt
 ackdt
@@ -6254,6 +6256,7 @@ bdstate2
 bdstate2_bit
 bdstate3
 bdstate3_bit
+belt_steps
 bf1devcfg0
 bf1devcfg0bits
 bf1devcfg1
@@ -18382,6 +18385,10 @@ conthrif_bit
 conthrise
 conthrise
 conthrise_bit
+coolant_mode
+coord_offset
+coord_select
+coord_system
 cos
 cosc
 cosc
@@ -23132,6 +23139,9 @@ debug1_ubadevcfg0_bit
 dec
 dec2bcd
 dec2bcd16
+decimal_places
+default_feed_rate
+default_seek_rate
 delay_100ms
 delay_10ms
 delay_10us
@@ -28913,6 +28923,7 @@ fedge_ic6con_bit
 fedge_ic7con_bit
 fedge_ic8con_bit
 fedge_ic9con_bit
+feed_rate
 fen
 fen
 fen_bit
@@ -29468,6 +29479,7 @@ filhit3_c2vec_bit
 filhit4
 filhit4_bit
 filhit4_c2vec_bit
+flags
 flash_erase_lowermemory
 flash_erase_page
 flash_erase_uppermemory
@@ -32432,6 +32444,7 @@ fwmarkie_bit
 fwroverr
 fwroverr
 fwroverr_bit
+gc
 gcen
 gcen
 gcen
@@ -33112,6 +33125,11 @@ hird3_bit
 hold
 hold
 hold_bit
+homing_debounce_delay
+homing_dir_mask
+homing_feed_rate
+homing_pulloff
+homing_seek_rate
 hostmode
 hostmode
 hostmode_bit
@@ -33332,6 +33350,7 @@ hugefrm
 hugefrm
 hugefrm_bit
 hugefrm_emacxcfg2_bit
+hypot
 i
 i2c1add
 i2c1addbits
@@ -36405,6 +36424,8 @@ igntur_spi4con2_bit
 igntur_spi5con2_bit
 igntur_spi6con2_bit
 ii
+in2mm
+inches_mode
 incm
 incm
 incm
@@ -36978,6 +36999,8 @@ intstatsetbits
 inttohex
 inttostr
 inttostrwithzeros
+inverse_feed_rate_mode
+invert_mask
 ioancpen
 ioancpen
 ioancpen_bit
@@ -37949,6 +37972,7 @@ jtagen_bf2devcfg0_bit
 jtagen_bit
 jtagen_devcfg0_bit
 jtagen_ubadevcfg0_bit
+junction_deviation
 labs
 lanemode
 lanemode0
@@ -38519,6 +38543,7 @@ lcd_01_address
 lcd_display
 ldexp
 ldiv
+leadscrew_steps
 led1
 led1_dir
 led2
@@ -38868,6 +38893,7 @@ manfc
 manfc
 manfc_bit
 max
+mc_arc
 mcen
 mcen
 mcen
@@ -39000,6 +39026,7 @@ memtype1
 memtype1_bit
 memtype2
 memtype2_bit
+microsteps
 mide
 mide
 mide
@@ -39091,6 +39118,8 @@ min102_bit
 min103
 min103_alrmtime_bit
 min103_bit
+mm_per_arc_segment
+mm2in
 mode
 mode
 mode
@@ -39283,6 +39312,7 @@ month102_bit
 month103
 month103_alrmdate_bit
 month103_bit
+motion_mode
 mpen
 mpen
 mpen
@@ -40081,6 +40111,7 @@ mwtd8_emacxmwtd_bit
 mwtd9
 mwtd9_bit
 mwtd9_emacxmwtd_bit
+n_arc_correction
 nak
 nak
 nak_bit
@@ -44359,6 +44390,9 @@ pktpendie
 pktpendie
 pktpendie
 pktpendie_bit
+plane_axis_0
+plane_axis_1
+plane_axis_2
 plen
 plen
 plen
@@ -45220,6 +45254,7 @@ poscrdy
 poscrdy
 poscrdy
 poscrdy_bit
+position
 pow
 pps_mapping
 pps_mapping_nolock
@@ -45670,6 +45705,7 @@ progop3
 progop3
 progop3_bit
 progop3_nvmcon_bit
+program_flow
 protocol
 protocol
 protocol
@@ -45975,6 +46011,7 @@ ptwren
 ptwren
 ptwren_bit
 pulse
+pulse_microseconds
 purepre
 purepre
 purepre
@@ -46052,6 +46089,7 @@ pwrconsetbits
 px
 py
 pz
+r_or_ijk
 r_w
 r_w
 r_w
@@ -56308,6 +56346,7 @@ seq2
 seq2bits
 seq3
 seq3bits
+serialprint
 serrie
 serrie
 serrie
@@ -56347,6 +56386,7 @@ setendc
 setendc
 setendc_bit
 setpinmode
+settings
 setup
 setup
 setup_bit
@@ -59715,6 +59755,7 @@ spife_spi3con_bit
 spife_spi4con_bit
 spife_spi5con_bit
 spife_spi6con_bit
+spindle_direction
 spirbe
 spirbe
 spirbe
@@ -60892,6 +60933,7 @@ stattype1_bit
 status
 status
 status_bit
+status_code
 step_cycle
 step1
 step10
@@ -60928,7 +60970,9 @@ step26_bit
 step27
 step27_bit
 stepa
+stepper_idle_lock_time
 stepperconstants
+steps_per_mm
 stepx
 stepy
 stepz
@@ -63185,6 +63229,7 @@ ton_t6con_bit
 ton_t7con_bit
 ton_t8con_bit
 ton_t9con_bit
+tool
 toupper
 tpc
 tpc
@@ -70974,6 +71019,7 @@ txstate2_bit
 txstate3
 txstate3_bit
 txt
+txt_a
 txta
 txtb
 txtc

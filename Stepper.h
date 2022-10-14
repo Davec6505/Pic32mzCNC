@@ -5,7 +5,7 @@
  #include "Timers.h"
  #include "Pins.h"
  #include "Kinematics.h"
-
+ #include "Settings.h"
 
 //extern bit PLS_Step_;sfr;
 
@@ -30,12 +30,10 @@ typedef unsigned short UInt8_t;
 // Timer/Counter 1 running on 3,686MHz / 8 = 460,75kHz (2,17uS). (T1-FREQ 460750)
 #define T1_FREQ   781250//781250=1.28us || 796150=1us   per tick
 #define minSpeed  30210
-#define maxSpeed  510
+#define maxSpeed  10
 #define cirSpeed  100
 
-//! Number of (full)steps per round on stepper motor in use.
-#define FSPR 200       // 200 Steps per rev
-#define SPR (FSPR*16)  // FSPR * micro stepping of stepper drive
+
 
 // Maths constants. To simplify maths when calculating in speed_cntr_Move().
 #define ALPHA    (2*3.14159)/SPR                   // 2*pi/spr in rad
@@ -147,22 +145,22 @@ void YZ_Interpolate();
 void XA_Interpolate();
 void YA_Interpolate();
 void ZA_Interpolate();
-
+ 
 void StopX();
 void StopY();
 void StopZ();
 void StopA();
 
-
-
 //Step control using Output compare module
 int Pulse(int axis_No);
 void toggleOCx(int axis_No);
+void multiToggleOCx(int axis_No);
 void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
 void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
+ 
  void Test_CycleX();
  void Test_CycleY();
  void Test_CycleZ();

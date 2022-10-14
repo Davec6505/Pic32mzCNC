@@ -1,4 +1,53 @@
-#line 1 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 1 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+
+
+
+
+typedef signed char int8_t;
+typedef signed int int16_t;
+typedef signed long int int32_t;
+typedef signed long long int64_t;
+
+
+typedef unsigned char uint8_t;
+typedef unsigned int uint16_t;
+typedef unsigned long int uint32_t;
+typedef unsigned long long uint64_t;
+
+
+typedef signed char int_least8_t;
+typedef signed int int_least16_t;
+typedef signed long int int_least32_t;
+typedef signed long long int_least64_t;
+
+
+typedef unsigned char uint_least8_t;
+typedef unsigned int uint_least16_t;
+typedef unsigned long int uint_least32_t;
+typedef unsigned long long uint_least64_t;
+
+
+
+typedef signed long int int_fast8_t;
+typedef signed long int int_fast16_t;
+typedef signed long int int_fast32_t;
+typedef signed long long int_fast64_t;
+
+
+typedef unsigned long int uint_fast8_t;
+typedef unsigned long int uint_fast16_t;
+typedef unsigned long int uint_fast32_t;
+typedef unsigned long long uint_fast64_t;
+
+
+typedef signed long int intptr_t;
+typedef unsigned long int uintptr_t;
+
+
+typedef signed long long intmax_t;
+typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -117,53 +166,6 @@ extern sfr sbit FLT_StepA;
 extern sfr sbit FLT_Step_PinDirA;
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-
-
-
-
-typedef signed char int8_t;
-typedef signed int int16_t;
-typedef signed long int int32_t;
-typedef signed long long int64_t;
-
-
-typedef unsigned char uint8_t;
-typedef unsigned int uint16_t;
-typedef unsigned long int uint32_t;
-typedef unsigned long long uint64_t;
-
-
-typedef signed char int_least8_t;
-typedef signed int int_least16_t;
-typedef signed long int int_least32_t;
-typedef signed long long int_least64_t;
-
-
-typedef unsigned char uint_least8_t;
-typedef unsigned int uint_least16_t;
-typedef unsigned long int uint_least32_t;
-typedef unsigned long long uint_least64_t;
-
-
-
-typedef signed long int int_fast8_t;
-typedef signed long int int_fast16_t;
-typedef signed long int int_fast32_t;
-typedef signed long long int_fast64_t;
-
-
-typedef unsigned long int uint_fast8_t;
-typedef unsigned long int uint_fast16_t;
-typedef unsigned long int uint_fast32_t;
-typedef unsigned long long uint_fast64_t;
-
-
-typedef signed long int intptr_t;
-typedef unsigned long int uintptr_t;
-
-
-typedef signed long long intmax_t;
-typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -183,44 +185,6 @@ void DMA_global();
 void DMA0();
 void DMA1();
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 54 "c:/users/git/pic32mzcnc/gcode.h"
-typedef struct {
- uint8_t status_code;
- uint8_t motion_mode;
- uint8_t inverse_feed_rate_mode;
- uint8_t inches_mode;
- uint8_t absolute_mode;
- uint8_t program_flow;
- int8_t spindle_direction;
- uint8_t coolant_mode;
- float feed_rate;
-
- float position[3];
- uint8_t tool;
-
- uint8_t plane_axis_0,
- plane_axis_1,
- plane_axis_2;
- uint8_t coord_select;
- float coord_system[ 6 ];
-
- float coord_offset[ 6 ];
-
-} parser_state_t;
-extern parser_state_t gc;
-
-
-
-void gc_init();
-
-
-uint8_t gc_execute_line(char *line);
-
-
-void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 #line 38 "c:/users/git/pic32mzcnc/kinematics.h"
 extern volatile void (*AxisPulse[3])();
 
@@ -269,8 +233,11 @@ typedef struct Steps{
  long StartUp_delay;
 
  signed long mmToTravel;
+<<<<<<< HEAD
+=======
 
  char master: 1;
+>>>>>>> patch2
 }STP;
 extern STP STPS[ 6 ];
 
@@ -299,12 +266,6 @@ typedef struct {
  uint8_t stepper_idle_lock_time;
  uint8_t decimal_places;
  uint8_t n_arc_correction;
-<<<<<<< HEAD
-
-} settings_t;
-extern settings_t settings;
-=======
->>>>>>> patch2
 
 } settings_t;
 extern settings_t settings;
@@ -315,19 +276,8 @@ extern settings_t settings;
 void DualAxisStep(long newx,long newy,int axis_combo);
 void SingleAxisStep(long newxyz,int axis_No);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-void mc_arc(float *position, float *target, float *offset, uint8_t axis_0, uint8_t axis_1,
- uint8_t axis_linear, float feed_rate, uint8_t invert_feed_rate, float radius, uint8_t isclockwise);
-=======
 void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
  uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
->>>>>>> patch2
-=======
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
- uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
->>>>>>> patch2
 float hypot(float angular_travel, float linear_travel);
 void SerialPrint(float r);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
@@ -434,15 +384,25 @@ void StopZ();
 void StopA();
 
 
+<<<<<<< HEAD
+
+
+int Pulse(int axis_No);
+void toggleOCx(int axis_No);
+=======
 int Pulse(int axis_No);
 void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
+>>>>>>> patch2
 void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
 void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> patch2
  void Test_CycleX();
  void Test_CycleY();
  void Test_CycleZ();
@@ -499,302 +459,39 @@ void LcdI2CConfig();
 void OutPutPulseXYZ();
 void Temp_Move(int a);
 void LCD_Display();
-#line 5 "C:/Users/Git/Pic32mzCNC/Config.c"
-void PinMode(){
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 54 "c:/users/git/pic32mzcnc/gcode.h"
+typedef struct {
+ uint8_t status_code;
+ uint8_t motion_mode;
+ uint8_t inverse_feed_rate_mode;
+ uint8_t inches_mode;
+ uint8_t absolute_mode;
+ uint8_t program_flow;
+ int8_t spindle_direction;
+ uint8_t coolant_mode;
+ float feed_rate;
 
+ float position[3];
+ uint8_t tool;
 
- SYSKEY = 0xAA996655;
- SYSKEY = 0x556699AA;
- CFGCONbits.OCACLK = 1;
- SYSKEY = 0x33333333;
+ uint8_t plane_axis_0,
+ plane_axis_1,
+ plane_axis_2;
+ uint8_t coord_select;
+ float coord_system[ 6 ];
 
- JTAGEN_bit = 0;
- Delay_ms(100);
+ float coord_offset[ 6 ];
 
+} parser_state_t;
+extern parser_state_t gc;
 
- ANSELA = 0X0000;
- TRISA = 0X0000;
- ANSELB = 0X0000;
- TRISB = 0X0000;
- ANSELC = 0X0000;
- TRISC = 0X0000;
- ANSELD = 0X0000;
- TRISD = 0X0000;
- ANSELE = 0X0000;
- TRISE = 0X0000;
- ANSELG = 0X0000;
- TRISG = 0X0000;
 
- CNPUB = 0x0000;
 
+void gc_init();
 
- LED1_Dir = 0;
- LED2_Dir = 0;
 
+uint8_t gc_execute_line(char *line);
 
 
-
- SW1_Dir = 1;
- SW2_Dir = 1;
-
- TRISG7_bit = 1;
- TRISG8_bit = 1;
-
-
-
- Unlock_IOLOCK();
- PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);
- PPS_Mapping_NoLock(_RPE9, _INPUT, _U2RX);
- PPS_Mapping_NoLock(_RPB9, _OUTPUT, _NULL);
- PPS_Mapping_NoLock(_RPB10, _OUTPUT, _NULL);
- PPS_Mapping_NoLock(_RPD4, _OUTPUT, _OC5);
- PPS_Mapping_NoLock(_RPD5, _OUTPUT, _OC2);
- PPS_Mapping_NoLock(_RPF0, _OUTPUT, _OC7);
- PPS_Mapping_NoLock(_RPF1, _OUTPUT, _OC3);
- PPS_Mapping_NoLock(_RPG1, _OUTPUT, _OC6);
- PPS_Mapping_NoLock(_RPE3, _OUTPUT, _OC8);
- Lock_IOLOCK();
-
-
-
- UartConfig();
-
-
-
- set_performance_mode();
-
-
-
-
-
-
-
- InitTimer1();
-
-
-
-
-
-
-
- DMA_global();
-
-
-
- OutPutPulseXYZ();
- SetPinMode();
-}
-
-void UartConfig(){
-
-
- UART2_Init_Advanced(256000, 50000 , _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
- UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle);
- Delay_ms(100);
-}
-
-
-
-void Uart2InterruptSetup(){
- URXISEL0_bit = 0;
- URXISEL1_bit = 1;
- IEC4.B18 = 1;
-
- U2RXIP0_bit = 1;
- U2RXIP1_bit = 1;
- U2RXIP2_bit = 1;
-
- URXISEL1_U2STA_bit = 0;
- U2RXIF_bit = 0;
-}
-
-void set_performance_mode(){
-unsigned long cp0;
-
-
- DI();
-
-
- SYSKEY = 0xAA996655;
- SYSKEY = 0x556699AA;
-
-
- PB1DIVbits.PBDIV = 1;
-
-
- UEN0_bit = 1;
- UEN1_bit = 1;
- PB2DIVbits.ON = 1;
- while(!PB2DIVbits.PBDIVRDY);
- PB2DIVbits.PBDIV = 0x07;
-
-
- PB3DIVbits.ON = 1;
- while(!PB3DIVbits.PBDIVRDY);
- PB3DIVbits.PBDIV = 3;
-
-
- PB4DIVbits.ON = 1;
- while (!PB4DIVbits.PBDIVRDY);
- PB4DIVbits.PBDIV = 0;
-
-
- PB5DIVbits.ON = 1;
- while(!PB5DIVbits.PBDIVRDY);
- PB5DIVbits.PBDIV = 1;
-
-
- PB7DIVbits.ON = 1;
- while(!PB7DIVbits.PBDIVRDY);
- PB7DIVbits.PBDIV = 0;
-
-
- PB8DIVbits.ON = 1;
- while(!PB8DIVbits.PBDIVRDY);
- PB8DIVbits.PBDIV = 1;
-
-
- PRECONbits.PFMSECEN = 0;
- PRECONbits.PREFEN = 0b11;
- PRECONbits.PFMWS = 0b100;
-
-
-
- cp0 = CP0_GET(CP0_CONFIG);
- cp0 &= ~0x07;
- cp0 |= 0b011;
- CP0_SET(CP0_CONFIG,cp0);
-
-
- SYSKEY = 0x33333333;
- PRISS = 0x76543210;
-
- PREFEN0_bit = 1;
- PREFEN1_bit = 1;
- PFMWS0_bit = 0;
- PFMWS1_bit = 1;
- PFMWS2_bit = 0;
-}
-
-
-void OutPutPulseXYZ(){
-#line 188 "C:/Users/Git/Pic32mzCNC/Config.c"
- OC5CON = 0x0000;
- OC2CON = 0x0000;
- OC7CON = 0X0000;
- OC3CON = 0x0000;
- OC6CON = 0x0000;
- OC8CON = 0X0000;
-
-
- T2CON = 0x0000;
- T3CON = 0x0000;
- T4CON = 0x0000;
- T5CON = 0x0000;
- T6CON = 0x0000;
- T7CON = 0x0000;
-
- T2CON = 0x0060;
- T3CON = 0x0060;
- T4CON = 0x0060;
- T5CON = 0x0060;
- T6CON = 0x0060;
- T7CON = 0x0060;
-
-
- PR2 = 0xFFFF;
- PR3 = 0xFFFF;
- PR4 = 0xFFFF;
- PR5 = 0xFFFF;
- PR6 = 0xFFFF;
- PR7 = 0xFFFF;
-
-
- OC5CON = 0x0004;
- OC2CON = 0x0004;
- OC7CON = 0x0004;
- OC3CON = 0x000C;
- OC6CON = 0x000C;
- OC8CON = 0x000C;
-#line 232 "C:/Users/Git/Pic32mzCNC/Config.c"
- OC5R = 0x5;
- OC5RS = 0x234;
- OC2R = 0x5;
- OC2RS = 0x234;
- OC7R = 0x5;
- OC7RS = 0x234;
- OC3R = 0x5;
- OC3RS = 0x234;
- OC6R = 0x5;
- OC6RS = 0x234;
- OC8R = 0x5;
- OC8RS = 0x234;
-
-
-
- OC5IP0_bit = 1;
- OC5IP1_bit = 1;
- OC5IP2_bit = 0;
- OC5IS0_bit = 0;
- OC5IS1_bit = 0;
- OC5IF_bit = 0;
- OC5IE_bit = 0;
-
-
- OC2IP0_bit = 1;
- OC2IP1_bit = 1;
- OC2IP2_bit = 0;
- OC2IS0_bit = 1;
- OC2IS1_bit = 0;
- OC2IF_bit = 0;
- OC2IE_bit = 0;
-
-
- OC7IP0_bit = 1;
- OC7IP1_bit = 1;
- OC7IP2_bit = 1;
- OC7IS0_bit = 0;
- OC7IS1_bit = 1;
- OC7IF_bit = 0;
- OC7IE_bit = 0;
-
-
- OC3IP0_bit = 1;
- OC3IP1_bit = 1;
- OC3IP2_bit = 0;
- OC3IS0_bit = 1;
- OC3IS1_bit = 1;
- OC3IF_bit = 0;
- OC3IE_bit = 0;
-
-
- OC6IP0_bit = 1;
- OC6IP1_bit = 1;
- OC6IP2_bit = 0;
- OC6IS0_bit = 1;
- OC6IS1_bit = 1;
- OC6IF_bit = 0;
- OC6IE_bit = 0;
-
-
- OC8IP0_bit = 1;
- OC8IP1_bit = 1;
- OC8IP2_bit = 0;
- OC8IS0_bit = 1;
- OC8IS1_bit = 1;
- OC8IF_bit = 0;
- OC8IE_bit = 0;
-
-
- T2CONSET = 0x8000;
- T4CONSET = 0x8000;
- T6CONSET = 0x8000;
- T5CONSET = 0x8000;
- T3CONSET = 0x8000;
- T7CONSET = 0x8000;
-
-
-
-
-
-}
+void gc_set_current_position(int32_t x, int32_t y, int32_t z);

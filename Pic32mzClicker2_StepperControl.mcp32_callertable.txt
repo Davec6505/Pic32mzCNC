@@ -20,46 +20,110 @@ main
 		OutPutPulseXYZ
 		SetPinMode
 	StepperConstants
-	DisableStepper
 	disableOCx
+	DisableStepper
 	EnStepperX
 	EnStepperY
 	EnStepperZ
 	EnStepperA
 	Temp_Move
-		calcSteps
+		belt_steps
 		speed_cntr_Move
 			abs
 			sqrt_
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			UART2_Write_Text
+				UART2_Write
+			UART2_Write
 		SingleAxisStep
 			Single_Axis_Enable
 			abs
 			Step_Cycle
 				toggleOCx
-				Pulse
-					AccDec
 		DualAxisStep
 			Multi_Axis_Enable
 			abs
 			ClockPulse
 			XY_Interpolate
+				__CC2DW
 				StopX
 				StopY
+				UART2_Write_Text
+<<<<<<< HEAD
+					UART2_Write
+=======
+>>>>>>> patch2
 				Step_Cycle
+				Pulse
+					AccDec
 			XZ_Interpolate
 				StopX
 				StopZ
 				Step_Cycle
+				Pulse
 			YZ_Interpolate
 				StopY
 				StopZ
 				Step_Cycle
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+		r_or_ijk
+			memset
+			sqrt
+				frexp
+				ldexp
+			hypot
+				sqrt
+			SerialPrint
+				strlen
+				memset
+				sprintf
+					_doprntf
+						isdigit
+						scale
+						fround
+				strncpy
+				strncat
+				UART2_Write_Text
+					UART2_Write
+			mc_arc
+				atan2
+					fabs
+					atan
+						fabs
+						eval_poly
+				SerialPrint
+				fabs
+				hypot
+				floor
+				cos
+					sin
+						floor
+						eval_poly
+				sin
+				calcSteps
+				DualAxisStep
+>>>>>>> patch2
+=======
+		calcSteps
+>>>>>>> patch2
+=======
+				Pulse
+		calcSteps
+>>>>>>> patch2
 	ResetSteppers
 		DisableStepper
 StepA
 	SingleStepA
 		StopA
 		Step_Cycle
+		Pulse
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate
@@ -74,6 +138,10 @@ StepX
 	SingleStepX
 		StopX
 		Step_Cycle
+<<<<<<< HEAD
+=======
+		Pulse
+>>>>>>> patch2
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate
@@ -82,6 +150,10 @@ StepY
 	SingleStepY
 		StopY
 		Step_Cycle
+<<<<<<< HEAD
+=======
+		Pulse
+>>>>>>> patch2
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate
@@ -90,6 +162,10 @@ StepZ
 	SingleStepZ
 		StopZ
 		Step_Cycle
+<<<<<<< HEAD
+=======
+		Pulse
+>>>>>>> patch2
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate

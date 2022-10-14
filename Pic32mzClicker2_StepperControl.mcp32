@@ -6,7 +6,19 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 Value=Config.c
+=======
+Value=Main.c
+>>>>>>> patch2
+=======
+Value=Kinematics.c
+>>>>>>> patch2
+=======
+Value=Main.c
+>>>>>>> patch2
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -24,7 +36,9 @@ File4=Timers.c
 File5=Kinematics.c
 File6=Pins.c
 File7=Serial_Dma.c
-Count=8
+File8=Print.c
+File9=GCODE.c
+Count=10
 [BINARIES]
 Count=0
 [IMAGES]
@@ -35,13 +49,34 @@ File0=Stepper.c
 File1=Stepper.h
 File2=Kinematics.h
 File3=Kinematics.c
+<<<<<<< HEAD
 File4=Config.c
 File5=Config.h
 File6=Main.c
 File7=Steptodistance.c
 File8=Steptodistance.h
+<<<<<<< HEAD
+<<<<<<< HEAD
 File9=Timers.c
 Count=10
+=======
+Count=9
+>>>>>>> patch2
+=======
+File9=Settings.h
+File10=GCODE.c
+File11=GCODE.h
+Count=12
+>>>>>>> patch2
+=======
+File4=Main.c
+File5=Steptodistance.c
+File6=Steptodistance.h
+File7=Settings.h
+File8=GCODE.c
+File9=GCODE.h
+Count=10
+>>>>>>> patch2
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -62,7 +97,10 @@ File3=Timers.h
 File4=Kinematics.h
 File5=Pins.h
 File6=Serial_Dma.h
-Count=7
+File7=Settings.h
+File8=Print.h
+File9=GCODE.h
+Count=10
 [PLDS]
 File0=DEFINES.pld
 Count=1
@@ -89,6 +127,5 @@ USE_SRS=7
 [EXPANDED_NODES]
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
-10=Header Files
-19=Project Level Defines
-Count=4
+12=Header Files
+Count=3

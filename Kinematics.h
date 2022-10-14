@@ -1,16 +1,36 @@
 #ifndef KINEMATICS_H
 #define KINEMATICS_H
 
+#include <stdint.h>
+#include "Settings.h"
 #include "Stepper.h"
 #include  "SErial_Dma.h"
+#include "GCODE.h"
+
 
 //Circle defines and consts
 // Decide how many axis you would like to run
-#define NoOfAxis 6
 #define  Pi         3.141593
-#define  rad2deg   (180.00/Pi)
-#define  deg2rad   (Pi/180.00)
+#define  M_PI       3.1416
+#define  rad2deg    (180.00/Pi)
+#define  deg2rad    (Pi/180.00)
 
+
+
+
+#define X_AXIS 0 // Axis indexing value
+#define Y_AXIS 1
+#define Z_AXIS 2
+
+#define DEFAULT_FEEDRATE 250.0
+#define DEFAULT_MM_PER_ARC_SEGMENT 0.1
+
+
+// Useful macros
+#define clear_vector(a) memset(a, 0, sizeof(a))
+#define clear_vector_float(a) memset(a, 0.0, sizeof(float)*N_AXIS)
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define min(a,b) (((a) < (b)) ? (a) : (b))
 /*
  *FUNCTION POINTER ARRAY FOR TOGGLING BETWEEN LINEAR
  *OUTPUT COMPARE AND CIRCULAR OUTPUT COMPARE
@@ -62,10 +82,66 @@ typedef struct Steps{
   long StartUp_delay;
  //!  the mm to travel
  signed long mmToTravel;
+ //! the master axis indicator
+ char master: 1;
 }STP;
 extern STP STPS[NoOfAxis];
 
 
+////////////////////////////////////////////////////
+//     ******CIRCULAR INTERPOLATION******         //
+////////////////////////////////////////////////////
+<<<<<<< HEAD
+
+// Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
+typedef struct {
+  double steps_per_mm[3];
+  uint8_t microsteps;
+  uint8_t pulse_microseconds;
+  double default_feed_rate;
+  double default_seek_rate;
+  uint8_t invert_mask;
+  double mm_per_arc_segment;
+  double acceleration;
+  double junction_deviation;
+  uint8_t flags;  // Contains default boolean settings
+  uint8_t homing_dir_mask;
+  double homing_feed_rate;
+  double homing_seek_rate;
+  uint16_t homing_debounce_delay;
+  double homing_pulloff;
+  uint8_t stepper_idle_lock_time; // If max value 255, steppers do not disable.
+  uint8_t decimal_places;
+  uint8_t n_arc_correction;
+//  uint8_t status_report_mask; // Mask to indicate desired report data.
+} settings_t;
+extern settings_t settings;
+=======
+>>>>>>> patch2
+
+// Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
+typedef struct {
+  double steps_per_mm[3];
+  uint8_t microsteps;
+  uint8_t pulse_microseconds;
+  double default_feed_rate;
+  double default_seek_rate;
+  uint8_t invert_mask;
+  double mm_per_arc_segment;
+  double acceleration;
+  double junction_deviation;
+  uint8_t flags;  // Contains default boolean settings
+  uint8_t homing_dir_mask;
+  double homing_feed_rate;
+  double homing_seek_rate;
+  uint16_t homing_debounce_delay;
+  double homing_pulloff;
+  uint8_t stepper_idle_lock_time; // If max value 255, steppers do not disable.
+  uint8_t decimal_places;
+  uint8_t n_arc_correction;
+//  uint8_t status_report_mask; // Mask to indicate desired report data.
+} settings_t;
+extern settings_t settings;
 
 ///////////////////////////////////////////
 //FUNCTION PROTOTYPES
@@ -73,5 +149,19 @@ extern STP STPS[NoOfAxis];
 void DualAxisStep(long newx,long newy,int axis_combo);
 void SingleAxisStep(long newxyz,int axis_No);
 
+//Circle move axis
+void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
+  uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
+float hypot(float angular_travel, float linear_travel);
+void SerialPrint(float r);
+<<<<<<< HEAD
+<<<<<<< HEAD
+void r_or_ijk(float xCur,float yCur,float xFin,float yFin,float r, float i, float j, float k);
 
+=======
+void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
+>>>>>>> patch2
+=======
+void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
+>>>>>>> patch2
 #endif

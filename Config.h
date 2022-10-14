@@ -9,7 +9,7 @@
 #include "Steptodistance.h"
 #include "Serial_Dma.h"
 #include "Kinematics.h"
-
+#include "GCODE.h"
 
 
 
@@ -21,6 +21,9 @@
  * and all output compares are set to off
  */
 #define SEC_TO_DISABLE_STEPPERS 10
+#define false 0
+#define true 1
+
 
 
 ////////////////////////////////////////////////////
