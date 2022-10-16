@@ -426,27 +426,12 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
 
      if(SV.Single_Dual == 0)
         SingleStepX();
-<<<<<<< HEAD
      else
         AxisPulse[SV.Single_Dual]();
 }
 
 void SingleStepX(){
-    if(/*(STPS[X].step_count >= STPS[X].dist)||*/(SV.Tog == 1)){
-=======
-     else{
-        if(STPS[X].master = 1)
-           AxisPulse[SV.Single_Dual]();
-     }
-}
-
-void SingleStepX(){
-<<<<<<< HEAD
-    if((STPS[X].step_count >= STPS[X].dist)/*||(SV.Tog == 1)*/){
->>>>>>> patch2
-=======
     if((STPS[X].step_count >= STPS[X].dist)||(SV.Tog == 1)){
->>>>>>> patch2
       StopX();
     }
     else{
@@ -471,15 +456,10 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
 
    if(SV.Single_Dual == 0)
         SingleStepY();
-<<<<<<< HEAD
-   else
-        AxisPulse[SV.Single_Dual]();
-=======
    else {
       if(STPS[Y].master = 1)
         AxisPulse[SV.Single_Dual]();
    }
->>>>>>> patch2
 }
 
 void SingleStepY(){
@@ -558,36 +538,19 @@ void StopA(){
 }
 
 ////////////////////////////////////////////////////////
-<<<<<<< HEAD
-//Dual Interpolate test conditions after interrrupts
-void XY_Interpolate(){
-
-   if((STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)/*||(SV.Tog == 1)*/){
-=======
 //   INTERPOLATE MULTI AXIS USING BRESENHAMS ALGO     //
 //       MASTER AXIS CONTROLS THE ACCELERATION        //
 ////////////////////////////////////////////////////////
 void XY_Interpolate(){
-
-<<<<<<< HEAD
-   if(/*(STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)*/||(SV.Tog == 1)){
->>>>>>> patch2
-=======
    if(/*(STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||*/(SV.Tog == 1)){
->>>>>>> patch2
         StopX();
         StopY();
         return;
    }
 
-<<<<<<< HEAD
-   if(SV.dx > SV.dy){
-      Step_Cycle(X);
-=======
    if(SV.dx >= SV.dy){
       Step_Cycle(X);
       Pulse(X);
->>>>>>> patch2
       if(SV.d2 < 0){
           SV.d2 += 2*SV.dy;
       }else{
@@ -596,10 +559,7 @@ void XY_Interpolate(){
       }
    }else{
       Step_Cycle(Y);
-<<<<<<< HEAD
-=======
       Pulse(Y);
->>>>>>> patch2
       if(SV.d2 < 0){
          SV.d2 += 2 * SV.dx;
       }else{
@@ -611,29 +571,16 @@ void XY_Interpolate(){
 
 void XZ_Interpolate(){
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if((STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||(SV.Tog == 1)){
-=======
-    if(/*(STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)*/||(SV.Tog == 1)){
->>>>>>> patch2
-=======
     if(/*(STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||*/(SV.Tog == 1)){
->>>>>>> patch2
         StopX();
         StopZ();
 
         return;
     }
 
-<<<<<<< HEAD
-   if(SV.dx > SV.dz){
-      Step_Cycle(X);
-=======
    if(SV.dx >= SV.dz){
       Step_Cycle(X);
       Pulse(X);
->>>>>>> patch2
       if(SV.d2 < 0)
         SV.d2 += 2*SV.dz;
       else{
@@ -643,10 +590,7 @@ void XZ_Interpolate(){
 
     }else{
         Step_Cycle(Z);
-<<<<<<< HEAD
-=======
         Pulse(Z);
->>>>>>> patch2
         if(SV.d2 < 0)
             SV.d2 += 2 * SV.dx;
         else{
@@ -662,14 +606,9 @@ void YZ_Interpolate(){
        return;
     }
 
-<<<<<<< HEAD
-    if(SV.dy > SV.dz){
-      Step_Cycle(Y);
-=======
     if(SV.dy >= SV.dz){
       Step_Cycle(Y);
       Pulse(Y);
->>>>>>> patch2
       if(SV.d2 < 0)
         SV.d2 += 2*SV.dz;
       else{
@@ -678,10 +617,7 @@ void YZ_Interpolate(){
       }
     }else{
       Step_Cycle(Z);
-<<<<<<< HEAD
-=======
       Pulse(Z);
->>>>>>> patch2
       if(SV.d2 < 0)
          SV.d2 += 2 * SV.dy;
       else{

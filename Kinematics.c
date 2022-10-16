@@ -1,14 +1,7 @@
 #include "Kinematics.h"
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-//axis_combination axis_xyz;
->>>>>>> patch2
-=======
-//axis_combination axis_xyz;
->>>>>>> patch2
+
 //////////////////////////////////
 //FUNCTION POINTERS
 volatile void (*AxisPulse[3])();

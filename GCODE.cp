@@ -233,11 +233,8 @@ typedef struct Steps{
  long StartUp_delay;
 
  signed long mmToTravel;
-<<<<<<< HEAD
-=======
 
  char master: 1;
->>>>>>> patch2
 }STP;
 extern STP STPS[ 6 ];
 
@@ -275,6 +272,7 @@ extern settings_t settings;
 
 void DualAxisStep(long newx,long newy,int axis_combo);
 void SingleAxisStep(long newxyz,int axis_No);
+
 
 void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
  uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
@@ -384,25 +382,15 @@ void StopZ();
 void StopA();
 
 
-<<<<<<< HEAD
-
-
-int Pulse(int axis_No);
-void toggleOCx(int axis_No);
-=======
 int Pulse(int axis_No);
 void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
->>>>>>> patch2
 void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
 void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
-<<<<<<< HEAD
-=======
 
->>>>>>> patch2
  void Test_CycleX();
  void Test_CycleY();
  void Test_CycleZ();

@@ -91,33 +91,6 @@ extern STP STPS[NoOfAxis];
 ////////////////////////////////////////////////////
 //     ******CIRCULAR INTERPOLATION******         //
 ////////////////////////////////////////////////////
-<<<<<<< HEAD
-
-// Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
-typedef struct {
-  double steps_per_mm[3];
-  uint8_t microsteps;
-  uint8_t pulse_microseconds;
-  double default_feed_rate;
-  double default_seek_rate;
-  uint8_t invert_mask;
-  double mm_per_arc_segment;
-  double acceleration;
-  double junction_deviation;
-  uint8_t flags;  // Contains default boolean settings
-  uint8_t homing_dir_mask;
-  double homing_feed_rate;
-  double homing_seek_rate;
-  uint16_t homing_debounce_delay;
-  double homing_pulloff;
-  uint8_t stepper_idle_lock_time; // If max value 255, steppers do not disable.
-  uint8_t decimal_places;
-  uint8_t n_arc_correction;
-//  uint8_t status_report_mask; // Mask to indicate desired report data.
-} settings_t;
-extern settings_t settings;
-=======
->>>>>>> patch2
 
 // Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
 typedef struct {
@@ -154,14 +127,5 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
 void SerialPrint(float r);
-<<<<<<< HEAD
-<<<<<<< HEAD
-void r_or_ijk(float xCur,float yCur,float xFin,float yFin,float r, float i, float j, float k);
-
-=======
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
->>>>>>> patch2
-=======
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
->>>>>>> patch2
 #endif
