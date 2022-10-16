@@ -200,12 +200,12 @@ void OutPutPulseXYZ(){
   T6CON  = 0x0000;  // disable Timer4  OC3
   T7CON  = 0x0000;  // disable Timer6  OC8
 //setup  Tmr2,3,4,5,6&7 as 1:64 prescaler 16bit
-  T2CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-  T3CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-  T4CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-  T5CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-  T6CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-  T7CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
+  T2CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+  T3CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+  T4CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+  T5CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+  T6CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+  T7CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
   
 // Set period (PR2 is 32-bits wide) and common to all OCx compares
   PR2    = 0xFFFF;   //OC5

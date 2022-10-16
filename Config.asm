@@ -494,23 +494,23 @@ SW	R0, Offset(T5CON+0)(GP)
 SW	R0, Offset(T6CON+0)(GP)
 ;Config.c,201 :: 		T7CON  = 0x0000;  // disable Timer6  OC8
 SW	R0, Offset(T7CON+0)(GP)
-;Config.c,203 :: 		T2CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-ORI	R2, R0, 96
+;Config.c,203 :: 		T2CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+ORI	R2, R0, 48
 SW	R2, Offset(T2CON+0)(GP)
-;Config.c,204 :: 		T3CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-ORI	R2, R0, 96
+;Config.c,204 :: 		T3CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+ORI	R2, R0, 48
 SW	R2, Offset(T3CON+0)(GP)
-;Config.c,205 :: 		T4CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-ORI	R2, R0, 96
+;Config.c,205 :: 		T4CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+ORI	R2, R0, 48
 SW	R2, Offset(T4CON+0)(GP)
-;Config.c,206 :: 		T5CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-ORI	R2, R0, 96
+;Config.c,206 :: 		T5CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+ORI	R2, R0, 48
 SW	R2, Offset(T5CON+0)(GP)
-;Config.c,207 :: 		T6CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-ORI	R2, R0, 96
+;Config.c,207 :: 		T6CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+ORI	R2, R0, 48
 SW	R2, Offset(T6CON+0)(GP)
-;Config.c,208 :: 		T7CON  = 0x0060;  //   a prescaler of 1:64 to get 1.28usec tick resolution
-ORI	R2, R0, 96
+;Config.c,208 :: 		T7CON  = 0x0030;  //   a prescaler of 1:8 to get 1.28usec tick resolution
+ORI	R2, R0, 48
 SW	R2, Offset(T7CON+0)(GP)
 ;Config.c,211 :: 		PR2    = 0xFFFF;   //OC5
 ORI	R2, R0, 65535

@@ -9,12 +9,20 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 Value=Config.c
 =======
 Value=Main.c
 >>>>>>> patch2
 =======
 Value=Kinematics.c
+>>>>>>> patch2
+=======
+Value=Main.c
+>>>>>>> patch2
+=======
+Value=Config.c
 >>>>>>> patch2
 =======
 Value=Main.c
@@ -75,7 +83,12 @@ File6=Steptodistance.h
 File7=Settings.h
 File8=GCODE.c
 File9=GCODE.h
+<<<<<<< HEAD
 Count=10
+>>>>>>> patch2
+=======
+File10=Config.c
+Count=11
 >>>>>>> patch2
 [EEPROM]
 Count=0

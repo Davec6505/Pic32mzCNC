@@ -387,7 +387,7 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 15 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 56 "c:/users/git/pic32mzcnc/stepper.h"
+#line 61 "c:/users/git/pic32mzcnc/stepper.h"
 extern unsigned int Toggle;
 
 
@@ -516,7 +516,7 @@ double temp = 0.00;
 
 
 
- temp =  (1/ 1 )  *  (1/ 0.032 )  *  200 ;
+ temp =  (1/ 1 )  *  (1/ 0.032 )  *  188 ;
 
  return temp;
 }
@@ -527,11 +527,15 @@ double temp = 0.00;
 
 long belt_steps(double move_distance){
  double temp = 0;
+<<<<<<< HEAD
  temp = ( ( 200 * 32 ) /( 2 * 20 ))*move_distance;
 <<<<<<< HEAD
 
  return (signed long)temp;
 =======
+=======
+ temp = ( ( 188 * 32 ) /( 2 * 20 ))*move_distance;
+>>>>>>> patch2
  return (long)temp;
 >>>>>>> patch2
 }
@@ -564,7 +568,7 @@ double circ,cirDivision,stepsToMove;
 
 
  cirDivision = mmsToMove / circ;
- stepsToMove = cirDivision *  ( 200 * 32 ) ;
+ stepsToMove = cirDivision *  ( 188 * 32 ) ;
 
 
  return (signed long)stepsToMove;

@@ -2,7 +2,7 @@ _leadscrew_steps:
 ;Steptodistance.c,17 :: 		long leadscrew_steps(double move_distance){
 ;Steptodistance.c,18 :: 		double temp = 0.00;
 ;Steptodistance.c,24 :: 		return temp;
-ORI	R2, R0, 6249
+ORI	R2, R0, 5874
 ;Steptodistance.c,25 :: 		}
 L_end_leadscrew_steps:
 JR	RA
@@ -12,7 +12,7 @@ _belt_steps:
 ;Steptodistance.c,31 :: 		long belt_steps(double move_distance){
 ;Steptodistance.c,32 :: 		double temp = 0;
 ;Steptodistance.c,33 :: 		temp = (SPRU/(BELT_PITCH*PULLEY_TOOTH_COUNT))*move_distance;
-LUI	R2, 17184
+LUI	R2, 17174
 ORI	R2, R2, 0
 MTC1	R2, S0
 MUL.S 	S0, S0, S12
@@ -93,8 +93,12 @@ DIV.S 	S1, S12, S0
 ;Steptodistance.c,64 :: 		cirDivision = mmsToMove / circ;
 DIV.S 	S1, S12, S0
 ;Steptodistance.c,65 :: 		stepsToMove = cirDivision * SPRU;
+<<<<<<< HEAD
 >>>>>>> patch2
 LUI	R2, 17864
+=======
+LUI	R2, 17852
+>>>>>>> patch2
 ORI	R2, R2, 0
 MTC1	R2, S0
 MUL.S 	S0, S1, S0

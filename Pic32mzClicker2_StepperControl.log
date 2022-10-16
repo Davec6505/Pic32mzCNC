@@ -4,6 +4,7 @@ diagnostics: 65825	123	Compiled Successfully	P32MZ2048EFH100.c
 diagnostics: 0	122	Compilation Started	__Lib_Delays.c
 diagnostics: 176	123	Compiled Successfully	__Lib_Delays.c
 diagnostics: 0	122	Compilation Started	i2c_lcd.h
+<<<<<<< HEAD
 hint: 32	1163	Variable 'j' has been declared, but not used	Main.c
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -16,14 +17,21 @@ hint: 93	1163	Variable 'txt_' has been declared, but not used	Main.c
 diagnostics: 169	123	Compiled Successfully	Main.c
 >>>>>>> patch2
 hint: 34	1164	Variable 'xyz_' has been eliminated by optimizer	Main.c
+=======
+hint: 33	1163	Variable 'j' has been declared, but not used	Main.c
+hint: 99	1163	Variable 'txt_' has been declared, but not used	Main.c
+diagnostics: 189	123	Compiled Successfully	Main.c
+hint: 35	1164	Variable 'xyz_' has been eliminated by optimizer	Main.c
+>>>>>>> patch2
 diagnostics: 0	122	Compilation Started	i2c_lcd.h
 diagnostics: 312	123	Compiled Successfully	Config.c
 diagnostics: 0	122	Compilation Started	pins.h
-hint: 112	1163	Variable 'ii' has been declared, but not used	Stepper.c
+hint: 113	1163	Variable 'ii' has been declared, but not used	Stepper.c
 hint: 0	1004	interrupt handler (StepX at 0x001B)	Stepper.c
 hint: 0	1004	interrupt handler (StepY at 0x000C)	Stepper.c
 hint: 0	1004	interrupt handler (StepZ at 0x0023)	Stepper.c
 hint: 0	1004	interrupt handler (StepA at 0x0011)	Stepper.c
+<<<<<<< HEAD
 <<<<<<< HEAD
 diagnostics: 689	123	Compiled Successfully	Stepper.c
 diagnostics: 0	122	Compilation Started	pins.h
@@ -35,6 +43,9 @@ hint: 57	1164	Variable 'cirDivision' has been eliminated by optimizer	Steptodist
 hint: 57	1164	Variable 'stepsToMove' has been eliminated by optimizer	Steptodistance.c
 =======
 diagnostics: 728	123	Compiled Successfully	Stepper.c
+=======
+diagnostics: 731	123	Compiled Successfully	Stepper.c
+>>>>>>> patch2
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 69	123	Compiled Successfully	Steptodistance.c
 hint: 18	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
@@ -47,8 +58,9 @@ diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (Timer1Interrupt at 0x0004)	Timers.c
 hint: 0	1004	interrupt handler (Timer8Interrupt at 0x0024)	Timers.c
 diagnostics: 106	123	Compiled Successfully	Timers.c
-hint: 20	1354	 warning: "/*" within comment     /////////////////////////////////////////////////////////////////////////////*/   <stdint.h> #include "Config.h" #include "Kinematics.h"    /*#define gcode_h #include <avr/io.h> #include "nuts_bolts.h"*/ #define  NoOfAxis   6  // Define modal group internal numbers for checking multiple command violations and tracking the // type of command that is called in the block. A modal group is a group of g-code commands that are // mutually exclusive, or cannot exist on the same line, because they each toggle a state or execute // a unique motion. These are defined in the NIST RS274-NGC v3 g-code standard, available online, // and are similar/identical to other g-code interpreters by manufacturers (Haas,Fanuc,Mazak,etc). #define MODAL_GROUP_NONE 0 #define MODAL_GROUP_0 1 // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal #define MODAL_GROUP_1 2 // [G0,G1,G2,G3,G80] Motion #define MODAL_GROUP_2 3 // [G17,G18,G19] Plane selection #define MODAL_GROUP_3 4 // [G90,G91] Distance mode #define MODAL_GROUP_4 5 // [M0,M1,M2,M30] Stopping #define MODAL_GROUP_5 6 // [G93,G94] Feed rate mode #define MODAL_GROUP_6 7 // [G20,G21] Units #define MODAL_GROUP_7 8 // [M3,M4,M5] Spindle turning #define MODAL_GROUP_12 9 // [G54,G55,G56,G57,G58,G59] Coordinate system selection  // Define command actions for within execution-type modal groups (motion, stopping, non-modal). Used // internally by the parser to know which command to execute. #define MOTION_MODE_SEEK 0 // G0 #define MOTION_MODE_LINEAR 1 // G1 #define MOTION_MODE_CW_ARC 2  // G2 #define MOTION_MODE_CCW_ARC 3  // G3 #define MOTION_MODE_CANCEL 4 // G80  #define PROGRAM_FLOW_RUNNING 0 #define PROGRAM_FLOW_PAUSED 1 // M0, M1 #define PROGRAM_FLOW_COMPLETED 2 // M2, M30  #define NON_MODAL_NONE 0 #define NON_MODAL_DWELL 1 // G4 #define NON_MODAL_SET_COORDINATE_DATA 2 // G10 #define NON_MODAL_GO_HOME_0 3 // G28 #define NON_MODAL_SET_HOME_0 4 // G28.1 #define NON_MODAL_GO_HOME_1 5 // G30 #define NON_MODAL_SET_HOME_1 6 // G30.1 #define NON_MODAL_SET_COORDINATE_OFFSET 7 // G92 #define NON_MODAL_RESET_COORDINATE_OFFSET 8 //G92.1   typedef struct {   uint8_t status_code;	C:\Users\Git\Pic32mzCNC\Kinematics.c
+hint: 21	1354	 warning: "/*" within comment     /////////////////////////////////////////////////////////////////////////////*/   <stdint.h> #include "Config.h" #include "Kinematics.h"    /*#define gcode_h #include <avr/io.h> #include "nuts_bolts.h"*/ #define  NoOfAxis   6  // Define modal group internal numbers for checking multiple command violations and tracking the // type of command that is called in the block. A modal group is a group of g-code commands that are // mutually exclusive, or cannot exist on the same line, because they each toggle a state or execute // a unique motion. These are defined in the NIST RS274-NGC v3 g-code standard, available online, // and are similar/identical to other g-code interpreters by manufacturers (Haas,Fanuc,Mazak,etc). #define MODAL_GROUP_NONE 0 #define MODAL_GROUP_0 1 // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal #define MODAL_GROUP_1 2 // [G0,G1,G2,G3,G80] Motion #define MODAL_GROUP_2 3 // [G17,G18,G19] Plane selection #define MODAL_GROUP_3 4 // [G90,G91] Distance mode #define MODAL_GROUP_4 5 // [M0,M1,M2,M30] Stopping #define MODAL_GROUP_5 6 // [G93,G94] Feed rate mode #define MODAL_GROUP_6 7 // [G20,G21] Units #define MODAL_GROUP_7 8 // [M3,M4,M5] Spindle turning #define MODAL_GROUP_12 9 // [G54,G55,G56,G57,G58,G59] Coordinate system selection  // Define command actions for within execution-type modal groups (motion, stopping, non-modal). Used // internally by the parser to know which command to execute. #define MOTION_MODE_SEEK 0 // G0 #define MOTION_MODE_LINEAR 1 // G1 #define MOTION_MODE_CW_ARC 2  // G2 #define MOTION_MODE_CCW_ARC 3  // G3 #define MOTION_MODE_CANCEL 4 // G80  #define PROGRAM_FLOW_RUNNING 0 #define PROGRAM_FLOW_PAUSED 1 // M0, M1 #define PROGRAM_FLOW_COMPLETED 2 // M2, M30  #define NON_MODAL_NONE 0 #define NON_MODAL_DWELL 1 // G4 #define NON_MODAL_SET_COORDINATE_DATA 2 // G10 #define NON_MODAL_GO_HOME_0 3 // G28 #define NON_MODAL_SET_HOME_0 4 // G28.1 #define NON_MODAL_GO_HOME_1 5 // G30 #define NON_MODAL_SET_HOME_1 6 // G30.1 #define NON_MODAL_SET_COORDINATE_OFFSET 7 // G92 #define NON_MODAL_RESET_COORDINATE_OFFSET 8 //G92.1   typedef struct {   uint8_t status_code;	C:\Users\Git\Pic32mzCNC\Kinematics.c
 diagnostics: 0	122	Compilation Started	stdint.h
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 hint: 281	1163	Variable 'letter' has been declared, but not used	Kinematics.c
@@ -77,6 +89,13 @@ hint: 217	1164	Variable 'inverse_feed_rate' has been eliminated by optimizer	Kin
 hint: 388	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
 hint: 390	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
 hint: 508	1164	Variable 'str_len' has been eliminated by optimizer	Kinematics.c
+>>>>>>> patch2
+=======
+diagnostics: 586	123	Compiled Successfully	Kinematics.c
+hint: 219	1164	Variable 'inverse_feed_rate' has been eliminated by optimizer	Kinematics.c
+hint: 390	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
+hint: 392	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
+hint: 510	1164	Variable 'str_len' has been eliminated by optimizer	Kinematics.c
 >>>>>>> patch2
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 69	123	Compiled Successfully	Pins.c
@@ -115,6 +134,8 @@ diagnostics: 0	123	Compiled Successfully	Print.c
 diagnostics: 1	122	Compilation Started	Print.c
 diagnostics: 87	123	Compiled Successfully	gcode.h
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 diagnostics: 0	127	All files Compiled in 1172 ms	 
 >>>>>>> patch1
 hint: 0	1144	Used RX: 17 (53%)   Free RX: 15 (47%)	Used RX: 17 (53%)   Free RX: 15 (47%)
@@ -135,14 +156,35 @@ diagnostics: 0	103	Finished successfully: 13 Oct 2022, 23:04:07	Pic32mzClicker2_
 >>>>>>> patch2
 =======
 diagnostics: 0	127	All files Compiled in 828 ms	 
+=======
+diagnostics: 0	127	All files Compiled in 1266 ms	 
+>>>>>>> patch2
+=======
+diagnostics: 0	127	All files Compiled in 813 ms	 
+>>>>>>> patch2
 hint: 0	1144	Used RX: 21 (66%)   Free RX: 11 (34%)	Used RX: 21 (66%)   Free RX: 11 (34%)
 hint: 0	1144	Static RAM (bytes): 588   Dynamic RAM (bytes): 515564	Static RAM (bytes): 588   Dynamic RAM (bytes): 515564
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 32818 (2%)  Free ROM (bytes): 2064334 (98%)	Used ROM (bytes): 32818 (2%)  Free ROM (bytes): 2064334 (98%)
+hint: 0	1144	Used ROM (bytes): 32939 (2%)  Free ROM (bytes): 2064213 (98%)	Used ROM (bytes): 32939 (2%)  Free ROM (bytes): 2064213 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
+<<<<<<< HEAD
+<<<<<<< HEAD
 diagnostics: 0	128	Linked in 609 ms	 
 diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 2859 ms	 
 diagnostics: 0	103	Finished successfully: 14 Oct 2022, 20:03:18	Pic32mzClicker2_StepperControl.mcp32
+>>>>>>> patch2
+<<<<<<< HEAD
+>>>>>>> patch1
+=======
+=======
+diagnostics: 0	128	Linked in 844 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4235 ms	 
+diagnostics: 0	103	Finished successfully: 15 Oct 2022, 23:28:03	Pic32mzClicker2_StepperControl.mcp32
+>>>>>>> patch2
+=======
+diagnostics: 0	128	Linked in 640 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 2922 ms	 
+diagnostics: 0	103	Finished successfully: 16 Oct 2022, 14:17:40	Pic32mzClicker2_StepperControl.mcp32
 >>>>>>> patch2
 >>>>>>> patch1

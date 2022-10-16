@@ -28,15 +28,20 @@ typedef unsigned short UInt8_t;
  * the timer1 frequency is the clock frequency divided by 8.
  */
 // Timer/Counter 1 running on 3,686MHz / 8 = 460,75kHz (2,17uS). (T1-FREQ 460750)
-#define T1_FREQ   781250//781250=1.28us || 796150=1us   per tick
+#define T1_FREQ   781250//=1.28us => timer pre-scaler at (1/64) * 50mhz pbclk3
 #define minSpeed  30210
 #define maxSpeed  10
 #define cirSpeed  100
 
-
-
-// Maths constants. To simplify maths when calculating in speed_cntr_Move().
-#define ALPHA    (2*3.14159)/SPR                   // 2*pi/spr in rad
+#define MAX_ACC_LIM 5000
+#define MIN_ACC_LIN 10
+/************************************************************************
+* Maths constants. To simplify maths when calculating in speed_cntr_Move().
+* Alpha is stepangle in radians 2*pi/spr in rad  || (1.8 * Pi) / 180
+* Speed = (ALPHA * T1_FREQ) / Step
+* acc = ((2 * ALPHA * T1_FREQ)*(Step1 - Step2)) / (Step1*Step2)*(Step1+Step2)
+*************************************************************************/
+#define ALPHA    (2*3.14159)/SPR
 #define A_T_x100 (long)((ALPHA*T1_FREQ)*100)    // (ALPHA / T1_FREQ)*100
 #define T1_FREQ_148 (long)((T1_FREQ*0.676)/100)      // divided by 100 and scaled by 0.676
 #define A_SQ (long)(ALPHA*2*10000000000)                    // ALPHA*2*10000000000

@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////
 #define  NoOfAxis   6
 //! Number of (full)steps per round on stepper motor in use.
-#define SPR 200                // 200 Steps per rev
+#define SPR 188               // 200 Steps per rev
 #define M_STEP 32               //Stepper drive micro steps setting
 
 

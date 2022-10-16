@@ -84,7 +84,6 @@ int dir;
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
 void DualAxisStep(long newx,long newy,int axis_combo){
-
    SV.over=0;
    //will need to change these 3 lines when implimenting position referenc??
    SV.px = 0;
@@ -125,18 +124,21 @@ void DualAxisStep(long newx,long newy,int axis_combo){
 
           if(SV.dx > SV.dy){
              SV.d2 = 2*(SV.dy - SV.dx);
-             STPS[X].master = 1;
-             STPS[Y].master = 0;
           }
           else{
              SV.d2 = 2* (SV.dx - SV.dy);
+          }
+           if(SV.dx >= SV.dy){
+             STPS[X].master = 1;
+             STPS[Y].master = 0;
+           }else{
              STPS[X].master = 0;
              STPS[Y].master = 1;
-          }
+           }
 
-             STPS[X].step_count = 0;
-             STPS[Y].step_count = 0;
-             AxisPulse[1]();
+           STPS[X].step_count = 0;
+           STPS[Y].step_count = 0;
+           AxisPulse[1]();
 
          break;
     case xz:
