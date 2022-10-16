@@ -1,7 +1,6 @@
 #include "Kinematics.h"
 
 
-
 //////////////////////////////////
 //FUNCTION POINTERS
 volatile void (*AxisPulse[3])();
@@ -224,7 +223,7 @@ double x = 0.00;
 double y = 0.00;
 double h_x2_div_d = 0.00;
 unsigned int axis_plane_a,axis_plane_b;
-
+char txt_[9];
      //use thess arrays to simplify call to arc function
      position[X] = Cur_axis_a;
      position[Y] = Cur_axis_b;
@@ -243,7 +242,7 @@ unsigned int axis_plane_a,axis_plane_b;
        axis_plane_b = Z;
      }
 
-     if (r != 0) { // Arc Radius Mode
+     if (r != 0.00) { // Arc Radius Mode
             /*
               We need to calculate the center of the circle that has the designated radius and passes
               through both the current position and the target position. This method calculates the following
@@ -355,11 +354,16 @@ unsigned int axis_plane_a,axis_plane_b;
             // Arc Center Format Offset Mode
              r = hypot(i, j); // Compute arc radius for mc_arc
           }
+          sprintf(txt_,"%0.2f",r);
+          UART2_Write_Text("r:= ");
+          UART2_Write_Text(txt_);
+          UART2_Write(0x0D);
           
           // Set clockwise/counter-clockwise sign for mc_arc computations
           isclockwise = false;
           if (gc.motion_mode == MOTION_MODE_CW_ARC) { isclockwise = true; }
 
+          gc.plane_axis_2 =1;
           // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
           mc_arc(position, target, offset, gc.plane_axis_0, gc.plane_axis_1, gc.plane_axis_2,
             DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,
@@ -370,7 +374,7 @@ unsigned int axis_plane_a,axis_plane_b;
 
 void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
   uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
-
+ long tempA,tempB;
   double center_axis0            = position[X] + offset[X];
  double center_axis1             = position[Y] + offset[Y];
   double linear_travel           = target[X] - position[X];
@@ -407,7 +411,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
 
   // Check this with calculator
   millimeters_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
-  if (millimeters_of_travel == 0.0) { return; }
+  //if (millimeters_of_travel == 0.0) { return; }
   
   segments = floor(millimeters_of_travel/DEFAULT_MM_PER_ARC_SEGMENT);
 
@@ -488,11 +492,15 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
      nPy = fabs(nPy);   */
   //  mc_line(arc_target[X_AXIS], arc_target[Y_AXIS], arc_target[Z_AXIS], feed_rate, invert_feed_rate);
    STPS[X].mmToTravel = belt_steps(nPx);//calcSteps(nPx,8.06);
-   //speed_cntr_Move(STPS[X].mmToTravel, 25000,X);
    STPS[Y].mmToTravel = belt_steps(nPy);//calcSteps(nPy,8.06);
-   //speed_cntr_Move(STPS[Y].mmToTravel, 25000,Y);
-   STPS[X].step_delay = 100;
-   STPS[Y].step_delay = 100;
+   tempA = abs(STPS[X].mmToTravel);
+   tempB = abs(STPS[Y].mmToTravel);
+   if(tempA > tempB)
+       speed_cntr_Move(STPS[X].mmToTravel, 1000,X);
+   else
+       speed_cntr_Move(STPS[Y].mmToTravel, 1000,Y);
+  // STPS[X].step_delay = 2000;
+  // STPS[Y].step_delay = 2000;
    DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
     // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
    // if (sys.abort) { return; }

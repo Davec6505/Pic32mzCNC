@@ -10,7 +10,7 @@
 #include "Serial_Dma.h"
 #include "Kinematics.h"
 #include "GCODE.h"
-
+#include "Globals.h"
 
 
 

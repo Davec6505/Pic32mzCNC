@@ -2287,7 +2287,7 @@ _XY_Interpolate:
 ;Stepper.c,544 :: 		void XY_Interpolate(){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Stepper.c,545 :: 		if(/*(STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||*/(SV.Tog == 1)){
+;Stepper.c,546 :: 		if(/*(STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||*/(SV.Tog == 1)){
 SW	R25, 4(SP)
 LH	R3, Offset(_SV+4)(GP)
 ORI	R2, R0, 1
@@ -2296,18 +2296,18 @@ NOP
 J	L_XY_Interpolate78
 NOP	
 L__XY_Interpolate247:
-;Stepper.c,546 :: 		StopX();
+;Stepper.c,547 :: 		StopX();
 JAL	_StopX+0
 NOP	
-;Stepper.c,547 :: 		StopY();
+;Stepper.c,548 :: 		StopY();
 JAL	_StopY+0
 NOP	
-;Stepper.c,548 :: 		return;
+;Stepper.c,549 :: 		return;
 J	L_end_XY_Interpolate
 NOP	
-;Stepper.c,549 :: 		}
+;Stepper.c,550 :: 		}
 L_XY_Interpolate78:
-;Stepper.c,551 :: 		if(SV.dx >= SV.dy){
+;Stepper.c,552 :: 		if(SV.dx >= SV.dy){
 LW	R3, Offset(_SV+20)(GP)
 LW	R2, Offset(_SV+16)(GP)
 SLT	R2, R2, R3
@@ -2316,15 +2316,15 @@ NOP
 J	L_XY_Interpolate79
 NOP	
 L__XY_Interpolate248:
-;Stepper.c,552 :: 		Step_Cycle(X);
+;Stepper.c,553 :: 		Step_Cycle(X);
 MOVZ	R25, R0, R0
 JAL	_Step_Cycle+0
 NOP	
-;Stepper.c,553 :: 		Pulse(X);
+;Stepper.c,554 :: 		Pulse(X);
 MOVZ	R25, R0, R0
 JAL	_Pulse+0
 NOP	
-;Stepper.c,554 :: 		if(SV.d2 < 0){
+;Stepper.c,555 :: 		if(SV.d2 < 0){
 LW	R2, Offset(_SV+12)(GP)
 SLTI	R2, R2, 0
 BNE	R2, R0, L__XY_Interpolate249
@@ -2332,17 +2332,17 @@ NOP
 J	L_XY_Interpolate80
 NOP	
 L__XY_Interpolate249:
-;Stepper.c,555 :: 		SV.d2 += 2*SV.dy;
+;Stepper.c,556 :: 		SV.d2 += 2*SV.dy;
 LW	R2, Offset(_SV+20)(GP)
 SLL	R3, R2, 1
 LW	R2, Offset(_SV+12)(GP)
 ADDU	R2, R2, R3
 SW	R2, Offset(_SV+12)(GP)
-;Stepper.c,556 :: 		}else{
+;Stepper.c,557 :: 		}else{
 J	L_XY_Interpolate81
 NOP	
 L_XY_Interpolate80:
-;Stepper.c,557 :: 		SV.d2 += 2 * (SV.dy - SV.dx);
+;Stepper.c,558 :: 		SV.d2 += 2 * (SV.dy - SV.dx);
 LW	R3, Offset(_SV+16)(GP)
 LW	R2, Offset(_SV+20)(GP)
 SUBU	R2, R2, R3
@@ -2350,25 +2350,25 @@ SLL	R3, R2, 1
 LW	R2, Offset(_SV+12)(GP)
 ADDU	R2, R2, R3
 SW	R2, Offset(_SV+12)(GP)
-;Stepper.c,558 :: 		Step_Cycle(Y);
+;Stepper.c,559 :: 		Step_Cycle(Y);
 ORI	R25, R0, 1
 JAL	_Step_Cycle+0
 NOP	
-;Stepper.c,559 :: 		}
+;Stepper.c,560 :: 		}
 L_XY_Interpolate81:
-;Stepper.c,560 :: 		}else{
+;Stepper.c,561 :: 		}else{
 J	L_XY_Interpolate82
 NOP	
 L_XY_Interpolate79:
-;Stepper.c,561 :: 		Step_Cycle(Y);
+;Stepper.c,562 :: 		Step_Cycle(Y);
 ORI	R25, R0, 1
 JAL	_Step_Cycle+0
 NOP	
-;Stepper.c,562 :: 		Pulse(Y);
+;Stepper.c,563 :: 		Pulse(Y);
 ORI	R25, R0, 1
 JAL	_Pulse+0
 NOP	
-;Stepper.c,563 :: 		if(SV.d2 < 0){
+;Stepper.c,564 :: 		if(SV.d2 < 0){
 LW	R2, Offset(_SV+12)(GP)
 SLTI	R2, R2, 0
 BNE	R2, R0, L__XY_Interpolate250
@@ -2376,17 +2376,17 @@ NOP
 J	L_XY_Interpolate83
 NOP	
 L__XY_Interpolate250:
-;Stepper.c,564 :: 		SV.d2 += 2 * SV.dx;
+;Stepper.c,565 :: 		SV.d2 += 2 * SV.dx;
 LW	R2, Offset(_SV+16)(GP)
 SLL	R3, R2, 1
 LW	R2, Offset(_SV+12)(GP)
 ADDU	R2, R2, R3
 SW	R2, Offset(_SV+12)(GP)
-;Stepper.c,565 :: 		}else{
+;Stepper.c,566 :: 		}else{
 J	L_XY_Interpolate84
 NOP	
 L_XY_Interpolate83:
-;Stepper.c,566 :: 		SV.d2 += 2 * (SV.dx - SV.dy);
+;Stepper.c,567 :: 		SV.d2 += 2 * (SV.dx - SV.dy);
 LW	R3, Offset(_SV+20)(GP)
 LW	R2, Offset(_SV+16)(GP)
 SUBU	R2, R2, R3
@@ -2394,15 +2394,15 @@ SLL	R3, R2, 1
 LW	R2, Offset(_SV+12)(GP)
 ADDU	R2, R2, R3
 SW	R2, Offset(_SV+12)(GP)
-;Stepper.c,567 :: 		Step_Cycle(X);
+;Stepper.c,568 :: 		Step_Cycle(X);
 MOVZ	R25, R0, R0
 JAL	_Step_Cycle+0
 NOP	
-;Stepper.c,568 :: 		}
-L_XY_Interpolate84:
 ;Stepper.c,569 :: 		}
-L_XY_Interpolate82:
+L_XY_Interpolate84:
 ;Stepper.c,570 :: 		}
+L_XY_Interpolate82:
+;Stepper.c,571 :: 		}
 L_end_XY_Interpolate:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -2411,10 +2411,10 @@ JR	RA
 NOP	
 ; end of _XY_Interpolate
 _XZ_Interpolate:
-;Stepper.c,572 :: 		void XZ_Interpolate(){
+;Stepper.c,573 :: 		void XZ_Interpolate(){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Stepper.c,574 :: 		if(/*(STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||*/(SV.Tog == 1)){
+;Stepper.c,575 :: 		if(/*(STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||*/(SV.Tog == 1)){
 SW	R25, 4(SP)
 LH	R3, Offset(_SV+4)(GP)
 ORI	R2, R0, 1
@@ -2423,10 +2423,10 @@ NOP
 J	L_XZ_Interpolate85
 NOP	
 L__XZ_Interpolate252:
-;Stepper.c,575 :: 		StopX();
+;Stepper.c,576 :: 		StopX();
 JAL	_StopX+0
 NOP	
-;Stepper.c,576 :: 		StopZ();
+;Stepper.c,577 :: 		StopZ();
 JAL	_StopZ+0
 NOP	
 ;Stepper.c,578 :: 		return;

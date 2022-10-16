@@ -343,6 +343,7 @@ abf2seq2
 abf2seq2bits
 abf2seq3
 abf2seq3bits
+abort
 abs
 absolute_mode
 acc
@@ -5084,6 +5085,7 @@ audmono_spi3con2_bit
 audmono_spi4con2_bit
 audmono_spi5con2_bit
 audmono_spi6con2_bit
+auto_start
 autoclr
 autoclr
 autoclr
@@ -28300,6 +28302,7 @@ excessdfr
 excessdfr
 excessdfr_bit
 excessdfr_emacxcfg2_bit
+execute
 exid
 exid
 exid
@@ -39118,7 +39121,9 @@ min102_bit
 min103
 min103_alrmtime_bit
 min103_bit
+mm_home_position
 mm_per_arc_segment
+mm_position
 mm2in
 mode
 mode
@@ -60922,6 +60927,7 @@ statcmd8
 statcmd8_bit
 statcmd9
 statcmd9_bit
+state
 statpos
 statpos
 statpos_bit
@@ -60973,6 +60979,7 @@ stepa
 stepper_idle_lock_time
 stepperconstants
 steps_per_mm
+steps_position
 stepx
 stepy
 stepz
@@ -61413,6 +61420,7 @@ swrst
 swrst
 swrst
 swrst_bit
+sys
 sysdiv
 sysdiv
 sysdiv
@@ -71019,6 +71027,7 @@ txstate2_bit
 txstate3
 txstate3_bit
 txt
+txt_
 txt_a
 txta
 txtb

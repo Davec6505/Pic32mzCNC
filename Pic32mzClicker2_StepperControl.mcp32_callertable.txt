@@ -52,14 +52,6 @@ main
 			XY_Interpolate
 				StopX
 				StopY
-<<<<<<< HEAD
-				UART2_Write_Text
-<<<<<<< HEAD
-					UART2_Write
-=======
->>>>>>> patch2
-=======
->>>>>>> patch2
 				Step_Cycle
 				Pulse
 					AccDec
@@ -72,36 +64,22 @@ main
 				StopY
 				StopZ
 				Step_Cycle
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+				Pulse
 		r_or_ijk
-			memset
 			sqrt
 				frexp
 				ldexp
 			hypot
 				sqrt
-			SerialPrint
-				strlen
-				memset
-				sprintf
-					_doprntf
-						isdigit
-						scale
-						fround
-				strncpy
-				strncat
-				UART2_Write_Text
-					UART2_Write
+			sprintf
+			UART2_Write_Text
+			UART2_Write
 			mc_arc
 				atan2
 					fabs
 					atan
 						fabs
 						eval_poly
-				SerialPrint
 				fabs
 				hypot
 				floor
@@ -110,21 +88,12 @@ main
 						floor
 						eval_poly
 				sin
-				calcSteps
+				belt_steps
+				abs
+				speed_cntr_Move
 				DualAxisStep
->>>>>>> patch2
-=======
-		calcSteps
->>>>>>> patch2
-=======
-				Pulse
-<<<<<<< HEAD
-		calcSteps
->>>>>>> patch2
-=======
 	__CC2DW
 	__FillZeros
->>>>>>> patch2
 	ResetSteppers
 		DisableStepper
 StepA
@@ -146,10 +115,7 @@ StepX
 	SingleStepX
 		StopX
 		Step_Cycle
-<<<<<<< HEAD
-=======
 		Pulse
->>>>>>> patch2
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate
@@ -158,10 +124,7 @@ StepY
 	SingleStepY
 		StopY
 		Step_Cycle
-<<<<<<< HEAD
-=======
 		Pulse
->>>>>>> patch2
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate
@@ -170,10 +133,7 @@ StepZ
 	SingleStepZ
 		StopZ
 		Step_Cycle
-<<<<<<< HEAD
-=======
 		Pulse
->>>>>>> patch2
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate

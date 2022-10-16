@@ -34,7 +34,6 @@ long belt_steps(double move_distance){
   return (signed long)temp;
 }
 
-
 ///////////////////////////////////////////
 //mm to inches conversion arg in mm
 //returns inches

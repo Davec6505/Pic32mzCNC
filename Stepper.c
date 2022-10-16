@@ -542,6 +542,7 @@ void StopA(){
 //       MASTER AXIS CONTROLS THE ACCELERATION        //
 ////////////////////////////////////////////////////////
 void XY_Interpolate(){
+
    if(/*(STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||*/(SV.Tog == 1)){
         StopX();
         StopY();
@@ -574,7 +575,6 @@ void XZ_Interpolate(){
     if(/*(STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||*/(SV.Tog == 1)){
         StopX();
         StopZ();
-
         return;
     }
 
