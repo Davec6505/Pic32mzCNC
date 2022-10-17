@@ -16,11 +16,7 @@ hint: 0	1004	interrupt handler (StepX at 0x001B)	Stepper.c
 hint: 0	1004	interrupt handler (StepY at 0x000C)	Stepper.c
 hint: 0	1004	interrupt handler (StepZ at 0x0023)	Stepper.c
 hint: 0	1004	interrupt handler (StepA at 0x0011)	Stepper.c
-<<<<<<< HEAD
-diagnostics: 728	123	Compiled Successfully	Stepper.c
-=======
-diagnostics: 746	123	Compiled Successfully	Stepper.c
->>>>>>> patch1
+diagnostics: 745	123	Compiled Successfully	Stepper.c
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 69	123	Compiled Successfully	Steptodistance.c
 hint: 18	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
@@ -58,19 +54,13 @@ diagnostics: 1	122	Compilation Started	Print.c
 diagnostics: 87	123	Compiled Successfully	gcode.h
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 11	123	Compiled Successfully	Globals.c
-diagnostics: 0	127	All files Compiled in 1282 ms	 
+diagnostics: 0	127	All files Compiled in 1234 ms	 
 hint: 0	1144	Used RX: 21 (66%)   Free RX: 11 (34%)	Used RX: 21 (66%)   Free RX: 11 (34%)
 hint: 0	1144	Static RAM (bytes): 756   Dynamic RAM (bytes): 515473	Static RAM (bytes): 756   Dynamic RAM (bytes): 515473
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
 hint: 0	1144	Used ROM (bytes): 37549 (2%)  Free ROM (bytes): 2059603 (98%)	Used ROM (bytes): 37549 (2%)  Free ROM (bytes): 2059603 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-<<<<<<< HEAD
-diagnostics: 0	128	Linked in 828 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4094 ms	 
-diagnostics: 0	103	Finished successfully: 16 Oct 2022, 23:44:17	Pic32mzClicker2_StepperControl.mcp32
-=======
-diagnostics: 0	128	Linked in 812 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4469 ms	 
-diagnostics: 0	103	Finished successfully: 17 Oct 2022, 22:55:19	Pic32mzClicker2_StepperControl.mcp32
->>>>>>> patch1
+diagnostics: 0	128	Linked in 750 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3765 ms	 
+diagnostics: 0	103	Finished successfully: 17 Oct 2022, 22:57:53	Pic32mzClicker2_StepperControl.mcp32
