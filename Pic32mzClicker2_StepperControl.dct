@@ -348,7 +348,6 @@ abs
 absolute_mode
 acc
 accdec
-acceleration
 ackdt
 ackdt
 ackdt
@@ -5151,6 +5150,7 @@ autoset_usbe4csr0_bit
 autoset_usbe5csr0_bit
 autoset_usbe6csr0_bit
 autoset_usbe7csr0_bit
+axis_dir
 axis_xyz
 axisno
 axisno
@@ -23141,9 +23141,6 @@ debug1_ubadevcfg0_bit
 dec
 dec2bcd
 dec2bcd16
-decimal_places
-default_feed_rate
-default_seek_rate
 delay_100ms
 delay_10ms
 delay_10us
@@ -29482,7 +29479,6 @@ filhit3_c2vec_bit
 filhit4
 filhit4_bit
 filhit4_c2vec_bit
-flags
 flash_erase_lowermemory
 flash_erase_page
 flash_erase_uppermemory
@@ -32501,6 +32497,7 @@ gcstat_i2c3stat_bit
 gcstat_i2c4stat_bit
 gcstat_i2c5stat_bit
 get_fosc_khz
+getaxisdirection
 glswtrg
 glswtrg
 glswtrg_bit
@@ -33128,11 +33125,6 @@ hird3_bit
 hold
 hold
 hold_bit
-homing_debounce_delay
-homing_dir_mask
-homing_feed_rate
-homing_pulloff
-homing_seek_rate
 hostmode
 hostmode
 hostmode_bit
@@ -37003,7 +36995,6 @@ inttohex
 inttostr
 inttostrwithzeros
 inverse_feed_rate_mode
-invert_mask
 ioancpen
 ioancpen
 ioancpen_bit
@@ -37975,7 +37966,6 @@ jtagen_bf2devcfg0_bit
 jtagen_bit
 jtagen_devcfg0_bit
 jtagen_ubadevcfg0_bit
-junction_deviation
 labs
 lanemode
 lanemode0
@@ -39029,7 +39019,6 @@ memtype1
 memtype1_bit
 memtype2
 memtype2_bit
-microsteps
 mide
 mide
 mide
@@ -39122,7 +39111,6 @@ min103
 min103_alrmtime_bit
 min103_bit
 mm_home_position
-mm_per_arc_segment
 mm_position
 mm2in
 mode
@@ -40116,7 +40104,6 @@ mwtd8_emacxmwtd_bit
 mwtd9
 mwtd9_bit
 mwtd9_emacxmwtd_bit
-n_arc_correction
 nak
 nak
 nak_bit
@@ -46016,7 +46003,6 @@ ptwren
 ptwren
 ptwren_bit
 pulse
-pulse_microseconds
 purepre
 purepre
 purepre
@@ -56391,7 +56377,6 @@ setendc
 setendc
 setendc_bit
 setpinmode
-settings
 setup
 setup
 setup_bit
@@ -60976,9 +60961,7 @@ step26_bit
 step27
 step27_bit
 stepa
-stepper_idle_lock_time
 stepperconstants
-steps_per_mm
 steps_position
 stepx
 stepy
@@ -71041,6 +71024,7 @@ txthrif_bit
 txthrise
 txthrise
 txthrise_bit
+txtl
 txwarn
 txwarn
 txwarn

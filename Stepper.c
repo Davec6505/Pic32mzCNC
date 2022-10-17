@@ -13,7 +13,6 @@ unsigned int Toggle;
 
 //////////////////////////////////
 //structs
- sVars SV;
  StepTmr STmr;
  
 
@@ -191,7 +190,7 @@ long abs_mmSteps = abs(mmSteps);
       STPS[axis_No].dist        = 0;
       SV.Tog   = 0;
       SV.running = 1;
-      
+ /*
      sprintf(txt_,"%d",STPS[axis_No].mmToTravel);
      UART2_Write_Text(txt_);
      UART2_Write_Text(" : ");
@@ -213,6 +212,7 @@ long abs_mmSteps = abs(mmSteps);
      sprintf(txt_,"%d",STPS[axis_No].decel_start);
      UART2_Write_Text(txt_);
      UART2_Write(0x0D);
+ */
 }
 
 
@@ -223,6 +223,10 @@ long abs_mmSteps = abs(mmSteps);
 
 //Step cycle out of for loop
 void Step_Cycle(int axis_No){
+     //keep track of relative position
+      STPS[axis_No].step_count++;
+     //keep track of absolute position
+      sys.steps_position[axis_No] += sys.axis_dir[axis_No];
       toggleOCx(axis_No);
 }
 
@@ -326,7 +330,7 @@ int Pulse(int axis_No){
         // else STPS[axis_No].new_step_delay = STPS[axis_No].StartUp_delay;
         // Check if we at last step
 
-        if(STPS[axis_No].accel_count >= 0 ){
+        if(STPS[axis_No].accel_count > -1 ){
          STPS[axis_No].run_state = STOP;
         }
         break;
@@ -421,8 +425,11 @@ void disableOCx(){
 //            X AXIS PULSE CONTROL                      //
 //////////////////////////////////////////////////////////
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
-     STPS[X].step_count++;
+   //  STPS[X].step_count++;
      OC5IF_bit = 0;
+
+     //keep track of absolute position
+     //sys.steps_position[X] += sys.axis_dir[X];
 
      if(SV.Single_Dual == 0)
         SingleStepX();
@@ -451,8 +458,11 @@ void StopX(){
 //            Y AXIS PULSE CONTROL                      //
 //////////////////////////////////////////////////////////
 void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
-   STPS[Y].step_count++;
+  // STPS[Y].step_count++;
    OC2IF_bit = 0;
+
+   //keep track of absolute position
+   //sys.steps_position[Y] += sys.axis_dir[Y];
 
    if(SV.Single_Dual == 0)
         SingleStepY();
@@ -482,9 +492,12 @@ void StopY(){
 //            Z AXIS PULSE CONTROL                      //
 //////////////////////////////////////////////////////////
 void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
-   STPS[Z].step_count++;
+  // STPS[Z].step_count++;
    OC7IF_bit = 0;
-
+   
+   //keep track of absolute position
+   //sys.steps_position[Z] += sys.axis_dir[Z];
+   
    if(SV.Single_Dual == 0)
         SingleStepZ();
      else
@@ -512,9 +525,12 @@ void StopZ(){
 //            A AXIS PULSE CONTROL                      //
 //////////////////////////////////////////////////////////
 void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
-   STPS[A].step_count++;
+  // STPS[A].step_count++;
    OC3IF_bit = 0;
 
+   //keep track of absolute position
+   //sys.steps_position[A] += sys.axis_dir[A];
+     
    if(SV.Single_Dual == 0)
         SingleStepA();
      else
@@ -543,7 +559,7 @@ void StopA(){
 ////////////////////////////////////////////////////////
 void XY_Interpolate(){
 
-   if(/*(STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||*/(SV.Tog == 1)){
+   if((STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||(SV.Tog == 1)){
         StopX();
         StopY();
         return;
@@ -572,7 +588,7 @@ void XY_Interpolate(){
 
 void XZ_Interpolate(){
 
-    if(/*(STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||*/(SV.Tog == 1)){
+    if((STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||(SV.Tog == 1)){
         StopX();
         StopZ();
         return;
@@ -627,6 +643,7 @@ void YZ_Interpolate(){
     }
 
 }
+
 ////////////////////////////////////////////////
 //              CALCULATIONS                  //
 ////////////////////////////////////////////////

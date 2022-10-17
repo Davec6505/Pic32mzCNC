@@ -48,6 +48,7 @@
 
 // Define global system variables
 typedef struct {
+  int     axis_dir[NoOfAxis];         // Track the direction of the axis for absolute value tracking
   uint8_t abort;                      // System abort flag. Forces exit back to main loop for reset.
   uint8_t state;                      // Tracks the current state of Grbl.
   uint8_t auto_start;                 // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
@@ -60,7 +61,38 @@ typedef struct {
 extern system_t sys;
 
 
+//////////////////////////////////////////
+//structs enums and constants
+typedef struct genVars{
+  int Single_Dual;
+  unsigned short running: 1;       //running bit
+  unsigned short startPulses: 1;
+  int   Tog;
+  int   AxisNo;
+  long  i;
+  long  d2;
+  long  dx;
+  long  dy;
+  long  dz;
+  long  da;
+  long  px;
+  long  py;
+  long  pz;
+  long  pa;
+  long  psingle;
+  long  over;
+  long  acc;
+  long  dec;
+  int   dirx;
+  int   diry;
+  int   dirz;
+  int   dira;
+  int   dirb;
+  int   dirc;
+}sVars;
+extern sVars SV;
 
-
-
+////////////////////////////////////////////
+//function prototypes
+int GetAxisDirection(long mm2move);
 #endif

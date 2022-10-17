@@ -6,7 +6,7 @@
  #include "Pins.h"
  #include "Kinematics.h"
  #include "Settings.h"
-
+ #include "Globals.h"
 //extern bit PLS_Step_;sfr;
 
 
@@ -14,13 +14,6 @@
 //defines
 typedef unsigned short UInt8_t;
 
-
-
-
-
-// Direction of stepper motor movement
-#define CW  0
-#define CCW 1
 
 /*! \Brief Frequency of timer1 in [Hz].
  * Newtimer 50000000
@@ -60,36 +53,7 @@ typedef unsigned short UInt8_t;
   //! Stop and Start toggle bit
 extern  unsigned int Toggle;
 
-//////////////////////////////////////////
-//structs enums and constants
-typedef struct genVars{
-  int Single_Dual;
-  UInt8_t running: 1;       //running bit
-  UInt8_t startPulses: 1;
-  int   Tog;
-  int   AxisNo;
-  long  i;
-  long  d2;
-  long  dx;
-  long  dy;
-  long  dz;
-  long  da;
-  long  px;
-  long  py;
-  long  pz;
-  long  pa;
-  long  psingle;
-  long  over;
-  long  acc;
-  long  dec;
-  int   dirx;
-  int   diry;
-  int   dirz;
-  int   dira;
-  int   dirb;
-  int   dirc;
-}sVars;
-extern sVars SV;
+
 
 typedef struct STPT {
 //! micro sec counter
@@ -108,7 +72,7 @@ extern StepTmr STmr;
 //enums
 typedef enum xyz{X,Y,Z,A,B,C}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
-enum swt{FALSE,TRUE};
+
 
 extern _axis_ _axis;
 extern axis_combination axis_xyz;
@@ -150,7 +114,7 @@ void YZ_Interpolate();
 void XA_Interpolate();
 void YA_Interpolate();
 void ZA_Interpolate();
- 
+
 void StopX();
 void StopY();
 void StopZ();

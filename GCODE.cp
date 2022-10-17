@@ -185,6 +185,58 @@ void DMA_global();
 void DMA0();
 void DMA1();
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 50 "c:/users/git/pic32mzcnc/globals.h"
+typedef struct {
+ int axis_dir[ 6 ];
+ uint8_t abort;
+ uint8_t state;
+ uint8_t auto_start;
+ volatile uint8_t execute;
+ long steps_position[ 6 ];
+
+ double mm_position[ 6 ];
+ double mm_home_position[ 6 ];
+} system_t;
+extern system_t sys;
+
+
+
+
+typedef struct genVars{
+ int Single_Dual;
+ unsigned short running: 1;
+ unsigned short startPulses: 1;
+ int Tog;
+ int AxisNo;
+ long i;
+ long d2;
+ long dx;
+ long dy;
+ long dz;
+ long da;
+ long px;
+ long py;
+ long pz;
+ long pa;
+ long psingle;
+ long over;
+ long acc;
+ long dec;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
+}sVars;
+extern sVars SV;
+
+
+
+int GetAxisDirection(long mm2move);
 #line 38 "c:/users/git/pic32mzcnc/kinematics.h"
 extern volatile void (*AxisPulse[3])();
 
@@ -237,39 +289,7 @@ typedef struct Steps{
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-
-
-
-
-
-
-
-typedef struct {
- double steps_per_mm[3];
- uint8_t microsteps;
- uint8_t pulse_microseconds;
- double default_feed_rate;
- double default_seek_rate;
- uint8_t invert_mask;
- double mm_per_arc_segment;
- double acceleration;
- double junction_deviation;
- uint8_t flags;
- uint8_t homing_dir_mask;
- double homing_feed_rate;
- double homing_seek_rate;
- uint16_t homing_debounce_delay;
- double homing_pulloff;
- uint8_t stepper_idle_lock_time;
- uint8_t decimal_places;
- uint8_t n_arc_correction;
-
-} settings_t;
-extern settings_t settings;
-
-
-
-
+#line 100 "c:/users/git/pic32mzcnc/kinematics.h"
 void DualAxisStep(long newx,long newy,int axis_combo);
 void SingleAxisStep(long newxyz,int axis_No);
 
@@ -280,41 +300,13 @@ float hypot(float angular_travel, float linear_travel);
 void SerialPrint(float r);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 15 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 61 "c:/users/git/pic32mzcnc/stepper.h"
+#line 54 "c:/users/git/pic32mzcnc/stepper.h"
 extern unsigned int Toggle;
 
 
-
-typedef struct genVars{
- int Single_Dual;
- UInt8_t running: 1;
- UInt8_t startPulses: 1;
- int Tog;
- int AxisNo;
- long i;
- long d2;
- long dx;
- long dy;
- long dz;
- long da;
- long px;
- long py;
- long pz;
- long pa;
- long psingle;
- long over;
- long acc;
- long dec;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
-}sVars;
-extern sVars SV;
 
 typedef struct STPT {
 
@@ -333,7 +325,7 @@ extern StepTmr STmr;
 
 typedef enum xyz{X,Y,Z,A,B,C}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
-enum swt{FALSE,TRUE};
+
 
 extern _axis_ _axis;
 extern axis_combination axis_xyz;
@@ -429,20 +421,6 @@ double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 50 "c:/users/git/pic32mzcnc/globals.h"
-typedef struct {
- uint8_t abort;
- uint8_t state;
- uint8_t auto_start;
- volatile uint8_t execute;
- long steps_position[ 6 ];
-
- double mm_position[ 6 ];
- double mm_home_position[ 6 ];
-} system_t;
-extern system_t sys;
 #line 31 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;

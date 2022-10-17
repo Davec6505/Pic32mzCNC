@@ -6,7 +6,7 @@
 #include "Stepper.h"
 #include  "SErial_Dma.h"
 #include "GCODE.h"
-
+#include "Globals.h"
 
 //Circle defines and consts
 // Decide how many axis you would like to run
@@ -92,29 +92,7 @@ extern STP STPS[NoOfAxis];
 //     ******CIRCULAR INTERPOLATION******         //
 ////////////////////////////////////////////////////
 
-// Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
-typedef struct {
-  double steps_per_mm[3];
-  uint8_t microsteps;
-  uint8_t pulse_microseconds;
-  double default_feed_rate;
-  double default_seek_rate;
-  uint8_t invert_mask;
-  double mm_per_arc_segment;
-  double acceleration;
-  double junction_deviation;
-  uint8_t flags;  // Contains default boolean settings
-  uint8_t homing_dir_mask;
-  double homing_feed_rate;
-  double homing_seek_rate;
-  uint16_t homing_debounce_delay;
-  double homing_pulloff;
-  uint8_t stepper_idle_lock_time; // If max value 255, steppers do not disable.
-  uint8_t decimal_places;
-  uint8_t n_arc_correction;
-//  uint8_t status_report_mask; // Mask to indicate desired report data.
-} settings_t;
-extern settings_t settings;
+
 
 ///////////////////////////////////////////
 //FUNCTION PROTOTYPES

@@ -198,6 +198,58 @@ uint8_t gc_execute_line(char *line);
 
 
 void gc_set_current_position(int32_t x, int32_t y, int32_t z);
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 50 "c:/users/git/pic32mzcnc/globals.h"
+typedef struct {
+ int axis_dir[ 6 ];
+ uint8_t abort;
+ uint8_t state;
+ uint8_t auto_start;
+ volatile uint8_t execute;
+ long steps_position[ 6 ];
+
+ double mm_position[ 6 ];
+ double mm_home_position[ 6 ];
+} system_t;
+extern system_t sys;
+
+
+
+
+typedef struct genVars{
+ int Single_Dual;
+ unsigned short running: 1;
+ unsigned short startPulses: 1;
+ int Tog;
+ int AxisNo;
+ long i;
+ long d2;
+ long dx;
+ long dy;
+ long dz;
+ long da;
+ long px;
+ long py;
+ long pz;
+ long pa;
+ long psingle;
+ long over;
+ long acc;
+ long dec;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
+}sVars;
+extern sVars SV;
+
+
+
+int GetAxisDirection(long mm2move);
 #line 38 "c:/users/git/pic32mzcnc/kinematics.h"
 extern volatile void (*AxisPulse[3])();
 
@@ -250,39 +302,7 @@ typedef struct Steps{
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-
-
-
-
-
-
-
-typedef struct {
- double steps_per_mm[3];
- uint8_t microsteps;
- uint8_t pulse_microseconds;
- double default_feed_rate;
- double default_seek_rate;
- uint8_t invert_mask;
- double mm_per_arc_segment;
- double acceleration;
- double junction_deviation;
- uint8_t flags;
- uint8_t homing_dir_mask;
- double homing_feed_rate;
- double homing_seek_rate;
- uint16_t homing_debounce_delay;
- double homing_pulloff;
- uint8_t stepper_idle_lock_time;
- uint8_t decimal_places;
- uint8_t n_arc_correction;
-
-} settings_t;
-extern settings_t settings;
-
-
-
-
+#line 100 "c:/users/git/pic32mzcnc/kinematics.h"
 void DualAxisStep(long newx,long newy,int axis_combo);
 void SingleAxisStep(long newxyz,int axis_No);
 
@@ -294,20 +314,6 @@ void SerialPrint(float r);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 50 "c:/users/git/pic32mzcnc/globals.h"
-typedef struct {
- uint8_t abort;
- uint8_t state;
- uint8_t auto_start;
- volatile uint8_t execute;
- long steps_position[ 6 ];
-
- double mm_position[ 6 ];
- double mm_home_position[ 6 ];
-} system_t;
-extern system_t sys;
 #line 31 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -383,41 +389,13 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 15 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 61 "c:/users/git/pic32mzcnc/stepper.h"
+#line 54 "c:/users/git/pic32mzcnc/stepper.h"
 extern unsigned int Toggle;
 
 
-
-typedef struct genVars{
- int Single_Dual;
- UInt8_t running: 1;
- UInt8_t startPulses: 1;
- int Tog;
- int AxisNo;
- long i;
- long d2;
- long dx;
- long dy;
- long dz;
- long da;
- long px;
- long py;
- long pz;
- long pa;
- long psingle;
- long over;
- long acc;
- long dec;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
-}sVars;
-extern sVars SV;
 
 typedef struct STPT {
 
@@ -436,7 +414,7 @@ extern StepTmr STmr;
 
 typedef enum xyz{X,Y,Z,A,B,C}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
-enum swt{FALSE,TRUE};
+
 
 extern _axis_ _axis;
 extern axis_combination axis_xyz;
@@ -512,7 +490,6 @@ unsigned int Toggle;
 
 
 
- sVars SV;
  StepTmr STmr;
 
 
@@ -591,7 +568,7 @@ void DisableStepper(){
  EN_StepZ = 1;
  EN_StepA = 1;
 }
-#line 112 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 111 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 void speed_cntr_Move(signed long mmSteps, signed long speed, int axis_No){
 int ii;
 char txt_[9];
@@ -674,28 +651,7 @@ long abs_mmSteps = abs(mmSteps);
  STPS[axis_No].dist = 0;
  SV.Tog = 0;
  SV.running = 1;
-
- sprintf(txt_,"%d",STPS[axis_No].mmToTravel);
- UART2_Write_Text(txt_);
- UART2_Write_Text(" : ");
- sprintf(txt_,"%d",STPS[axis_No].step_delay);
- UART2_Write_Text(txt_);
- UART2_Write_Text(" : ");
- sprintf(txt_,"%d",STPS[axis_No].min_delay);
- UART2_Write_Text(txt_);
- UART2_Write_Text(" : ");
- sprintf(txt_,"%d",STPS[axis_No].max_step_lim);
- UART2_Write_Text(txt_);
- UART2_Write_Text(" : ");
- sprintf(txt_,"%d",STPS[axis_No].accel_lim);
- UART2_Write_Text(txt_);
- UART2_Write_Text(" : ");
- sprintf(txt_,"%d",STPS[axis_No].decel_val);
- UART2_Write_Text(txt_);
- UART2_Write_Text(" : ");
- sprintf(txt_,"%d",STPS[axis_No].decel_start);
- UART2_Write_Text(txt_);
- UART2_Write(0x0D);
+#line 216 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 }
 
 
@@ -706,6 +662,10 @@ long abs_mmSteps = abs(mmSteps);
 
 
 void Step_Cycle(int axis_No){
+
+ STPS[axis_No].step_count++;
+
+ sys.steps_position[axis_No] += sys.axis_dir[axis_No];
  toggleOCx(axis_No);
 }
 
@@ -758,14 +718,14 @@ void toggleOCx(int axis_No){
 
 
 int Pulse(int axis_No){
-#line 283 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 287 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  switch(STPS[axis_No].run_state) {
  case  0 :
  SV.Tog = 1;
  break;
 
  case  1 :
-#line 293 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 297 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  AccDec(axis_No);
  if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
 
@@ -794,12 +754,12 @@ int Pulse(int axis_No){
  break;
 
  case  2 :
-#line 325 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 329 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  AccDec(axis_No);
 
 
 
- if(STPS[axis_No].accel_count >= 0 ){
+ if(STPS[axis_No].accel_count > -1 ){
  STPS[axis_No].run_state =  0 ;
  }
  break;
@@ -894,8 +854,11 @@ void disableOCx(){
 
 
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
- STPS[X].step_count++;
+
  OC5IF_bit = 0;
+
+
+
 
  if(SV.Single_Dual == 0)
  SingleStepX();
@@ -924,8 +887,11 @@ void StopX(){
 
 
 void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
- STPS[Y].step_count++;
+
  OC2IF_bit = 0;
+
+
+
 
  if(SV.Single_Dual == 0)
  SingleStepY();
@@ -955,8 +921,11 @@ void StopY(){
 
 
 void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
- STPS[Z].step_count++;
+
  OC7IF_bit = 0;
+
+
+
 
  if(SV.Single_Dual == 0)
  SingleStepZ();
@@ -985,8 +954,11 @@ void StopZ(){
 
 
 void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
- STPS[A].step_count++;
+
  OC3IF_bit = 0;
+
+
+
 
  if(SV.Single_Dual == 0)
  SingleStepA();
@@ -1016,7 +988,7 @@ void StopA(){
 
 void XY_Interpolate(){
 
- if( (SV.Tog == 1)){
+ if((STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||(SV.Tog == 1)){
  StopX();
  StopY();
  return;
@@ -1045,7 +1017,7 @@ void XY_Interpolate(){
 
 void XZ_Interpolate(){
 
- if( (SV.Tog == 1)){
+ if((STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||(SV.Tog == 1)){
  StopX();
  StopZ();
  return;
@@ -1100,7 +1072,11 @@ void YZ_Interpolate(){
  }
 
 }
+<<<<<<< HEAD
 #line 639 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+=======
+#line 657 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
 unsigned int min_(unsigned int x, unsigned int y){
  if(x < y){
  return x;
@@ -1109,7 +1085,11 @@ unsigned int min_(unsigned int x, unsigned int y){
  return y;
  }
 }
+<<<<<<< HEAD
 #line 656 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+=======
+#line 674 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
 static unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;
@@ -1140,7 +1120,11 @@ static unsigned long sqrt_(unsigned long x){
  return xr;
  }
 }
+<<<<<<< HEAD
 #line 710 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+=======
+#line 728 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
 void CycleStop(){
 int ii;
  STmr.uSec = 0;

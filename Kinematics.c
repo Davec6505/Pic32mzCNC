@@ -20,11 +20,13 @@ static long d2;
 *****************************************************/
 void SingleAxisStep(long newxyz,int axis_No){
 int dir;
+char txt_[9];
 //static long dist;
        /*if(SV.psingle != newxyz)
           SV.psingle = newxyz;
        else*/
      SV.Single_Dual = 0;
+     sys.axis_dir[axis_No] = GetAxisDirection(newxyz);
 
      switch(axis_No){
        case X:
@@ -75,7 +77,7 @@ int dir;
 //////////////////////////////////////////////////////////
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
-void DualAxisStep(long newx,long newy,int axis_combo){
+void DualAxisStep(long axis_a,long axis_b,int axis_combo){
    SV.over=0;
    //will need to change these 3 lines when implimenting position referenc??
    SV.px = 0;
@@ -85,6 +87,16 @@ void DualAxisStep(long newx,long newy,int axis_combo){
 /*!
  *use Bressenhams algorithm here
  */
+  if(axis_combo == xy){
+    sys.axis_dir[X] = GetAxisDirection(axis_a);
+    sys.axis_dir[Y] = GetAxisDirection(axis_b);
+  }else if(axis_combo == xz){
+    sys.axis_dir[X] = GetAxisDirection(axis_a);
+    sys.axis_dir[Z] = GetAxisDirection(axis_b);
+  }else if(axis_combo == yz){
+    sys.axis_dir[Y] = GetAxisDirection(axis_a);
+    sys.axis_dir[Z] = GetAxisDirection(axis_b);
+  }
   SV.Single_Dual = 1;
 
   switch(axis_combo){
@@ -93,8 +105,8 @@ void DualAxisStep(long newx,long newy,int axis_combo){
           axis_xyz = xy;
           Multi_Axis_Enable(axis_xyz);
 
-          SV.dx   = newx - SV.px;           // distance to move (delta)
-          SV.dy   = newy - SV.py;
+          SV.dx   = axis_a - SV.px;           // distance to move (delta)
+          SV.dy   = axis_b - SV.py;
 
           // direction to move
           SV.dirx = SV.dx > 0? 1:-1;
@@ -106,27 +118,28 @@ void DualAxisStep(long newx,long newy,int axis_combo){
           else
             DIR_StepX = CW;
 
+
           if(SV.diry < 0)
             DIR_StepY = CCW;
           else
             DIR_StepY = CW;
 
+
           SV.dx = abs(SV.dx);
           SV.dy = abs(SV.dy);
 
-          if(SV.dx > SV.dy){
+          if(SV.dx > SV.dy)
              SV.d2 = 2*(SV.dy - SV.dx);
-          }
-          else{
+          else
              SV.d2 = 2* (SV.dx - SV.dy);
-          }
-           if(SV.dx >= SV.dy){
+
+          if(SV.dx >= SV.dy){
              STPS[X].master = 1;
              STPS[Y].master = 0;
-           }else{
+          }else{
              STPS[X].master = 0;
              STPS[Y].master = 1;
-           }
+          }
 
            STPS[X].step_count = 0;
            STPS[Y].step_count = 0;
@@ -138,8 +151,8 @@ void DualAxisStep(long newx,long newy,int axis_combo){
           axis_xyz = xz;
           Multi_Axis_Enable(axis_xyz);
 
-          SV.dx   = newx - SV.px;           // distance to move (delta)
-          SV.dz   = newy - SV.pz;
+          SV.dx   = axis_a - SV.px;           // distance to move (delta)
+          SV.dz   = axis_b - SV.pz;
 
           // direction to move
           SV.dirx = SV.dx > 0?1:-1;
@@ -168,8 +181,8 @@ void DualAxisStep(long newx,long newy,int axis_combo){
           Multi_Axis_Enable(axis_xyz);
 
           // distance to move (delta)
-          SV.dy   = newx - SV.pz;
-          SV.dz   = newy - SV.py;
+          SV.dy   = axis_a - SV.pz;
+          SV.dz   = axis_b - SV.py;
 
           // direction to move
           SV.diry = SV.dy > 0?1:-1;
@@ -397,6 +410,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   uint16_t i;
   int8_t count = 0;
   double nPx,nPy;
+  uint8_t n_arc_correction; //to be sorted int global struct???
   
   // CCW angle between position and target from circle center. Only one atan2() trig computation required.
   // atan2((I*-J' - I'*J ),(I*J + I'-J'))   ~ arctan Vector opp/Vector adj
@@ -457,7 +471,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   nPx = arc_target[X] = position[X];
   nPy = arc_target[Y] = position[Y];
   for (i = 1; i<segments; i++) { // Increment (segments-1)
-    if (count < settings.n_arc_correction) {
+    if (count < n_arc_correction) {
       // Apply vector rotation matrix
       r_axisi = r_axis0*sin_T + r_axis1*cos_T;
       r_axis0 = r_axis0*cos_T - r_axis1*sin_T;

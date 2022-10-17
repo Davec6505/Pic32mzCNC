@@ -37,15 +37,14 @@ main
 		speed_cntr_Move
 			abs
 			sqrt_
-			sprintf
-			UART2_Write_Text
-			UART2_Write
 		SingleAxisStep
+			GetAxisDirection
 			Single_Axis_Enable
 			abs
 			Step_Cycle
 				toggleOCx
 		DualAxisStep
+			GetAxisDirection
 			Multi_Axis_Enable
 			abs
 			ClockPulse

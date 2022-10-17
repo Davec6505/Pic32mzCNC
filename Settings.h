@@ -1,6 +1,20 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+////////////////////////////////////////////////////////////
+//                  Global usage defines                  //
+////////////////////////////////////////////////////////////
+// Direction of stepper motor movement
+#define CW  0
+#define CCW 1
+
+#define CW_   1
+#define CCW_ -1
+
+#define true 1
+#define TRUE 1
+#define false 0
+#define FALSE 0
 
 ////////////////////////////////////////////////////////////
 //              Stepper Motor Settings                    //
