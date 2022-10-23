@@ -41,12 +41,15 @@ void PinMode(){
     
     TRISG7_bit = 1;
     TRISG8_bit = 1;
+///////////////////////////////////////////////////
+//setup the performance of the sys clocks
+    set_performance_mode();
 
 ////////////////////////////////////////////////////
 //Remapping of Uart 2 pins
     Unlock_IOLOCK();
-     PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);    // Sets pin PORTE.B8 to be Output and maps UART1 Transmit to it
-     PPS_Mapping_NoLock(_RPE9, _INPUT,  _U2RX);    // Sets pin PORTE.B9 to be Input and maps UART1 Receive to it
+     PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);    // Sets pin PORTE.B8 to be Output and maps UART2 Transmit
+     PPS_Mapping_NoLock(_RPE9, _INPUT,  _U2RX);    // Sets pin PORTE.B9 to be Input and maps UART2 Receive
      PPS_Mapping_NoLock(_RPB9, _OUTPUT, _NULL);
      PPS_Mapping_NoLock(_RPB10, _OUTPUT, _NULL);
      PPS_Mapping_NoLock(_RPD4, _OUTPUT, _OC5);     //X_Axis TMR2
@@ -58,56 +61,60 @@ void PinMode(){
     Lock_IOLOCK();
 
 //////////////////////////////////////////////////
+//TMR 1 & 8 config
+   InitTimer1();
+  // InitTimer8();
+  
+//////////////////////////////////////////////////
 //configure the uart2 module
     UartConfig();
 
-///////////////////////////////////////////////////
-//setup the performance of the sys clocks
-    set_performance_mode();
-
 //////////////////////////////////////////////////
-//configure the interrupts
-  //  Uart2InterruptSetup();
-
-//////////////////////////////////////////////////
-//TMR8 config
-   InitTimer1();
-  // InitTimer8();
-/////////////////////////////////////////////////
-//setup i2c_lcd
-  //  LcdI2CConfig();
+//configure UART the interrupts
+  Uart2InterruptSetup();
 
 ////////////////////////////////////////////////
 //DMA CONFIG
    DMA_global();
-   
+   DMA0_Enable();
 ////////////////////////////////////////////////
 //set up output compare module for oc3 RF1 pin
   OutPutPulseXYZ();
   SetPinMode();
+
+/////////////////////////////////////////////////
+//setup i2c_lcd
+  //  LcdI2CConfig();
+  
 }
 
 void UartConfig(){
 //////////////////////////////////////////////////
 //setup the serial comms on uart 2  using PBCLK2 at 50mhz
-  UART2_Init_Advanced(256000, 50000/*PBClk x 2*/, _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
+  UART2_Init_Advanced(256000, 200000/*PBClk x 2*/, _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
   UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle); // set UART2 active
   Delay_ms(100);                  // Wait for UART module to stabilize
 }
 
 ////////////////////////////////////////////////
-//Uart 2 interrupt setup
+//Uart 2 interrupt setup, make sure that for DMA
+//the interrupt is turned of for this module,
+//only use the IRQ from the DMA controller but
+//itis important it set up the irelx bits of the
+// 8 level deep interrupt buffer specific to the
+//UART module
 void Uart2InterruptSetup(){
+    // IRQ after 1 byte is empty, buffer is 8 deep
     URXISEL0_bit = 0;
-    URXISEL1_bit = 1;
-    IEC4.B18 = 1;              // Enable UART2 RX interrupt
+    URXISEL1_bit = 0;
 
-    U2RXIP0_bit = 1;           //
-    U2RXIP1_bit = 1;           //
-    U2RXIP2_bit = 1;           // Set priority
+    // IRQ after 1 byte is empty buffer is 8 deep
+    UTXISEL0_bit = 0;
+    UTXISEL1_bit = 0;
 
-    URXISEL1_U2STA_bit = 0;
-    U2RXIF_bit = 0;            // Ensure interrupt is not pending
+    // Disnable UART2 RX & TX interrupts
+    IEC4CLR      = 0xc000;
+
 }
 
 void set_performance_mode(){
@@ -123,7 +130,7 @@ unsigned long cp0;
     // Peripheral Bus 1 cannot be turned off, so there's no need to turn it on
     PB1DIVbits.PBDIV = 1; // Peripheral Bus 1 Clock Divisor Control (PBCLK1 is SYSCLK divided by 2)
 
-    // PB2DIV
+    // PB2DIV  UART / SPI / I2C / PMP
     UEN0_bit = 1;
     UEN1_bit = 1;
     PB2DIVbits.ON = 1; // Peripheral Bus 2 Output Clock Enable (Output clock is enabled)

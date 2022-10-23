@@ -168,7 +168,7 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 7 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 11 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
@@ -182,6 +182,10 @@ extern char txBuf[];
 void DMA_global();
 void DMA0();
 void DMA1();
+void DMA0_Enable();
+void DMA0_Disable();
+void DMA1_Enable();
+void DMA1_Disable();
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -501,7 +505,8 @@ char txt_[9];
 static char oneshot = 0;
 unsigned char j;
 static unsigned int disable_steps = 0;
-int xyz_ = 0;
+int xyz_ = 0, i;
+
  PinMode();
 
  StepperConstants(15000,15000);
@@ -511,6 +516,7 @@ int xyz_ = 0;
  disable_steps = 0;
  disableOCx();
  DisableStepper();
+
  EnableInterrupts();
  while(1){
 
@@ -520,8 +526,6 @@ int xyz_ = 0;
  disable_steps = TMR.Reset( 10 ,disable_steps);
  if(LED1 && (oneshot == 0)){
  oneshot = 1;
-
-
  }else if(!LED1 && (oneshot == 1))
  oneshot = 0;
 
@@ -547,30 +551,9 @@ int xyz_ = 0;
  }
 
  if(Toggle){
+#line 86 "C:/Users/Git/Pic32mzCNC/Main.c"
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
- sprintf(txt_,"%d",a);
- UART2_Write_Text("a:= ");
- UART2_Write_Text(txt_);
- sprintf(txt_,"%d",STPS[X].step_count);
- UART2_Write_Text(" | step_count[X]:= ");
- UART2_Write_Text(txt_);
- sprintf(txt_,"%d",sys.axis_dir[X]);
- UART2_Write_Text(" | axis_dir[X]:= ");
- UART2_Write_Text(txt_);
- sprintf(txt_,"%d",sys.steps_position[X]);
- UART2_Write_Text(" | absX:= ");
- UART2_Write_Text(txt_);
- sprintf(txt_,"%d",STPS[Y].step_count);
- UART2_Write_Text(" | step_count[Y]:= ");
- UART2_Write_Text(txt_);
- sprintf(txt_,"%d",sys.axis_dir[Y]);
- UART2_Write_Text(" | axis_dir[Y]:= ");
- UART2_Write_Text(txt_);
- sprintf(txt_,"%d",sys.steps_position[Y]);
- UART2_Write_Text(" | absY:= ");
- UART2_Write_Text(txt_);
- UART2_Write(0x0D);
-
+#line 111 "C:/Users/Git/Pic32mzCNC/Main.c"
  Temp_Move(a);
  a++;
  if(a > 8)a=0;

@@ -1,20 +1,23 @@
 main
+	__CC2DW
+	__FillZeros
 	PinMode
+		set_performance_mode
 		Unlock_IOLOCK
 		PPS_Mapping_NoLock
 			_PPS_MAPPING
 				Unlock_IOLOCK
 				Lock_IOLOCK
 		Lock_IOLOCK
+		InitTimer1
 		UartConfig
 			UART2_Init_Advanced
 				UART_Calc_BRG
 			UART_Set_Active
-		set_performance_mode
-		InitTimer1
+		Uart2InterruptSetup
 		DMA_global
 			DMA0
-			DMA1
+		DMA0_Enable
 		OutPutPulseXYZ
 		SetPinMode
 	StepperConstants
@@ -24,14 +27,6 @@ main
 	EnStepperY
 	EnStepperZ
 	EnStepperA
-	sprintf
-		_doprntf
-			isdigit
-			scale
-			fround
-	UART2_Write_Text
-		UART2_Write
-	UART2_Write
 	Temp_Move
 		belt_steps
 		speed_cntr_Move
@@ -71,7 +66,12 @@ main
 			hypot
 				sqrt
 			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
 			UART2_Write_Text
+				UART2_Write
 			UART2_Write
 			mc_arc
 				atan2
@@ -91,8 +91,6 @@ main
 				abs
 				speed_cntr_Move
 				DualAxisStep
-	__CC2DW
-	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepA
@@ -104,12 +102,16 @@ StepA
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
-Timer1Interrupt
+Timer8Interrupt
+StepZ
+	SingleStepZ
+		StopZ
+		Step_Cycle
+		Pulse
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
-Timer8Interrupt
 StepX
 	SingleStepX
 		StopX
@@ -128,17 +130,15 @@ StepY
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
-StepZ
-	SingleStepZ
-		StopZ
-		Step_Cycle
-		Pulse
-	ClockPulse
-	XY_Interpolate
-	XZ_Interpolate
-	YZ_Interpolate
 DMA_CH1_ISR
 DMA_CH0_ISR
 	__CC2DW
 	strlen
-	memcpy
+	strncpy
+	UART2_Write_Text
+	strcpy
+Timer1Interrupt
+	ClockPulse
+	XY_Interpolate
+	XZ_Interpolate
+	YZ_Interpolate

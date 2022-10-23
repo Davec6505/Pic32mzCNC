@@ -12493,6 +12493,7 @@ cherie
 cherie
 cherie
 cherie
+cherie
 cherie_bit
 cherie_dch1int_bit
 cherie_dch2int_bit
@@ -23628,6 +23629,9 @@ dma_ch0_isr
 dma_ch1_isr
 dma_global
 dma0
+dma0
+dma0_disable
+dma0_enable
 dma0ie
 dma0ie
 dma0ie
@@ -23660,6 +23664,9 @@ dma0is0_bit
 dma0is1
 dma0is1_bit
 dma1
+dma1
+dma1_disable
+dma1_enable
 dma1ie
 dma1ie
 dma1ie
@@ -71009,7 +71016,6 @@ txstate2
 txstate2_bit
 txstate3
 txstate3_bit
-txt
 txt_
 txt_a
 txta

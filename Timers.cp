@@ -133,7 +133,7 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 7 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 11 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
@@ -147,6 +147,10 @@ extern char txBuf[];
 void DMA_global();
 void DMA0();
 void DMA1();
+void DMA0_Enable();
+void DMA0_Disable();
+void DMA1_Enable();
+void DMA1_Disable();
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -492,13 +496,13 @@ void InitTimer1(){
  TMR.Reset = ResetSteppers;
 
  T1CON = 0x8010;
- T1IP0_bit = 1;
- T1IP1_bit = 1;
- T1IP2_bit = 0;
- T1IS0_bit = 1;
- T1IS1_bit = 0;
- T1IF_bit = 0;
- T1IE_bit = 1;
+
+ IPC1SET = 0x1A;
+
+ IEC0SET = 0x10;
+
+ IFS0CLR = 0x10;;
+
  PR1 = 62500;
  TMR1 = 0;
 }
@@ -514,6 +518,8 @@ void InitTimer8(){
  T8IP2_bit = 0;
  T8IS0_bit = 0;
  T8IS1_bit = 1;
+
+
  T8IF_bit = 0;
  T8IE_bit = 0;
  PR8 = 50;
@@ -523,7 +529,7 @@ void InitTimer8(){
 
 
 
-void Timer1Interrupt() iv IVT_TIMER_1 ilevel 3 ics ICS_SRS {
+void Timer1Interrupt() iv IVT_TIMER_1 ilevel 6 ics ICS_SRS {
  T1IF_bit = 0;
 
  Clock();

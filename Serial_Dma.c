@@ -1,140 +1,239 @@
 #include "Serial_Dma.h"
 
+#define err(x,y) x##y
+#define DMAx_err(x,y) (#x " " #y)
 
-char txt[] = "Start......";
-char rxBuf[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}  absolute 0xA0002000 ; //resides in flash ??
-char txBuf[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}  absolute 0xA0002200 ;
+char rxBuf[200] = {0}  absolute 0xA0002000 ; //resides in flash ??
+char txBuf[200] = {0}  absolute 0xA0002200 ;
+char cherie[] = " CHERIF Error\r";
+char dma0[] = "DMA0_";
+char dma1[] = "DMA1_";
 
 char DMA_Buff[200];
-short dma0int_flag;
-short dma1int_flag;
+char dma0int_flag;
+char dma1int_flag;
 
 
 
 ////////////////////////////////////////////////////////////////
 //DMA Config
 void DMA_global(){
-    DMACON = 1<<16;   //enable the DMA controller
-    DCH0CON = 0x03;   //channel off on block trf complete ,no event detect, priority 3, no chaining
-    
+    //Enable the whole DMA module
+    DMACONSET = 0x8000;
     DMA0();
-    DMA1();
+    //DMA1();
 }
 
-/* This is the DMA channel 0 setup for the receiver */
+
+/************************************************************
+* This is the DMA channel 0 setup for the receiver
+* it is setup to auto enable after a block transfer or
+* pattern match of '\r' we can enable the 2 char pattern
+* match if needed by setting PATLEN bit on.
+* Destination size is 200 . a pattern match must be
+* Sent or a block transfer will only take place after
+* 200 bytes. An abort can be forced by setting the CABORT bit
+************************************************************/
 void  DMA0(){
-    DMACONbits.ON = 1;
-    DCH0CONbits.CHAEN = 1;
-    DCH0CONbits.CHPATLEN = 0;
-    DMA0IE_bit = 0;
-    DMA0IF_bit = 0;
+    //Disable DMA0 IE
+    IEC4CLR      = 0x40;
+    IFS4CLR      = 0x40;
+    
+    //Disable DMA0 and reset priority
+    DCH0CONCLR = 0x8003;
 
-    DCH0ECON      =(146 << 8 ) | 0x30;         // DCH0ECON Specific INTERRUPT IRQ NUMBER (146) for UART 2 RX
-    DCH0DAT       =  0x0D;
+    //1INTERRUPT IRQ NUMBER for UART 2 TX (146) | [0x10 = SIRQEN] [0x30 = PATEN & SIRQEN]
+    DCH0ECON      =  (146 << 8 ) | 0x30;
+    
+    //Pattern data
+    DCH0DAT       =  '\r';
+    
+    //Source address as UART_RX
+    DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
+    DCH0SSIZ      = 1;                 // source size = 1byte at a time
 
-    DCH0SSA       = KVA_TO_PA(0xBF822230);    // RxBuf virtual address     [0xBF822230 = U2RXREG]
-    DCH0DSA       = KVA_TO_PA(0xA0002000);    //   virtual address:= IN RAM FOR RECIEVED DATA
-
-    DCH0SSIZ      = 200  ;  // source size = size of buffer set up rcBuf, x bytes at a time
+    //Destination address  as RxBuffer
+    DCH0DSA       = KVA_TO_PA(0xA0002000);    // virtual address:= IN RAM FOR RECIEVED DATA
     DCH0DSIZ      = 200  ;  // destination size = Size for the 'rxBuf' to fill up with received characters. It is = 5 in this example...
-    DCH0CSIZ      = 200  ;  // bytes transferred per event = Size of how many bytes to transfer per each interrupt on #27 IRQ event
-
-    DCH0INTCLR    = 0x00FF00FF ; // Clear existing events, disable all interrupts ''Clear flags in DMA controller channel 0
-    CHBCIE_bit    = 1  ;         // Enable Interrupt on block transfer complete
-    CHERIE_bit    = 1  ;         // Enable Interrupt on errors
-
-/* Interrupt setup */
-
-    IPC33CLR       = 0x0000001F ;//' clear DMA channel priority and sub-priority
-    DMA0IP2_bit   = 1 ;          //' IPC9 DMA0IP  priority = 5
-    DMA0IP1_bit   = 0 ;
-    DMA0IP0_bit   = 1 ;
-    DMA0IS1_bit   = 1 ;         //' sub-priority 3
-    DMA0IS0_bit   = 1 ;
-
-    DMA0IE_bit    = 1 ;         //' enable DMA0 interrupt
-    CHEN_bit      = 1 ;         //' Enable channel - may want to do this when you are ready to receive...
-
+   
+    //Cell size as 1 byte
+    DCH0CSIZ      = 1  ;  // bytes transferred in the background
+    
+    
+    // Clear existing events, disable all interrupts
+    DCH0INTCLR    = 0x00FF00FF ;
+    //Enable [CHBCIE && CHERIE] Interrupts
+    DCH0INTSET      =  0x90000;
+    
+    //Interrupt setup
+    //clear DMA channel priority and sub-priority
+    IPC33CLR     = 0x160000;
+    //Set priority 5 sub-priority 1
+    IPC33SET      = 0x00140000;
+    //set DMA0IE bit
+    IEC4SET       = 0x40;
+    IFS4CLR       = 0x40;
+    //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0] 
+    //Set up AutoEnable & Priority as 3       .
+    DCH0CONSET      = 0X0000013;
+    
 }
-
-/* This is the DMA setup for the transmitter */
-void DMA1(){
-
-    DMA1IE_bit = 0 ;                   //' disable DMA1 interrupt
-    DMA1IF_bit = 0 ;                   //' clear DMA1 interrupt flag
-    DCH1CONbits.CHPATLEN = 0;          //' Pattern length = 1 byte
-    DCH1ECON=(147 << 8)| 0x30;         //' Specific INTERRUPT IRQ NUMBER for UART 2 TX (147)
-    DCH1SSA = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
-    DCH1DSA = KVA_TO_PA(0xBF822220) ;  //U1TX2REG for reply  [0xBF822220 = U1TXREG]
-    DCH1DAT       = 0x00;
-/* Source Size */
-    DCH1SSIZ = 200;  //' This is how many bytes you want to send out in a block transfer for UART transmitter
-/* Destination Size */
-    DCH1DSIZ = 1;    //' This is how many bytes come from the destination - i.e. rxBuf recieved can change dynamicall as its send buffer
-/* Cell Size */
-    DCH1CSIZ = 1;  //' x bytes from txBuf in a cell waiting to send out 1 byte at a time to U1TXREG / DCH1DSIZ
-
-    DCH1INTCLR  =  0x00FF00FF ; //'clear all interrupts and clear all interrupt flags
-    SIRQEN_DCH1ECON_bit = 1;
-    CHBCIE_DCH1INT_bit = 1    ; //'Enable Channel Block transfer interrupt
-    CHERIE_DCH1INT_bit = 1    ; //'Enable Channel Address Error interrupt
-/* Interrupt Setup */
-    DMA1IP2_bit = 1 ;           //' DMA1 interrupt priority 5
-    DMA1IP1_bit = 0 ;
-    DMA1IP0_bit = 1 ;
-    DMA1IS1_bit = 0 ;           //' sub-priority 1
-    DMA1IS0_bit = 1 ;
-    DMA1IE_bit  = 0 ;           //' enable DMA1 interrupt
-}
-
 
 ////////////////////////////////////////
-//DMA IRQ
-void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO {
- char A[6];
- int i,ptr;
-    if (CHBCIF_bit == 1) {         // Channel Block Transfer has Completed Interrupt Flag bit
-     i = 0;
-
-/* ECHO EXAMPLE */
-      i = strlen(rxBuf);
-      dma0int_flag = 1;          // user flag to inform this int was triggered. should be cleared in software
-      memcpy(txBuf, rxBuf, i);   // copy RxBuf -> TxBuf  BUFFER_LENGTH
-      CHEN_DCH1CON_bit = 1;     // Enable the DMA1 channel to transmit back what was received
-    }
-    DCH1SSIZ            = i ;
-   //  DCH1CSIZ            = i*2 ;
-/* Channel Address Error Interrupt Flag bit  */
-    if( CHERIF_bit == 1){                     // clear channel error int flag
-       CHERIF_bit = 0;
-       memcpy(txBuf,"CHERIF Error",13);
-    }
-    DCH0INTCLR          = 0x00FF;             // clear DMA 0 int flags
-/* re-enable DMA 0 int */
-    DMA1IE_bit  = 1 ;
-    CHEN_bit            = 1 ;                 // Enable channel - may want to do this when you are ready to receive...
-
-    CFORCE_DCH1ECON_bit = 1 ;                 // force DMA1 interrupt trigger
-    DMA0IF_bit          = 0 ;                 // clear DMA0 int flag
-
+//DMA0 on control
+void DMA0_Enable(){
+   //CHEN[7]
+   //Turn on DMA0
+   /******************************************************
+    *"A new understanding" [SET CLR INV] will affect the
+    *the entire word with 0's as well as 1's , this meand
+    *or the bit you need to set, contrary to my initial
+    *understanding of SET CLR & INV 'MORE REASEARCH NEEDED'
+    *****************************************************/
+   DCH0CONSET  |= 1<<7;
 }
 
+////////////////////////////////////////
+//DMA0 off control
+void DMA0_Disable(){
+  //Disable DAM0 module and clear priority level
+   DCH0CONCLR  |= 1<<7;
+   //DCH0CONbits.CHEN = 0;
+}
 
-void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_AUTO {
-int ptr = 0;
-char ptrAdd[6];
-/* Channel Block Transfer Complete Interrupt Flag bit */
-    if (CHBCIF_DCH1INT_bit == 1){
-       CHBCIF_DCH1INT_bit = 0;             // clear flag
+////////////////////////////////////////
+//DMA0 IRQ   UART2 RX
+void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
+ int i = 0;
+
+    dma0int_flag = DCH0INT & 0x00FF;         //flags to sample in code if needed
+
+ // THIS CHANNEL IS AUTOMATICALLY ENABLED AFTER A BLOCK
+ // OR ERROR ABORT EVENT, THIS SHOULD TAKE PLACE IF A
+ // '\n' HAS BEEN RECIEVED OR 200 BYTES EXCEEDED
+    if (DCH0INTbits.CHBCIF == 1) {
+
+      // LOOPBACK EXAMPLE USE THIS TO SEND DATA
+      // ENABLE DMA1 FOR LOOPBACK
+      i = strlen(rxBuf)+1;
+      strncpy(txBuf, rxBuf, i);   // copy RxBuf -> TxBuf  BUFFER_LENGTH
+      DCH1SSIZ            = i+2 ;  // change the size of block register
+      UART2_Write_Text(txBuf);
+      //DMA1_Enable();
+      // DCH1ECONbits.CFORCE = 1 ;  // force DMA1 interrupt trigger
     }
-/* Channel Address Error Interrupt Flag bit */
+
+    // CHANNEN ADDRESS ERROR FLAF
+    if( CHERIF_bit == 1){       // test error int flag
+       dma0int_flag = 2;
+       
+       //LOOPBACK RECIEVE ERROR COULD BE SPECIFIC MSG
+       strcpy(txBuf,DMAx_err(dma0,cherie));
+       UART2_Write_Text(txBuf);
+       //DCH1SSIZ = 13;           //set block size of transfer
+       //DCH1ECONbits.CFORCE = 1 ;// force DMA1 interrupt trigger
+    }
+    
+    DCH0INTCLR    = 0x000000ff;
+    IFS4CLR       = 0x40;
+}
+
+/******************************************************
+* This is the DMA setup for the UART2 transmitter and
+* is not auto enabled, this will be done everytime a
+* UART transfer out need to take place. The loopback 
+* is temporary and is done from within the DMA0 IRQ
+* Vector, The steps within this Vector to loopback
+* will be used from within code to perfoem a data send
+* A pattern match should abort the transfer and wait
+* for the next CFORCE bit to be set, DCH1SSIZ can be
+* dynamically assigned to force and abort but block
+* transfer having been finnished
+*******************************************************/
+void DMA1(){
+    //Disable DMA1 IE and clear IF
+    //clear DMA channel priority and sub-priority
+     IPC33CLR      = 0x17000000;
+     IEC4CLR       = 0x7;
+     
+     //Disable DMA0 and reset priority
+    DCH1CONCLR = 0x8003;
+
+    //INTERRUPT IRQ NUMBER for UART 2 TX (147) | [0x10 = SIRQEN] [0x30 = PATEN & SIRQEN]
+    DCH1ECON=(147 << 8)| 0x30;
+    
+    //Pattern Length and char to match not needed here ????
+    //Pattern length = 0 = 1 byte
+    DCH1DAT       = '\r';
+    
+    //Source address and size of transfer buffer
+    DCH1SSA = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
+    DCH1SSIZ = 200;  //' This is how many bytes you want to send out in a block transfer for UART transmitter
+    
+    //Destination Address and size which is 1byte
+    //U1TX2REG for reply  [0xBF822220 = U1TXREG]
+    DCH1DSA = KVA_TO_PA(0xBF822220) ;
+    DCH1DSIZ = 1;
+    
+    //Cell size to transfer each transfer
+    DCH1CSIZ = 1;    //' x bytes from txBuf in a cell waiting to send out 1 byte at a time to U1TXREG / DCH1DSIZ
+
+    // Clear existing events, disable all interrupts
+    DCH1INTCLR    = 0x00FF00FF ;
+    //[CHBCIE && CHERIE]
+    DCH1INTSET    =  0x90000;
+    
+    //Interrupt setup
+    //clear DMA channel priority and sub-priority
+    IPC33CLR     = 0x16000000;
+    //Set priority 5 sub-priority 2
+    IPC33SET    = 0x16000000;
+    //set DMA1IE bit
+    IEC4SET     = 0x80;
+    //Clear DMA1IF bit
+    IFS4CLR     = 0x80;
+    
+    //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0]
+    //Set up no AutoEnable & Priority as 3        .
+    DCH1CONSET    = 0x00000003;
+
+}
+////////////////////////////////////////
+//DMA1 on control
+void DMA1_Enable(){
+   DCH1CONSET |= 1<<7;
+}
+
+////////////////////////////////////////
+//DMA1 off control
+void DMA1_Disable(){
+    DCH1CONCLR |= 1<<7;
+}
+
+/////////////////////////////////////////////////////
+//UART2 TX Interrupt should be handed automatically
+//from within the DMA controller, this IRQ vector
+//is only used if errors are need to be checked
+//or some otherfunctionality is need after a block
+//transfer has completed
+void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
+
+    // user flag to inform this int was triggered. should be cleared in software
+    dma1int_flag = DCH1INT & 0x00FF;
+    //Channel Block Transfer Complete Interrupt Flag bit
+    if (DCH1INTbits.CHBCIF){
+       dma1int_flag = 1;
+       dma0int_flag = 0;
+    }
+     //Channel Address Error Interrupt Flag bit
     if( CHERIF_DCH1INT_bit == 1){
-       CHERIF_DCH1INT_bit = 0;
 
     }
 
-    dma1int_flag = 1;                          // user flag to inform this int was triggered. should be cleared in software
-    DCH1INTCLR   = 0x00FF;                     // clear event flags
-    DMA1IF_bit   = 0 ;
+    //However, for the interrupt controller, there is
+    //just one dedicated interrupt flag bit per channel,
+    //DMAxIF, and the corresponding interrupt enable/mask bits, DMAxIE.
+    DCH1INTCLR  = 0x00FF;
+    IFS4CLR     = 0x80;
 
 }

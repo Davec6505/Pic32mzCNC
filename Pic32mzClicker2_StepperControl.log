@@ -4,11 +4,13 @@ diagnostics: 65825	123	Compiled Successfully	P32MZ2048EFH100.c
 diagnostics: 0	122	Compilation Started	__Lib_Delays.c
 diagnostics: 176	123	Compiled Successfully	__Lib_Delays.c
 diagnostics: 0	122	Compilation Started	i2c_lcd.h
+hint: 32	1163	Variable 'txt_' has been declared, but not used	Main.c
 hint: 34	1163	Variable 'j' has been declared, but not used	Main.c
-diagnostics: 207	123	Compiled Successfully	Main.c
+hint: 36	1163	Variable 'i' has been declared, but not used	Main.c
+diagnostics: 212	123	Compiled Successfully	Main.c
 hint: 36	1164	Variable 'xyz_' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	i2c_lcd.h
-diagnostics: 312	123	Compiled Successfully	Config.c
+diagnostics: 319	123	Compiled Successfully	Config.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 112	1163	Variable 'ii' has been declared, but not used	Stepper.c
 hint: 113	1163	Variable 'txt_' has been declared, but not used	Stepper.c
@@ -27,7 +29,7 @@ hint: 56	1164	Variable 'stepsToMove' has been eliminated by optimizer	Steptodist
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (Timer1Interrupt at 0x0004)	Timers.c
 hint: 0	1004	interrupt handler (Timer8Interrupt at 0x0024)	Timers.c
-diagnostics: 106	123	Compiled Successfully	Timers.c
+diagnostics: 108	123	Compiled Successfully	Timers.c
 hint: 22	1354	 warning: "/*" within comment     /////////////////////////////////////////////////////////////////////////////*/  /////////////////////////////////////////////// //includes #include <stdint.h> #include "Settings.h"    #define max(a,b) (((a) > (b)) ? (a) : (b)) #define min(a,b) (((a) < (b)) ? (a) : (b))  // Bit field and masking macros #define bit(n) (1 << n) #define bit_true(x,mask) (x |= mask) #define bit_false(x,mask) (x &= ~mask) #define bit_toggle(x,mask) (x ^= mask) #define bit_istrue(x,mask) ((x & mask) != 0) #define bit_isfalse(x,mask) ((x & mask) == 0)  // Define system executor bit map. Used internally by runtime protocol as runtime command flags, // which notifies the main program to execute the specified runtime command asynchronously. // NOTE: The system executor uses an unsigned 8-bit volatile variable (8 flag limit.) The default // flags are always false, so the runtime protocol only needs to check for a non-zero value to // know when there is a runtime command to execute. #define EXEC_STATUS_REPORT  bit(0) // bitmask 00000001 #define EXEC_CYCLE_START    bit(1) // bitmask 00000010 #define EXEC_CYCLE_STOP     bit(2) // bitmask 00000100 #define EXEC_FEED_HOLD      bit(3) // bitmask 00001000 #define EXEC_RESET	C:\Users\Git\Pic32mzCNC\Kinematics.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 23	1163	Variable 'txt_' has been declared, but not used	Kinematics.c
@@ -42,25 +44,31 @@ diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 69	123	Compiled Successfully	Pins.c
 diagnostics: 0	122	Compilation Started	i2c_lcd.h
 hint: 0	1004	interrupt handler (DMA_CH0_ISR at 0x0086)	Serial_Dma.c
-hint: 94	1163	Variable 'A' has been declared, but not used	Serial_Dma.c
-hint: 95	1163	Variable 'ptr' has been declared, but not used	Serial_Dma.c
 hint: 0	1004	interrupt handler (DMA_CH1_ISR at 0x0087)	Serial_Dma.c
-hint: 125	1163	Variable 'ptrAdd' has been declared, but not used	Serial_Dma.c
-diagnostics: 140	123	Compiled Successfully	Serial_Dma.c
-hint: 124	1164	Variable 'ptr' has been eliminated by optimizer	Serial_Dma.c
+diagnostics: 239	123	Compiled Successfully	Serial_Dma.c
 diagnostics: 0	122	Compilation Started	Print.c
 diagnostics: 0	123	Compiled Successfully	Print.c
 diagnostics: 1	122	Compilation Started	Print.c
 diagnostics: 87	123	Compiled Successfully	gcode.h
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 11	123	Compiled Successfully	Globals.c
+<<<<<<< HEAD
 diagnostics: 0	127	All files Compiled in 1234 ms	 
+=======
+diagnostics: 0	127	All files Compiled in 922 ms	 
+>>>>>>> patch1
 hint: 0	1144	Used RX: 21 (66%)   Free RX: 11 (34%)	Used RX: 21 (66%)   Free RX: 11 (34%)
-hint: 0	1144	Static RAM (bytes): 756   Dynamic RAM (bytes): 515473	Static RAM (bytes): 756   Dynamic RAM (bytes): 515473
+hint: 0	1144	Static RAM (bytes): 1122   Dynamic RAM (bytes): 514973	Static RAM (bytes): 1122   Dynamic RAM (bytes): 514973
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 37549 (2%)  Free ROM (bytes): 2059603 (98%)	Used ROM (bytes): 37549 (2%)  Free ROM (bytes): 2059603 (98%)
+hint: 0	1144	Used ROM (bytes): 37014 (2%)  Free ROM (bytes): 2060138 (98%)	Used ROM (bytes): 37014 (2%)  Free ROM (bytes): 2060138 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
+<<<<<<< HEAD
 diagnostics: 0	128	Linked in 750 ms	 
 diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3765 ms	 
 diagnostics: 0	103	Finished successfully: 17 Oct 2022, 22:57:53	Pic32mzClicker2_StepperControl.mcp32
+=======
+diagnostics: 0	128	Linked in 719 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3266 ms	 
+diagnostics: 0	103	Finished successfully: 23 Oct 2022, 21:23:22	Pic32mzClicker2_StepperControl.mcp32
+>>>>>>> patch1

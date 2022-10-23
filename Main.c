@@ -33,7 +33,8 @@ char txt_[9];
 static char oneshot = 0;
 unsigned char j;
 static unsigned int disable_steps = 0;
-int xyz_ = 0;
+int xyz_ = 0, i;
+
   PinMode();
 
   StepperConstants(15000,15000);
@@ -43,6 +44,7 @@ int xyz_ = 0;
   disable_steps = 0;
   disableOCx();
   DisableStepper();
+
   EnableInterrupts();
   while(1){
 
@@ -52,8 +54,6 @@ int xyz_ = 0;
                  disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
              if(LED1 && (oneshot == 0)){
                oneshot = 1;
-            //   sprintf(txBuf,"%d",disable_steps);
-            //   CHEN_DCH1CON_bit = 1;
              }else if(!LED1 && (oneshot == 1))
                 oneshot = 0;
                 
@@ -79,8 +79,13 @@ int xyz_ = 0;
          }
          //X Y Z
          if(Toggle){
+             /* i = strlen(rxBuf)+1;
+              strncpy(txBuf, rxBuf, i);   // copy RxBuf -> TxBuf  BUFFER_LENGTH
+              //DCH1SSIZ            = i+2 ;  // change the size of block register
+              UART2_Write_Text(txBuf); */
            if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-               sprintf(txt_,"%d",a);
+
+           /*    sprintf(txt_,"%d",a);
                UART2_Write_Text("a:= ");
                UART2_Write_Text(txt_);
                sprintf(txt_,"%d",STPS[X].step_count);
@@ -102,7 +107,7 @@ int xyz_ = 0;
                UART2_Write_Text(" | absY:= ");
                UART2_Write_Text(txt_);
                UART2_Write(0x0D);
-               
+            */
                Temp_Move(a);
                a++;
                if(a > 8)a=0;

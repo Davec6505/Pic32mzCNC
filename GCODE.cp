@@ -170,7 +170,7 @@ extern sfr sbit FLT_Step_PinDirA;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 7 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 11 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
@@ -184,6 +184,10 @@ extern char txBuf[];
 void DMA_global();
 void DMA0();
 void DMA1();
+void DMA0_Enable();
+void DMA0_Disable();
+void DMA1_Enable();
+void DMA1_Disable();
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
