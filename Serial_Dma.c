@@ -8,8 +8,8 @@ char txBuf[200] = {0}  absolute 0xA0002200 ;
 char cherie[] = " CHERIF Error\r";
 char dma0[] = "DMA0_";
 char dma1[] = "DMA1_";
+const char newline[] = "\r\n";
 
-char DMA_Buff[200];
 char dma0int_flag;
 char dma1int_flag;
 
@@ -21,7 +21,7 @@ void DMA_global(){
     //Enable the whole DMA module
     DMACONSET = 0x8000;
     DMA0();
-    //DMA1();
+    DMA1();
 }
 
 
@@ -115,18 +115,15 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
 
       // LOOPBACK EXAMPLE USE THIS TO SEND DATA
       // ENABLE DMA1 FOR LOOPBACK
-      i = strlen(rxBuf)+1;
-      strncpy(txBuf, rxBuf, i);   // copy RxBuf -> TxBuf  BUFFER_LENGTH
-      DCH1SSIZ            = i+2 ;  // change the size of block register
-      UART2_Write_Text(txBuf);
-      //DMA1_Enable();
-      // DCH1ECONbits.CFORCE = 1 ;  // force DMA1 interrupt trigger
+     // i = strlen(rxBuf)+1;
+     // strncpy(txBuf, rxBuf, i);  // copy RxBuf -> TxBuf  BUFFER_LENGTH
+     // DCH1SSIZ            = i ;  // change the size of block register
+     // DMA1_Enable();             //enabling the dma forces a write
+
     }
 
     // CHANNEN ADDRESS ERROR FLAF
     if( CHERIF_bit == 1){       // test error int flag
-       dma0int_flag = 2;
-       
        //LOOPBACK RECIEVE ERROR COULD BE SPECIFIC MSG
        strcpy(txBuf,DMAx_err(dma0,cherie));
        UART2_Write_Text(txBuf);
@@ -181,7 +178,7 @@ void DMA1(){
     // Clear existing events, disable all interrupts
     DCH1INTCLR    = 0x00FF00FF ;
     //[CHBCIE && CHERIE]
-    DCH1INTSET    =  0x90000;
+    //DCH1INTSET    =  0x90000;
     
     //Interrupt setup
     //clear DMA channel priority and sub-priority
@@ -224,6 +221,7 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
     if (DCH1INTbits.CHBCIF){
        dma1int_flag = 1;
        dma0int_flag = 0;
+       //DMA1_Disable();
     }
      //Channel Address Error Interrupt Flag bit
     if( CHERIF_DCH1INT_bit == 1){
@@ -236,4 +234,115 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
     DCH1INTCLR  = 0x00FF;
     IFS4CLR     = 0x80;
 
+}
+
+
+//////////////////////////////////////////////////////
+//DMA Print strings and variable arguments formating
+int dma_printf(char* str,...){
+  int i = 0, j=0;
+  char buff[100]={0}, tmp[20];
+  char * str_arg;
+  
+ //Variable decleration of type va_list
+  va_list va;
+ //initialize the va_list via themacro va_start(arg1,arg2)
+ //arg1 is type va_list and arg2 is type var preceding elipsis
+ va_start(va,str);
+ 
+ while(str && str[i]){
+    if(str[i] == '%'){
+     i++;
+     switch(str[i]){
+        case 'c':
+             //convert to ASCII cahr
+             buff[j] = (char)va_arg(va,int);
+             j++;
+             break;
+        case 'd':
+             //convert to decimal
+             //_itoa(va_arg( va, int ), tmp, 10);
+             IntToStr(va_arg(va,int),tmp);
+             strcpy(&buff[j], tmp);
+             j += strlen(tmp);
+             break;
+        case 'l':
+             //convert to decimal
+             //_itoa(va_arg( va, int ), tmp, 10);
+             LongToStr(va_arg(va,int),tmp);
+             strcpy(&buff[j], tmp);
+             j += strlen(tmp);
+             break;
+        case 'x':
+        case 'X':
+             //convert to hex
+             _itoa(va_arg( va, int ), tmp, 16);
+             strcpy(&buff[j], tmp);
+             j += strlen(tmp);
+             break;
+        case 'o':
+        case 'O':
+             //convert to octal
+             _itoa(va_arg( va, int ), tmp, 8);
+             strcpy(&buff[j], tmp);
+             j += strlen(tmp);
+             break;
+        case 's':
+             //copy string
+             str_arg = va_arg( va, char* );
+             strcpy(&buff[j], str_arg);
+             j += strlen(str_arg);
+             break;
+     }
+    }else{
+       buff[j] = str[i];
+       j++;
+    }
+    i++;
+ }
+ buff[j] = 0;
+ strncpy(txBuf,buff,j);
+ DCH1SSIZ    = j ;
+ DMA1_Enable();
+ return j;
+
+}
+
+char * _itoa(int i, char *strout, int base){
+  char *str = strout;
+  int digit, sign = 0;
+  if (i < 0) {
+    sign = 1;
+    i *= -1;
+  }
+  while(i) {
+    digit = i % base;
+    *str = (digit > 9) ? ('A' + digit - 10) : '0' + digit;
+    i = i / base;
+    str ++;
+  }
+  if(sign) {
+  *str++ = '-';
+  }
+  *str = '\0';
+  _strrev(strout);
+  return strout;
+}
+
+char *_strrev (char *str){
+  int i;
+  int len = 0;
+  char c;
+  if (!str)
+    return NULL;
+  while(str[len] != '\0'){
+    len++;
+  }
+  for(i = 0; i < (len/2); i++)
+  {
+    c = str[i];
+    str [i] = str[len - i - 1];
+    str[len - i - 1] = c;
+  }
+  return str;
 }

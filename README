@@ -1,19 +1,21 @@
 ==================================================
-astepper lib
+Pulse,train control with Trapizodial acc/dec
 ==================================================
-= Copyright (c) Davide Gironi, 2014              =
-= http://davidegironi.blogspot.it/               =
+A cnc type control using CIP with pic32mz2048efh          
 ==================================================
 
 
-This library drive up to stepper motor using the Allegro driver like the
-A3967 (EasyDriver) on ATmega8.
-It uses the CTC mode of TIMER2, changing OCR2 register results in the
-change of the interrupt frequency.
+This library drives up to 6 stepper motors using the various Pololu drivers
 
-Devel Notes
+It uses the Outout capture compares and Timers running in the backgroung freeing up
+core to do other tasks, changing OCRx registers results in the change of the interrupt 
+frequency, which is how the acc and dec is achieved
+
+Notes
 -----------
-This library was developed on Eclipse, built with avr-gcc on Atmega8 @ 8MHz.
+Code was developed with MikroC Pro for Pic32, it will eventually be a complete code to
+use with Clicker2 for pic32mz.
+There will be a Shield designed for the Clicker2.
 
 
 License

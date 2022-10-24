@@ -63,6 +63,7 @@ _int1
 _int2
 _int3
 _int4
+_itoa
 _mod_64x64_s
 _mod_64x64_u
 _mul_64x64
@@ -159,6 +160,7 @@ _ss5_in
 _ss5_out
 _ss6_in
 _ss6_out
+_strrev
 _t2ck
 _t3ck
 _t4ck
@@ -23628,6 +23630,7 @@ dma_buff
 dma_ch0_isr
 dma_ch1_isr
 dma_global
+dma_printf
 dma0
 dma0
 dma0_disable
@@ -40195,6 +40198,7 @@ nb2bipktgp25_emacxipgr_bit
 nb2bipktgp26
 nb2bipktgp26_bit
 nb2bipktgp26_emacxipgr_bit
+newline
 nmicnt
 nmicnt
 nmicnt
@@ -58812,6 +58816,7 @@ soscrdy
 soscrdy
 soscrdy_bit
 sp
+spc
 spdivrdy
 spdivrdy
 spdivrdy

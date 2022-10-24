@@ -12,7 +12,9 @@
 parser_state_t gc;
 STP STPS[NoOfAxis];
 
+char DMA_Buff[200];
 char txt_[9];
+char spc[] = " : ";
 bit testISR;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
@@ -79,35 +81,12 @@ int xyz_ = 0, i;
          }
          //X Y Z
          if(Toggle){
-             /* i = strlen(rxBuf)+1;
-              strncpy(txBuf, rxBuf, i);   // copy RxBuf -> TxBuf  BUFFER_LENGTH
-              //DCH1SSIZ            = i+2 ;  // change the size of block register
-              UART2_Write_Text(txBuf); */
-           if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
 
-           /*    sprintf(txt_,"%d",a);
-               UART2_Write_Text("a:= ");
-               UART2_Write_Text(txt_);
-               sprintf(txt_,"%d",STPS[X].step_count);
-               UART2_Write_Text(" | step_count[X]:= ");
-               UART2_Write_Text(txt_);
-               sprintf(txt_,"%d",sys.axis_dir[X]);
-               UART2_Write_Text(" | axis_dir[X]:= ");
-               UART2_Write_Text(txt_);
-               sprintf(txt_,"%d",sys.steps_position[X]);
-               UART2_Write_Text(" | absX:= ");
-               UART2_Write_Text(txt_);
-               sprintf(txt_,"%d",STPS[Y].step_count);
-               UART2_Write_Text(" | step_count[Y]:= ");
-               UART2_Write_Text(txt_);
-               sprintf(txt_,"%d",sys.axis_dir[Y]);
-               UART2_Write_Text(" | axis_dir[Y]:= ");
-               UART2_Write_Text(txt_);
-               sprintf(txt_,"%d",sys.steps_position[Y]);
-               UART2_Write_Text(" | absY:= ");
-               UART2_Write_Text(txt_);
-               UART2_Write(0x0D);
-            */
+           if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+               dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",a,STPS[X].step_count,sys.axis_dir[X],
+                                                          sys.steps_position[X],STPS[Y].step_count,
+                                                          sys.axis_dir[Y],sys.steps_position[Y]);
+
                Temp_Move(a);
                a++;
                if(a > 8)a=0;

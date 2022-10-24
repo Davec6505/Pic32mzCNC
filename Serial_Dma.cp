@@ -1,5 +1,45 @@
 #line 1 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
+
+
+
+
+
+
+
+ typedef struct divstruct {
+ int quot;
+ int rem;
+ } div_t;
+
+ typedef struct ldivstruct {
+ long quot;
+ long rem;
+ } ldiv_t;
+
+ typedef struct uldivstruct {
+ unsigned long quot;
+ unsigned long rem;
+ } uldiv_t;
+
+int abs(int a);
+float atof(char * s);
+int atoi(char * s);
+long atol(char * s);
+div_t div(int number, int denom);
+ldiv_t ldiv(long number, long denom);
+uldiv_t uldiv(unsigned long number, unsigned long denom);
+long labs(long x);
+long int max(long int a, long int b);
+long int min(long int a, long int b);
+void srand(unsigned x);
+int rand();
+int xtoi(char * s);
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdarg.h"
+
+
+typedef void * va_list[1];
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -462,7 +502,7 @@ void LcdI2CConfig();
 void OutPutPulseXYZ();
 void Temp_Move(int a);
 void LCD_Display();
-#line 11 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
@@ -480,14 +520,17 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
+int dma_printf(char* str,...);
+char * _itoa(int i, char *strout, int base);
+char *_strrev (char *str);
 #line 6 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 char rxBuf[200] = {0} absolute 0xA0002000 ;
 char txBuf[200] = {0} absolute 0xA0002200 ;
 char cherie[] = " CHERIF Error\r";
 char dma0[] = "DMA0_";
 char dma1[] = "DMA1_";
+const char newline[] = "\r\n";
 
-char DMA_Buff[200];
 char dma0int_flag;
 char dma1int_flag;
 
@@ -499,7 +542,7 @@ void DMA_global(){
 
  DMACONSET = 0x8000;
  DMA0();
-
+ DMA1();
 }
 #line 37 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 void DMA0(){
@@ -576,18 +619,15 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
 
 
 
- i = strlen(rxBuf)+1;
- strncpy(txBuf, rxBuf, i);
- DCH1SSIZ = i+2 ;
- UART2_Write_Text(txBuf);
+
+
+
 
 
  }
 
 
  if( CHERIF_bit == 1){
- dma0int_flag = 2;
-
 
  strcpy(txBuf, ("dma0" " " "cherie") );
  UART2_Write_Text(txBuf);
@@ -598,7 +638,7 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
  DCH0INTCLR = 0x000000ff;
  IFS4CLR = 0x40;
 }
-#line 153 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+#line 150 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 void DMA1(){
 
 
@@ -630,7 +670,7 @@ void DMA1(){
 
  DCH1INTCLR = 0x00FF00FF ;
 
- DCH1INTSET = 0x90000;
+
 
 
 
@@ -673,6 +713,7 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
  if (DCH1INTbits.CHBCIF){
  dma1int_flag = 1;
  dma0int_flag = 0;
+
  }
 
  if( CHERIF_DCH1INT_bit == 1){
@@ -685,4 +726,115 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
  DCH1INTCLR = 0x00FF;
  IFS4CLR = 0x80;
 
+}
+
+
+
+
+int dma_printf(char* str,...){
+ int i = 0, j=0;
+ char buff[100]={0}, tmp[20];
+ char * str_arg;
+
+
+ va_list va;
+
+
+  __va_start(va, str) ;
+
+ while(str && str[i]){
+ if(str[i] == '%'){
+ i++;
+ switch(str[i]){
+ case 'c':
+
+ buff[j] = (char) __va_arg(va, int) ;
+ j++;
+ break;
+ case 'd':
+
+
+ IntToStr( __va_arg(va, int) ,tmp);
+ strcpy(&buff[j], tmp);
+ j += strlen(tmp);
+ break;
+ case 'l':
+
+
+ LongToStr( __va_arg(va, int) ,tmp);
+ strcpy(&buff[j], tmp);
+ j += strlen(tmp);
+ break;
+ case 'x':
+ case 'X':
+
+ _itoa( __va_arg(va, int) , tmp, 16);
+ strcpy(&buff[j], tmp);
+ j += strlen(tmp);
+ break;
+ case 'o':
+ case 'O':
+
+ _itoa( __va_arg(va, int) , tmp, 8);
+ strcpy(&buff[j], tmp);
+ j += strlen(tmp);
+ break;
+ case 's':
+
+ str_arg =  __va_arg(va, char*) ;
+ strcpy(&buff[j], str_arg);
+ j += strlen(str_arg);
+ break;
+ }
+ }else{
+ buff[j] = str[i];
+ j++;
+ }
+ i++;
+ }
+ buff[j] = 0;
+ strncpy(txBuf,buff,j);
+ DCH1SSIZ = j ;
+ DMA1_Enable();
+ return j;
+
+}
+
+char * _itoa(int i, char *strout, int base){
+ char *str = strout;
+ int digit, sign = 0;
+ if (i < 0) {
+ sign = 1;
+ i *= -1;
+ }
+ while(i) {
+ digit = i % base;
+ *str = (digit > 9) ? ('A' + digit - 10) : '0' + digit;
+ i = i / base;
+ str ++;
+ }
+ if(sign) {
+ *str++ = '-';
+ }
+ *str = '\0';
+ _strrev(strout);
+ return strout;
+}
+
+char *_strrev (char *str){
+ int i;
+ int len = 0;
+ char c;
+ if (!str)
+ return  0 ;
+ while(str[len] != '\0'){
+ len++;
+ }
+ for(i = 0; i < (len/2); i++)
+ {
+ c = str[i];
+ str [i] = str[len - i - 1];
+ str[len - i - 1] = c;
+ }
+ return str;
 }
