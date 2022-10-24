@@ -598,7 +598,7 @@ int xyz_ = 0, i;
  if(Toggle){
 
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
- dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l\r\n",a,STPS[X].step_count,sys.axis_dir[X],
+ dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",a,STPS[X].step_count,sys.axis_dir[X],
  sys.steps_position[X],STPS[Y].step_count,
  sys.axis_dir[Y],sys.steps_position[Y]);
 

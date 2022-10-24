@@ -1,6 +1,6 @@
 _main:
 ;Main.c,33 :: 		void main() {
-ADDIU	SP, SP, -36
+ADDIU	SP, SP, -40
 ;Main.c,38 :: 		int xyz_ = 0, i;
 ;Main.c,40 :: 		PinMode();
 JAL	_PinMode+0
@@ -201,9 +201,9 @@ J	L__main43
 NOP	
 L__main63:
 L__main33:
-;Main.c,86 :: 		dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l\r\n",a,STPS[X].step_count,sys.axis_dir[X],
+;Main.c,86 :: 		dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",a,STPS[X].step_count,sys.axis_dir[X],
 ADDIU	R23, SP, 0
-ADDIU	R22, R23, 36
+ADDIU	R22, R23, 37
 LUI	R24, hi_addr(?ICS?lstr1_Main+0)
 ORI	R24, R24, lo_addr(?ICS?lstr1_Main+0)
 JAL	___CC2DW+0
@@ -220,7 +220,7 @@ LW	R2, Offset(_STPS+100)(GP)
 SW	R2, 20(SP)
 LW	R2, Offset(_sys+16)(GP)
 SW	R2, 16(SP)
-;Main.c,86 :: 		dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l\r\n",a,STPS[X].step_count,sys.axis_dir[X],
+;Main.c,86 :: 		dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",a,STPS[X].step_count,sys.axis_dir[X],
 LH	R2, Offset(_sys+0)(GP)
 SH	R2, 12(SP)
 LW	R2, Offset(_STPS+32)(GP)

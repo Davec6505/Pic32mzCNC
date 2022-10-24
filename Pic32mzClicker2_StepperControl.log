@@ -53,24 +53,14 @@ diagnostics: 1	122	Compilation Started	Print.c
 diagnostics: 87	123	Compiled Successfully	gcode.h
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 11	123	Compiled Successfully	Globals.c
-<<<<<<< HEAD
-diagnostics: 0	127	All files Compiled in 953 ms	 
-=======
-diagnostics: 0	127	All files Compiled in 984 ms	 
+diagnostics: 0	127	All files Compiled in 1000 ms	 
 hint: 6	1004	Variable rxBuf has been declared, but not used	Serial_Dma.c
->>>>>>> patch1
 hint: 0	1144	Used RX: 21 (66%)   Free RX: 11 (34%)	Used RX: 21 (66%)   Free RX: 11 (34%)
 hint: 0	1144	Static RAM (bytes): 922   Dynamic RAM (bytes): 515363	Static RAM (bytes): 922   Dynamic RAM (bytes): 515363
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 39282 (2%)  Free ROM (bytes): 2057870 (98%)	Used ROM (bytes): 39282 (2%)  Free ROM (bytes): 2057870 (98%)
+hint: 0	1144	Used ROM (bytes): 39283 (2%)  Free ROM (bytes): 2057869 (98%)	Used ROM (bytes): 39283 (2%)  Free ROM (bytes): 2057869 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)	Used BOOTROM (bytes): 784 (1%)  Free BOOTROM (bytes): 146227 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-<<<<<<< HEAD
-diagnostics: 0	128	Linked in 687 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3187 ms	 
-diagnostics: 0	103	Finished successfully: 23 Oct 2022, 21:25:23	Pic32mzClicker2_StepperControl.mcp32
-=======
-diagnostics: 0	128	Linked in 688 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3235 ms	 
-diagnostics: 0	103	Finished successfully: 24 Oct 2022, 19:52:55	Pic32mzClicker2_StepperControl.mcp32
->>>>>>> patch1
+diagnostics: 0	128	Linked in 657 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3282 ms	 
+diagnostics: 0	103	Finished successfully: 24 Oct 2022, 20:05:04	Pic32mzClicker2_StepperControl.mcp32
