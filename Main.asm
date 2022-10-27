@@ -197,10 +197,6 @@ NOP
 J	L__main45
 NOP	
 L__main63:
-<<<<<<< HEAD
-L__main33:
-;Main.c,86 :: 		dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",a,STPS[X].step_count,sys.axis_dir[X],
-=======
 _LX	
 EXT	R2, R2, BitPos(OC3IE_bit+0), 1
 BEQ	R2, R0, L__main64
@@ -241,7 +237,6 @@ J	L_main20
 NOP	
 L__main66:
 ;Main.c,103 :: 		dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",
->>>>>>> patch1
 ADDIU	R23, SP, 0
 ADDIU	R22, R23, 37
 LUI	R24, hi_addr(?ICS?lstr1_Main+0)
@@ -260,11 +255,7 @@ LW	R2, Offset(_STPS+100)(GP)
 SW	R2, 20(SP)
 LW	R2, Offset(_sys+16)(GP)
 SW	R2, 16(SP)
-<<<<<<< HEAD
-;Main.c,86 :: 		dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",a,STPS[X].step_count,sys.axis_dir[X],
-=======
 ;Main.c,104 :: 		a,STPS[X].step_count,sys.axis_dir[X],
->>>>>>> patch1
 LH	R2, Offset(_sys+0)(GP)
 SH	R2, 12(SP)
 LW	R2, Offset(_STPS+32)(GP)
