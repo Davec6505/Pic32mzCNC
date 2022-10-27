@@ -71,6 +71,10 @@ extern sfr sbit DIR_Step_PinDirA;
 extern sfr sbit FLT_StepA;
 extern sfr sbit FLT_Step_PinDirA;
 
-
+//Limits
+extern sfr sbit X_Min_Limit;
+extern sfr sbit X_Min_Limit_Dir;
+extern sfr sbit Y_Min_Limit;
+extern sfr sbit Y_Min_Limit_Dir;
 
 #endif

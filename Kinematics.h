@@ -105,5 +105,6 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
 void SerialPrint(float r);
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
+void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
+              double r, double i, double j, double k, int axis_A,int axis_B,int dir);
 #endif

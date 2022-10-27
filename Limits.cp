@@ -1,88 +1,5 @@
-#line 1 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
-#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
-
-
-
-
-
-
-
- typedef struct divstruct {
- int quot;
- int rem;
- } div_t;
-
- typedef struct ldivstruct {
- long quot;
- long rem;
- } ldiv_t;
-
- typedef struct uldivstruct {
- unsigned long quot;
- unsigned long rem;
- } uldiv_t;
-
-int abs(int a);
-float atof(char * s);
-int atoi(char * s);
-long atol(char * s);
-div_t div(int number, int denom);
-ldiv_t ldiv(long number, long denom);
-uldiv_t uldiv(unsigned long number, unsigned long denom);
-long labs(long x);
-long int max(long int a, long int b);
-long int min(long int a, long int b);
-void srand(unsigned x);
-int rand();
-int xtoi(char * s);
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdarg.h"
-
-
-typedef void * va_list[1];
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/packages/i2c_lcd/uses/i2c_lcd.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 62 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/packages/i2c_lcd/uses/i2c_lcd.h"
-typedef enum{
- _LCD_FIRST_ROW = 1,
- _LCD_SECOND_ROW,
- _LCD_THIRD_ROW,
- _LCD_FOURTH_ROW,
- _LCD_CLEAR,
- _LCD_RETURN_HOME,
- _LCD_CURSOR_OFF,
- _LCD_UNDERLINE_ON,
- _LCD_BLINK_CURSOR_ON,
- _LCD_MOVE_CURSOR_LEFT,
- _LCD_MOVE_CURSOR_RIGHT,
- _LCD_TURN_ON,
- _LCD_TURN_OFF,
- _LCD_SHIFT_LEFT,
- _LCD_SHIFT_RIGHT,
- _LCD_INCREMENT_NO_SHIFT
-}Cmd_Type;
-
-extern Cmd_Type Cmd;
-
-
-
-  unsigned char  I2C_PCF8574_Write( unsigned char  addr, unsigned char  Data);
- void I2C_LCD_putcmd( unsigned char  addr,  unsigned char  dta, unsigned char  cmdtype);
- void I2C_LCD_goto( unsigned char  addr, unsigned char  row,  unsigned char  col);
- void I2C_Lcd_Cmd( unsigned char  addr,Cmd_Type cmd, unsigned char  col);
- void I2C_LCD_putch( unsigned char  addr,  unsigned char  dta);
- void I2C_LCD_Out( unsigned char  addr,  unsigned char  row,  unsigned char  col,  unsigned char  *s);
- void I2C_Lcd_Chr( unsigned char  addr,  unsigned char  row,  unsigned char  col,  unsigned char  out_char);
- void I2C_LCD_init( unsigned char  addr);
- void I2C_LCD_init4l( unsigned char  addr);
- void I2C_Pins(char i2c_pins);
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "C:/Users/Git/Pic32mzCNC/Limits.c"
+#line 1 "c:/users/git/pic32mzcnc/limits.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 
 
@@ -162,6 +79,15 @@ extern sfr sbit X_Min_Limit;
 extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
+#line 1 "c:/users/git/pic32mzcnc/pins.h"
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 
@@ -214,6 +140,68 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
+
+
+
+
+
+
+
+ typedef struct divstruct {
+ int quot;
+ int rem;
+ } div_t;
+
+ typedef struct ldivstruct {
+ long quot;
+ long rem;
+ } ldiv_t;
+
+ typedef struct uldivstruct {
+ unsigned long quot;
+ unsigned long rem;
+ } uldiv_t;
+
+int abs(int a);
+float atof(char * s);
+int atoi(char * s);
+long atol(char * s);
+div_t div(int number, int denom);
+ldiv_t ldiv(long number, long denom);
+uldiv_t uldiv(unsigned long number, unsigned long denom);
+long labs(long x);
+long int max(long int a, long int b);
+long int min(long int a, long int b);
+void srand(unsigned x);
+int rand();
+int xtoi(char * s);
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdarg.h"
+
+
+typedef void * va_list[1];
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
+extern char txt[];
+extern char rxBuf[];
+extern char txBuf[];
+
+
+
+
+
+
+
+void DMA_global();
+void DMA0();
+void DMA1();
+void DMA0_Enable();
+void DMA0_Disable();
+void DMA1_Enable();
+void DMA1_Disable();
+int dma_printf(char* str,...);
+char * _itoa(int i, char *strout, int base);
+char *_strrev (char *str);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -457,24 +445,6 @@ void Single_Axis_Enable(_axis_ axis_);
  void Test_CycleY();
  void Test_CycleZ();
  void Test_CycleA();
-#line 12 "c:/users/git/pic32mzcnc/timers.h"
-struct Timer{
-char clock;
-char P1: 1;
-char P2: 1;
-unsigned int disable_cnt;
-unsigned int (*Reset)(unsigned int time,unsigned int last_sec);
-};
-extern struct Timer TMR;
-
-
-void InitTimer1();
-void InitTimer8();
-void ClockPulse();
-unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/pins.h"
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/steptodistance.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
@@ -492,8 +462,78 @@ double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/limits.h"
-#line 1 "c:/users/git/pic32mzcnc/pins.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 31 "c:/users/git/pic32mzcnc/config.h"
+extern unsigned char LCD_01_ADDRESS;
+extern bit oneShotA; sfr;
+extern bit oneShotB; sfr;
+
+
+
+
+
+
+
+void PinMode();
+void UartConfig();
+void set_performance_mode();
+void Uart2InterruptSetup();
+void LcdI2CConfig();
+void OutPutPulseXYZ();
+void Temp_Move(int a);
+void LCD_Display();
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/packages/i2c_lcd/uses/i2c_lcd.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
+#line 62 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/packages/i2c_lcd/uses/i2c_lcd.h"
+typedef enum{
+ _LCD_FIRST_ROW = 1,
+ _LCD_SECOND_ROW,
+ _LCD_THIRD_ROW,
+ _LCD_FOURTH_ROW,
+ _LCD_CLEAR,
+ _LCD_RETURN_HOME,
+ _LCD_CURSOR_OFF,
+ _LCD_UNDERLINE_ON,
+ _LCD_BLINK_CURSOR_ON,
+ _LCD_MOVE_CURSOR_LEFT,
+ _LCD_MOVE_CURSOR_RIGHT,
+ _LCD_TURN_ON,
+ _LCD_TURN_OFF,
+ _LCD_SHIFT_LEFT,
+ _LCD_SHIFT_RIGHT,
+ _LCD_INCREMENT_NO_SHIFT
+}Cmd_Type;
+
+extern Cmd_Type Cmd;
+
+
+
+  unsigned char  I2C_PCF8574_Write( unsigned char  addr, unsigned char  Data);
+ void I2C_LCD_putcmd( unsigned char  addr,  unsigned char  dta, unsigned char  cmdtype);
+ void I2C_LCD_goto( unsigned char  addr, unsigned char  row,  unsigned char  col);
+ void I2C_Lcd_Cmd( unsigned char  addr,Cmd_Type cmd, unsigned char  col);
+ void I2C_LCD_putch( unsigned char  addr,  unsigned char  dta);
+ void I2C_LCD_Out( unsigned char  addr,  unsigned char  row,  unsigned char  col,  unsigned char  *s);
+ void I2C_Lcd_Chr( unsigned char  addr,  unsigned char  row,  unsigned char  col,  unsigned char  out_char);
+ void I2C_LCD_init( unsigned char  addr);
+ void I2C_LCD_init4l( unsigned char  addr);
+ void I2C_Pins(char i2c_pins);
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 12 "c:/users/git/pic32mzcnc/timers.h"
+struct Timer{
+char clock;
+char P1: 1;
+char P2: 1;
+unsigned int disable_cnt;
+unsigned int (*Reset)(unsigned int time,unsigned int last_sec);
+};
+extern struct Timer TMR;
+
+
+void InitTimer1();
+void InitTimer8();
+void ClockPulse();
+unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 28 "c:/users/git/pic32mzcnc/limits.h"
 extern sbit TX0;
@@ -563,10 +603,28 @@ void Debounce_X_Limits();
 void Debounce_Y_Limits();
 void Reset_X_Min_Debounce();
 void Reset_Y_Min_Debounce();
-#line 31 "c:/users/git/pic32mzcnc/config.h"
-extern unsigned char LCD_01_ADDRESS;
-extern bit oneShotA; sfr;
-extern bit oneShotB; sfr;
+#line 7 "C:/Users/Git/Pic32mzCNC/Limits.c"
+struct limits Limits;
+
+
+
+static unsigned int last_cntX_min;
+static unsigned int last_cntY_min;
+static unsigned int last_cntZ_min;
+static unsigned int last_cntA_min;
+
+
+
+
+static char bits;
+sbit TX0 at bits.B0;
+sbit TX1 at bits.B1;
+sbit TX2 at bits.B2;
+sbit TX3 at bits.B3;
+sbit TY0 at bits.B4;
+sbit TY1 at bits.B5;
+sbit TY2 at bits.B6;
+sbit TY3 at bits.B7;
 
 
 
@@ -574,209 +632,83 @@ extern bit oneShotB; sfr;
 
 
 
-void PinMode();
-void UartConfig();
-void set_performance_mode();
-void Uart2InterruptSetup();
-void LcdI2CConfig();
-void OutPutPulseXYZ();
-void Temp_Move(int a);
-void LCD_Display();
-#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
-extern char txt[];
-extern char rxBuf[];
-extern char txBuf[];
+
+void Limit_Initialize(){
+
+ X_Min_Limit_Dir = 1;
+ Y_Min_Limit_Dir = 1;
 
 
+ Limits.X_Limit_Min = 0;
+ Limits.Y_Limit_Min = 0;
 
 
+ last_cntX_min = 0;
+ last_cntY_min = 0;
+ last_cntZ_min = 0;
+ last_cntA_min = 0;
 
 
+ IEC0 |= 0x21 << 8;
 
-void DMA_global();
-void DMA0();
-void DMA1();
-void DMA0_Enable();
-void DMA0_Disable();
-void DMA1_Enable();
-void DMA1_Disable();
-int dma_printf(char* str,...);
-char * _itoa(int i, char *strout, int base);
-char *_strrev (char *str);
-#line 6 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
-char rxBuf[200] = {0} absolute 0xA0002000 ;
-char txBuf[200] = {0} absolute 0xA0002200 ;
-char cherie[] = " CHERIF Error\r";
-char dma0[] = "DMA0_";
-char dma1[] = "DMA1_";
-const char newline[] = "\r\n";
+ INTCON |= 0x0000001F;
 
-char dma0int_flag;
-char dma1int_flag;
-
-
-
-
-
-void DMA_global(){
-
- DMACONSET = 0x8000;
- DMA0();
- DMA1();
-}
-#line 38 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
-void DMA0(){
-
- IEC4CLR = 0x40;
- IFS4CLR = 0x40;
-
-
- DCH0CONCLR = 0x8003;
-
-
- DCH0ECON = (146 << 8 ) | 0x30;
-
-
- DCH0DAT = '\r';
-
-
- DCH0SSA = KVA_TO_PA(0xBF822230);
- DCH0SSIZ = 1;
-
-
- DCH0DSA = KVA_TO_PA(0xA0002000);
- DCH0DSIZ = 200 ;
-
-
- DCH0CSIZ = 1 ;
-
-
-
- DCH0INTCLR = 0x00FF00FF ;
-
- DCH0INTSET = 0x90000;
-
-
-
- IPC33CLR = 0x160000;
-
- IPC33SET = 0x00140000;
-
- IEC4SET = 0x40;
- IFS4CLR = 0x40;
-
-
- DCH0CONSET = 0X0000013;
+ X_Min_Limit_Setup();
+ Y_Min_Limit_Setup();
 
 }
 
 
 
-void DMA0_Enable(){
-#line 94 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
- DCH0CONSET |= 1<<7;
+void X_Min_Limit_Setup(){
+
+
+
+
+
+
+ IPC2 |= 13 ;
+
+
+ IEC0 |= 1 << 8;
+
+ IFS0 |= ~(1 << 8);
 }
 
 
 
-void DMA0_Disable(){
+void Y_Min_Limit_Setup(){
 
- DCH0CONCLR |= 1<<7;
 
+
+
+
+
+ IPC3 |= 14 << 8;
+
+
+ IEC0 |= 1 << 13;
+
+ IFS0 |= ~(1 << 13);
 }
 
 
 
-void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
- int i = 0;
-
- dma0int_flag = DCH0INT & 0x00FF;
 
 
 
-
- if (DCH0INTbits.CHBCIF == 1) {
-
-
-
-
-
-
-
-
- }
-
-
- if( CHERIF_bit == 1){
-
- strcpy(txBuf, ("dma0" " " "cherie") );
- UART2_Write_Text(txBuf);
-
-
- }
-
- DCH0INTCLR = 0x000000ff;
- IFS4CLR = 0x40;
-}
-#line 151 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
-void DMA1(){
-
-
- IPC33CLR = 0x17000000;
- IEC4CLR = 0x7;
-
-
- DCH1CONCLR = 0x8003;
-
-
- DCH1ECON=(147 << 8)| 0x30;
-
-
-
- DCH1DAT = '\r';
-
-
- DCH1SSA = KVA_TO_PA(0xA0002200) ;
- DCH1SSIZ = 200;
-
-
-
- DCH1DSA = KVA_TO_PA(0xBF822220) ;
- DCH1DSIZ = 1;
-
-
- DCH1CSIZ = 1;
-
-
- DCH1INTCLR = 0x00FF00FF ;
-
-
-
-
-
- IPC33CLR = 0x16000000;
-
- IPC33SET = 0x16000000;
-
- IEC4SET = 0x80;
-
- IFS4CLR = 0x80;
-
-
-
- DCH1CONSET = 0x00000003;
-
-}
-
-
-void DMA1_Enable(){
- DCH1CONSET |= 1<<7;
+void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 3 ics ICS_AUTO {
+ INT1IF_bit = 0;
+ if(!Limits.X_Limit_Min)
+ Limits.X_Limit_Min = 1;
 }
 
 
 
-void DMA1_Disable(){
- DCH1CONCLR |= 1<<7;
+void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 3 ics ICS_AUTO {
+ INT2IF_bit = 0;
+ if(!Limits.Y_Limit_Min)
+ Limits.Y_Limit_Min = 1;
 }
 
 
@@ -785,138 +717,105 @@ void DMA1_Disable(){
 
 
 
-void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 
-
- dma1int_flag = DCH1INT & 0x00FF;
-
- if (DCH1INTbits.CHBCIF){
- dma1int_flag = 1;
- dma0int_flag = 0;
-
- }
-
- if( CHERIF_DCH1INT_bit == 1){
-
- }
+char Test_X_Min(){
+ return (Limits.X_Limit_Min == 1)? 1:0;
+}
 
 
 
-
- DCH1INTCLR = 0x00FF;
- IFS4CLR = 0x80;
-
+char Test_Y_Min(){
+ return (Limits.Y_Limit_Min == 1)? 1:0;
 }
 
 
 
 
-int dma_printf(const char* str,...){
- int i = 0, j=0;
- char buff[100]={0}, tmp[20];
- char * str_arg;
-
- va_list va;
 
 
 
-  __va_start(va, str) ;
 
- i = j = 0;
- while(str && str[i]){
- if(str[i] == '%'){
- i++;
- switch(str[i]){
- case 'c':
-
- buff[j] = (char) __va_arg(va, int) ;
- j++;
- break;
- case 'd':
+void Reset_X_Min_Limit(){
+ Limits.X_Limit_Min = ~Limits.X_Limit_Min;
+}
 
 
- IntToStr( __va_arg(va, int) ,tmp);
- strcpy(&buff[j], tmp);
- j += strlen(tmp);
- break;
- case 'l':
+
+void Reset_Y_Min_Limit(){
+ Limits.Y_Limit_Min = ~Limits.Y_Limit_Min;
+}
 
 
- LongToStr( __va_arg(va, long) ,tmp);
- strcpy(&buff[j], tmp);
- j += strlen(tmp);
- break;
- case 'x':
- case 'X':
-
- _itoa( __va_arg(va, int) , tmp, 16);
- strcpy(&buff[j], tmp);
- j += strlen(tmp);
- break;
- case 'f':
- case 'F':
 
 
- FloatToStr( __va_arg(va, float) ,tmp);
- strcpy(&buff[j], tmp);
- j += strlen(tmp);
- break;
- case 's':
 
- str_arg =  __va_arg(va, char*) ;
- strcpy(&buff[j], str_arg);
- j += strlen(str_arg);
- break;
+
+
+
+
+void Reset_X_Min_Debounce(){
+ Limits.X_Min_DeBnc = 0;
+ last_cntX_min = 0;
+}
+
+
+
+void Reset_Y_Min_Debounce(){
+ Limits.Y_Min_DeBnc = 0;
+ last_cntY_min = 0;
+}
+
+
+
+void Debounce_X_Limits(){
+ TX0 = TMR.clock >>  0 ;
+ TX1 = Test_X_Min();
+
+ if((!X_Min_Limit)&&(TX1)){
+ if(TX0 && !TX2){
+ TX2 = 1;
+ Limits.X_Min_DeBnc++;
+
+ dma_printf("LimitX:=%d \r\n",Limits.X_Min_DeBnc);
+
+ if(Limits.X_Min_DeBnc > last_cntX_min){
+ last_cntX_min = Limits.X_Min_DeBnc;
  }
- }else{
- buff[j] = str[i];
- j++;
+ }else if(!TX0 && TX2)
+ TX2=0;
+
+ if(Limits.X_Min_DeBnc >  3 )
+ Reset_X_Min_Limit();
+
+ }else if(X_Min_Limit){
+ Reset_X_Min_Debounce();
  }
- i++;
- }
- buff[j] = 0;
- strncpy(txBuf,buff,j);
- DCH1SSIZ = j ;
- DMA1_Enable();
- return j;
 
 }
 
-char * _itoa(int i, char *strout, int base){
- char *str = strout;
- int digit, sign = 0;
- if (i < 0) {
- sign = 1;
- i *= -1;
- }
- while(i) {
- digit = i % base;
- *str = (digit > 9) ? ('A' + digit - 10) : '0' + digit;
- i = i / base;
- str ++;
- }
- if(sign) {
- *str++ = '-';
- }
- *str = '\0';
- _strrev(strout);
- return strout;
-}
 
-char *_strrev (char *str){
- int i;
- int len = 0;
- char c;
- if (!str)
- return  0 ;
- while(str[len] != '\0'){
- len++;
+
+ void Debounce_Y_Limits(){
+ TY0 = TMR.clock >>  0 ;
+ TY1 = Test_Y_Min();
+
+ if((!Y_Min_Limit)&&(TY1)){
+ if(TY0 && !TY2){
+ TY2 = 1;
+ Limits.Y_Min_DeBnc++;
+
+ dma_printf("LimitY:=%d \r\n",Limits.Y_Min_DeBnc);
+
+ if(Limits.Y_Min_DeBnc > last_cntY_min){
+ last_cntY_min = Limits.Y_Min_DeBnc;
  }
- for(i = 0; i < (len/2); i++)
- {
- c = str[i];
- str [i] = str[len - i - 1];
- str[len - i - 1] = c;
+ }else if(!TY0 && TY2)
+ TY2=0;
+
+ if(Limits.Y_Min_DeBnc >  3 )
+ Reset_Y_Min_Limit();
+
+ }else if(Y_Min_Limit){
+ Reset_Y_Min_Debounce();
  }
- return str;
 }

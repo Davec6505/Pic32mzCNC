@@ -226,7 +226,8 @@ void DualAxisStep(long axis_a,long axis_b,int axis_combo){
 //      as arrays for GCODE sampling and conditioning mostly to compensate for
 //      for 3 axis helix movement/spiraling; for test purposes we keep
 //      axix_linear_per_segment as 0 test 2D plane circle
-void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,double r, double i, double j, double k, int axis_xyz){
+void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,
+              double r, double i, double j, double k, int axis_A,int axis_B,int dir){
 unsigned short isclockwise = 0;
 double inverse_feed_rate = -1; // negative inverse_feed_rate means no inverse_feed_rate specified
 double position[NoOfAxis];
@@ -238,22 +239,12 @@ double h_x2_div_d = 0.00;
 unsigned int axis_plane_a,axis_plane_b;
 char txt_[9];
      //use thess arrays to simplify call to arc function
-     position[X] = Cur_axis_a;
-     position[Y] = Cur_axis_b;
-     target[X] = Fin_axis_a;
-     target[Y] = Fin_axis_b;
-     offset[X] = i;
-     offset[Y] = j;
-     if(axis_xyz == xy){
-       axis_plane_a = X;
-       axis_plane_b = Y;
-     }else if(axis_xyz == xz){
-       axis_plane_a = X;
-       axis_plane_b = Z;
-     }else if(axis_xyz == yz){
-       axis_plane_a = y;
-       axis_plane_b = Z;
-     }
+     position[axis_A] = Cur_axis_a;
+     position[axis_B] = Cur_axis_b;
+     target[axis_A] = Fin_axis_a;
+     target[axis_B] = Fin_axis_b;
+     offset[axis_A] = i;
+     offset[axis_B] = j;
 
      if (r != 0.00) { // Arc Radius Mode
             /*
@@ -367,20 +358,16 @@ char txt_[9];
             // Arc Center Format Offset Mode
              r = hypot(i, j); // Compute arc radius for mc_arc
           }
-          sprintf(txt_,"%0.2f",r);
-          UART2_Write_Text("r:= ");
-          UART2_Write_Text(txt_);
-          UART2_Write(0x0D);
+          dma_printf("Radius:= %f",r);
           
           // Set clockwise/counter-clockwise sign for mc_arc computations
           isclockwise = false;
-          if (gc.motion_mode == MOTION_MODE_CW_ARC) { isclockwise = true; }
+          if (dir == CW) { isclockwise = true; }
 
-          gc.plane_axis_2 =1;
+        //  gc.plane_axis_2 =1;
           // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
           mc_arc(position, target, offset, gc.plane_axis_0, gc.plane_axis_1, gc.plane_axis_2,
-            DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,
-            r, isclockwise);
+                 DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
 
@@ -388,13 +375,13 @@ char txt_[9];
 void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
   uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
  long tempA,tempB;
-  double center_axis0            = position[X] + offset[X];
- double center_axis1             = position[Y] + offset[Y];
-  double linear_travel           = target[X] - position[X];
-  double r_axis0                 = -offset[X];  // Radius vector from center to current location
-  double r_axis1                 = -offset[Y];
-  double rt_axis0                = target[X] - center_axis0;
- double rt_axis1                 = target[Y] - center_axis1;
+  double center_axis0            = position[axis_0] + offset[axis_0];
+ double center_axis1             = position[axis_1] + offset[axis_1];
+  double linear_travel           = target[axis_linear] - position[axis_linear];
+  double r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
+  double r_axis1                 = -offset[axis_1];
+  double rt_axis0                = target[axis_0] - center_axis0;
+ double rt_axis1                 = target[axis_1] - center_axis1;
   double theta_per_segment       = 0.00;
   double linear_per_segment      = 0.00;
   double angular_travel          = 0.00;
@@ -528,81 +515,3 @@ float hypot(float angular_travel, float linear_travel){
       return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
 }
 
-void SerialPrint(float r){
-int str_len = 0;
-int str_lenA = 0;
-     str_lenA = strlen(txtA);
-     memset(txtB,0,30);
-      //Radius
-     sprintf(txt,"%0.2f",r);
-     strncpy(txtB, " ",strlen(txt));
-     strncat(txtB, txt,strlen(txt));
-     str_len += strlen(txt);
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;
-     //xPos
-    /* sprintf(txt,"%0.2f",Circ.xStep);
-     strncat(txtB,txt,strlen(txt));
-     str_len += strlen(txt);
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;
-     //xFin
-     sprintf(txt,"%0.2f",Circ.yStep);
-     strncat(txtB,txt,strlen(txt));
-     str_len += strlen(txt);
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;
-     //Deg
-     sprintf(txt,"%0.2f",Circ.xFin);
-     strncat(txtB,txt,strlen(txt));
-     str_len += strlen(txt)+1;
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;
-      //yFin
-     sprintf(txt,"%0.2f",Circ.yFin);
-     strncat(txtB,txt,strlen(txt));
-     str_len += strlen(txt)+1;
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;
-      //newdeg
-     sprintf(txt,"%0.2f",Circ.Deg.degStart);
-     strncat(txtB,txt,strlen(txt));
-     str_len += strlen(txt)+1;
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;
-     //newdeg
-     sprintf(txt,"%0.2f",Circ.Deg.degFinnish);
-     strncat(txtB,txt,strlen(txt));
-     str_len += strlen(txt)+1;
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;
-      //newdeg
-     sprintf(txt,"%0.2f",Circ.Deg.degTotal);
-     strncat(txtB,txt,strlen(txt));
-     str_len += strlen(txt)+1;
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;
-     //deg
-     sprintf(txt,"%0.2f",Circ.Deg.deg);
-     strncat(txtB,txt,strlen(txt));
-     str_len += strlen(txt)+1;
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;
-     //rad
-     sprintf(txt,"%d",Circ.quadrantS);
-     strncat(txtB,txt,strlen(txt));
-     str_len += strlen(txt)+1;
-     strncat(txtB,"\n",1);
-     str_len += 2;
-     strncat(txtB,txtA,str_lenA);
-     str_len += str_lenA;   */
-     UART2_Write_Text(txtB);
-   /*  memcpy(txBuf, txtB, str_len+1);
-
-     CHEN_DCH1CON_bit    = 1;     // Enable the DMA1 channel to transmit back what was received
-
-     DCH1SSIZ            = str_len +1;
-     CHEN_bit            = 1 ;
-     CFORCE_DCH1ECON_bit = 1 ;                 // force DMA1 interrupt trigger
-   */
-}

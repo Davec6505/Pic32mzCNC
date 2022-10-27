@@ -115,6 +115,12 @@ extern sfr sbit DIR_StepA;
 extern sfr sbit DIR_Step_PinDirA;
 extern sfr sbit FLT_StepA;
 extern sfr sbit FLT_Step_PinDirA;
+
+
+extern sfr sbit X_Min_Limit;
+extern sfr sbit X_Min_Limit_Dir;
+extern sfr sbit Y_Min_Limit;
+extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 
@@ -381,7 +387,8 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
 void SerialPrint(float r);
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
+void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
+ double r, double i, double j, double k, int axis_A,int axis_B,int dir);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 15 "c:/users/git/pic32mzcnc/stepper.h"
@@ -406,7 +413,7 @@ extern StepTmr STmr;
 
 
 
-typedef enum xyz{X,Y,Z,A,B,C}_axis_;
+typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
 
 
@@ -426,6 +433,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+int EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
@@ -504,6 +512,78 @@ double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/limits.h"
+#line 1 "c:/users/git/pic32mzcnc/pins.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 28 "c:/users/git/pic32mzcnc/limits.h"
+extern sbit TX0;
+extern sbit TX1;
+extern sbit TX2;
+extern sbit TX3;
+
+extern sbit TY0;
+extern sbit TY1;
+extern sbit TY2;
+extern sbit TY3;
+
+extern sbit TZ0;
+extern sbit TZ1;
+extern sbit TZ2;
+extern sbit TZ3;
+
+extern sbit TA0;
+extern sbit TA1;
+extern sbit TA2;
+extern sbit TA3;
+
+
+
+struct limits{
+
+char X_Limit_Min: 1;
+char Y_Limit_Min: 1;
+char Z_Limit_Min: 1;
+char A_Limit_Min: 1;
+char X_Limit_Max: 1;
+char Y_Limit_Max: 1;
+char Z_Limit_Max: 1;
+char A_Limit_Max: 1;
+
+long X_Soft_Limit_Min;
+long X_Soft_Limit_Max;
+long Y_Soft_Limit_Min;
+long Y_Soft_Limit_MAx;
+long Z_Soft_Limit_Min;
+long Z_Soft_Limit_MAx;
+long A_Soft_Limit_Min;
+long A_Soft_Limit_MAx;
+
+unsigned int X_Min_DeBnc;
+unsigned int Y_Min_DeBnc;
+unsigned int Z_Min_DeBnc;
+unsigned int A_Min_DeBnc;
+};
+
+
+
+extern struct limits Limits;
+
+
+void Limit_Initialize();
+void X_Min_Limit_Setup();
+void Y_Min_Limit_Setup();
+void Z_Min_Limit_Setup();
+void A_Min_Limit_Setup();
+
+char Test_X_Min();
+char Test_Y_Min();
+void Reset_X_Min_Limit();
+void Reset_Y_Min_Limit();
+void Debounce_X_Limits();
+void Debounce_Y_Limits();
+void Reset_X_Min_Debounce();
+void Reset_Y_Min_Debounce();
 #line 31 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -526,7 +606,7 @@ void LCD_Display();
 #line 5 "C:/Users/Git/Pic32mzCNC/Config.c"
 void PinMode(){
 
-
+ DI();
  SYSKEY = 0xAA996655;
  SYSKEY = 0x556699AA;
  CFGCONbits.OCACLK = 1;
@@ -570,16 +650,24 @@ void PinMode(){
 
 
  Unlock_IOLOCK();
+
  PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);
  PPS_Mapping_NoLock(_RPE9, _INPUT, _U2RX);
+
  PPS_Mapping_NoLock(_RPB9, _OUTPUT, _NULL);
  PPS_Mapping_NoLock(_RPB10, _OUTPUT, _NULL);
+
+
  PPS_Mapping_NoLock(_RPD4, _OUTPUT, _OC5);
  PPS_Mapping_NoLock(_RPD5, _OUTPUT, _OC2);
  PPS_Mapping_NoLock(_RPF0, _OUTPUT, _OC7);
  PPS_Mapping_NoLock(_RPF1, _OUTPUT, _OC3);
  PPS_Mapping_NoLock(_RPG1, _OUTPUT, _OC6);
  PPS_Mapping_NoLock(_RPE3, _OUTPUT, _OC8);
+
+
+ PPS_Mapping_NoLock(_RPF3, _INPUT, _INT1);
+ PPS_Mapping_NoLock(_RPB15, _INPUT, _INT2);
  Lock_IOLOCK();
 
 
@@ -605,6 +693,9 @@ void PinMode(){
  OutPutPulseXYZ();
  SetPinMode();
 
+
+
+ Limit_Initialize();
 
 
 
@@ -710,7 +801,7 @@ unsigned long cp0;
 
 
 void OutPutPulseXYZ(){
-#line 196 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 207 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5CON = 0x0000;
  OC2CON = 0x0000;
  OC7CON = 0X0000;
@@ -748,7 +839,7 @@ void OutPutPulseXYZ(){
  OC3CON = 0x000C;
  OC6CON = 0x000C;
  OC8CON = 0x000C;
-#line 240 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 251 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5R = 0x5;
  OC5RS = 0x234;
  OC2R = 0x5;

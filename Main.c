@@ -36,7 +36,7 @@ static char oneshot = 0;
 unsigned char j;
 static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
-
+static int cntr;
   PinMode();
 
   StepperConstants(15000,15000);
@@ -77,22 +77,40 @@ int xyz_ = 0, i;
             EnStepperY();
             EnStepperZ();
             EnStepperA();
-            sys.steps_position[X] = 0;
+            cntr = 0;
          }
          //X Y Z
          if(Toggle){
-
+         cntr++;
            if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-               dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",a,STPS[X].step_count,sys.axis_dir[X],
-                                                          sys.steps_position[X],STPS[Y].step_count,
-                                                          sys.axis_dir[Y],sys.steps_position[Y]);
-
                Temp_Move(a);
                a++;
                if(a > 8)a=0;
+            //Change the value of DMADebug in the DEFINE.pld
+            //file found in the Project Level Define folder
+            #if DMADebug == 1
+              dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",
+                         a,STPS[X].step_count,sys.axis_dir[X],
+                         sys.steps_position[X],STPS[Y].step_count,
+                         sys.axis_dir[Y],sys.steps_position[Y]);
+            #endif
            }
+            if(cntr > 10000){
+            #if DMADebug == 2
+             dma_printf("a:=%d \r\n",sys.steps_position[X]);
+
+            #elif DMADebug == 3
+              dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",
+                         a,STPS[X].step_count,sys.axis_dir[X],
+                         sys.steps_position[X],STPS[Y].step_count,
+                         sys.axis_dir[Y],sys.steps_position[Y]);
+            #endif
+              cntr = 0;
+            }
          }
-            
+         
+        Debounce_X_Limits();
+        Debounce_Y_Limits();
   }
 }
 
@@ -154,8 +172,10 @@ void Temp_Move(int a){
                  SingleAxisStep(STPS[A].mmToTravel,A);
              break;
        case 9:
-                //r_or_ijk(float xCur,float yCur,float xFin,float yFin,float r, float i, float j, float k)
-                 r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,1.0, 0.00);
+                //r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,
+                //         double Fin_axis_b,double r, double i, double j, double k,
+                //         int axis_A,int axis_B)
+                 r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
         default: a = 0;
               break;

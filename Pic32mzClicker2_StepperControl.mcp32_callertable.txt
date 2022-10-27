@@ -20,6 +20,9 @@ main
 		DMA1_Enable
 		OutPutPulseXYZ
 		SetPinMode
+		Limit_Initialize
+			X_Min_Limit_Setup
+			Y_Min_Limit_Setup
 	StepperConstants
 	disableOCx
 	DisableStepper
@@ -27,18 +30,6 @@ main
 	EnStepperY
 	EnStepperZ
 	EnStepperA
-	dma_printf
-		__CC2DW
-		IntToStr
-			WordToStr
-		strcpy
-		strlen
-		LongToStr
-			LongWordToStr
-		_itoa
-			_strrev
-		strncpy
-		DMA1_Enable
 	Temp_Move
 		belt_steps
 		speed_cntr_Move
@@ -77,14 +68,20 @@ main
 				ldexp
 			hypot
 				sqrt
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			UART2_Write_Text
-				UART2_Write
-			UART2_Write
+			dma_printf
+				__CC2DW
+				IntToStr
+					WordToStr
+				strcpy
+				strlen
+				LongToStr
+					LongWordToStr
+				_itoa
+					_strrev
+				FloatToStr
+					strcpy
+				strncpy
+				DMA1_Enable
 			mc_arc
 				atan2
 					fabs
@@ -103,23 +100,30 @@ main
 				abs
 				speed_cntr_Move
 				DualAxisStep
+			__CC2DW
+	dma_printf
+	Debounce_X_Limits
+		Test_X_Min
+		dma_printf
+		Reset_X_Min_Limit
+		Reset_X_Min_Debounce
+		__CC2DW
+	Debounce_Y_Limits
+		Test_Y_Min
+		dma_printf
+		Reset_Y_Min_Limit
+		Reset_Y_Min_Debounce
+		__CC2DW
 	__CC2DW
 	__FillZeros
 	ResetSteppers
 		DisableStepper
+Y_Min_Limit
+Timer8Interrupt
+X_Min_Limit
 StepA
 	SingleStepA
 		StopA
-		Step_Cycle
-		Pulse
-	ClockPulse
-	XY_Interpolate
-	XZ_Interpolate
-	YZ_Interpolate
-Timer8Interrupt
-StepZ
-	SingleStepZ
-		StopZ
 		Step_Cycle
 		Pulse
 	ClockPulse
@@ -144,11 +148,21 @@ StepY
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
+StepZ
+	SingleStepZ
+		StopZ
+		Step_Cycle
+		Pulse
+	ClockPulse
+	XY_Interpolate
+	XZ_Interpolate
+	YZ_Interpolate
 DMA_CH1_ISR
 DMA_CH0_ISR
 	__CC2DW
 	strcpy
 	UART2_Write_Text
+		UART2_Write
 Timer1Interrupt
 	ClockPulse
 	XY_Interpolate

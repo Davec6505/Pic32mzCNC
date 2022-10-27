@@ -26,6 +26,7 @@ void DMA_global(){
 
 
 /************************************************************
+* ac:DMA_Pic32
 * This is the DMA channel 0 setup for the receiver
 * it is setup to auto enable after a block transfer or
 * pattern match of '\r' we can enable the 2 char pattern
@@ -239,29 +240,30 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 
 //////////////////////////////////////////////////////
 //DMA Print strings and variable arguments formating
-int dma_printf(char* str,...){
+int dma_printf(const char* str,...){
   int i = 0, j=0;
   char buff[100]={0}, tmp[20];
   char * str_arg;
-  
  //Variable decleration of type va_list
-  va_list va;
+ va_list va;
+  
  //initialize the va_list via themacro va_start(arg1,arg2)
  //arg1 is type va_list and arg2 is type var preceding elipsis
  va_start(va,str);
  
+  i = j = 0;
  while(str && str[i]){
     if(str[i] == '%'){
      i++;
      switch(str[i]){
         case 'c':
-             //convert to ASCII cahr
+             //convert to ASCII char
              buff[j] = (char)va_arg(va,int);
              j++;
              break;
         case 'd':
              //convert to decimal
-             //_itoa(va_arg( va, int ), tmp, 10);
+            // _itoa(va_arg( va, int ), tmp, 10);
              IntToStr(va_arg(va,int),tmp);
              strcpy(&buff[j], tmp);
              j += strlen(tmp);
@@ -269,7 +271,7 @@ int dma_printf(char* str,...){
         case 'l':
              //convert to decimal
              //_itoa(va_arg( va, int ), tmp, 10);
-             LongToStr(va_arg(va,int),tmp);
+             LongToStr(va_arg(va,long),tmp);
              strcpy(&buff[j], tmp);
              j += strlen(tmp);
              break;
@@ -280,10 +282,11 @@ int dma_printf(char* str,...){
              strcpy(&buff[j], tmp);
              j += strlen(tmp);
              break;
-        case 'o':
-        case 'O':
+        case 'f':
+        case 'F':
              //convert to octal
-             _itoa(va_arg( va, int ), tmp, 8);
+             //_itoa(va_arg( va, int ), tmp, 8);
+             FloatToStr(va_arg(va,float),tmp);
              strcpy(&buff[j], tmp);
              j += strlen(tmp);
              break;

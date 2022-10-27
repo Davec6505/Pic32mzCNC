@@ -1,9 +1,9 @@
 #include "Pins.h"
 
 
-///////////////////////////////////////
-// CLICKER2 SPECIFIC PINS            //
-///////////////////////////////////////
+//////////////////////////////////////////////////////////
+// CLICKER2   ac:Clicker2_Pinouts     ac:Clicker2_Dwg   //
+//////////////////////////////////////////////////////////
 
 //////////////////////////////////////
 //ONBOARD SWITCHES AND LEDS
@@ -67,3 +67,10 @@ sbit DIR_Step_PinDirA at TRISE5_bit;
 //sbit SLP_FLT_Step_PinDirY at TRISB10_bit;
 sbit PLS_StepA at LATF1_bit;
 sbit PLS_Step_PinDirA at TRISF1_bit;
+
+//////////////////////////////////////////
+//Pinouts for Limits
+sbit X_Min_Limit at RF3_bit;
+sbit X_Min_Limit_Dir at TRISF3_bit;
+sbit Y_Min_Limit at RB15_bit;
+sbit Y_Min_Limit_Dir at TRISB15_bit;

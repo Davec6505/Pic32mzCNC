@@ -15,6 +15,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Kinematics.c
 =======
 =======
@@ -24,6 +25,9 @@ Value=Stepper.c
 >>>>>>> patch1
 =======
 Value=Serial_Dma.h
+>>>>>>> patch1
+=======
+Value=Stepper.c
 >>>>>>> patch1
 =======
 Value=Main.c
@@ -69,26 +73,36 @@ File7=Serial_Dma.c
 File8=Print.c
 File9=GCODE.c
 File10=Globals.c
-Count=11
+File11=Limits.c
+Count=12
 [BINARIES]
 Count=0
 [IMAGES]
-Count=0
+File0=Pic32mzClicker2_Pinout.png
+Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Serial_Dma.c
-File2=Serial_Dma.h
+File1=Stepper.c
+File2=Stepper.h
 Count=3
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
-Count=0
+File0=AVR_Stepper_Acc_Dec.xml
+File1=DMA_Pic32.xml
+File2=Clicker2_Pinouts.xml
+File3=Clicker2_Dwg.xml
+Count=4
 [OTHER_FILES]
-Count=0
+File0=AVR_StepperAccDec.pdf
+File1=DMA_Pic32.pdf
+File2=Clicker2_Dwg.pdf
+Count=3
 [SEARCH_PATH]
 Path0=..\..\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\
-Count=1
+Path1=E:\Downloads\CNC _Papers\
+Count=2
 [HEADER_PATH]
 Path0=..\..\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\
 Count=1
@@ -104,7 +118,8 @@ File7=Settings.h
 File8=Print.h
 File9=GCODE.h
 File10=Globals.h
-Count=11
+File11=Limits.h
+Count=12
 [PLDS]
 File0=DEFINES.pld
 Count=1
@@ -131,5 +146,7 @@ USE_SRS=7
 [EXPANDED_NODES]
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
-13=Header Files
-Count=3
+14=Header Files
+28=Project Level Defines
+33=Active Comments Files
+Count=5

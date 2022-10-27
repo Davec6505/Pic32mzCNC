@@ -35,7 +35,7 @@ _InitTimer8:
 ;Timers.c,34 :: 		T8CON            = 0x8000;
 ORI	R2, R0, 32768
 SW	R2, Offset(T8CON+0)(GP)
-;Timers.c,35 :: 		T8IP0_bit        = 3;
+;Timers.c,35 :: 		T8IP0_bit        = 1;
 LUI	R2, BitMask(T8IP0_bit+0)
 ORI	R2, R2, BitMask(T8IP0_bit+0)
 _SX	

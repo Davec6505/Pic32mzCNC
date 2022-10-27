@@ -11,7 +11,7 @@
 #include "Kinematics.h"
 #include "GCODE.h"
 #include "Globals.h"
-
+#include "Limits.h"
 
 
 ///////////////////////////////////////////////////

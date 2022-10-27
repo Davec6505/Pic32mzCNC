@@ -115,6 +115,12 @@ extern sfr sbit DIR_StepA;
 extern sfr sbit DIR_Step_PinDirA;
 extern sfr sbit FLT_StepA;
 extern sfr sbit FLT_Step_PinDirA;
+
+
+extern sfr sbit X_Min_Limit;
+extern sfr sbit X_Min_Limit_Dir;
+extern sfr sbit Y_Min_Limit;
+extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 
@@ -381,7 +387,8 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
 void SerialPrint(float r);
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,double r, double i, double j, double k,int axis_xyz);
+void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
+ double r, double i, double j, double k, int axis_A,int axis_B,int dir);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 15 "c:/users/git/pic32mzcnc/stepper.h"
@@ -406,7 +413,7 @@ extern StepTmr STmr;
 
 
 
-typedef enum xyz{X,Y,Z,A,B,C}_axis_;
+typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
 
 
@@ -426,6 +433,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+int EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
@@ -504,6 +512,78 @@ double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/limits.h"
+#line 1 "c:/users/git/pic32mzcnc/pins.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 28 "c:/users/git/pic32mzcnc/limits.h"
+extern sbit TX0;
+extern sbit TX1;
+extern sbit TX2;
+extern sbit TX3;
+
+extern sbit TY0;
+extern sbit TY1;
+extern sbit TY2;
+extern sbit TY3;
+
+extern sbit TZ0;
+extern sbit TZ1;
+extern sbit TZ2;
+extern sbit TZ3;
+
+extern sbit TA0;
+extern sbit TA1;
+extern sbit TA2;
+extern sbit TA3;
+
+
+
+struct limits{
+
+char X_Limit_Min: 1;
+char Y_Limit_Min: 1;
+char Z_Limit_Min: 1;
+char A_Limit_Min: 1;
+char X_Limit_Max: 1;
+char Y_Limit_Max: 1;
+char Z_Limit_Max: 1;
+char A_Limit_Max: 1;
+
+long X_Soft_Limit_Min;
+long X_Soft_Limit_Max;
+long Y_Soft_Limit_Min;
+long Y_Soft_Limit_MAx;
+long Z_Soft_Limit_Min;
+long Z_Soft_Limit_MAx;
+long A_Soft_Limit_Min;
+long A_Soft_Limit_MAx;
+
+unsigned int X_Min_DeBnc;
+unsigned int Y_Min_DeBnc;
+unsigned int Z_Min_DeBnc;
+unsigned int A_Min_DeBnc;
+};
+
+
+
+extern struct limits Limits;
+
+
+void Limit_Initialize();
+void X_Min_Limit_Setup();
+void Y_Min_Limit_Setup();
+void Z_Min_Limit_Setup();
+void A_Min_Limit_Setup();
+
+char Test_X_Min();
+char Test_Y_Min();
+void Reset_X_Min_Limit();
+void Reset_Y_Min_Limit();
+void Debounce_X_Limits();
+void Debounce_Y_Limits();
+void Reset_X_Min_Debounce();
+void Reset_Y_Min_Debounce();
 #line 31 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -551,7 +631,7 @@ static char oneshot = 0;
 unsigned char j;
 static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
-
+static int cntr;
  PinMode();
 
  StepperConstants(15000,15000);
@@ -592,22 +672,40 @@ int xyz_ = 0, i;
  EnStepperY();
  EnStepperZ();
  EnStepperA();
- sys.steps_position[X] = 0;
+ cntr = 0;
  }
 
  if(Toggle){
-
+ cntr++;
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+<<<<<<< HEAD
  dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",a,STPS[X].step_count,sys.axis_dir[X],
  sys.steps_position[X],STPS[Y].step_count,
  sys.axis_dir[Y],sys.steps_position[Y]);
 
+=======
+>>>>>>> patch1
  Temp_Move(a);
  a++;
  if(a > 8)a=0;
+#line 97 "C:/Users/Git/Pic32mzCNC/Main.c"
+ }
+ if(cntr > 10000){
+
+
+
+
+ dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",
+ a,STPS[X].step_count,sys.axis_dir[X],
+ sys.steps_position[X],STPS[Y].step_count,
+ sys.axis_dir[Y],sys.steps_position[Y]);
+
+ cntr = 0;
  }
  }
 
+ Debounce_X_Limits();
+ Debounce_Y_Limits();
  }
 }
 
@@ -670,7 +768,9 @@ void Temp_Move(int a){
  break;
  case 9:
 
- r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,1.0, 0.00);
+
+
+ r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
  break;
  default: a = 0;
  break;

@@ -1,0 +1,13 @@
+<Clicker2_Dwg>
+	<Attributes>
+		<Url></Url>
+		<Image></Image>
+		<File>Clicker2_Dwg.pdf</File>
+	</Attributes>
+	<Events>
+		<OnLeftClick></OnLeftClick>
+		<OnRightClick></OnRightClick>
+		<OnDblClick>OpenFile</OnDblClick>
+		<OnMouseOver></OnMouseOver>
+	</Events>
+</Clicker2_Dwg>

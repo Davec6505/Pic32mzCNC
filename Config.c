@@ -4,7 +4,7 @@
 
 void PinMode(){
 
-
+     DI();
      SYSKEY = 0xAA996655;
      SYSKEY = 0x556699AA;
      CFGCONbits.OCACLK = 1;
@@ -48,16 +48,24 @@ void PinMode(){
 ////////////////////////////////////////////////////
 //Remapping of Uart 2 pins
     Unlock_IOLOCK();
+     //UART2 PIN MAPPING
      PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);    // Sets pin PORTE.B8 to be Output and maps UART2 Transmit
      PPS_Mapping_NoLock(_RPE9, _INPUT,  _U2RX);    // Sets pin PORTE.B9 to be Input and maps UART2 Receive
+     //???
      PPS_Mapping_NoLock(_RPB9, _OUTPUT, _NULL);
      PPS_Mapping_NoLock(_RPB10, _OUTPUT, _NULL);
+     ///////////////////////////////////////////////////////////
+     //OUTPUT PULSES TO STEPPERS
      PPS_Mapping_NoLock(_RPD4, _OUTPUT, _OC5);     //X_Axis TMR2
      PPS_Mapping_NoLock(_RPD5, _OUTPUT, _OC2);     //Y_Axis TMR4
      PPS_Mapping_NoLock(_RPF0, _OUTPUT, _OC7);     //Z_Axis TMR6
      PPS_Mapping_NoLock(_RPF1, _OUTPUT, _OC3);     //A_Axis TMR5
      PPS_Mapping_NoLock(_RPG1, _OUTPUT, _OC6);     //B_Axis TMR3
      PPS_Mapping_NoLock(_RPE3, _OUTPUT, _OC8);     //C_Axis TMR7
+     //////////////////////////////////////////////////////////
+     //lIMIT SWITCHES
+     PPS_Mapping_NoLock(_RPF3, _INPUT, _INT1);     //X_Min_Limit
+     PPS_Mapping_NoLock(_RPB15, _INPUT, _INT2);    //Y_Min_Limit
     Lock_IOLOCK();
 
 //////////////////////////////////////////////////
@@ -83,6 +91,9 @@ void PinMode(){
   OutPutPulseXYZ();
   SetPinMode();
 
+///////////////////////////////////////////////
+//Limits initialize
+  Limit_Initialize();
 /////////////////////////////////////////////////
 //setup i2c_lcd
   //  LcdI2CConfig();

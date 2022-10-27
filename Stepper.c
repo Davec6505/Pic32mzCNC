@@ -85,6 +85,7 @@ void EnStepperA(){
    EN_StepA       = 0;
 }
 
+
 void DisableStepper(){
    EN_StepX      = 1;
    EN_StepY      = 1;
@@ -93,21 +94,22 @@ void DisableStepper(){
 }
 
 
+
 //speedRampData STPS;
 
-/*! \brief Move the stepper motor a given number of steps.
- *
+/************************************************************************
  *  Makes the stepper motor move the given number of steps.
  *  It accelrate with given accelration up to maximum speed and decelerate
  *  with given deceleration so it stops at the given step.
  *  If accel/decel is to small and steps to move is to few, speed might not
  *  reach the max speed limit before deceleration starts.
- *
+ *   ac:AVR_Stepper_Acc_Dec
  *  \param step  Number of steps to move (pos - CW, neg - CCW).
  *  \param accel  Accelration to use, in 0.01*rad/sec^2.
  *  \param decel  Decelration to use, in 0.01*rad/sec^2.
  *  \param speed  Max speed, in 0.01*rad/sec.
- */
+ *
+ ***********************************************************************/
 void speed_cntr_Move(signed long mmSteps, signed long speed, int axis_No){
 int ii;
 char txt_[9];

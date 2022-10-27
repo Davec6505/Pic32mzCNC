@@ -70,7 +70,7 @@ extern StepTmr STmr;
 
 
 //enums
-typedef enum xyz{X,Y,Z,A,B,C}_axis_;
+typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
 
 
@@ -90,6 +90,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+int  EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
