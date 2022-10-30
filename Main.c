@@ -221,9 +221,10 @@ void Temp_Move(int a){
                 Home_Axis(-300.00,500,X);
             break;
        case 11://Homing Y axis
-                Inv_Home_Axis(10.00,100,X);
-                Delay_ms(1000);
                 sys.homing = 1;
+                Inv_Home_Axis(20.00,100,X);
+                Delay_ms(1000);
+
             break;
        case 12://Homing Y axis
 

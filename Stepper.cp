@@ -1214,11 +1214,7 @@ void YZ_Interpolate(){
  }
 
 }
-<<<<<<< HEAD
-#line 658 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-=======
-#line 638 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch1
+#line 637 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 unsigned int min_(unsigned int x, unsigned int y){
  if(x < y){
  return x;
@@ -1227,11 +1223,7 @@ unsigned int min_(unsigned int x, unsigned int y){
  return y;
  }
 }
-<<<<<<< HEAD
-#line 675 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-=======
-#line 655 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch1
+#line 654 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 static unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;
@@ -1262,11 +1254,7 @@ static unsigned long sqrt_(unsigned long x){
  return xr;
  }
 }
-<<<<<<< HEAD
-#line 729 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-=======
-#line 709 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch1
+#line 708 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 void CycleStop(){
 int ii;
  STmr.uSec = 0;
