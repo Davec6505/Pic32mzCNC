@@ -192,29 +192,7 @@ long abs_mmSteps = abs(mmSteps);
       STPS[axis_No].dist        = 0;
       SV.Tog   = 0;
       SV.running = 1;
- /*
-     sprintf(txt_,"%d",STPS[axis_No].mmToTravel);
-     UART2_Write_Text(txt_);
-     UART2_Write_Text(" : ");
-     sprintf(txt_,"%d",STPS[axis_No].step_delay);
-     UART2_Write_Text(txt_);
-     UART2_Write_Text(" : ");
-     sprintf(txt_,"%d",STPS[axis_No].min_delay);
-     UART2_Write_Text(txt_);
-     UART2_Write_Text(" : ");
-     sprintf(txt_,"%d",STPS[axis_No].max_step_lim);
-     UART2_Write_Text(txt_);
-     UART2_Write_Text(" : ");
-     sprintf(txt_,"%d",STPS[axis_No].accel_lim);
-     UART2_Write_Text(txt_);
-     UART2_Write_Text(" : ");
-     sprintf(txt_,"%d",STPS[axis_No].decel_val);
-     UART2_Write_Text(txt_);
-     UART2_Write_Text(" : ");
-     sprintf(txt_,"%d",STPS[axis_No].decel_start);
-     UART2_Write_Text(txt_);
-     UART2_Write(0x0D);
- */
+
 }
 
 
@@ -228,7 +206,7 @@ void Step_Cycle(int axis_No){
      //keep track of relative position
       STPS[axis_No].step_count++;
      //keep track of absolute position
-      sys.steps_position[axis_No] += sys.axis_dir[axis_No];
+      STPS[axis_No].steps_position += STPS[axis_No].axis_dir;
       toggleOCx(axis_No);
 }
 
@@ -422,6 +400,7 @@ void disableOCx(){
      OC6IE_bit = 0;OC6CONbits.ON = 0; //B
      OC8IE_bit = 0;OC8CONbits.ON = 0; //Z
 }
+
 
 //////////////////////////////////////////////////////////
 //            X AXIS PULSE CONTROL                      //

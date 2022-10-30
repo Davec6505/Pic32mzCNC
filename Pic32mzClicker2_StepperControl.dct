@@ -5157,7 +5157,6 @@ autoset_usbe4csr0_bit
 autoset_usbe5csr0_bit
 autoset_usbe6csr0_bit
 autoset_usbe7csr0_bit
-axis_dir
 axis_xyz
 axisno
 axisno
@@ -33142,6 +33141,9 @@ hird3_bit
 hold
 hold
 hold_bit
+home_axis
+homing
+homing_cnt
 hostmode
 hostmode
 hostmode_bit
@@ -37011,6 +37013,7 @@ intstatsetbits
 inttohex
 inttostr
 inttostrwithzeros
+inv_home_axis
 inverse_feed_rate_mode
 ioancpen
 ioancpen
@@ -38905,6 +38908,7 @@ manfc
 manfc
 manfc_bit
 max
+max_sizes
 mc_arc
 mcen
 mcen
@@ -39129,8 +39133,6 @@ min102_bit
 min103
 min103_alrmtime_bit
 min103_bit
-mm_home_position
-mm_position
 mm2in
 mode
 mode
@@ -56399,6 +56401,7 @@ setend_bit
 setendc
 setendc
 setendc_bit
+setinitialsizes
 setpinmode
 setup
 setup
@@ -58828,7 +58831,6 @@ soscrdy
 soscrdy
 soscrdy_bit
 sp
-spc
 spdivrdy
 spdivrdy
 spdivrdy
@@ -60986,7 +60988,6 @@ step27
 step27_bit
 stepa
 stepperconstants
-steps_position
 stepx
 stepy
 stepz

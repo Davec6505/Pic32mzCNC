@@ -325,22 +325,22 @@ ERET
 ; end of _DMA_CH1_ISR
 _dma_printf:
 ;Serial_Dma.c,243 :: 		int dma_printf(const char* str,...){
-ADDIU	SP, SP, -148
+ADDIU	SP, SP, -248
 SW	RA, 0(SP)
 ;Serial_Dma.c,244 :: 		int i = 0, j=0;
 SW	R25, 4(SP)
 SW	R26, 8(SP)
 SW	R27, 12(SP)
-;Serial_Dma.c,245 :: 		char buff[100]={0}, tmp[20];
+;Serial_Dma.c,245 :: 		char buff[200]={0}, tmp[20];
 ADDIU	R23, SP, 44
-ADDIU	R22, R23, 100
+ADDIU	R22, R23, 200
 LUI	R24, hi_addr(?ICSdma_printf_buff_L0+0)
 ORI	R24, R24, lo_addr(?ICSdma_printf_buff_L0+0)
 JAL	___CC2DW+0
 NOP	
 ;Serial_Dma.c,252 :: 		va_start(va,str);
 ADDIU	R3, SP, 40
-ADDIU	R2, SP, 148
+ADDIU	R2, SP, 248
 ADDIU	R2, R2, 4
 SW	R2, 0(R3)
 ;Serial_Dma.c,254 :: 		i = j = 0;
@@ -354,14 +354,14 @@ MOVZ	R5, R0, R0
 L_dma_printf4:
 ; i start address is: 20 (R5)
 ; j start address is: 32 (R8)
-LW	R2, 148(SP)
+LW	R2, 248(SP)
 BNE	R2, R0, L__dma_printf56
 NOP	
 J	L__dma_printf36
 NOP	
 L__dma_printf56:
 SEH	R3, R5
-LW	R2, 148(SP)
+LW	R2, 248(SP)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 BNE	R2, R0, L__dma_printf58
@@ -372,7 +372,7 @@ L__dma_printf58:
 L__dma_printf34:
 ;Serial_Dma.c,256 :: 		if(str[i] == '%'){
 SEH	R3, R5
-LW	R2, 148(SP)
+LW	R2, 248(SP)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 ANDI	R3, R2, 255
@@ -389,9 +389,9 @@ ADDIU	R2, R5, 1
 SEH	R7, R2
 ;Serial_Dma.c,258 :: 		switch(str[i]){
 SEH	R3, R2
-LW	R2, 148(SP)
+LW	R2, 248(SP)
 ADDU	R2, R2, R3
-SW	R2, 144(SP)
+SW	R2, 244(SP)
 J	L_dma_printf9
 NOP	
 ;Serial_Dma.c,259 :: 		case 'c':
@@ -531,7 +531,7 @@ L_dma_printf16:
 ;Serial_Dma.c,286 :: 		case 'F':
 ; j start address is: 32 (R8)
 L_dma_printf17:
-;Serial_Dma.c,289 :: 		FloatToStr(va_arg(va,float),tmp);
+;Serial_Dma.c,289 :: 		FloatToStr(va_arg(va,double),tmp);
 ADDIU	R5, SP, 16
 ADDIU	R4, SP, 40
 LW	R3, 0(R4)
@@ -597,7 +597,7 @@ NOP
 ;Serial_Dma.c,299 :: 		}
 L_dma_printf9:
 ; j start address is: 32 (R8)
-LW	R4, 144(SP)
+LW	R4, 244(SP)
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 99
@@ -677,7 +677,7 @@ ADDIU	R3, SP, 44
 SEH	R2, R8
 ADDU	R4, R3, R2
 SEH	R3, R5
-LW	R2, 148(SP)
+LW	R2, 248(SP)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 SB	R2, 0(R4)
@@ -732,7 +732,7 @@ LW	R27, 12(SP)
 LW	R26, 8(SP)
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 148
+ADDIU	SP, SP, 248
 JR	RA
 NOP	
 ; end of _dma_printf
@@ -798,23 +798,23 @@ L___itoa80:
 ADDIU	R2, R3, 65
 ; digit end address is: 12 (R3)
 ADDIU	R2, R2, -10
-; ?FLOC____itoa?T153 start address is: 8 (R2)
+; ?FLOC____itoa?T154 start address is: 8 (R2)
 ANDI	R2, R2, 255
-; ?FLOC____itoa?T153 end address is: 8 (R2)
+; ?FLOC____itoa?T154 end address is: 8 (R2)
 J	L__itoa24
 NOP	
 L__itoa23:
 ; digit start address is: 12 (R3)
 ADDIU	R2, R3, 48
 ; digit end address is: 12 (R3)
-; ?FLOC____itoa?T153 start address is: 12 (R3)
+; ?FLOC____itoa?T154 start address is: 12 (R3)
 ANDI	R3, R2, 255
-; ?FLOC____itoa?T153 end address is: 12 (R3)
+; ?FLOC____itoa?T154 end address is: 12 (R3)
 SEH	R2, R3
 L__itoa24:
-; ?FLOC____itoa?T153 start address is: 8 (R2)
+; ?FLOC____itoa?T154 start address is: 8 (R2)
 SB	R2, 0(R5)
-; ?FLOC____itoa?T153 end address is: 8 (R2)
+; ?FLOC____itoa?T154 end address is: 8 (R2)
 ;Serial_Dma.c,324 :: 		i = i / base;
 SEH	R3, R25
 SEH	R2, R27

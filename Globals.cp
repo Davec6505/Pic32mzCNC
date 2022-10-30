@@ -51,15 +51,12 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 50 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
- int axis_dir[ 6 ];
  uint8_t abort;
  uint8_t state;
+ int8_t homing;
+ uint8_t homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
- long steps_position[ 6 ];
-
- double mm_position[ 6 ];
- double mm_home_position[ 6 ];
 } system_t;
 extern system_t sys;
 
@@ -94,17 +91,7 @@ typedef struct genVars{
  int dirc;
 }sVars;
 extern sVars SV;
-
-
-
-int GetAxisDirection(long mm2move);
 #line 3 "C:/Users/Git/Pic32mzCNC/Globals.c"
 char txtL[9];
 system_t sys;
 sVars SV;
-
-
-
-int GetAxisDirection(long mm2move){
- return(mm2move < 0)?  -1 : 1 ;
-}

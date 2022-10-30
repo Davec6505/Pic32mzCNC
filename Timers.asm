@@ -14,12 +14,16 @@ SW	R2, Offset(T1CON+0)(GP)
 ;Timers.c,19 :: 		IPC1SET       = 0x1A;
 ORI	R2, R0, 26
 SW	R2, Offset(IPC1SET+0)(GP)
-;Timers.c,21 :: 		IEC0SET       = 0x10;
-ORI	R2, R0, 16
-SW	R2, Offset(IEC0SET+0)(GP)
-;Timers.c,23 :: 		IFS0CLR       = 0x10;;
-ORI	R2, R0, 16
-SW	R2, Offset(IFS0CLR+0)(GP)
+;Timers.c,21 :: 		IEC0       |= 1<<4;
+LW	R2, Offset(IEC0+0)(GP)
+ORI	R2, R2, 16
+SW	R2, Offset(IEC0+0)(GP)
+;Timers.c,23 :: 		IFS0       |= ~(1<<4);
+LW	R3, Offset(IFS0+0)(GP)
+LUI	R2, 65535
+ORI	R2, R2, 65519
+OR	R2, R3, R2
+SW	R2, Offset(IFS0+0)(GP)
 ;Timers.c,25 :: 		PR1           = 62500;
 ORI	R2, R0, 62500
 SW	R2, Offset(PR1+0)(GP)

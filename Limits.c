@@ -50,8 +50,7 @@ void Limit_Initialize(){
    
    //disable external interrupts 1 and 2
    IEC0  |= 0x21 << 8;
-   //SET the bitS for rising edge trigger
-   INTCON |= 0x0000001F;
+
    
    X_Min_Limit_Setup();
    Y_Min_Limit_Setup();
@@ -66,8 +65,8 @@ void X_Min_Limit_Setup(){
 //IPC2<4:2>
 //IPC2<1:0>
 
- //Set Priority level to 3 & sub 1
- IPC2 |= 13 ;
+ //Set Priority level to 4 & sub 1
+ IPC2 |= 17 ;
  
  // enable INT0
  IEC0 |= 1 << 8;
@@ -84,7 +83,7 @@ void Y_Min_Limit_Setup(){
 //IPC3<9:8>
 
  //Set Priority level to 3 & sub 2
- IPC3 |= 14 << 8;
+ IPC3 |= 18 << 8;
 
  // enable INT0
  IEC0 |= 1 << 13;
@@ -97,7 +96,7 @@ void Y_Min_Limit_Setup(){
 /////////////////////////////////////////////////////////////
 
 //X Min Limit interrupt
-void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 3 ics ICS_AUTO {
+void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
    INT1IF_bit = 0;
    if(!Limits.X_Limit_Min)
         Limits.X_Limit_Min = 1;
@@ -105,7 +104,7 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 3 ics ICS_AUTO {
 
 ///////////////////////////////////////////////////////////
 //Y Min Limit interrupt
-void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 3 ics ICS_AUTO {
+void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
    INT2IF_bit = 0;
    if(!Limits.Y_Limit_Min)
       Limits.Y_Limit_Min = 1;
@@ -168,14 +167,14 @@ void Reset_Y_Min_Debounce(){
 ////////////////////////////////////////////////////////
 //Debounce the resetting of X Limit Min
 void Debounce_X_Limits(){
-   TX0 = TMR.clock >> BASE_TMR;
+   TX0 = (TMR.clock >> BASE_TMR)&1;
    TX1 = Test_X_Min();
 
    if((!X_Min_Limit)&&(TX1)){
       if(TX0 && !TX2){
          TX2 = 1;
          Limits.X_Min_DeBnc++;
-      #if DMADebug == 3
+      #if DMADebug == 1
          dma_printf("LimitX:=%d \r\n",Limits.X_Min_DeBnc);
       #endif
         if(Limits.X_Min_DeBnc > last_cntX_min){
@@ -196,14 +195,14 @@ void Debounce_X_Limits(){
 /////////////////////////////////////////////////////////
 //Debounce the resetting of Y Limit Min
  void Debounce_Y_Limits(){
-   TY0 = TMR.clock >> BASE_TMR;
+   TY0 = (TMR.clock >> BASE_TMR)&1;
    TY1 = Test_Y_Min();
 
    if((!Y_Min_Limit)&&(TY1)){
       if(TY0 && !TY2){
          TY2 = 1;
          Limits.Y_Min_DeBnc++;
-      #if DMADebug == 3
+      #if DMADebug == 1
          dma_printf("LimitY:=%d \r\n",Limits.Y_Min_DeBnc);
       #endif
         if(Limits.Y_Min_DeBnc > last_cntY_min){

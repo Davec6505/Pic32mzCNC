@@ -279,15 +279,12 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 50 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
- int axis_dir[ 6 ];
  uint8_t abort;
  uint8_t state;
+ int8_t homing;
+ uint8_t homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
- long steps_position[ 6 ];
-
- double mm_position[ 6 ];
- double mm_home_position[ 6 ];
 } system_t;
 extern system_t sys;
 
@@ -322,11 +319,7 @@ typedef struct genVars{
  int dirc;
 }sVars;
 extern sVars SV;
-
-
-
-int GetAxisDirection(long mm2move);
-#line 38 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 60 "c:/users/git/pic32mzcnc/kinematics.h"
 extern volatile void (*AxisPulse[3])();
 
 
@@ -375,20 +368,40 @@ typedef struct Steps{
 
  signed long mmToTravel;
 
+ long steps_position;
+
+ double mm_position;
+
+ double mm_home_position;
+
+ double max_travel;
+
+ int axis_dir;
+
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-#line 100 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 134 "c:/users/git/pic32mzcnc/kinematics.h"
+void SetInitialSizes(STP axis[6]);
+
+
 void DualAxisStep(long newx,long newy,int axis_combo);
 void SingleAxisStep(long newxyz,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
- uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
+void mc_arc(double *position, double *target, double *offset, uint8_t axis_0,
+ uint8_t axis_1,uint8_t axis_linear, double feed_rate,uint8_t invert_feed_rate,
+ double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
-void SerialPrint(float r);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir);
+
+
+int GetAxisDirection(long mm2move);
+
+
+void Home_Axis(double distance,long speed,int axis);
+void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 15 "c:/users/git/pic32mzcnc/stepper.h"
@@ -603,13 +616,12 @@ void LcdI2CConfig();
 void OutPutPulseXYZ();
 void Temp_Move(int a);
 void LCD_Display();
-#line 12 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 34 "C:/Users/Git/Pic32mzCNC/Main.c"
 parser_state_t gc;
 STP STPS[ 6 ];
 
 char DMA_Buff[200];
 char txt_[9];
-char spc[] = " : ";
 bit testISR;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
@@ -646,7 +658,7 @@ static int cntr;
  while(1){
 
  if(!Toggle){
- LED1 = TMR.clock >> 4;
+ LED1 = Limits.X_Limit_Min;
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
  if(LED1 && (oneshot == 0)){
@@ -664,7 +676,6 @@ static int cntr;
  }
 
  if((!SW1)&&(!Toggle)){
- a = 0;
  LED1 = 0;
  Toggle = 1;
  disable_steps = 0;
@@ -673,28 +684,38 @@ static int cntr;
  EnStepperZ();
  EnStepperA();
  cntr = 0;
+ sys.homing = 1;
+ sys.homing_cnt = 0;
+ a = 10;
  }
 
  if(Toggle){
- cntr++;
+
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
  Temp_Move(a);
  a++;
- if(a > 8)a=0;
-#line 97 "C:/Users/Git/Pic32mzCNC/Main.c"
+ if(a > 12)a=10;
+
+
+
  }
+ if((Limits.X_Limit_Min)&&(sys.homing == 1)){
+ sys.homing == -1;
+ StopX();
+ Delay_ms(200);
+ }
+
+
+ cntr++;
  if(cntr > 10000){
 
-
-
-
- dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",
- a,STPS[X].step_count,sys.axis_dir[X],
- sys.steps_position[X],STPS[Y].step_count,
- sys.axis_dir[Y],sys.steps_position[Y]);
-
+ dma_printf("a:=%d:%l:%d:abs:=%l \r\n",
+ a,STPS[X].step_count,STPS[X].axis_dir,
+ STPS[X].steps_position);
+#line 139 "C:/Users/Git/Pic32mzCNC/Main.c"
  cntr = 0;
  }
+
  }
 
  Debounce_X_Limits();
@@ -707,11 +728,6 @@ void Temp_Move(int a){
 
  switch(a){
  case 0:
- STPS[X].mmToTravel = belt_steps(-50.00);
- speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
- SingleAxisStep(STPS[X].mmToTravel,X);
- break;
- case 2:
  STPS[X].mmToTravel = belt_steps(50.00);
  speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
  SingleAxisStep(STPS[X].mmToTravel,X);
@@ -721,34 +737,39 @@ void Temp_Move(int a){
  speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
  SingleAxisStep(STPS[Y].mmToTravel,Y);
  break;
+ case 2:
+ STPS[X].mmToTravel = belt_steps(-50.00);
+ speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
+ SingleAxisStep(STPS[X].mmToTravel,X);
+ break;
  case 3:
  STPS[Y].mmToTravel = belt_steps(-50.00);
  speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
  SingleAxisStep(STPS[Y].mmToTravel,Y);
  break;
  case 4:
- STPS[X].mmToTravel = belt_steps(-50.00);
+ STPS[X].mmToTravel = belt_steps(50.00);
 
  STPS[Y].mmToTravel = belt_steps(100.00);
  speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
  DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
  break;
  case 5:
- STPS[X].mmToTravel = belt_steps(50.00);
+ STPS[X].mmToTravel = belt_steps(-50.00);
 
  STPS[Y].mmToTravel = belt_steps(-100.00);
  speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
  DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
  break;
  case 6:
- STPS[X].mmToTravel = belt_steps(-150.00);
+ STPS[X].mmToTravel = belt_steps(150.00);
  speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
  STPS[Y].mmToTravel = belt_steps(100.00);
 
  DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
  break;
  case 7:
- STPS[X].mmToTravel = belt_steps(150.00);
+ STPS[X].mmToTravel = belt_steps(-150.00);
  speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
  STPS[Y].mmToTravel = belt_steps(-100.00);
 
@@ -756,7 +777,8 @@ void Temp_Move(int a){
  break;
  case 8:
  STPS[A].mmToTravel = belt_steps(150.00);
- speed_cntr_Move(STPS[A].mmToTravel, 15000,A);
+ speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
+#line 212 "C:/Users/Git/Pic32mzCNC/Main.c"
  SingleAxisStep(STPS[A].mmToTravel,A);
  break;
  case 9:
@@ -764,6 +786,17 @@ void Temp_Move(int a){
 
 
  r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
+ break;
+ case 10:
+ Home_Axis(-300.00,500,X);
+ break;
+ case 11:
+ Inv_Home_Axis(10.00,100,X);
+ Delay_ms(1000);
+ sys.homing = 1;
+ break;
+ case 12:
+
  break;
  default: a = 0;
  break;

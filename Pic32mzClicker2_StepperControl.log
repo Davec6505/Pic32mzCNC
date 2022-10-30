@@ -4,13 +4,13 @@ diagnostics: 65825	123	Compiled Successfully	P32MZ2048EFH100.c
 diagnostics: 0	122	Compilation Started	__Lib_Delays.c
 diagnostics: 176	123	Compiled Successfully	__Lib_Delays.c
 diagnostics: 0	122	Compilation Started	i2c_lcd.h
-hint: 34	1163	Variable 'txt_' has been declared, but not used	Main.c
-hint: 36	1163	Variable 'j' has been declared, but not used	Main.c
-hint: 38	1163	Variable 'i' has been declared, but not used	Main.c
-diagnostics: 211	123	Compiled Successfully	Main.c
-hint: 38	1164	Variable 'xyz_' has been eliminated by optimizer	Main.c
+hint: 55	1163	Variable 'txt_' has been declared, but not used	Main.c
+hint: 57	1163	Variable 'j' has been declared, but not used	Main.c
+hint: 59	1163	Variable 'i' has been declared, but not used	Main.c
+diagnostics: 262	123	Compiled Successfully	Main.c
+hint: 59	1164	Variable 'xyz_' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	i2c_lcd.h
-diagnostics: 331	123	Compiled Successfully	Config.c
+diagnostics: 340	123	Compiled Successfully	Config.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 114	1163	Variable 'ii' has been declared, but not used	Stepper.c
 hint: 115	1163	Variable 'txt_' has been declared, but not used	Stepper.c
@@ -18,7 +18,11 @@ hint: 0	1004	interrupt handler (StepX at 0x001B)	Stepper.c
 hint: 0	1004	interrupt handler (StepY at 0x000C)	Stepper.c
 hint: 0	1004	interrupt handler (StepZ at 0x0023)	Stepper.c
 hint: 0	1004	interrupt handler (StepA at 0x0011)	Stepper.c
+<<<<<<< HEAD
 diagnostics: 747	123	Compiled Successfully	Stepper.c
+=======
+diagnostics: 727	123	Compiled Successfully	Stepper.c
+>>>>>>> patch1
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 69	123	Compiled Successfully	Steptodistance.c
 hint: 18	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
@@ -30,18 +34,20 @@ diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (Timer1Interrupt at 0x0004)	Timers.c
 hint: 0	1004	interrupt handler (Timer8Interrupt at 0x0024)	Timers.c
 diagnostics: 108	123	Compiled Successfully	Timers.c
-hint: 22	1354	 warning: "/*" within comment     /////////////////////////////////////////////////////////////////////////////*/  /////////////////////////////////////////////// //includes #include <stdint.h> #include "Settings.h"    #define max(a,b) (((a) > (b)) ? (a) : (b)) #define min(a,b) (((a) < (b)) ? (a) : (b))  // Bit field and masking macros #define bit(n) (1 << n) #define bit_true(x,mask) (x |= mask) #define bit_false(x,mask) (x &= ~mask) #define bit_toggle(x,mask) (x ^= mask) #define bit_istrue(x,mask) ((x & mask) != 0) #define bit_isfalse(x,mask) ((x & mask) == 0)  // Define system executor bit map. Used internally by runtime protocol as runtime command flags, // which notifies the main program to execute the specified runtime command asynchronously. // NOTE: The system executor uses an unsigned 8-bit volatile variable (8 flag limit.) The default // flags are always false, so the runtime protocol only needs to check for a non-zero value to // know when there is a runtime command to execute. #define EXEC_STATUS_REPORT  bit(0) // bitmask 00000001 #define EXEC_CYCLE_START    bit(1) // bitmask 00000010 #define EXEC_CYCLE_STOP     bit(2) // bitmask 00000100 #define EXEC_FEED_HOLD      bit(3) // bitmask 00001000 #define EXEC_RESET	C:\Users\Git\Pic32mzCNC\Kinematics.c
+hint: 22	1354	 warning: "/*" within comment     /////////////////////////////////////////////////////////////////////////////*/  SIZE,C_MAX_SIZE};	C:\Users\Git\Pic32mzCNC\Kinematics.c
 diagnostics: 0	122	Compilation Started	stdint.h
-hint: 23	1163	Variable 'txt_' has been declared, but not used	Kinematics.c
-hint: 240	1163	Variable 'txt_' has been declared, but not used	Kinematics.c
-diagnostics: 516	123	Compiled Successfully	Kinematics.c
-warning: 461	1512	variable 'n_arc_correction' might not have been initialized	Kinematics.c
-warning: 313	1512	variable 'axis_plane_a' might not have been initialized	Kinematics.c
-warning: 315	1512	variable 'axis_plane_b' might not have been initialized	Kinematics.c
-hint: 232	1164	Variable 'inverse_feed_rate' has been eliminated by optimizer	Kinematics.c
-hint: 394	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
-hint: 396	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
-hint: 388	1164	Variable 'millimeters_of_travel' has been eliminated by optimizer	Kinematics.c
+hint: 41	1354	argument may be out of range [axis_No]	Kinematics.c
+hint: 33	1163	Variable 'txt_' has been declared, but not used	Kinematics.c
+hint: 89	1163	Variable 'dirC' has been declared, but not used	Kinematics.c
+hint: 244	1163	Variable 'txt_' has been declared, but not used	Kinematics.c
+diagnostics: 551	123	Compiled Successfully	Kinematics.c
+warning: 465	1512	variable 'n_arc_correction' might not have been initialized	Kinematics.c
+warning: 317	1512	variable 'axis_plane_a' might not have been initialized	Kinematics.c
+warning: 319	1512	variable 'axis_plane_b' might not have been initialized	Kinematics.c
+hint: 236	1164	Variable 'inverse_feed_rate' has been eliminated by optimizer	Kinematics.c
+hint: 398	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
+hint: 400	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
+hint: 392	1164	Variable 'millimeters_of_travel' has been eliminated by optimizer	Kinematics.c
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 76	123	Compiled Successfully	Pins.c
 diagnostics: 0	122	Compilation Started	stdlib.h
@@ -54,19 +60,30 @@ diagnostics: 0	123	Compiled Successfully	Print.c
 diagnostics: 1	122	Compilation Started	Print.c
 diagnostics: 87	123	Compiled Successfully	gcode.h
 diagnostics: 0	122	Compilation Started	stdint.h
-diagnostics: 11	123	Compiled Successfully	Globals.c
+diagnostics: 5	123	Compiled Successfully	Globals.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (X_Min_Limit at 0x0008)	Limits.c
 hint: 0	1004	interrupt handler (Y_Min_Limit at 0x000D)	Limits.c
+<<<<<<< HEAD
 diagnostics: 221	123	Compiled Successfully	Limits.c
 diagnostics: 0	127	All files Compiled in 1672 ms	 
+=======
+diagnostics: 220	123	Compiled Successfully	Limits.c
+diagnostics: 0	127	All files Compiled in 1063 ms	 
+>>>>>>> patch1
 hint: 6	1004	Variable rxBuf has been declared, but not used	Serial_Dma.c
 hint: 0	1144	Used RX: 19 (59%)   Free RX: 13 (41%)	Used RX: 19 (59%)   Free RX: 13 (41%)
-hint: 0	1144	Static RAM (bytes): 980   Dynamic RAM (bytes): 515293	Static RAM (bytes): 980   Dynamic RAM (bytes): 515293
+hint: 0	1144	Static RAM (bytes): 1018   Dynamic RAM (bytes): 515257	Static RAM (bytes): 1018   Dynamic RAM (bytes): 515257
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 32246 (2%)  Free ROM (bytes): 2064906 (98%)	Used ROM (bytes): 32246 (2%)  Free ROM (bytes): 2064906 (98%)
+hint: 0	1144	Used ROM (bytes): 32988 (2%)  Free ROM (bytes): 2064164 (98%)	Used ROM (bytes): 32988 (2%)  Free ROM (bytes): 2064164 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
+<<<<<<< HEAD
 diagnostics: 0	128	Linked in 922 ms	 
 diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4484 ms	 
 diagnostics: 0	103	Finished successfully: 27 Oct 2022, 23:29:49	Pic32mzClicker2_StepperControl.mcp32
+=======
+diagnostics: 0	128	Linked in 625 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3141 ms	 
+diagnostics: 0	103	Finished successfully: 30 Oct 2022, 19:49:19	Pic32mzClicker2_StepperControl.mcp32
+>>>>>>> patch1

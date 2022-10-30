@@ -279,15 +279,12 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 50 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
- int axis_dir[ 6 ];
  uint8_t abort;
  uint8_t state;
+ int8_t homing;
+ uint8_t homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
- long steps_position[ 6 ];
-
- double mm_position[ 6 ];
- double mm_home_position[ 6 ];
 } system_t;
 extern system_t sys;
 
@@ -322,11 +319,7 @@ typedef struct genVars{
  int dirc;
 }sVars;
 extern sVars SV;
-
-
-
-int GetAxisDirection(long mm2move);
-#line 38 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 60 "c:/users/git/pic32mzcnc/kinematics.h"
 extern volatile void (*AxisPulse[3])();
 
 
@@ -375,20 +368,40 @@ typedef struct Steps{
 
  signed long mmToTravel;
 
+ long steps_position;
+
+ double mm_position;
+
+ double mm_home_position;
+
+ double max_travel;
+
+ int axis_dir;
+
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-#line 100 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 134 "c:/users/git/pic32mzcnc/kinematics.h"
+void SetInitialSizes(STP axis[6]);
+
+
 void DualAxisStep(long newx,long newy,int axis_combo);
 void SingleAxisStep(long newxyz,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
- uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
+void mc_arc(double *position, double *target, double *offset, uint8_t axis_0,
+ uint8_t axis_1,uint8_t axis_linear, double feed_rate,uint8_t invert_feed_rate,
+ double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
-void SerialPrint(float r);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir);
+
+
+int GetAxisDirection(long mm2move);
+
+
+void Home_Axis(double distance,long speed,int axis);
+void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 15 "c:/users/git/pic32mzcnc/stepper.h"
@@ -685,6 +698,10 @@ void PinMode(){
 
 
 
+ Limit_Initialize();
+
+
+
  DMA_global();
  DMA0_Enable();
  DMA1_Enable();
@@ -695,11 +712,12 @@ void PinMode(){
 
 
 
- Limit_Initialize();
 
 
 
 
+
+ SetInitialSizes(STPS);
 }
 
 void UartConfig(){
@@ -737,6 +755,10 @@ unsigned long cp0;
 
  DI();
 
+
+
+
+ INTCONSET = 0x00001400;
 
  SYSKEY = 0xAA996655;
  SYSKEY = 0x556699AA;
@@ -801,7 +823,7 @@ unsigned long cp0;
 
 
 void OutPutPulseXYZ(){
-#line 207 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 216 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5CON = 0x0000;
  OC2CON = 0x0000;
  OC7CON = 0X0000;
@@ -839,7 +861,7 @@ void OutPutPulseXYZ(){
  OC3CON = 0x000C;
  OC6CON = 0x000C;
  OC8CON = 0x000C;
-#line 251 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 260 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5R = 0x5;
  OC5RS = 0x234;
  OC2R = 0x5;
@@ -875,7 +897,7 @@ void OutPutPulseXYZ(){
 
  OC7IP0_bit = 1;
  OC7IP1_bit = 1;
- OC7IP2_bit = 1;
+ OC7IP2_bit = 0;
  OC7IS0_bit = 0;
  OC7IS1_bit = 1;
  OC7IF_bit = 0;

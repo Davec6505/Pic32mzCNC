@@ -256,15 +256,12 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 50 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
- int axis_dir[ 6 ];
  uint8_t abort;
  uint8_t state;
+ int8_t homing;
+ uint8_t homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
- long steps_position[ 6 ];
-
- double mm_position[ 6 ];
- double mm_home_position[ 6 ];
 } system_t;
 extern system_t sys;
 
@@ -299,11 +296,7 @@ typedef struct genVars{
  int dirc;
 }sVars;
 extern sVars SV;
-
-
-
-int GetAxisDirection(long mm2move);
-#line 38 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 60 "c:/users/git/pic32mzcnc/kinematics.h"
 extern volatile void (*AxisPulse[3])();
 
 
@@ -352,20 +345,40 @@ typedef struct Steps{
 
  signed long mmToTravel;
 
+ long steps_position;
+
+ double mm_position;
+
+ double mm_home_position;
+
+ double max_travel;
+
+ int axis_dir;
+
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-#line 100 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 134 "c:/users/git/pic32mzcnc/kinematics.h"
+void SetInitialSizes(STP axis[6]);
+
+
 void DualAxisStep(long newx,long newy,int axis_combo);
 void SingleAxisStep(long newxyz,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
- uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
+void mc_arc(double *position, double *target, double *offset, uint8_t axis_0,
+ uint8_t axis_1,uint8_t axis_linear, double feed_rate,uint8_t invert_feed_rate,
+ double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
-void SerialPrint(float r);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir);
+
+
+int GetAxisDirection(long mm2move);
+
+
+void Home_Axis(double distance,long speed,int axis);
+void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/limits.h"
@@ -779,7 +792,7 @@ long abs_mmSteps = abs(mmSteps);
  STPS[axis_No].dist = 0;
  SV.Tog = 0;
  SV.running = 1;
-#line 218 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+
 }
 
 
@@ -793,7 +806,7 @@ void Step_Cycle(int axis_No){
 
  STPS[axis_No].step_count++;
 
- sys.steps_position[axis_No] += sys.axis_dir[axis_No];
+ STPS[axis_No].steps_position += STPS[axis_No].axis_dir;
  toggleOCx(axis_No);
 }
 
@@ -846,14 +859,14 @@ void toggleOCx(int axis_No){
 
 
 int Pulse(int axis_No){
-#line 289 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 267 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  switch(STPS[axis_No].run_state) {
  case  0 :
  SV.Tog = 1;
  break;
 
  case  1 :
-#line 299 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 277 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  AccDec(axis_No);
  if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
 
@@ -882,7 +895,7 @@ int Pulse(int axis_No){
  break;
 
  case  2 :
-#line 331 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 309 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  AccDec(axis_No);
 
 
@@ -977,6 +990,7 @@ void disableOCx(){
  OC6IE_bit = 0;OC6CONbits.ON = 0;
  OC8IE_bit = 0;OC8CONbits.ON = 0;
 }
+
 
 
 
@@ -1200,7 +1214,11 @@ void YZ_Interpolate(){
  }
 
 }
+<<<<<<< HEAD
 #line 658 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+=======
+#line 638 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
 unsigned int min_(unsigned int x, unsigned int y){
  if(x < y){
  return x;
@@ -1209,7 +1227,11 @@ unsigned int min_(unsigned int x, unsigned int y){
  return y;
  }
 }
+<<<<<<< HEAD
 #line 675 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+=======
+#line 655 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
 static unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;
@@ -1240,7 +1262,11 @@ static unsigned long sqrt_(unsigned long x){
  return xr;
  }
 }
+<<<<<<< HEAD
 #line 729 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+=======
+#line 709 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
 void CycleStop(){
 int ii;
  STmr.uSec = 0;

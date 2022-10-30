@@ -4,12 +4,6 @@
 ////////////////////////////////////////////////////////////
 //                  Global usage defines                  //
 ////////////////////////////////////////////////////////////
-// Direction of stepper motor movement
-#define CW  0
-#define CCW 1
-
-#define CW_   1
-#define CCW_ -1
 
 #define true 1
 #define TRUE 1
@@ -38,8 +32,8 @@
 
 /////////////////////////////////////////////////////////
 //Set the Limit Debounce  counter max count
-#define X_DEBOUNCE_COUNT 3
-#define Y_DEBOUNCE_COUNT 3
+#define X_DEBOUNCE_COUNT 1
+#define Y_DEBOUNCE_COUNT 1
 #define Z_DEBOUNCE_COUNT 3
 #define A_DEBOUNCE_COUNT 3
 
@@ -48,16 +42,23 @@
 //value required may be usefull if using a cheap limit
 // this is only a reset time base, the setting of the
 //limits is instantaneous with interrupts
-#define _ms10_
-//#define _ms100_
+//#define _ms10_
+#define _ms100_
 //#define _ms300_
 //#define _ms500_
 //#define _sec1_
 
+///////////////////////////////////////////////////////////
+//            SET THE  PLATFORM DIMENSIONS               //
+///////////////////////////////////////////////////////////
 
+#define X_MAX_SIZE 290.00
+#define Y_MAX_SIZE 290.00
+#define Z_MAX_SIZE 100.00
+#define A_MAX_SIZE 100.00
+#define B_MAX_SIZE 100.00
+#define C_MAX_SIZE 100.00
 
-
-
-
+#define SIZE_LIST (double[]){X_MAX_SIZE, Y_MAX_SIZE, Z_MAX_SIZE, A_MAX_SIZE, B_MAX_SIZE, C_MAX_SIZE}
 
 #endif

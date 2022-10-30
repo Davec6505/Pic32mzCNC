@@ -246,15 +246,12 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 50 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
- int axis_dir[ 6 ];
  uint8_t abort;
  uint8_t state;
+ int8_t homing;
+ uint8_t homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
- long steps_position[ 6 ];
-
- double mm_position[ 6 ];
- double mm_home_position[ 6 ];
 } system_t;
 extern system_t sys;
 
@@ -289,11 +286,7 @@ typedef struct genVars{
  int dirc;
 }sVars;
 extern sVars SV;
-
-
-
-int GetAxisDirection(long mm2move);
-#line 38 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 60 "c:/users/git/pic32mzcnc/kinematics.h"
 extern volatile void (*AxisPulse[3])();
 
 
@@ -342,20 +335,40 @@ typedef struct Steps{
 
  signed long mmToTravel;
 
+ long steps_position;
+
+ double mm_position;
+
+ double mm_home_position;
+
+ double max_travel;
+
+ int axis_dir;
+
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-#line 100 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 134 "c:/users/git/pic32mzcnc/kinematics.h"
+void SetInitialSizes(STP axis[6]);
+
+
 void DualAxisStep(long newx,long newy,int axis_combo);
 void SingleAxisStep(long newxyz,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
- uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise);
+void mc_arc(double *position, double *target, double *offset, uint8_t axis_0,
+ uint8_t axis_1,uint8_t axis_linear, double feed_rate,uint8_t invert_feed_rate,
+ double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
-void SerialPrint(float r);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir);
+
+
+int GetAxisDirection(long mm2move);
+
+
+void Home_Axis(double distance,long speed,int axis);
+void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 15 "c:/users/git/pic32mzcnc/stepper.h"
@@ -651,7 +664,6 @@ void Limit_Initialize(){
 
  IEC0 |= 0x21 << 8;
 
- INTCON |= 0x0000001F;
 
  X_Min_Limit_Setup();
  Y_Min_Limit_Setup();
@@ -667,7 +679,7 @@ void X_Min_Limit_Setup(){
 
 
 
- IPC2 |= 13 ;
+ IPC2 |= 17 ;
 
 
  IEC0 |= 1 << 8;
@@ -684,7 +696,7 @@ void Y_Min_Limit_Setup(){
 
 
 
- IPC3 |= 14 << 8;
+ IPC3 |= 18 << 8;
 
 
  IEC0 |= 1 << 13;
@@ -697,7 +709,7 @@ void Y_Min_Limit_Setup(){
 
 
 
-void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 3 ics ICS_AUTO {
+void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
  INT1IF_bit = 0;
  if(!Limits.X_Limit_Min)
  Limits.X_Limit_Min = 1;
@@ -705,7 +717,7 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 3 ics ICS_AUTO {
 
 
 
-void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 3 ics ICS_AUTO {
+void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  INT2IF_bit = 0;
  if(!Limits.Y_Limit_Min)
  Limits.Y_Limit_Min = 1;
@@ -768,7 +780,7 @@ void Reset_Y_Min_Debounce(){
 
 
 void Debounce_X_Limits(){
- TX0 = TMR.clock >>  0 ;
+ TX0 = (TMR.clock >>  1 )&1;
  TX1 = Test_X_Min();
 
  if((!X_Min_Limit)&&(TX1)){
@@ -784,7 +796,7 @@ void Debounce_X_Limits(){
  }else if(!TX0 && TX2)
  TX2=0;
 
- if(Limits.X_Min_DeBnc >  3 )
+ if(Limits.X_Min_DeBnc >  1 )
  Reset_X_Min_Limit();
 
  }else if(X_Min_Limit){
@@ -796,7 +808,7 @@ void Debounce_X_Limits(){
 
 
  void Debounce_Y_Limits(){
- TY0 = TMR.clock >>  0 ;
+ TY0 = (TMR.clock >>  1 )&1;
  TY1 = Test_Y_Min();
 
  if((!Y_Min_Limit)&&(TY1)){
@@ -812,7 +824,7 @@ void Debounce_X_Limits(){
  }else if(!TY0 && TY2)
  TY2=0;
 
- if(Limits.Y_Min_DeBnc >  3 )
+ if(Limits.Y_Min_DeBnc >  1 )
  Reset_Y_Min_Limit();
 
  }else if(Y_Min_Limit){

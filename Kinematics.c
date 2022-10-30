@@ -1,6 +1,6 @@
 #include "Kinematics.h"
 
-
+const code double max_sizes[]={X_MAX_SIZE,Y_MAX_SIZE,Z_MAX_SIZE,A_MAX_SIZE,B_MAX_SIZE,C_MAX_SIZE};
 //////////////////////////////////
 //FUNCTION POINTERS
 volatile void (*AxisPulse[3])();
@@ -12,6 +12,16 @@ char txtB[200];
 //static file vars
 static long d2;
 
+///////////////////////////////////////////////////////
+//         INITIALIZE THE AXIS AND PLATFROM          //
+///////////////////////////////////////////////////////
+void SetInitialSizes(STP axis[6]){
+int i = 0;
+
+  for (i = 0;i<NoOfAxis;i++){
+    axis[i].max_travel = max_sizes[i];//SIZE_LIST[i];
+  }
+}
 
 /*****************************************************
 *single axix step rate need to be doubled to compensate
@@ -22,13 +32,17 @@ void SingleAxisStep(long newxyz,int axis_No){
 int dir;
 char txt_[9];
 //static long dist;
-       /*if(SV.psingle != newxyz)
-          SV.psingle = newxyz;
-       else*/
-     SV.Single_Dual = 0;
-     sys.axis_dir[axis_No] = GetAxisDirection(newxyz);
+      /* if(SV.psingle != newxyz)
+             SV.psingle = newxyz; */
 
-     switch(axis_No){
+     STPS[axis_No].axis_dir = Direction(newxyz);
+     SV.Single_Dual = 0;
+     SV.psingle  = 0;
+     Single_Axis_Enable(axis_No);
+     STPS[axis_No].dist = newxyz - SV.psingle;
+     STPS[axis_No].dist = abs(STPS[axis_No].dist);
+
+   /*  switch(axis_No){
        case X:
               Single_Axis_Enable(X);
               break;
@@ -42,96 +56,77 @@ char txt_[9];
               Single_Axis_Enable(A);
               break;
        default: break;
-     }
-     SV.psingle  = 0;
-     STPS[axis_No].dist = newxyz - SV.psingle;
-     STPS[axis_No].dist = abs(STPS[axis_No].dist);
+     }*/
 
-     if(newxyz < 0)
-           dir = CCW;
-     else
-           dir = CW;
-
+     dir = (newxyz < 0)? CCW : CW;
      switch(axis_No){
        case X:
-            DIR_StepX = dir;
+            DIR_StepX = (X_DIR_DIR ^ dir) & 0x0001;//(X_DIR_DIR)?dir:~dir;
             break;
        case Y:
-            DIR_StepY = dir;
+            DIR_StepY = (Y_DIR_DIR ^ dir) & 0x0001;
             break;
        case Z:
-            DIR_StepZ = dir;
+            DIR_StepZ = (Z_DIR_DIR ^ dir) & 0x0001;
             break;
        case A:
-            DIR_StepA = dir;
+            DIR_StepA = (A_DIR_DIR ^ dir) & 0x0001;
             break;
        default: break;
      }
-
-          STPS[axis_No].step_count = 0;
-          //Start output compare module
-          Step_Cycle(axis_No);
+     STPS[axis_No].step_count = 0;
+     //Start output compare module
+     Step_Cycle(axis_No);
 
 }
 
 //////////////////////////////////////////////////////////
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
+//this mus become more code efficient by supplying pointer
+//arguments ???
 void DualAxisStep(long axis_a,long axis_b,int axis_combo){
+int dirA,dirB,dirC;
    SV.over=0;
    //will need to change these 3 lines when implimenting position referenc??
    SV.px = 0;
    SV.py = 0;
    SV.pz = 0;
    SV.d2 = 0;
-/*!
- *use Bressenhams algorithm here
- */
-  if(axis_combo == xy){
-    sys.axis_dir[X] = GetAxisDirection(axis_a);
-    sys.axis_dir[Y] = GetAxisDirection(axis_b);
-  }else if(axis_combo == xz){
-    sys.axis_dir[X] = GetAxisDirection(axis_a);
-    sys.axis_dir[Z] = GetAxisDirection(axis_b);
-  }else if(axis_combo == yz){
-    sys.axis_dir[Y] = GetAxisDirection(axis_a);
-    sys.axis_dir[Z] = GetAxisDirection(axis_b);
-  }
+
+
   SV.Single_Dual = 1;
 
   switch(axis_combo){
     case xy:
+          //Assign function from Stepper.c to function ptr
           AxisPulse[1] = &XY_Interpolate;
+          // set the enum variable
           axis_xyz = xy;
+          //set the direction counter for absolute position
+          STPS[X].axis_dir = Direction(axis_a);
+          STPS[Y].axis_dir = Direction(axis_b);
+          //Enable the relevant axis in Stepper.c
           Multi_Axis_Enable(axis_xyz);
-
-          SV.dx   = axis_a - SV.px;           // distance to move (delta)
+          //Delta distance to move
+          SV.dx   = axis_a - SV.px;
           SV.dy   = axis_b - SV.py;
-
-          // direction to move
-          SV.dirx = SV.dx > 0? 1:-1;
-          SV.diry = SV.dy > 0? 1:-1;
-
+          
           // Set direction from sign on step value.
-          if(SV.dirx < 0)
-            DIR_StepX = CCW;
-          else
-            DIR_StepX = CW;
-
-
-          if(SV.diry < 0)
-            DIR_StepY = CCW;
-          else
-            DIR_StepY = CW;
-
-
+          //Set the Dir_bits
+          dirA = SV.dx > 0? CW:CCW;
+          dirB = SV.dy > 0? CW:CCW;
+          //inversion mask
+          DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
+          DIR_StepY = (Y_DIR_DIR ^ dirB) & 0x0001;
+          //Remove -ve values
           SV.dx = abs(SV.dx);
           SV.dy = abs(SV.dy);
-
+          //Start values for Bresenhams
           if(SV.dx > SV.dy)
-             SV.d2 = 2*(SV.dy - SV.dx);
+             SV.d2 = BresDiffVal(SV.dy,SV.dx);//2*(SV.dy - SV.dx);
           else
-             SV.d2 = 2* (SV.dx - SV.dy);
+             SV.d2 = BresDiffVal(SV.dx,SV.dy);//2* (SV.dx - SV.dy);
 
           if(SV.dx >= SV.dy){
              STPS[X].master = 1;
@@ -147,58 +142,67 @@ void DualAxisStep(long axis_a,long axis_b,int axis_combo){
 
          break;
     case xz:
+          //Assign function from Stepper.c to function ptr
           AxisPulse[1] = &XZ_Interpolate;
+          // set the enum variable
           axis_xyz = xz;
+          //set the direction counter for absolute position
+          STPS[X].axis_dir = Direction(axis_a);
+          STPS[Z].axis_dir = Direction(axis_b);
+          //Enable the relevant axis in Stepper.c
           Multi_Axis_Enable(axis_xyz);
-
-          SV.dx   = axis_a - SV.px;           // distance to move (delta)
-          SV.dz   = axis_b - SV.pz;
-
-          // direction to move
-          SV.dirx = SV.dx > 0?1:-1;
-          SV.dirz = SV.dz > 0?1:-1;
-
+          
           // Set direction from sign on step value.
-          if(SV.dirx < 0)DIR_StepX = CCW;
-          else DIR_StepX = CW;
-
-          if(SV.dirz < 0) DIR_StepZ = CCW;
-          else DIR_StepZ = CW;
-
+          //Delta distance to move
+          SV.dx   = axis_a - SV.px;
+          SV.dz   = axis_b - SV.pz;
+          //Set the Dir_bits
+          dirA = SV.dx > 0? CW:CCW;
+          dirB = SV.dz > 0? CW:CCW;
+          //Inversion mask
+          DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
+          DIR_StepZ = (Z_DIR_DIR ^ dirB) & 0x0001;
+          //Remove -ve values
           SV.dx = abs(SV.dx);
           SV.dz = abs(SV.dz);
 
-          if(SV.dx > SV.dz) d2 = 2*(SV.dz - SV.dx);
-          else d2 = 2* (SV.dx - SV.dz);
+          if(SV.dx > SV.dz) 
+             d2 = BresDiffVal(SV.dz,SV.dx);//2*(SV.dz - SV.dx);
+          else 
+             d2 = BresDiffVal(SV.dx,SV.dx);//2* (SV.dx - SV.dz);
 
           STPS[X].step_count = 0;
           STPS[Z].step_count = 0;
           AxisPulse[1]();
          break;
     case yz:
+          //Assign function from Stepper.c to function ptr
           AxisPulse[1] = &YZ_Interpolate;
+          // set the enum variable
           axis_xyz = yz;
+          STPS[Y].axis_dir = Direction(axis_a);
+          STPS[Z].axis_dir = Direction(axis_b);
+          //Enable the relevant axis in Stepper.c
           Multi_Axis_Enable(axis_xyz);
 
-          // distance to move (delta)
+          // Set direction from sign on step value.
+          //Delta distance to move
           SV.dy   = axis_a - SV.pz;
           SV.dz   = axis_b - SV.py;
-
           // direction to move
-          SV.diry = SV.dy > 0?1:-1;
-          SV.dirz = SV.dz > 0?1:-1;
-
-          // Set direction from sign on step value.
-          if(SV.diry < 0)DIR_StepY = CCW;
-          else DIR_StepY = CW;
-          if(SV.dirz < 0) DIR_StepZ = CCW;
-          else DIR_StepZ = CW;
-
+          dirA = SV.dy > 0? CW:CCW;
+          dirB = SV.dz > 0? CW:CCW;
+          //Inversion mask
+          DIR_StepY = (Y_DIR_DIR ^ dirA) & 0x0001;
+          DIR_StepZ = (Z_DIR_DIR ^ dirB) & 0x0001;
+          //Remove -ve
           SV.dy = abs(SV.dy);
           SV.dz = abs(SV.dz);
 
-         if(SV.dy > SV.dz) d2 = 2*(SV.dz - SV.dy);
-         else SV.d2 = 2* (SV.dy - SV.dz);
+         if(SV.dy > SV.dz)
+            SV.d2 = BresDiffVal(SV.dz,SV.dy);//2*(SV.dz - SV.dy);
+         else 
+            SV.d2 = BresDiffVal(SV.dy,SV.dz);//2* (SV.dy - SV.dz);
 
          STPS[Y].step_count = 0;
          STPS[Z].step_count = 0;
@@ -515,3 +519,33 @@ float hypot(float angular_travel, float linear_travel){
       return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
 }
 
+
+///////////////////////////////////////////////////////////////////
+//                       DIRECTION INDICATION                    //
+///////////////////////////////////////////////////////////////////
+
+//Return the direction counter for absolute counts +1 or -1
+int GetAxisDirection(long mm2move){
+ return(mm2move < 0)? CCW_:CW_ ;
+}
+
+///////////////////////////////////////////////////////////////////
+//                       HOMING AXIS                             //
+///////////////////////////////////////////////////////////////////
+
+//Home single axis
+void Home_Axis(double distance,long speed,int axis){
+      distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
+      distance = (distance < 0.0)? distance : -distance;
+      STPS[axis].mmToTravel = belt_steps(-max_sizes[axis]);
+      speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
+      SingleAxisStep(STPS[axis].mmToTravel,axis);
+}
+
+void Inv_Home_Axis(double distance,long speed,int axis){
+      distance = (distance > 10.0)?  10.0 : distance;
+      distance *= (distance < 0.0)?  -1.0 : 1.0;
+      STPS[axis].mmToTravel = belt_steps(distance);
+      speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
+      SingleAxisStep(STPS[axis].mmToTravel,axis);
+}

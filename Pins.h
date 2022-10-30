@@ -77,4 +77,19 @@ extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 
+///////////////////////////////////////////////////////
+//Enable pins
+#define X_EN_DIR   0
+#define Y_EN_DIR   0
+#define Z_EN_DIR   0
+#define A_EN_DIR   0
+
+/////////////////////////////////////////////////////
+//Direction pins  0 =ve 1 || = -ve
+#define X_DIR_DIR  1
+#define Y_DIR_DIR  0
+#define Z_DIR_DIR  0
+#define A_DIR_DIR  0
+
+
 #endif

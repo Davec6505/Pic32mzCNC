@@ -242,8 +242,8 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 //DMA Print strings and variable arguments formating
 int dma_printf(const char* str,...){
   int i = 0, j=0;
-  char buff[100]={0}, tmp[20];
-  char * str_arg;
+  char buff[200]={0}, tmp[20];
+  char* str_arg;
  //Variable decleration of type va_list
  va_list va;
   
@@ -286,7 +286,7 @@ int dma_printf(const char* str,...){
         case 'F':
              //convert to octal
              //_itoa(va_arg( va, int ), tmp, 8);
-             FloatToStr(va_arg(va,float),tmp);
+             FloatToStr(va_arg(va,double),tmp);
              strcpy(&buff[j], tmp);
              j += strlen(tmp);
              break;

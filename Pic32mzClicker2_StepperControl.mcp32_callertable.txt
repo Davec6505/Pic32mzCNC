@@ -13,6 +13,9 @@ main
 				UART_Calc_BRG
 			UART_Set_Active
 		Uart2InterruptSetup
+		Limit_Initialize
+			X_Min_Limit_Setup
+			Y_Min_Limit_Setup
 		DMA_global
 			DMA0
 			DMA1
@@ -20,9 +23,7 @@ main
 		DMA1_Enable
 		OutPutPulseXYZ
 		SetPinMode
-		Limit_Initialize
-			X_Min_Limit_Setup
-			Y_Min_Limit_Setup
+		SetInitialSizes
 	StepperConstants
 	disableOCx
 	DisableStepper
@@ -36,13 +37,11 @@ main
 			abs
 			sqrt_
 		SingleAxisStep
-			GetAxisDirection
 			Single_Axis_Enable
 			abs
 			Step_Cycle
 				toggleOCx
 		DualAxisStep
-			GetAxisDirection
 			Multi_Axis_Enable
 			abs
 			ClockPulse
@@ -101,6 +100,15 @@ main
 				speed_cntr_Move
 				DualAxisStep
 			__CC2DW
+		Home_Axis
+			belt_steps
+			speed_cntr_Move
+			SingleAxisStep
+		Inv_Home_Axis
+			belt_steps
+			speed_cntr_Move
+			SingleAxisStep
+	StopX
 	dma_printf
 	Debounce_X_Limits
 		Test_X_Min
@@ -118,12 +126,19 @@ main
 	__FillZeros
 	ResetSteppers
 		DisableStepper
-Y_Min_Limit
-Timer8Interrupt
-X_Min_Limit
 StepA
 	SingleStepA
 		StopA
+		Step_Cycle
+		Pulse
+	ClockPulse
+	XY_Interpolate
+	XZ_Interpolate
+	YZ_Interpolate
+Timer8Interrupt
+StepZ
+	SingleStepZ
+		StopZ
 		Step_Cycle
 		Pulse
 	ClockPulse
@@ -148,15 +163,8 @@ StepY
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
-StepZ
-	SingleStepZ
-		StopZ
-		Step_Cycle
-		Pulse
-	ClockPulse
-	XY_Interpolate
-	XZ_Interpolate
-	YZ_Interpolate
+X_Min_Limit
+Y_Min_Limit
 DMA_CH1_ISR
 DMA_CH0_ISR
 	__CC2DW

@@ -1,0 +1,13 @@
+<pic32mz>
+	<Attributes>
+		<Url></Url>
+		<Image></Image>
+		<File>PIC32MZ2048EFH100.pdf</File>
+	</Attributes>
+	<Events>
+		<OnLeftClick></OnLeftClick>
+		<OnRightClick></OnRightClick>
+		<OnDblClick>OpenFile</OnDblClick>
+		<OnMouseOver></OnMouseOver>
+	</Events>
+</pic32mz>

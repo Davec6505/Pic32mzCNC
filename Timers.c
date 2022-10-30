@@ -18,9 +18,9 @@ void InitTimer1(){
   //PRIORITY 6 SUB-PRIORTY 2
   IPC1SET       = 0x1A;
   //SET IE FLAG
-  IEC0SET       = 0x10;
+  IEC0       |= 1<<4;
   //CLEAR IF FLAG
-  IFS0CLR       = 0x10;;
+  IFS0       |= ~(1<<4);
 
   PR1           = 62500;
   TMR1          = 0;

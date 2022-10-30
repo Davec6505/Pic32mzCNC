@@ -48,15 +48,12 @@
 
 // Define global system variables
 typedef struct {
-  int     axis_dir[NoOfAxis];         // Track the direction of the axis for absolute value tracking
   uint8_t abort;                      // System abort flag. Forces exit back to main loop for reset.
   uint8_t state;                      // Tracks the current state of Grbl.
+  int8_t  homing;                     //track the axis homing -1 = none, 0 = x, 1 = y, 2 = z etc
+  uint8_t homing_cnt;                 //count the homing bounce
   uint8_t auto_start;                 // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
   volatile uint8_t execute;           // Global system runtime executor bitflag variable. See EXEC bitmasks.
-  long steps_position[NoOfAxis];      // Real-time machine (aka home) position vector in steps.
-                                      // NOTE: This may need to be a volatile variable, if problems arise.
-  double mm_position[NoOfAxis];       // Real-time machine positions in mm or inches
-  double mm_home_position[NoOfAxis];  // Home positions saved if offsets are needed for limit switches
 } system_t;
 extern system_t sys;
 
@@ -92,7 +89,5 @@ typedef struct genVars{
 }sVars;
 extern sVars SV;
 
-////////////////////////////////////////////
-//function prototypes
-int GetAxisDirection(long mm2move);
+
 #endif

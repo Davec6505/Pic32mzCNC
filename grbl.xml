@@ -1,0 +1,13 @@
+<grbl>
+	<Attributes>
+		<Url>https://github.com/grbl/grbl</Url>
+		<Image></Image>
+		<File></File>
+	</Attributes>
+	<Events>
+		<OnLeftClick></OnLeftClick>
+		<OnRightClick></OnRightClick>
+		<OnDblClick>OpenUrl</OnDblClick>
+		<OnMouseOver></OnMouseOver>
+	</Events>
+</grbl>

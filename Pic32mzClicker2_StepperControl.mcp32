@@ -16,6 +16,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Stepper.h
 =======
 =======
@@ -28,6 +29,9 @@ Value=Serial_Dma.h
 >>>>>>> patch1
 =======
 Value=Stepper.c
+>>>>>>> patch1
+=======
+Value=Kinematics.c
 >>>>>>> patch1
 =======
 Value=Main.c
@@ -84,9 +88,20 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 File1=Stepper.c
+<<<<<<< HEAD
 File2=Stepper.h
 File3=Pins.c
 Count=4
+=======
+File2=Kinematics.c
+File3=Kinematics.h
+File4=Stepper.h
+File5=Limits.c
+File6=Pins.h
+File7=Limits.h
+File8=Config.c
+Count=9
+>>>>>>> patch1
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -94,12 +109,19 @@ File0=AVR_Stepper_Acc_Dec.xml
 File1=DMA_Pic32.xml
 File2=Clicker2_Pinouts.xml
 File3=Clicker2_Dwg.xml
-Count=4
+File4=pic32mz.xml
+File5=grbl.xml
+File6=OUTPUT_COMPARE.xml
+File7=Interrupts.xml
+Count=8
 [OTHER_FILES]
 File0=AVR_StepperAccDec.pdf
 File1=DMA_Pic32.pdf
 File2=Clicker2_Dwg.pdf
-Count=3
+File3=PIC32MZ2048EFH100.pdf
+File4=OUTPUT Compare.pdf
+File5=Interrupts pic32.pdf
+Count=6
 [SEARCH_PATH]
 Path0=..\..\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\
 Path1=E:\Downloads\CNC _Papers\
