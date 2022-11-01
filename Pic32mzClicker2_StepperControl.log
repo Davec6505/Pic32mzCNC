@@ -69,6 +69,6 @@ hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
 hint: 0	1144	Used ROM (bytes): 32992 (2%)  Free ROM (bytes): 2064160 (98%)	Used ROM (bytes): 32992 (2%)  Free ROM (bytes): 2064160 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 625 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3141 ms	 
-diagnostics: 0	103	Finished successfully: 30 Oct 2022, 19:57:28	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 609 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3172 ms	 
+diagnostics: 0	103	Finished successfully: 01 Nov 2022, 20:59:46	Pic32mzClicker2_StepperControl.mcp32
