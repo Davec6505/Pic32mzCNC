@@ -40,8 +40,7 @@ bit testISR;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
 char uart_rd;
-//struct Timer TMR;
-unsigned char LCD_01_ADDRESS = 0x4E;//7E; //PCF8574T
+
 //////////////////////////////////////////
 // temp vars
 unsigned int ii;
@@ -59,10 +58,8 @@ static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
 static int cntr;
   PinMode();
-
   StepperConstants(15000,15000);
   oneShotA = 0;
-  //I2C_LCD_Out(LCD_01_ADDRESS,1,4,txt);
   a=0;
   disable_steps = 0;
   disableOCx();
@@ -70,9 +67,9 @@ static int cntr;
 
   EnableInterrupts();
   while(1){
-
+         LED1 = Test_Min(X)&0x0001;
          if(!Toggle){
-             LED1 = Limits.X_Limit_Min;//= TMR.clock >> 4;
+             //LED1 = Test_Min(X)&0x0001;//TMR.clock >> 4;
              if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
                  disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
              if(LED1 && (oneshot == 0)){
@@ -104,20 +101,21 @@ static int cntr;
          }
          //X Y Z
          if(Toggle){
-
-           if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-               Temp_Move(a);
-               a++;
-               if(a > 12)a=10;
-            //Change the value of DMADebug in the DEFINE.pld
-            //file found in the Project Level Define folder
-
-           }
-           if((Limits.X_Limit_Min)&&(sys.homing == 1)){
+         
+           if(FP(Test_Min(X))){
                sys.homing == -1;
                StopX();
                Delay_ms(200);
            }
+           if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+               Temp_Move(a);
+             //  a++;
+             //  if(a > 12)a=10;
+            //Change the value of DMADebug in the DEFINE.pld
+            //file found in the Project Level Define folder
+
+           }
+
            
 #if DMADebug > 0
             cntr++;
@@ -140,9 +138,10 @@ static int cntr;
             }
 #endif
          }
-         
         Debounce_X_Limits();
-        Debounce_Y_Limits();
+        Debounce_Limits(X);
+       // Debounce_Y_Limits();
+        Debounce_Limits(Y);
   }
 }
 
@@ -219,11 +218,12 @@ void Temp_Move(int a){
             break;
        case 10://Homing X axis
                 Home_Axis(-300.00,500,X);
+                a =12;
             break;
        case 11://Homing Y axis
                 Inv_Home_Axis(10.00,100,X);
-                Delay_ms(1000);
                 sys.homing = 1;
+                a = 12;
             break;
        case 12://Homing Y axis
 
@@ -233,30 +233,3 @@ void Temp_Move(int a){
     }
 }
 
-void LCD_Display(){
-
-
-     //line 1
-     // Find out after how many Steps before we must start deceleration.
-     sprintf(txt,"%d",STPS[0].accel_lim);
-     I2C_LCD_Out(LCD_01_ADDRESS,1,1,txt);
-     // Find step to start decleration.
-     sprintf(txt,"%d",STPS[0].decel_start);
-     I2C_LCD_Out(LCD_01_ADDRESS,1,11,txt);
-
-     //Line 2
-     // Set accelration/speed/deccelration  by  step delay .
-     sprintf(txt,"%d",STPS[0].step_delay);
-     I2C_LCD_Out(LCD_01_ADDRESS,2,1,txt);
-     // Set max speed limit, by calc min_delay to use in timer.
-     sprintf(txt,"%d",STPS[0].min_delay);
-     I2C_LCD_Out(LCD_01_ADDRESS,2,11,txt);
-
-     //Line 3
-     // Find out after how many steps does the speed hit the max speed limit.
-     sprintf(txt,"%d",STPS[0].max_step_lim);
-     I2C_LCD_Out(LCD_01_ADDRESS,3,1,txt);
-     // decelrate  value start
-     sprintf(txt,"%d",STPS[0].decel_val);
-     I2C_LCD_Out(LCD_01_ADDRESS,3,11,txt);
-}

@@ -14,7 +14,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Kinematics.c
+Value=Main.c
 =======
 Value=Main.c
 >>>>>>> patch2
@@ -69,15 +69,13 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Stepper.c
-File2=Kinematics.c
-File3=Kinematics.h
-File4=Stepper.h
-File5=Limits.c
-File6=Pins.h
-File7=Limits.h
-File8=Config.c
-Count=9
+File1=Limits.h
+File2=Limits.c
+File3=Kinematics.c
+File4=Kinematics.h
+File5=Config.c
+File6=Config.h
+Count=7
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -136,7 +134,8 @@ File9=C_Math
 File10=FLASH
 File11=FFT
 File12=TwiddleFactors
-Count=13
+File13=MemManager
+Count=14
 [INTERRUPT_DEFS]
 EBASE=9FC01000
 VECTOR_SPACEING=32

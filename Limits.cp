@@ -206,7 +206,7 @@ char *_strrev (char *str);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 54 "c:/users/git/pic32mzcnc/gcode.h"
+#line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  uint8_t status_code;
  uint8_t motion_mode;
@@ -596,29 +596,55 @@ unsigned int Y_Min_DeBnc;
 unsigned int Z_Min_DeBnc;
 unsigned int A_Min_DeBnc;
 };
-
-
-
 extern struct limits Limits;
 
 
+
+struct limit {
+
+char Limit_Min: 1;
+char Limit_Max: 1;
+char T0: 1;
+char T1: 1;
+char T2: 1;
+char T4: 1;
+
+long Soft_Limit_Min;
+
+unsigned int Min_DeBnc;
+unsigned int last_cnt_min;
+};
+
+
+
 void Limit_Initialize();
+
 void X_Min_Limit_Setup();
 void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+char Test_Min(int axis);
 char Test_X_Min();
 char Test_Y_Min();
+
+void Reset_Min_Limit(int axis);
 void Reset_X_Min_Limit();
 void Reset_Y_Min_Limit();
+
+void Debounce_Limits(int axis);
 void Debounce_X_Limits();
 void Debounce_Y_Limits();
+
+void Reset_Min_Debounce(int axis);
 void Reset_X_Min_Debounce();
 void Reset_Y_Min_Debounce();
+
+char FP(char new_val);
+char FN(char new_val);
 #line 7 "C:/Users/Git/Pic32mzCNC/Limits.c"
 struct limits Limits;
-
+static struct limit Limit[ 6 ];
 
 
 static unsigned int last_cntX_min;
@@ -646,7 +672,10 @@ sbit TY3 at bits.B7;
 
 
 
+
 void Limit_Initialize(){
+
+
 
  X_Min_Limit_Dir = 1;
  Y_Min_Limit_Dir = 1;
@@ -711,6 +740,9 @@ void Y_Min_Limit_Setup(){
 
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
  INT1IF_bit = 0;
+ if(!Limit[X].Limit_Min)
+ Limit[X].Limit_Min = 1;
+
  if(!Limits.X_Limit_Min)
  Limits.X_Limit_Min = 1;
 }
@@ -719,6 +751,9 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  INT2IF_bit = 0;
+ if(!Limit[Y].Limit_Min)
+ Limit[Y].Limit_Min = 1;
+
  if(!Limits.Y_Limit_Min)
  Limits.Y_Limit_Min = 1;
 }
@@ -729,6 +764,12 @@ void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
 
 
 
+
+
+
+char Test_Min(int axis){
+ return (Limit[axis].Limit_Min == 1)? 1:0;
+}
 
 char Test_X_Min(){
  return (Limits.X_Limit_Min == 1)? 1:0;
@@ -745,6 +786,9 @@ char Test_Y_Min(){
 
 
 
+void Reset_Min_Limit(int axis){
+ Limit[axis].Limit_Min = ~Limit[axis].Limit_Min;
+}
 
 
 void Reset_X_Min_Limit(){
@@ -762,7 +806,10 @@ void Reset_Y_Min_Limit(){
 
 
 
-
+void Reset_Min_Debounce(int axis){
+ Limit[axis].Min_DeBnc = 0;
+ Limit[axis].last_cnt_min = 0;
+}
 
 
 void Reset_X_Min_Debounce(){
@@ -779,8 +826,36 @@ void Reset_Y_Min_Debounce(){
 
 
 
+
+void Debounce_Limits(int axis){
+ Limit[axis].T0 = (TMR.clock >>  0 )&1;
+ Limit[axis].T1 = Test_Min(axis)&0x0001;
+
+ if((!X_Min_Limit)&&(Limit[axis].T1)){
+ if(Limit[axis].T0 && !Limit[axis].T2){
+ Limit[axis].T2 = 1;
+ Limit[axis].Min_DeBnc++;
+
+ dma_printf("Limit[%d]:=%d \r\n",axis,Limit[axis].Min_DeBnc);
+
+ if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
+ Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
+ }
+ }else if(!TX0 && TX2)
+ Limit[axis].T2=0;
+
+ if(Limit[axis].Min_DeBnc >  0 )
+ Reset_Min_Limit(axis);
+
+ }else if(X_Min_Limit){
+ Reset_Min_Debounce(axis);
+ }
+
+}
+
+
 void Debounce_X_Limits(){
- TX0 = (TMR.clock >>  1 )&1;
+ TX0 = (TMR.clock >>  0 )&1;
  TX1 = Test_X_Min();
 
  if((!X_Min_Limit)&&(TX1)){
@@ -796,7 +871,7 @@ void Debounce_X_Limits(){
  }else if(!TX0 && TX2)
  TX2=0;
 
- if(Limits.X_Min_DeBnc >  1 )
+ if(Limits.X_Min_DeBnc >  0 )
  Reset_X_Min_Limit();
 
  }else if(X_Min_Limit){
@@ -808,7 +883,7 @@ void Debounce_X_Limits(){
 
 
  void Debounce_Y_Limits(){
- TY0 = (TMR.clock >>  1 )&1;
+ TY0 = (TMR.clock >>  0 )&1;
  TY1 = Test_Y_Min();
 
  if((!Y_Min_Limit)&&(TY1)){
@@ -824,10 +899,35 @@ void Debounce_X_Limits(){
  }else if(!TY0 && TY2)
  TY2=0;
 
- if(Limits.Y_Min_DeBnc >  1 )
+ if(Limits.Y_Min_DeBnc >  0 )
  Reset_Y_Min_Limit();
 
  }else if(Y_Min_Limit){
  Reset_Y_Min_Debounce();
  }
+}
+
+
+
+
+
+
+
+char FP(char new_val){
+static char old_val;
+ if(old_val < new_val){
+ old_val = new_val;
+ return 1;
+ }
+ return 0;
+}
+
+
+char FN(char new_val){
+static char old_val;
+ if(new_val < old_val){
+ old_val = new_val;
+ return 1;
+ }
+ return 0;
 }

@@ -5,6 +5,7 @@
 void PinMode(){
 
      DI();
+     
      SYSKEY = 0xAA996655;
      SYSKEY = 0x556699AA;
      CFGCONbits.OCACLK = 1;
@@ -67,7 +68,11 @@ void PinMode(){
      PPS_Mapping_NoLock(_RPF3, _INPUT, _INT1);     //X_Min_Limit
      PPS_Mapping_NoLock(_RPB15, _INPUT, _INT2);    //Y_Min_Limit
     Lock_IOLOCK();
-
+    
+//////////////////////////////////////////////////
+//Memory manager initialize
+  // MM_Init();
+   
 //////////////////////////////////////////////////
 //TMR 1 & 8 config
    InitTimer1();

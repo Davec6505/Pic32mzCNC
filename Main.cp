@@ -239,7 +239,7 @@ char *_strrev (char *str);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 54 "c:/users/git/pic32mzcnc/gcode.h"
+#line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  uint8_t status_code;
  uint8_t motion_mode;
@@ -577,26 +577,52 @@ unsigned int Y_Min_DeBnc;
 unsigned int Z_Min_DeBnc;
 unsigned int A_Min_DeBnc;
 };
-
-
-
 extern struct limits Limits;
 
 
+
+struct limit {
+
+char Limit_Min: 1;
+char Limit_Max: 1;
+char T0: 1;
+char T1: 1;
+char T2: 1;
+char T4: 1;
+
+long Soft_Limit_Min;
+
+unsigned int Min_DeBnc;
+unsigned int last_cnt_min;
+};
+
+
+
 void Limit_Initialize();
+
 void X_Min_Limit_Setup();
 void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+char Test_Min(int axis);
 char Test_X_Min();
 char Test_Y_Min();
+
+void Reset_Min_Limit(int axis);
 void Reset_X_Min_Limit();
 void Reset_Y_Min_Limit();
+
+void Debounce_Limits(int axis);
 void Debounce_X_Limits();
 void Debounce_Y_Limits();
+
+void Reset_Min_Debounce(int axis);
 void Reset_X_Min_Debounce();
 void Reset_Y_Min_Debounce();
+
+char FP(char new_val);
+char FN(char new_val);
 #line 31 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -627,7 +653,6 @@ bit oneShotA; sfr;
 bit oneShotB; sfr;
 char uart_rd;
 
-unsigned char LCD_01_ADDRESS = 0x4E;
 
 
 unsigned int ii;
@@ -645,10 +670,8 @@ static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
 static int cntr;
  PinMode();
-
  StepperConstants(15000,15000);
  oneShotA = 0;
-
  a=0;
  disable_steps = 0;
  disableOCx();
@@ -656,9 +679,9 @@ static int cntr;
 
  EnableInterrupts();
  while(1){
-
+ LED1 = Test_Min(X)&0x0001;
  if(!Toggle){
- LED1 = Limits.X_Limit_Min;
+
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
  if(LED1 && (oneshot == 0)){
@@ -691,19 +714,20 @@ static int cntr;
 
  if(Toggle){
 
- if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
- Temp_Move(a);
- a++;
- if(a > 12)a=10;
-
-
-
- }
- if((Limits.X_Limit_Min)&&(sys.homing == 1)){
+ if(FP(Test_Min(X))){
  sys.homing == -1;
  StopX();
  Delay_ms(200);
  }
+ if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+ Temp_Move(a);
+
+
+
+
+
+ }
+
 
 
  cntr++;
@@ -712,14 +736,15 @@ static int cntr;
  dma_printf("a:=%d:%l:%d:abs:=%l \r\n",
  a,STPS[X].step_count,STPS[X].axis_dir,
  STPS[X].steps_position);
-#line 139 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 137 "C:/Users/Git/Pic32mzCNC/Main.c"
  cntr = 0;
  }
 
  }
-
  Debounce_X_Limits();
- Debounce_Y_Limits();
+ Debounce_Limits(X);
+
+ Debounce_Limits(Y);
  }
 }
 
@@ -778,7 +803,7 @@ void Temp_Move(int a){
  case 8:
  STPS[A].mmToTravel = belt_steps(150.00);
  speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
-#line 212 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 211 "C:/Users/Git/Pic32mzCNC/Main.c"
  SingleAxisStep(STPS[A].mmToTravel,A);
  break;
  case 9:
@@ -789,11 +814,12 @@ void Temp_Move(int a){
  break;
  case 10:
  Home_Axis(-300.00,500,X);
+ a =12;
  break;
  case 11:
  Inv_Home_Axis(10.00,100,X);
- Delay_ms(1000);
  sys.homing = 1;
+ a = 12;
  break;
  case 12:
 
@@ -801,32 +827,4 @@ void Temp_Move(int a){
  default: a = 0;
  break;
  }
-}
-
-void LCD_Display(){
-
-
-
-
- sprintf(txt,"%d",STPS[0].accel_lim);
- I2C_LCD_Out(LCD_01_ADDRESS,1,1,txt);
-
- sprintf(txt,"%d",STPS[0].decel_start);
- I2C_LCD_Out(LCD_01_ADDRESS,1,11,txt);
-
-
-
- sprintf(txt,"%d",STPS[0].step_delay);
- I2C_LCD_Out(LCD_01_ADDRESS,2,1,txt);
-
- sprintf(txt,"%d",STPS[0].min_delay);
- I2C_LCD_Out(LCD_01_ADDRESS,2,11,txt);
-
-
-
- sprintf(txt,"%d",STPS[0].max_step_lim);
- I2C_LCD_Out(LCD_01_ADDRESS,3,1,txt);
-
- sprintf(txt,"%d",STPS[0].decel_val);
- I2C_LCD_Out(LCD_01_ADDRESS,3,11,txt);
 }

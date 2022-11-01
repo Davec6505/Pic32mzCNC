@@ -5,7 +5,7 @@
 /////////////////////////////////////
 //Limits variables
 struct limits Limits;
-
+static struct limit Limit[NoOfAxis];
 //////////////////////////////////////
 //static local variables
 static unsigned int last_cntX_min;
@@ -31,10 +31,13 @@ sbit TY3 at bits.B7;
 //                LIMITS INITAILIZE                 //
 //////////////////////////////////////////////////////
 
+
 /////////////////////////////////////
 //Configure Pins for Limits as inputs
 void Limit_Initialize(){
+
    //set the limit ports to inputs
+
    X_Min_Limit_Dir = 1;
    Y_Min_Limit_Dir = 1;
 
@@ -98,6 +101,9 @@ void Y_Min_Limit_Setup(){
 //X Min Limit interrupt
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
    INT1IF_bit = 0;
+   if(!Limit[X].Limit_Min)
+        Limit[X].Limit_Min = 1;
+        
    if(!Limits.X_Limit_Min)
         Limits.X_Limit_Min = 1;
 }
@@ -106,6 +112,9 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 //Y Min Limit interrupt
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
    INT2IF_bit = 0;
+   if(!Limit[Y].Limit_Min)
+      Limit[Y].Limit_Min = 1;
+        
    if(!Limits.Y_Limit_Min)
       Limits.Y_Limit_Min = 1;
 }
@@ -117,6 +126,12 @@ void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
 
 ///////////////////////////////////////////////////////////
 //Get the value of the X Min Limit interrupt
+
+
+char Test_Min(int axis){
+   return (Limit[axis].Limit_Min == 1)? 1:0;
+}
+
 char Test_X_Min(){
   return (Limits.X_Limit_Min == 1)? 1:0;
 }
@@ -132,6 +147,9 @@ char Test_Y_Min(){
 //                  LIMIT BITS RESET                     //
 ///////////////////////////////////////////////////////////
 
+void Reset_Min_Limit(int axis){
+   Limit[axis].Limit_Min = ~Limit[axis].Limit_Min;
+}
 ///////////////////////////////////////////////////////////
 //Reset X_Min_Limit pn oneshot bit
 void Reset_X_Min_Limit(){
@@ -149,7 +167,10 @@ void Reset_Y_Min_Limit(){
 /////////////////////////////////////////////////////////
 //         Debounce the resetting Limits               //
 /////////////////////////////////////////////////////////
-
+void Reset_Min_Debounce(int axis){
+  Limit[axis].Min_DeBnc = 0;
+  Limit[axis].last_cnt_min = 0;
+}
 ///////////////////////////////////////////////////////////
 //Reset X_Min debounce Count
 void Reset_X_Min_Debounce(){
@@ -164,6 +185,34 @@ void Reset_Y_Min_Debounce(){
   last_cntY_min = 0;
 }
 
+
+////////////////////////////////////////////////////////
+//
+void Debounce_Limits(int axis){
+   Limit[axis].T0 = (TMR.clock >> BASE_TMR)&1;
+   Limit[axis].T1 = Test_Min(axis)&0x0001;
+
+   if((!X_Min_Limit)&&(Limit[axis].T1)){
+      if(Limit[axis].T0 && !Limit[axis].T2){
+         Limit[axis].T2 = 1;
+         Limit[axis].Min_DeBnc++;
+      #if DMADebug == 1
+         dma_printf("Limit[%d]:=%d \r\n",axis,Limit[axis].Min_DeBnc);
+      #endif
+        if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
+           Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
+        }
+      }else if(!TX0 && TX2)
+         Limit[axis].T2=0;
+
+      if(Limit[axis].Min_DeBnc > X_DEBOUNCE_COUNT)
+          Reset_Min_Limit(axis);
+
+   }else if(X_Min_Limit){
+         Reset_Min_Debounce(axis);
+   }
+
+}
 ////////////////////////////////////////////////////////
 //Debounce the resetting of X Limit Min
 void Debounce_X_Limits(){
@@ -217,4 +266,29 @@ void Debounce_X_Limits(){
    }else if(Y_Min_Limit){
          Reset_Y_Min_Debounce();
    }
+}
+
+
+/////////////////////////////////////////////////////////
+//                      Edge triggers                  //
+/////////////////////////////////////////////////////////
+
+//positive edge
+char FP(char new_val){
+static char old_val;
+    if(old_val < new_val){
+      old_val = new_val;
+      return 1;
+    }
+   return 0;
+}
+
+//negative edge
+char FN(char new_val){
+static char old_val;
+    if(new_val < old_val){
+      old_val = new_val;
+      return 1;
+    }
+   return 0;
 }

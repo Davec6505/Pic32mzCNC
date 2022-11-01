@@ -23095,6 +23095,7 @@ ddrmode
 ddrmode
 ddrmode_bit
 ddrmode_sqi1con_bit
+debounce_limits
 debounce_x_limits
 debounce_y_limits
 debug
@@ -30025,6 +30026,7 @@ fmiien_bf1devcfg3_bit
 fmiien_bf2devcfg3_bit
 fmiien_bit
 fmiien_ubadevcfg3_bit
+fn
 fnosc
 fnosc
 fnosc
@@ -30069,6 +30071,7 @@ forcehs_bit
 forcehst
 forcehst
 forcehst_bit
+fp
 fplliclk
 fplliclk
 fplliclk
@@ -30301,6 +30304,7 @@ frcrdy_bit
 frdy
 frdy
 frdy_bit
+free
 freset
 freset
 freset
@@ -38552,8 +38556,6 @@ lbwpulock
 lbwpulock
 lbwpulock
 lbwpulock_bit
-lcd_01_address
-lcd_display
 ldexp
 ldiv
 leadscrew_steps
@@ -38901,6 +38903,7 @@ macmaxf9
 macmaxf9_bit
 macmaxf9_emacxmaxf_bit
 main
+malloc
 manfc
 manfc
 manfc
@@ -39133,6 +39136,13 @@ min102_bit
 min103
 min103_alrmtime_bit
 min103_bit
+mm_error_
+mm_freememtable
+mm_init
+mm_largestfreememblock
+mm_nrfreeblocksused
+mm_possiblyfragmented
+mm_totalfreememsize
 mm2in
 mode
 mode
@@ -40312,6 +40322,7 @@ notvalid
 notvalid
 notvalid_bit
 notvalid_emacxmind_bit
+nr_free_blocks
 nvmaddr
 nvmaddrbits
 nvmaddrclr
@@ -47131,6 +47142,8 @@ reset
 reset
 reset_
 reset_bit
+reset_min_debounce
+reset_min_limit
 reset_usbcsr0_bit
 reset_x_min_debounce
 reset_x_min_limit
@@ -62855,6 +62868,7 @@ terrcnt6_c2trec_bit
 terrcnt7
 terrcnt7_bit
 terrcnt7_c2trec_bit
+test_min
 test_x_min
 test_y_min
 testbp
