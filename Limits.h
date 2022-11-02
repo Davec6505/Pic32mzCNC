@@ -23,6 +23,7 @@
   #define BASE_TMR 4
 #endif
 
+#define INV 1
 //////////////////////////////////////////////
 //SFR's
 extern sbit TX0;
@@ -78,17 +79,23 @@ extern struct limits Limits;
 //Structs enums and Unions
 struct limit {
 //hard limits
+char Pin: 1;
 char Limit_Min: 1;
 char Limit_Max: 1;
 char T0: 1;
 char T1: 1;
 char T2: 1;
 char T4: 1;
-//Soft limits
-long Soft_Limit_Min;
+char new_val;
+char old_val;
+
 //hard limits debounce counters
 unsigned int Min_DeBnc;
 unsigned int last_cnt_min;
+
+//Soft limits
+long Soft_Limit_Min;
+
 };
 
 //////////////////////////////////////////////
@@ -100,6 +107,7 @@ void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 char Test_X_Min();
 char Test_Y_Min();
@@ -116,6 +124,6 @@ void Reset_Min_Debounce(int axis);
 void Reset_X_Min_Debounce();
 void Reset_Y_Min_Debounce();
 
-char FP(char new_val);
-char FN(char new_val);
+char FP(int axis);
+char FN(int axis);
 #endif

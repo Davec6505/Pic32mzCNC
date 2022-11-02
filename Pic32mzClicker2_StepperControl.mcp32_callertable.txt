@@ -32,7 +32,8 @@ main
 	EnStepperY
 	EnStepperZ
 	EnStepperA
-	FP
+	FN
+		Test_Min
 	StopX
 	Temp_Move
 		belt_steps
@@ -112,12 +113,6 @@ main
 			speed_cntr_Move
 			SingleAxisStep
 	dma_printf
-	Debounce_X_Limits
-		Test_X_Min
-		dma_printf
-		Reset_X_Min_Limit
-		Reset_X_Min_Debounce
-		__CC2DW
 	Debounce_Limits
 		Test_Min
 		dma_printf

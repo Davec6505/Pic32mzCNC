@@ -529,7 +529,7 @@ double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 28 "c:/users/git/pic32mzcnc/limits.h"
+#line 29 "c:/users/git/pic32mzcnc/limits.h"
 extern sbit TX0;
 extern sbit TX1;
 extern sbit TX2;
@@ -583,17 +583,23 @@ extern struct limits Limits;
 
 struct limit {
 
+char Pin: 1;
 char Limit_Min: 1;
 char Limit_Max: 1;
 char T0: 1;
 char T1: 1;
 char T2: 1;
 char T4: 1;
+char new_val;
+char old_val;
 
-long Soft_Limit_Min;
 
 unsigned int Min_DeBnc;
 unsigned int last_cnt_min;
+
+
+long Soft_Limit_Min;
+
 };
 
 
@@ -605,6 +611,7 @@ void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 char Test_X_Min();
 char Test_Y_Min();
@@ -621,8 +628,8 @@ void Reset_Min_Debounce(int axis);
 void Reset_X_Min_Debounce();
 void Reset_Y_Min_Debounce();
 
-char FP(char new_val);
-char FN(char new_val);
+char FP(int axis);
+char FN(int axis);
 #line 31 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -659,7 +666,7 @@ unsigned int ii;
 unsigned long testOcr;
 static unsigned int a;
 
-
+char (*fp)(int);
 
 
 void main() {
@@ -669,6 +676,7 @@ unsigned char j;
 static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
 static int cntr;
+ fp = Test_Min;
  PinMode();
  StepperConstants(15000,15000);
  oneShotA = 0;
@@ -714,13 +722,19 @@ static int cntr;
 
  if(Toggle){
 
- if(FP(Test_Min(X))){
- sys.homing == -1;
+ if(FN(X)==1){
+ sys.homing == 2;
  StopX();
- Delay_ms(200);
+ a= 11;
+ }
+
+ if(sys.homing == 1){
+ sys.homing == 2;
+ a = 10;
  }
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
  Temp_Move(a);
+
 
 
 
@@ -736,12 +750,12 @@ static int cntr;
  dma_printf("a:=%d:%l:%d:abs:=%l \r\n",
  a,STPS[X].step_count,STPS[X].axis_dir,
  STPS[X].steps_position);
-#line 137 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 144 "C:/Users/Git/Pic32mzCNC/Main.c"
  cntr = 0;
  }
 
  }
- Debounce_X_Limits();
+
  Debounce_Limits(X);
 
  Debounce_Limits(Y);
@@ -803,7 +817,7 @@ void Temp_Move(int a){
  case 8:
  STPS[A].mmToTravel = belt_steps(150.00);
  speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
-#line 211 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 218 "C:/Users/Git/Pic32mzCNC/Main.c"
  SingleAxisStep(STPS[A].mmToTravel,A);
  break;
  case 9:
@@ -818,7 +832,6 @@ void Temp_Move(int a){
  break;
  case 11:
  Inv_Home_Axis(10.00,100,X);
- sys.homing = 1;
  a = 12;
  break;
  case 12:

@@ -129,7 +129,7 @@ void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
 
 
 char Test_Min(int axis){
-   return (Limit[axis].Limit_Min == 1)? 1:0;
+   return ((Limit[axis].Limit_Min & 0x0001))? 1:0;
 }
 
 char Test_X_Min(){
@@ -148,18 +148,18 @@ char Test_Y_Min(){
 ///////////////////////////////////////////////////////////
 
 void Reset_Min_Limit(int axis){
-   Limit[axis].Limit_Min = ~Limit[axis].Limit_Min;
+   Limit[axis].Limit_Min = INV ^ Limit[axis].Limit_Min;
 }
 ///////////////////////////////////////////////////////////
 //Reset X_Min_Limit pn oneshot bit
 void Reset_X_Min_Limit(){
-  Limits.X_Limit_Min = ~Limits.X_Limit_Min;
+  Limits.X_Limit_Min = INV ^ Limits.X_Limit_Min;
 }
 
 //////////////////////////////////////////////////////////
 //Reset Y_Min_Limit pn oneshot bit
 void Reset_Y_Min_Limit(){
-  Limits.Y_Limit_Min = ~Limits.Y_Limit_Min;
+  Limits.Y_Limit_Min = INV ^ Limits.Y_Limit_Min;
 }
 
 
@@ -191,24 +191,26 @@ void Reset_Y_Min_Debounce(){
 void Debounce_Limits(int axis){
    Limit[axis].T0 = (TMR.clock >> BASE_TMR)&1;
    Limit[axis].T1 = Test_Min(axis)&0x0001;
-
-   if((!X_Min_Limit)&&(Limit[axis].T1)){
-      if(Limit[axis].T0 && !Limit[axis].T2){
+   
+   Limit[axis].Pin = XTest_Port_Pins(axis);
+   
+   if((!Limit[axis].Pin)&&(Limit[axis].T1)){
+      if(!Limit[axis].T0 && !Limit[axis].T2){
          Limit[axis].T2 = 1;
          Limit[axis].Min_DeBnc++;
       #if DMADebug == 1
-         dma_printf("Limit[%d]:=%d \r\n",axis,Limit[axis].Min_DeBnc);
+         dma_printf("Limit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
       #endif
         if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
            Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
         }
-      }else if(!TX0 && TX2)
-         Limit[axis].T2=0;
+      }else if(!Limit[axis].T0 && Limit[axis].T2)
+         Limit[axis].T2 = 0;
 
-      if(Limit[axis].Min_DeBnc > X_DEBOUNCE_COUNT)
+      if(Limit[axis].Min_DeBnc > DEBOUNCE_COUNT)
           Reset_Min_Limit(axis);
 
-   }else if(X_Min_Limit){
+   }else if(Limit[axis].Pin){
          Reset_Min_Debounce(axis);
    }
 
@@ -232,7 +234,7 @@ void Debounce_X_Limits(){
       }else if(!TX0 && TX2)
          TX2=0;
 
-      if(Limits.X_Min_DeBnc > X_DEBOUNCE_COUNT)
+      if(Limits.X_Min_DeBnc > DEBOUNCE_COUNT)
           Reset_X_Min_Limit();
 
    }else if(X_Min_Limit){
@@ -260,7 +262,7 @@ void Debounce_X_Limits(){
       }else if(!TY0 && TY2)
          TY2=0;
 
-      if(Limits.Y_Min_DeBnc > Y_DEBOUNCE_COUNT)
+      if(Limits.Y_Min_DeBnc > DEBOUNCE_COUNT)
           Reset_Y_Min_Limit();
           
    }else if(Y_Min_Limit){
@@ -274,21 +276,47 @@ void Debounce_X_Limits(){
 /////////////////////////////////////////////////////////
 
 //positive edge
-char FP(char new_val){
-static char old_val;
-    if(old_val < new_val){
-      old_val = new_val;
+char FP(int axis){
+    Limit[axis].new_val = Test_Min(axis) & 0x0001;
+    if(Limit[axis].old_val < Limit[axis].new_val){
+      Limit[axis].old_val = Limit[axis].new_val;
       return 1;
     }
    return 0;
 }
 
 //negative edge
-char FN(char new_val){
-static char old_val;
-    if(new_val < old_val){
-      old_val = new_val;
+char FN(int axis){
+     Limit[axis].new_val = Test_Min(axis) & 0x0001;
+    if(Limit[axis].old_val > Limit[axis].new_val){
+      Limit[axis].old_val = Limit[axis].new_val;
       return 1;
     }
    return 0;
 }
+
+/////////////////////////////////////////////////////////
+//        TEST PORT PINS FOR REAL VALUES               //
+/////////////////////////////////////////////////////////
+
+char Test_Port_Pins(int axis){
+char tmp = 0;
+    switch(axis){
+        case X:
+             tmp = X_Min_Limit & 0x0001;
+             break;
+        case Y:
+             tmp = Y_Min_Limit & 0x0001;
+             break;
+        case Z:
+             tmp = Z_Min_Limit & 0x0001;
+             break;
+        case A:
+             tmp = A_Min_Limit & 0x0001;
+             break;
+        default: tmp = -1;
+             break;
+    }
+     return tmp;
+}
+

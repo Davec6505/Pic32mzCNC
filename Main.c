@@ -47,7 +47,7 @@ unsigned int ii;
 unsigned long testOcr;
 static unsigned int a;
 
-
+char (*fp)(int);
 /////////////////////////////////////////
 //main function
 void main() {
@@ -57,6 +57,7 @@ unsigned char j;
 static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
 static int cntr;
+  fp = Test_Min;
   PinMode();
   StepperConstants(15000,15000);
   oneShotA = 0;
@@ -102,13 +103,19 @@ static int cntr;
          //X Y Z
          if(Toggle){
          
-           if(FP(Test_Min(X))){
-               sys.homing == -1;
+           if(FN(X)==1){
+               sys.homing == 2;
                StopX();
-               Delay_ms(200);
+               a= 11;
+           }
+
+           if(sys.homing == 1){
+              sys.homing == 2;
+              a = 10;
            }
            if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
                Temp_Move(a);
+
              //  a++;
              //  if(a > 12)a=10;
             //Change the value of DMADebug in the DEFINE.pld
@@ -138,7 +145,7 @@ static int cntr;
             }
 #endif
          }
-        Debounce_X_Limits();
+        //Debounce_X_Limits();
         Debounce_Limits(X);
        // Debounce_Y_Limits();
         Debounce_Limits(Y);
@@ -222,7 +229,6 @@ void Temp_Move(int a){
             break;
        case 11://Homing Y axis
                 Inv_Home_Axis(10.00,100,X);
-                sys.homing = 1;
                 a = 12;
             break;
        case 12://Homing Y axis
@@ -232,4 +238,3 @@ void Temp_Move(int a){
               break;
     }
 }
-

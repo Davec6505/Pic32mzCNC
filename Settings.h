@@ -32,10 +32,8 @@
 
 /////////////////////////////////////////////////////////
 //Set the Limit Debounce  counter max count
-#define X_DEBOUNCE_COUNT 0
-#define Y_DEBOUNCE_COUNT 0
-#define Z_DEBOUNCE_COUNT 0
-#define A_DEBOUNCE_COUNT 0
+#define DEBOUNCE_COUNT 0
+
 
 ///////////////////////////////////////////////////////
 //Debounce timer counter base pulse uncomment the base

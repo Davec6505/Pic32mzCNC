@@ -14,7 +14,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Main.c
+Value=Limits.c
 =======
 Value=Main.c
 >>>>>>> patch2
@@ -73,8 +73,8 @@ File1=Limits.h
 File2=Limits.c
 File3=Kinematics.c
 File4=Kinematics.h
-File5=Config.c
-File6=Config.h
+File5=Settings.h
+File6=Pins.c
 Count=7
 [EEPROM]
 Count=0
