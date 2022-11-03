@@ -62870,6 +62870,7 @@ terrcnt7
 terrcnt7_bit
 terrcnt7_c2trec_bit
 test_min
+test_port_pins
 test_x_min
 test_y_min
 testbp

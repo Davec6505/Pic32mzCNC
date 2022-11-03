@@ -591,8 +591,8 @@ char T1: 1;
 char T2: 1;
 char T4: 1;
 char new_val;
-char old_val;
-
+char old_Pval;
+char old_Fval;
 
 unsigned int Min_DeBnc;
 unsigned int last_cnt_min;
@@ -688,6 +688,7 @@ static int cntr;
  EnableInterrupts();
  while(1){
  LED1 = Test_Min(X)&0x0001;
+
  if(!Toggle){
 
  if(disable_steps <=  10 )
@@ -698,8 +699,6 @@ static int cntr;
  oneshot = 0;
 
  }
-
-
 
  if(!SW2){
  Toggle = 0;
@@ -715,28 +714,32 @@ static int cntr;
  EnStepperZ();
  EnStepperA();
  cntr = 0;
- sys.homing = 1;
+ sys.homing = 2;
  sys.homing_cnt = 0;
  a = 10;
  }
 
  if(Toggle){
 
- if(FN(X)==1){
- sys.homing == 2;
- StopX();
+ if(FP(Y)){
+ StopY();
  a= 11;
  }
 
+ if(FN(Y)){
+ sys.homing = 1;
+ }
+
  if(sys.homing == 1){
- sys.homing == 2;
  a = 10;
+ sys.homing= 2;
  }
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
  Temp_Move(a);
-
-
-
+ if(a < 9){
+ a++;
+ if(a == 9)a=10;
+ }
 
 
 
@@ -750,7 +753,7 @@ static int cntr;
  dma_printf("a:=%d:%l:%d:abs:=%l \r\n",
  a,STPS[X].step_count,STPS[X].axis_dir,
  STPS[X].steps_position);
-#line 144 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 147 "C:/Users/Git/Pic32mzCNC/Main.c"
  cntr = 0;
  }
 
@@ -817,7 +820,7 @@ void Temp_Move(int a){
  case 8:
  STPS[A].mmToTravel = belt_steps(150.00);
  speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
-#line 218 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 221 "C:/Users/Git/Pic32mzCNC/Main.c"
  SingleAxisStep(STPS[A].mmToTravel,A);
  break;
  case 9:
@@ -827,11 +830,11 @@ void Temp_Move(int a){
  r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
  break;
  case 10:
- Home_Axis(-300.00,500,X);
+ Home_Axis(-300.00,500,Y);
  a =12;
  break;
  case 11:
- Inv_Home_Axis(10.00,100,X);
+ Inv_Home_Axis(10.00,100,Y);
  a = 12;
  break;
  case 12:

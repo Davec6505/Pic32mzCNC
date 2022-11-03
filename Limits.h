@@ -87,8 +87,8 @@ char T1: 1;
 char T2: 1;
 char T4: 1;
 char new_val;
-char old_val;
-
+char old_Pval;
+char old_Fval;
 //hard limits debounce counters
 unsigned int Min_DeBnc;
 unsigned int last_cnt_min;
