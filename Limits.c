@@ -13,7 +13,7 @@ static unsigned int last_cntY_min;
 static unsigned int last_cntZ_min;
 static unsigned int last_cntA_min;
 
-
+/*
 /////////////////////////////////////
 //Timer debounce bits
 static char bits;
@@ -26,7 +26,7 @@ sbit TY1 at bits.B5;
 sbit TY2 at bits.B6;
 sbit TY3 at bits.B7;
 
-
+*/
 //////////////////////////////////////////////////////
 //                LIMITS INITAILIZE                 //
 //////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ void Limit_Initialize(){
    last_cntY_min = 0;
    last_cntZ_min = 0;
    last_cntA_min = 0;
-   
+
    //disable external interrupts 1 and 2
    IEC0  |= 0x21 << 8;
 
@@ -132,17 +132,6 @@ char Test_Min(int axis){
    return (Limit[axis].Limit_Min & 0x0001)? 1:0;
 }
 
-char Test_X_Min(){
-  return (Limits.X_Limit_Min == 1)? 1:0;
-}
-
-
-//Get the value of the Y Min Limit interrupt
-char Test_Y_Min(){
-  return (Limits.Y_Limit_Min == 1)? 1:0;
-}
-
-
 ///////////////////////////////////////////////////////////
 //                  LIMIT BITS RESET                     //
 ///////////////////////////////////////////////////////////
@@ -150,18 +139,6 @@ char Test_Y_Min(){
 void Reset_Min_Limit(int axis){
    Limit[axis].Limit_Min = INV ^ Limit[axis].Limit_Min;
 }
-///////////////////////////////////////////////////////////
-//Reset X_Min_Limit pn oneshot bit
-void Reset_X_Min_Limit(){
-  Limits.X_Limit_Min = INV ^ Limits.X_Limit_Min;
-}
-
-//////////////////////////////////////////////////////////
-//Reset Y_Min_Limit pn oneshot bit
-void Reset_Y_Min_Limit(){
-  Limits.Y_Limit_Min = INV ^ Limits.Y_Limit_Min;
-}
-
 
 
 /////////////////////////////////////////////////////////
@@ -170,19 +147,6 @@ void Reset_Y_Min_Limit(){
 void Reset_Min_Debounce(int axis){
   Limit[axis].Min_DeBnc = 0;
   Limit[axis].last_cnt_min = 0;
-}
-///////////////////////////////////////////////////////////
-//Reset X_Min debounce Count
-void Reset_X_Min_Debounce(){
-  Limits.X_Min_DeBnc = 0;
-  last_cntX_min = 0;
-}
-
-///////////////////////////////////////////////////////////
-//Reset Y_Min debounce Count
-void Reset_Y_Min_Debounce(){
-  Limits.Y_Min_DeBnc = 0;
-  last_cntY_min = 0;
 }
 
 
@@ -214,60 +178,6 @@ void Debounce_Limits(int axis){
          Reset_Min_Debounce(axis);
    }
 
-}
-////////////////////////////////////////////////////////
-//Debounce the resetting of X Limit Min
-void Debounce_X_Limits(){
-   TX0 = (TMR.clock >> BASE_TMR)&1;
-   TX1 = Test_X_Min();
-
-   if((!X_Min_Limit)&&(TX1)){
-      if(TX0 && !TX2){
-         TX2 = 1;
-         Limits.X_Min_DeBnc++;
-      #if DMADebug == 10
-         dma_printf("LimitX:=%d \r\n",Limits.X_Min_DeBnc);
-      #endif
-        if(Limits.X_Min_DeBnc > last_cntX_min){
-           last_cntX_min = Limits.X_Min_DeBnc;
-        }
-      }else if(!TX0 && TX2)
-         TX2=0;
-
-      if(Limits.X_Min_DeBnc > DEBOUNCE_COUNT)
-          Reset_X_Min_Limit();
-
-   }else if(X_Min_Limit){
-         Reset_X_Min_Debounce();
-   }
-
-}
-
-/////////////////////////////////////////////////////////
-//Debounce the resetting of Y Limit Min
- void Debounce_Y_Limits(){
-   TY0 = (TMR.clock >> BASE_TMR)&1;
-   TY1 = Test_Y_Min();
-
-   if((!Y_Min_Limit)&&(TY1)){
-      if(TY0 && !TY2){
-         TY2 = 1;
-         Limits.Y_Min_DeBnc++;
-      #if DMADebug == 10
-         dma_printf("LimitY:=%d \r\n",Limits.Y_Min_DeBnc);
-      #endif
-        if(Limits.Y_Min_DeBnc > last_cntY_min){
-           last_cntY_min = Limits.Y_Min_DeBnc;
-        }
-      }else if(!TY0 && TY2)
-         TY2=0;
-
-      if(Limits.Y_Min_DeBnc > DEBOUNCE_COUNT)
-          Reset_Y_Min_Limit();
-          
-   }else if(Y_Min_Limit){
-         Reset_Y_Min_Debounce();
-   }
 }
 
 

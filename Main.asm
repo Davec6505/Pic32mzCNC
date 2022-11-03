@@ -2,10 +2,6 @@ _main:
 ;Main.c,53 :: 		void main() {
 ADDIU	SP, SP, -24
 ;Main.c,58 :: 		int xyz_ = 0, i;
-;Main.c,60 :: 		fp = Test_Min;
-LUI	R2, hi_addr(_Test_Min+0)
-ORI	R2, R2, lo_addr(_Test_Min+0)
-SW	R2, Offset(_fp+0)(GP)
 ;Main.c,61 :: 		PinMode();
 JAL	_PinMode+0
 NOP	

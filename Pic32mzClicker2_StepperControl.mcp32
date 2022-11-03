@@ -14,7 +14,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Main.c
+Value=Limits.h
 =======
 Value=Main.c
 >>>>>>> patch2
@@ -68,14 +68,11 @@ File0=Pic32mzClicker2_Pinout.png
 Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
-File0=Main.c
+File0=Limits.c
 File1=Limits.h
-File2=Limits.c
+File2=Settings.h
 File3=Kinematics.c
-File4=Kinematics.h
-File5=Settings.h
-File6=Pins.c
-Count=7
+Count=4
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

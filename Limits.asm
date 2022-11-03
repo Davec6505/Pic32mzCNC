@@ -106,11 +106,11 @@ _SX
 ;Limits.c,104 :: 		if(!Limit[X].Limit_Min)
 LBU	R2, Offset(Limits_Limit+0)(GP)
 EXT	R2, R2, 1, 1
-BEQ	R2, R0, L__X_Min_Limit94
+BEQ	R2, R0, L__X_Min_Limit44
 NOP	
 J	L_X_Min_Limit0
 NOP	
-L__X_Min_Limit94:
+L__X_Min_Limit44:
 ;Limits.c,105 :: 		Limit[X].Limit_Min = 1;
 LBU	R2, Offset(Limits_Limit+0)(GP)
 ORI	R2, R2, 2
@@ -119,11 +119,11 @@ L_X_Min_Limit0:
 ;Limits.c,107 :: 		if(!Limits.X_Limit_Min)
 LBU	R2, Offset(_Limits+0)(GP)
 EXT	R2, R2, 0, 1
-BEQ	R2, R0, L__X_Min_Limit95
+BEQ	R2, R0, L__X_Min_Limit45
 NOP	
 J	L_X_Min_Limit1
 NOP	
-L__X_Min_Limit95:
+L__X_Min_Limit45:
 ;Limits.c,108 :: 		Limits.X_Limit_Min = 1;
 LBU	R2, Offset(_Limits+0)(GP)
 ORI	R2, R2, 1
@@ -165,11 +165,11 @@ _SX
 ;Limits.c,115 :: 		if(!Limit[Y].Limit_Min)
 LBU	R2, Offset(Limits_Limit+12)(GP)
 EXT	R2, R2, 1, 1
-BEQ	R2, R0, L__Y_Min_Limit97
+BEQ	R2, R0, L__Y_Min_Limit47
 NOP	
 J	L_Y_Min_Limit2
 NOP	
-L__Y_Min_Limit97:
+L__Y_Min_Limit47:
 ;Limits.c,116 :: 		Limit[Y].Limit_Min = 1;
 LBU	R2, Offset(Limits_Limit+12)(GP)
 ORI	R2, R2, 2
@@ -178,11 +178,11 @@ L_Y_Min_Limit2:
 ;Limits.c,118 :: 		if(!Limits.Y_Limit_Min)
 LBU	R2, Offset(_Limits+0)(GP)
 EXT	R2, R2, 1, 1
-BEQ	R2, R0, L__Y_Min_Limit98
+BEQ	R2, R0, L__Y_Min_Limit48
 NOP	
 J	L_Y_Min_Limit3
 NOP	
-L__Y_Min_Limit98:
+L__Y_Min_Limit48:
 ;Limits.c,119 :: 		Limits.Y_Limit_Min = 1;
 LBU	R2, Offset(_Limits+0)(GP)
 ORI	R2, R2, 2
@@ -216,11 +216,11 @@ ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 EXT	R2, R2, 1, 1
 ANDI	R2, R2, 1
-BNE	R2, R0, L__Test_Min101
+BNE	R2, R0, L__Test_Min51
 NOP	
 J	L_Test_Min4
 NOP	
-L__Test_Min101:
+L__Test_Min51:
 ; ?FLOC___Test_Min?T44 start address is: 8 (R2)
 ORI	R2, R0, 1
 ; ?FLOC___Test_Min?T44 end address is: 8 (R2)
@@ -238,67 +238,9 @@ L_end_Test_Min:
 JR	RA
 NOP	
 ; end of _Test_Min
-_Test_X_Min:
-;Limits.c,135 :: 		char Test_X_Min(){
-;Limits.c,136 :: 		return (Limits.X_Limit_Min == 1)? 1:0;
-LBU	R2, Offset(_Limits+0)(GP)
-EXT	R2, R2, 0, 1
-ANDI	R3, R2, 255
-ORI	R2, R0, 1
-BEQ	R3, R2, L__Test_X_Min103
-NOP	
-J	L_Test_X_Min6
-NOP	
-L__Test_X_Min103:
-; ?FLOC___Test_X_Min?T48 start address is: 8 (R2)
-ORI	R2, R0, 1
-; ?FLOC___Test_X_Min?T48 end address is: 8 (R2)
-J	L_Test_X_Min7
-NOP	
-L_Test_X_Min6:
-; ?FLOC___Test_X_Min?T48 start address is: 8 (R2)
-MOVZ	R2, R0, R0
-; ?FLOC___Test_X_Min?T48 end address is: 8 (R2)
-L_Test_X_Min7:
-; ?FLOC___Test_X_Min?T48 start address is: 8 (R2)
-; ?FLOC___Test_X_Min?T48 end address is: 8 (R2)
-;Limits.c,137 :: 		}
-L_end_Test_X_Min:
-JR	RA
-NOP	
-; end of _Test_X_Min
-_Test_Y_Min:
-;Limits.c,141 :: 		char Test_Y_Min(){
-;Limits.c,142 :: 		return (Limits.Y_Limit_Min == 1)? 1:0;
-LBU	R2, Offset(_Limits+0)(GP)
-EXT	R2, R2, 1, 1
-ANDI	R3, R2, 255
-ORI	R2, R0, 1
-BEQ	R3, R2, L__Test_Y_Min105
-NOP	
-J	L_Test_Y_Min8
-NOP	
-L__Test_Y_Min105:
-; ?FLOC___Test_Y_Min?T52 start address is: 8 (R2)
-ORI	R2, R0, 1
-; ?FLOC___Test_Y_Min?T52 end address is: 8 (R2)
-J	L_Test_Y_Min9
-NOP	
-L_Test_Y_Min8:
-; ?FLOC___Test_Y_Min?T52 start address is: 8 (R2)
-MOVZ	R2, R0, R0
-; ?FLOC___Test_Y_Min?T52 end address is: 8 (R2)
-L_Test_Y_Min9:
-; ?FLOC___Test_Y_Min?T52 start address is: 8 (R2)
-; ?FLOC___Test_Y_Min?T52 end address is: 8 (R2)
-;Limits.c,143 :: 		}
-L_end_Test_Y_Min:
-JR	RA
-NOP	
-; end of _Test_Y_Min
 _Reset_Min_Limit:
-;Limits.c,150 :: 		void Reset_Min_Limit(int axis){
-;Limits.c,151 :: 		Limit[axis].Limit_Min = INV ^ Limit[axis].Limit_Min;
+;Limits.c,139 :: 		void Reset_Min_Limit(int axis){
+;Limits.c,140 :: 		Limit[axis].Limit_Min = INV ^ Limit[axis].Limit_Min;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -313,42 +255,14 @@ ANDI	R3, R2, 255
 LBU	R2, 0(R4)
 INS	R2, R3, 1, 1
 SB	R2, 0(R4)
-;Limits.c,152 :: 		}
+;Limits.c,141 :: 		}
 L_end_Reset_Min_Limit:
 JR	RA
 NOP	
 ; end of _Reset_Min_Limit
-_Reset_X_Min_Limit:
-;Limits.c,155 :: 		void Reset_X_Min_Limit(){
-;Limits.c,156 :: 		Limits.X_Limit_Min = INV ^ Limits.X_Limit_Min;
-LBU	R2, Offset(_Limits+0)(GP)
-EXT	R2, R2, 0, 1
-XORI	R3, R2, 1
-LBU	R2, Offset(_Limits+0)(GP)
-INS	R2, R3, 0, 1
-SB	R2, Offset(_Limits+0)(GP)
-;Limits.c,157 :: 		}
-L_end_Reset_X_Min_Limit:
-JR	RA
-NOP	
-; end of _Reset_X_Min_Limit
-_Reset_Y_Min_Limit:
-;Limits.c,161 :: 		void Reset_Y_Min_Limit(){
-;Limits.c,162 :: 		Limits.Y_Limit_Min = INV ^ Limits.Y_Limit_Min;
-LBU	R2, Offset(_Limits+0)(GP)
-EXT	R2, R2, 1, 1
-XORI	R3, R2, 1
-LBU	R2, Offset(_Limits+0)(GP)
-INS	R2, R3, 1, 1
-SB	R2, Offset(_Limits+0)(GP)
-;Limits.c,163 :: 		}
-L_end_Reset_Y_Min_Limit:
-JR	RA
-NOP	
-; end of _Reset_Y_Min_Limit
 _Reset_Min_Debounce:
-;Limits.c,170 :: 		void Reset_Min_Debounce(int axis){
-;Limits.c,171 :: 		Limit[axis].Min_DeBnc = 0;
+;Limits.c,147 :: 		void Reset_Min_Debounce(int axis){
+;Limits.c,148 :: 		Limit[axis].Min_DeBnc = 0;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -358,7 +272,7 @@ ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 4
 SH	R0, 0(R2)
-;Limits.c,172 :: 		Limit[axis].last_cnt_min = 0;
+;Limits.c,149 :: 		Limit[axis].last_cnt_min = 0;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -368,38 +282,16 @@ ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 6
 SH	R0, 0(R2)
-;Limits.c,173 :: 		}
+;Limits.c,150 :: 		}
 L_end_Reset_Min_Debounce:
 JR	RA
 NOP	
 ; end of _Reset_Min_Debounce
-_Reset_X_Min_Debounce:
-;Limits.c,176 :: 		void Reset_X_Min_Debounce(){
-;Limits.c,177 :: 		Limits.X_Min_DeBnc = 0;
-SH	R0, Offset(_Limits+36)(GP)
-;Limits.c,178 :: 		last_cntX_min = 0;
-SH	R0, Offset(Limits_last_cntX_min+0)(GP)
-;Limits.c,179 :: 		}
-L_end_Reset_X_Min_Debounce:
-JR	RA
-NOP	
-; end of _Reset_X_Min_Debounce
-_Reset_Y_Min_Debounce:
-;Limits.c,183 :: 		void Reset_Y_Min_Debounce(){
-;Limits.c,184 :: 		Limits.Y_Min_DeBnc = 0;
-SH	R0, Offset(_Limits+38)(GP)
-;Limits.c,185 :: 		last_cntY_min = 0;
-SH	R0, Offset(Limits_last_cntY_min+0)(GP)
-;Limits.c,186 :: 		}
-L_end_Reset_Y_Min_Debounce:
-JR	RA
-NOP	
-; end of _Reset_Y_Min_Debounce
 _Debounce_Limits:
-;Limits.c,191 :: 		void Debounce_Limits(int axis){
+;Limits.c,155 :: 		void Debounce_Limits(int axis){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Limits.c,192 :: 		Limit[axis].T0 = (TMR.clock >> BASE_TMR)&1;
+;Limits.c,156 :: 		Limit[axis].T0 = (TMR.clock >> BASE_TMR)&1;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -413,7 +305,7 @@ ANDI	R3, R2, 255
 LBU	R2, 0(R4)
 INS	R2, R3, 3, 1
 SB	R2, 0(R4)
-;Limits.c,195 :: 		Limit[axis].Pin = Test_Port_Pins(axis);
+;Limits.c,159 :: 		Limit[axis].Pin = Test_Port_Pins(axis);
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -429,7 +321,7 @@ LW	R3, 4(SP)
 LBU	R2, 0(R3)
 INS	R2, R4, 0, 1
 SB	R2, 0(R3)
-;Limits.c,197 :: 		if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
+;Limits.c,161 :: 		if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -439,11 +331,11 @@ ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 EXT	R2, R2, 0, 1
-BEQ	R2, R0, L__Debounce_Limits113
+BEQ	R2, R0, L__Debounce_Limits55
 NOP	
-J	L__Debounce_Limits71
+J	L__Debounce_Limits39
 NOP	
-L__Debounce_Limits113:
+L__Debounce_Limits55:
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -453,13 +345,13 @@ ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 EXT	R2, R2, 1, 1
-BNE	R2, R0, L__Debounce_Limits115
+BNE	R2, R0, L__Debounce_Limits57
 NOP	
-J	L__Debounce_Limits70
+J	L__Debounce_Limits38
 NOP	
-L__Debounce_Limits115:
-L__Debounce_Limits65:
-;Limits.c,198 :: 		if(!Limit[axis].T0 && !Limit[axis].T2){
+L__Debounce_Limits57:
+L__Debounce_Limits33:
+;Limits.c,162 :: 		if(!Limit[axis].T0 && !Limit[axis].T2){
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -469,11 +361,11 @@ ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 EXT	R2, R2, 3, 1
-BEQ	R2, R0, L__Debounce_Limits116
+BEQ	R2, R0, L__Debounce_Limits58
 NOP	
-J	L__Debounce_Limits67
+J	L__Debounce_Limits35
 NOP	
-L__Debounce_Limits116:
+L__Debounce_Limits58:
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -483,13 +375,13 @@ ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 EXT	R2, R2, 5, 1
-BEQ	R2, R0, L__Debounce_Limits117
+BEQ	R2, R0, L__Debounce_Limits59
 NOP	
-J	L__Debounce_Limits66
+J	L__Debounce_Limits34
 NOP	
-L__Debounce_Limits117:
-L__Debounce_Limits64:
-;Limits.c,199 :: 		Limit[axis].T2 = 1;
+L__Debounce_Limits59:
+L__Debounce_Limits32:
+;Limits.c,163 :: 		Limit[axis].T2 = 1;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -500,7 +392,7 @@ ADDU	R3, R2, R3
 LBU	R2, 0(R3)
 ORI	R2, R2, 32
 SB	R2, 0(R3)
-;Limits.c,200 :: 		Limit[axis].Min_DeBnc++;
+;Limits.c,164 :: 		Limit[axis].Min_DeBnc++;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -512,7 +404,7 @@ ADDIU	R3, R2, 4
 LHU	R2, 0(R3)
 ADDIU	R2, R2, 1
 SH	R2, 0(R3)
-;Limits.c,204 :: 		if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
+;Limits.c,168 :: 		if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -527,12 +419,12 @@ LHU	R2, 0(R2)
 ANDI	R3, R3, 65535
 ANDI	R2, R2, 65535
 SLTU	R2, R2, R3
-BNE	R2, R0, L__Debounce_Limits118
+BNE	R2, R0, L__Debounce_Limits60
 NOP	
-J	L_Debounce_Limits16
+J	L_Debounce_Limits12
 NOP	
-L__Debounce_Limits118:
-;Limits.c,205 :: 		Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
+L__Debounce_Limits60:
+;Limits.c,169 :: 		Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -544,15 +436,15 @@ ADDIU	R3, R2, 6
 ADDIU	R2, R2, 4
 LHU	R2, 0(R2)
 SH	R2, 0(R3)
-;Limits.c,206 :: 		}
-L_Debounce_Limits16:
-;Limits.c,207 :: 		}else if(Limit[axis].T0 && Limit[axis].T2)
-J	L_Debounce_Limits17
+;Limits.c,170 :: 		}
+L_Debounce_Limits12:
+;Limits.c,171 :: 		}else if(Limit[axis].T0 && Limit[axis].T2)
+J	L_Debounce_Limits13
 NOP	
-;Limits.c,198 :: 		if(!Limit[axis].T0 && !Limit[axis].T2){
-L__Debounce_Limits67:
-L__Debounce_Limits66:
-;Limits.c,207 :: 		}else if(Limit[axis].T0 && Limit[axis].T2)
+;Limits.c,162 :: 		if(!Limit[axis].T0 && !Limit[axis].T2){
+L__Debounce_Limits35:
+L__Debounce_Limits34:
+;Limits.c,171 :: 		}else if(Limit[axis].T0 && Limit[axis].T2)
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -562,11 +454,11 @@ ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 EXT	R2, R2, 3, 1
-BNE	R2, R0, L__Debounce_Limits120
+BNE	R2, R0, L__Debounce_Limits62
 NOP	
-J	L__Debounce_Limits69
+J	L__Debounce_Limits37
 NOP	
-L__Debounce_Limits120:
+L__Debounce_Limits62:
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -576,13 +468,13 @@ ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 EXT	R2, R2, 5, 1
-BNE	R2, R0, L__Debounce_Limits122
+BNE	R2, R0, L__Debounce_Limits64
 NOP	
-J	L__Debounce_Limits68
+J	L__Debounce_Limits36
 NOP	
-L__Debounce_Limits122:
-L__Debounce_Limits63:
-;Limits.c,208 :: 		Limit[axis].T2 = 0;
+L__Debounce_Limits64:
+L__Debounce_Limits31:
+;Limits.c,172 :: 		Limit[axis].T2 = 0;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -593,12 +485,12 @@ ADDU	R3, R2, R3
 LBU	R2, 0(R3)
 INS	R2, R0, 5, 1
 SB	R2, 0(R3)
-;Limits.c,207 :: 		}else if(Limit[axis].T0 && Limit[axis].T2)
-L__Debounce_Limits69:
-L__Debounce_Limits68:
-;Limits.c,208 :: 		Limit[axis].T2 = 0;
-L_Debounce_Limits17:
-;Limits.c,210 :: 		if(Limit[axis].Min_DeBnc > DEBOUNCE_COUNT)
+;Limits.c,171 :: 		}else if(Limit[axis].T0 && Limit[axis].T2)
+L__Debounce_Limits37:
+L__Debounce_Limits36:
+;Limits.c,172 :: 		Limit[axis].T2 = 0;
+L_Debounce_Limits13:
+;Limits.c,174 :: 		if(Limit[axis].Min_DeBnc > DEBOUNCE_COUNT)
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -610,22 +502,22 @@ ADDIU	R2, R2, 4
 LHU	R2, 0(R2)
 ANDI	R2, R2, 65535
 SLTIU	R2, R2, 6
-BEQ	R2, R0, L__Debounce_Limits123
+BEQ	R2, R0, L__Debounce_Limits65
 NOP	
-J	L_Debounce_Limits21
+J	L_Debounce_Limits17
 NOP	
-L__Debounce_Limits123:
-;Limits.c,211 :: 		Reset_Min_Limit(axis);
+L__Debounce_Limits65:
+;Limits.c,175 :: 		Reset_Min_Limit(axis);
 JAL	_Reset_Min_Limit+0
 NOP	
-L_Debounce_Limits21:
-;Limits.c,213 :: 		}else if(Limit[axis].Pin){
-J	L_Debounce_Limits22
+L_Debounce_Limits17:
+;Limits.c,177 :: 		}else if(Limit[axis].Pin){
+J	L_Debounce_Limits18
 NOP	
-;Limits.c,197 :: 		if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
-L__Debounce_Limits71:
-L__Debounce_Limits70:
-;Limits.c,213 :: 		}else if(Limit[axis].Pin){
+;Limits.c,161 :: 		if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
+L__Debounce_Limits39:
+L__Debounce_Limits38:
+;Limits.c,177 :: 		}else if(Limit[axis].Pin){
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -635,310 +527,30 @@ ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 EXT	R2, R2, 0, 1
-BNE	R2, R0, L__Debounce_Limits125
+BNE	R2, R0, L__Debounce_Limits67
 NOP	
-J	L_Debounce_Limits23
+J	L_Debounce_Limits19
 NOP	
-L__Debounce_Limits125:
-;Limits.c,214 :: 		Reset_Min_Debounce(axis);
+L__Debounce_Limits67:
+;Limits.c,178 :: 		Reset_Min_Debounce(axis);
 JAL	_Reset_Min_Debounce+0
 NOP	
-;Limits.c,215 :: 		}
-L_Debounce_Limits23:
-L_Debounce_Limits22:
-;Limits.c,217 :: 		}
+;Limits.c,179 :: 		}
+L_Debounce_Limits19:
+L_Debounce_Limits18:
+;Limits.c,181 :: 		}
 L_end_Debounce_Limits:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
 JR	RA
 NOP	
 ; end of _Debounce_Limits
-_Debounce_X_Limits:
-;Limits.c,220 :: 		void Debounce_X_Limits(){
-ADDIU	SP, SP, -4
-SW	RA, 0(SP)
-;Limits.c,221 :: 		TX0 = (TMR.clock >> BASE_TMR)&1;
-LBU	R2, Offset(_TMR+0)(GP)
-ANDI	R3, R2, 1
-LBU	R2, Offset(Limits_bits+0)(GP)
-INS	R2, R3, 0, 1
-SB	R2, Offset(Limits_bits+0)(GP)
-;Limits.c,222 :: 		TX1 = Test_X_Min();
-JAL	_Test_X_Min+0
-NOP	
-LBU	R3, Offset(Limits_bits+0)(GP)
-INS	R3, R2, 1, 1
-SB	R3, Offset(Limits_bits+0)(GP)
-;Limits.c,224 :: 		if((!X_Min_Limit)&&(TX1)){
-_LX	
-EXT	R2, R2, BitPos(X_Min_Limit+0), 1
-BEQ	R2, R0, L__Debounce_X_Limits127
-NOP	
-J	L__Debounce_X_Limits80
-NOP	
-L__Debounce_X_Limits127:
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 1, 1
-BNE	R2, R0, L__Debounce_X_Limits129
-NOP	
-J	L__Debounce_X_Limits79
-NOP	
-L__Debounce_X_Limits129:
-L__Debounce_X_Limits74:
-;Limits.c,225 :: 		if(TX0 && !TX2){
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 0, 1
-BNE	R2, R0, L__Debounce_X_Limits131
-NOP	
-J	L__Debounce_X_Limits76
-NOP	
-L__Debounce_X_Limits131:
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 2, 1
-BEQ	R2, R0, L__Debounce_X_Limits132
-NOP	
-J	L__Debounce_X_Limits75
-NOP	
-L__Debounce_X_Limits132:
-L__Debounce_X_Limits73:
-;Limits.c,226 :: 		TX2 = 1;
-LBU	R2, Offset(Limits_bits+0)(GP)
-ORI	R2, R2, 4
-SB	R2, Offset(Limits_bits+0)(GP)
-;Limits.c,227 :: 		Limits.X_Min_DeBnc++;
-LHU	R2, Offset(_Limits+36)(GP)
-ADDIU	R2, R2, 1
-SH	R2, Offset(_Limits+36)(GP)
-;Limits.c,231 :: 		if(Limits.X_Min_DeBnc > last_cntX_min){
-ANDI	R3, R2, 65535
-LHU	R2, Offset(Limits_last_cntX_min+0)(GP)
-SLTU	R2, R2, R3
-BNE	R2, R0, L__Debounce_X_Limits133
-NOP	
-J	L_Debounce_X_Limits30
-NOP	
-L__Debounce_X_Limits133:
-;Limits.c,232 :: 		last_cntX_min = Limits.X_Min_DeBnc;
-LHU	R2, Offset(_Limits+36)(GP)
-SH	R2, Offset(Limits_last_cntX_min+0)(GP)
-;Limits.c,233 :: 		}
-L_Debounce_X_Limits30:
-;Limits.c,234 :: 		}else if(!TX0 && TX2)
-J	L_Debounce_X_Limits31
-NOP	
-;Limits.c,225 :: 		if(TX0 && !TX2){
-L__Debounce_X_Limits76:
-L__Debounce_X_Limits75:
-;Limits.c,234 :: 		}else if(!TX0 && TX2)
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 0, 1
-BEQ	R2, R0, L__Debounce_X_Limits134
-NOP	
-J	L__Debounce_X_Limits78
-NOP	
-L__Debounce_X_Limits134:
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 2, 1
-BNE	R2, R0, L__Debounce_X_Limits136
-NOP	
-J	L__Debounce_X_Limits77
-NOP	
-L__Debounce_X_Limits136:
-L__Debounce_X_Limits72:
-;Limits.c,235 :: 		TX2=0;
-LBU	R2, Offset(Limits_bits+0)(GP)
-INS	R2, R0, 2, 1
-SB	R2, Offset(Limits_bits+0)(GP)
-;Limits.c,234 :: 		}else if(!TX0 && TX2)
-L__Debounce_X_Limits78:
-L__Debounce_X_Limits77:
-;Limits.c,235 :: 		TX2=0;
-L_Debounce_X_Limits31:
-;Limits.c,237 :: 		if(Limits.X_Min_DeBnc > DEBOUNCE_COUNT)
-LHU	R2, Offset(_Limits+36)(GP)
-SLTIU	R2, R2, 6
-BEQ	R2, R0, L__Debounce_X_Limits137
-NOP	
-J	L_Debounce_X_Limits35
-NOP	
-L__Debounce_X_Limits137:
-;Limits.c,238 :: 		Reset_X_Min_Limit();
-JAL	_Reset_X_Min_Limit+0
-NOP	
-L_Debounce_X_Limits35:
-;Limits.c,240 :: 		}else if(X_Min_Limit){
-J	L_Debounce_X_Limits36
-NOP	
-;Limits.c,224 :: 		if((!X_Min_Limit)&&(TX1)){
-L__Debounce_X_Limits80:
-L__Debounce_X_Limits79:
-;Limits.c,240 :: 		}else if(X_Min_Limit){
-_LX	
-EXT	R2, R2, BitPos(X_Min_Limit+0), 1
-BNE	R2, R0, L__Debounce_X_Limits139
-NOP	
-J	L_Debounce_X_Limits37
-NOP	
-L__Debounce_X_Limits139:
-;Limits.c,241 :: 		Reset_X_Min_Debounce();
-JAL	_Reset_X_Min_Debounce+0
-NOP	
-;Limits.c,242 :: 		}
-L_Debounce_X_Limits37:
-L_Debounce_X_Limits36:
-;Limits.c,244 :: 		}
-L_end_Debounce_X_Limits:
-LW	RA, 0(SP)
-ADDIU	SP, SP, 4
-JR	RA
-NOP	
-; end of _Debounce_X_Limits
-_Debounce_Y_Limits:
-;Limits.c,248 :: 		void Debounce_Y_Limits(){
-ADDIU	SP, SP, -4
-SW	RA, 0(SP)
-;Limits.c,249 :: 		TY0 = (TMR.clock >> BASE_TMR)&1;
-LBU	R2, Offset(_TMR+0)(GP)
-ANDI	R3, R2, 1
-LBU	R2, Offset(Limits_bits+0)(GP)
-INS	R2, R3, 4, 1
-SB	R2, Offset(Limits_bits+0)(GP)
-;Limits.c,250 :: 		TY1 = Test_Y_Min();
-JAL	_Test_Y_Min+0
-NOP	
-LBU	R3, Offset(Limits_bits+0)(GP)
-INS	R3, R2, 5, 1
-SB	R3, Offset(Limits_bits+0)(GP)
-;Limits.c,252 :: 		if((!Y_Min_Limit)&&(TY1)){
-_LX	
-EXT	R2, R2, BitPos(Y_Min_Limit+0), 1
-BEQ	R2, R0, L__Debounce_Y_Limits141
-NOP	
-J	L__Debounce_Y_Limits89
-NOP	
-L__Debounce_Y_Limits141:
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 5, 1
-BNE	R2, R0, L__Debounce_Y_Limits143
-NOP	
-J	L__Debounce_Y_Limits88
-NOP	
-L__Debounce_Y_Limits143:
-L__Debounce_Y_Limits83:
-;Limits.c,253 :: 		if(TY0 && !TY2){
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 4, 1
-BNE	R2, R0, L__Debounce_Y_Limits145
-NOP	
-J	L__Debounce_Y_Limits85
-NOP	
-L__Debounce_Y_Limits145:
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 6, 1
-BEQ	R2, R0, L__Debounce_Y_Limits146
-NOP	
-J	L__Debounce_Y_Limits84
-NOP	
-L__Debounce_Y_Limits146:
-L__Debounce_Y_Limits82:
-;Limits.c,254 :: 		TY2 = 1;
-LBU	R2, Offset(Limits_bits+0)(GP)
-ORI	R2, R2, 64
-SB	R2, Offset(Limits_bits+0)(GP)
-;Limits.c,255 :: 		Limits.Y_Min_DeBnc++;
-LHU	R2, Offset(_Limits+38)(GP)
-ADDIU	R2, R2, 1
-SH	R2, Offset(_Limits+38)(GP)
-;Limits.c,259 :: 		if(Limits.Y_Min_DeBnc > last_cntY_min){
-ANDI	R3, R2, 65535
-LHU	R2, Offset(Limits_last_cntY_min+0)(GP)
-SLTU	R2, R2, R3
-BNE	R2, R0, L__Debounce_Y_Limits147
-NOP	
-J	L_Debounce_Y_Limits44
-NOP	
-L__Debounce_Y_Limits147:
-;Limits.c,260 :: 		last_cntY_min = Limits.Y_Min_DeBnc;
-LHU	R2, Offset(_Limits+38)(GP)
-SH	R2, Offset(Limits_last_cntY_min+0)(GP)
-;Limits.c,261 :: 		}
-L_Debounce_Y_Limits44:
-;Limits.c,262 :: 		}else if(!TY0 && TY2)
-J	L_Debounce_Y_Limits45
-NOP	
-;Limits.c,253 :: 		if(TY0 && !TY2){
-L__Debounce_Y_Limits85:
-L__Debounce_Y_Limits84:
-;Limits.c,262 :: 		}else if(!TY0 && TY2)
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 4, 1
-BEQ	R2, R0, L__Debounce_Y_Limits148
-NOP	
-J	L__Debounce_Y_Limits87
-NOP	
-L__Debounce_Y_Limits148:
-LBU	R2, Offset(Limits_bits+0)(GP)
-EXT	R2, R2, 6, 1
-BNE	R2, R0, L__Debounce_Y_Limits150
-NOP	
-J	L__Debounce_Y_Limits86
-NOP	
-L__Debounce_Y_Limits150:
-L__Debounce_Y_Limits81:
-;Limits.c,263 :: 		TY2=0;
-LBU	R2, Offset(Limits_bits+0)(GP)
-INS	R2, R0, 6, 1
-SB	R2, Offset(Limits_bits+0)(GP)
-;Limits.c,262 :: 		}else if(!TY0 && TY2)
-L__Debounce_Y_Limits87:
-L__Debounce_Y_Limits86:
-;Limits.c,263 :: 		TY2=0;
-L_Debounce_Y_Limits45:
-;Limits.c,265 :: 		if(Limits.Y_Min_DeBnc > DEBOUNCE_COUNT)
-LHU	R2, Offset(_Limits+38)(GP)
-SLTIU	R2, R2, 6
-BEQ	R2, R0, L__Debounce_Y_Limits151
-NOP	
-J	L_Debounce_Y_Limits49
-NOP	
-L__Debounce_Y_Limits151:
-;Limits.c,266 :: 		Reset_Y_Min_Limit();
-JAL	_Reset_Y_Min_Limit+0
-NOP	
-L_Debounce_Y_Limits49:
-;Limits.c,268 :: 		}else if(Y_Min_Limit){
-J	L_Debounce_Y_Limits50
-NOP	
-;Limits.c,252 :: 		if((!Y_Min_Limit)&&(TY1)){
-L__Debounce_Y_Limits89:
-L__Debounce_Y_Limits88:
-;Limits.c,268 :: 		}else if(Y_Min_Limit){
-_LX	
-EXT	R2, R2, BitPos(Y_Min_Limit+0), 1
-BNE	R2, R0, L__Debounce_Y_Limits153
-NOP	
-J	L_Debounce_Y_Limits51
-NOP	
-L__Debounce_Y_Limits153:
-;Limits.c,269 :: 		Reset_Y_Min_Debounce();
-JAL	_Reset_Y_Min_Debounce+0
-NOP	
-;Limits.c,270 :: 		}
-L_Debounce_Y_Limits51:
-L_Debounce_Y_Limits50:
-;Limits.c,271 :: 		}
-L_end_Debounce_Y_Limits:
-LW	RA, 0(SP)
-ADDIU	SP, SP, 4
-JR	RA
-NOP	
-; end of _Debounce_Y_Limits
 _FP:
-;Limits.c,279 :: 		char FP(int axis){
+;Limits.c,189 :: 		char FP(int axis){
 ADDIU	SP, SP, -24
 SW	RA, 0(SP)
-;Limits.c,280 :: 		char tmp = 0;
-;Limits.c,281 :: 		Limit[axis].new_val = Test_Min(axis) & 0x0001;
+;Limits.c,190 :: 		char tmp = 0;
+;Limits.c,191 :: 		Limit[axis].new_val = Test_Min(axis) & 0x0001;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -953,7 +565,7 @@ NOP
 ANDI	R3, R2, 1
 LW	R2, 20(SP)
 SB	R3, 0(R2)
-;Limits.c,282 :: 		if(Limit[axis].new_val > Limit[axis].old_Pval){
+;Limits.c,192 :: 		if(Limit[axis].new_val > Limit[axis].old_Pval){
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -968,12 +580,12 @@ LBU	R2, 0(R2)
 ANDI	R3, R3, 255
 ANDI	R2, R2, 255
 SLTU	R2, R2, R3
-BNE	R2, R0, L__FP155
+BNE	R2, R0, L__FP69
 NOP	
-J	L_FP52
+J	L_FP20
 NOP	
-L__FP155:
-;Limits.c,284 :: 		dma_printf("\t\tFP():=%d\r\n",(int)Limit[axis].new_val);
+L__FP69:
+;Limits.c,194 :: 		dma_printf("\t\tFP():=%d\r\n",(int)Limit[axis].new_val);
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -999,21 +611,21 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 8
 LH	R25, 4(SP)
-;Limits.c,286 :: 		tmp = 1;
+;Limits.c,196 :: 		tmp = 1;
 ; tmp start address is: 16 (R4)
 ORI	R4, R0, 1
-;Limits.c,287 :: 		}else {
+;Limits.c,197 :: 		}else {
 ; tmp end address is: 16 (R4)
-J	L_FP53
+J	L_FP21
 NOP	
-L_FP52:
-;Limits.c,288 :: 		tmp = 0;
+L_FP20:
+;Limits.c,198 :: 		tmp = 0;
 ; tmp start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; tmp end address is: 16 (R4)
-;Limits.c,289 :: 		}
-L_FP53:
-;Limits.c,290 :: 		Limit[axis].old_Pval = Limit[axis].new_val;
+;Limits.c,199 :: 		}
+L_FP21:
+;Limits.c,200 :: 		Limit[axis].old_Pval = Limit[axis].new_val;
 ; tmp start address is: 16 (R4)
 SEH	R3, R25
 ORI	R2, R0, 12
@@ -1026,10 +638,10 @@ ADDIU	R3, R2, 2
 ADDIU	R2, R2, 1
 LBU	R2, 0(R2)
 SB	R2, 0(R3)
-;Limits.c,291 :: 		return tmp;
+;Limits.c,201 :: 		return tmp;
 ANDI	R2, R4, 255
 ; tmp end address is: 16 (R4)
-;Limits.c,292 :: 		}
+;Limits.c,202 :: 		}
 L_end_FP:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 24
@@ -1037,11 +649,11 @@ JR	RA
 NOP	
 ; end of _FP
 _FN:
-;Limits.c,295 :: 		char FN(int axis){
+;Limits.c,205 :: 		char FN(int axis){
 ADDIU	SP, SP, -24
 SW	RA, 0(SP)
-;Limits.c,296 :: 		char tmp = 0;
-;Limits.c,297 :: 		Limit[axis].new_val = Test_Min(axis) & 0x0001;
+;Limits.c,206 :: 		char tmp = 0;
+;Limits.c,207 :: 		Limit[axis].new_val = Test_Min(axis) & 0x0001;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -1056,7 +668,7 @@ NOP
 ANDI	R3, R2, 1
 LW	R2, 20(SP)
 SB	R3, 0(R2)
-;Limits.c,298 :: 		if(Limit[axis].new_val < Limit[axis].old_Fval){
+;Limits.c,208 :: 		if(Limit[axis].new_val < Limit[axis].old_Fval){
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -1071,12 +683,12 @@ LBU	R2, 0(R2)
 ANDI	R3, R3, 255
 ANDI	R2, R2, 255
 SLTU	R2, R3, R2
-BNE	R2, R0, L__FN157
+BNE	R2, R0, L__FN71
 NOP	
-J	L_FN54
+J	L_FN22
 NOP	
-L__FN157:
-;Limits.c,300 :: 		dma_printf("\t\tFN():=%d\r\n",(int)Limit[axis].new_val);
+L__FN71:
+;Limits.c,210 :: 		dma_printf("\t\tFN():=%d\r\n",(int)Limit[axis].new_val);
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -1102,20 +714,20 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 8
 LH	R25, 4(SP)
-;Limits.c,302 :: 		tmp = 1;
+;Limits.c,212 :: 		tmp = 1;
 ; tmp start address is: 16 (R4)
 ORI	R4, R0, 1
-;Limits.c,303 :: 		}else
+;Limits.c,213 :: 		}else
 ; tmp end address is: 16 (R4)
-J	L_FN55
+J	L_FN23
 NOP	
-L_FN54:
-;Limits.c,304 :: 		tmp = 0;
+L_FN22:
+;Limits.c,214 :: 		tmp = 0;
 ; tmp start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; tmp end address is: 16 (R4)
-L_FN55:
-;Limits.c,305 :: 		Limit[axis].old_Fval = Limit[axis].new_val;
+L_FN23:
+;Limits.c,215 :: 		Limit[axis].old_Fval = Limit[axis].new_val;
 ; tmp start address is: 16 (R4)
 SEH	R3, R25
 ORI	R2, R0, 12
@@ -1128,10 +740,10 @@ ADDIU	R3, R2, 3
 ADDIU	R2, R2, 1
 LBU	R2, 0(R2)
 SB	R2, 0(R3)
-;Limits.c,306 :: 		return tmp;
+;Limits.c,216 :: 		return tmp;
 ANDI	R2, R4, 255
 ; tmp end address is: 16 (R4)
-;Limits.c,307 :: 		}
+;Limits.c,217 :: 		}
 L_end_FN:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 24
@@ -1139,96 +751,96 @@ JR	RA
 NOP	
 ; end of _FN
 _Test_Port_Pins:
-;Limits.c,313 :: 		char Test_Port_Pins(int axis){
-;Limits.c,314 :: 		char tmp = 0;
+;Limits.c,223 :: 		char Test_Port_Pins(int axis){
+;Limits.c,224 :: 		char tmp = 0;
 ; tmp start address is: 16 (R4)
 MOVZ	R4, R0, R0
-;Limits.c,315 :: 		switch(axis){
-J	L_Test_Port_Pins56
+;Limits.c,225 :: 		switch(axis){
+J	L_Test_Port_Pins24
 NOP	
 ; tmp end address is: 16 (R4)
-;Limits.c,316 :: 		case X:
-L_Test_Port_Pins58:
-;Limits.c,317 :: 		tmp = X_Min_Limit & 0x0001;
+;Limits.c,226 :: 		case X:
+L_Test_Port_Pins26:
+;Limits.c,227 :: 		tmp = X_Min_Limit & 0x0001;
 _LX	
 EXT	R2, R2, BitPos(X_Min_Limit+0), 1
 ANDI	R2, R2, 1
 ; tmp start address is: 8 (R2)
-;Limits.c,318 :: 		break;
+;Limits.c,228 :: 		break;
 ; tmp end address is: 8 (R2)
-J	L_Test_Port_Pins57
+J	L_Test_Port_Pins25
 NOP	
-;Limits.c,319 :: 		case Y:
-L_Test_Port_Pins59:
-;Limits.c,320 :: 		tmp = Y_Min_Limit & 0x0001;
+;Limits.c,229 :: 		case Y:
+L_Test_Port_Pins27:
+;Limits.c,230 :: 		tmp = Y_Min_Limit & 0x0001;
 _LX	
 EXT	R2, R2, BitPos(Y_Min_Limit+0), 1
 ANDI	R2, R2, 1
 ; tmp start address is: 8 (R2)
-;Limits.c,321 :: 		break;
+;Limits.c,231 :: 		break;
 ; tmp end address is: 8 (R2)
-J	L_Test_Port_Pins57
+J	L_Test_Port_Pins25
 NOP	
-;Limits.c,322 :: 		case Z:
-L_Test_Port_Pins60:
-;Limits.c,324 :: 		break;
+;Limits.c,232 :: 		case Z:
+L_Test_Port_Pins28:
+;Limits.c,234 :: 		break;
 ; tmp start address is: 16 (R4)
 ANDI	R2, R4, 255
-J	L_Test_Port_Pins57
+J	L_Test_Port_Pins25
 NOP	
-;Limits.c,325 :: 		case A:
-L_Test_Port_Pins61:
-;Limits.c,327 :: 		break;
+;Limits.c,235 :: 		case A:
+L_Test_Port_Pins29:
+;Limits.c,237 :: 		break;
 ANDI	R2, R4, 255
 ; tmp end address is: 16 (R4)
-J	L_Test_Port_Pins57
+J	L_Test_Port_Pins25
 NOP	
-;Limits.c,328 :: 		default: tmp = 255;
-L_Test_Port_Pins62:
+;Limits.c,238 :: 		default: tmp = 255;
+L_Test_Port_Pins30:
 ; tmp start address is: 8 (R2)
 ORI	R2, R0, 255
-;Limits.c,329 :: 		break;
+;Limits.c,239 :: 		break;
 ; tmp end address is: 8 (R2)
-J	L_Test_Port_Pins57
+J	L_Test_Port_Pins25
 NOP	
-;Limits.c,330 :: 		}
-L_Test_Port_Pins56:
+;Limits.c,240 :: 		}
+L_Test_Port_Pins24:
 ; tmp start address is: 16 (R4)
 SEH	R2, R25
-BNE	R2, R0, L__Test_Port_Pins160
+BNE	R2, R0, L__Test_Port_Pins74
 NOP	
-J	L_Test_Port_Pins58
+J	L_Test_Port_Pins26
 NOP	
-L__Test_Port_Pins160:
+L__Test_Port_Pins74:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L__Test_Port_Pins162
+BNE	R3, R2, L__Test_Port_Pins76
 NOP	
-J	L_Test_Port_Pins59
+J	L_Test_Port_Pins27
 NOP	
-L__Test_Port_Pins162:
+L__Test_Port_Pins76:
 SEH	R3, R25
 ORI	R2, R0, 2
-BNE	R3, R2, L__Test_Port_Pins164
+BNE	R3, R2, L__Test_Port_Pins78
 NOP	
-J	L_Test_Port_Pins60
+J	L_Test_Port_Pins28
 NOP	
-L__Test_Port_Pins164:
+L__Test_Port_Pins78:
 SEH	R3, R25
 ORI	R2, R0, 3
-BNE	R3, R2, L__Test_Port_Pins166
+BNE	R3, R2, L__Test_Port_Pins80
 NOP	
-J	L_Test_Port_Pins61
+J	L_Test_Port_Pins29
 NOP	
-L__Test_Port_Pins166:
+L__Test_Port_Pins80:
 ; tmp end address is: 16 (R4)
-J	L_Test_Port_Pins62
+J	L_Test_Port_Pins30
 NOP	
-L_Test_Port_Pins57:
-;Limits.c,331 :: 		return tmp;
+L_Test_Port_Pins25:
+;Limits.c,241 :: 		return tmp;
 ; tmp start address is: 8 (R2)
 ; tmp end address is: 8 (R2)
-;Limits.c,332 :: 		}
+;Limits.c,242 :: 		}
 L_end_Test_Port_Pins:
 JR	RA
 NOP	

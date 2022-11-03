@@ -47,7 +47,7 @@ unsigned int ii;
 unsigned long testOcr;
 static unsigned int a;
 
-char (*fp)(int);
+//char (*fp)(int);
 /////////////////////////////////////////
 //main function
 void main() {
@@ -57,7 +57,7 @@ unsigned char j;
 static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
 static int cntr;
-  fp = Test_Min;
+ // fp = Test_Min;
   PinMode();
   StepperConstants(15000,15000);
   oneShotA = 0;

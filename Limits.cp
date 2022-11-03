@@ -658,28 +658,7 @@ static unsigned int last_cntX_min;
 static unsigned int last_cntY_min;
 static unsigned int last_cntZ_min;
 static unsigned int last_cntA_min;
-
-
-
-
-static char bits;
-sbit TX0 at bits.B0;
-sbit TX1 at bits.B1;
-sbit TX2 at bits.B2;
-sbit TX3 at bits.B3;
-sbit TY0 at bits.B4;
-sbit TY1 at bits.B5;
-sbit TY2 at bits.B6;
-sbit TY3 at bits.B7;
-
-
-
-
-
-
-
-
-
+#line 37 "C:/Users/Git/Pic32mzCNC/Limits.c"
 void Limit_Initialize(){
 
 
@@ -778,17 +757,6 @@ char Test_Min(int axis){
  return (Limit[axis].Limit_Min & 0x0001)? 1:0;
 }
 
-char Test_X_Min(){
- return (Limits.X_Limit_Min == 1)? 1:0;
-}
-
-
-
-char Test_Y_Min(){
- return (Limits.Y_Limit_Min == 1)? 1:0;
-}
-
-
 
 
 
@@ -798,37 +766,12 @@ void Reset_Min_Limit(int axis){
 }
 
 
-void Reset_X_Min_Limit(){
- Limits.X_Limit_Min =  1  ^ Limits.X_Limit_Min;
-}
-
-
-
-void Reset_Y_Min_Limit(){
- Limits.Y_Limit_Min =  1  ^ Limits.Y_Limit_Min;
-}
-
-
-
 
 
 
 void Reset_Min_Debounce(int axis){
  Limit[axis].Min_DeBnc = 0;
  Limit[axis].last_cnt_min = 0;
-}
-
-
-void Reset_X_Min_Debounce(){
- Limits.X_Min_DeBnc = 0;
- last_cntX_min = 0;
-}
-
-
-
-void Reset_Y_Min_Debounce(){
- Limits.Y_Min_DeBnc = 0;
- last_cntY_min = 0;
 }
 
 
@@ -844,7 +787,7 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 204 "C:/Users/Git/Pic32mzCNC/Limits.c"
+#line 168 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }
@@ -858,56 +801,6 @@ void Debounce_Limits(int axis){
  Reset_Min_Debounce(axis);
  }
 
-}
-
-
-void Debounce_X_Limits(){
- TX0 = (TMR.clock >>  0 )&1;
- TX1 = Test_X_Min();
-
- if((!X_Min_Limit)&&(TX1)){
- if(TX0 && !TX2){
- TX2 = 1;
- Limits.X_Min_DeBnc++;
-#line 231 "C:/Users/Git/Pic32mzCNC/Limits.c"
- if(Limits.X_Min_DeBnc > last_cntX_min){
- last_cntX_min = Limits.X_Min_DeBnc;
- }
- }else if(!TX0 && TX2)
- TX2=0;
-
- if(Limits.X_Min_DeBnc >  5 )
- Reset_X_Min_Limit();
-
- }else if(X_Min_Limit){
- Reset_X_Min_Debounce();
- }
-
-}
-
-
-
- void Debounce_Y_Limits(){
- TY0 = (TMR.clock >>  0 )&1;
- TY1 = Test_Y_Min();
-
- if((!Y_Min_Limit)&&(TY1)){
- if(TY0 && !TY2){
- TY2 = 1;
- Limits.Y_Min_DeBnc++;
-#line 259 "C:/Users/Git/Pic32mzCNC/Limits.c"
- if(Limits.Y_Min_DeBnc > last_cntY_min){
- last_cntY_min = Limits.Y_Min_DeBnc;
- }
- }else if(!TY0 && TY2)
- TY2=0;
-
- if(Limits.Y_Min_DeBnc >  5 )
- Reset_Y_Min_Limit();
-
- }else if(Y_Min_Limit){
- Reset_Y_Min_Debounce();
- }
 }
 
 

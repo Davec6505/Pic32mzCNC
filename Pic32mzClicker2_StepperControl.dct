@@ -23096,8 +23096,6 @@ ddrmode
 ddrmode_bit
 ddrmode_sqi1con_bit
 debounce_limits
-debounce_x_limits
-debounce_y_limits
 debug
 debug
 debug
@@ -30071,7 +30069,6 @@ forcehs_bit
 forcehst
 forcehst
 forcehst_bit
-fp
 fp
 fplliclk
 fplliclk
@@ -47146,10 +47143,6 @@ reset_bit
 reset_min_debounce
 reset_min_limit
 reset_usbcsr0_bit
-reset_x_min_debounce
-reset_x_min_limit
-reset_y_min_debounce
-reset_y_min_limit
 resetie
 resetie
 resetie_bit
@@ -62871,8 +62864,6 @@ terrcnt7_bit
 terrcnt7_c2trec_bit
 test_min
 test_port_pins
-test_x_min
-test_y_min
 testbp
 testbp
 testbp
@@ -64646,10 +64637,6 @@ twr1
 twr1_bit
 twr1_ebismt1_bit
 twr1_ebismt2_bit
-tx0
-tx1
-tx2
-tx3
 txabat
 txabat
 txabat
@@ -71082,10 +71069,6 @@ txwarn
 txwarn
 txwarn_bit
 txwarn_c2trec_bit
-ty0
-ty1
-ty2
-ty3
 typeaddr
 typeaddr0
 typeaddr0_bit
