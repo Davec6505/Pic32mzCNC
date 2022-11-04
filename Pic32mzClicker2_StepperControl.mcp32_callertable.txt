@@ -38,12 +38,13 @@ main
 			__CC2DW
 			IntToStr
 				WordToStr
-			strcpy
+			strcat
 			strlen
 			LongToStr
 				LongWordToStr
-			_itoa
-				_strrev
+			strcpy
+			IntToHex
+			LongIntToHex
 			FloatToStr
 				strcpy
 			strncpy

@@ -68,11 +68,8 @@ File0=Pic32mzClicker2_Pinout.png
 Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
-File0=Limits.c
-File1=Limits.h
-File2=Settings.h
-File3=Kinematics.c
-Count=4
+File0=Serial_Dma.c
+Count=1
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
