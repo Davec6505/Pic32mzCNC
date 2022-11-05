@@ -606,53 +606,16 @@ ORI	R25, R0, 12
 ;Main.c,217 :: 		break;
 J	L_Temp_Move26
 NOP	
-<<<<<<< HEAD
-;Main.c,223 :: 		case 11://Homing Y axis
-L_Temp_Move39:
-;Main.c,224 :: 		sys.homing = 1;
-ORI	R2, R0, 1
-SB	R2, Offset(_sys+2)(GP)
-;Main.c,225 :: 		Inv_Home_Axis(20.00,100,X);
-LUI	R2, 16800
-=======
 ;Main.c,218 :: 		case 11://Homing Y axis
 L_Temp_Move37:
 ;Main.c,219 :: 		Inv_Home_Axis(10.00,100,X);
 LUI	R2, 16672
->>>>>>> patch1
 ORI	R2, R2, 0
 MOVZ	R26, R0, R0
 ORI	R25, R0, 100
 MTC1	R2, S12
 JAL	_Inv_Home_Axis+0
 NOP	
-<<<<<<< HEAD
-;Main.c,226 :: 		Delay_ms(1000);
-LUI	R24, 1017
-ORI	R24, R24, 16554
-L_Temp_Move40:
-ADDIU	R24, R24, -1
-BNE	R24, R0, L_Temp_Move40
-NOP	
-;Main.c,228 :: 		break;
-J	L_Temp_Move27
-NOP	
-;Main.c,229 :: 		case 12://Homing Y axis
-L_Temp_Move42:
-;Main.c,231 :: 		break;
-J	L_Temp_Move27
-NOP	
-;Main.c,232 :: 		default: a = 0;
-L_Temp_Move43:
-MOVZ	R25, R0, R0
-;Main.c,233 :: 		break;
-J	L_Temp_Move27
-NOP	
-;Main.c,234 :: 		}
-L_Temp_Move26:
-SEH	R2, R25
-BNE	R2, R0, L__Temp_Move86
-=======
 ;Main.c,220 :: 		a = 12;
 ORI	R25, R0, 12
 ;Main.c,221 :: 		case 12://Homing Y axis
@@ -677,7 +640,6 @@ L__Temp_Move82:
 SEH	R3, R25
 ORI	R2, R0, 2
 BNE	R3, R2, L__Temp_Move84
->>>>>>> patch1
 NOP	
 J	L_Temp_Move28
 NOP	
@@ -754,23 +716,8 @@ NOP
 L__Temp_Move104:
 J	L_Temp_Move39
 NOP	
-<<<<<<< HEAD
-L__Temp_Move108:
-SEH	R3, R25
-ORI	R2, R0, 12
-BNE	R3, R2, L__Temp_Move110
-NOP	
-J	L_Temp_Move42
-NOP	
-L__Temp_Move110:
-J	L_Temp_Move43
-NOP	
-L_Temp_Move27:
-;Main.c,235 :: 		}
-=======
 L_Temp_Move26:
 ;Main.c,227 :: 		}
->>>>>>> patch1
 L_end_Temp_Move:
 LW	R27, 12(SP)
 LW	R26, 8(SP)
@@ -780,151 +727,3 @@ ADDIU	SP, SP, 16
 JR	RA
 NOP	
 ; end of _Temp_Move
-<<<<<<< HEAD
-_LCD_Display:
-;Main.c,237 :: 		void LCD_Display(){
-ADDIU	SP, SP, -20
-SW	RA, 0(SP)
-;Main.c,242 :: 		sprintf(txt,"%d",STPS[0].accel_lim);
-SW	R25, 4(SP)
-SW	R26, 8(SP)
-SW	R27, 12(SP)
-SW	R28, 16(SP)
-LW	R2, Offset(_STPS+48)(GP)
-ADDIU	SP, SP, -12
-SW	R2, 8(SP)
-LUI	R2, hi_addr(?lstr_2_Main+0)
-ORI	R2, R2, lo_addr(?lstr_2_Main+0)
-SW	R2, 4(SP)
-LUI	R2, hi_addr(_txt+0)
-ORI	R2, R2, lo_addr(_txt+0)
-SW	R2, 0(SP)
-JAL	_sprintf+0
-NOP	
-ADDIU	SP, SP, 12
-;Main.c,243 :: 		I2C_LCD_Out(LCD_01_ADDRESS,1,1,txt);
-LUI	R28, hi_addr(_txt+0)
-ORI	R28, R28, lo_addr(_txt+0)
-ORI	R27, R0, 1
-ORI	R26, R0, 1
-LBU	R25, Offset(_LCD_01_ADDRESS+0)(GP)
-JAL	_I2C_LCD_Out+0
-NOP	
-;Main.c,245 :: 		sprintf(txt,"%d",STPS[0].decel_start);
-LW	R2, Offset(_STPS+12)(GP)
-ADDIU	SP, SP, -12
-SW	R2, 8(SP)
-LUI	R2, hi_addr(?lstr_3_Main+0)
-ORI	R2, R2, lo_addr(?lstr_3_Main+0)
-SW	R2, 4(SP)
-LUI	R2, hi_addr(_txt+0)
-ORI	R2, R2, lo_addr(_txt+0)
-SW	R2, 0(SP)
-JAL	_sprintf+0
-NOP	
-ADDIU	SP, SP, 12
-;Main.c,246 :: 		I2C_LCD_Out(LCD_01_ADDRESS,1,11,txt);
-LUI	R28, hi_addr(_txt+0)
-ORI	R28, R28, lo_addr(_txt+0)
-ORI	R27, R0, 11
-ORI	R26, R0, 1
-LBU	R25, Offset(_LCD_01_ADDRESS+0)(GP)
-JAL	_I2C_LCD_Out+0
-NOP	
-;Main.c,250 :: 		sprintf(txt,"%d",STPS[0].step_delay);
-LW	R2, Offset(_STPS+8)(GP)
-ADDIU	SP, SP, -12
-SW	R2, 8(SP)
-LUI	R2, hi_addr(?lstr_4_Main+0)
-ORI	R2, R2, lo_addr(?lstr_4_Main+0)
-SW	R2, 4(SP)
-LUI	R2, hi_addr(_txt+0)
-ORI	R2, R2, lo_addr(_txt+0)
-SW	R2, 0(SP)
-JAL	_sprintf+0
-NOP	
-ADDIU	SP, SP, 12
-;Main.c,251 :: 		I2C_LCD_Out(LCD_01_ADDRESS,2,1,txt);
-LUI	R28, hi_addr(_txt+0)
-ORI	R28, R28, lo_addr(_txt+0)
-ORI	R27, R0, 1
-ORI	R26, R0, 2
-LBU	R25, Offset(_LCD_01_ADDRESS+0)(GP)
-JAL	_I2C_LCD_Out+0
-NOP	
-;Main.c,253 :: 		sprintf(txt,"%d",STPS[0].min_delay);
-LW	R2, Offset(_STPS+20)(GP)
-ADDIU	SP, SP, -12
-SW	R2, 8(SP)
-LUI	R2, hi_addr(?lstr_5_Main+0)
-ORI	R2, R2, lo_addr(?lstr_5_Main+0)
-SW	R2, 4(SP)
-LUI	R2, hi_addr(_txt+0)
-ORI	R2, R2, lo_addr(_txt+0)
-SW	R2, 0(SP)
-JAL	_sprintf+0
-NOP	
-ADDIU	SP, SP, 12
-;Main.c,254 :: 		I2C_LCD_Out(LCD_01_ADDRESS,2,11,txt);
-LUI	R28, hi_addr(_txt+0)
-ORI	R28, R28, lo_addr(_txt+0)
-ORI	R27, R0, 11
-ORI	R26, R0, 2
-LBU	R25, Offset(_LCD_01_ADDRESS+0)(GP)
-JAL	_I2C_LCD_Out+0
-NOP	
-;Main.c,258 :: 		sprintf(txt,"%d",STPS[0].max_step_lim);
-LW	R2, Offset(_STPS+52)(GP)
-ADDIU	SP, SP, -12
-SW	R2, 8(SP)
-LUI	R2, hi_addr(?lstr_6_Main+0)
-ORI	R2, R2, lo_addr(?lstr_6_Main+0)
-SW	R2, 4(SP)
-LUI	R2, hi_addr(_txt+0)
-ORI	R2, R2, lo_addr(_txt+0)
-SW	R2, 0(SP)
-JAL	_sprintf+0
-NOP	
-ADDIU	SP, SP, 12
-;Main.c,259 :: 		I2C_LCD_Out(LCD_01_ADDRESS,3,1,txt);
-LUI	R28, hi_addr(_txt+0)
-ORI	R28, R28, lo_addr(_txt+0)
-ORI	R27, R0, 1
-ORI	R26, R0, 3
-LBU	R25, Offset(_LCD_01_ADDRESS+0)(GP)
-JAL	_I2C_LCD_Out+0
-NOP	
-;Main.c,261 :: 		sprintf(txt,"%d",STPS[0].decel_val);
-LW	R2, Offset(_STPS+16)(GP)
-ADDIU	SP, SP, -12
-SW	R2, 8(SP)
-LUI	R2, hi_addr(?lstr_7_Main+0)
-ORI	R2, R2, lo_addr(?lstr_7_Main+0)
-SW	R2, 4(SP)
-LUI	R2, hi_addr(_txt+0)
-ORI	R2, R2, lo_addr(_txt+0)
-SW	R2, 0(SP)
-JAL	_sprintf+0
-NOP	
-ADDIU	SP, SP, 12
-;Main.c,262 :: 		I2C_LCD_Out(LCD_01_ADDRESS,3,11,txt);
-LUI	R28, hi_addr(_txt+0)
-ORI	R28, R28, lo_addr(_txt+0)
-ORI	R27, R0, 11
-ORI	R26, R0, 3
-LBU	R25, Offset(_LCD_01_ADDRESS+0)(GP)
-JAL	_I2C_LCD_Out+0
-NOP	
-;Main.c,263 :: 		}
-L_end_LCD_Display:
-LW	R28, 16(SP)
-LW	R27, 12(SP)
-LW	R26, 8(SP)
-LW	R25, 4(SP)
-LW	RA, 0(SP)
-ADDIU	SP, SP, 20
-JR	RA
-NOP	
-; end of _LCD_Display
-=======
->>>>>>> patch1

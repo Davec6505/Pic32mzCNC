@@ -216,16 +216,8 @@ void Temp_Move(int a){
             a =12;
             break;
        case 11://Homing Y axis
-<<<<<<< HEAD
-                sys.homing = 1;
-                Inv_Home_Axis(20.00,100,X);
-                Delay_ms(1000);
-
-            break;
-=======
             Inv_Home_Axis(10.00,100,X);
             a = 12;
->>>>>>> patch1
        case 12://Homing Y axis
 
             break;
