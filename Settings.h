@@ -32,18 +32,16 @@
 
 /////////////////////////////////////////////////////////
 //Set the Limit Debounce  counter max count
-#define X_DEBOUNCE_COUNT 1
-#define Y_DEBOUNCE_COUNT 1
-#define Z_DEBOUNCE_COUNT 3
-#define A_DEBOUNCE_COUNT 3
+#define DEBOUNCE_COUNT 5
+
 
 ///////////////////////////////////////////////////////
 //Debounce timer counter base pulse uncomment the base
 //value required may be usefull if using a cheap limit
 // this is only a reset time base, the setting of the
 //limits is instantaneous with interrupts
-//#define _ms10_
-#define _ms100_
+#define _ms10_
+//#define _ms100_
 //#define _ms300_
 //#define _ms500_
 //#define _sec1_

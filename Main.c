@@ -16,7 +16,7 @@
 *for limits the external interrupts  [ ac:Interrupts ] for origins x y z &
 * a b c* will most likely get polled without interrupts??
 *
-* Communication is Serial using the  ac:DMA_Pic32 DMA0 and DMA1 and is setup to 
+* Communication is Serial using the  ac:DMA_Pic32 DMA0 and DMA1 and is setup to
 * transfer and recieve to two seperate buffers.
 *
 * The development platform used for this application is MikroC Pro for pic32
@@ -40,15 +40,14 @@ bit testISR;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
 char uart_rd;
-//struct Timer TMR;
-unsigned char LCD_01_ADDRESS = 0x4E;//7E; //PCF8574T
+
 //////////////////////////////////////////
 // temp vars
 unsigned int ii;
 unsigned long testOcr;
 static unsigned int a;
 
-
+//char (*fp)(int);
 /////////////////////////////////////////
 //main function
 void main() {
@@ -58,11 +57,10 @@ unsigned char j;
 static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
 static int cntr;
+ // fp = Test_Min;
   PinMode();
-
   StepperConstants(15000,15000);
   oneShotA = 0;
-  //I2C_LCD_Out(LCD_01_ADDRESS,1,4,txt);
   a=0;
   disable_steps = 0;
   disableOCx();
@@ -70,194 +68,168 @@ static int cntr;
 
   EnableInterrupts();
   while(1){
+     LED1 = Test_Min(X)&0x0001;
 
-         if(!Toggle){
-             LED1 = Limits.X_Limit_Min;//= TMR.clock >> 4;
-             if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
-                 disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
-             if(LED1 && (oneshot == 0)){
-               oneshot = 1;
-             }else if(!LED1 && (oneshot == 1))
-                oneshot = 0;
-                
-         }
-             
-
-            
-         if(!SW2){
-               Toggle  = 0;
-               disableOCx();
-         }
-
-         if((!SW1)&&(!Toggle)){
-            LED1 = 0;
-            Toggle = 1;
-            disable_steps = 0;
-            EnStepperX();
-            EnStepperY();
-            EnStepperZ();
-            EnStepperA();
-            cntr = 0;
-            sys.homing = 1;
-            sys.homing_cnt = 0;
-            a = 10;
-         }
-         //X Y Z
-         if(Toggle){
-
-           if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-               Temp_Move(a);
-               a++;
-               if(a > 12)a=10;
-            //Change the value of DMADebug in the DEFINE.pld
-            //file found in the Project Level Define folder
-
-           }
-           if((Limits.X_Limit_Min)&&(sys.homing == 1)){
-               sys.homing == -1;
-               StopX();
-               Delay_ms(200);
-           }
-           
-#if DMADebug > 0
-            cntr++;
-            if(cntr > 10000){
-            #if DMADebug == 1
-              dma_printf("a:=%d:%l:%d:abs:=%l \r\n",
-                         a,STPS[X].step_count,STPS[X].axis_dir,
-                         STPS[X].steps_position);
-            #endif
-            #if DMADebug == 2
-             dma_printf("a:=%d \r\n",sys.steps_position[X]);
-
-            #elif DMADebug == 3
-              dma_printf("a:=%d:%l:%d:abs:=%l:%l:%d:abs:=%l \r\n",
-                         a,STPS[X].step_count,STPS[X].axis_dir,
-                         STPS[X].steps_position,STPS[Y].step_count,
-                         STPS[Y].axis_dir,STPS[Y].steps_position);
-            #endif
-              cntr = 0;
-            }
-#endif
-         }
+     if(!Toggle){
+       //LED1 = Test_Min(X)&0x0001;//TMR.clock >> 4;
+       if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
+           disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
+       
+       if(LED1 && (oneshot == 0)){
+         oneshot = 1;
+       }else if(!LED1 && (oneshot == 1))
+          oneshot = 0;
+     }
          
-        Debounce_X_Limits();
-        Debounce_Y_Limits();
+     if(!SW2){
+       Toggle  = 0;
+       disableOCx();
+     }
+
+     if((!SW1)&&(!Toggle)){
+        LED1 = 0;
+        Toggle = 1;
+        disable_steps = 0;
+        EnStepperX();
+        EnStepperY();
+        EnStepperZ();
+        EnStepperA();
+        cntr = 0;
+        sys.homing = 2;
+        sys.homing_cnt = 0;
+        a = 10;
+     }
+     //X Y Z
+     if(Toggle){
+     
+       if(FP(X)){
+         StopX();
+         a= 11;
+       }
+
+       if(FN(X)){
+         sys.homing = 1;
+       }
+          
+       if(sys.homing == 1){
+         a = 10;
+         sys.homing= 2;
+       }
+       if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+         Temp_Move(a);
+         if(a < 9){
+           a++;
+           if(a == 9)a=10;
+         }
+        //Change the value of DMADebug in the DEFINE.pld
+        //file found in the Project Level Define folder
+
+       }
+
+       
+        #if DMADebug == 1
+        if(!DMA_Busy(1)){
+          dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
+                     a,STPS[X].step_count,STPS[X].axis_dir,
+                     STPS[X].steps_position);
+        }
+
+        #endif
+     }
+    //Debounce_X_Limits();
+     Debounce_Limits(X);
+   // Debounce_Y_Limits();
+     Debounce_Limits(Y);
   }
 }
 
-//Temp code for trsting
 void Temp_Move(int a){
-
     switch(a){
       case 0:
-                 STPS[X].mmToTravel = belt_steps(50.00);//calcSteps(-125.25,8.06);
-                 speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
-                 SingleAxisStep(STPS[X].mmToTravel,X);
+             STPS[X].mmToTravel = belt_steps(50.00);//calcSteps(-125.25,8.06);
              break;
-       case 1:
-                 STPS[Y].mmToTravel = belt_steps(50.00);
-                 speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
-                 SingleAxisStep(STPS[Y].mmToTravel,Y);
-              break;
+             STPS[Y].mmToTravel = belt_steps(50.00);
+             speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
+             SingleAxisStep(STPS[Y].mmToTravel,Y);
+             break;
       case 2:
-                 STPS[X].mmToTravel = belt_steps(-50.00);
-                 speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
-                 SingleAxisStep(STPS[X].mmToTravel,X);
+             STPS[X].mmToTravel = belt_steps(-50.00);
+             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
+             SingleAxisStep(STPS[X].mmToTravel,X);
               break;
        case 3:
-                 STPS[Y].mmToTravel = belt_steps(-50.00);
-                 speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
-                 SingleAxisStep(STPS[Y].mmToTravel,Y);
+             STPS[Y].mmToTravel = belt_steps(-50.00);
+             speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
+             SingleAxisStep(STPS[Y].mmToTravel,Y);
               break;
        case 4:
-                 STPS[X].mmToTravel = belt_steps(50.00);
-                // speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
-                 STPS[Y].mmToTravel = belt_steps(100.00);
-                 speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
-                 DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+             STPS[X].mmToTravel = belt_steps(50.00);
+            // speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
+             STPS[Y].mmToTravel = belt_steps(100.00);
+             speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
+             DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
               break;
        case 5:
-                 STPS[X].mmToTravel = belt_steps(-50.00);
-                 //speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
-                 STPS[Y].mmToTravel = belt_steps(-100.00);
-                 speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
-                 DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+             STPS[X].mmToTravel = belt_steps(-50.00);
+             //speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
+             STPS[Y].mmToTravel = belt_steps(-100.00);
+             speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
+             DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
               break;
        case 6:
-                 STPS[X].mmToTravel = belt_steps(150.00);
-                 speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
-                 STPS[Y].mmToTravel = belt_steps(100.00);
-               //  speed_cntr_Move(STPS[Y].mmToTravel, 5000,Y);
-                 DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+             STPS[X].mmToTravel = belt_steps(150.00);
+             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
+             STPS[Y].mmToTravel = belt_steps(100.00);
+           //  speed_cntr_Move(STPS[Y].mmToTravel, 5000,Y);
+             DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
               break;
        case 7:
-                 STPS[X].mmToTravel = belt_steps(-150.00);
-                 speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
-                 STPS[Y].mmToTravel = belt_steps(-100.00);
-                // speed_cntr_Move(STPS[Y].mmToTravel, 5000,Y);
-                 DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+             STPS[X].mmToTravel = belt_steps(-150.00);
+             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
+             STPS[Y].mmToTravel = belt_steps(-100.00);
+            // speed_cntr_Move(STPS[Y].mmToTravel, 5000,Y);
+             DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
               break;
        case 8:
-                 STPS[A].mmToTravel = belt_steps(150.00);
-                 speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
+             STPS[A].mmToTravel = belt_steps(150.00);
+             speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
 #if DMADebug == 4
-                 dma_printf("mm:=%l\ndly%l\nmin_dly%l\nmax_lim%l\n"
-                 "acc_lim%l\ndec_val%l\ndecel_val%l\ndec_start%l\n\r\n",
-                 STPS[A].mmToTravel,STPS[A].step_delay,
-                 STPS[A].min_delay,STPS[A].max_step_lim,
-                 STPS[A].accel_lim,STPS[A].decel_val,
-                 STPS[A].decel_start);
+             if(!DMA_Busy(1)){
+             dma_printf("mm:=%l\ndly%l\nmin_dly%l\nmax_lim%l\n"
+             "acc_lim%l\ndec_val%l\ndecel_val%l\ndec_start%l\n\n",
+             STPS[A].mmToTravel,STPS[A].step_delay,
+             STPS[A].min_delay,STPS[A].max_step_lim,
+             STPS[A].accel_lim,STPS[A].decel_val,
+             STPS[A].decel_start);
+
 #endif
-                 SingleAxisStep(STPS[A].mmToTravel,A);
+             SingleAxisStep(STPS[A].mmToTravel,A);
              break;
        case 9:
-                //r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,
-                //         double Fin_axis_b,double r, double i, double j, double k,
-                //         int axis_A,int axis_B)
-                 r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
+            //r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,
+            //         double Fin_axis_b,double r, double i, double j, double k,
+            //         int axis_A,int axis_B)
+            r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
        case 10://Homing X axis
-                Home_Axis(-300.00,500,X);
+            Home_Axis(-300.00,500,X);
+            a =12;
             break;
        case 11://Homing Y axis
+<<<<<<< HEAD
                 sys.homing = 1;
                 Inv_Home_Axis(20.00,100,X);
                 Delay_ms(1000);
 
             break;
+=======
+            Inv_Home_Axis(10.00,100,X);
+            a = 12;
+>>>>>>> patch1
        case 12://Homing Y axis
 
             break;
         default: a = 0;
               break;
     }
-}
-
-void LCD_Display(){
-
-
-     //line 1
-     // Find out after how many Steps before we must start deceleration.
-     sprintf(txt,"%d",STPS[0].accel_lim);
-     I2C_LCD_Out(LCD_01_ADDRESS,1,1,txt);
-     // Find step to start decleration.
-     sprintf(txt,"%d",STPS[0].decel_start);
-     I2C_LCD_Out(LCD_01_ADDRESS,1,11,txt);
-
-     //Line 2
-     // Set accelration/speed/deccelration  by  step delay .
-     sprintf(txt,"%d",STPS[0].step_delay);
-     I2C_LCD_Out(LCD_01_ADDRESS,2,1,txt);
-     // Set max speed limit, by calc min_delay to use in timer.
-     sprintf(txt,"%d",STPS[0].min_delay);
-     I2C_LCD_Out(LCD_01_ADDRESS,2,11,txt);
-
-     //Line 3
-     // Find out after how many steps does the speed hit the max speed limit.
-     sprintf(txt,"%d",STPS[0].max_step_lim);
-     I2C_LCD_Out(LCD_01_ADDRESS,3,1,txt);
-     // decelrate  value start
-     sprintf(txt,"%d",STPS[0].decel_val);
-     I2C_LCD_Out(LCD_01_ADDRESS,3,11,txt);
 }

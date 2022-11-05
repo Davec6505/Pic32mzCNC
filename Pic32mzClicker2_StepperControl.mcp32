@@ -17,6 +17,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Stepper.h
 =======
 =======
@@ -32,6 +33,9 @@ Value=Stepper.c
 >>>>>>> patch1
 =======
 Value=Kinematics.c
+>>>>>>> patch1
+=======
+Value=Main.c
 >>>>>>> patch1
 =======
 Value=Main.c
@@ -87,6 +91,7 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
+<<<<<<< HEAD
 File1=Stepper.c
 <<<<<<< HEAD
 File2=Stepper.h
@@ -101,6 +106,9 @@ File6=Pins.h
 File7=Limits.h
 File8=Config.c
 Count=9
+>>>>>>> patch1
+=======
+Count=1
 >>>>>>> patch1
 [EEPROM]
 Count=0
@@ -160,7 +168,8 @@ File9=C_Math
 File10=FLASH
 File11=FFT
 File12=TwiddleFactors
-Count=13
+File13=MemManager
+Count=14
 [INTERRUPT_DEFS]
 EBASE=9FC01000
 VECTOR_SPACEING=32
@@ -172,4 +181,5 @@ USE_SRS=7
 14=Header Files
 28=Project Level Defines
 33=Active Comments Files
-Count=5
+42=Output Files
+Count=6

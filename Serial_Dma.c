@@ -199,13 +199,24 @@ void DMA1(){
 ////////////////////////////////////////
 //DMA1 on control
 void DMA1_Enable(){
-   DCH1CONSET |= 1<<7;
+   DCH1CON |= 1<<7;
 }
 
 ////////////////////////////////////////
 //DMA1 off control
 void DMA1_Disable(){
-    DCH1CONCLR |= 1<<7;
+    DCH1CON |= 1<<7;
+}
+
+///////////////////////////////////////
+//Get the status of the respective DMA
+//channel, decide whether or not to send
+//new data  [1 = busy || 0 = free]
+char DMA_Busy(char channel){
+   if(channel == 0)
+     return DCH0CON & 0x8000;
+   else
+     return DCH1CON & 0x8000;
 }
 
 /////////////////////////////////////////////////////
@@ -242,8 +253,9 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 //DMA Print strings and variable arguments formating
 int dma_printf(const char* str,...){
   int i = 0, j=0;
-  char buff[200]={0}, tmp[20];
-  char* str_arg;
+  char buff[200]={0},tmp[20];
+  char *str_arg,*tmp_;
+
  //Variable decleration of type va_list
  va_list va;
   
@@ -258,52 +270,55 @@ int dma_printf(const char* str,...){
      switch(str[i]){
         case 'c':
              //convert to ASCII char
-             buff[j] = (char)va_arg(va,int);
+             buff[j] = (char)va_arg(va,char);
              j++;
              break;
         case 'd':
              //convert to decimal
-            // _itoa(va_arg( va, int ), tmp, 10);
              IntToStr(va_arg(va,int),tmp);
-             strcpy(&buff[j], tmp);
-             j += strlen(tmp);
+             lTrim(tmp_,&tmp);
+             strcat(buff+j, tmp_);
+             j += strlen(tmp_);
              break;
         case 'l':
              //convert to decimal
-             //_itoa(va_arg( va, int ), tmp, 10);
              LongToStr(va_arg(va,long),tmp);
-             strcpy(&buff[j], tmp);
-             j += strlen(tmp);
+             lTrim(tmp_,&tmp);
+             strcat(buff+j, tmp_);
+             j += strlen(tmp_);
              break;
         case 'x':
+             IntToHex(va_arg(va,int),tmp);
+             strcat(buff+j, tmp);
+             j += strlen(tmp);
+             break;
         case 'X':
              //convert to hex
-             _itoa(va_arg( va, int ), tmp, 16);
-             strcpy(&buff[j], tmp);
+             LongIntToHex(va_arg(va,long),tmp);
+             strcat(buff+j, tmp);
              j += strlen(tmp);
              break;
         case 'f':
         case 'F':
              //convert to octal
-             //_itoa(va_arg( va, int ), tmp, 8);
              FloatToStr(va_arg(va,double),tmp);
-             strcpy(&buff[j], tmp);
+             strcat(buff+j, tmp);
              j += strlen(tmp);
              break;
         case 's':
              //copy string
              str_arg = va_arg( va, char* );
-             strcpy(&buff[j], str_arg);
+             strcat(buff+j, str_arg);
              j += strlen(str_arg);
              break;
      }
     }else{
-       buff[j] = str[i];
+       *(buff+j) = *(str+i);
        j++;
     }
     i++;
  }
- buff[j] = 0;
+ *(buff+j) = 0;
  strncpy(txBuf,buff,j);
  DCH1SSIZ    = j ;
  DMA1_Enable();
@@ -311,41 +326,25 @@ int dma_printf(const char* str,...){
 
 }
 
-char * _itoa(int i, char *strout, int base){
-  char *str = strout;
-  int digit, sign = 0;
-  if (i < 0) {
-    sign = 1;
-    i *= -1;
-  }
-  while(i) {
-    digit = i % base;
-    *str = (digit > 9) ? ('A' + digit - 10) : '0' + digit;
-    i = i / base;
-    str ++;
-  }
-  if(sign) {
-  *str++ = '-';
-  }
-  *str = '\0';
-  _strrev(strout);
-  return strout;
-}
-
-char *_strrev (char *str){
-  int i;
-  int len = 0;
-  char c;
-  if (!str)
-    return NULL;
-  while(str[len] != '\0'){
-    len++;
-  }
-  for(i = 0; i < (len/2); i++)
-  {
-    c = str[i];
-    str [i] = str[len - i - 1];
-    str[len - i - 1] = c;
-  }
-  return str;
+///////////////////////////////////////////////////
+//left trim the string of zeros
+void lTrim(char *d,char* s){
+char* temp;
+int i=0,j,k;
+  k = i;
+  j = strlen(s);
+ while(*s != '\0'){
+      if((*s > 0x30)||(k>0)){
+         k = 1;
+         *d = *s;
+         d++;
+      }else
+         i++;
+      s++;
+ }
+ if(i == j){
+   *d = '0';
+   d++;
+ }
+ *d = 0;
 }

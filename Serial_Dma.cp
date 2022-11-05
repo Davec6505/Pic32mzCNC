@@ -218,7 +218,7 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 54 "c:/users/git/pic32mzcnc/gcode.h"
+#line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  uint8_t status_code;
  uint8_t motion_mode;
@@ -508,7 +508,7 @@ double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 28 "c:/users/git/pic32mzcnc/limits.h"
+#line 29 "c:/users/git/pic32mzcnc/limits.h"
 extern sbit TX0;
 extern sbit TX1;
 extern sbit TX2;
@@ -556,26 +556,59 @@ unsigned int Y_Min_DeBnc;
 unsigned int Z_Min_DeBnc;
 unsigned int A_Min_DeBnc;
 };
-
-
-
 extern struct limits Limits;
 
 
+
+struct limit {
+
+char Pin: 1;
+char Limit_Min: 1;
+char Limit_Max: 1;
+char T0: 1;
+char T1: 1;
+char T2: 1;
+char T4: 1;
+char new_val;
+char old_Pval;
+char old_Fval;
+
+unsigned int Min_DeBnc;
+unsigned int last_cnt_min;
+
+
+long Soft_Limit_Min;
+
+};
+
+
+
 void Limit_Initialize();
+
 void X_Min_Limit_Setup();
 void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+char Test_Port_Pins(int axis);
+char Test_Min(int axis);
 char Test_X_Min();
 char Test_Y_Min();
+
+void Reset_Min_Limit(int axis);
 void Reset_X_Min_Limit();
 void Reset_Y_Min_Limit();
+
+void Debounce_Limits(int axis);
 void Debounce_X_Limits();
 void Debounce_Y_Limits();
+
+void Reset_Min_Debounce(int axis);
 void Reset_X_Min_Debounce();
 void Reset_Y_Min_Debounce();
+
+char FP(int axis);
+char FN(int axis);
 #line 31 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -613,9 +646,9 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
+char DMA_Busy(char channel);
 int dma_printf(char* str,...);
-char * _itoa(int i, char *strout, int base);
-char *_strrev (char *str);
+void lTrim(char* d,char* s);
 #line 6 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 char rxBuf[200] = {0} absolute 0xA0002000 ;
 char txBuf[200] = {0} absolute 0xA0002200 ;
@@ -783,13 +816,24 @@ void DMA1(){
 
 
 void DMA1_Enable(){
- DCH1CONSET |= 1<<7;
+ DCH1CON |= 1<<7;
 }
 
 
 
 void DMA1_Disable(){
- DCH1CONCLR |= 1<<7;
+ DCH1CON |= 1<<7;
+}
+
+
+
+
+
+char DMA_Busy(char channel){
+ if(channel == 0)
+ return DCH0CON & 0x8000;
+ else
+ return DCH1CON & 0x8000;
 }
 
 
@@ -826,8 +870,9 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 
 int dma_printf(const char* str,...){
  int i = 0, j=0;
- char buff[200]={0}, tmp[20];
- char* str_arg;
+ char buff[200]={0},tmp[20];
+ char *str_arg,*tmp_;
+
 
  va_list va;
 
@@ -842,52 +887,55 @@ int dma_printf(const char* str,...){
  switch(str[i]){
  case 'c':
 
- buff[j] = (char) __va_arg(va, int) ;
+ buff[j] = (char) __va_arg(va, char) ;
  j++;
  break;
  case 'd':
 
-
  IntToStr( __va_arg(va, int) ,tmp);
- strcpy(&buff[j], tmp);
- j += strlen(tmp);
+ lTrim(tmp_,&tmp);
+ strcat(buff+j, tmp_);
+ j += strlen(tmp_);
  break;
  case 'l':
 
-
  LongToStr( __va_arg(va, long) ,tmp);
- strcpy(&buff[j], tmp);
- j += strlen(tmp);
+ lTrim(tmp_,&tmp);
+ strcat(buff+j, tmp_);
+ j += strlen(tmp_);
  break;
  case 'x':
+ IntToHex( __va_arg(va, int) ,tmp);
+ strcat(buff+j, tmp);
+ j += strlen(tmp);
+ break;
  case 'X':
 
- _itoa( __va_arg(va, int) , tmp, 16);
- strcpy(&buff[j], tmp);
+ LongIntToHex( __va_arg(va, long) ,tmp);
+ strcat(buff+j, tmp);
  j += strlen(tmp);
  break;
  case 'f':
  case 'F':
 
-
  FloatToStr( __va_arg(va, double) ,tmp);
- strcpy(&buff[j], tmp);
+ strcat(buff+j, tmp);
  j += strlen(tmp);
  break;
  case 's':
 
  str_arg =  __va_arg(va, char*) ;
- strcpy(&buff[j], str_arg);
+ strcat(buff+j, str_arg);
  j += strlen(str_arg);
  break;
  }
  }else{
- buff[j] = str[i];
+ *(buff+j) = *(str+i);
  j++;
  }
  i++;
  }
- buff[j] = 0;
+ *(buff+j) = 0;
  strncpy(txBuf,buff,j);
  DCH1SSIZ = j ;
  DMA1_Enable();
@@ -895,41 +943,25 @@ int dma_printf(const char* str,...){
 
 }
 
-char * _itoa(int i, char *strout, int base){
- char *str = strout;
- int digit, sign = 0;
- if (i < 0) {
- sign = 1;
- i *= -1;
- }
- while(i) {
- digit = i % base;
- *str = (digit > 9) ? ('A' + digit - 10) : '0' + digit;
- i = i / base;
- str ++;
- }
- if(sign) {
- *str++ = '-';
- }
- *str = '\0';
- _strrev(strout);
- return strout;
-}
 
-char *_strrev (char *str){
- int i;
- int len = 0;
- char c;
- if (!str)
- return  0 ;
- while(str[len] != '\0'){
- len++;
+
+void lTrim(char *d,char* s){
+char* temp;
+int i=0,j,k;
+ k = i;
+ j = strlen(s);
+ while(*s != '\0'){
+ if((*s > 0x30)||(k>0)){
+ k = 1;
+ *d = *s;
+ d++;
+ }else
+ i++;
+ s++;
  }
- for(i = 0; i < (len/2); i++)
- {
- c = str[i];
- str [i] = str[len - i - 1];
- str[len - i - 1] = c;
+ if(i == j){
+ *d = '0';
+ d++;
  }
- return str;
+ *d = 0;
 }

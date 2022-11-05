@@ -27,10 +27,35 @@ main
 	StepperConstants
 	disableOCx
 	DisableStepper
+	Test_Min
 	EnStepperX
 	EnStepperY
 	EnStepperZ
 	EnStepperA
+	FP
+		Test_Min
+		dma_printf
+			__CC2DW
+			IntToStr
+				WordToStr
+			lTrim
+				strlen
+			strcat
+			strlen
+			LongToStr
+				LongWordToStr
+			IntToHex
+			LongIntToHex
+			FloatToStr
+				strcpy
+			strncpy
+			DMA1_Enable
+		__CC2DW
+	StopX
+	FN
+		Test_Min
+		dma_printf
+		__CC2DW
 	Temp_Move
 		belt_steps
 		speed_cntr_Move
@@ -68,19 +93,6 @@ main
 			hypot
 				sqrt
 			dma_printf
-				__CC2DW
-				IntToStr
-					WordToStr
-				strcpy
-				strlen
-				LongToStr
-					LongWordToStr
-				_itoa
-					_strrev
-				FloatToStr
-					strcpy
-				strncpy
-				DMA1_Enable
 			mc_arc
 				atan2
 					fabs
@@ -108,20 +120,12 @@ main
 			belt_steps
 			speed_cntr_Move
 			SingleAxisStep
-	StopX
+	DMA_Busy
 	dma_printf
-	Debounce_X_Limits
-		Test_X_Min
-		dma_printf
-		Reset_X_Min_Limit
-		Reset_X_Min_Debounce
-		__CC2DW
-	Debounce_Y_Limits
-		Test_Y_Min
-		dma_printf
-		Reset_Y_Min_Limit
-		Reset_Y_Min_Debounce
-		__CC2DW
+	Debounce_Limits
+		Test_Port_Pins
+		Reset_Min_Limit
+		Reset_Min_Debounce
 	__CC2DW
 	__FillZeros
 	ResetSteppers

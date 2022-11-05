@@ -541,7 +541,7 @@ void Home_Axis(double distance,long speed,int axis){
       speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
       SingleAxisStep(STPS[axis].mmToTravel,axis);
 }
-
+//Re verse
 void Inv_Home_Axis(double distance,long speed,int axis){
       distance = (distance > 10.0)?  10.0 : distance;
       distance *= (distance < 0.0)?  -1.0 : 1.0;

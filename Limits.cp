@@ -199,14 +199,14 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
+char DMA_Busy(char channel);
 int dma_printf(char* str,...);
-char * _itoa(int i, char *strout, int base);
-char *_strrev (char *str);
+void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 54 "c:/users/git/pic32mzcnc/gcode.h"
+#line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  uint8_t status_code;
  uint8_t motion_mode;
@@ -548,7 +548,7 @@ void InitTimer8();
 void ClockPulse();
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 28 "c:/users/git/pic32mzcnc/limits.h"
+#line 29 "c:/users/git/pic32mzcnc/limits.h"
 extern sbit TX0;
 extern sbit TX1;
 extern sbit TX2;
@@ -596,57 +596,72 @@ unsigned int Y_Min_DeBnc;
 unsigned int Z_Min_DeBnc;
 unsigned int A_Min_DeBnc;
 };
-
-
-
 extern struct limits Limits;
 
 
+
+struct limit {
+
+char Pin: 1;
+char Limit_Min: 1;
+char Limit_Max: 1;
+char T0: 1;
+char T1: 1;
+char T2: 1;
+char T4: 1;
+char new_val;
+char old_Pval;
+char old_Fval;
+
+unsigned int Min_DeBnc;
+unsigned int last_cnt_min;
+
+
+long Soft_Limit_Min;
+
+};
+
+
+
 void Limit_Initialize();
+
 void X_Min_Limit_Setup();
 void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+char Test_Port_Pins(int axis);
+char Test_Min(int axis);
 char Test_X_Min();
 char Test_Y_Min();
+
+void Reset_Min_Limit(int axis);
 void Reset_X_Min_Limit();
 void Reset_Y_Min_Limit();
+
+void Debounce_Limits(int axis);
 void Debounce_X_Limits();
 void Debounce_Y_Limits();
+
+void Reset_Min_Debounce(int axis);
 void Reset_X_Min_Debounce();
 void Reset_Y_Min_Debounce();
+
+char FP(int axis);
+char FN(int axis);
 #line 7 "C:/Users/Git/Pic32mzCNC/Limits.c"
 struct limits Limits;
-
+static struct limit Limit[ 6 ];
 
 
 static unsigned int last_cntX_min;
 static unsigned int last_cntY_min;
 static unsigned int last_cntZ_min;
 static unsigned int last_cntA_min;
-
-
-
-
-static char bits;
-sbit TX0 at bits.B0;
-sbit TX1 at bits.B1;
-sbit TX2 at bits.B2;
-sbit TX3 at bits.B3;
-sbit TY0 at bits.B4;
-sbit TY1 at bits.B5;
-sbit TY2 at bits.B6;
-sbit TY3 at bits.B7;
-
-
-
-
-
-
-
-
+#line 37 "C:/Users/Git/Pic32mzCNC/Limits.c"
 void Limit_Initialize(){
+
+
 
  X_Min_Limit_Dir = 1;
  Y_Min_Limit_Dir = 1;
@@ -711,6 +726,9 @@ void Y_Min_Limit_Setup(){
 
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
  INT1IF_bit = 0;
+ if(!Limit[X].Limit_Min)
+ Limit[X].Limit_Min = 1;
+
  if(!Limits.X_Limit_Min)
  Limits.X_Limit_Min = 1;
 }
@@ -719,6 +737,9 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  INT2IF_bit = 0;
+ if(!Limit[Y].Limit_Min)
+ Limit[Y].Limit_Min = 1;
+
  if(!Limits.Y_Limit_Min)
  Limits.Y_Limit_Min = 1;
 }
@@ -730,104 +751,115 @@ void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
 
 
 
-char Test_X_Min(){
- return (Limits.X_Limit_Min == 1)? 1:0;
-}
 
 
-
-char Test_Y_Min(){
- return (Limits.Y_Limit_Min == 1)? 1:0;
-}
-
-
-
-
-
-
-
-
-void Reset_X_Min_Limit(){
- Limits.X_Limit_Min = ~Limits.X_Limit_Min;
-}
-
-
-
-void Reset_Y_Min_Limit(){
- Limits.Y_Limit_Min = ~Limits.Y_Limit_Min;
+char Test_Min(int axis){
+ return (Limit[axis].Limit_Min & 0x0001)? 1:0;
 }
 
 
 
 
 
-
-
-
-
-void Reset_X_Min_Debounce(){
- Limits.X_Min_DeBnc = 0;
- last_cntX_min = 0;
+void Reset_Min_Limit(int axis){
+ Limit[axis].Limit_Min =  1  ^ Limit[axis].Limit_Min;
 }
 
 
 
-void Reset_Y_Min_Debounce(){
- Limits.Y_Min_DeBnc = 0;
- last_cntY_min = 0;
+
+
+void Reset_Min_Debounce(int axis){
+ Limit[axis].Min_DeBnc = 0;
+ Limit[axis].last_cnt_min = 0;
 }
 
 
 
-void Debounce_X_Limits(){
- TX0 = (TMR.clock >>  1 )&1;
- TX1 = Test_X_Min();
 
- if((!X_Min_Limit)&&(TX1)){
- if(TX0 && !TX2){
- TX2 = 1;
- Limits.X_Min_DeBnc++;
+void Debounce_Limits(int axis){
+ Limit[axis].T0 = (TMR.clock >>  0 )&1;
 
- dma_printf("LimitX:=%d \r\n",Limits.X_Min_DeBnc);
 
- if(Limits.X_Min_DeBnc > last_cntX_min){
- last_cntX_min = Limits.X_Min_DeBnc;
+ Limit[axis].Pin = Test_Port_Pins(axis);
+
+ if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
+ if(!Limit[axis].T0 && !Limit[axis].T2){
+ Limit[axis].T2 = 1;
+ Limit[axis].Min_DeBnc++;
+#line 168 "C:/Users/Git/Pic32mzCNC/Limits.c"
+ if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
+ Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }
- }else if(!TX0 && TX2)
- TX2=0;
+ }else if(Limit[axis].T0 && Limit[axis].T2)
+ Limit[axis].T2 = 0;
 
- if(Limits.X_Min_DeBnc >  1 )
- Reset_X_Min_Limit();
+ if(Limit[axis].Min_DeBnc >  5 )
+ Reset_Min_Limit(axis);
 
- }else if(X_Min_Limit){
- Reset_X_Min_Debounce();
+ }else if(Limit[axis].Pin){
+ Reset_Min_Debounce(axis);
  }
 
 }
 
 
 
- void Debounce_Y_Limits(){
- TY0 = (TMR.clock >>  1 )&1;
- TY1 = Test_Y_Min();
 
- if((!Y_Min_Limit)&&(TY1)){
- if(TY0 && !TY2){
- TY2 = 1;
- Limits.Y_Min_DeBnc++;
 
- dma_printf("LimitY:=%d \r\n",Limits.Y_Min_DeBnc);
 
- if(Limits.Y_Min_DeBnc > last_cntY_min){
- last_cntY_min = Limits.Y_Min_DeBnc;
+
+char FP(int axis){
+char tmp = 0;
+ Limit[axis].new_val = Test_Min(axis) & 0x0001;
+ if(Limit[axis].new_val > Limit[axis].old_Pval){
+
+ dma_printf("\t\tFP():=%d\r\n",(int)Limit[axis].new_val);
+
+ tmp = 1;
+ }else {
+ tmp = 0;
  }
- }else if(!TY0 && TY2)
- TY2=0;
+ Limit[axis].old_Pval = Limit[axis].new_val;
+ return tmp;
+}
 
- if(Limits.Y_Min_DeBnc >  1 )
- Reset_Y_Min_Limit();
 
- }else if(Y_Min_Limit){
- Reset_Y_Min_Debounce();
+char FN(int axis){
+char tmp = 0;
+ Limit[axis].new_val = Test_Min(axis) & 0x0001;
+ if(Limit[axis].new_val < Limit[axis].old_Fval){
+
+ dma_printf("\t\tFN():=%d\r\n",(int)Limit[axis].new_val);
+
+ tmp = 1;
+ }else
+ tmp = 0;
+ Limit[axis].old_Fval = Limit[axis].new_val;
+ return tmp;
+}
+
+
+
+
+
+char Test_Port_Pins(int axis){
+char tmp = 0;
+ switch(axis){
+ case X:
+ tmp = X_Min_Limit & 0x0001;
+ break;
+ case Y:
+ tmp = Y_Min_Limit & 0x0001;
+ break;
+ case Z:
+
+ break;
+ case A:
+
+ break;
+ default: tmp = 255;
+ break;
  }
+ return tmp;
 }

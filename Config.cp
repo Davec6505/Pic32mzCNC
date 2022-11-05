@@ -232,14 +232,14 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
+char DMA_Busy(char channel);
 int dma_printf(char* str,...);
-char * _itoa(int i, char *strout, int base);
-char *_strrev (char *str);
+void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 54 "c:/users/git/pic32mzcnc/gcode.h"
+#line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  uint8_t status_code;
  uint8_t motion_mode;
@@ -529,7 +529,7 @@ double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 28 "c:/users/git/pic32mzcnc/limits.h"
+#line 29 "c:/users/git/pic32mzcnc/limits.h"
 extern sbit TX0;
 extern sbit TX1;
 extern sbit TX2;
@@ -577,26 +577,59 @@ unsigned int Y_Min_DeBnc;
 unsigned int Z_Min_DeBnc;
 unsigned int A_Min_DeBnc;
 };
-
-
-
 extern struct limits Limits;
 
 
+
+struct limit {
+
+char Pin: 1;
+char Limit_Min: 1;
+char Limit_Max: 1;
+char T0: 1;
+char T1: 1;
+char T2: 1;
+char T4: 1;
+char new_val;
+char old_Pval;
+char old_Fval;
+
+unsigned int Min_DeBnc;
+unsigned int last_cnt_min;
+
+
+long Soft_Limit_Min;
+
+};
+
+
+
 void Limit_Initialize();
+
 void X_Min_Limit_Setup();
 void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+char Test_Port_Pins(int axis);
+char Test_Min(int axis);
 char Test_X_Min();
 char Test_Y_Min();
+
+void Reset_Min_Limit(int axis);
 void Reset_X_Min_Limit();
 void Reset_Y_Min_Limit();
+
+void Debounce_Limits(int axis);
 void Debounce_X_Limits();
 void Debounce_Y_Limits();
+
+void Reset_Min_Debounce(int axis);
 void Reset_X_Min_Debounce();
 void Reset_Y_Min_Debounce();
+
+char FP(int axis);
+char FN(int axis);
 #line 31 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -620,6 +653,7 @@ void LCD_Display();
 void PinMode(){
 
  DI();
+
  SYSKEY = 0xAA996655;
  SYSKEY = 0x556699AA;
  CFGCONbits.OCACLK = 1;
@@ -682,6 +716,10 @@ void PinMode(){
  PPS_Mapping_NoLock(_RPF3, _INPUT, _INT1);
  PPS_Mapping_NoLock(_RPB15, _INPUT, _INT2);
  Lock_IOLOCK();
+
+
+
+
 
 
 
@@ -823,7 +861,7 @@ unsigned long cp0;
 
 
 void OutPutPulseXYZ(){
-#line 216 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 221 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5CON = 0x0000;
  OC2CON = 0x0000;
  OC7CON = 0X0000;
@@ -861,7 +899,7 @@ void OutPutPulseXYZ(){
  OC3CON = 0x000C;
  OC6CON = 0x000C;
  OC8CON = 0x000C;
-#line 260 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 265 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5R = 0x5;
  OC5RS = 0x234;
  OC2R = 0x5;

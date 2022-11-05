@@ -23,6 +23,7 @@
   #define BASE_TMR 4
 #endif
 
+#define INV 1
 //////////////////////////////////////////////
 //SFR's
 extern sbit TX0;
@@ -72,25 +73,57 @@ unsigned int Y_Min_DeBnc;
 unsigned int Z_Min_DeBnc;
 unsigned int A_Min_DeBnc;
 };
-
-
-
 extern struct limits Limits;
+
+/////////////////////////////////////////////
+//Structs enums and Unions
+struct limit {
+//hard limits
+char Pin: 1;
+char Limit_Min: 1;
+char Limit_Max: 1;
+char T0: 1;
+char T1: 1;
+char T2: 1;
+char T4: 1;
+char new_val;
+char old_Pval;
+char old_Fval;
+//hard limits debounce counters
+unsigned int Min_DeBnc;
+unsigned int last_cnt_min;
+
+//Soft limits
+long Soft_Limit_Min;
+
+};
+
 //////////////////////////////////////////////
 //Limit function Prototypes
 void Limit_Initialize();
+
 void X_Min_Limit_Setup();
 void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+char Test_Port_Pins(int axis);
+char Test_Min(int axis);
 char Test_X_Min();
 char Test_Y_Min();
+
+void Reset_Min_Limit(int axis);
 void Reset_X_Min_Limit();
 void Reset_Y_Min_Limit();
+
+void Debounce_Limits(int axis);
 void Debounce_X_Limits();
 void Debounce_Y_Limits();
+
+void Reset_Min_Debounce(int axis);
 void Reset_X_Min_Debounce();
 void Reset_Y_Min_Debounce();
 
+char FP(int axis);
+char FN(int axis);
 #endif
