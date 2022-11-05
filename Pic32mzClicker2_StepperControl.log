@@ -12,7 +12,8 @@ diagnostics: 0	122	Compilation Started	i2c_lcd.h
 hint: 54	1163	Variable 'txt_' has been declared, but not used	Main.c
 hint: 56	1163	Variable 'j' has been declared, but not used	Main.c
 hint: 58	1163	Variable 'i' has been declared, but not used	Main.c
-diagnostics: 243	123	Compiled Successfully	Main.c
+diagnostics: 227	123	Compiled Successfully	Main.c
+hint: 59	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
 hint: 58	1164	Variable 'xyz_' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	i2c_lcd.h
 diagnostics: 345	123	Compiled Successfully	Config.c
@@ -54,7 +55,9 @@ diagnostics: 76	123	Compiled Successfully	Pins.c
 diagnostics: 0	122	Compilation Started	stdlib.h
 hint: 0	1004	interrupt handler (DMA_CH0_ISR at 0x0086)	Serial_Dma.c
 hint: 0	1004	interrupt handler (DMA_CH1_ISR at 0x0087)	Serial_Dma.c
-diagnostics: 313	123	Compiled Successfully	Serial_Dma.c
+hint: 332	1163	Variable 'temp' has been declared, but not used	Serial_Dma.c
+diagnostics: 350	123	Compiled Successfully	Serial_Dma.c
+warning: 279	1512	variable 'tmp_' might not have been initialized	Serial_Dma.c
 hint: 108	1164	Variable 'i' has been eliminated by optimizer	Serial_Dma.c
 diagnostics: 0	122	Compilation Started	Print.c
 diagnostics: 0	123	Compiled Successfully	Print.c
@@ -66,14 +69,14 @@ diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (X_Min_Limit at 0x0008)	Limits.c
 hint: 0	1004	interrupt handler (Y_Min_Limit at 0x000D)	Limits.c
 diagnostics: 242	123	Compiled Successfully	Limits.c
-diagnostics: 0	127	All files Compiled in 1547 ms	 
+diagnostics: 0	127	All files Compiled in 1078 ms	 
 hint: 6	1004	Variable rxBuf has been declared, but not used	Serial_Dma.c
 hint: 0	1144	Used RX: 19 (59%)   Free RX: 13 (41%)	Used RX: 19 (59%)   Free RX: 13 (41%)
-hint: 0	1144	Static RAM (bytes): 1089   Dynamic RAM (bytes): 515193	Static RAM (bytes): 1089   Dynamic RAM (bytes): 515193
+hint: 0	1144	Static RAM (bytes): 1087   Dynamic RAM (bytes): 515197	Static RAM (bytes): 1087   Dynamic RAM (bytes): 515197
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 34194 (2%)  Free ROM (bytes): 2062958 (98%)	Used ROM (bytes): 34194 (2%)  Free ROM (bytes): 2062958 (98%)
+hint: 0	1144	Used ROM (bytes): 34337 (2%)  Free ROM (bytes): 2062815 (98%)	Used ROM (bytes): 34337 (2%)  Free ROM (bytes): 2062815 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 812 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4281 ms	 
-diagnostics: 0	103	Finished successfully: 04 Nov 2022, 23:34:59	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 625 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3266 ms	 
+diagnostics: 0	103	Finished successfully: 05 Nov 2022, 20:55:43	Pic32mzClicker2_StepperControl.mcp32

@@ -27,7 +27,7 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
+char DMA_Busy(char channel);
 int dma_printf(char* str,...);
-char * _itoa(int i, char *strout, int base);
-char *_strrev (char *str);
+void lTrim(char* d,char* s);
 #endif

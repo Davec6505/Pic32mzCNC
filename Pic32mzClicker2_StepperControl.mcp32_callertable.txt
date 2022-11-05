@@ -38,11 +38,12 @@ main
 			__CC2DW
 			IntToStr
 				WordToStr
+			lTrim
+				strlen
 			strcat
 			strlen
 			LongToStr
 				LongWordToStr
-			strcpy
 			IntToHex
 			LongIntToHex
 			FloatToStr
@@ -50,7 +51,7 @@ main
 			strncpy
 			DMA1_Enable
 		__CC2DW
-	StopY
+	StopX
 	FN
 		Test_Min
 		dma_printf
@@ -119,6 +120,7 @@ main
 			belt_steps
 			speed_cntr_Move
 			SingleAxisStep
+	DMA_Busy
 	dma_printf
 	Debounce_Limits
 		Test_Port_Pins

@@ -646,9 +646,9 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
+char DMA_Busy(char channel);
 int dma_printf(char* str,...);
-char * _itoa(int i, char *strout, int base);
-char *_strrev (char *str);
+void lTrim(char* d,char* s);
 #line 6 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 char rxBuf[200] = {0} absolute 0xA0002000 ;
 char txBuf[200] = {0} absolute 0xA0002200 ;
@@ -816,13 +816,24 @@ void DMA1(){
 
 
 void DMA1_Enable(){
- DCH1CONSET |= 1<<7;
+ DCH1CON |= 1<<7;
 }
 
 
 
 void DMA1_Disable(){
- DCH1CONCLR |= 1<<7;
+ DCH1CON |= 1<<7;
+}
+
+
+
+
+
+char DMA_Busy(char channel){
+ if(channel == 0)
+ return DCH0CON & 0x8000;
+ else
+ return DCH1CON & 0x8000;
 }
 
 
@@ -859,8 +870,9 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 
 int dma_printf(const char* str,...){
  int i = 0, j=0;
- char buff[200]={0}, tmp[20];
- char* str_arg;
+ char buff[200]={0},tmp[20];
+ char *str_arg,*tmp_;
+
 
  va_list va;
 
@@ -881,50 +893,75 @@ int dma_printf(const char* str,...){
  case 'd':
 
  IntToStr( __va_arg(va, int) ,tmp);
- strcat(&buff[j], tmp);
- j += strlen(tmp);
+ lTrim(tmp_,&tmp);
+ strcat(buff+j, tmp_);
+ j += strlen(tmp_);
  break;
  case 'l':
 
  LongToStr( __va_arg(va, long) ,tmp);
- strcpy(&buff[j], tmp);
- j += strlen(tmp);
+ lTrim(tmp_,&tmp);
+ strcat(buff+j, tmp_);
+ j += strlen(tmp_);
  break;
  case 'x':
  IntToHex( __va_arg(va, int) ,tmp);
- strcat(&buff[j], tmp);
+ strcat(buff+j, tmp);
  j += strlen(tmp);
  break;
  case 'X':
 
  LongIntToHex( __va_arg(va, long) ,tmp);
- strcat(&buff[j], tmp);
+ strcat(buff+j, tmp);
  j += strlen(tmp);
  break;
  case 'f':
  case 'F':
 
  FloatToStr( __va_arg(va, double) ,tmp);
- strcat(&buff[j], tmp);
+ strcat(buff+j, tmp);
  j += strlen(tmp);
  break;
  case 's':
 
  str_arg =  __va_arg(va, char*) ;
- strcat(&buff[j], str_arg);
+ strcat(buff+j, str_arg);
  j += strlen(str_arg);
  break;
  }
  }else{
- buff[j] = str[i];
+ *(buff+j) = *(str+i);
  j++;
  }
  i++;
  }
- buff[j] = 0;
+ *(buff+j) = 0;
  strncpy(txBuf,buff,j);
  DCH1SSIZ = j ;
  DMA1_Enable();
  return j;
 
+}
+
+
+
+void lTrim(char *d,char* s){
+char* temp;
+int i=0,j,k;
+ k = i;
+ j = strlen(s);
+ while(*s != '\0'){
+ if((*s > 0x30)||(k>0)){
+ k = 1;
+ *d = *s;
+ d++;
+ }else
+ i++;
+ s++;
+ }
+ if(i == j){
+ *d = '0';
+ d++;
+ }
+ *d = 0;
 }

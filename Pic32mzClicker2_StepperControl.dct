@@ -23630,6 +23630,7 @@ divswen_refo2con_bit
 divswen_refo3con_bit
 divswen_refo4con_bit
 dma_buff
+dma_busy
 dma_ch0_isr
 dma_ch1_isr
 dma_global
@@ -38777,6 +38778,7 @@ lseof6
 lseof6_bit
 lseof7
 lseof7_bit
+ltrim
 ltrim
 lvderr
 lvderr

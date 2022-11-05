@@ -14,7 +14,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Limits.h
+Value=Main.c
 =======
 Value=Main.c
 >>>>>>> patch2
@@ -68,8 +68,9 @@ File0=Pic32mzClicker2_Pinout.png
 Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
-File0=Serial_Dma.c
-Count=1
+File0=Main.c
+File1=Serial_Dma.c
+Count=2
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -141,4 +142,5 @@ USE_SRS=7
 14=Header Files
 28=Project Level Defines
 33=Active Comments Files
-Count=5
+42=Output Files
+Count=6

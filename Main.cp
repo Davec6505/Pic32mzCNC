@@ -232,9 +232,9 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
+char DMA_Busy(char channel);
 int dma_printf(char* str,...);
-char * _itoa(int i, char *strout, int base);
-char *_strrev (char *str);
+void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -693,11 +693,11 @@ static int cntr;
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
+
  if(LED1 && (oneshot == 0)){
  oneshot = 1;
  }else if(!LED1 && (oneshot == 1))
  oneshot = 0;
-
  }
 
  if(!SW2){
@@ -721,12 +721,12 @@ static int cntr;
 
  if(Toggle){
 
- if(FP(Y)){
- StopY();
+ if(FP(X)){
+ StopX();
  a= 11;
  }
 
- if(FN(Y)){
+ if(FN(X)){
  sys.homing = 1;
  }
 
@@ -747,15 +747,12 @@ static int cntr;
 
 
 
- cntr++;
- if(cntr > 10000){
-
- dma_printf("a:=%d:%l:%d:abs:=%l \r\n",
+ if(!DMA_Busy(1)){
+ dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
  a,STPS[X].step_count,STPS[X].axis_dir,
  STPS[X].steps_position);
-#line 147 "C:/Users/Git/Pic32mzCNC/Main.c"
- cntr = 0;
  }
+
 
  }
 
@@ -765,16 +762,11 @@ static int cntr;
  }
 }
 
-
 void Temp_Move(int a){
-
  switch(a){
  case 0:
  STPS[X].mmToTravel = belt_steps(50.00);
- speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
- SingleAxisStep(STPS[X].mmToTravel,X);
  break;
- case 1:
  STPS[Y].mmToTravel = belt_steps(50.00);
  speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
  SingleAxisStep(STPS[Y].mmToTravel,Y);
@@ -820,7 +812,7 @@ void Temp_Move(int a){
  case 8:
  STPS[A].mmToTravel = belt_steps(150.00);
  speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
-#line 221 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 206 "C:/Users/Git/Pic32mzCNC/Main.c"
  SingleAxisStep(STPS[A].mmToTravel,A);
  break;
  case 9:
@@ -830,13 +822,12 @@ void Temp_Move(int a){
  r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
  break;
  case 10:
- Home_Axis(-300.00,500,Y);
+ Home_Axis(-300.00,500,X);
  a =12;
  break;
  case 11:
- Inv_Home_Axis(10.00,100,Y);
+ Inv_Home_Axis(10.00,100,X);
  a = 12;
- break;
  case 12:
 
  break;
