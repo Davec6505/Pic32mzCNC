@@ -4,8 +4,8 @@
 
 /////////////////////////////////////
 //Limits variables
-struct limits Limits;
 static struct limit Limit[NoOfAxis];
+
 //////////////////////////////////////
 //static local variables
 static unsigned int last_cntX_min;
@@ -13,20 +13,6 @@ static unsigned int last_cntY_min;
 static unsigned int last_cntZ_min;
 static unsigned int last_cntA_min;
 
-/*
-/////////////////////////////////////
-//Timer debounce bits
-static char bits;
-sbit TX0 at bits.B0;
-sbit TX1 at bits.B1;
-sbit TX2 at bits.B2;
-sbit TX3 at bits.B3;
-sbit TY0 at bits.B4;
-sbit TY1 at bits.B5;
-sbit TY2 at bits.B6;
-sbit TY3 at bits.B7;
-
-*/
 //////////////////////////////////////////////////////
 //                LIMITS INITAILIZE                 //
 //////////////////////////////////////////////////////
@@ -42,8 +28,8 @@ void Limit_Initialize(){
    Y_Min_Limit_Dir = 1;
 
    //set initial limit values
-   Limits.X_Limit_Min = 0;
-   Limits.Y_Limit_Min = 0;
+   Limit[X].Limit_Min = 0;
+   Limit[Y].Limit_Min = 0;
 
    //keep track of 100ms pulse
    last_cntX_min = 0;
@@ -104,8 +90,6 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
    if(!Limit[X].Limit_Min)
         Limit[X].Limit_Min = 1;
         
-   if(!Limits.X_Limit_Min)
-        Limits.X_Limit_Min = 1;
 }
 
 ///////////////////////////////////////////////////////////
@@ -115,8 +99,6 @@ void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
    if(!Limit[Y].Limit_Min)
       Limit[Y].Limit_Min = 1;
         
-   if(!Limits.Y_Limit_Min)
-      Limits.Y_Limit_Min = 1;
 }
 
 

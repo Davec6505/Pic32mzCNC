@@ -299,58 +299,7 @@ extern sVars SV;
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 29 "c:/users/git/pic32mzcnc/limits.h"
-extern sbit TX0;
-extern sbit TX1;
-extern sbit TX2;
-extern sbit TX3;
-
-extern sbit TY0;
-extern sbit TY1;
-extern sbit TY2;
-extern sbit TY3;
-
-extern sbit TZ0;
-extern sbit TZ1;
-extern sbit TZ2;
-extern sbit TZ3;
-
-extern sbit TA0;
-extern sbit TA1;
-extern sbit TA2;
-extern sbit TA3;
-
-
-
-struct limits{
-
-char X_Limit_Min: 1;
-char Y_Limit_Min: 1;
-char Z_Limit_Min: 1;
-char A_Limit_Min: 1;
-char X_Limit_Max: 1;
-char Y_Limit_Max: 1;
-char Z_Limit_Max: 1;
-char A_Limit_Max: 1;
-
-long X_Soft_Limit_Min;
-long X_Soft_Limit_Max;
-long Y_Soft_Limit_Min;
-long Y_Soft_Limit_MAx;
-long Z_Soft_Limit_Min;
-long Z_Soft_Limit_MAx;
-long A_Soft_Limit_Min;
-long A_Soft_Limit_MAx;
-
-unsigned int X_Min_DeBnc;
-unsigned int Y_Min_DeBnc;
-unsigned int Z_Min_DeBnc;
-unsigned int A_Min_DeBnc;
-};
-extern struct limits Limits;
-
-
-
+#line 33 "c:/users/git/pic32mzcnc/limits.h"
 struct limit {
 
 char Pin: 1;
@@ -383,20 +332,9 @@ void A_Min_Limit_Setup();
 
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
-char Test_X_Min();
-char Test_Y_Min();
-
 void Reset_Min_Limit(int axis);
-void Reset_X_Min_Limit();
-void Reset_Y_Min_Limit();
-
 void Debounce_Limits(int axis);
-void Debounce_X_Limits();
-void Debounce_Y_Limits();
-
 void Reset_Min_Debounce(int axis);
-void Reset_X_Min_Debounce();
-void Reset_Y_Min_Debounce();
 
 char FP(int axis);
 char FN(int axis);
@@ -647,6 +585,7 @@ void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
 int GetAxisDirection(long mm2move);
 
 
+void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 #line 3 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
@@ -1028,6 +967,38 @@ int GetAxisDirection(long mm2move){
 
 
 
+
+
+
+void Home(int axis){
+long speed = 0;
+
+ if(sys.homing_cnt == 0)
+ speed = 250;
+ else
+ speed = 100;
+
+
+ if(FP(X)){
+ StopX();
+ if(sys.homing_cnt == 0)
+ Inv_Home_Axis(5.0,100, axis);
+ }
+
+ if(FN(X)){
+ sys.homing_cnt++;
+ }
+
+ if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+ if(sys.homing_cnt < 1)
+ Home_Axis(300.0,250,axis);
+ else{
+ STPS[axis].step_count = 0;
+ STPS[axis].steps_position = 0;
+ }
+ }
+
+}
 
 
 void Home_Axis(double distance,long speed,int axis){

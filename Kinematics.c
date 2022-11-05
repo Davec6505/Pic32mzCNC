@@ -533,6 +533,38 @@ int GetAxisDirection(long mm2move){
 //                       HOMING AXIS                             //
 ///////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////
+//Homeing sequence is a 2 bounce
+void Home(int axis){
+long speed = 0;
+
+   if(sys.homing_cnt == 0)
+      speed = 250;
+   else
+     speed = 100;
+     
+   //test if limit has been hit with rising edge
+   if(FP(X)){
+     StopX();
+     if(sys.homing_cnt == 0)
+         Inv_Home_Axis(5.0,100, axis);
+   }
+   //use falling edge to stop after 1 cycle
+   if(FN(X)){
+     sys.homing_cnt++;
+   }
+
+   if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+        if(sys.homing_cnt < 1)
+            Home_Axis(300.0,250,axis);
+        else{
+           STPS[axis].step_count = 0;
+           STPS[axis].steps_position = 0;
+        }
+   }
+   
+}
+
 //Home single axis
 void Home_Axis(double distance,long speed,int axis){
       distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;

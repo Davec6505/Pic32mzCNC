@@ -32,30 +32,6 @@ main
 	EnStepperY
 	EnStepperZ
 	EnStepperA
-	FP
-		Test_Min
-		dma_printf
-			__CC2DW
-			IntToStr
-				WordToStr
-			lTrim
-				strlen
-			strcat
-			strlen
-			LongToStr
-				LongWordToStr
-			IntToHex
-			LongIntToHex
-			FloatToStr
-				strcpy
-			strncpy
-			DMA1_Enable
-		__CC2DW
-	StopX
-	FN
-		Test_Min
-		dma_printf
-		__CC2DW
 	Temp_Move
 		belt_steps
 		speed_cntr_Move
@@ -93,6 +69,21 @@ main
 			hypot
 				sqrt
 			dma_printf
+				__CC2DW
+				IntToStr
+					WordToStr
+				lTrim
+					strlen
+				strcat
+				strlen
+				LongToStr
+					LongWordToStr
+				IntToHex
+				LongIntToHex
+				FloatToStr
+					strcpy
+				strncpy
+				DMA1_Enable
 			mc_arc
 				atan2
 					fabs
@@ -112,14 +103,24 @@ main
 				speed_cntr_Move
 				DualAxisStep
 			__CC2DW
-		Home_Axis
-			belt_steps
-			speed_cntr_Move
-			SingleAxisStep
-		Inv_Home_Axis
-			belt_steps
-			speed_cntr_Move
-			SingleAxisStep
+		Home
+			FP
+				Test_Min
+				dma_printf
+				__CC2DW
+			StopX
+			Inv_Home_Axis
+				belt_steps
+				speed_cntr_Move
+				SingleAxisStep
+			FN
+				Test_Min
+				dma_printf
+				__CC2DW
+			Home_Axis
+				belt_steps
+				speed_cntr_Move
+				SingleAxisStep
 	DMA_Busy
 	dma_printf
 	Debounce_Limits

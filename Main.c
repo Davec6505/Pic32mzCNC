@@ -101,20 +101,7 @@ static int cntr;
      }
      //X Y Z
      if(Toggle){
-     
-       if(FP(X)){
-         StopX();
-         a= 11;
-       }
 
-       if(FN(X)){
-         sys.homing = 1;
-       }
-          
-       if(sys.homing == 1){
-         a = 10;
-         sys.homing= 2;
-       }
        if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
          Temp_Move(a);
          if(a < 9){
@@ -126,7 +113,7 @@ static int cntr;
 
        }
 
-       
+
         #if DMADebug == 1
         if(!DMA_Busy(1)){
           dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
@@ -212,12 +199,18 @@ void Temp_Move(int a){
             r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
        case 10://Homing X axis
-            Home_Axis(-300.00,500,X);
-            a =12;
+            Home(X);
+            if(sys.homing_cnt >= 1){
+              a =11;
+              sys.homing_cnt = 0;
+            }
             break;
        case 11://Homing Y axis
-            Inv_Home_Axis(10.00,100,X);
-            a = 12;
+            Home(Y);
+            if(sys.homing_cnt >= 1){
+               a = 12;
+               sys.homing_cnt = 0;
+            }
        case 12://Homing Y axis
 
             break;
