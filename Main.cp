@@ -232,7 +232,7 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
-char DMA_Busy(char channel);
+int DMA_Busy(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -627,7 +627,8 @@ static int cntr;
  EnableInterrupts();
  while(1){
  LED1 = Test_Min(X)&0x0001;
-
+ Debounce_Limits(X);
+ Debounce_Limits(Y);
  if(!Toggle){
 
  if(disable_steps <=  10 )
@@ -653,9 +654,9 @@ static int cntr;
  EnStepperZ();
  EnStepperA();
  cntr = 0;
- sys.homing = 2;
+ sys.homing = 0;
  sys.homing_cnt = 0;
- a = 10;
+ a = 0;
  }
 
  if(Toggle){
@@ -674,17 +675,17 @@ static int cntr;
 
 
  if(!DMA_Busy(1)){
+
  dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
  a,STPS[X].step_count,STPS[X].axis_dir,
  STPS[X].steps_position);
  }
 
 
+
+
  }
 
- Debounce_Limits(X);
-
- Debounce_Limits(Y);
  }
 }
 
@@ -738,7 +739,7 @@ void Temp_Move(int a){
  case 8:
  STPS[A].mmToTravel = belt_steps(150.00);
  speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
-#line 193 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 194 "C:/Users/Git/Pic32mzCNC/Main.c"
  SingleAxisStep(STPS[A].mmToTravel,A);
  break;
  case 9:

@@ -207,7 +207,7 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
-char DMA_Busy(char channel);
+int DMA_Busy(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
@@ -614,7 +614,6 @@ int i = 0;
 #line 31 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void SingleAxisStep(long newxyz,int axis_No){
 int dir;
-char txt_[9];
 #line 38 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis_No].axis_dir =  (((newxyz) < (0))? ( -1 ) : ( 1 )) ;
  SV.Single_Dual = 0;
@@ -651,7 +650,7 @@ char txt_[9];
 
 
 void DualAxisStep(long axis_a,long axis_b,int axis_combo){
-int dirA,dirB,dirC;
+int dirA,dirB;
  SV.over=0;
 
  SV.px = 0;
@@ -789,7 +788,7 @@ double x = 0.00;
 double y = 0.00;
 double h_x2_div_d = 0.00;
 unsigned int axis_plane_a,axis_plane_b;
-char txt_[9];
+
 
  position[axis_A] = Cur_axis_a;
  position[axis_B] = Cur_axis_b;
@@ -979,13 +978,13 @@ long speed = 0;
  speed = 100;
 
 
- if(FP(X)){
+ if(FP(axis)){
  StopX();
  if(sys.homing_cnt == 0)
  Inv_Home_Axis(5.0,100, axis);
  }
 
- if(FN(X)){
+ if(FN(axis)){
  sys.homing_cnt++;
  }
 

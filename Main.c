@@ -69,7 +69,8 @@ static int cntr;
   EnableInterrupts();
   while(1){
      LED1 = Test_Min(X)&0x0001;
-
+     Debounce_Limits(X);
+     Debounce_Limits(Y);
      if(!Toggle){
        //LED1 = Test_Min(X)&0x0001;//TMR.clock >> 4;
        if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
@@ -95,9 +96,9 @@ static int cntr;
         EnStepperZ();
         EnStepperA();
         cntr = 0;
-        sys.homing = 2;
+        sys.homing = 0;
         sys.homing_cnt = 0;
-        a = 10;
+        a = 0;
      }
      //X Y Z
      if(Toggle){
@@ -116,17 +117,17 @@ static int cntr;
 
         #if DMADebug == 1
         if(!DMA_Busy(1)){
+         // dma_printf("\ncount:=\t%d",sys.homing_cnt);
           dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
                      a,STPS[X].step_count,STPS[X].axis_dir,
                      STPS[X].steps_position);
-        }
-
+         }
+                     
         #endif
+        
+
      }
-    //Debounce_X_Limits();
-     Debounce_Limits(X);
-   // Debounce_Y_Limits();
-     Debounce_Limits(Y);
+
   }
 }
 

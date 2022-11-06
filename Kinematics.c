@@ -30,7 +30,7 @@ int i = 0;
 *****************************************************/
 void SingleAxisStep(long newxyz,int axis_No){
 int dir;
-char txt_[9];
+
 //static long dist;
       /* if(SV.psingle != newxyz)
              SV.psingle = newxyz; */
@@ -86,7 +86,7 @@ char txt_[9];
 //this mus become more code efficient by supplying pointer
 //arguments ???
 void DualAxisStep(long axis_a,long axis_b,int axis_combo){
-int dirA,dirB,dirC;
+int dirA,dirB;
    SV.over=0;
    //will need to change these 3 lines when implimenting position referenc??
    SV.px = 0;
@@ -241,7 +241,7 @@ double x = 0.00;
 double y = 0.00;
 double h_x2_div_d = 0.00;
 unsigned int axis_plane_a,axis_plane_b;
-char txt_[9];
+
      //use thess arrays to simplify call to arc function
      position[axis_A] = Cur_axis_a;
      position[axis_B] = Cur_axis_b;
@@ -541,16 +541,16 @@ long speed = 0;
    if(sys.homing_cnt == 0)
       speed = 250;
    else
-     speed = 100;
+      speed = 100;
      
    //test if limit has been hit with rising edge
-   if(FP(X)){
+   if(FP(axis)){
      StopX();
      if(sys.homing_cnt == 0)
          Inv_Home_Axis(5.0,100, axis);
    }
    //use falling edge to stop after 1 cycle
-   if(FN(X)){
+   if(FN(axis)){
      sys.homing_cnt++;
    }
 

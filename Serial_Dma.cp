@@ -585,7 +585,7 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
-char DMA_Busy(char channel);
+int DMA_Busy(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 6 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
@@ -768,11 +768,11 @@ void DMA1_Disable(){
 
 
 
-char DMA_Busy(char channel){
+int DMA_Busy(int channel){
  if(channel == 0)
- return DCH0CON & 0x8000;
+ return (DCH0CON & 0x8000)>>15;
  else
- return DCH1CON & 0x8000;
+ return (DCH1CON & 0x8000)>>15;
 }
 
 
@@ -808,15 +808,15 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 
 
 int dma_printf(const char* str,...){
- int i = 0, j=0;
+ int i = 0, j=0,busy;
  char buff[200]={0},tmp[20];
  char *str_arg,*tmp_;
 
 
+
+
  va_list va;
-
-
-
+#line 272 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
   __va_start(va, str) ;
 
  i = j = 0;

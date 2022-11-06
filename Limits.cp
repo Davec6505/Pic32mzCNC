@@ -199,7 +199,7 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
-char DMA_Busy(char channel);
+int DMA_Busy(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -729,7 +729,9 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 150 "C:/Users/Git/Pic32mzCNC/Limits.c"
+
+ dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
+
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }

@@ -158,7 +158,7 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
-char DMA_Busy(char channel);
+int DMA_Busy(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"

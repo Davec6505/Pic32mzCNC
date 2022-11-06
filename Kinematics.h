@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "Settings.h"
 #include "Stepper.h"
-#include  "SErial_Dma.h"
+#include  "Serial_Dma.h"
 #include "GCODE.h"
 #include "Globals.h"
 

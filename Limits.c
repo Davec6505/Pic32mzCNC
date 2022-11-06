@@ -144,8 +144,8 @@ void Debounce_Limits(int axis){
       if(!Limit[axis].T0 && !Limit[axis].T2){
          Limit[axis].T2 = 1;
          Limit[axis].Min_DeBnc++;
-      #if DMADebug == 10
-         dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
+      #if DMADebug == 1
+          dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
       #endif
         if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
            Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;

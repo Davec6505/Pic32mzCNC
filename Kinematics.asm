@@ -1698,9 +1698,8 @@ NOP
 L_Home76:
 ;Kinematics.c,544 :: 		speed = 100;
 L_Home77:
-;Kinematics.c,547 :: 		if(FP(X)){
+;Kinematics.c,547 :: 		if(FP(axis)){
 SH	R25, 12(SP)
-MOVZ	R25, R0, R0
 JAL	_FP+0
 NOP	
 LH	R25, 12(SP)
@@ -1734,9 +1733,8 @@ LH	R25, 12(SP)
 L_Home79:
 ;Kinematics.c,551 :: 		}
 L_Home78:
-;Kinematics.c,553 :: 		if(FN(X)){
+;Kinematics.c,553 :: 		if(FN(axis)){
 SH	R25, 12(SP)
-MOVZ	R25, R0, R0
 JAL	_FN+0
 NOP	
 LH	R25, 12(SP)

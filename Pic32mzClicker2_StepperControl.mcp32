@@ -14,7 +14,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Kinematics.c
+Value=Serial_Dma.c
 =======
 Value=Main.c
 >>>>>>> patch2
@@ -73,7 +73,9 @@ File1=Limits.c
 File2=Kinematics.c
 File3=Kinematics.h
 File4=Limits.h
-Count=5
+File5=Serial_Dma.c
+File6=Serial_Dma.h
+Count=7
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -144,6 +146,4 @@ USE_SRS=7
 1=Sources
 14=Header Files
 28=Project Level Defines
-33=Active Comments Files
-42=Output Files
-Count=6
+Count=4
