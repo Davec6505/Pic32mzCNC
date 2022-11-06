@@ -69,7 +69,20 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
+<<<<<<< HEAD
 Count=1
+=======
+File1=Limits.c
+File2=Kinematics.c
+File3=Kinematics.h
+File4=Limits.h
+File5=Serial_Dma.c
+File6=Serial_Dma.h
+File7=Stepper.c
+File8=Settings.h
+File9=Steptodistance.c
+Count=10
+>>>>>>> patch2
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -140,6 +153,4 @@ USE_SRS=7
 1=Sources
 14=Header Files
 28=Project Level Defines
-33=Active Comments Files
-42=Output Files
-Count=6
+Count=4

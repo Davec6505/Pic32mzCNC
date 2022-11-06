@@ -1,6 +1,8 @@
 #include "Kinematics.h"
 
 const code double max_sizes[]={X_MAX_SIZE,Y_MAX_SIZE,Z_MAX_SIZE,A_MAX_SIZE,B_MAX_SIZE,C_MAX_SIZE};
+Homing homing[NoOfAxis];
+
 //////////////////////////////////
 //FUNCTION POINTERS
 volatile void (*AxisPulse[3])();
@@ -30,7 +32,7 @@ int i = 0;
 *****************************************************/
 void SingleAxisStep(long newxyz,int axis_No){
 int dir;
-char txt_[9];
+
 //static long dist;
       /* if(SV.psingle != newxyz)
              SV.psingle = newxyz; */
@@ -86,7 +88,7 @@ char txt_[9];
 //this mus become more code efficient by supplying pointer
 //arguments ???
 void DualAxisStep(long axis_a,long axis_b,int axis_combo){
-int dirA,dirB,dirC;
+int dirA,dirB;
    SV.over=0;
    //will need to change these 3 lines when implimenting position referenc??
    SV.px = 0;
@@ -241,7 +243,7 @@ double x = 0.00;
 double y = 0.00;
 double h_x2_div_d = 0.00;
 unsigned int axis_plane_a,axis_plane_b;
-char txt_[9];
+
      //use thess arrays to simplify call to arc function
      position[axis_A] = Cur_axis_a;
      position[axis_B] = Cur_axis_b;
@@ -533,11 +535,72 @@ int GetAxisDirection(long mm2move){
 //                       HOMING AXIS                             //
 ///////////////////////////////////////////////////////////////////
 
+void ResetHoming(){
+int i = 0;
+   for(i = 0;i< NoOfAxis;i++){
+        homing[i].set = 0;
+        homing[i].complete = 0;
+        homing[i].home_cnt = 0;
+        homing[i].rev = 0;
+        homing[i].home = 0;
+   }
+}
+//////////////////////////////////////////////////////////////////
+//Homeing sequence is a 2 bounce
+void Home(int axis){
+long speed = 0;
+
+     if(!homing[axis].set){
+        homing[axis].set = 1;
+        homing[axis].complete = 0;
+        homing[axis].home_cnt = 0;
+        speed = 1000;
+     }else{
+        speed = 100;
+     }
+
+     
+   //test if limit has been hit with rising edge
+   if(FP(axis)){
+     if(axis == X)
+        StopX();
+     else if(axis == Y)
+        StopY();
+
+     if(!homing[axis].rev){
+         homing[axis].rev = 1;
+         Inv_Home_Axis(2.0,speed, axis);
+     }
+     homing[axis].home_cnt++;
+   }
+   //use falling edge to stop after 1 cycle
+   if(FN(axis)){
+     homing[axis].home = 0;
+   //  dma_printf("\nBack : Cnt:= %d",homing[axis].home_cnt);
+   }
+
+   if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+
+      if(!homing[axis].home){
+        homing[axis].home = 1;
+        Home_Axis(-290.00,speed,axis);
+      }
+
+      if((homing[axis].home_cnt >= 2)&&(!homing[axis].complete)){
+          homing[axis].complete      = 1;
+          STPS[axis].step_count      = 0;
+          STPS[axis].steps_position  = 0;
+         // dma_printf("\nComplete: Cnt:= %d",homing[axis].home_cnt);
+      }
+   }
+   
+}
+
 //Home single axis
 void Home_Axis(double distance,long speed,int axis){
-      distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
+      //distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
       distance = (distance < 0.0)? distance : -distance;
-      STPS[axis].mmToTravel = belt_steps(-max_sizes[axis]);
+      STPS[axis].mmToTravel = belt_steps(distance);
       speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
       SingleAxisStep(STPS[axis].mmToTravel,axis);
 }

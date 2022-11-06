@@ -199,7 +199,7 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
-char DMA_Busy(char channel);
+int DMA_Busy(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -248,8 +248,8 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 typedef struct {
  uint8_t abort;
  uint8_t state;
- int8_t homing;
- uint8_t homing_cnt;
+ int homing;
+ int homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
 } system_t;
@@ -348,7 +348,27 @@ typedef struct Steps{
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-#line 134 "c:/users/git/pic32mzcnc/kinematics.h"
+
+
+typedef struct{
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}Homing;
+extern Homing homing[ 6 ];
+
+
+
+
+
+
+
+
+
+
 void SetInitialSizes(STP axis[6]);
 
 
@@ -367,6 +387,8 @@ void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
 int GetAxisDirection(long mm2move);
 
 
+void ResetHoming();
+void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -548,58 +570,7 @@ void InitTimer8();
 void ClockPulse();
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 29 "c:/users/git/pic32mzcnc/limits.h"
-extern sbit TX0;
-extern sbit TX1;
-extern sbit TX2;
-extern sbit TX3;
-
-extern sbit TY0;
-extern sbit TY1;
-extern sbit TY2;
-extern sbit TY3;
-
-extern sbit TZ0;
-extern sbit TZ1;
-extern sbit TZ2;
-extern sbit TZ3;
-
-extern sbit TA0;
-extern sbit TA1;
-extern sbit TA2;
-extern sbit TA3;
-
-
-
-struct limits{
-
-char X_Limit_Min: 1;
-char Y_Limit_Min: 1;
-char Z_Limit_Min: 1;
-char A_Limit_Min: 1;
-char X_Limit_Max: 1;
-char Y_Limit_Max: 1;
-char Z_Limit_Max: 1;
-char A_Limit_Max: 1;
-
-long X_Soft_Limit_Min;
-long X_Soft_Limit_Max;
-long Y_Soft_Limit_Min;
-long Y_Soft_Limit_MAx;
-long Z_Soft_Limit_Min;
-long Z_Soft_Limit_MAx;
-long A_Soft_Limit_Min;
-long A_Soft_Limit_MAx;
-
-unsigned int X_Min_DeBnc;
-unsigned int Y_Min_DeBnc;
-unsigned int Z_Min_DeBnc;
-unsigned int A_Min_DeBnc;
-};
-extern struct limits Limits;
-
-
-
+#line 33 "c:/users/git/pic32mzcnc/limits.h"
 struct limit {
 
 char Pin: 1;
@@ -632,33 +603,29 @@ void A_Min_Limit_Setup();
 
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
-char Test_X_Min();
-char Test_Y_Min();
-
 void Reset_Min_Limit(int axis);
-void Reset_X_Min_Limit();
-void Reset_Y_Min_Limit();
-
 void Debounce_Limits(int axis);
-void Debounce_X_Limits();
-void Debounce_Y_Limits();
-
 void Reset_Min_Debounce(int axis);
-void Reset_X_Min_Debounce();
-void Reset_Y_Min_Debounce();
 
 char FP(int axis);
 char FN(int axis);
 #line 7 "C:/Users/Git/Pic32mzCNC/Limits.c"
-struct limits Limits;
 static struct limit Limit[ 6 ];
+
 
 
 static unsigned int last_cntX_min;
 static unsigned int last_cntY_min;
 static unsigned int last_cntZ_min;
 static unsigned int last_cntA_min;
-#line 37 "C:/Users/Git/Pic32mzCNC/Limits.c"
+
+
+
+
+
+
+
+
 void Limit_Initialize(){
 
 
@@ -667,8 +634,8 @@ void Limit_Initialize(){
  Y_Min_Limit_Dir = 1;
 
 
- Limits.X_Limit_Min = 0;
- Limits.Y_Limit_Min = 0;
+ Limit[X].Limit_Min = 0;
+ Limit[Y].Limit_Min = 0;
 
 
  last_cntX_min = 0;
@@ -729,8 +696,6 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
  if(!Limit[X].Limit_Min)
  Limit[X].Limit_Min = 1;
 
- if(!Limits.X_Limit_Min)
- Limits.X_Limit_Min = 1;
 }
 
 
@@ -740,8 +705,6 @@ void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  if(!Limit[Y].Limit_Min)
  Limit[Y].Limit_Min = 1;
 
- if(!Limits.Y_Limit_Min)
- Limits.Y_Limit_Min = 1;
 }
 
 
@@ -787,7 +750,7 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 168 "C:/Users/Git/Pic32mzCNC/Limits.c"
+#line 150 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }
@@ -813,9 +776,6 @@ char FP(int axis){
 char tmp = 0;
  Limit[axis].new_val = Test_Min(axis) & 0x0001;
  if(Limit[axis].new_val > Limit[axis].old_Pval){
-
- dma_printf("\t\tFP():=%d\r\n",(int)Limit[axis].new_val);
-
  tmp = 1;
  }else {
  tmp = 0;
@@ -829,9 +789,6 @@ char FN(int axis){
 char tmp = 0;
  Limit[axis].new_val = Test_Min(axis) & 0x0001;
  if(Limit[axis].new_val < Limit[axis].old_Fval){
-
- dma_printf("\t\tFN():=%d\r\n",(int)Limit[axis].new_val);
-
  tmp = 1;
  }else
  tmp = 0;

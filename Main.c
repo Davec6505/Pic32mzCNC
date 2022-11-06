@@ -34,6 +34,7 @@
 parser_state_t gc;
 STP STPS[NoOfAxis];
 
+
 char DMA_Buff[200];
 char txt_[9];
 bit testISR;
@@ -69,7 +70,8 @@ static int cntr;
   EnableInterrupts();
   while(1){
      LED1 = Test_Min(X)&0x0001;
-
+     Debounce_Limits(X);
+     Debounce_Limits(Y);
      if(!Toggle){
        //LED1 = Test_Min(X)&0x0001;//TMR.clock >> 4;
        if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
@@ -94,52 +96,49 @@ static int cntr;
         EnStepperY();
         EnStepperZ();
         EnStepperA();
-        cntr = 0;
-        sys.homing = 2;
-        sys.homing_cnt = 0;
+        ResetHoming();
         a = 10;
      }
      //X Y Z
      if(Toggle){
-     
-       if(FP(X)){
-         StopX();
-         a= 11;
-       }
 
-       if(FN(X)){
-         sys.homing = 1;
-       }
-          
-       if(sys.homing == 1){
-         a = 10;
-         sys.homing= 2;
-       }
-       if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+       //if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+         if(homing[X].home_cnt >= 2){
+            homing[X].home_cnt = 0;
+            a = 11;
+            dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+         }
+         if(homing[Y].home_cnt >= 2){
+            homing[Y].home_cnt = 0;
+            a = 12;
+            dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+         }
+      
          Temp_Move(a);
-         if(a < 9){
+         
+         /*if(a < 9){
            a++;
            if(a == 9)a=10;
-         }
+         } */
         //Change the value of DMADebug in the DEFINE.pld
         //file found in the Project Level Define folder
 
-       }
+       //}
 
-       
+
         #if DMADebug == 1
-        if(!DMA_Busy(1)){
+
+         // dma_printf("\ncount:=\t%d",sys.homing_cnt);
           dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
                      a,STPS[X].step_count,STPS[X].axis_dir,
                      STPS[X].steps_position);
-        }
 
+                     
         #endif
+        
+
      }
-    //Debounce_X_Limits();
-     Debounce_Limits(X);
-   // Debounce_Y_Limits();
-     Debounce_Limits(Y);
+
   }
 }
 
@@ -212,12 +211,11 @@ void Temp_Move(int a){
             r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
        case 10://Homing X axis
-            Home_Axis(-300.00,500,X);
-            a =12;
+            Home(X);
             break;
        case 11://Homing Y axis
-            Inv_Home_Axis(10.00,100,X);
-            a = 12;
+            Home(Y);
+            break;
        case 12://Homing Y axis
 
             break;

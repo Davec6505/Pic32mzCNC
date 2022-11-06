@@ -50,8 +50,8 @@
 typedef struct {
   uint8_t abort;                      // System abort flag. Forces exit back to main loop for reset.
   uint8_t state;                      // Tracks the current state of Grbl.
-  int8_t  homing;                     //track the axis homing -1 = none, 0 = x, 1 = y, 2 = z etc
-  uint8_t homing_cnt;                 //count the homing bounce
+  int  homing;                     //track the axis homing -1 = none, 0 = x, 1 = y, 2 = z etc
+  int homing_cnt;                 //count the homing bounce
   uint8_t auto_start;                 // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
   volatile uint8_t execute;           // Global system runtime executor bitflag variable. See EXEC bitmasks.
 } system_t;

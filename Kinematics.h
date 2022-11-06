@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "Settings.h"
 #include "Stepper.h"
-#include  "SErial_Dma.h"
+#include  "Serial_Dma.h"
 #include "GCODE.h"
 #include "Globals.h"
 
@@ -120,7 +120,15 @@ typedef struct Steps{
 extern STP STPS[NoOfAxis];
 
 
-
+typedef struct{
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}Homing;
+extern Homing homing[NoOfAxis];
 ////////////////////////////////////////////////////
 //     ******CIRCULAR INTERPOLATION******         //
 ////////////////////////////////////////////////////
@@ -149,6 +157,8 @@ void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
 int GetAxisDirection(long mm2move);
 
 //homing cycle
+void ResetHoming();
+void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 #endif

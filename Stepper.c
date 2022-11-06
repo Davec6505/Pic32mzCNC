@@ -408,7 +408,7 @@ void disableOCx(){
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
    //  STPS[X].step_count++;
      OC5IF_bit = 0;
-
+     
      //keep track of absolute position
      //sys.steps_position[X] += sys.axis_dir[X];
 
@@ -433,6 +433,7 @@ void SingleStepX(){
 void StopX(){
    OC5IE_bit = 0;
    OC5CONbits.ON = 0;
+   STPS[X].stopAxis = 1;
 }
 
 
@@ -467,6 +468,7 @@ void SingleStepY(){
 void StopY(){
    OC2IE_bit = 0;
    OC2CONbits.ON = 0;
+   STPS[Y].stopAxis = 1;
 }
 
 
@@ -476,7 +478,7 @@ void StopY(){
 void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
   // STPS[Z].step_count++;
    OC7IF_bit = 0;
-   
+
    //keep track of absolute position
    //sys.steps_position[Z] += sys.axis_dir[Z];
    
@@ -500,6 +502,7 @@ void SingleStepZ(){
 void StopZ(){
    OC7IE_bit = 0;
    OC7CONbits.ON = 0;
+   STPS[Z].stopAxis = 1;
 }
 
 
@@ -533,6 +536,7 @@ void SingleStepA(){
 void StopA(){
    OC3IE_bit = 0;
    OC3CONbits.ON = 0;
+   STPS[A].stopAxis = 1;
 }
 
 ////////////////////////////////////////////////////////
