@@ -33140,6 +33140,7 @@ hold_bit
 home
 home_axis
 homing
+homing
 homing_cnt
 hostmode
 hostmode
@@ -47138,6 +47139,7 @@ reset_bit
 reset_min_debounce
 reset_min_limit
 reset_usbcsr0_bit
+resethoming
 resetie
 resetie
 resetie_bit

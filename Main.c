@@ -34,6 +34,7 @@
 parser_state_t gc;
 STP STPS[NoOfAxis];
 
+
 char DMA_Buff[200];
 char txt_[9];
 bit testISR;
@@ -95,33 +96,43 @@ static int cntr;
         EnStepperY();
         EnStepperZ();
         EnStepperA();
-        cntr = 0;
-        sys.homing = 0;
-        sys.homing_cnt = 0;
+        ResetHoming();
         a = 10;
      }
      //X Y Z
      if(Toggle){
 
-       if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+       //if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+         if(homing[X].home_cnt >= 2){
+            homing[X].home_cnt = 0;
+            a = 11;
+            dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+         }
+         if(homing[Y].home_cnt >= 2){
+            homing[Y].home_cnt = 0;
+            a = 12;
+            dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+         }
+      
          Temp_Move(a);
-         if(a < 9){
+         
+         /*if(a < 9){
            a++;
            if(a == 9)a=10;
-         }
+         } */
         //Change the value of DMADebug in the DEFINE.pld
         //file found in the Project Level Define folder
 
-       }
+       //}
 
 
         #if DMADebug == 1
 
-          dma_printf("\ncount:=\t%d",sys.homing_cnt);
-         /* dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
+         // dma_printf("\ncount:=\t%d",sys.homing_cnt);
+          dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
                      a,STPS[X].step_count,STPS[X].axis_dir,
                      STPS[X].steps_position);
-          */
+
                      
         #endif
         
@@ -201,17 +212,10 @@ void Temp_Move(int a){
             break;
        case 10://Homing X axis
             Home(X);
-            if(sys.homing_cnt >= 1){
-              a =11;
-              sys.homing_cnt = 0;
-            }
             break;
        case 11://Homing Y axis
             Home(Y);
-            if(sys.homing_cnt >= 1){
-               a = 12;
-               sys.homing_cnt = 0;
-            }
+            break;
        case 12://Homing Y axis
 
             break;

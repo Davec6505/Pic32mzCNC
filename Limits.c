@@ -172,9 +172,6 @@ char FP(int axis){
 char tmp = 0;
   Limit[axis].new_val = Test_Min(axis) & 0x0001;
   if(Limit[axis].new_val > Limit[axis].old_Pval){
-  #if DMADebug == 1
-      dma_printf("\t\tFP():=%d\r\n",(int)Limit[axis].new_val);
-  #endif
      tmp = 1;
   }else {
      tmp = 0;
@@ -188,9 +185,6 @@ char FN(int axis){
 char tmp = 0;
    Limit[axis].new_val = Test_Min(axis) & 0x0001;
    if(Limit[axis].new_val < Limit[axis].old_Fval){
-   #if DMADebug == 1
-         dma_printf("\t\tFN():=%d\r\n",(int)Limit[axis].new_val);
-   #endif
       tmp = 1;
    }else
       tmp = 0;

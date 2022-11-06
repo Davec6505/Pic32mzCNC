@@ -381,7 +381,27 @@ typedef struct Steps{
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-#line 134 "c:/users/git/pic32mzcnc/kinematics.h"
+
+
+typedef struct{
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}Homing;
+extern Homing homing[ 6 ];
+
+
+
+
+
+
+
+
+
+
 void SetInitialSizes(STP axis[6]);
 
 
@@ -400,6 +420,7 @@ void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
 int GetAxisDirection(long mm2move);
 
 
+void ResetHoming();
 void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
@@ -592,6 +613,7 @@ void LCD_Display();
 parser_state_t gc;
 STP STPS[ 6 ];
 
+
 char DMA_Buff[200];
 char txt_[9];
 bit testISR;
@@ -653,30 +675,34 @@ static int cntr;
  EnStepperY();
  EnStepperZ();
  EnStepperA();
- cntr = 0;
- sys.homing = 0;
- sys.homing_cnt = 0;
+ ResetHoming();
  a = 10;
  }
 
  if(Toggle){
 
- if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+
+ if(homing[X].home_cnt >= 2){
+ homing[X].home_cnt = 0;
+ a = 11;
+ dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+ }
+ if(homing[Y].home_cnt >= 2){
+ homing[Y].home_cnt = 0;
+ a = 12;
+ dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+ }
+
  Temp_Move(a);
- if(a < 9){
- a++;
- if(a == 9)a=10;
- }
-
-
-
- }
+#line 132 "C:/Users/Git/Pic32mzCNC/Main.c"
+ dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
+ a,STPS[X].step_count,STPS[X].axis_dir,
+ STPS[X].steps_position);
 
 
 
 
- dma_printf("\ncount:=\t%d",sys.homing_cnt);
-#line 129 "C:/Users/Git/Pic32mzCNC/Main.c"
+
  }
 
  }
@@ -732,7 +758,7 @@ void Temp_Move(int a){
  case 8:
  STPS[A].mmToTravel = belt_steps(150.00);
  speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
-#line 194 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 205 "C:/Users/Git/Pic32mzCNC/Main.c"
  SingleAxisStep(STPS[A].mmToTravel,A);
  break;
  case 9:
@@ -743,17 +769,10 @@ void Temp_Move(int a){
  break;
  case 10:
  Home(X);
- if(sys.homing_cnt >= 1){
- a =11;
- sys.homing_cnt = 0;
- }
  break;
  case 11:
  Home(Y);
- if(sys.homing_cnt >= 1){
- a = 12;
- sys.homing_cnt = 0;
- }
+ break;
  case 12:
 
  break;

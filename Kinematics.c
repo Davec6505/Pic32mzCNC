@@ -1,6 +1,8 @@
 #include "Kinematics.h"
 
 const code double max_sizes[]={X_MAX_SIZE,Y_MAX_SIZE,Z_MAX_SIZE,A_MAX_SIZE,B_MAX_SIZE,C_MAX_SIZE};
+Homing homing[NoOfAxis];
+
 //////////////////////////////////
 //FUNCTION POINTERS
 volatile void (*AxisPulse[3])();
@@ -533,15 +535,30 @@ int GetAxisDirection(long mm2move){
 //                       HOMING AXIS                             //
 ///////////////////////////////////////////////////////////////////
 
+void ResetHoming(){
+int i = 0;
+   for(i = 0;i< NoOfAxis;i++){
+        homing[i].set = 0;
+        homing[i].complete = 0;
+        homing[i].home_cnt = 0;
+        homing[i].rev = 0;
+        homing[i].home = 0;
+   }
+}
 //////////////////////////////////////////////////////////////////
 //Homeing sequence is a 2 bounce
 void Home(int axis){
 long speed = 0;
 
-   if(sys.homing_cnt == 0)
-      speed = 250;
-   else
-      speed = 100;
+     if(!homing[axis].set){
+        homing[axis].set = 1;
+        homing[axis].complete = 0;
+        homing[axis].home_cnt = 0;
+        speed = 1000;
+     }else{
+        speed = 100;
+     }
+
      
    //test if limit has been hit with rising edge
    if(FP(axis)){
@@ -549,31 +566,41 @@ long speed = 0;
         StopX();
      else if(axis == Y)
         StopY();
-        
-     if(sys.homing_cnt == 0)
-         Inv_Home_Axis(5.0,100, axis);
+
+     if(!homing[axis].rev){
+         homing[axis].rev = 1;
+         Inv_Home_Axis(2.0,speed, axis);
+     }
+     homing[axis].home_cnt++;
    }
    //use falling edge to stop after 1 cycle
    if(FN(axis)){
-     sys.homing_cnt++;
+     homing[axis].home = 0;
+   //  dma_printf("\nBack : Cnt:= %d",homing[axis].home_cnt);
    }
 
    if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-        if(sys.homing_cnt < 1)
-            Home_Axis(300.0,250,axis);
-        else{
-           STPS[axis].step_count = 0;
-           STPS[axis].steps_position = 0;
-        }
+
+      if(!homing[axis].home){
+        homing[axis].home = 1;
+        Home_Axis(-290.00,speed,axis);
+      }
+
+      if((homing[axis].home_cnt >= 2)&&(!homing[axis].complete)){
+          homing[axis].complete      = 1;
+          STPS[axis].step_count      = 0;
+          STPS[axis].steps_position  = 0;
+         // dma_printf("\nComplete: Cnt:= %d",homing[axis].home_cnt);
+      }
    }
    
 }
 
 //Home single axis
 void Home_Axis(double distance,long speed,int axis){
-      distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
+      //distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
       distance = (distance < 0.0)? distance : -distance;
-      STPS[axis].mmToTravel = belt_steps(-max_sizes[axis]);
+      STPS[axis].mmToTravel = belt_steps(distance);
       speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
       SingleAxisStep(STPS[axis].mmToTravel,axis);
 }

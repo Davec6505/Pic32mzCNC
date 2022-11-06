@@ -348,7 +348,27 @@ typedef struct Steps{
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-#line 134 "c:/users/git/pic32mzcnc/kinematics.h"
+
+
+typedef struct{
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}Homing;
+extern Homing homing[ 6 ];
+
+
+
+
+
+
+
+
+
+
 void SetInitialSizes(STP axis[6]);
 
 
@@ -367,6 +387,7 @@ void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
 int GetAxisDirection(long mm2move);
 
 
+void ResetHoming();
 void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
@@ -755,9 +776,6 @@ char FP(int axis){
 char tmp = 0;
  Limit[axis].new_val = Test_Min(axis) & 0x0001;
  if(Limit[axis].new_val > Limit[axis].old_Pval){
-
- dma_printf("\t\tFP():=%d\r\n",(int)Limit[axis].new_val);
-
  tmp = 1;
  }else {
  tmp = 0;
@@ -771,9 +789,6 @@ char FN(int axis){
 char tmp = 0;
  Limit[axis].new_val = Test_Min(axis) & 0x0001;
  if(Limit[axis].new_val < Limit[axis].old_Fval){
-
- dma_printf("\t\tFN():=%d\r\n",(int)Limit[axis].new_val);
-
  tmp = 1;
  }else
  tmp = 0;

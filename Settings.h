@@ -50,8 +50,8 @@
 //            SET THE  PLATFORM DIMENSIONS               //
 ///////////////////////////////////////////////////////////
 
-#define X_MAX_SIZE 290.00
-#define Y_MAX_SIZE 290.00
+#define X_MAX_SIZE 300.00
+#define Y_MAX_SIZE 300.00
 #define Z_MAX_SIZE 100.00
 #define A_MAX_SIZE 100.00
 #define B_MAX_SIZE 100.00

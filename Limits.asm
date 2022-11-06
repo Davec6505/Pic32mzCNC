@@ -521,7 +521,7 @@ NOP
 ; end of _Debounce_Limits
 _FP:
 ;Limits.c,171 :: 		char FP(int axis){
-ADDIU	SP, SP, -24
+ADDIU	SP, SP, -8
 SW	RA, 0(SP)
 ;Limits.c,172 :: 		char tmp = 0;
 ;Limits.c,173 :: 		Limit[axis].new_val = Test_Min(axis) & 0x0001;
@@ -533,11 +533,11 @@ LUI	R2, hi_addr(Limits_Limit+0)
 ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 1
-SW	R2, 20(SP)
+SW	R2, 4(SP)
 JAL	_Test_Min+0
 NOP	
 ANDI	R3, R2, 1
-LW	R2, 20(SP)
+LW	R2, 4(SP)
 SB	R3, 0(R2)
 ;Limits.c,174 :: 		if(Limit[axis].new_val > Limit[axis].old_Pval){
 SEH	R3, R25
@@ -559,47 +559,21 @@ NOP
 J	L_FP18
 NOP	
 L__FP65:
-;Limits.c,176 :: 		dma_printf("\t\tFP():=%d\r\n",(int)Limit[axis].new_val);
-SEH	R3, R25
-ORI	R2, R0, 12
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(Limits_Limit+0)
-ORI	R2, R2, lo_addr(Limits_Limit+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 1
-LBU	R2, 0(R2)
-ANDI	R3, R2, 255
-ADDIU	R23, SP, 6
-ADDIU	R22, R23, 13
-LUI	R24, hi_addr(?ICS?lstr1_Limits+0)
-ORI	R24, R24, lo_addr(?ICS?lstr1_Limits+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R2, SP, 6
-SH	R25, 4(SP)
-ADDIU	SP, SP, -8
-SH	R3, 4(SP)
-SW	R2, 0(SP)
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 8
-LH	R25, 4(SP)
-;Limits.c,178 :: 		tmp = 1;
+;Limits.c,175 :: 		tmp = 1;
 ; tmp start address is: 16 (R4)
 ORI	R4, R0, 1
-;Limits.c,179 :: 		}else {
+;Limits.c,176 :: 		}else {
 ; tmp end address is: 16 (R4)
 J	L_FP19
 NOP	
 L_FP18:
-;Limits.c,180 :: 		tmp = 0;
+;Limits.c,177 :: 		tmp = 0;
 ; tmp start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; tmp end address is: 16 (R4)
-;Limits.c,181 :: 		}
+;Limits.c,178 :: 		}
 L_FP19:
-;Limits.c,182 :: 		Limit[axis].old_Pval = Limit[axis].new_val;
+;Limits.c,179 :: 		Limit[axis].old_Pval = Limit[axis].new_val;
 ; tmp start address is: 16 (R4)
 SEH	R3, R25
 ORI	R2, R0, 12
@@ -612,22 +586,22 @@ ADDIU	R3, R2, 2
 ADDIU	R2, R2, 1
 LBU	R2, 0(R2)
 SB	R2, 0(R3)
-;Limits.c,183 :: 		return tmp;
+;Limits.c,180 :: 		return tmp;
 ANDI	R2, R4, 255
 ; tmp end address is: 16 (R4)
-;Limits.c,184 :: 		}
+;Limits.c,181 :: 		}
 L_end_FP:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 24
+ADDIU	SP, SP, 8
 JR	RA
 NOP	
 ; end of _FP
 _FN:
-;Limits.c,187 :: 		char FN(int axis){
-ADDIU	SP, SP, -24
+;Limits.c,184 :: 		char FN(int axis){
+ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Limits.c,188 :: 		char tmp = 0;
-;Limits.c,189 :: 		Limit[axis].new_val = Test_Min(axis) & 0x0001;
+;Limits.c,185 :: 		char tmp = 0;
+;Limits.c,186 :: 		Limit[axis].new_val = Test_Min(axis) & 0x0001;
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -636,13 +610,13 @@ LUI	R2, hi_addr(Limits_Limit+0)
 ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 1
-SW	R2, 20(SP)
+SW	R2, 4(SP)
 JAL	_Test_Min+0
 NOP	
 ANDI	R3, R2, 1
-LW	R2, 20(SP)
+LW	R2, 4(SP)
 SB	R3, 0(R2)
-;Limits.c,190 :: 		if(Limit[axis].new_val < Limit[axis].old_Fval){
+;Limits.c,187 :: 		if(Limit[axis].new_val < Limit[axis].old_Fval){
 SEH	R3, R25
 ORI	R2, R0, 12
 MULTU	R2, R3
@@ -662,46 +636,20 @@ NOP
 J	L_FN20
 NOP	
 L__FN67:
-;Limits.c,192 :: 		dma_printf("\t\tFN():=%d\r\n",(int)Limit[axis].new_val);
-SEH	R3, R25
-ORI	R2, R0, 12
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(Limits_Limit+0)
-ORI	R2, R2, lo_addr(Limits_Limit+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 1
-LBU	R2, 0(R2)
-ANDI	R3, R2, 255
-ADDIU	R23, SP, 6
-ADDIU	R22, R23, 13
-LUI	R24, hi_addr(?ICS?lstr2_Limits+0)
-ORI	R24, R24, lo_addr(?ICS?lstr2_Limits+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R2, SP, 6
-SH	R25, 4(SP)
-ADDIU	SP, SP, -8
-SH	R3, 4(SP)
-SW	R2, 0(SP)
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 8
-LH	R25, 4(SP)
-;Limits.c,194 :: 		tmp = 1;
+;Limits.c,188 :: 		tmp = 1;
 ; tmp start address is: 16 (R4)
 ORI	R4, R0, 1
-;Limits.c,195 :: 		}else
+;Limits.c,189 :: 		}else
 ; tmp end address is: 16 (R4)
 J	L_FN21
 NOP	
 L_FN20:
-;Limits.c,196 :: 		tmp = 0;
+;Limits.c,190 :: 		tmp = 0;
 ; tmp start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; tmp end address is: 16 (R4)
 L_FN21:
-;Limits.c,197 :: 		Limit[axis].old_Fval = Limit[axis].new_val;
+;Limits.c,191 :: 		Limit[axis].old_Fval = Limit[axis].new_val;
 ; tmp start address is: 16 (R4)
 SEH	R3, R25
 ORI	R2, R0, 12
@@ -714,70 +662,70 @@ ADDIU	R3, R2, 3
 ADDIU	R2, R2, 1
 LBU	R2, 0(R2)
 SB	R2, 0(R3)
-;Limits.c,198 :: 		return tmp;
+;Limits.c,192 :: 		return tmp;
 ANDI	R2, R4, 255
 ; tmp end address is: 16 (R4)
-;Limits.c,199 :: 		}
+;Limits.c,193 :: 		}
 L_end_FN:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 24
+ADDIU	SP, SP, 8
 JR	RA
 NOP	
 ; end of _FN
 _Test_Port_Pins:
-;Limits.c,205 :: 		char Test_Port_Pins(int axis){
-;Limits.c,206 :: 		char tmp = 0;
+;Limits.c,199 :: 		char Test_Port_Pins(int axis){
+;Limits.c,200 :: 		char tmp = 0;
 ; tmp start address is: 16 (R4)
 MOVZ	R4, R0, R0
-;Limits.c,207 :: 		switch(axis){
+;Limits.c,201 :: 		switch(axis){
 J	L_Test_Port_Pins22
 NOP	
 ; tmp end address is: 16 (R4)
-;Limits.c,208 :: 		case X:
+;Limits.c,202 :: 		case X:
 L_Test_Port_Pins24:
-;Limits.c,209 :: 		tmp = X_Min_Limit & 0x0001;
+;Limits.c,203 :: 		tmp = X_Min_Limit & 0x0001;
 _LX	
 EXT	R2, R2, BitPos(X_Min_Limit+0), 1
 ANDI	R2, R2, 1
 ; tmp start address is: 8 (R2)
-;Limits.c,210 :: 		break;
+;Limits.c,204 :: 		break;
 ; tmp end address is: 8 (R2)
 J	L_Test_Port_Pins23
 NOP	
-;Limits.c,211 :: 		case Y:
+;Limits.c,205 :: 		case Y:
 L_Test_Port_Pins25:
-;Limits.c,212 :: 		tmp = Y_Min_Limit & 0x0001;
+;Limits.c,206 :: 		tmp = Y_Min_Limit & 0x0001;
 _LX	
 EXT	R2, R2, BitPos(Y_Min_Limit+0), 1
 ANDI	R2, R2, 1
 ; tmp start address is: 8 (R2)
-;Limits.c,213 :: 		break;
+;Limits.c,207 :: 		break;
 ; tmp end address is: 8 (R2)
 J	L_Test_Port_Pins23
 NOP	
-;Limits.c,214 :: 		case Z:
+;Limits.c,208 :: 		case Z:
 L_Test_Port_Pins26:
-;Limits.c,216 :: 		break;
+;Limits.c,210 :: 		break;
 ; tmp start address is: 16 (R4)
 ANDI	R2, R4, 255
 J	L_Test_Port_Pins23
 NOP	
-;Limits.c,217 :: 		case A:
+;Limits.c,211 :: 		case A:
 L_Test_Port_Pins27:
-;Limits.c,219 :: 		break;
+;Limits.c,213 :: 		break;
 ANDI	R2, R4, 255
 ; tmp end address is: 16 (R4)
 J	L_Test_Port_Pins23
 NOP	
-;Limits.c,220 :: 		default: tmp = 255;
+;Limits.c,214 :: 		default: tmp = 255;
 L_Test_Port_Pins28:
 ; tmp start address is: 8 (R2)
 ORI	R2, R0, 255
-;Limits.c,221 :: 		break;
+;Limits.c,215 :: 		break;
 ; tmp end address is: 8 (R2)
 J	L_Test_Port_Pins23
 NOP	
-;Limits.c,222 :: 		}
+;Limits.c,216 :: 		}
 L_Test_Port_Pins22:
 ; tmp start address is: 16 (R4)
 SEH	R2, R25
@@ -811,10 +759,10 @@ L__Test_Port_Pins76:
 J	L_Test_Port_Pins28
 NOP	
 L_Test_Port_Pins23:
-;Limits.c,223 :: 		return tmp;
+;Limits.c,217 :: 		return tmp;
 ; tmp start address is: 8 (R2)
 ; tmp end address is: 8 (R2)
-;Limits.c,224 :: 		}
+;Limits.c,218 :: 		}
 L_end_Test_Port_Pins:
 JR	RA
 NOP	

@@ -75,7 +75,10 @@ File3=Kinematics.h
 File4=Limits.h
 File5=Serial_Dma.c
 File6=Serial_Dma.h
-Count=7
+File7=Stepper.c
+File8=Settings.h
+File9=Steptodistance.c
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
