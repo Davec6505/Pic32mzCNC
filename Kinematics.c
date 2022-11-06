@@ -545,7 +545,11 @@ long speed = 0;
      
    //test if limit has been hit with rising edge
    if(FP(axis)){
-     StopX();
+     if(axis == X)
+        StopX();
+     else if(axis == Y)
+        StopY();
+        
      if(sys.homing_cnt == 0)
          Inv_Home_Axis(5.0,100, axis);
    }

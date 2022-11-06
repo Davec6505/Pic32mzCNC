@@ -257,8 +257,8 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 typedef struct {
  uint8_t abort;
  uint8_t state;
- int8_t homing;
- uint8_t homing_cnt;
+ int homing;
+ int homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
 } system_t;
@@ -979,7 +979,11 @@ long speed = 0;
 
 
  if(FP(axis)){
+ if(axis == X)
  StopX();
+ else if(axis == Y)
+ StopY();
+
  if(sys.homing_cnt == 0)
  Inv_Home_Axis(5.0,100, axis);
  }

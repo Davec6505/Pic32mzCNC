@@ -30,25 +30,8 @@ main
 	Test_Min
 	Debounce_Limits
 		Test_Port_Pins
-		dma_printf
-			__CC2DW
-			IntToStr
-				WordToStr
-			lTrim
-				strlen
-			strcat
-			strlen
-			LongToStr
-				LongWordToStr
-			IntToHex
-			LongIntToHex
-			FloatToStr
-				strcpy
-			strncpy
-			DMA1_Enable
 		Reset_Min_Limit
 		Reset_Min_Debounce
-		__CC2DW
 	EnStepperX
 	EnStepperY
 	EnStepperZ
@@ -90,6 +73,22 @@ main
 			hypot
 				sqrt
 			dma_printf
+				__CC2DW
+				DMA_Busy
+				IntToStr
+					WordToStr
+				lTrim
+					strlen
+				strcat
+				strlen
+				LongToStr
+					LongWordToStr
+				IntToHex
+				LongIntToHex
+				FloatToStr
+					strcpy
+				strncpy
+				DMA1_Enable
 			mc_arc
 				atan2
 					fabs
@@ -115,6 +114,7 @@ main
 				dma_printf
 				__CC2DW
 			StopX
+			StopY
 			Inv_Home_Axis
 				belt_steps
 				speed_cntr_Move
@@ -127,7 +127,6 @@ main
 				belt_steps
 				speed_cntr_Move
 				SingleAxisStep
-	DMA_Busy
 	dma_printf
 	__CC2DW
 	__FillZeros

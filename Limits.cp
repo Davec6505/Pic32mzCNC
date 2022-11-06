@@ -248,8 +248,8 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 typedef struct {
  uint8_t abort;
  uint8_t state;
- int8_t homing;
- uint8_t homing_cnt;
+ int homing;
+ int homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
 } system_t;
@@ -729,9 +729,7 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-
- dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
-
+#line 150 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }

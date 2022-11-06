@@ -260,8 +260,8 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 typedef struct {
  uint8_t abort;
  uint8_t state;
- int8_t homing;
- uint8_t homing_cnt;
+ int homing;
+ int homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
 } system_t;
@@ -816,7 +816,15 @@ int dma_printf(const char* str,...){
 
 
  va_list va;
-#line 272 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+
+
+
+
+ if(DMA_Busy(1)){
+ return 0;
+ }
+
+
   __va_start(va, str) ;
 
  i = j = 0;

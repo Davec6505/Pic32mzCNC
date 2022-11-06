@@ -281,8 +281,8 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 typedef struct {
  uint8_t abort;
  uint8_t state;
- int8_t homing;
- uint8_t homing_cnt;
+ int homing;
+ int homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
 } system_t;
@@ -656,7 +656,7 @@ static int cntr;
  cntr = 0;
  sys.homing = 0;
  sys.homing_cnt = 0;
- a = 0;
+ a = 10;
  }
 
  if(Toggle){
@@ -674,16 +674,9 @@ static int cntr;
 
 
 
- if(!DMA_Busy(1)){
 
- dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
- a,STPS[X].step_count,STPS[X].axis_dir,
- STPS[X].steps_position);
- }
-
-
-
-
+ dma_printf("\ncount:=\t%d",sys.homing_cnt);
+#line 129 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
 
  }

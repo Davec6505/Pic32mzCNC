@@ -264,9 +264,9 @@ int dma_printf(const char* str,...){
  //can only call this once the va_list has bee declared
  //or the compiler throws an undefined error!!! not sure
  //about the compiler not implimenting va_end????
-/*if(DMA_Busy(1)){
+   if(DMA_Busy(1)){
       return 0;
-   }*/
+   }
  //initialize the va_list via themacro va_start(arg1,arg2)
  //arg1 is type va_list and arg2 is type var preceding elipsis
  va_start(va,str);
