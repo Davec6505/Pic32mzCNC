@@ -139,9 +139,9 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 20 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 22 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 32 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 34 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
@@ -283,7 +283,6 @@ typedef struct genVars{
  long py;
  long pz;
  long pa;
- long psingle;
  long over;
  long acc;
  long dec;
@@ -338,7 +337,7 @@ void Reset_Min_Debounce(int axis);
 
 char FP(int axis);
 char FN(int axis);
-#line 31 "c:/users/git/pic32mzcnc/config.h"
+#line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
 extern bit oneShotB; sfr;
@@ -358,44 +357,8 @@ void OutPutPulseXYZ();
 void Temp_Move(int a);
 void LCD_Display();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/packages/i2c_lcd/uses/i2c_lcd.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 62 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/packages/i2c_lcd/uses/i2c_lcd.h"
-typedef enum{
- _LCD_FIRST_ROW = 1,
- _LCD_SECOND_ROW,
- _LCD_THIRD_ROW,
- _LCD_FOURTH_ROW,
- _LCD_CLEAR,
- _LCD_RETURN_HOME,
- _LCD_CURSOR_OFF,
- _LCD_UNDERLINE_ON,
- _LCD_BLINK_CURSOR_ON,
- _LCD_MOVE_CURSOR_LEFT,
- _LCD_MOVE_CURSOR_RIGHT,
- _LCD_TURN_ON,
- _LCD_TURN_OFF,
- _LCD_SHIFT_LEFT,
- _LCD_SHIFT_RIGHT,
- _LCD_INCREMENT_NO_SHIFT
-}Cmd_Type;
-
-extern Cmd_Type Cmd;
-
-
-
-  unsigned char  I2C_PCF8574_Write( unsigned char  addr, unsigned char  Data);
- void I2C_LCD_putcmd( unsigned char  addr,  unsigned char  dta, unsigned char  cmdtype);
- void I2C_LCD_goto( unsigned char  addr, unsigned char  row,  unsigned char  col);
- void I2C_Lcd_Cmd( unsigned char  addr,Cmd_Type cmd, unsigned char  col);
- void I2C_LCD_putch( unsigned char  addr,  unsigned char  dta);
- void I2C_LCD_Out( unsigned char  addr,  unsigned char  row,  unsigned char  col,  unsigned char  *s);
- void I2C_Lcd_Chr( unsigned char  addr,  unsigned char  row,  unsigned char  col,  unsigned char  out_char);
- void I2C_LCD_init( unsigned char  addr);
- void I2C_LCD_init4l( unsigned char  addr);
- void I2C_Pins(char i2c_pins);
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 12 "c:/users/git/pic32mzcnc/timers.h"
+#line 11 "c:/users/git/pic32mzcnc/timers.h"
 struct Timer{
 char clock;
 char P1: 1;
@@ -420,7 +383,6 @@ typedef unsigned short UInt8_t;
 extern unsigned int Toggle;
 
 
-
 typedef struct STPT {
 
  long uSec;
@@ -434,11 +396,8 @@ typedef struct STPT {
 extern StepTmr STmr;
 
 
-
-
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
-
 
 extern _axis_ _axis;
 extern axis_combination axis_xyz;
@@ -468,8 +427,6 @@ unsigned int min_(unsigned long x, unsigned long y);
 void CalcDly(int axis_No);
 void StepperConstants(long accel,long decel);
 
-
-
 void SingleStepX();
 void SingleStepY();
 void SingleStepZ();
@@ -496,11 +453,10 @@ void Step_Cycle(int axis_No);
 void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
-
- void Test_CycleX();
- void Test_CycleY();
- void Test_CycleZ();
- void Test_CycleA();
+void Test_CycleX();
+void Test_CycleY();
+void Test_CycleZ();
+void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
@@ -538,6 +494,8 @@ typedef struct Steps{
  long step_count;
 
  long dist;
+
+ long psingle;
 
  long new_step_delay;
 
@@ -640,12 +598,13 @@ int dir;
 #line 40 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis_No].axis_dir =  (((newxyz) < (0))? ( -1 ) : ( 1 )) ;
  SV.Single_Dual = 0;
- SV.psingle = 0;
+ STPS[axis_No].psingle = 0;
+
  Single_Axis_Enable(axis_No);
- STPS[axis_No].dist = newxyz - SV.psingle;
- STPS[axis_No].dist = abs(STPS[axis_No].dist);
-#line 63 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ STPS[axis_No].dist = newxyz - STPS[axis_No].psingle;
+ STPS[axis_No].dist = labs(newxyz);
  dir = (newxyz < 0)?  1  :  0 ;
+
  switch(axis_No){
  case X:
  DIR_StepX = ( 1  ^ dir) & 0x0001;
@@ -707,8 +666,8 @@ int dirA,dirB;
  DIR_StepX = ( 1  ^ dirA) & 0x0001;
  DIR_StepY = ( 0  ^ dirB) & 0x0001;
 
- SV.dx = abs(SV.dx);
- SV.dy = abs(SV.dy);
+ SV.dx = labs(SV.dx);
+ SV.dy = labs(SV.dy);
 
  if(SV.dx > SV.dy)
  SV.d2 =  ((2)*((SV.dy) - (SV.dx))) ;
@@ -750,8 +709,8 @@ int dirA,dirB;
  DIR_StepX = ( 1  ^ dirA) & 0x0001;
  DIR_StepZ = ( 0  ^ dirB) & 0x0001;
 
- SV.dx = abs(SV.dx);
- SV.dz = abs(SV.dz);
+ SV.dx = labs(SV.dx);
+ SV.dz = labs(SV.dz);
 
  if(SV.dx > SV.dz)
  d2 =  ((2)*((SV.dz) - (SV.dx))) ;
@@ -783,8 +742,8 @@ int dirA,dirB;
  DIR_StepY = ( 0  ^ dirA) & 0x0001;
  DIR_StepZ = ( 0  ^ dirB) & 0x0001;
 
- SV.dy = abs(SV.dy);
- SV.dz = abs(SV.dz);
+ SV.dy = labs(SV.dy);
+ SV.dz = labs(SV.dz);
 
  if(SV.dy > SV.dz)
  SV.d2 =  ((2)*((SV.dz) - (SV.dy))) ;
@@ -799,7 +758,7 @@ int dirA,dirB;
 
  }
 }
-#line 235 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 220 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir){
 unsigned short isclockwise = 0;
@@ -821,7 +780,7 @@ unsigned int axis_plane_a,axis_plane_b;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 319 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 304 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -834,7 +793,7 @@ unsigned int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (gc.motion_mode ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 353 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 338 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -917,7 +876,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
 
 
  linear_per_segment = linear_travel/segments;
-#line 461 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 446 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  cos_T = 1-0.5*theta_per_segment*theta_per_segment;
  sin_T = theta_per_segment;
 
@@ -952,7 +911,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  if(!OC5IE_bit && !OC2IE_bit)
  break;
  }
-#line 501 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 486 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[X].mmToTravel = belt_steps(nPx);
  STPS[Y].mmToTravel = belt_steps(nPy);
  tempA = abs(STPS[X].mmToTravel);
@@ -1009,7 +968,7 @@ long speed = 0;
  homing[axis].set = 1;
  homing[axis].complete = 0;
  homing[axis].home_cnt = 0;
- speed = 1000;
+ speed = 2000;
  }else{
  speed = 100;
  }
@@ -1031,7 +990,6 @@ long speed = 0;
 
  if(FN(axis)){
  homing[axis].home = 0;
-
  }
 
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
@@ -1045,7 +1003,6 @@ long speed = 0;
  homing[axis].complete = 1;
  STPS[axis].step_count = 0;
  STPS[axis].steps_position = 0;
-
  }
  }
 
@@ -1053,7 +1010,7 @@ long speed = 0;
 
 
 void Home_Axis(double distance,long speed,int axis){
-
+ distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
  distance = (distance < 0.0)? distance : -distance;
  STPS[axis].mmToTravel = belt_steps(distance);
  speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);

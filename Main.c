@@ -34,7 +34,7 @@
 parser_state_t gc;
 STP STPS[NoOfAxis];
 
-
+static unsigned int disable_steps;
 char DMA_Buff[200];
 char txt_[9];
 bit testISR;
@@ -47,7 +47,7 @@ char uart_rd;
 unsigned int ii;
 unsigned long testOcr;
 static unsigned int a;
-
+//static unsigned int disable_steps = 0;
 //char (*fp)(int);
 /////////////////////////////////////////
 //main function
@@ -55,7 +55,6 @@ void main() {
 char txt_[9];
 static char oneshot = 0;
 unsigned char j;
-static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
 static int cntr;
  // fp = Test_Min;
@@ -63,46 +62,44 @@ static int cntr;
   StepperConstants(15000,15000);
   oneShotA = 0;
   a=0;
-  disable_steps = 0;
   disableOCx();
   DisableStepper();
-
+  //stepper timeout counter
+  disable_steps = 0;
   EnableInterrupts();
   while(1){
-     LED1 = Test_Min(X)&0x0001;
+
      Debounce_Limits(X);
      Debounce_Limits(Y);
+     
      if(!Toggle){
-       //LED1 = Test_Min(X)&0x0001;//TMR.clock >> 4;
+       LED1 = TMR.clock >> 4;
+
        if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
            disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
-       
-       if(LED1 && (oneshot == 0)){
-         oneshot = 1;
-       }else if(!LED1 && (oneshot == 1))
-          oneshot = 0;
+
      }
          
      if(!SW2){
        Toggle  = 0;
+       disable_steps = 0;
        disableOCx();
      }
 
      if((!SW1)&&(!Toggle)){
         LED1 = 0;
         Toggle = 1;
-        disable_steps = 0;
         EnStepperX();
         EnStepperY();
         EnStepperZ();
         EnStepperA();
         ResetHoming();
-        a = 10;
+        a = 0;
      }
      //X Y Z
      if(Toggle){
 
-       //if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+       if((a > 9)){
          if(homing[X].home_cnt >= 2){
             homing[X].home_cnt = 0;
             a = 11;
@@ -113,30 +110,23 @@ static int cntr;
             a = 12;
             dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
          }
-      
          Temp_Move(a);
-         
-         /*if(a < 9){
-           a++;
-           if(a == 9)a=10;
-         } */
-        //Change the value of DMADebug in the DEFINE.pld
-        //file found in the Project Level Define folder
-
-       //}
-
+       }else{
+          if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+             Temp_Move(a);
+             if(a < 9){
+                  a++;
+                  if(a == 9)a=10;
+             }
+          }
+       }
 
         #if DMADebug == 1
-
-         // dma_printf("\ncount:=\t%d",sys.homing_cnt);
-          dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
-                     a,STPS[X].step_count,STPS[X].axis_dir,
-                     STPS[X].steps_position);
-
-                     
+          dma_printf("\nStep:=\t%l mm2mve:=\t%l: Step:=\t%l",
+                     STPS[X].dist,STPS[X].mmToTravel,
+                     STPS[X].step_count);
         #endif
         
-
      }
 
   }
@@ -145,50 +135,53 @@ static int cntr;
 void Temp_Move(int a){
     switch(a){
       case 0:
-             STPS[X].mmToTravel = belt_steps(50.00);//calcSteps(-125.25,8.06);
-             break;
              STPS[Y].mmToTravel = belt_steps(50.00);
              speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
              SingleAxisStep(STPS[Y].mmToTravel,Y);
              break;
-      case 2:
-             STPS[X].mmToTravel = belt_steps(-50.00);
+      case 1:
+             STPS[X].mmToTravel = belt_steps(50.00);
              speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
              SingleAxisStep(STPS[X].mmToTravel,X);
-              break;
-       case 3:
+             break;
+       case 2:
              STPS[Y].mmToTravel = belt_steps(-50.00);
              speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
              SingleAxisStep(STPS[Y].mmToTravel,Y);
-              break;
+             break;
+      case 3:
+             STPS[X].mmToTravel = belt_steps(-50.00);
+             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
+             SingleAxisStep(STPS[X].mmToTravel,X);
+             break;
        case 4:
              STPS[X].mmToTravel = belt_steps(50.00);
             // speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
              STPS[Y].mmToTravel = belt_steps(100.00);
              speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
              DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
-              break;
+             break;
        case 5:
              STPS[X].mmToTravel = belt_steps(-50.00);
              //speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
              STPS[Y].mmToTravel = belt_steps(-100.00);
              speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
              DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
-              break;
+             break;
        case 6:
              STPS[X].mmToTravel = belt_steps(150.00);
              speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
              STPS[Y].mmToTravel = belt_steps(100.00);
            //  speed_cntr_Move(STPS[Y].mmToTravel, 5000,Y);
              DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
-              break;
+             break;
        case 7:
              STPS[X].mmToTravel = belt_steps(-150.00);
              speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
              STPS[Y].mmToTravel = belt_steps(-100.00);
             // speed_cntr_Move(STPS[Y].mmToTravel, 5000,Y);
              DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
-              break;
+             break;
        case 8:
              STPS[A].mmToTravel = belt_steps(150.00);
              speed_cntr_Move(STPS[A].mmToTravel, 8000,A);

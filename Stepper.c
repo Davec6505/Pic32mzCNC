@@ -7,8 +7,10 @@ char txt_A[9];
 _axis_ _axis;
 axis_combination axis_xyz;
 
+
 unsigned char AxisNo;
 unsigned int Toggle;
+
 //Differential position for interpolation
 
 //////////////////////////////////
@@ -51,6 +53,7 @@ void SetPinMode(){
 //  SLP_FLT_Step_PinDirA = 0;
 //  PLS_Step_PinDirA = 0;
 
+//stepper timeout counter
 }
 
 /////////////////////////////////
@@ -270,19 +273,17 @@ int Pulse(int axis_No){
         break;
 
       case ACCEL:
-        /*
-        * Chech if we should start decelration.
-        * Check if we hit max speed.
-        */
+        //taylor series calculation for acc
         AccDec(axis_No);
         if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
-        //  STPS.last_accel_delay = STPS.new_step_delay;
              STPS[axis_No].step_delay = STPS[axis_No].min_delay;
              STPS[axis_No].run_state  = RUN;
         }
         if(STPS[axis_No].step_delay > STPS[axis_No].accel_lim){
              STPS[axis_No].run_state  = RUN;
         }
+        //if the peak of the triangle is before max_accel_limit
+        //then start to decel
         if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
           STPS[axis_No].accel_count = STPS[axis_No].decel_val;
           STPS[axis_No].rest        = 0;
@@ -292,24 +293,21 @@ int Pulse(int axis_No){
 
       case RUN:
         STPS[axis_No].step_delay = STPS[axis_No].min_delay;
-        // Chech if we should start decelration.
+        
+        // Check for decelration start position.
+        // Start decelration with same delay as accel ended with.
         if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
              STPS[axis_No].accel_count = STPS[axis_No].decel_val;
              STPS[axis_No].rest        = 0;
-        // Start decelration with same delay as accel ended with.
              STPS[axis_No].run_state   =  DECEL;
         }
         break;
 
       case DECEL:
-        /*
-        * Chech if we should start decelration.
-        * Check if we hit max speed.
-        */
+        //taylor series calculation for dec
         AccDec(axis_No);
-        // else STPS[axis_No].new_step_delay = STPS[axis_No].StartUp_delay;
-        // Check if we at last step
-
+        
+        // Check for final step
         if(STPS[axis_No].accel_count > -1 ){
          STPS[axis_No].run_state = STOP;
         }
@@ -326,7 +324,6 @@ void AccDec(int axis_No){
           STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
           STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
           STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
-
 }
 
 //////////////////////////////////////////////////////////
@@ -406,12 +403,8 @@ void disableOCx(){
 //            X AXIS PULSE CONTROL                      //
 //////////////////////////////////////////////////////////
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
-   //  STPS[X].step_count++;
      OC5IF_bit = 0;
      
-     //keep track of absolute position
-     //sys.steps_position[X] += sys.axis_dir[X];
-
      if(SV.Single_Dual == 0)
         SingleStepX();
      else
@@ -420,7 +413,7 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
 
 
 void SingleStepX(){
-    if((STPS[X].step_count >= STPS[X].dist)||(SV.Tog == 1)){
+    if((STPS[X].step_count >= STPS[X].dist)/*||(SV.Tog == 1)*/){
       StopX();
     }
     else{
@@ -441,11 +434,7 @@ void StopX(){
 //            Y AXIS PULSE CONTROL                      //
 //////////////////////////////////////////////////////////
 void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
-  // STPS[Y].step_count++;
    OC2IF_bit = 0;
-
-   //keep track of absolute position
-   //sys.steps_position[Y] += sys.axis_dir[Y];
 
    if(SV.Single_Dual == 0)
         SingleStepY();
@@ -456,7 +445,7 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
 }
 
 void SingleStepY(){
-    if((STPS[Y].step_count >= STPS[Y].dist)||(SV.Tog == 1)){  //i think this is where the problem lies
+    if((STPS[Y].step_count >= STPS[Y].dist)/*||(SV.Tog == 1)*/){  //i think this is where the problem lies
       StopY();
     }
     else{
@@ -476,12 +465,8 @@ void StopY(){
 //            Z AXIS PULSE CONTROL                      //
 //////////////////////////////////////////////////////////
 void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
-  // STPS[Z].step_count++;
    OC7IF_bit = 0;
 
-   //keep track of absolute position
-   //sys.steps_position[Z] += sys.axis_dir[Z];
-   
    if(SV.Single_Dual == 0)
         SingleStepZ();
      else
@@ -490,7 +475,7 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
 }
 
 void SingleStepZ(){
-   if((STPS[Z].step_count >= STPS[Z].dist)||(SV.Tog == 1)){
+   if((STPS[Z].step_count >= STPS[Z].dist)/*||(SV.Tog == 1)*/){
       StopZ();
    }
    else{
@@ -510,12 +495,8 @@ void StopZ(){
 //            A AXIS PULSE CONTROL                      //
 //////////////////////////////////////////////////////////
 void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
-  // STPS[A].step_count++;
    OC3IF_bit = 0;
 
-   //keep track of absolute position
-   //sys.steps_position[A] += sys.axis_dir[A];
-     
    if(SV.Single_Dual == 0)
         SingleStepA();
      else
@@ -524,7 +505,7 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 }
 
 void SingleStepA(){
-   if((STPS[A].step_count >= STPS[A].dist)||(SV.Tog == 1)){
+   if((STPS[A].step_count >= STPS[A].dist)/*||(SV.Tog == 1)*/){
       StopA();
    }
    else{
@@ -686,7 +667,6 @@ static unsigned long sqrt_(unsigned long x){
     return xr;
   }
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //TEST CODE

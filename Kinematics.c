@@ -34,33 +34,18 @@ void SingleAxisStep(long newxyz,int axis_No){
 int dir;
 
 //static long dist;
-      /* if(SV.psingle != newxyz)
-             SV.psingle = newxyz; */
+      /* if(STPS[axis].psingle != newxyz)
+             STPS[axis].psingle = newxyz; */
 
      STPS[axis_No].axis_dir = Direction(newxyz);
      SV.Single_Dual = 0;
-     SV.psingle  = 0;
+     STPS[axis_No].psingle  = 0;
+     
      Single_Axis_Enable(axis_No);
-     STPS[axis_No].dist = newxyz - SV.psingle;
-     STPS[axis_No].dist = abs(STPS[axis_No].dist);
-
-   /*  switch(axis_No){
-       case X:
-              Single_Axis_Enable(X);
-              break;
-       case Y:
-              Single_Axis_Enable(Y);
-              break;
-       case Z:
-              Single_Axis_Enable(Z);
-              break;
-       case A:
-              Single_Axis_Enable(A);
-              break;
-       default: break;
-     }*/
-
+     STPS[axis_No].dist = newxyz - STPS[axis_No].psingle;
+     STPS[axis_No].dist = labs(newxyz);
      dir = (newxyz < 0)? CCW : CW;
+
      switch(axis_No){
        case X:
             DIR_StepX = (X_DIR_DIR ^ dir) & 0x0001;//(X_DIR_DIR)?dir:~dir;
@@ -122,8 +107,8 @@ int dirA,dirB;
           DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
           DIR_StepY = (Y_DIR_DIR ^ dirB) & 0x0001;
           //Remove -ve values
-          SV.dx = abs(SV.dx);
-          SV.dy = abs(SV.dy);
+          SV.dx = labs(SV.dx);
+          SV.dy = labs(SV.dy);
           //Start values for Bresenhams
           if(SV.dx > SV.dy)
              SV.d2 = BresDiffVal(SV.dy,SV.dx);//2*(SV.dy - SV.dx);
@@ -165,8 +150,8 @@ int dirA,dirB;
           DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
           DIR_StepZ = (Z_DIR_DIR ^ dirB) & 0x0001;
           //Remove -ve values
-          SV.dx = abs(SV.dx);
-          SV.dz = abs(SV.dz);
+          SV.dx = labs(SV.dx);
+          SV.dz = labs(SV.dz);
 
           if(SV.dx > SV.dz) 
              d2 = BresDiffVal(SV.dz,SV.dx);//2*(SV.dz - SV.dx);
@@ -198,8 +183,8 @@ int dirA,dirB;
           DIR_StepY = (Y_DIR_DIR ^ dirA) & 0x0001;
           DIR_StepZ = (Z_DIR_DIR ^ dirB) & 0x0001;
           //Remove -ve
-          SV.dy = abs(SV.dy);
-          SV.dz = abs(SV.dz);
+          SV.dy = labs(SV.dy);
+          SV.dz = labs(SV.dz);
 
          if(SV.dy > SV.dz)
             SV.d2 = BresDiffVal(SV.dz,SV.dy);//2*(SV.dz - SV.dy);
@@ -554,7 +539,7 @@ long speed = 0;
         homing[axis].set = 1;
         homing[axis].complete = 0;
         homing[axis].home_cnt = 0;
-        speed = 1000;
+        speed = 2000;
      }else{
         speed = 100;
      }
@@ -576,7 +561,6 @@ long speed = 0;
    //use falling edge to stop after 1 cycle
    if(FN(axis)){
      homing[axis].home = 0;
-   //  dma_printf("\nBack : Cnt:= %d",homing[axis].home_cnt);
    }
 
    if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
@@ -590,7 +574,6 @@ long speed = 0;
           homing[axis].complete      = 1;
           STPS[axis].step_count      = 0;
           STPS[axis].steps_position  = 0;
-         // dma_printf("\nComplete: Cnt:= %d",homing[axis].home_cnt);
       }
    }
    
@@ -598,7 +581,7 @@ long speed = 0;
 
 //Home single axis
 void Home_Axis(double distance,long speed,int axis){
-      //distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
+      distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
       distance = (distance < 0.0)? distance : -distance;
       STPS[axis].mmToTravel = belt_steps(distance);
       speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);

@@ -95,15 +95,12 @@ void PinMode(){
    DMA_global();
    DMA0_Enable();
    DMA1_Enable();
+   
 ////////////////////////////////////////////////
 //set up output compare module for oc3 RF1 pin
   OutPutPulseXYZ();
   SetPinMode();
 
-
-/////////////////////////////////////////////////
-//setup i2c_lcd
-  //  LcdI2CConfig();
 
 ////////////////////////////////////////////////
 //Setup platform
@@ -343,16 +340,3 @@ void OutPutPulseXYZ(){
  // OC5CONSET = 0x8000; // Enable OC6
  // OC8CONSET = 0x8000; // Enable OC8
 }
-
-/*void LcdI2CConfig(){
-
-     I2C4_Init_Advanced(50000, 100000);
-     I2C_Set_Active(&I2C4_Start, &I2C4_Restart, &I2C4_Read, &I2C4_Write,
-                    &I2C4_Stop,&I2C4_Is_Idle); // Sets the I2C4 module active
-     Delay_ms(100);
-     I2C_LCD_init(LCD_01_ADDRESS,4);
-     Delay_ms(100);
-     I2C_Lcd_Cmd(LCD_01_ADDRESS,_LCD_FIRST_ROW,1);
-     I2C_Lcd_Cmd(LCD_01_ADDRESS,_LCD_CURSOR_OFF,1); // Cursor off
-     I2C_Lcd_Cmd(LCD_01_ADDRESS,_LCD_CLEAR,1); // Clear display
-} */

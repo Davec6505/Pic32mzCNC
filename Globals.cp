@@ -79,7 +79,6 @@ typedef struct genVars{
  long py;
  long pz;
  long pa;
- long psingle;
  long over;
  long acc;
  long dec;

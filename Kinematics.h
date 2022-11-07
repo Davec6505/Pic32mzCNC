@@ -90,6 +90,8 @@ typedef struct Steps{
   long step_count;
   //! Distance calculated to travel
   long dist;
+  //! if a change of speed is required from dir change or any other
+  long psingle;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long new_step_delay;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.

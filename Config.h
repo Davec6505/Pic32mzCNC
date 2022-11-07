@@ -16,11 +16,7 @@
 
 ///////////////////////////////////////////////////
 //DEFINES
-/* Define the Timer value in seconds to reset
- * the Steppers if no calls to run steppers
- * and all output compares are set to off
- */
-#define SEC_TO_DISABLE_STEPPERS 10
+
 #define false 0
 #define true 1
 
