@@ -3,42 +3,6 @@
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/packages/i2c_lcd/uses/i2c_lcd.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 62 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/packages/i2c_lcd/uses/i2c_lcd.h"
-typedef enum{
- _LCD_FIRST_ROW = 1,
- _LCD_SECOND_ROW,
- _LCD_THIRD_ROW,
- _LCD_FOURTH_ROW,
- _LCD_CLEAR,
- _LCD_RETURN_HOME,
- _LCD_CURSOR_OFF,
- _LCD_UNDERLINE_ON,
- _LCD_BLINK_CURSOR_ON,
- _LCD_MOVE_CURSOR_LEFT,
- _LCD_MOVE_CURSOR_RIGHT,
- _LCD_TURN_ON,
- _LCD_TURN_OFF,
- _LCD_SHIFT_LEFT,
- _LCD_SHIFT_RIGHT,
- _LCD_INCREMENT_NO_SHIFT
-}Cmd_Type;
-
-extern Cmd_Type Cmd;
-
-
-
-  unsigned char  I2C_PCF8574_Write( unsigned char  addr, unsigned char  Data);
- void I2C_LCD_putcmd( unsigned char  addr,  unsigned char  dta, unsigned char  cmdtype);
- void I2C_LCD_goto( unsigned char  addr, unsigned char  row,  unsigned char  col);
- void I2C_Lcd_Cmd( unsigned char  addr,Cmd_Type cmd, unsigned char  col);
- void I2C_LCD_putch( unsigned char  addr,  unsigned char  dta);
- void I2C_LCD_Out( unsigned char  addr,  unsigned char  row,  unsigned char  col,  unsigned char  *s);
- void I2C_Lcd_Chr( unsigned char  addr,  unsigned char  row,  unsigned char  col,  unsigned char  out_char);
- void I2C_LCD_init( unsigned char  addr);
- void I2C_LCD_init4l( unsigned char  addr);
- void I2C_Pins(char i2c_pins);
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
@@ -232,7 +196,7 @@ void DMA0_Enable();
 void DMA0_Disable();
 void DMA1_Enable();
 void DMA1_Disable();
-char DMA_Busy(char channel);
+int DMA_Busy(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -281,8 +245,8 @@ void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 typedef struct {
  uint8_t abort;
  uint8_t state;
- int8_t homing;
- uint8_t homing_cnt;
+ int homing;
+ int homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
 } system_t;
@@ -307,7 +271,6 @@ typedef struct genVars{
  long py;
  long pz;
  long pa;
- long psingle;
  long over;
  long acc;
  long dec;
@@ -354,6 +317,8 @@ typedef struct Steps{
 
  long dist;
 
+ long psingle;
+
  long new_step_delay;
 
  long last_accel_delay;
@@ -381,7 +346,27 @@ typedef struct Steps{
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-#line 134 "c:/users/git/pic32mzcnc/kinematics.h"
+
+
+typedef struct{
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}Homing;
+extern Homing homing[ 6 ];
+
+
+
+
+
+
+
+
+
+
 void SetInitialSizes(STP axis[6]);
 
 
@@ -400,6 +385,8 @@ void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
 int GetAxisDirection(long mm2move);
 
 
+void ResetHoming();
+void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -408,7 +395,6 @@ void Inv_Home_Axis(double distance,long speed,int axis);
 typedef unsigned short UInt8_t;
 #line 54 "c:/users/git/pic32mzcnc/stepper.h"
 extern unsigned int Toggle;
-
 
 
 typedef struct STPT {
@@ -424,11 +410,8 @@ typedef struct STPT {
 extern StepTmr STmr;
 
 
-
-
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
-
 
 extern _axis_ _axis;
 extern axis_combination axis_xyz;
@@ -458,8 +441,6 @@ unsigned int min_(unsigned long x, unsigned long y);
 void CalcDly(int axis_No);
 void StepperConstants(long accel,long decel);
 
-
-
 void SingleStepX();
 void SingleStepY();
 void SingleStepZ();
@@ -486,12 +467,11 @@ void Step_Cycle(int axis_No);
 void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
-
- void Test_CycleX();
- void Test_CycleY();
- void Test_CycleZ();
- void Test_CycleA();
-#line 12 "c:/users/git/pic32mzcnc/timers.h"
+void Test_CycleX();
+void Test_CycleY();
+void Test_CycleZ();
+void Test_CycleA();
+#line 11 "c:/users/git/pic32mzcnc/timers.h"
 struct Timer{
 char clock;
 char P1: 1;
@@ -513,9 +493,9 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 20 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 22 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 32 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 34 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
@@ -529,58 +509,7 @@ double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 29 "c:/users/git/pic32mzcnc/limits.h"
-extern sbit TX0;
-extern sbit TX1;
-extern sbit TX2;
-extern sbit TX3;
-
-extern sbit TY0;
-extern sbit TY1;
-extern sbit TY2;
-extern sbit TY3;
-
-extern sbit TZ0;
-extern sbit TZ1;
-extern sbit TZ2;
-extern sbit TZ3;
-
-extern sbit TA0;
-extern sbit TA1;
-extern sbit TA2;
-extern sbit TA3;
-
-
-
-struct limits{
-
-char X_Limit_Min: 1;
-char Y_Limit_Min: 1;
-char Z_Limit_Min: 1;
-char A_Limit_Min: 1;
-char X_Limit_Max: 1;
-char Y_Limit_Max: 1;
-char Z_Limit_Max: 1;
-char A_Limit_Max: 1;
-
-long X_Soft_Limit_Min;
-long X_Soft_Limit_Max;
-long Y_Soft_Limit_Min;
-long Y_Soft_Limit_MAx;
-long Z_Soft_Limit_Min;
-long Z_Soft_Limit_MAx;
-long A_Soft_Limit_Min;
-long A_Soft_Limit_MAx;
-
-unsigned int X_Min_DeBnc;
-unsigned int Y_Min_DeBnc;
-unsigned int Z_Min_DeBnc;
-unsigned int A_Min_DeBnc;
-};
-extern struct limits Limits;
-
-
-
+#line 33 "c:/users/git/pic32mzcnc/limits.h"
 struct limit {
 
 char Pin: 1;
@@ -613,24 +542,13 @@ void A_Min_Limit_Setup();
 
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
-char Test_X_Min();
-char Test_Y_Min();
-
 void Reset_Min_Limit(int axis);
-void Reset_X_Min_Limit();
-void Reset_Y_Min_Limit();
-
 void Debounce_Limits(int axis);
-void Debounce_X_Limits();
-void Debounce_Y_Limits();
-
 void Reset_Min_Debounce(int axis);
-void Reset_X_Min_Debounce();
-void Reset_Y_Min_Debounce();
 
 char FP(int axis);
 char FN(int axis);
-#line 31 "c:/users/git/pic32mzcnc/config.h"
+#line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
 extern bit oneShotB; sfr;
@@ -653,6 +571,7 @@ void LCD_Display();
 parser_state_t gc;
 STP STPS[ 6 ];
 
+static unsigned int disable_steps;
 char DMA_Buff[200];
 char txt_[9];
 bit testISR;
@@ -673,7 +592,6 @@ void main() {
 char txt_[9];
 static char oneshot = 0;
 unsigned char j;
-static unsigned int disable_steps = 0;
 int xyz_ = 0, i;
 static int cntr;
 
@@ -681,105 +599,97 @@ static int cntr;
  StepperConstants(15000,15000);
  oneShotA = 0;
  a=0;
- disable_steps = 0;
  disableOCx();
  DisableStepper();
 
+ disable_steps = 0;
  EnableInterrupts();
  while(1){
- LED1 = Test_Min(X)&0x0001;
+
+ Debounce_Limits(X);
+ Debounce_Limits(Y);
 
  if(!Toggle){
+ LED1 = TMR.clock >> 4;
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
 
- if(LED1 && (oneshot == 0)){
- oneshot = 1;
- }else if(!LED1 && (oneshot == 1))
- oneshot = 0;
  }
 
  if(!SW2){
  Toggle = 0;
+ disable_steps = 0;
  disableOCx();
  }
 
  if((!SW1)&&(!Toggle)){
  LED1 = 0;
  Toggle = 1;
- disable_steps = 0;
  EnStepperX();
  EnStepperY();
  EnStepperZ();
  EnStepperA();
- cntr = 0;
- sys.homing = 2;
- sys.homing_cnt = 0;
- a = 10;
+ ResetHoming();
+ a = 0;
  }
 
  if(Toggle){
 
- if(FP(X)){
- StopX();
- a= 11;
+ if((a > 9)){
+ if(homing[X].home_cnt >= 2){
+ homing[X].home_cnt = 0;
+ a = 11;
+ dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
  }
-
- if(FN(X)){
- sys.homing = 1;
+ if(homing[Y].home_cnt >= 2){
+ homing[Y].home_cnt = 0;
+ a = 12;
+ dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
  }
-
- if(sys.homing == 1){
- a = 10;
- sys.homing= 2;
- }
+ Temp_Move(a);
+ }else{
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
  Temp_Move(a);
  if(a < 9){
  a++;
  if(a == 9)a=10;
  }
+ }
+ }
 
+
+ dma_printf("\nStep:=\t%l mm2mve:=\t%l: Step:=\t%l",
+ STPS[X].dist,STPS[X].mmToTravel,
+ STPS[X].step_count);
 
 
  }
 
-
-
- if(!DMA_Busy(1)){
- dma_printf("\na:=\t%d: cnt:=\t%l: dir:=\t%d: abs:=\t%l",
- a,STPS[X].step_count,STPS[X].axis_dir,
- STPS[X].steps_position);
- }
-
-
- }
-
- Debounce_Limits(X);
-
- Debounce_Limits(Y);
  }
 }
 
 void Temp_Move(int a){
  switch(a){
  case 0:
- STPS[X].mmToTravel = belt_steps(50.00);
- break;
  STPS[Y].mmToTravel = belt_steps(50.00);
  speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
  SingleAxisStep(STPS[Y].mmToTravel,Y);
  break;
- case 2:
- STPS[X].mmToTravel = belt_steps(-50.00);
+ case 1:
+ STPS[X].mmToTravel = belt_steps(50.00);
  speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
  SingleAxisStep(STPS[X].mmToTravel,X);
  break;
- case 3:
+ case 2:
  STPS[Y].mmToTravel = belt_steps(-50.00);
  speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
  SingleAxisStep(STPS[Y].mmToTravel,Y);
+ break;
+ case 3:
+ STPS[X].mmToTravel = belt_steps(-50.00);
+ speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
+ SingleAxisStep(STPS[X].mmToTravel,X);
  break;
  case 4:
  STPS[X].mmToTravel = belt_steps(50.00);
@@ -812,7 +722,7 @@ void Temp_Move(int a){
  case 8:
  STPS[A].mmToTravel = belt_steps(150.00);
  speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
-#line 206 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 198 "C:/Users/Git/Pic32mzCNC/Main.c"
  SingleAxisStep(STPS[A].mmToTravel,A);
  break;
  case 9:
@@ -822,12 +732,11 @@ void Temp_Move(int a){
  r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
  break;
  case 10:
- Home_Axis(-300.00,500,X);
- a =12;
+ Home(X);
  break;
  case 11:
- Inv_Home_Axis(10.00,100,X);
- a = 12;
+ Home(Y);
+ break;
  case 12:
 
  break;

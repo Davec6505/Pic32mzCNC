@@ -4,7 +4,6 @@
 
 #include "Config.h"
 #include "built_in.h"
-#include "I2C_LCD.h"
 #include "Stepper.h"
 ////////////////////////////////////////////////////
 //STRUCTS and ENUMS

@@ -53,8 +53,8 @@ typedef unsigned long long uintmax_t;
 typedef struct {
  uint8_t abort;
  uint8_t state;
- int8_t homing;
- uint8_t homing_cnt;
+ int homing;
+ int homing_cnt;
  uint8_t auto_start;
  volatile uint8_t execute;
 } system_t;
@@ -79,7 +79,6 @@ typedef struct genVars{
  long py;
  long pz;
  long pa;
- long psingle;
  long over;
  long acc;
  long dec;

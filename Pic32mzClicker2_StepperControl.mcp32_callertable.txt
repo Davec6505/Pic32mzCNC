@@ -27,35 +27,32 @@ main
 	StepperConstants
 	disableOCx
 	DisableStepper
-	Test_Min
+	Debounce_Limits
+		Test_Port_Pins
+		Reset_Min_Limit
+		Reset_Min_Debounce
 	EnStepperX
 	EnStepperY
 	EnStepperZ
 	EnStepperA
-	FP
-		Test_Min
-		dma_printf
-			__CC2DW
-			IntToStr
-				WordToStr
-			lTrim
-				strlen
-			strcat
+	ResetHoming
+	dma_printf
+		__CC2DW
+		DMA_Busy
+		IntToStr
+			WordToStr
+		lTrim
 			strlen
-			LongToStr
-				LongWordToStr
-			IntToHex
-			LongIntToHex
-			FloatToStr
-				strcpy
-			strncpy
-			DMA1_Enable
-		__CC2DW
-	StopX
-	FN
-		Test_Min
-		dma_printf
-		__CC2DW
+		strcat
+		strlen
+		LongToStr
+			LongWordToStr
+		IntToHex
+		LongIntToHex
+		FloatToStr
+			strcpy
+		strncpy
+		DMA1_Enable
 	Temp_Move
 		belt_steps
 		speed_cntr_Move
@@ -63,12 +60,12 @@ main
 			sqrt_
 		SingleAxisStep
 			Single_Axis_Enable
-			abs
+			labs
 			Step_Cycle
 				toggleOCx
 		DualAxisStep
 			Multi_Axis_Enable
-			abs
+			labs
 			ClockPulse
 			XY_Interpolate
 				StopX
@@ -112,20 +109,21 @@ main
 				speed_cntr_Move
 				DualAxisStep
 			__CC2DW
-		Home_Axis
-			belt_steps
-			speed_cntr_Move
-			SingleAxisStep
-		Inv_Home_Axis
-			belt_steps
-			speed_cntr_Move
-			SingleAxisStep
-	DMA_Busy
-	dma_printf
-	Debounce_Limits
-		Test_Port_Pins
-		Reset_Min_Limit
-		Reset_Min_Debounce
+		Home
+			FP
+				Test_Min
+			StopX
+			StopY
+			Inv_Home_Axis
+				belt_steps
+				speed_cntr_Move
+				SingleAxisStep
+			FN
+				Test_Min
+			Home_Axis
+				belt_steps
+				speed_cntr_Move
+				SingleAxisStep
 	__CC2DW
 	__FillZeros
 	ResetSteppers

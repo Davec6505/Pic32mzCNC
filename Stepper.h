@@ -50,9 +50,8 @@ typedef unsigned short UInt8_t;
 
 // Constants for accelleration
 
-  //! Stop and Start toggle bit
+//! Stop and Start toggle bit
 extern  unsigned int Toggle;
-
 
 
 typedef struct STPT {
@@ -67,12 +66,9 @@ typedef struct STPT {
 }StepTmr;
 extern StepTmr STmr;
 
-
-
 //enums
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
-
 
 extern _axis_ _axis;
 extern axis_combination axis_xyz;
@@ -102,8 +98,6 @@ unsigned int min_(unsigned long x, unsigned long y);
 void CalcDly(int axis_No);
 void StepperConstants(long accel,long decel);
 
-
-
 void SingleStepX();
 void SingleStepY();
 void SingleStepZ();
@@ -130,11 +124,9 @@ void Step_Cycle(int axis_No);
 void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
- 
- void Test_CycleX();
- void Test_CycleY();
- void Test_CycleZ();
- void Test_CycleA();
- 
+void Test_CycleX();
+void Test_CycleY();
+void Test_CycleZ();
+void Test_CycleA();
  
 #endif

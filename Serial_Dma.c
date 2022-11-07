@@ -212,11 +212,11 @@ void DMA1_Disable(){
 //Get the status of the respective DMA
 //channel, decide whether or not to send
 //new data  [1 = busy || 0 = free]
-char DMA_Busy(char channel){
+int DMA_Busy(int channel){
    if(channel == 0)
-     return DCH0CON & 0x8000;
+     return (DCH0CON & 0x8000)>>15;
    else
-     return DCH1CON & 0x8000;
+     return (DCH1CON & 0x8000)>>15;
 }
 
 /////////////////////////////////////////////////////
@@ -252,13 +252,21 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 //////////////////////////////////////////////////////
 //DMA Print strings and variable arguments formating
 int dma_printf(const char* str,...){
-  int i = 0, j=0;
+  int i = 0, j=0,busy;
   char buff[200]={0},tmp[20];
   char *str_arg,*tmp_;
 
+
+
  //Variable decleration of type va_list
  va_list va;
-  
+ 
+ //can only call this once the va_list has bee declared
+ //or the compiler throws an undefined error!!! not sure
+ //about the compiler not implimenting va_end????
+   if(DMA_Busy(1)){
+      return 0;
+   }
  //initialize the va_list via themacro va_start(arg1,arg2)
  //arg1 is type va_list and arg2 is type var preceding elipsis
  va_start(va,str);

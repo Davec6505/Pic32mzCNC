@@ -4,8 +4,8 @@
 
 /////////////////////////////////////
 //Limits variables
-struct limits Limits;
 static struct limit Limit[NoOfAxis];
+
 //////////////////////////////////////
 //static local variables
 static unsigned int last_cntX_min;
@@ -13,20 +13,6 @@ static unsigned int last_cntY_min;
 static unsigned int last_cntZ_min;
 static unsigned int last_cntA_min;
 
-/*
-/////////////////////////////////////
-//Timer debounce bits
-static char bits;
-sbit TX0 at bits.B0;
-sbit TX1 at bits.B1;
-sbit TX2 at bits.B2;
-sbit TX3 at bits.B3;
-sbit TY0 at bits.B4;
-sbit TY1 at bits.B5;
-sbit TY2 at bits.B6;
-sbit TY3 at bits.B7;
-
-*/
 //////////////////////////////////////////////////////
 //                LIMITS INITAILIZE                 //
 //////////////////////////////////////////////////////
@@ -42,8 +28,8 @@ void Limit_Initialize(){
    Y_Min_Limit_Dir = 1;
 
    //set initial limit values
-   Limits.X_Limit_Min = 0;
-   Limits.Y_Limit_Min = 0;
+   Limit[X].Limit_Min = 0;
+   Limit[Y].Limit_Min = 0;
 
    //keep track of 100ms pulse
    last_cntX_min = 0;
@@ -104,8 +90,6 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
    if(!Limit[X].Limit_Min)
         Limit[X].Limit_Min = 1;
         
-   if(!Limits.X_Limit_Min)
-        Limits.X_Limit_Min = 1;
 }
 
 ///////////////////////////////////////////////////////////
@@ -115,8 +99,6 @@ void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
    if(!Limit[Y].Limit_Min)
       Limit[Y].Limit_Min = 1;
         
-   if(!Limits.Y_Limit_Min)
-      Limits.Y_Limit_Min = 1;
 }
 
 
@@ -163,7 +145,7 @@ void Debounce_Limits(int axis){
          Limit[axis].T2 = 1;
          Limit[axis].Min_DeBnc++;
       #if DMADebug == 10
-         dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
+          dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
       #endif
         if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
            Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
@@ -190,9 +172,6 @@ char FP(int axis){
 char tmp = 0;
   Limit[axis].new_val = Test_Min(axis) & 0x0001;
   if(Limit[axis].new_val > Limit[axis].old_Pval){
-  #if DMADebug == 1
-      dma_printf("\t\tFP():=%d\r\n",(int)Limit[axis].new_val);
-  #endif
      tmp = 1;
   }else {
      tmp = 0;
@@ -206,9 +185,6 @@ char FN(int axis){
 char tmp = 0;
    Limit[axis].new_val = Test_Min(axis) & 0x0001;
    if(Limit[axis].new_val < Limit[axis].old_Fval){
-   #if DMADebug == 1
-         dma_printf("\t\tFN():=%d\r\n",(int)Limit[axis].new_val);
-   #endif
       tmp = 1;
    }else
       tmp = 0;

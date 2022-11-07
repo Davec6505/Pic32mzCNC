@@ -92,6 +92,7 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 <<<<<<< HEAD
+<<<<<<< HEAD
 File1=Stepper.c
 <<<<<<< HEAD
 File2=Stepper.h
@@ -109,6 +110,20 @@ Count=9
 >>>>>>> patch1
 =======
 Count=1
+>>>>>>> patch1
+=======
+File1=Kinematics.c
+File2=Kinematics.h
+<<<<<<< HEAD
+Count=3
+=======
+File3=Stepper.c
+File4=Stepper.h
+File5=Globals.c
+File6=Globals.h
+File7=Settings.h
+Count=8
+>>>>>>> patch2
 >>>>>>> patch1
 [EEPROM]
 Count=0
@@ -180,6 +195,4 @@ USE_SRS=7
 1=Sources
 14=Header Files
 28=Project Level Defines
-33=Active Comments Files
-42=Output Files
-Count=6
+Count=4
