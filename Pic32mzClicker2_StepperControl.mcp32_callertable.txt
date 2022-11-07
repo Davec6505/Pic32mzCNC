@@ -27,7 +27,6 @@ main
 	StepperConstants
 	disableOCx
 	DisableStepper
-	Test_Min
 	Debounce_Limits
 		Test_Port_Pins
 		Reset_Min_Limit
@@ -61,12 +60,12 @@ main
 			sqrt_
 		SingleAxisStep
 			Single_Axis_Enable
-			abs
+			labs
 			Step_Cycle
 				toggleOCx
 		DualAxisStep
 			Multi_Axis_Enable
-			abs
+			labs
 			ClockPulse
 			XY_Interpolate
 				StopX
