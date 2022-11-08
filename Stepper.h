@@ -112,10 +112,6 @@ void YA_Interpolate();
 void ZA_Interpolate();
 
 void StopAxis(int axis);
-void StopX();
-void StopY();
-void StopZ();
-void StopA();
 
 //Step control using Output compare module
 int Pulse(int axis_No);

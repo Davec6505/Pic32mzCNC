@@ -548,9 +548,9 @@ long speed = 0;
    //test if limit has been hit with rising edge
    if(FP(axis)){
      if(axis == X)
-        StopX();
+        StopAxis(X);
      else if(axis == Y)
-        StopY();
+        StopAxis(Y);
 
      if(!homing[axis].rev){
          homing[axis].rev = 1;

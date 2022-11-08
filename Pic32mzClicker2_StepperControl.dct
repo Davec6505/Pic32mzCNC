@@ -61170,11 +61170,7 @@ stnaddr66_emacxsa0_bit
 stnaddr67
 stnaddr67_bit
 stnaddr67_emacxsa0_bit
-stopa
 stopaxis
-stopx
-stopy
-stopz
 stps
 strcat
 strchr

@@ -1826,10 +1826,11 @@ NOP
 J	L_Home82
 NOP	
 L__Home178:
-;Kinematics.c,551 :: 		StopX();
+;Kinematics.c,551 :: 		StopAxis(X);
 SW	R4, 8(SP)
 SH	R25, 12(SP)
-JAL	_StopX+0
+MOVZ	R25, R0, R0
+JAL	_StopAxis+0
 NOP	
 LH	R25, 12(SP)
 LW	R4, 8(SP)
@@ -1844,10 +1845,11 @@ NOP
 J	L_Home84
 NOP	
 L__Home179:
-;Kinematics.c,553 :: 		StopY();
+;Kinematics.c,553 :: 		StopAxis(Y);
 SW	R4, 8(SP)
 SH	R25, 12(SP)
-JAL	_StopY+0
+ORI	R25, R0, 1
+JAL	_StopAxis+0
 NOP	
 LH	R25, 12(SP)
 LW	R4, 8(SP)

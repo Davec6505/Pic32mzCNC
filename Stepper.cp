@@ -551,10 +551,6 @@ void YA_Interpolate();
 void ZA_Interpolate();
 
 void StopAxis(int axis);
-void StopX();
-void StopY();
-void StopZ();
-void StopA();
 
 
 int Pulse(int axis_No);
@@ -966,19 +962,12 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
 
 void SingleStepX(){
  if((STPS[X].step_count >= STPS[X].dist) ){
- StopX();
+ StopAxis(X);
  }
  else{
  Step_Cycle(X);
  Pulse(X);
  }
-}
-
-
-void StopX(){
- OC5IE_bit = 0;
- OC5CONbits.ON = 0;
- STPS[X].stopAxis = 1;
 }
 
 
@@ -999,18 +988,12 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
 
 void SingleStepY(){
  if((STPS[Y].step_count >= STPS[Y].dist) ){
- StopY();
+ StopAxis(Y);
  }
  else{
  Step_Cycle(Y);
  Pulse(Y);
  }
-}
-
-void StopY(){
- OC2IE_bit = 0;
- OC2CONbits.ON = 0;
- STPS[Y].stopAxis = 1;
 }
 
 
@@ -1032,18 +1015,12 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
 
 void SingleStepZ(){
  if((STPS[Z].step_count >= STPS[Z].dist) ){
- StopZ();
+ StopAxis(Z);
  }
  else{
  Step_Cycle(Z);
  Pulse(Z);
  }
-}
-
-void StopZ(){
- OC7IE_bit = 0;
- OC7CONbits.ON = 0;
- STPS[Z].stopAxis = 1;
 }
 
 
@@ -1064,18 +1041,12 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 void SingleStepA(){
  if((STPS[A].step_count >= STPS[A].dist) ){
- StopA();
+ StopAxis(A);
  }
  else{
  Step_Cycle(A);
  Pulse(A);
  }
-}
-
-void StopA(){
- OC3IE_bit = 0;
- OC3CONbits.ON = 0;
- STPS[A].stopAxis = 1;
 }
 
 
@@ -1206,7 +1177,7 @@ void YZ_Interpolate(){
  }
 
 }
-#line 670 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 645 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 unsigned int min_(unsigned int x, unsigned int y){
  if(x < y){
  return x;
@@ -1215,7 +1186,7 @@ unsigned int min_(unsigned int x, unsigned int y){
  return y;
  }
 }
-#line 687 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 662 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 static unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;
@@ -1246,7 +1217,7 @@ static unsigned long sqrt_(unsigned long x){
  return xr;
  }
 }
-#line 740 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 715 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 void CycleStop(){
 int ii;
  STmr.uSec = 0;

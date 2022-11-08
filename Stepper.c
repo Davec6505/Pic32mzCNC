@@ -417,19 +417,12 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
 
 void SingleStepX(){
     if((STPS[X].step_count >= STPS[X].dist)/*||(SV.Tog == 1)*/){
-      StopX();
+      StopAxis(X);
     }
     else{
       Step_Cycle(X);
       Pulse(X);
     }
-}
-
-
-void StopX(){
-   OC5IE_bit = 0;
-   OC5CONbits.ON = 0;
-   STPS[X].stopAxis = 1;
 }
 
 
@@ -450,18 +443,12 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
 
 void SingleStepY(){
     if((STPS[Y].step_count >= STPS[Y].dist)/*||(SV.Tog == 1)*/){  //i think this is where the problem lies
-      StopY();
+      StopAxis(Y);
     }
     else{
       Step_Cycle(Y);
       Pulse(Y);
     }
-}
-
-void StopY(){
-   OC2IE_bit = 0;
-   OC2CONbits.ON = 0;
-   STPS[Y].stopAxis = 1;
 }
 
 
@@ -483,18 +470,12 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
 
 void SingleStepZ(){
    if((STPS[Z].step_count >= STPS[Z].dist)/*||(SV.Tog == 1)*/){
-      StopZ();
+      StopAxis(Z);
    }
    else{
       Step_Cycle(Z);
       Pulse(Z);
    }
-}
-
-void StopZ(){
-   OC7IE_bit = 0;
-   OC7CONbits.ON = 0;
-   STPS[Z].stopAxis = 1;
 }
 
 
@@ -515,18 +496,12 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 void SingleStepA(){
    if((STPS[A].step_count >= STPS[A].dist)/*||(SV.Tog == 1)*/){
-      StopA();
+      StopAxis(A);
    }
    else{
       Step_Cycle(A);
       Pulse(A);
    }
-}
-
-void StopA(){
-   OC3IE_bit = 0;
-   OC3CONbits.ON = 0;
-   STPS[A].stopAxis = 1;
 }
 
 

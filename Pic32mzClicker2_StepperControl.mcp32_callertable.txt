@@ -109,8 +109,7 @@ main
 		Home
 			FP
 				Test_Min
-			StopX
-			StopY
+			StopAxis
 			Inv_Home_Axis
 				belt_steps
 				speed_cntr_Move
