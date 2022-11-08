@@ -295,12 +295,7 @@ typedef struct genVars{
  int dirc;
 }sVars;
 extern sVars SV;
-#line 60 "c:/users/git/pic32mzcnc/kinematics.h"
-extern volatile void (*AxisPulse[3])();
-
-
-
-
+#line 65 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct Steps{
 
  signed long microSec;
@@ -944,7 +939,6 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
  SingleStepAxis(X);
  }else{
  if(STPS[X].master = 1){
-
  if(axis_xyz == xy)
  Axis_Interpolate(X,Y);
  else if(axis_xyz == xz)
@@ -965,7 +959,6 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
  SingleStepAxis(Y);
  }else {
  if(STPS[Y].master = 1){
-
  if(axis_xyz == xy)
  Axis_Interpolate(X,Y);
  else if(axis_xyz == yz)
@@ -986,7 +979,6 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
  SingleStepAxis(Z);
  }else{
  if(STPS[Z].master = 1){
-
  if(axis_xyz == xz)
  Axis_Interpolate(X,Z);
  else if(axis_xyz == yz)
@@ -1009,7 +1001,6 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
  SingleStepAxis(A);
  }else{
  if(STPS[A].master = 1){
-
  if(axis_xyz == xa)
  Axis_Interpolate(X,A);
  else if(axis_xyz == ya)
@@ -1091,7 +1082,7 @@ void Axis_Interpolate(int axisA,int axisB){
  }
  }
 }
-#line 569 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 565 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 unsigned int min_(unsigned int x, unsigned int y){
  if(x < y){
  return x;
@@ -1100,7 +1091,7 @@ unsigned int min_(unsigned int x, unsigned int y){
  return y;
  }
 }
-#line 586 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 582 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 static unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;
@@ -1131,7 +1122,7 @@ static unsigned long sqrt_(unsigned long x){
  return xr;
  }
 }
-#line 639 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 635 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 void CycleStop(){
 int ii;
  STmr.uSec = 0;

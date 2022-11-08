@@ -57,7 +57,7 @@
  *FUNCTION POINTER ARRAY FOR TOGGLING BETWEEN LINEAR
  *OUTPUT COMPARE AND CIRCULAR OUTPUT COMPARE
  */
-extern volatile void (*AxisPulse[3])();
+
 
 ////////////////////////////////////////////////////
 //       ******LINEAR INTERPOLATION******         //

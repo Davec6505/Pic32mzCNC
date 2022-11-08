@@ -448,12 +448,7 @@ void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 60 "c:/users/git/pic32mzcnc/kinematics.h"
-extern volatile void (*AxisPulse[3])();
-
-
-
-
+#line 65 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct Steps{
 
  signed long microSec;
@@ -634,8 +629,6 @@ int dirA,dirB;
  switch(axis_combo){
  case xy:
 
-
-
  axis_xyz = xy;
 
  STPS[X].axis_dir =  (((axis_a) < (0))? ( -1 ) : ( 1 )) ;
@@ -672,12 +665,9 @@ int dirA,dirB;
 
  STPS[X].step_count = 0;
  STPS[Y].step_count = 0;
-
  Axis_Interpolate(X,Y);
  break;
  case xz:
-
-
 
  axis_xyz = xz;
 
@@ -707,12 +697,9 @@ int dirA,dirB;
 
  STPS[X].step_count = 0;
  STPS[Z].step_count = 0;
-
  Axis_Interpolate(X,Z);
  break;
  case yz:
-
-
 
  axis_xyz = yz;
  STPS[Y].axis_dir =  (((axis_a) < (0))? ( -1 ) : ( 1 )) ;
@@ -741,14 +728,13 @@ int dirA,dirB;
 
  STPS[Y].step_count = 0;
  STPS[Z].step_count = 0;
-
  Axis_Interpolate(Y,Z);
  break;
  default: break;
 
  }
 }
-#line 222 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 213 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir){
 unsigned short isclockwise = 0;
@@ -770,7 +756,7 @@ unsigned int axis_plane_a,axis_plane_b;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 306 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 297 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -783,7 +769,7 @@ unsigned int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (gc.motion_mode ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 340 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 331 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -866,7 +852,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
 
 
  linear_per_segment = linear_travel/segments;
-#line 448 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 439 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  cos_T = 1-0.5*theta_per_segment*theta_per_segment;
  sin_T = theta_per_segment;
 
@@ -901,7 +887,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  if(!OC5IE_bit && !OC2IE_bit)
  break;
  }
-#line 488 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 479 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[X].mmToTravel = belt_steps(nPx);
  STPS[Y].mmToTravel = belt_steps(nPy);
  tempA = abs(STPS[X].mmToTravel);

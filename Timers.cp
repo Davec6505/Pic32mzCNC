@@ -283,12 +283,7 @@ typedef struct genVars{
  int dirc;
 }sVars;
 extern sVars SV;
-#line 60 "c:/users/git/pic32mzcnc/kinematics.h"
-extern volatile void (*AxisPulse[3])();
-
-
-
-
+#line 65 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct Steps{
 
  signed long microSec;

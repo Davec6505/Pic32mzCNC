@@ -409,7 +409,6 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
         SingleStepAxis(X);
      }else{
        if(STPS[X].master = 1){
-          //AxisPulse[SV.Single_Dual]();
           if(axis_xyz == xy)
                Axis_Interpolate(X,Y);
           else if(axis_xyz == xz)
@@ -430,7 +429,6 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
         SingleStepAxis(Y);
    }else {
       if(STPS[Y].master = 1){
-        //AxisPulse[SV.Single_Dual]();
         if(axis_xyz == xy)
            Axis_Interpolate(X,Y);
         else if(axis_xyz == yz)
@@ -451,7 +449,6 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
         SingleStepAxis(Z);
    }else{
      if(STPS[Z].master = 1){
-        //AxisPulse[SV.Single_Dual]();
         if(axis_xyz == xz)
            Axis_Interpolate(X,Z);
         else if(axis_xyz == yz)
@@ -474,7 +471,6 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
         SingleStepAxis(A);
    }else{
      if(STPS[A].master = 1){
-        //AxisPulse[SV.Single_Dual]();
         if(axis_xyz == xa)
            Axis_Interpolate(X,A);
         else if(axis_xyz == ya)
