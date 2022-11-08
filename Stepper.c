@@ -574,8 +574,8 @@ void StopAxis(int axis){
 void XY_Interpolate(){
 
    if((STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||(SV.Tog == 1)){
-        StopX();
-        StopY();
+        StopAxis(X);
+        StopAxis(Y);
         return;
    }
 
@@ -603,8 +603,8 @@ void XY_Interpolate(){
 void XZ_Interpolate(){
 
     if((STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||(SV.Tog == 1)){
-        StopX();
-        StopZ();
+        StopAxis(X);
+        StopAxis(Z);
         return;
     }
 
@@ -631,8 +631,8 @@ void XZ_Interpolate(){
 }
 void YZ_Interpolate(){
     if((STPS[Y].step_count > SV.dy)||(STPS[Z].step_count > SV.dz)||(SV.Tog == 1)){
-       StopY();
-       StopZ();
+       StopAxis(Y);
+       StopAxis(Z);
        return;
     }
 

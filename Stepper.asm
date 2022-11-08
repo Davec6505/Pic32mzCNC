@@ -2240,11 +2240,13 @@ NOP
 L__XY_Interpolate136:
 L__XY_Interpolate135:
 L__XY_Interpolate134:
-;Stepper.c,577 :: 		StopX();
-JAL	_StopX+0
+;Stepper.c,577 :: 		StopAxis(X);
+MOVZ	R25, R0, R0
+JAL	_StopAxis+0
 NOP	
-;Stepper.c,578 :: 		StopY();
-JAL	_StopY+0
+;Stepper.c,578 :: 		StopAxis(Y);
+ORI	R25, R0, 1
+JAL	_StopAxis+0
 NOP	
 ;Stepper.c,579 :: 		return;
 J	L_end_XY_Interpolate
@@ -2388,11 +2390,13 @@ NOP
 L__XZ_Interpolate140:
 L__XZ_Interpolate139:
 L__XZ_Interpolate138:
-;Stepper.c,606 :: 		StopX();
-JAL	_StopX+0
+;Stepper.c,606 :: 		StopAxis(X);
+MOVZ	R25, R0, R0
+JAL	_StopAxis+0
 NOP	
-;Stepper.c,607 :: 		StopZ();
-JAL	_StopZ+0
+;Stepper.c,607 :: 		StopAxis(Z);
+ORI	R25, R0, 2
+JAL	_StopAxis+0
 NOP	
 ;Stepper.c,608 :: 		return;
 J	L_end_XZ_Interpolate
@@ -2534,11 +2538,13 @@ NOP
 L__YZ_Interpolate144:
 L__YZ_Interpolate143:
 L__YZ_Interpolate142:
-;Stepper.c,634 :: 		StopY();
-JAL	_StopY+0
+;Stepper.c,634 :: 		StopAxis(Y);
+ORI	R25, R0, 1
+JAL	_StopAxis+0
 NOP	
-;Stepper.c,635 :: 		StopZ();
-JAL	_StopZ+0
+;Stepper.c,635 :: 		StopAxis(Z);
+ORI	R25, R0, 2
+JAL	_StopAxis+0
 NOP	
 ;Stepper.c,636 :: 		return;
 J	L_end_YZ_Interpolate

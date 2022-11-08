@@ -68,19 +68,16 @@ main
 			labs
 			ClockPulse
 			XY_Interpolate
-				StopX
-				StopY
+				StopAxis
 				Step_Cycle
 				Pulse
 					AccDec
 			XZ_Interpolate
-				StopX
-				StopZ
+				StopAxis
 				Step_Cycle
 				Pulse
 			YZ_Interpolate
-				StopY
-				StopZ
+				StopAxis
 				Step_Cycle
 				Pulse
 		r_or_ijk
