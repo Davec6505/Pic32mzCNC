@@ -406,25 +406,19 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
      OC5IF_bit = 0;
      
      if(SV.Single_Dual == 0){
-        //SingleStepX();
         SingleStepAxis(X);
      }else{
-       if(STPS[X].master = 1)
-          AxisPulse[SV.Single_Dual]();
+       if(STPS[X].master = 1){
+          //AxisPulse[SV.Single_Dual]();
+          if(axis_xyz == xy)
+               Axis_Interpolate(X,Y);
+          else if(axis_xyz == xz)
+               Axis_Interpolate(X,Z);
+          else if(axis_xyz == yz)
+               Axis_Interpolate(Y,Z);
+       }
      }
 }
-
-
-void SingleStepX(){
-    if((STPS[X].step_count >= STPS[X].dist)/*||(SV.Tog == 1)*/){
-      StopAxis(X);
-    }
-    else{
-      Step_Cycle(X);
-      Pulse(X);
-    }
-}
-
 
 //////////////////////////////////////////////////////////
 //            Y AXIS PULSE CONTROL                      //
@@ -433,24 +427,19 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
    OC2IF_bit = 0;
 
    if(SV.Single_Dual == 0){
-        //SingleStepY();
         SingleStepAxis(Y);
    }else {
-      if(STPS[Y].master = 1)
-        AxisPulse[SV.Single_Dual]();
+      if(STPS[Y].master = 1){
+        //AxisPulse[SV.Single_Dual]();
+        if(axis_xyz == xy)
+           Axis_Interpolate(X,Y);
+        else if(axis_xyz == yz)
+           Axis_Interpolate(Y,Z);
+        else if(axis_xyz == ya)
+           Axis_Interpolate(Y,A);
+      }
    }
 }
-
-void SingleStepY(){
-    if((STPS[Y].step_count >= STPS[Y].dist)/*||(SV.Tog == 1)*/){  //i think this is where the problem lies
-      StopAxis(Y);
-    }
-    else{
-      Step_Cycle(Y);
-      Pulse(Y);
-    }
-}
-
 
 //////////////////////////////////////////////////////////
 //            Z AXIS PULSE CONTROL                      //
@@ -459,25 +448,21 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
    OC7IF_bit = 0;
 
    if(SV.Single_Dual == 0){
-        //SingleStepZ();
         SingleStepAxis(Z);
    }else{
-     if(STPS[Z].master = 1)
-        AxisPulse[SV.Single_Dual]();
+     if(STPS[Z].master = 1){
+        //AxisPulse[SV.Single_Dual]();
+        if(axis_xyz == xz)
+           Axis_Interpolate(X,Z);
+        else if(axis_xyz == yz)
+           Axis_Interpolate(Y,Z);
+        else if(axis_xyz == za)
+           Axis_Interpolate(Z,A);
+
+     }
    }
 
 }
-
-void SingleStepZ(){
-   if((STPS[Z].step_count >= STPS[Z].dist)/*||(SV.Tog == 1)*/){
-      StopAxis(Z);
-   }
-   else{
-      Step_Cycle(Z);
-      Pulse(Z);
-   }
-}
-
 
 //////////////////////////////////////////////////////////
 //            A AXIS PULSE CONTROL                      //
@@ -486,21 +471,17 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
    OC3IF_bit = 0;
 
    if(SV.Single_Dual == 0){
-        //SingleStepA();
         SingleStepAxis(A);
    }else{
-     if(STPS[A].master = 1)
-        AxisPulse[SV.Single_Dual]();
-   }
-}
-
-void SingleStepA(){
-   if((STPS[A].step_count >= STPS[A].dist)/*||(SV.Tog == 1)*/){
-      StopAxis(A);
-   }
-   else{
-      Step_Cycle(A);
-      Pulse(A);
+     if(STPS[A].master = 1){
+        //AxisPulse[SV.Single_Dual]();
+        if(axis_xyz == xa)
+           Axis_Interpolate(X,A);
+        else if(axis_xyz == ya)
+           Axis_Interpolate(Y,A);
+        else if(axis_xyz == za)
+           Axis_Interpolate(Z,A);
+      }
    }
 }
 
@@ -546,91 +527,34 @@ void StopAxis(int axis){
 //   INTERPOLATE MULTI AXIS USING BRESENHAMS ALGO     //
 //       MASTER AXIS CONTROLS THE ACCELERATION        //
 ////////////////////////////////////////////////////////
-void XY_Interpolate(){
 
-   if((STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||(SV.Tog == 1)){
-        StopAxis(X);
-        StopAxis(Y);
+void Axis_Interpolate(int axisA,int axisB){
+
+   if((STPS[axisA].step_count > SV.dx)||(STPS[axisB].step_count > SV.dy)){
+        StopAxis(axisA);
+        StopAxis(axisB);
         return;
    }
 
    if(SV.dx >= SV.dy){
-      Step_Cycle(X);
-      Pulse(X);
+      Step_Cycle(axisA);
+      Pulse(axisA);
       if(SV.d2 < 0){
           SV.d2 += 2*SV.dy;
       }else{
           SV.d2 += 2 * (SV.dy - SV.dx);
-          Step_Cycle(Y);
+          Step_Cycle(axisB);
       }
    }else{
-      Step_Cycle(Y);
-      Pulse(Y);
+      Step_Cycle(axisB);
+      Pulse(axisB);
       if(SV.d2 < 0){
          SV.d2 += 2 * SV.dx;
       }else{
          SV.d2 += 2 * (SV.dx - SV.dy);
-         Step_Cycle(X);
+         Step_Cycle(axisA);
        }
-    }
-}
-
-void XZ_Interpolate(){
-
-    if((STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||(SV.Tog == 1)){
-        StopAxis(X);
-        StopAxis(Z);
-        return;
-    }
-
-   if(SV.dx >= SV.dz){
-      Step_Cycle(X);
-      Pulse(X);
-      if(SV.d2 < 0)
-        SV.d2 += 2*SV.dz;
-      else{
-        SV.d2 += 2 * (SV.dz - SV.dx);
-        Step_Cycle(Z);
-      }
-
-    }else{
-        Step_Cycle(Z);
-        Pulse(Z);
-        if(SV.d2 < 0)
-            SV.d2 += 2 * SV.dx;
-        else{
-            SV.d2 += 2 * (SV.dx - SV.dz);
-            Step_Cycle(X);
-        }
-     }
-}
-void YZ_Interpolate(){
-    if((STPS[Y].step_count > SV.dy)||(STPS[Z].step_count > SV.dz)||(SV.Tog == 1)){
-       StopAxis(Y);
-       StopAxis(Z);
-       return;
-    }
-
-    if(SV.dy >= SV.dz){
-      Step_Cycle(Y);
-      Pulse(Y);
-      if(SV.d2 < 0)
-        SV.d2 += 2*SV.dz;
-      else{
-        SV.d2 += 2 * (SV.dz - SV.dy);
-        Step_Cycle(Z);
-      }
-    }else{
-      Step_Cycle(Z);
-      Pulse(Z);
-      if(SV.d2 < 0)
-         SV.d2 += 2 * SV.dy;
-      else{
-         SV.d2 += 2 * (SV.dy - SV.dz);
-         Step_Cycle(Y);
-      }
-    }
-
+   }
 }
 
 ////////////////////////////////////////////////

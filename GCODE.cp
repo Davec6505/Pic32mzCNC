@@ -405,19 +405,9 @@ unsigned int min_(unsigned long x, unsigned long y);
 void CalcDly(int axis_No);
 void StepperConstants(long accel,long decel);
 
+
 void SingleStepAxis(int axis);
-void SingleStepX();
-void SingleStepY();
-void SingleStepZ();
-void SingleStepA();
-
-void XY_Interpolate();
-void XZ_Interpolate();
-void YZ_Interpolate();
-void XA_Interpolate();
-void YA_Interpolate();
-void ZA_Interpolate();
-
+void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 

@@ -66,20 +66,11 @@ main
 		DualAxisStep
 			Multi_Axis_Enable
 			labs
-			ClockPulse
-			XY_Interpolate
+			Axis_Interpolate
 				StopAxis
 				Step_Cycle
 				Pulse
 					AccDec
-			XZ_Interpolate
-				StopAxis
-				Step_Cycle
-				Pulse
-			YZ_Interpolate
-				StopAxis
-				Step_Cycle
-				Pulse
 		r_or_ijk
 			sqrt
 				frexp
@@ -129,29 +120,17 @@ StepA
 		StopAxis
 		Step_Cycle
 		Pulse
-	ClockPulse
-	XY_Interpolate
-	XZ_Interpolate
-	YZ_Interpolate
+	Axis_Interpolate
 Timer8Interrupt
 StepZ
 	SingleStepAxis
-	ClockPulse
-	XY_Interpolate
-	XZ_Interpolate
-	YZ_Interpolate
+	Axis_Interpolate
 StepX
 	SingleStepAxis
-	ClockPulse
-	XY_Interpolate
-	XZ_Interpolate
-	YZ_Interpolate
+	Axis_Interpolate
 StepY
 	SingleStepAxis
-	ClockPulse
-	XY_Interpolate
-	XZ_Interpolate
-	YZ_Interpolate
+	Axis_Interpolate
 X_Min_Limit
 Y_Min_Limit
 DMA_CH1_ISR
@@ -162,6 +141,3 @@ DMA_CH0_ISR
 		UART2_Write
 Timer1Interrupt
 	ClockPulse
-	XY_Interpolate
-	XZ_Interpolate
-	YZ_Interpolate

@@ -5150,6 +5150,7 @@ autoset_usbe4csr0_bit
 autoset_usbe5csr0_bit
 autoset_usbe6csr0_bit
 autoset_usbe7csr0_bit
+axis_interpolate
 axis_xyz
 axisno
 axisno
@@ -58146,11 +58147,7 @@ sin
 single_axis_enable
 single_dual
 singleaxisstep
-singlestepa
 singlestepaxis
-singlestepx
-singlestepy
-singlestepz
 sinh
 sirq
 sirq
@@ -81383,8 +81380,6 @@ x_min_limit
 x_min_limit_dir
 x_min_limit_setup
 xtoi
-xy_interpolate
-xz_interpolate
 y_min_limit
 y_min_limit
 y_min_limit_dir
@@ -81413,4 +81408,3 @@ year102
 year102_bit
 year103
 year103_bit
-yz_interpolate
