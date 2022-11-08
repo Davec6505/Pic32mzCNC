@@ -419,27 +419,7 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
      }
 }
 
-<<<<<<< HEAD
-void SingleStepX(){
-    if((STPS[X].step_count >= STPS[X].dist)/*||(SV.Tog == 1)*/){
-      StopX();
-    }
-    else{
-      Step_Cycle(X);
-      Pulse(X);
-    }
-}
 
-
-void StopX(){
-   OC5IE_bit = 0;
-   OC5CONbits.ON = 0;
-   STPS[X].stopAxis = 1;
-}
-
-
-=======
->>>>>>> patch1
 //////////////////////////////////////////////////////////
 //            Y AXIS PULSE CONTROL                      //
 //////////////////////////////////////////////////////////

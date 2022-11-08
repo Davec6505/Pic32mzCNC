@@ -935,17 +935,6 @@ void disableOCx(){
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
  OC5IF_bit = 0;
 
-<<<<<<< HEAD
- if(SV.Single_Dual == 0)
- SingleStepX();
- else
- AxisPulse[SV.Single_Dual]();
-}
-
-void SingleStepX(){
- if((STPS[X].step_count >= STPS[X].dist) ){
- StopX();
-=======
  if(SV.Single_Dual == 0){
  SingleStepAxis(X);
  }else{
@@ -956,10 +945,10 @@ void SingleStepX(){
  Axis_Interpolate(X,Z);
  else if(axis_xyz == yz)
  Axis_Interpolate(Y,Z);
->>>>>>> patch1
  }
  }
 }
+
 
 
 
@@ -1094,73 +1083,7 @@ void Axis_Interpolate(int axisA,int axisB){
  }
  }
 }
-<<<<<<< HEAD
-
-void XZ_Interpolate(){
-
- if((STPS[X].step_count > SV.dx)||(STPS[Z].step_count > SV.dz)||(SV.Tog == 1)){
- StopX();
- StopZ();
- return;
- }
-
- if(SV.dx >= SV.dz){
- Step_Cycle(X);
- Pulse(X);
- if(SV.d2 < 0)
- SV.d2 += 2*SV.dz;
- else{
- SV.d2 += 2 * (SV.dz - SV.dx);
- Step_Cycle(Z);
- }
-
- }else{
- Step_Cycle(Z);
- Pulse(Z);
- if(SV.d2 < 0)
- SV.d2 += 2 * SV.dx;
- else{
- SV.d2 += 2 * (SV.dx - SV.dz);
- Step_Cycle(X);
- }
- }
-}
-void YZ_Interpolate(){
- if((STPS[Y].step_count > SV.dy)||(STPS[Z].step_count > SV.dz)||(SV.Tog == 1)){
- StopY();
- StopZ();
- return;
- }
-
- if(SV.dy >= SV.dz){
- Step_Cycle(Y);
- Pulse(Y);
- if(SV.d2 < 0)
- SV.d2 += 2*SV.dz;
- else{
- SV.d2 += 2 * (SV.dz - SV.dy);
- Step_Cycle(Z);
- }
- }else{
- Step_Cycle(Z);
- Pulse(Z);
- if(SV.d2 < 0)
- SV.d2 += 2 * SV.dy;
- else{
- SV.d2 += 2 * (SV.dy - SV.dz);
- Step_Cycle(Y);
- }
- }
-
-}
-<<<<<<< HEAD
-#line 637 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-=======
-#line 623 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch1
-=======
-#line 565 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch1
+#line 566 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 unsigned int min_(unsigned int x, unsigned int y){
  if(x < y){
  return x;
@@ -1169,15 +1092,7 @@ unsigned int min_(unsigned int x, unsigned int y){
  return y;
  }
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-#line 654 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-=======
-#line 640 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch1
-=======
-#line 582 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch1
+#line 583 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 static unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;
@@ -1208,15 +1123,7 @@ static unsigned long sqrt_(unsigned long x){
  return xr;
  }
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-#line 708 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-=======
-#line 693 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch1
-=======
-#line 635 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch1
+#line 636 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 void CycleStop(){
 int ii;
  STmr.uSec = 0;
