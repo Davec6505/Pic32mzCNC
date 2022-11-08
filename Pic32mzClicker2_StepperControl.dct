@@ -58147,6 +58147,7 @@ single_axis_enable
 single_dual
 singleaxisstep
 singlestepa
+singlestepaxis
 singlestepx
 singlestepy
 singlestepz
@@ -61170,6 +61171,7 @@ stnaddr67
 stnaddr67_bit
 stnaddr67_emacxsa0_bit
 stopa
+stopaxis
 stopx
 stopy
 stopz

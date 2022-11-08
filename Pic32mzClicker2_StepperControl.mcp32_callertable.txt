@@ -129,8 +129,8 @@ main
 	ResetSteppers
 		DisableStepper
 StepA
-	SingleStepA
-		StopA
+	SingleStepAxis
+		StopAxis
 		Step_Cycle
 		Pulse
 	ClockPulse
@@ -139,28 +139,19 @@ StepA
 	YZ_Interpolate
 Timer8Interrupt
 StepZ
-	SingleStepZ
-		StopZ
-		Step_Cycle
-		Pulse
+	SingleStepAxis
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
 StepX
-	SingleStepX
-		StopX
-		Step_Cycle
-		Pulse
+	SingleStepAxis
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate
 	YZ_Interpolate
 StepY
-	SingleStepY
-		StopY
-		Step_Cycle
-		Pulse
+	SingleStepAxis
 	ClockPulse
 	XY_Interpolate
 	XZ_Interpolate

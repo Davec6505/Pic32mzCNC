@@ -405,10 +405,13 @@ void disableOCx(){
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
      OC5IF_bit = 0;
      
-     if(SV.Single_Dual == 0)
-        SingleStepX();
-     else
-        AxisPulse[SV.Single_Dual]();
+     if(SV.Single_Dual == 0){
+        //SingleStepX();
+        SingleStepAxis(X);
+     }else{
+       if(STPS[X].master = 1)
+          AxisPulse[SV.Single_Dual]();
+     }
 }
 
 
@@ -436,9 +439,10 @@ void StopX(){
 void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
    OC2IF_bit = 0;
 
-   if(SV.Single_Dual == 0)
-        SingleStepY();
-   else {
+   if(SV.Single_Dual == 0){
+        //SingleStepY();
+        SingleStepAxis(Y);
+   }else {
       if(STPS[Y].master = 1)
         AxisPulse[SV.Single_Dual]();
    }
@@ -467,10 +471,13 @@ void StopY(){
 void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
    OC7IF_bit = 0;
 
-   if(SV.Single_Dual == 0)
-        SingleStepZ();
-     else
+   if(SV.Single_Dual == 0){
+        //SingleStepZ();
+        SingleStepAxis(Z);
+   }else{
+     if(STPS[Z].master = 1)
         AxisPulse[SV.Single_Dual]();
+   }
 
 }
 
@@ -497,11 +504,13 @@ void StopZ(){
 void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
    OC3IF_bit = 0;
 
-   if(SV.Single_Dual == 0)
-        SingleStepA();
-     else
+   if(SV.Single_Dual == 0){
+        //SingleStepA();
+        SingleStepAxis(A);
+   }else{
+     if(STPS[A].master = 1)
         AxisPulse[SV.Single_Dual]();
-
+   }
 }
 
 void SingleStepA(){
@@ -518,6 +527,44 @@ void StopA(){
    OC3IE_bit = 0;
    OC3CONbits.ON = 0;
    STPS[A].stopAxis = 1;
+}
+
+
+////////////////////////////////////////////////////////
+//        SINGLE AXIS STEP FUNCTIONALITY              //
+////////////////////////////////////////////////////////
+
+void SingleStepAxis(int axis){
+    if(STPS[axis].step_count >= STPS[axis].dist){
+      StopAxis(axis);
+    }
+    else{
+      Step_Cycle(axis);
+      Pulse(axis);
+    }
+}
+
+void StopAxis(int axis){
+  switch(axis){
+   case X:
+         OC5IE_bit = 0;
+         OC5CONbits.ON = 0;
+         break;
+   case Y:
+         OC2IE_bit = 0;
+         OC2CONbits.ON = 0;
+         break;
+   case Z:
+        OC7IE_bit = 0;
+        OC7CONbits.ON = 0;
+        break;
+   case A:
+        OC3IE_bit = 0;
+        OC3CONbits.ON = 0;
+        break;
+   default : break;
+  }
+  STPS[axis].stopAxis = 1;
 }
 
 ////////////////////////////////////////////////////////
