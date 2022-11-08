@@ -86,8 +86,6 @@ int dirA,dirB;
 
   switch(axis_combo){
     case xy:
-          //Assign function from Stepper.c to function ptr
-          AxisPulse[1] = &XY_Interpolate;
           // set the enum variable
           axis_xyz = xy;
           //set the direction counter for absolute position
@@ -125,12 +123,9 @@ int dirA,dirB;
 
            STPS[X].step_count = 0;
            STPS[Y].step_count = 0;
-           AxisPulse[1]();
-
+           Axis_Interpolate(X,Y);
          break;
     case xz:
-          //Assign function from Stepper.c to function ptr
-          AxisPulse[1] = &XZ_Interpolate;
           // set the enum variable
           axis_xyz = xz;
           //set the direction counter for absolute position
@@ -160,11 +155,9 @@ int dirA,dirB;
 
           STPS[X].step_count = 0;
           STPS[Z].step_count = 0;
-          AxisPulse[1]();
+          Axis_Interpolate(X,Z);
          break;
     case yz:
-          //Assign function from Stepper.c to function ptr
-          AxisPulse[1] = &YZ_Interpolate;
           // set the enum variable
           axis_xyz = yz;
           STPS[Y].axis_dir = Direction(axis_a);
@@ -193,7 +186,7 @@ int dirA,dirB;
 
          STPS[Y].step_count = 0;
          STPS[Z].step_count = 0;
-         AxisPulse[1]();
+         Axis_Interpolate(Y,Z);
          break;
     default: break;
 
@@ -548,9 +541,9 @@ long speed = 0;
    //test if limit has been hit with rising edge
    if(FP(axis)){
      if(axis == X)
-        StopX();
+        StopAxis(X);
      else if(axis == Y)
-        StopY();
+        StopAxis(Y);
 
      if(!homing[axis].rev){
          homing[axis].rev = 1;

@@ -295,12 +295,7 @@ typedef struct genVars{
  int dirc;
 }sVars;
 extern sVars SV;
-#line 60 "c:/users/git/pic32mzcnc/kinematics.h"
-extern volatile void (*AxisPulse[3])();
-
-
-
-
+#line 65 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct Steps{
 
  signed long microSec;
@@ -537,22 +532,10 @@ unsigned int min_(unsigned long x, unsigned long y);
 void CalcDly(int axis_No);
 void StepperConstants(long accel,long decel);
 
-void SingleStepX();
-void SingleStepY();
-void SingleStepZ();
-void SingleStepA();
 
-void XY_Interpolate();
-void XZ_Interpolate();
-void YZ_Interpolate();
-void XA_Interpolate();
-void YA_Interpolate();
-void ZA_Interpolate();
-
-void StopX();
-void StopY();
-void StopZ();
-void StopA();
+void SingleStepAxis(int axis);
+void Axis_Interpolate(int axisA,int axisB);
+void StopAxis(int axis);
 
 
 int Pulse(int axis_No);
@@ -952,6 +935,7 @@ void disableOCx(){
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
  OC5IF_bit = 0;
 
+<<<<<<< HEAD
  if(SV.Single_Dual == 0)
  SingleStepX();
  else
@@ -961,20 +945,21 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
 void SingleStepX(){
  if((STPS[X].step_count >= STPS[X].dist) ){
  StopX();
+=======
+ if(SV.Single_Dual == 0){
+ SingleStepAxis(X);
+ }else{
+ if(STPS[X].master = 1){
+ if(axis_xyz == xy)
+ Axis_Interpolate(X,Y);
+ else if(axis_xyz == xz)
+ Axis_Interpolate(X,Z);
+ else if(axis_xyz == yz)
+ Axis_Interpolate(Y,Z);
+>>>>>>> patch1
  }
- else{
- Step_Cycle(X);
- Pulse(X);
  }
 }
-
-
-void StopX(){
- OC5IE_bit = 0;
- OC5CONbits.ON = 0;
- STPS[X].stopAxis = 1;
-}
-
 
 
 
@@ -982,30 +967,19 @@ void StopX(){
 void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
  OC2IF_bit = 0;
 
- if(SV.Single_Dual == 0)
- SingleStepY();
- else {
- if(STPS[Y].master = 1)
- AxisPulse[SV.Single_Dual]();
+ if(SV.Single_Dual == 0){
+ SingleStepAxis(Y);
+ }else {
+ if(STPS[Y].master = 1){
+ if(axis_xyz == xy)
+ Axis_Interpolate(X,Y);
+ else if(axis_xyz == yz)
+ Axis_Interpolate(Y,Z);
+ else if(axis_xyz == ya)
+ Axis_Interpolate(Y,A);
+ }
  }
 }
-
-void SingleStepY(){
- if((STPS[Y].step_count >= STPS[Y].dist) ){
- StopY();
- }
- else{
- Step_Cycle(Y);
- Pulse(Y);
- }
-}
-
-void StopY(){
- OC2IE_bit = 0;
- OC2CONbits.ON = 0;
- STPS[Y].stopAxis = 1;
-}
-
 
 
 
@@ -1013,29 +987,21 @@ void StopY(){
 void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
  OC7IF_bit = 0;
 
- if(SV.Single_Dual == 0)
- SingleStepZ();
- else
- AxisPulse[SV.Single_Dual]();
+ if(SV.Single_Dual == 0){
+ SingleStepAxis(Z);
+ }else{
+ if(STPS[Z].master = 1){
+ if(axis_xyz == xz)
+ Axis_Interpolate(X,Z);
+ else if(axis_xyz == yz)
+ Axis_Interpolate(Y,Z);
+ else if(axis_xyz == za)
+ Axis_Interpolate(Z,A);
 
-}
-
-void SingleStepZ(){
- if((STPS[Z].step_count >= STPS[Z].dist) ){
- StopZ();
  }
- else{
- Step_Cycle(Z);
- Pulse(Z);
  }
-}
 
-void StopZ(){
- OC7IE_bit = 0;
- OC7CONbits.ON = 0;
- STPS[Z].stopAxis = 1;
 }
-
 
 
 
@@ -1043,61 +1009,92 @@ void StopZ(){
 void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
  OC3IF_bit = 0;
 
- if(SV.Single_Dual == 0)
- SingleStepA();
- else
- AxisPulse[SV.Single_Dual]();
-
+ if(SV.Single_Dual == 0){
+ SingleStepAxis(A);
+ }else{
+ if(STPS[A].master = 1){
+ if(axis_xyz == xa)
+ Axis_Interpolate(X,A);
+ else if(axis_xyz == ya)
+ Axis_Interpolate(Y,A);
+ else if(axis_xyz == za)
+ Axis_Interpolate(Z,A);
+ }
+ }
 }
 
-void SingleStepA(){
- if((STPS[A].step_count >= STPS[A].dist) ){
- StopA();
+
+
+
+
+
+void SingleStepAxis(int axis){
+ if(STPS[axis].step_count >= STPS[axis].dist){
+ StopAxis(axis);
  }
  else{
- Step_Cycle(A);
- Pulse(A);
+ Step_Cycle(axis);
+ Pulse(axis);
  }
 }
 
-void StopA(){
+void StopAxis(int axis){
+ switch(axis){
+ case X:
+ OC5IE_bit = 0;
+ OC5CONbits.ON = 0;
+ break;
+ case Y:
+ OC2IE_bit = 0;
+ OC2CONbits.ON = 0;
+ break;
+ case Z:
+ OC7IE_bit = 0;
+ OC7CONbits.ON = 0;
+ break;
+ case A:
  OC3IE_bit = 0;
  OC3CONbits.ON = 0;
- STPS[A].stopAxis = 1;
+ break;
+ default : break;
+ }
+ STPS[axis].stopAxis = 1;
 }
 
 
 
 
 
-void XY_Interpolate(){
 
- if((STPS[X].step_count > SV.dx)||(STPS[Y].step_count > SV.dy)||(SV.Tog == 1)){
- StopX();
- StopY();
+void Axis_Interpolate(int axisA,int axisB){
+
+ if((STPS[axisA].step_count > SV.dx)||(STPS[axisB].step_count > SV.dy)){
+ StopAxis(axisA);
+ StopAxis(axisB);
  return;
  }
 
  if(SV.dx >= SV.dy){
- Step_Cycle(X);
- Pulse(X);
+ Step_Cycle(axisA);
+ Pulse(axisA);
  if(SV.d2 < 0){
  SV.d2 += 2*SV.dy;
  }else{
  SV.d2 += 2 * (SV.dy - SV.dx);
- Step_Cycle(Y);
+ Step_Cycle(axisB);
  }
  }else{
- Step_Cycle(Y);
- Pulse(Y);
+ Step_Cycle(axisB);
+ Pulse(axisB);
  if(SV.d2 < 0){
  SV.d2 += 2 * SV.dx;
  }else{
  SV.d2 += 2 * (SV.dx - SV.dy);
- Step_Cycle(X);
+ Step_Cycle(axisA);
  }
  }
 }
+<<<<<<< HEAD
 
 void XZ_Interpolate(){
 
@@ -1161,6 +1158,9 @@ void YZ_Interpolate(){
 =======
 #line 623 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 >>>>>>> patch1
+=======
+#line 565 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
 unsigned int min_(unsigned int x, unsigned int y){
  if(x < y){
  return x;
@@ -1170,9 +1170,13 @@ unsigned int min_(unsigned int x, unsigned int y){
  }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 #line 654 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 =======
 #line 640 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
+=======
+#line 582 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 >>>>>>> patch1
 static unsigned long sqrt_(unsigned long x){
 
@@ -1205,9 +1209,13 @@ static unsigned long sqrt_(unsigned long x){
  }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 #line 708 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 =======
 #line 693 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
+=======
+#line 635 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 >>>>>>> patch1
 void CycleStop(){
 int ii;

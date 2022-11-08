@@ -18,6 +18,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Stepper.h
 =======
 =======
@@ -36,6 +37,9 @@ Value=Kinematics.c
 >>>>>>> patch1
 =======
 Value=Main.c
+>>>>>>> patch1
+=======
+Value=Stepper.c
 >>>>>>> patch1
 =======
 Value=Main.c
@@ -90,6 +94,7 @@ File0=Pic32mzClicker2_Pinout.png
 Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
+<<<<<<< HEAD
 File0=Main.c
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -124,6 +129,14 @@ File6=Globals.h
 File7=Settings.h
 Count=8
 >>>>>>> patch2
+>>>>>>> patch1
+=======
+File0=Kinematics.c
+File1=Kinematics.h
+File2=Stepper.c
+File3=Stepper.h
+File4=Main.c
+Count=5
 >>>>>>> patch1
 [EEPROM]
 Count=0

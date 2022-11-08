@@ -282,12 +282,7 @@ typedef struct genVars{
  int dirc;
 }sVars;
 extern sVars SV;
-#line 60 "c:/users/git/pic32mzcnc/kinematics.h"
-extern volatile void (*AxisPulse[3])();
-
-
-
-
+#line 65 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct Steps{
 
  signed long microSec;
@@ -441,22 +436,10 @@ unsigned int min_(unsigned long x, unsigned long y);
 void CalcDly(int axis_No);
 void StepperConstants(long accel,long decel);
 
-void SingleStepX();
-void SingleStepY();
-void SingleStepZ();
-void SingleStepA();
 
-void XY_Interpolate();
-void XZ_Interpolate();
-void YZ_Interpolate();
-void XA_Interpolate();
-void YA_Interpolate();
-void ZA_Interpolate();
-
-void StopX();
-void StopY();
-void StopZ();
-void StopA();
+void SingleStepAxis(int axis);
+void Axis_Interpolate(int axisA,int axisB);
+void StopAxis(int axis);
 
 
 int Pulse(int axis_No);
