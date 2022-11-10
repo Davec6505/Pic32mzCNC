@@ -1638,10 +1638,17 @@ ORI	R30, R0, 3072
 MTC0	R30, 12, 0
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
+<<<<<<< HEAD
 ;Stepper.c,427 :: 		OC2IF_bit = 0;
 ORI	R2, R0, 4096
 SW	R2, Offset(-1082064828)(GP)
 ;Stepper.c,429 :: 		if(SV.Single_Dual == 0){
+=======
+;Stepper.c,426 :: 		OC2IF_bit = 0;
+ORI	R2, R0, 4096
+SW	R2, Offset(-1082064828)(GP)
+;Stepper.c,428 :: 		if(SV.Single_Dual == 0){
+>>>>>>> patch1
 LH	R2, Offset(_SV+0)(GP)
 BEQ	R2, R0, L__StepY213
 NOP	
@@ -1749,10 +1756,17 @@ ORI	R30, R0, 3072
 MTC0	R30, 12, 0
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
+<<<<<<< HEAD
 ;Stepper.c,447 :: 		OC7IF_bit = 0;
 ORI	R2, R0, 8
 SW	R2, Offset(-1082064812)(GP)
 ;Stepper.c,449 :: 		if(SV.Single_Dual == 0){
+=======
+;Stepper.c,446 :: 		OC7IF_bit = 0;
+ORI	R2, R0, 8
+SW	R2, Offset(-1082064812)(GP)
+;Stepper.c,448 :: 		if(SV.Single_Dual == 0){
+>>>>>>> patch1
 LH	R2, Offset(_SV+0)(GP)
 BEQ	R2, R0, L__StepZ220
 NOP	
@@ -1861,10 +1875,17 @@ ORI	R30, R0, 3072
 MTC0	R30, 12, 0
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
+<<<<<<< HEAD
 ;Stepper.c,469 :: 		OC3IF_bit = 0;
 LUI	R2, 2
 SW	R2, Offset(-1082064828)(GP)
 ;Stepper.c,471 :: 		if(SV.Single_Dual == 0){
+=======
+;Stepper.c,468 :: 		OC3IF_bit = 0;
+LUI	R2, 2
+SW	R2, Offset(-1082064828)(GP)
+;Stepper.c,470 :: 		if(SV.Single_Dual == 0){
+>>>>>>> patch1
 LH	R2, Offset(_SV+0)(GP)
 BEQ	R2, R0, L__StepA227
 NOP	
@@ -2009,6 +2030,7 @@ J	L_StopAxis87
 NOP	
 ;Stepper.c,502 :: 		case X:
 L_StopAxis89:
+<<<<<<< HEAD
 ;Stepper.c,503 :: 		OC5IE_bit = 0;
 LUI	R2, 2048
 SW	R2, Offset(-1082064700)(GP)
@@ -2016,10 +2038,20 @@ SW	R2, Offset(-1082064700)(GP)
 ORI	R2, R0, 32768
 SW	R2, Offset(-1081849852)(GP)
 ;Stepper.c,505 :: 		break;
+=======
+;Stepper.c,502 :: 		OC5IE_bit = 0;
+LUI	R2, 2048
+SW	R2, Offset(-1082064700)(GP)
+;Stepper.c,503 :: 		OC5CONbits.ON = 0;
+ORI	R2, R0, 32768
+SW	R2, Offset(-1081849852)(GP)
+;Stepper.c,504 :: 		break;
+>>>>>>> patch1
 J	L_StopAxis88
 NOP	
 ;Stepper.c,506 :: 		case Y:
 L_StopAxis90:
+<<<<<<< HEAD
 ;Stepper.c,507 :: 		OC2IE_bit = 0;
 ORI	R2, R0, 4096
 SW	R2, Offset(-1082064700)(GP)
@@ -2027,10 +2059,20 @@ SW	R2, Offset(-1082064700)(GP)
 ORI	R2, R0, 32768
 SW	R2, Offset(-1081851388)(GP)
 ;Stepper.c,509 :: 		break;
+=======
+;Stepper.c,506 :: 		OC2IE_bit = 0;
+ORI	R2, R0, 4096
+SW	R2, Offset(-1082064700)(GP)
+;Stepper.c,507 :: 		OC2CONbits.ON = 0;
+ORI	R2, R0, 32768
+SW	R2, Offset(-1081851388)(GP)
+;Stepper.c,508 :: 		break;
+>>>>>>> patch1
 J	L_StopAxis88
 NOP	
 ;Stepper.c,510 :: 		case Z:
 L_StopAxis91:
+<<<<<<< HEAD
 ;Stepper.c,511 :: 		OC7IE_bit = 0;
 ORI	R2, R0, 8
 SW	R2, Offset(-1082064684)(GP)
@@ -2038,10 +2080,20 @@ SW	R2, Offset(-1082064684)(GP)
 ORI	R2, R0, 32768
 SW	R2, Offset(-1081848828)(GP)
 ;Stepper.c,513 :: 		break;
+=======
+;Stepper.c,510 :: 		OC7IE_bit = 0;
+ORI	R2, R0, 8
+SW	R2, Offset(-1082064684)(GP)
+;Stepper.c,511 :: 		OC7CONbits.ON = 0;
+ORI	R2, R0, 32768
+SW	R2, Offset(-1081848828)(GP)
+;Stepper.c,512 :: 		break;
+>>>>>>> patch1
 J	L_StopAxis88
 NOP	
 ;Stepper.c,514 :: 		case A:
 L_StopAxis92:
+<<<<<<< HEAD
 ;Stepper.c,515 :: 		OC3IE_bit = 0;
 LUI	R2, 2
 SW	R2, Offset(-1082064700)(GP)
@@ -2049,6 +2101,15 @@ SW	R2, Offset(-1082064700)(GP)
 ORI	R2, R0, 32768
 SW	R2, Offset(-1081850876)(GP)
 ;Stepper.c,517 :: 		break;
+=======
+;Stepper.c,514 :: 		OC3IE_bit = 0;
+LUI	R2, 2
+SW	R2, Offset(-1082064700)(GP)
+;Stepper.c,515 :: 		OC3CONbits.ON = 0;
+ORI	R2, R0, 32768
+SW	R2, Offset(-1081850876)(GP)
+;Stepper.c,516 :: 		break;
+>>>>>>> patch1
 J	L_StopAxis88
 NOP	
 ;Stepper.c,518 :: 		default : break;

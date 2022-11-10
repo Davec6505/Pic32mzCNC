@@ -19,6 +19,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Stepper.h
 =======
 =======
@@ -40,6 +41,9 @@ Value=Main.c
 >>>>>>> patch1
 =======
 Value=Stepper.c
+>>>>>>> patch1
+=======
+Value=Serial_Dma.c
 >>>>>>> patch1
 =======
 Value=Main.c
@@ -136,7 +140,12 @@ File1=Kinematics.h
 File2=Stepper.c
 File3=Stepper.h
 File4=Main.c
+<<<<<<< HEAD
 Count=5
+>>>>>>> patch1
+=======
+File5=Serial_Dma.c
+Count=6
 >>>>>>> patch1
 [EEPROM]
 Count=0

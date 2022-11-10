@@ -755,7 +755,7 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
  }
 
  if( CHERIF_DCH1INT_bit == 1){
-
+ CABORT_DCH1ECON_bit = 1;
  }
 
 
@@ -770,15 +770,14 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 
 
 int dma_printf(const char* str,...){
- int i = 0, j=0,busy;
- char buff[200]={0},tmp[20];
- char *str_arg,*tmp_;
-
-
-
 
  va_list va;
+ int i = 0, j=0,busy;
+ char buff[200]={0},tmp[20],tmp1[6];
+ char *str_arg,*tmp_;
 
+ if(str == 0)
+ return;
 
 
 
@@ -790,7 +789,7 @@ int dma_printf(const char* str,...){
   __va_start(va, str) ;
 
  i = j = 0;
- while(str && str[i]){
+ while(str[i] != '\0'){
  if(str[i] == '%'){
  i++;
  switch(str[i]){
@@ -801,15 +800,19 @@ int dma_printf(const char* str,...){
  break;
  case 'd':
 
- IntToStr( __va_arg(va, int) ,tmp);
- lTrim(tmp_,&tmp);
- strcat(buff+j, tmp_);
- j += strlen(tmp_);
+ sprintf(tmp1,"%d", __va_arg(va, int) );
+ strcat(buff+j, tmp1);
+ j += strlen(tmp1);
  break;
+ case 'u':
+ sprintf(tmp1,"%d", __va_arg(va, unsigned int) );
+ strcat(buff+j, tmp1);
+ j += strlen(tmp1);
  case 'l':
 
- LongToStr( __va_arg(va, long) ,tmp);
- lTrim(tmp_,&tmp);
+ sprintl(tmp,"%d", __va_arg(va, long) );
+
+
  strcat(buff+j, tmp_);
  j += strlen(tmp_);
  break;
@@ -825,6 +828,10 @@ int dma_printf(const char* str,...){
  j += strlen(tmp);
  break;
  case 'f':
+ FloatToStr( __va_arg(va, float) ,tmp);
+ strcat(buff+j, tmp);
+ j += strlen(tmp);
+ break;
  case 'F':
 
  FloatToStr( __va_arg(va, double) ,tmp);
