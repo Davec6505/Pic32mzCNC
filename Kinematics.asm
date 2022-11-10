@@ -1492,8 +1492,8 @@ L_mc_arc67:
 ; nPx start address is: 0 (R0)
 ; nPx start address is: 0 (R0)
 ; nPx end address is: 0 (R0)
-_LX	
-EXT	R2, R2, BitPos(OC5IE_bit+0), 1
+LBU	R2, Offset(-1082064701)(GP)
+EXT	R2, R2, 3, 1
 BEQ	R2, R0, L__mc_arc166
 NOP	
 J	L__mc_arc104
@@ -1501,8 +1501,8 @@ NOP
 L__mc_arc166:
 ; nPx end address is: 0 (R0)
 ; nPx start address is: 0 (R0)
-_LX	
-EXT	R2, R2, BitPos(OC2IE_bit+0), 1
+LBU	R2, Offset(-1082064703)(GP)
+EXT	R2, R2, 4, 1
 BEQ	R2, R0, L__mc_arc167
 NOP	
 J	L__mc_arc103
@@ -1920,29 +1920,29 @@ SB	R2, 0(R3)
 ;Kinematics.c,557 :: 		}
 L_Home86:
 ;Kinematics.c,559 :: 		if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-_LX	
-EXT	R2, R2, BitPos(OC5IE_bit+0), 1
+LBU	R2, Offset(-1082064701)(GP)
+EXT	R2, R2, 3, 1
 BEQ	R2, R0, L__Home183
 NOP	
 J	L__Home115
 NOP	
 L__Home183:
-_LX	
-EXT	R2, R2, BitPos(OC2IE_bit+0), 1
+LBU	R2, Offset(-1082064703)(GP)
+EXT	R2, R2, 4, 1
 BEQ	R2, R0, L__Home184
 NOP	
 J	L__Home114
 NOP	
 L__Home184:
-_LX	
-EXT	R2, R2, BitPos(OC7IE_bit+0), 1
+LBU	R2, Offset(-1082064688)(GP)
+EXT	R2, R2, 3, 1
 BEQ	R2, R0, L__Home185
 NOP	
 J	L__Home113
 NOP	
 L__Home185:
-_LX	
-EXT	R2, R2, BitPos(OC3IE_bit+0), 1
+LBU	R2, Offset(-1082064702)(GP)
+EXT	R2, R2, 1, 1
 BEQ	R2, R0, L__Home186
 NOP	
 J	L__Home112

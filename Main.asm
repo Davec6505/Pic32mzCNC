@@ -213,29 +213,29 @@ J	L_main12
 NOP	
 L_main9:
 ;Main.c,115 :: 		if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-_LX	
-EXT	R2, R2, BitPos(OC5IE_bit+0), 1
+LBU	R2, Offset(-1082064701)(GP)
+EXT	R2, R2, 3, 1
 BEQ	R2, R0, L__main53
 NOP	
 J	L__main41
 NOP	
 L__main53:
-_LX	
-EXT	R2, R2, BitPos(OC2IE_bit+0), 1
+LBU	R2, Offset(-1082064703)(GP)
+EXT	R2, R2, 4, 1
 BEQ	R2, R0, L__main54
 NOP	
 J	L__main40
 NOP	
 L__main54:
-_LX	
-EXT	R2, R2, BitPos(OC7IE_bit+0), 1
+LBU	R2, Offset(-1082064688)(GP)
+EXT	R2, R2, 3, 1
 BEQ	R2, R0, L__main55
 NOP	
 J	L__main39
 NOP	
 L__main55:
-_LX	
-EXT	R2, R2, BitPos(OC3IE_bit+0), 1
+LBU	R2, Offset(-1082064702)(GP)
+EXT	R2, R2, 1, 1
 BEQ	R2, R0, L__main56
 NOP	
 J	L__main38

@@ -10,25 +10,25 @@ ORI	R2, R2, lo_addr(_ResetSteppers+0)
 SW	R2, Offset(_TMR+4)(GP)
 ;Timers.c,17 :: 		T1CON         = 0x8010;
 ORI	R2, R0, 32784
-SW	R2, Offset(T1CON+0)(GP)
+SW	R2, Offset(-1081868288)(GP)
 ;Timers.c,19 :: 		IPC1SET       = 0x1A;
 ORI	R2, R0, 26
-SW	R2, Offset(IPC1SET+0)(GP)
+SW	R2, Offset(-1082064552)(GP)
 ;Timers.c,21 :: 		IEC0       |= 1<<4;
-LW	R2, Offset(IEC0+0)(GP)
+LW	R2, Offset(-1082064704)(GP)
 ORI	R2, R2, 16
-SW	R2, Offset(IEC0+0)(GP)
+SW	R2, Offset(-1082064704)(GP)
 ;Timers.c,23 :: 		IFS0       |= ~(1<<4);
-LW	R3, Offset(IFS0+0)(GP)
+LW	R3, Offset(-1082064832)(GP)
 LUI	R2, 65535
 ORI	R2, R2, 65519
 OR	R2, R3, R2
-SW	R2, Offset(IFS0+0)(GP)
+SW	R2, Offset(-1082064832)(GP)
 ;Timers.c,25 :: 		PR1           = 62500;
 ORI	R2, R0, 62500
-SW	R2, Offset(PR1+0)(GP)
+SW	R2, Offset(-1081868256)(GP)
 ;Timers.c,26 :: 		TMR1          = 0;
-SW	R0, Offset(TMR1+0)(GP)
+SW	R0, Offset(-1081868272)(GP)
 ;Timers.c,27 :: 		}
 L_end_InitTimer1:
 JR	RA
@@ -38,40 +38,31 @@ _InitTimer8:
 ;Timers.c,33 :: 		void InitTimer8(){
 ;Timers.c,34 :: 		T8CON            = 0x8000;
 ORI	R2, R0, 32768
-SW	R2, Offset(T8CON+0)(GP)
+SW	R2, Offset(-1081864704)(GP)
 ;Timers.c,35 :: 		T8IP0_bit        = 1;
-LUI	R2, BitMask(T8IP0_bit+0)
-ORI	R2, R2, BitMask(T8IP0_bit+0)
-_SX	
+ORI	R2, R0, 4
+SW	R2, Offset(-1082064424)(GP)
 ;Timers.c,36 :: 		T8IP1_bit        = 1;
-LUI	R2, BitMask(T8IP1_bit+0)
-ORI	R2, R2, BitMask(T8IP1_bit+0)
-_SX	
+ORI	R2, R0, 8
+SW	R2, Offset(-1082064424)(GP)
 ;Timers.c,37 :: 		T8IP2_bit        = 0;
-LUI	R2, BitMask(T8IP2_bit+0)
-ORI	R2, R2, BitMask(T8IP2_bit+0)
-_SX	
+ORI	R3, R0, 16
+SW	R3, Offset(-1082064428)(GP)
 ;Timers.c,38 :: 		T8IS0_bit        = 0;
-LUI	R2, BitMask(T8IS0_bit+0)
-ORI	R2, R2, BitMask(T8IS0_bit+0)
-_SX	
+ORI	R2, R0, 1
+SW	R2, Offset(-1082064428)(GP)
 ;Timers.c,39 :: 		T8IS1_bit        = 1;
-LUI	R2, BitMask(T8IS1_bit+0)
-ORI	R2, R2, BitMask(T8IS1_bit+0)
-_SX	
+ORI	R2, R0, 2
+SW	R2, Offset(-1082064424)(GP)
 ;Timers.c,42 :: 		T8IF_bit         = 0;
-LUI	R2, BitMask(T8IF_bit+0)
-ORI	R2, R2, BitMask(T8IF_bit+0)
-_SX	
+SW	R3, Offset(-1082064812)(GP)
 ;Timers.c,43 :: 		T8IE_bit         = 0;
-LUI	R2, BitMask(T8IE_bit+0)
-ORI	R2, R2, BitMask(T8IE_bit+0)
-_SX	
+SW	R3, Offset(-1082064684)(GP)
 ;Timers.c,44 :: 		PR8              = 50;
 ORI	R2, R0, 50
-SW	R2, Offset(PR8+0)(GP)
+SW	R2, Offset(-1081864672)(GP)
 ;Timers.c,45 :: 		TMR8             = 0;
-SW	R0, Offset(TMR8+0)(GP)
+SW	R0, Offset(-1081864688)(GP)
 ;Timers.c,46 :: 		}
 L_end_InitTimer8:
 JR	RA
@@ -93,9 +84,8 @@ MTC0	R30, 12, 0
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
 ;Timers.c,52 :: 		T1IF_bit  = 0;
-LUI	R2, BitMask(T1IF_bit+0)
-ORI	R2, R2, BitMask(T1IF_bit+0)
-_SX	
+ORI	R2, R0, 16
+SW	R2, Offset(-1082064828)(GP)
 ;Timers.c,54 :: 		Clock();
 LW	R30, Offset(_Clock+0)(GP)
 JALR	RA, R30
@@ -130,9 +120,8 @@ INS	R30, R0, 1, 15
 ORI	R30, R0, 3072
 MTC0	R30, 12, 0
 ;Timers.c,62 :: 		T8IF_bit  = 0;
-LUI	R2, BitMask(T8IF_bit+0)
-ORI	R2, R2, BitMask(T8IF_bit+0)
-_SX	
+ORI	R2, R0, 16
+SW	R2, Offset(-1082064812)(GP)
 ;Timers.c,63 :: 		}
 L_end_Timer8Interrupt:
 DI	
