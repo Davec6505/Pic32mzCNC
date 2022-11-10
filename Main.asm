@@ -216,30 +216,6 @@ L_main9:
 ;Main.c,115 :: 		if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
 LBU	R2, Offset(-1082064701)(GP)
 EXT	R2, R2, 3, 1
-<<<<<<< HEAD
-BEQ	R2, R0, L__main53
-NOP	
-J	L__main41
-NOP	
-L__main53:
-LBU	R2, Offset(-1082064703)(GP)
-EXT	R2, R2, 4, 1
-BEQ	R2, R0, L__main54
-NOP	
-J	L__main40
-NOP	
-L__main54:
-LBU	R2, Offset(-1082064688)(GP)
-EXT	R2, R2, 3, 1
-BEQ	R2, R0, L__main55
-NOP	
-J	L__main39
-NOP	
-L__main55:
-LBU	R2, Offset(-1082064702)(GP)
-EXT	R2, R2, 1, 1
-BEQ	R2, R0, L__main56
-=======
 BEQ	R2, R0, L__main51
 NOP	
 J	L__main39
@@ -248,7 +224,6 @@ L__main51:
 LBU	R2, Offset(-1082064703)(GP)
 EXT	R2, R2, 4, 1
 BEQ	R2, R0, L__main52
->>>>>>> patch1
 NOP	
 J	L__main38
 NOP	

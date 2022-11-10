@@ -1945,11 +1945,7 @@ INS	R2, R0, 1, 1
 SB	R2, 0(R3)
 ;Kinematics.c,565 :: 		}
 L_Home86:
-<<<<<<< HEAD
-;Kinematics.c,559 :: 		if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-=======
 ;Kinematics.c,567 :: 		if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
->>>>>>> patch1
 LBU	R2, Offset(-1082064701)(GP)
 EXT	R2, R2, 3, 1
 BEQ	R2, R0, L__Home183
