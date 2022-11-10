@@ -342,12 +342,10 @@ unsigned int axis_plane_a,axis_plane_b;
             // Arc Center Format Offset Mode
              r = hypot(i, j); // Compute arc radius for mc_arc
           }
-          dma_printf("Radius:= %f",r);
-          
           // Set clockwise/counter-clockwise sign for mc_arc computations
           isclockwise = false;
           if (dir == CW) { isclockwise = true; }
-
+          dma_printf("Radius:= %f",r);
         //  gc.plane_axis_2 =1;
           // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
           mc_arc(position, target, offset, gc.plane_axis_0, gc.plane_axis_1, gc.plane_axis_2,
@@ -370,7 +368,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   double linear_per_segment      = 0.00;
   double angular_travel          = 0.00;
   double millimeters_of_travel   = 0.00;
-  uint16_t segments              = 0;
+  unsigned int segments          = 0;
   double cos_T                   = 0.00;
   double sin_T                   = 0.00;
 
@@ -378,20 +376,23 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   double sin_Ti;
   double cos_Ti;
   double r_axisi;
-  uint16_t i;
-  int8_t count = 0;
+  unsigned int i;
+  int count = 0;
   double nPx,nPy;
-  uint8_t n_arc_correction; //to be sorted int global struct???
+  char n_arc_correction; //to be sorted int global struct???
   
   // CCW angle between position and target from circle center. Only one atan2() trig computation required.
   // atan2((I*-J' - I'*J ),(I*J + I'-J'))   ~ arctan Vector opp/Vector adj
   angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0, r_axis0*rt_axis0+r_axis1*rt_axis1);
   // Correct atan2 output per direction
-  if (isclockwise) {
+  if(isclockwise) {
     // 2*Pi = 360deg in radians
-    if (angular_travel >= 0) { angular_travel -= 2*M_PI; }
-  } else {
-    if (angular_travel <= 0) { angular_travel += 2*M_PI; }
+    if (angular_travel >= 0) 
+         angular_travel -= 2*M_PI;
+    else {
+      if(angular_travel <= 0)
+        angular_travel += 2*M_PI;
+    }
   }
 
   // Check this with calculator
@@ -403,7 +404,9 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   // Multiply inverse feed_rate to compensate for the fact that this movement is approximated
   // by a number of discrete segments. The inverse feed_rate should be correct for the sum of
   // all segments.
-  if (invert_feed_rate) { feed_rate *= segments; }
+  if (invert_feed_rate)
+      feed_rate *= segments;
+      
    angular_travel = angular_travel * rad2deg;
    theta_per_segment = angular_travel/segments;
    //linear_per_segmentis the down feed of the 3 axis
@@ -441,7 +444,9 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   // Initialize the linear axis
   nPx = arc_target[X] = position[X];
   nPy = arc_target[Y] = position[Y];
+
   for (i = 1; i<segments; i++) { // Increment (segments-1)
+    dma_printf("\nseg:=%d",i);
     if (count < n_arc_correction) {
       // Apply vector rotation matrix
       r_axisi = r_axis0*sin_T + r_axis1*cos_T;
@@ -456,7 +461,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
       r_axis0 = -offset[axis_0]*cos_Ti + offset[axis_1]*sin_Ti;
       r_axis1 = -offset[axis_0]*sin_Ti - offset[axis_1]*cos_Ti;
       count = 0;
-    }
+   }
 
     // Update arc_target location
     arc_target[X] = center_axis0 + r_axis0;
@@ -466,6 +471,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
     position[X] = arc_target[X];
     nPy =  arc_target[Y] - position[Y];
     position[Y] = arc_target[Y];
+
    while(1){
       if(!OC5IE_bit && !OC2IE_bit)
           break;
@@ -489,12 +495,14 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
    DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
     // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
    // if (sys.abort) { return; }
-
   }
   // Ensure last segment arrives at target location.
   //mc_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], feed_rate, invert_feed_rate);
 }
 
+
+///////////////////////////////////////////////////////////////////
+//returns hypotinuse of a triangle
 float hypot(float angular_travel, float linear_travel){
       return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
 }

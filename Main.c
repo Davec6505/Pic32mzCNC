@@ -94,7 +94,7 @@ static int cntr;
         EnStepperZ();
         EnStepperA();
         ResetHoming();
-        a = 0;
+        a = 4;
      }
      //X Y Z
      if(Toggle){
@@ -114,14 +114,15 @@ static int cntr;
        }else{
           if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
              Temp_Move(a);
-             if(a < 9){
+             a = 9;
+            /* if(a < 9){
                   a++;
                   if(a == 9)a=10;
-             }
+             } */
           }
        }
 
-        #if DMADebug == 1
+        #if DMADebug == 10
           dma_printf("\nStep:=\t%l mm2mve:=\t%l: Step:=\t%l",
                      STPS[X].dist,STPS[X].mmToTravel,
                      STPS[X].step_count);
@@ -155,9 +156,9 @@ void Temp_Move(int a){
              SingleAxisStep(STPS[X].mmToTravel,X);
              break;
        case 4:
-             STPS[X].mmToTravel = belt_steps(50.00);
+             STPS[X].mmToTravel = belt_steps(100.00);
             // speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
-             STPS[Y].mmToTravel = belt_steps(100.00);
+             STPS[Y].mmToTravel = belt_steps(110.00);
              speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
              DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
              break;
@@ -185,16 +186,6 @@ void Temp_Move(int a){
        case 8:
              STPS[A].mmToTravel = belt_steps(150.00);
              speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
-#if DMADebug == 4
-             if(!DMA_Busy(1)){
-             dma_printf("mm:=%l\ndly%l\nmin_dly%l\nmax_lim%l\n"
-             "acc_lim%l\ndec_val%l\ndecel_val%l\ndec_start%l\n\n",
-             STPS[A].mmToTravel,STPS[A].step_delay,
-             STPS[A].min_delay,STPS[A].max_step_lim,
-             STPS[A].accel_lim,STPS[A].decel_val,
-             STPS[A].decel_start);
-
-#endif
              SingleAxisStep(STPS[A].mmToTravel,A);
              break;
        case 9:

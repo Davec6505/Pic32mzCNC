@@ -14,7 +14,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Kinematics.c
+Value=Serial_Dma.c
 =======
 Value=Main.c
 >>>>>>> patch2
@@ -55,11 +55,12 @@ File3=Steptodistance.c
 File4=Timers.c
 File5=Kinematics.c
 File6=Pins.c
-File7=Print.c
-File8=GCODE.c
-File9=Globals.c
-File10=Limits.c
-Count=11
+File7=Serial_Dma.c
+File8=Print.c
+File9=GCODE.c
+File10=Globals.c
+File11=Limits.c
+Count=12
 [BINARIES]
 Count=0
 [IMAGES]
@@ -67,23 +68,24 @@ File0=Pic32mzClicker2_Pinout.png
 Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
-File0=Main.c
-File1=Stepper.c
-File2=Stepper.h
-File3=Kinematics.c
-File4=Kinematics.h
-Count=5
+File0=Kinematics.c
+File1=Kinematics.h
+File2=Stepper.c
+File3=Stepper.h
+File4=Main.c
+File5=Serial_Dma.c
+Count=6
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
 File0=AVR_Stepper_Acc_Dec.xml
-File1=Clicker2_Pinouts.xml
-File2=Clicker2_Dwg.xml
-File3=pic32mz.xml
-File4=grbl.xml
-File5=OUTPUT_COMPARE.xml
-File6=Interrupts.xml
-File7=DMA_Pic32.xml
+File1=DMA_Pic32.xml
+File2=Clicker2_Pinouts.xml
+File3=Clicker2_Dwg.xml
+File4=pic32mz.xml
+File5=grbl.xml
+File6=OUTPUT_COMPARE.xml
+File7=Interrupts.xml
 Count=8
 [OTHER_FILES]
 File0=AVR_StepperAccDec.pdf
@@ -141,5 +143,6 @@ USE_SRS=7
 [EXPANDED_NODES]
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
-13=Header Files
-Count=3
+14=Header Files
+28=Project Level Defines
+Count=4

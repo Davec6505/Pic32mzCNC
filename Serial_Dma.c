@@ -237,7 +237,7 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
     }
      //Channel Address Error Interrupt Flag bit
     if( CHERIF_DCH1INT_bit == 1){
-
+        CABORT_DCH1ECON_bit = 1;
     }
 
     //However, for the interrupt controller, there is
@@ -252,27 +252,26 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 //////////////////////////////////////////////////////
 //DMA Print strings and variable arguments formating
 int dma_printf(const char* str,...){
-  int i = 0, j=0,busy;
-  char buff[200]={0},tmp[20];
-  char *str_arg,*tmp_;
-
-
-
  //Variable decleration of type va_list
  va_list va;
- 
+ int i = 0, j=0,busy;
+ char buff[200]={0},tmp[20],tmp1[6];
+ char *str_arg,*tmp_;
+ //check that str is not null
+ if(str == 0)
+     return;
  //can only call this once the va_list has bee declared
  //or the compiler throws an undefined error!!! not sure
  //about the compiler not implimenting va_end????
-   if(DMA_Busy(1)){
-      return 0;
-   }
+ if(DMA_Busy(1)){
+   return 0;
+ }
  //initialize the va_list via themacro va_start(arg1,arg2)
  //arg1 is type va_list and arg2 is type var preceding elipsis
  va_start(va,str);
  
-  i = j = 0;
- while(str && str[i]){
+ i = j = 0;
+ while(str[i] != '\0'){
     if(str[i] == '%'){
      i++;
      switch(str[i]){
@@ -283,15 +282,19 @@ int dma_printf(const char* str,...){
              break;
         case 'd':
              //convert to decimal
-             IntToStr(va_arg(va,int),tmp);
-             lTrim(tmp_,&tmp);
-             strcat(buff+j, tmp_);
-             j += strlen(tmp_);
+             sprintf(tmp1,"%d",va_arg(va,int));
+             strcat(buff+j, tmp1);
+             j += strlen(tmp1);
              break;
+        case 'u':
+             sprintf(tmp1,"%d",va_arg(va,unsigned int));
+             strcat(buff+j, tmp1);
+             j += strlen(tmp1);
         case 'l':
              //convert to decimal
-             LongToStr(va_arg(va,long),tmp);
-             lTrim(tmp_,&tmp);
+             sprintl(tmp,"%d",va_arg(va,long));
+             //LongToStr(va_arg(va,long),tmp);
+             //lTrim(tmp_,&tmp);
              strcat(buff+j, tmp_);
              j += strlen(tmp_);
              break;
@@ -307,8 +310,12 @@ int dma_printf(const char* str,...){
              j += strlen(tmp);
              break;
         case 'f':
+             FloatToStr(va_arg(va,float),tmp);
+             strcat(buff+j, tmp);
+             j += strlen(tmp);
+             break;
         case 'F':
-             //convert to octal
+
              FloatToStr(va_arg(va,double),tmp);
              strcat(buff+j, tmp);
              j += strlen(tmp);
