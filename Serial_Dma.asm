@@ -4,7 +4,7 @@ ADDIU	SP, SP, -4
 SW	RA, 0(SP)
 ;Serial_Dma.c,22 :: 		DMACONSET = 0x8000;
 ORI	R2, R0, 32768
-SW	R2, Offset(DMACONSET+0)(GP)
+SW	R2, Offset(-1082060792)(GP)
 ;Serial_Dma.c,23 :: 		DMA0();
 JAL	_DMA0+0
 NOP	
@@ -22,57 +22,57 @@ _DMA0:
 ;Serial_Dma.c,38 :: 		void  DMA0(){
 ;Serial_Dma.c,40 :: 		IEC4CLR      = 0x40;
 ORI	R2, R0, 64
-SW	R2, Offset(IEC4CLR+0)(GP)
+SW	R2, Offset(-1082064636)(GP)
 ;Serial_Dma.c,41 :: 		IFS4CLR      = 0x40;
 ORI	R2, R0, 64
-SW	R2, Offset(IFS4CLR+0)(GP)
+SW	R2, Offset(-1082064764)(GP)
 ;Serial_Dma.c,44 :: 		DCH0CONCLR = 0x8003;
 ORI	R2, R0, 32771
-SW	R2, Offset(DCH0CONCLR+0)(GP)
+SW	R2, Offset(-1082060700)(GP)
 ;Serial_Dma.c,47 :: 		DCH0ECON      =  (146 << 8 ) | 0x30;
 ORI	R2, R0, 37424
-SW	R2, Offset(DCH0ECON+0)(GP)
+SW	R2, Offset(-1082060688)(GP)
 ;Serial_Dma.c,50 :: 		DCH0DAT       =  '\r';
 ORI	R2, R0, 13
-SW	R2, Offset(DCH0DAT+0)(GP)
+SW	R2, Offset(-1082060528)(GP)
 ;Serial_Dma.c,53 :: 		DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
 LUI	R2, 8066
 ORI	R2, R2, 8752
-SW	R2, Offset(DCH0SSA+0)(GP)
+SW	R2, Offset(-1082060656)(GP)
 ;Serial_Dma.c,54 :: 		DCH0SSIZ      = 1;                 // source size = 1byte at a time
 ORI	R2, R0, 1
-SW	R2, Offset(DCH0SSIZ+0)(GP)
+SW	R2, Offset(-1082060624)(GP)
 ;Serial_Dma.c,57 :: 		DCH0DSA       = KVA_TO_PA(0xA0002000);    // virtual address:= IN RAM FOR RECIEVED DATA
 ORI	R2, R0, 8192
-SW	R2, Offset(DCH0DSA+0)(GP)
+SW	R2, Offset(-1082060640)(GP)
 ;Serial_Dma.c,58 :: 		DCH0DSIZ      = 200  ;  // destination size = Size for the 'rxBuf' to fill up with received characters. It is = 5 in this example...
 ORI	R2, R0, 200
-SW	R2, Offset(DCH0DSIZ+0)(GP)
+SW	R2, Offset(-1082060608)(GP)
 ;Serial_Dma.c,61 :: 		DCH0CSIZ      = 1  ;  // bytes transferred in the background
 ORI	R2, R0, 1
-SW	R2, Offset(DCH0CSIZ+0)(GP)
+SW	R2, Offset(-1082060560)(GP)
 ;Serial_Dma.c,65 :: 		DCH0INTCLR    = 0x00FF00FF ;
 LUI	R2, 255
 ORI	R2, R2, 255
-SW	R2, Offset(DCH0INTCLR+0)(GP)
+SW	R2, Offset(-1082060668)(GP)
 ;Serial_Dma.c,67 :: 		DCH0INTSET      =  0x90000;
 LUI	R2, 9
-SW	R2, Offset(DCH0INTSET+0)(GP)
+SW	R2, Offset(-1082060664)(GP)
 ;Serial_Dma.c,71 :: 		IPC33CLR     = 0x160000;
 LUI	R2, 22
-SW	R2, Offset(IPC33CLR+0)(GP)
+SW	R2, Offset(-1082064044)(GP)
 ;Serial_Dma.c,73 :: 		IPC33SET      = 0x00140000;
 LUI	R2, 20
-SW	R2, Offset(IPC33SET+0)(GP)
+SW	R2, Offset(-1082064040)(GP)
 ;Serial_Dma.c,75 :: 		IEC4SET       = 0x40;
 ORI	R2, R0, 64
-SW	R2, Offset(IEC4SET+0)(GP)
+SW	R2, Offset(-1082064632)(GP)
 ;Serial_Dma.c,76 :: 		IFS4CLR       = 0x40;
 ORI	R2, R0, 64
-SW	R2, Offset(IFS4CLR+0)(GP)
+SW	R2, Offset(-1082064764)(GP)
 ;Serial_Dma.c,79 :: 		DCH0CONSET      = 0X0000013;
 ORI	R2, R0, 19
-SW	R2, Offset(DCH0CONSET+0)(GP)
+SW	R2, Offset(-1082060696)(GP)
 ;Serial_Dma.c,81 :: 		}
 L_end_DMA0:
 JR	RA
@@ -81,9 +81,9 @@ NOP
 _DMA0_Enable:
 ;Serial_Dma.c,85 :: 		void DMA0_Enable(){
 ;Serial_Dma.c,94 :: 		DCH0CONSET  |= 1<<7;
-LW	R2, Offset(DCH0CONSET+0)(GP)
+LW	R2, Offset(-1082060696)(GP)
 ORI	R2, R2, 128
-SW	R2, Offset(DCH0CONSET+0)(GP)
+SW	R2, Offset(-1082060696)(GP)
 ;Serial_Dma.c,95 :: 		}
 L_end_DMA0_Enable:
 JR	RA
@@ -92,9 +92,9 @@ NOP
 _DMA0_Disable:
 ;Serial_Dma.c,99 :: 		void DMA0_Disable(){
 ;Serial_Dma.c,101 :: 		DCH0CONCLR  |= 1<<7;
-LW	R2, Offset(DCH0CONCLR+0)(GP)
+LW	R2, Offset(-1082060700)(GP)
 ORI	R2, R2, 128
-SW	R2, Offset(DCH0CONCLR+0)(GP)
+SW	R2, Offset(-1082060700)(GP)
 ;Serial_Dma.c,103 :: 		}
 L_end_DMA0_Disable:
 JR	RA
@@ -118,11 +118,11 @@ ADDIU	SP, SP, -16
 SW	RA, 0(SP)
 ;Serial_Dma.c,108 :: 		int i = 0;
 ;Serial_Dma.c,110 :: 		dma0int_flag = DCH0INT & 0x00FF;         //flags to sample in code if needed
-LW	R2, Offset(DCH0INT+0)(GP)
+LW	R2, Offset(-1082060672)(GP)
 ANDI	R2, R2, 255
 SB	R2, Offset(_dma0int_flag+0)(GP)
 ;Serial_Dma.c,115 :: 		if (DCH0INTbits.CHBCIF == 1) {
-LBU	R2, Offset(DCH0INTbits+0)(GP)
+LBU	R2, Offset(-1082060672)(GP)
 EXT	R2, R2, 3, 1
 BNE	R2, 1, L__DMA_CH0_ISR42
 NOP	
@@ -132,8 +132,8 @@ L__DMA_CH0_ISR42:
 ;Serial_Dma.c,124 :: 		}
 L_DMA_CH0_ISR0:
 ;Serial_Dma.c,127 :: 		if( CHERIF_bit == 1){       // test error int flag
-_LX	
-EXT	R2, R2, BitPos(CHERIF_bit+0), 1
+LBU	R2, Offset(-1082060672)(GP)
+EXT	R2, R2, 0, 1
 BNE	R2, 1, L__DMA_CH0_ISR44
 NOP	
 J	L_DMA_CH0_ISR1
@@ -161,10 +161,10 @@ NOP
 L_DMA_CH0_ISR1:
 ;Serial_Dma.c,135 :: 		DCH0INTCLR    = 0x000000ff;
 ORI	R2, R0, 255
-SW	R2, Offset(DCH0INTCLR+0)(GP)
+SW	R2, Offset(-1082060668)(GP)
 ;Serial_Dma.c,136 :: 		IFS4CLR       = 0x40;
 ORI	R2, R0, 64
-SW	R2, Offset(IFS4CLR+0)(GP)
+SW	R2, Offset(-1082064764)(GP)
 ;Serial_Dma.c,137 :: 		}
 L_end_DMA_CH0_ISR:
 LW	RA, 0(SP)
@@ -186,54 +186,54 @@ _DMA1:
 ;Serial_Dma.c,151 :: 		void DMA1(){
 ;Serial_Dma.c,154 :: 		IPC33CLR      = 0x17000000;
 LUI	R2, 5888
-SW	R2, Offset(IPC33CLR+0)(GP)
+SW	R2, Offset(-1082064044)(GP)
 ;Serial_Dma.c,155 :: 		IEC4CLR       = 0x7;
 ORI	R2, R0, 7
-SW	R2, Offset(IEC4CLR+0)(GP)
+SW	R2, Offset(-1082064636)(GP)
 ;Serial_Dma.c,158 :: 		DCH1CONCLR = 0x8003;
 ORI	R2, R0, 32771
-SW	R2, Offset(DCH1CONCLR+0)(GP)
+SW	R2, Offset(-1082060508)(GP)
 ;Serial_Dma.c,161 :: 		DCH1ECON=(147 << 8)| 0x30;
 ORI	R2, R0, 37680
-SW	R2, Offset(DCH1ECON+0)(GP)
+SW	R2, Offset(-1082060496)(GP)
 ;Serial_Dma.c,165 :: 		DCH1DAT       = '\r';
 ORI	R2, R0, 13
-SW	R2, Offset(DCH1DAT+0)(GP)
+SW	R2, Offset(-1082060336)(GP)
 ;Serial_Dma.c,168 :: 		DCH1SSA = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
 ORI	R2, R0, 8704
-SW	R2, Offset(DCH1SSA+0)(GP)
+SW	R2, Offset(-1082060464)(GP)
 ;Serial_Dma.c,169 :: 		DCH1SSIZ = 200;  //' This is how many bytes you want to send out in a block transfer for UART transmitter
 ORI	R2, R0, 200
-SW	R2, Offset(DCH1SSIZ+0)(GP)
+SW	R2, Offset(-1082060432)(GP)
 ;Serial_Dma.c,173 :: 		DCH1DSA = KVA_TO_PA(0xBF822220) ;
 LUI	R2, 8066
 ORI	R2, R2, 8736
-SW	R2, Offset(DCH1DSA+0)(GP)
+SW	R2, Offset(-1082060448)(GP)
 ;Serial_Dma.c,174 :: 		DCH1DSIZ = 1;
 ORI	R2, R0, 1
-SW	R2, Offset(DCH1DSIZ+0)(GP)
+SW	R2, Offset(-1082060416)(GP)
 ;Serial_Dma.c,177 :: 		DCH1CSIZ = 1;    //' x bytes from txBuf in a cell waiting to send out 1 byte at a time to U1TXREG / DCH1DSIZ
 ORI	R2, R0, 1
-SW	R2, Offset(DCH1CSIZ+0)(GP)
+SW	R2, Offset(-1082060368)(GP)
 ;Serial_Dma.c,180 :: 		DCH1INTCLR    = 0x00FF00FF ;
 LUI	R2, 255
 ORI	R2, R2, 255
-SW	R2, Offset(DCH1INTCLR+0)(GP)
+SW	R2, Offset(-1082060476)(GP)
 ;Serial_Dma.c,186 :: 		IPC33CLR     = 0x16000000;
 LUI	R2, 5632
-SW	R2, Offset(IPC33CLR+0)(GP)
+SW	R2, Offset(-1082064044)(GP)
 ;Serial_Dma.c,188 :: 		IPC33SET    = 0x16000000;
 LUI	R2, 5632
-SW	R2, Offset(IPC33SET+0)(GP)
+SW	R2, Offset(-1082064040)(GP)
 ;Serial_Dma.c,190 :: 		IEC4SET     = 0x80;
 ORI	R2, R0, 128
-SW	R2, Offset(IEC4SET+0)(GP)
+SW	R2, Offset(-1082064632)(GP)
 ;Serial_Dma.c,192 :: 		IFS4CLR     = 0x80;
 ORI	R2, R0, 128
-SW	R2, Offset(IFS4CLR+0)(GP)
+SW	R2, Offset(-1082064764)(GP)
 ;Serial_Dma.c,196 :: 		DCH1CONSET    = 0x00000003;
 ORI	R2, R0, 3
-SW	R2, Offset(DCH1CONSET+0)(GP)
+SW	R2, Offset(-1082060504)(GP)
 ;Serial_Dma.c,198 :: 		}
 L_end_DMA1:
 JR	RA
@@ -242,9 +242,9 @@ NOP
 _DMA1_Enable:
 ;Serial_Dma.c,201 :: 		void DMA1_Enable(){
 ;Serial_Dma.c,202 :: 		DCH1CON |= 1<<7;
-LW	R2, Offset(DCH1CON+0)(GP)
+LW	R2, Offset(-1082060512)(GP)
 ORI	R2, R2, 128
-SW	R2, Offset(DCH1CON+0)(GP)
+SW	R2, Offset(-1082060512)(GP)
 ;Serial_Dma.c,203 :: 		}
 L_end_DMA1_Enable:
 JR	RA
@@ -253,9 +253,9 @@ NOP
 _DMA1_Disable:
 ;Serial_Dma.c,207 :: 		void DMA1_Disable(){
 ;Serial_Dma.c,208 :: 		DCH1CON |= 1<<7;
-LW	R2, Offset(DCH1CON+0)(GP)
+LW	R2, Offset(-1082060512)(GP)
 ORI	R2, R2, 128
-SW	R2, Offset(DCH1CON+0)(GP)
+SW	R2, Offset(-1082060512)(GP)
 ;Serial_Dma.c,209 :: 		}
 L_end_DMA1_Disable:
 JR	RA
@@ -271,14 +271,14 @@ J	L_DMA_Busy2
 NOP	
 L__DMA_Busy49:
 ;Serial_Dma.c,217 :: 		return (DCH0CON & 0x8000)>>15;
-LW	R2, Offset(DCH0CON+0)(GP)
+LW	R2, Offset(-1082060704)(GP)
 ANDI	R2, R2, 32768
 SRL	R2, R2, 15
 J	L_end_DMA_Busy
 NOP	
 L_DMA_Busy2:
 ;Serial_Dma.c,219 :: 		return (DCH1CON & 0x8000)>>15;
-LW	R2, Offset(DCH1CON+0)(GP)
+LW	R2, Offset(-1082060512)(GP)
 ANDI	R2, R2, 32768
 SRL	R2, R2, 15
 ;Serial_Dma.c,220 :: 		}
@@ -300,11 +300,11 @@ INS	R30, R0, 1, 15
 ORI	R30, R0, 5120
 MTC0	R30, 12, 0
 ;Serial_Dma.c,231 :: 		dma1int_flag = DCH1INT & 0x00FF;
-LW	R2, Offset(DCH1INT+0)(GP)
+LW	R2, Offset(-1082060480)(GP)
 ANDI	R2, R2, 255
 SB	R2, Offset(_dma1int_flag+0)(GP)
 ;Serial_Dma.c,233 :: 		if (DCH1INTbits.CHBCIF){
-LBU	R2, Offset(DCH1INTbits+0)(GP)
+LBU	R2, Offset(-1082060480)(GP)
 EXT	R2, R2, 3, 1
 BNE	R2, R0, L__DMA_CH1_ISR52
 NOP	
@@ -319,8 +319,8 @@ SB	R0, Offset(_dma0int_flag+0)(GP)
 ;Serial_Dma.c,237 :: 		}
 L_DMA_CH1_ISR4:
 ;Serial_Dma.c,239 :: 		if( CHERIF_DCH1INT_bit == 1){
-_LX	
-EXT	R2, R2, BitPos(CHERIF_DCH1INT_bit+0), 1
+LBU	R2, Offset(-1082060480)(GP)
+EXT	R2, R2, 0, 1
 BNE	R2, 1, L__DMA_CH1_ISR54
 NOP	
 J	L_DMA_CH1_ISR5
@@ -330,10 +330,10 @@ L__DMA_CH1_ISR54:
 L_DMA_CH1_ISR5:
 ;Serial_Dma.c,246 :: 		DCH1INTCLR  = 0x00FF;
 ORI	R2, R0, 255
-SW	R2, Offset(DCH1INTCLR+0)(GP)
+SW	R2, Offset(-1082060476)(GP)
 ;Serial_Dma.c,247 :: 		IFS4CLR     = 0x80;
 ORI	R2, R0, 128
-SW	R2, Offset(IFS4CLR+0)(GP)
+SW	R2, Offset(-1082064764)(GP)
 ;Serial_Dma.c,249 :: 		}
 L_end_DMA_CH1_ISR:
 DI	
@@ -798,7 +798,7 @@ JAL	_strncpy+0
 NOP	
 ;Serial_Dma.c,331 :: 		DCH1SSIZ    = j ;
 SEH	R2, R8
-SW	R2, Offset(DCH1SSIZ+0)(GP)
+SW	R2, Offset(-1082060432)(GP)
 ;Serial_Dma.c,332 :: 		DMA1_Enable();
 JAL	_DMA1_Enable+0
 NOP	

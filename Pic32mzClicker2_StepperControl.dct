@@ -12493,6 +12493,7 @@ cherie
 cherie
 cherie
 cherie
+cherie
 cherie_bit
 cherie_dch1int_bit
 cherie_dch2int_bit
@@ -23625,6 +23626,15 @@ divswen_refo2con_bit
 divswen_refo3con_bit
 divswen_refo4con_bit
 dma_buff
+dma_busy
+dma_ch0_isr
+dma_ch1_isr
+dma_global
+dma_printf
+dma0
+dma0
+dma0_disable
+dma0_enable
 dma0ie
 dma0ie
 dma0ie
@@ -23637,6 +23647,7 @@ dma0if
 dma0if
 dma0if
 dma0if_bit
+dma0int_flag
 dma0ip
 dma0ip
 dma0ip
@@ -23655,6 +23666,10 @@ dma0is0
 dma0is0_bit
 dma0is1
 dma0is1_bit
+dma1
+dma1
+dma1_disable
+dma1_enable
 dma1ie
 dma1ie
 dma1ie
@@ -23669,6 +23684,7 @@ dma1if
 dma1if
 dma1if_bit
 dma1if_usbdmaint_bit
+dma1int_flag
 dma1ip
 dma1ip
 dma1ip
@@ -38760,6 +38776,7 @@ lseof6_bit
 lseof7
 lseof7_bit
 ltrim
+ltrim
 lvderr
 lvderr
 lvderr
@@ -40197,6 +40214,7 @@ nb2bipktgp25_emacxipgr_bit
 nb2bipktgp26
 nb2bipktgp26_bit
 nb2bipktgp26_emacxipgr_bit
+newline
 nmicnt
 nmicnt
 nmicnt
@@ -49035,6 +49053,7 @@ rxbp
 rxbp
 rxbp_bit
 rxbp_c2trec_bit
+rxbuf
 rxbuf_sz
 rxbuf_sz
 rxbuf_sz
@@ -64964,6 +64983,7 @@ txbp
 txbp
 txbp_bit
 txbp_c2trec_bit
+txbuf
 txbufcnt
 txbufcnt0
 txbufcnt0_bit

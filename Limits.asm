@@ -27,9 +27,9 @@ SH	R0, Offset(Limits_last_cntZ_min+0)(GP)
 ;Limits.c,38 :: 		last_cntA_min = 0;
 SH	R0, Offset(Limits_last_cntA_min+0)(GP)
 ;Limits.c,41 :: 		IEC0  |= 0x21 << 8;
-LW	R2, Offset(IEC0+0)(GP)
+LW	R2, Offset(-1082064704)(GP)
 ORI	R2, R2, 8448
-SW	R2, Offset(IEC0+0)(GP)
+SW	R2, Offset(-1082064704)(GP)
 ;Limits.c,44 :: 		X_Min_Limit_Setup();
 JAL	_X_Min_Limit_Setup+0
 NOP	
@@ -46,19 +46,19 @@ NOP
 _X_Min_Limit_Setup:
 ;Limits.c,51 :: 		void X_Min_Limit_Setup(){
 ;Limits.c,58 :: 		IPC2 |= 17 ;
-LW	R2, Offset(IPC2+0)(GP)
+LW	R2, Offset(-1082064544)(GP)
 ORI	R2, R2, 17
-SW	R2, Offset(IPC2+0)(GP)
+SW	R2, Offset(-1082064544)(GP)
 ;Limits.c,61 :: 		IEC0 |= 1 << 8;
-LW	R2, Offset(IEC0+0)(GP)
+LW	R2, Offset(-1082064704)(GP)
 ORI	R2, R2, 256
-SW	R2, Offset(IEC0+0)(GP)
+SW	R2, Offset(-1082064704)(GP)
 ;Limits.c,63 :: 		IFS0 |= ~(1 << 8);
-LW	R3, Offset(IFS0+0)(GP)
+LW	R3, Offset(-1082064832)(GP)
 LUI	R2, 65535
 ORI	R2, R2, 65279
 OR	R2, R3, R2
-SW	R2, Offset(IFS0+0)(GP)
+SW	R2, Offset(-1082064832)(GP)
 ;Limits.c,64 :: 		}
 L_end_X_Min_Limit_Setup:
 JR	RA
@@ -67,19 +67,19 @@ NOP
 _Y_Min_Limit_Setup:
 ;Limits.c,68 :: 		void Y_Min_Limit_Setup(){
 ;Limits.c,75 :: 		IPC3 |= 18 << 8;
-LW	R2, Offset(IPC3+0)(GP)
+LW	R2, Offset(-1082064528)(GP)
 ORI	R2, R2, 4608
-SW	R2, Offset(IPC3+0)(GP)
+SW	R2, Offset(-1082064528)(GP)
 ;Limits.c,78 :: 		IEC0 |= 1 << 13;
-LW	R2, Offset(IEC0+0)(GP)
+LW	R2, Offset(-1082064704)(GP)
 ORI	R2, R2, 8192
-SW	R2, Offset(IEC0+0)(GP)
+SW	R2, Offset(-1082064704)(GP)
 ;Limits.c,80 :: 		IFS0 |= ~(1 << 13);
-LW	R3, Offset(IFS0+0)(GP)
+LW	R3, Offset(-1082064832)(GP)
 LUI	R2, 65535
 ORI	R2, R2, 57343
 OR	R2, R3, R2
-SW	R2, Offset(IFS0+0)(GP)
+SW	R2, Offset(-1082064832)(GP)
 ;Limits.c,81 :: 		}
 L_end_Y_Min_Limit_Setup:
 JR	RA
@@ -100,9 +100,8 @@ INS	R30, R0, 1, 15
 ORI	R30, R0, 4096
 MTC0	R30, 12, 0
 ;Limits.c,89 :: 		INT1IF_bit = 0;
-LUI	R2, BitMask(INT1IF_bit+0)
-ORI	R2, R2, BitMask(INT1IF_bit+0)
-_SX	
+ORI	R2, R0, 256
+SW	R2, Offset(-1082064828)(GP)
 ;Limits.c,90 :: 		if(!Limit[X].Limit_Min)
 LBU	R2, Offset(Limits_Limit+0)(GP)
 EXT	R2, R2, 1, 1
@@ -146,9 +145,8 @@ INS	R30, R0, 1, 15
 ORI	R30, R0, 4096
 MTC0	R30, 12, 0
 ;Limits.c,98 :: 		INT2IF_bit = 0;
-LUI	R2, BitMask(INT2IF_bit+0)
-ORI	R2, R2, BitMask(INT2IF_bit+0)
-_SX	
+ORI	R2, R0, 8192
+SW	R2, Offset(-1082064828)(GP)
 ;Limits.c,99 :: 		if(!Limit[Y].Limit_Min)
 LBU	R2, Offset(Limits_Limit+12)(GP)
 EXT	R2, R2, 1, 1
