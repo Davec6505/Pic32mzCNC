@@ -354,7 +354,7 @@ void set_performance_mode();
 void Uart2InterruptSetup();
 void LcdI2CConfig();
 void OutPutPulseXYZ();
-void Temp_Move(int a);
+int Temp_Move(int a);
 void LCD_Display();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
@@ -750,13 +750,14 @@ unsigned int axis_plane_a,axis_plane_b;
 
  position[axis_A] = Cur_axis_a;
  position[axis_B] = Cur_axis_b;
+ position[2] = 0;
  target[axis_A] = Fin_axis_a;
  target[axis_B] = Fin_axis_b;
  offset[axis_A] = i;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 297 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 298 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -769,7 +770,7 @@ unsigned int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (gc.motion_mode ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 331 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 332 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -787,15 +788,13 @@ unsigned int axis_plane_a,axis_plane_b;
 
  isclockwise =  0 ;
  if (dir ==  0 ) { isclockwise =  1 ; }
- dma_printf("Radius:= %f",r);
+
 
 
  mc_arc(position, target, offset, gc.plane_axis_0, gc.plane_axis_1, gc.plane_axis_2,
   250.0 , gc.inverse_feed_rate_mode,r, isclockwise);
 }
-
-
-
+#line 381 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
  uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
  long tempA,tempB;
@@ -809,7 +808,8 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  double theta_per_segment = 0.00;
  double linear_per_segment = 0.00;
  double angular_travel = 0.00;
- double millimeters_of_travel = 0.00;
+ double mm_of_travel = 0.00;
+ double rads = 0.00;
  unsigned int segments = 0;
  double cos_T = 0.00;
  double sin_T = 0.00;
@@ -818,11 +818,12 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  double sin_Ti;
  double cos_Ti;
  double r_axisi;
- unsigned int i;
+ unsigned int i = 0;
  int count = 0;
  double nPx,nPy;
  char n_arc_correction;
-
+ arc_target[axis_linear] = position[axis_linear];
+ rads = radius *  ( 3.141593 /180.00) ;
 
 
  angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0, r_axis0*rt_axis0+r_axis1*rt_axis1);
@@ -838,32 +839,34 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  }
 
 
- millimeters_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
+ mm_of_travel = hypot(angular_travel*rads, fabs(linear_travel));
+ if (mm_of_travel == 0.0) { return; }
 
-
- segments = floor(millimeters_of_travel/ 0.1 );
-
+ segments = (unsigned int)floor(mm_of_travel/ 0.3 );
 
 
 
  if (invert_feed_rate)
  feed_rate *= segments;
 
- angular_travel = angular_travel *  (180.00/ 3.141593 ) ;
+
  theta_per_segment = angular_travel/segments;
 
 
 
- linear_per_segment = linear_travel/segments;
-#line 442 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ linear_per_segment = linear_travel/(double)segments;
+
+ dma_printf("\nangTrav:= %f : mmoftrav:= %f : Lin_trav:= %f\nLinPseg:= %f : *pSeg:= %f",
+ angular_travel,mm_of_travel,linear_travel,linear_per_segment,theta_per_segment);
+
  cos_T = 1-0.5*theta_per_segment*theta_per_segment;
  sin_T = theta_per_segment;
 
  nPx = arc_target[X] = position[X];
  nPy = arc_target[Y] = position[Y];
 
- for (i = 1; i<segments; i++) {
- dma_printf("\nseg:=%d",i);
+ while(i < segments) {
+
  if (count < n_arc_correction) {
 
  r_axisi = r_axis0*sin_T + r_axis1*cos_T;
@@ -893,21 +896,32 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  if(!OC5IE_bit && !OC2IE_bit)
  break;
  }
-#line 485 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 487 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[X].mmToTravel = belt_steps(nPx);
  STPS[Y].mmToTravel = belt_steps(nPy);
  tempA = abs(STPS[X].mmToTravel);
  tempB = abs(STPS[Y].mmToTravel);
+
  if(tempA > tempB)
  speed_cntr_Move(STPS[X].mmToTravel, 1000,X);
  else
  speed_cntr_Move(STPS[Y].mmToTravel, 1000,Y);
 
 
+
+ dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f : X:= %l : Y:= %l",
+ i,segments,nPx,nPy,STPS[X].mmToTravel,STPS[Y].mmToTravel);
+
  DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
 
 
+ i++;
  }
+
+
+ while(DMA_Busy(1));
+ dma_printf("\n%s","Arc Finnished");
+
 
 
 }

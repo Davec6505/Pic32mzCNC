@@ -548,7 +548,7 @@ void set_performance_mode();
 void Uart2InterruptSetup();
 void LcdI2CConfig();
 void OutPutPulseXYZ();
-void Temp_Move(int a);
+int Temp_Move(int a);
 void LCD_Display();
 #line 5 "C:/Users/Git/Pic32mzCNC/Config.c"
 void PinMode(){

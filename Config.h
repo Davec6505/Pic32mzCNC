@@ -40,7 +40,7 @@ void set_performance_mode();//sys clk performance setup
 void Uart2InterruptSetup();//uart2 interrupt on recieve
 void LcdI2CConfig();//configure the i2c_lcd 4line 16ch display
 void OutPutPulseXYZ(); // setup output pulse OC3
-void Temp_Move(int a);
+int Temp_Move(int a);
 void LCD_Display();
 
 

@@ -548,7 +548,7 @@ void set_performance_mode();
 void Uart2InterruptSetup();
 void LcdI2CConfig();
 void OutPutPulseXYZ();
-void Temp_Move(int a);
+int Temp_Move(int a);
 void LCD_Display();
 #line 34 "C:/Users/Git/Pic32mzCNC/Main.c"
 parser_state_t gc;
@@ -619,7 +619,7 @@ static int cntr;
 
  if(Toggle){
 
- if((a > 9)){
+ if((a > 19)){
  if(homing[X].home_cnt >= 2){
  homing[X].home_cnt = 0;
  a = 11;
@@ -633,18 +633,17 @@ static int cntr;
  Temp_Move(a);
  }else{
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
- Temp_Move(a);
- a = 9;
-#line 122 "C:/Users/Git/Pic32mzCNC/Main.c"
+ a = Temp_Move(a);
+#line 121 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  }
-#line 131 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 130 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
 
  }
 }
 
-void Temp_Move(int a){
+int Temp_Move(int a){
  switch(a){
  case 0:
  STPS[Y].mmToTravel = belt_steps(50.00);
@@ -672,6 +671,7 @@ void Temp_Move(int a){
  STPS[Y].mmToTravel = belt_steps(110.00);
  speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
  DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+ a = 9;
  break;
  case 5:
  STPS[X].mmToTravel = belt_steps(-50.00);
@@ -703,7 +703,9 @@ void Temp_Move(int a){
 
 
 
- r_or_ijk(-50.00, 50.00, -150.00, 150.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
+ a = 12;
+ r_or_ijk(50.00, 50.00, 100.00, 100.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
+
  break;
  case 10:
  Home(X);
@@ -717,4 +719,6 @@ void Temp_Move(int a){
  default: a = 0;
  break;
  }
+
+ return a;
 }
