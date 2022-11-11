@@ -512,7 +512,7 @@ void set_performance_mode();
 void Uart2InterruptSetup();
 void LcdI2CConfig();
 void OutPutPulseXYZ();
-void Temp_Move(int a);
+int Temp_Move(int a);
 void LCD_Display();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 52 "c:/users/git/pic32mzcnc/gcode.h"

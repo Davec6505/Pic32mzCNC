@@ -45,7 +45,7 @@
 #define Z_AXIS 2
 
 #define DEFAULT_FEEDRATE 250.0
-#define DEFAULT_MM_PER_ARC_SEGMENT 0.1
+#define DEFAULT_MM_PER_ARC_SEGMENT 0.3
 
 
 // Useful macros

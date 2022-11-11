@@ -527,7 +527,7 @@ void set_performance_mode();
 void Uart2InterruptSetup();
 void LcdI2CConfig();
 void OutPutPulseXYZ();
-void Temp_Move(int a);
+int Temp_Move(int a);
 void LCD_Display();
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
@@ -805,36 +805,41 @@ int dma_printf(const char* str,...){
  j += strlen(tmp1);
  break;
  case 'u':
- sprintf(tmp1,"%d", __va_arg(va, unsigned int) );
+
+ sprintf(tmp1,"%u", __va_arg(va, unsigned int) );
  strcat(buff+j, tmp1);
  j += strlen(tmp1);
  case 'l':
 
- sprintl(tmp,"%d", __va_arg(va, long) );
+ sprintf(tmp,"%ld", __va_arg(va, long) );
 
-
- strcat(buff+j, tmp_);
- j += strlen(tmp_);
- break;
- case 'x':
- IntToHex( __va_arg(va, int) ,tmp);
  strcat(buff+j, tmp);
  j += strlen(tmp);
  break;
  case 'X':
 
- LongIntToHex( __va_arg(va, long) ,tmp);
+ sprintf(tmp,"%X", __va_arg(va, int) );
+ strcat(buff+j, tmp);
+ j += strlen(tmp);
+ break;
+ case 'X':
+
+ sprintf(tmp,"%lX", __va_arg(va, long) );
  strcat(buff+j, tmp);
  j += strlen(tmp);
  break;
  case 'f':
- FloatToStr( __va_arg(va, float) ,tmp);
+ sprintf(tmp,"%f", __va_arg(va, float) );
  strcat(buff+j, tmp);
  j += strlen(tmp);
  break;
  case 'F':
-
- FloatToStr( __va_arg(va, double) ,tmp);
+ sprintf(tmp,"%E", __va_arg(va, double) );
+ strcat(buff+j, tmp);
+ j += strlen(tmp);
+ break;
+ case 'p':
+ sprintf(tmp,"%p", __va_arg(va, void*) );
  strcat(buff+j, tmp);
  j += strlen(tmp);
  break;
