@@ -20,6 +20,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Stepper.h
 =======
 =======
@@ -44,6 +45,9 @@ Value=Stepper.c
 >>>>>>> patch1
 =======
 Value=Serial_Dma.c
+>>>>>>> patch1
+=======
+Value=Main.c
 >>>>>>> patch1
 =======
 Value=Main.c
@@ -99,6 +103,7 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 <<<<<<< HEAD
+<<<<<<< HEAD
 File0=Main.c
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -146,6 +151,17 @@ Count=5
 =======
 File5=Serial_Dma.c
 Count=6
+>>>>>>> patch1
+=======
+File0=Main.c
+File1=Stepper.c
+File2=Stepper.h
+File3=Kinematics.c
+File4=Kinematics.h
+File5=Serial_Dma.c
+File6=DEFINES.pld
+File7=Config.h
+Count=8
 >>>>>>> patch1
 [EEPROM]
 Count=0

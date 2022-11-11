@@ -45,13 +45,6 @@ main
 				fround
 		strcat
 		strlen
-		sprintl
-			_doprntl
-				isdigit
-		IntToHex
-		LongIntToHex
-		FloatToStr
-			strcpy
 		strncpy
 		DMA1_Enable
 		__CC2DW
@@ -79,7 +72,6 @@ main
 				ldexp
 			hypot
 				sqrt
-			dma_printf
 			mc_arc
 				atan2
 					fabs
@@ -99,8 +91,8 @@ main
 				abs
 				speed_cntr_Move
 				DualAxisStep
+				DMA_Busy
 				__CC2DW
-			__CC2DW
 		Home
 			FP
 				Test_Min

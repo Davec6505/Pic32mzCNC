@@ -276,47 +276,52 @@ int dma_printf(const char* str,...){
      i++;
      switch(str[i]){
         case 'c':
-             //convert to ASCII char
+             //convert char to ASCII char
              buff[j] = (char)va_arg(va,char);
              j++;
              break;
         case 'd':
-             //convert to decimal
+             //convert int to decimal
              sprintf(tmp1,"%d",va_arg(va,int));
              strcat(buff+j, tmp1);
              j += strlen(tmp1);
              break;
         case 'u':
-             sprintf(tmp1,"%d",va_arg(va,unsigned int));
+             //convert unsigned to decimal
+             sprintf(tmp1,"%u",va_arg(va,unsigned int));
              strcat(buff+j, tmp1);
              j += strlen(tmp1);
         case 'l':
-             //convert to decimal
-             sprintl(tmp,"%d",va_arg(va,long));
-             //LongToStr(va_arg(va,long),tmp);
+             //convert long to decimal
+             sprintf(tmp,"%ld",va_arg(va,long));
              //lTrim(tmp_,&tmp);
-             strcat(buff+j, tmp_);
-             j += strlen(tmp_);
-             break;
-        case 'x':
-             IntToHex(va_arg(va,int),tmp);
              strcat(buff+j, tmp);
              j += strlen(tmp);
              break;
         case 'X':
-             //convert to hex
-             LongIntToHex(va_arg(va,long),tmp);
+             //convert int to hex
+             sprintf(tmp,"%X",va_arg(va,int));
+             strcat(buff+j, tmp);
+             j += strlen(tmp);
+             break;
+        case 'X':
+             //convert long to hex
+             sprintf(tmp,"%lX",va_arg(va,long));
              strcat(buff+j, tmp);
              j += strlen(tmp);
              break;
         case 'f':
-             FloatToStr(va_arg(va,float),tmp);
+             sprintf(tmp,"%f",va_arg(va,float));
              strcat(buff+j, tmp);
              j += strlen(tmp);
              break;
         case 'F':
-
-             FloatToStr(va_arg(va,double),tmp);
+             sprintf(tmp,"%E",va_arg(va,double));
+             strcat(buff+j, tmp);
+             j += strlen(tmp);
+             break;
+        case 'p':
+             sprintf(tmp,"%p",va_arg(va,void*));
              strcat(buff+j, tmp);
              j += strlen(tmp);
              break;

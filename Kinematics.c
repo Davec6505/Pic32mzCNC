@@ -225,6 +225,7 @@ unsigned int axis_plane_a,axis_plane_b;
      //use thess arrays to simplify call to arc function
      position[axis_A] = Cur_axis_a;
      position[axis_B] = Cur_axis_b;
+     position[2] = 0;
      target[axis_A] = Fin_axis_a;
      target[axis_B] = Fin_axis_b;
      offset[axis_A] = i;
@@ -345,74 +346,12 @@ unsigned int axis_plane_a,axis_plane_b;
           // Set clockwise/counter-clockwise sign for mc_arc computations
           isclockwise = false;
           if (dir == CW) { isclockwise = true; }
-          dma_printf("Radius:= %f",r);
+       //   dma_printf("Radius:=%f\n",r);
         //  gc.plane_axis_2 =1;
           // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
           mc_arc(position, target, offset, gc.plane_axis_0, gc.plane_axis_1, gc.plane_axis_2,
                  DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
 }
-
-
-
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
-  uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
- long tempA,tempB;
-  double center_axis0            = position[axis_0] + offset[axis_0];
- double center_axis1             = position[axis_1] + offset[axis_1];
-  double linear_travel           = target[axis_linear] - position[axis_linear];
-  double r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
-  double r_axis1                 = -offset[axis_1];
-  double rt_axis0                = target[axis_0] - center_axis0;
- double rt_axis1                 = target[axis_1] - center_axis1;
-  double theta_per_segment       = 0.00;
-  double linear_per_segment      = 0.00;
-  double angular_travel          = 0.00;
-  double millimeters_of_travel   = 0.00;
-  unsigned int segments          = 0;
-  double cos_T                   = 0.00;
-  double sin_T                   = 0.00;
-
-  double arc_target[3];
-  double sin_Ti;
-  double cos_Ti;
-  double r_axisi;
-  unsigned int i;
-  int count = 0;
-  double nPx,nPy;
-  char n_arc_correction; //to be sorted int global struct???
-  
-  // CCW angle between position and target from circle center. Only one atan2() trig computation required.
-  // atan2((I*-J' - I'*J ),(I*J + I'-J'))   ~ arctan Vector opp/Vector adj
-  angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0, r_axis0*rt_axis0+r_axis1*rt_axis1);
-  // Correct atan2 output per direction
-  if(isclockwise) {
-    // 2*Pi = 360deg in radians
-    if (angular_travel >= 0) 
-         angular_travel -= 2*M_PI;
-    else {
-      if(angular_travel <= 0)
-        angular_travel += 2*M_PI;
-    }
-  }
-
-  // Check this with calculator
-  millimeters_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
-  //if (millimeters_of_travel == 0.0) { return; }
-  
-  segments = floor(millimeters_of_travel/DEFAULT_MM_PER_ARC_SEGMENT);
-
-  // Multiply inverse feed_rate to compensate for the fact that this movement is approximated
-  // by a number of discrete segments. The inverse feed_rate should be correct for the sum of
-  // all segments.
-  if (invert_feed_rate)
-      feed_rate *= segments;
-      
-   angular_travel = angular_travel * rad2deg;
-   theta_per_segment = angular_travel/segments;
-   //linear_per_segmentis the down feed of the 3 axis
-   //In most cases this will be 0 for 2D plane unless
-   //spiral pocket cutting is needed
-   linear_per_segment = linear_travel/segments;
 
   /* Vector rotation by transformation matrix: r is the original vector, r_T is the rotated vector,
      and phi is the angle of rotation. Solution approach by Jens Geisler.
@@ -438,6 +377,70 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
      a correction, the planner should have caught up to the lag caused by the initial mc_arc overhead.
      This is important when there are successive arc motions.
   */
+
+void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
+  uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
+ long tempA,tempB;
+ double center_axis0            = position[axis_0] + offset[axis_0];
+ double center_axis1             = position[axis_1] + offset[axis_1];
+ double linear_travel           = target[axis_linear] - position[axis_linear];
+ double r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
+ double r_axis1                 = -offset[axis_1];
+ double rt_axis0                = target[axis_0] - center_axis0;
+ double rt_axis1                 = target[axis_1] - center_axis1;
+ double theta_per_segment       = 0.00;
+ double linear_per_segment      = 0.00;
+ double angular_travel          = 0.00;
+ double mm_of_travel   = 0.00;
+ double rads                    = 0.00;
+ unsigned int segments          = 0;
+ double cos_T                   = 0.00;
+ double sin_T                   = 0.00;
+
+  double arc_target[3];
+  double sin_Ti;
+  double cos_Ti;
+  double r_axisi;
+  unsigned int i = 0;
+  int count = 0;
+  double nPx,nPy;
+  char n_arc_correction; //to be sorted int global struct???
+  arc_target[axis_linear] = position[axis_linear];
+  rads = radius * deg2rad;
+  // CCW angle between position and target from circle center. Only one atan2() trig computation required.
+  // atan2((I*-J' - I'*J ),(I*J + I'-J'))   ~ arctan Vector opp/Vector adj
+  angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0, r_axis0*rt_axis0+r_axis1*rt_axis1);
+  // Correct atan2 output per direction
+  if(isclockwise) {
+    // 2*Pi = 360deg in radians
+    if (angular_travel >= 0) 
+         angular_travel -= 2*M_PI;
+    else {
+      if(angular_travel <= 0)
+        angular_travel += 2*M_PI;
+    }
+  }
+
+  // Check this with calculator
+  mm_of_travel = hypot(angular_travel*rads, fabs(linear_travel));
+  if (mm_of_travel == 0.0) { return; }
+  
+  segments = (unsigned int)floor(mm_of_travel/DEFAULT_MM_PER_ARC_SEGMENT);
+  // Multiply inverse feed_rate to compensate for the fact that this movement is approximated
+  // by a number of discrete segments. The inverse feed_rate should be correct for the sum of
+  // all segments.
+  if (invert_feed_rate)
+      feed_rate *= segments;
+      
+  // angular_travel = angular_travel * rad2deg;
+   theta_per_segment = angular_travel/segments;
+   //linear_per_segmentis the down feed of the 3 axis
+   //In most cases this will be 0 for 2D plane unless
+   //spiral pocket cutting is needed
+   linear_per_segment = linear_travel/(double)segments;
+
+   dma_printf("\nangTrav:= %f : mmoftrav:= %f : Lin_trav:= %f\nLinPseg:= %f : *pSeg:= %f",
+               angular_travel,mm_of_travel,linear_travel,linear_per_segment,theta_per_segment);
   // Vector rotation matrix values
    cos_T = 1-0.5*theta_per_segment*theta_per_segment; // Small angle approximation
    sin_T = theta_per_segment;
@@ -445,57 +448,67 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   nPx = arc_target[X] = position[X];
   nPy = arc_target[Y] = position[Y];
 
-  for (i = 1; i<segments; i++) { // Increment (segments-1)
-    dma_printf("\nseg:=%d",i);
-    if (count < n_arc_correction) {
-      // Apply vector rotation matrix
-      r_axisi = r_axis0*sin_T + r_axis1*cos_T;
-      r_axis0 = r_axis0*cos_T - r_axis1*sin_T;
-      r_axis1 = r_axisi;
-      count++;
-    } else {
-      // Arc correction to radius vector. Computed only every n_arc_correction increments.
-      // Compute exact location by applying transformation matrix from initial radius vector(=-offset).
-      cos_Ti = cos(i*theta_per_segment);
-      sin_Ti = sin(i*theta_per_segment);
-      r_axis0 = -offset[axis_0]*cos_Ti + offset[axis_1]*sin_Ti;
-      r_axis1 = -offset[axis_0]*sin_Ti - offset[axis_1]*cos_Ti;
-      count = 0;
-   }
+  while(i < segments) { // Increment (segments-1)
 
-    // Update arc_target location
-    arc_target[X] = center_axis0 + r_axis0;
-    arc_target[Y] = center_axis1 + r_axis1;
-    arc_target[axis_linear] += linear_per_segment;
-    nPx =  arc_target[X] - position[X];
-    position[X] = arc_target[X];
-    nPy =  arc_target[Y] - position[Y];
-    position[Y] = arc_target[Y];
+      if (count < n_arc_correction) {
+        // Apply vector rotation matrix
+        r_axisi = r_axis0*sin_T + r_axis1*cos_T;
+        r_axis0 = r_axis0*cos_T - r_axis1*sin_T;
+        r_axis1 = r_axisi;
+        count++;
+      } else {
+        // Arc correction to radius vector. Computed only every n_arc_correction increments.
+        // Compute exact location by applying transformation matrix from initial radius vector(=-offset).
+        cos_Ti = cos(i*theta_per_segment);
+        sin_Ti = sin(i*theta_per_segment);
+        r_axis0 = -offset[axis_0]*cos_Ti + offset[axis_1]*sin_Ti;
+        r_axis1 = -offset[axis_0]*sin_Ti - offset[axis_1]*cos_Ti;
+        count = 0;
+     }
 
-   while(1){
-      if(!OC5IE_bit && !OC2IE_bit)
-          break;
-   }
+      // Update arc_target location
+      arc_target[X] = center_axis0 + r_axis0;
+      arc_target[Y] = center_axis1 + r_axis1;
+      arc_target[axis_linear] += linear_per_segment;
+      nPx =  arc_target[X] - position[X];
+      position[X] = arc_target[X];
+      nPy =  arc_target[Y] - position[Y];
+      position[Y] = arc_target[Y];
 
-    /* DIR_StepX = (nPx < 0)? CCW:CW;
-     DIR_StepY = (nPy < 0)? CCW:CW;
-     nPx = fabs(nPx);
-     nPy = fabs(nPy);   */
-  //  mc_line(arc_target[X_AXIS], arc_target[Y_AXIS], arc_target[Z_AXIS], feed_rate, invert_feed_rate);
-   STPS[X].mmToTravel = belt_steps(nPx);//calcSteps(nPx,8.06);
-   STPS[Y].mmToTravel = belt_steps(nPy);//calcSteps(nPy,8.06);
-   tempA = abs(STPS[X].mmToTravel);
-   tempB = abs(STPS[Y].mmToTravel);
-   if(tempA > tempB)
-       speed_cntr_Move(STPS[X].mmToTravel, 1000,X);
-   else
-       speed_cntr_Move(STPS[Y].mmToTravel, 1000,Y);
-  // STPS[X].step_delay = 2000;
-  // STPS[Y].step_delay = 2000;
-   DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
-    // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
-   // if (sys.abort) { return; }
+     while(1){
+        if(!OC5IE_bit && !OC2IE_bit)
+            break;
+     }
+      /* DIR_StepX = (nPx < 0)? CCW:CW;
+       DIR_StepY = (nPy < 0)? CCW:CW;
+       nPx = fabs(nPx);
+       nPy = fabs(nPy);   */
+    //  mc_line(arc_target[X_AXIS], arc_target[Y_AXIS], arc_target[Z_AXIS], feed_rate, invert_feed_rate);
+     STPS[X].mmToTravel = belt_steps(nPx);//calcSteps(nPx,8.06);
+     STPS[Y].mmToTravel = belt_steps(nPy);//calcSteps(nPy,8.06);
+     tempA = abs(STPS[X].mmToTravel);
+     tempB = abs(STPS[Y].mmToTravel);
+
+     if(tempA > tempB)
+         speed_cntr_Move(STPS[X].mmToTravel, 1000,X);
+     else
+         speed_cntr_Move(STPS[Y].mmToTravel, 1000,Y);
+    // STPS[X].step_delay = 2000;
+    // STPS[Y].step_delay = 2000;
+#if DMADebug == 1
+   dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f : X:= %l : Y:= %l",
+              i,segments,nPx,nPy,STPS[X].mmToTravel,STPS[Y].mmToTravel);
+#endif
+     DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+      // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
+     // if (sys.abort) { return; }
+   i++;
   }
+  
+#if DMADebug == 1
+   while(DMA_Busy(1));
+   dma_printf("\n%s","Arc Finnished");
+#endif
   // Ensure last segment arrives at target location.
   //mc_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], feed_rate, invert_feed_rate);
 }
