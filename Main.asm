@@ -5,9 +5,9 @@ ADDIU	SP, SP, -40
 ;Main.c,61 :: 		PinMode();
 JAL	_PinMode+0
 NOP	
-;Main.c,62 :: 		StepperConstants(15000,15000);
-ORI	R26, R0, 15000
-ORI	R25, R0, 15000
+;Main.c,62 :: 		StepperConstants(5000,5000);
+ORI	R26, R0, 5000
+ORI	R25, R0, 5000
 JAL	_StepperConstants+0
 NOP	
 ;Main.c,63 :: 		oneShotA = 0;
@@ -377,25 +377,25 @@ J	L_Temp_Move17
 NOP	
 ;Main.c,157 :: 		case 4:
 L_Temp_Move22:
-;Main.c,158 :: 		STPS[X].mmToTravel = belt_steps(100.00);
-LUI	R2, 17096
+;Main.c,158 :: 		STPS[X].mmToTravel = belt_steps(150.00);
+LUI	R2, 17174
 ORI	R2, R2, 0
 SH	R25, 12(SP)
 MTC1	R2, S12
 JAL	_belt_steps+0
 NOP	
 SW	R2, Offset(_STPS+68)(GP)
-;Main.c,160 :: 		STPS[Y].mmToTravel = belt_steps(110.00);
-LUI	R2, 17116
+;Main.c,160 :: 		STPS[Y].mmToTravel = belt_steps(30.00);
+LUI	R2, 16880
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_belt_steps+0
 NOP	
 SW	R2, Offset(_STPS+160)(GP)
-;Main.c,161 :: 		speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
-ORI	R27, R0, 1
+;Main.c,161 :: 		speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
+MOVZ	R27, R0, R0
 ORI	R26, R0, 8000
-MOVZ	R25, R2, R0
+LW	R25, Offset(_STPS+68)(GP)
 JAL	_speed_cntr_Move+0
 NOP	
 ;Main.c,162 :: 		DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
@@ -538,14 +538,14 @@ NOP
 L_Temp_Move27:
 ;Main.c,195 :: 		a = 12;
 ORI	R25, R0, 12
-;Main.c,196 :: 		r_or_ijk(50.00, 50.00, 100.00, 100.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
-LUI	R5, 17096
+;Main.c,196 :: 		r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
+LUI	R5, 16880
 ORI	R5, R5, 0
-LUI	R4, 17096
+LUI	R4, 17174
 ORI	R4, R4, 0
-LUI	R3, 16968
+LUI	R3, 16880
 ORI	R3, R3, 0
-LUI	R2, 16968
+LUI	R2, 17174
 ORI	R2, R2, 0
 SH	R25, 12(SP)
 MOVZ	R27, R0, R0

@@ -430,7 +430,7 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
         SingleStepAxis(Y);
    }else {
       if(STPS[Y].master = 1){
-        if(axis_xyz == xy)
+        if(axis_xyz == xy )
            Axis_Interpolate(X,Y);
         else if(axis_xyz == yz)
            Axis_Interpolate(Y,Z);
@@ -535,20 +535,22 @@ void Axis_Interpolate(int axisA,int axisB){
 
    if(SV.dx >= SV.dy){
       Step_Cycle(axisA);
-      Pulse(axisA);
+      if(!SV.cir)
+        Pulse(axisA);
       if(SV.d2 < 0){
-          SV.d2 += 2*SV.dy;
+          SV.d2 += BresIncVal(SV.dy);//2*SV.dy;//
       }else{
-          SV.d2 += 2 * (SV.dy - SV.dx);
+          SV.d2 += BresDiffVal(SV.dy,SV.dx);//2 * (SV.dy - SV.dx);//
           Step_Cycle(axisB);
       }
    }else{
       Step_Cycle(axisB);
-      Pulse(axisB);
+      if(!SV.cir)
+         Pulse(axisB);
       if(SV.d2 < 0){
-         SV.d2 += 2 * SV.dx;
+         SV.d2 += BresIncVal(SV.dx);//2 * SV.dx;//
       }else{
-         SV.d2 += 2 * (SV.dx - SV.dy);
+         SV.d2 += BresDiffVal(SV.dx,SV.dy);//2 * (SV.dx - SV.dy);//
          Step_Cycle(axisA);
        }
    }

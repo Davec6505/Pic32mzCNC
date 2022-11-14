@@ -259,9 +259,10 @@ typedef struct genVars{
  int dira;
  int dirb;
  int dirc;
+ char cir: 1;
 }sVars;
 extern sVars SV;
-#line 65 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct Steps{
 
  signed long microSec;
@@ -345,11 +346,12 @@ void SetInitialSizes(STP axis[6]);
 
 
 void DualAxisStep(long newx,long newy,int axis_combo);
+void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza);
 void SingleAxisStep(long newxyz,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0,
- uint8_t axis_1,uint8_t axis_linear, double feed_rate,uint8_t invert_feed_rate,
+void mc_arc(double *position, double *target, double *offset, int axis_0,
+ int axis_1,int axis_linear, double feed_rate,uint8_t invert_feed_rate,
  double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
@@ -385,7 +387,7 @@ extern StepTmr STmr;
 
 
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
+typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
 extern axis_combination axis_xyz;

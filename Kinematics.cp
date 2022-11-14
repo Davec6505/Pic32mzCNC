@@ -292,6 +292,7 @@ typedef struct genVars{
  int dira;
  int dirb;
  int dirc;
+ char cir: 1;
 }sVars;
 extern sVars SV;
 #line 1 "c:/users/git/pic32mzcnc/limits.h"
@@ -397,7 +398,7 @@ extern StepTmr STmr;
 
 
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
+typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
 extern axis_combination axis_xyz;
@@ -448,7 +449,7 @@ void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 65 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct Steps{
 
  signed long microSec;
@@ -532,11 +533,12 @@ void SetInitialSizes(STP axis[6]);
 
 
 void DualAxisStep(long newx,long newy,int axis_combo);
+void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza);
 void SingleAxisStep(long newxyz,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0,
- uint8_t axis_1,uint8_t axis_linear, double feed_rate,uint8_t invert_feed_rate,
+void mc_arc(double *position, double *target, double *offset, int axis_0,
+ int axis_1,int axis_linear, double feed_rate,uint8_t invert_feed_rate,
  double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
@@ -571,14 +573,16 @@ static long d2;
 void SetInitialSizes(STP axis[6]){
 int i = 0;
 
+ gc.absolute_mode = 0;
+
  for (i = 0;i< 6 ;i++){
  axis[i].max_travel = max_sizes[i];
  }
 }
-#line 33 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 35 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void SingleAxisStep(long newxyz,int axis_No){
 int dir;
-#line 40 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 42 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis_No].axis_dir =  (((newxyz) < (0))? ( -1 ) : ( 1 )) ;
  SV.Single_Dual = 0;
  STPS[axis_No].psingle = 0;
@@ -615,19 +619,18 @@ int dir;
 
 
 void DualAxisStep(long axis_a,long axis_b,int axis_combo){
-int dirA,dirB;
+int dirA,dirB,master_axis;
+
+
+ SV.cir = 0;
  SV.over=0;
-
- SV.px = 0;
- SV.py = 0;
- SV.pz = 0;
  SV.d2 = 0;
-
 
  SV.Single_Dual = 1;
 
  switch(axis_combo){
  case xy:
+
 
  axis_xyz = xy;
 
@@ -650,7 +653,7 @@ int dirA,dirB;
  SV.dx = labs(SV.dx);
  SV.dy = labs(SV.dy);
 
- if(SV.dx > SV.dy)
+ if(SV.dx >= SV.dy)
  SV.d2 =  ((2)*((SV.dy) - (SV.dx))) ;
  else
  SV.d2 =  ((2)*((SV.dx) - (SV.dy))) ;
@@ -733,8 +736,79 @@ int dirA,dirB;
  default: break;
 
  }
+
+ SV.px = 0;
+ SV.py = 0;
+ SV.pz = 0;
 }
-#line 213 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza){
+long tempA,tempB;
+int dirA,dirB;
+ SV.over=0;
+ SV.d2 = 0;
+
+
+ SV.Single_Dual = 1;
+
+
+ Multi_Axis_Enable(xyza);
+
+ if (!gc.absolute_mode){
+ SV.px = 0;
+ SV.py = 0;
+ SV.pz = 0;
+ }
+
+
+ STPS[axisA].axis_dir =  (((axis_a) < (0))? ( -1 ) : ( 1 )) ;
+ STPS[axisB].axis_dir =  (((axis_b) < (0))? ( -1 ) : ( 1 )) ;
+
+
+ SV.dx = axis_a - SV.px;
+ SV.dy = axis_b - SV.py;
+
+
+
+ dirA = SV.dx > 0?  0 : 1 ;
+ dirB = SV.dy > 0?  0 : 1 ;
+
+ DIR_StepX = ( 1  ^ dirA) & 0x0001;
+ DIR_StepY = ( 0  ^ dirB) & 0x0001;
+
+
+ SV.dx = labs(SV.dx);
+ SV.dy = labs(SV.dy);
+
+ if(SV.dx >= SV.dy){
+ SV.d2 =  ((2)*((SV.dy) - (SV.dx))) ;
+
+ STPS[axisA].master = 1;
+ STPS[axisB].master = 0;
+ }
+ else{
+ SV.d2 =  ((2)*((SV.dx) - (SV.dy))) ;
+
+ STPS[axisA].master = 0;
+ STPS[axisB].master = 1;
+ }
+
+ STPS[axisA].step_count = 0;
+ STPS[axisB].step_count = 0;
+ STPS[axisA].mmToTravel = axis_a;
+ STPS[axisB].mmToTravel = axis_b;
+ STPS[axisA].step_delay = 2000;
+ STPS[axisB].step_delay = 2000;
+ Axis_Interpolate(axisA,axisB);
+
+
+
+
+
+
+
+}
+#line 284 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir){
 unsigned short isclockwise = 0;
@@ -745,7 +819,7 @@ double offset[ 6 ];
 double x = 0.00;
 double y = 0.00;
 double h_x2_div_d = 0.00;
-unsigned int axis_plane_a,axis_plane_b;
+int axis_plane_a,axis_plane_b;
 
 
  position[axis_A] = Cur_axis_a;
@@ -753,11 +827,12 @@ unsigned int axis_plane_a,axis_plane_b;
  position[2] = 0;
  target[axis_A] = Fin_axis_a;
  target[axis_B] = Fin_axis_b;
+ target[2] = 0;
  offset[axis_A] = i;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 298 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 370 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -770,7 +845,7 @@ unsigned int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (gc.motion_mode ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 332 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 404 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -791,12 +866,19 @@ unsigned int axis_plane_a,axis_plane_b;
 
 
 
- mc_arc(position, target, offset, gc.plane_axis_0, gc.plane_axis_1, gc.plane_axis_2,
+ mc_arc(position, target, offset, axis_A, axis_B, Z,
   250.0 , gc.inverse_feed_rate_mode,r, isclockwise);
 }
-#line 381 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, uint8_t axis_1,
- uint8_t axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
+
+
+
+
+float hypot(float angular_travel, float linear_travel){
+ return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
+}
+#line 461 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+void mc_arc(double *position, double *target, double *offset, int axis_0, int axis_1,
+ int axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
  long tempA,tempB;
  double center_axis0 = position[axis_0] + offset[axis_0];
  double center_axis1 = position[axis_1] + offset[axis_1];
@@ -813,15 +895,15 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  unsigned int segments = 0;
  double cos_T = 0.00;
  double sin_T = 0.00;
-
  double arc_target[3];
  double sin_Ti;
  double cos_Ti;
  double r_axisi;
+ double nPx,nPy;
  unsigned int i = 0;
  int count = 0;
- double nPx,nPy;
- char n_arc_correction;
+ char n_arc_correction = 3;
+
  arc_target[axis_linear] = position[axis_linear];
  rads = radius *  ( 3.141593 /180.00) ;
 
@@ -839,10 +921,10 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  }
 
 
- mm_of_travel = hypot(angular_travel*rads, fabs(linear_travel));
+ mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
  if (mm_of_travel == 0.0) { return; }
 
- segments = (unsigned int)floor(mm_of_travel/ 0.3 );
+ segments = (unsigned int)floor(mm_of_travel/ 0.8 );
 
 
 
@@ -856,15 +938,16 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
 
  linear_per_segment = linear_travel/(double)segments;
 
- dma_printf("\nangTrav:= %f : mmoftrav:= %f : Lin_trav:= %f\nLinPseg:= %f : *pSeg:= %f",
- angular_travel,mm_of_travel,linear_travel,linear_per_segment,theta_per_segment);
 
  cos_T = 1-0.5*theta_per_segment*theta_per_segment;
  sin_T = theta_per_segment;
 
- nPx = arc_target[X] = position[X];
- nPy = arc_target[Y] = position[Y];
-
+ nPx = arc_target[axis_0] = position[axis_0];
+ nPy = arc_target[axis_1] = position[axis_1];
+ OC5IE_bit = OC2IE_bit = 0;
+ i = 0;
+ dma_printf("\n[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%d]\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\n[LinPseg:= %f : *pSeg:= %f]",
+ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel,linear_travel,linear_per_segment,theta_per_segment);
  while(i < segments) {
 
  if (count < n_arc_correction) {
@@ -884,35 +967,31 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
  }
 
 
- arc_target[X] = center_axis0 + r_axis0;
- arc_target[Y] = center_axis1 + r_axis1;
+ arc_target[axis_0] = center_axis0 + r_axis0;
+ arc_target[axis_1] = center_axis1 + r_axis1;
  arc_target[axis_linear] += linear_per_segment;
- nPx = arc_target[X] - position[X];
- position[X] = arc_target[X];
- nPy = arc_target[Y] - position[Y];
- position[Y] = arc_target[Y];
+ nPx = arc_target[axis_0] - position[axis_0];
+ position[axis_0] = arc_target[axis_0];
+ nPy = arc_target[axis_1] - position[axis_1];
+ position[axis_1] = arc_target[axis_1];
+
+ tempA = belt_steps(nPx);
+ tempB = belt_steps(nPy);
+
+
+ if(!DMA_Busy(1));
+ dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f : X:= %l : Y:= %l",
+ i,segments,nPx,nPy,tempA,tempB);
+
+ SV.cir = 1;
+ DualAxisStep2(tempA, tempB,axis_0,axis_1,xy);
 
  while(1){
  if(!OC5IE_bit && !OC2IE_bit)
  break;
  }
-#line 487 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
- STPS[X].mmToTravel = belt_steps(nPx);
- STPS[Y].mmToTravel = belt_steps(nPy);
- tempA = abs(STPS[X].mmToTravel);
- tempB = abs(STPS[Y].mmToTravel);
-
- if(tempA > tempB)
- speed_cntr_Move(STPS[X].mmToTravel, 1000,X);
- else
- speed_cntr_Move(STPS[Y].mmToTravel, 1000,Y);
 
 
-
- dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f : X:= %l : Y:= %l",
- i,segments,nPx,nPy,STPS[X].mmToTravel,STPS[Y].mmToTravel);
-
- DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
 
 
  i++;
@@ -927,11 +1006,6 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
 }
 
 
-
-
-float hypot(float angular_travel, float linear_travel){
- return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
-}
 
 
 

@@ -21,6 +21,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Stepper.h
 =======
 =======
@@ -48,6 +49,9 @@ Value=Serial_Dma.c
 >>>>>>> patch1
 =======
 Value=Main.c
+>>>>>>> patch1
+=======
+Value=Kinematics.c
 >>>>>>> patch1
 =======
 Value=Main.c
@@ -160,8 +164,15 @@ File3=Kinematics.c
 File4=Kinematics.h
 File5=Serial_Dma.c
 File6=DEFINES.pld
+<<<<<<< HEAD
 File7=Config.h
 Count=8
+>>>>>>> patch1
+=======
+File7=Globals.h
+File8=GCODE.h
+File9=Settings.h
+Count=10
 >>>>>>> patch1
 [EEPROM]
 Count=0
