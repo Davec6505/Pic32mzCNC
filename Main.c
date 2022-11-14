@@ -59,7 +59,7 @@ int xyz_ = 0, i;
 static int cntr;
  // fp = Test_Min;
   PinMode();
-  StepperConstants(15000,15000);
+  StepperConstants(5000,5000);
   oneShotA = 0;
   a=0;
   disableOCx();
@@ -155,10 +155,10 @@ int Temp_Move(int a){
              SingleAxisStep(STPS[X].mmToTravel,X);
              break;
        case 4:
-             STPS[X].mmToTravel = belt_steps(100.00);
+             STPS[X].mmToTravel = belt_steps(150.00);
             // speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
-             STPS[Y].mmToTravel = belt_steps(110.00);
-             speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
+             STPS[Y].mmToTravel = belt_steps(30.00);
+             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
              DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
              a = 9;
              break;
@@ -193,7 +193,7 @@ int Temp_Move(int a){
             //         double Fin_axis_b,double r, double i, double j, double k,
             //         int axis_A,int axis_B)
             a = 12;
-            r_or_ijk(50.00, 50.00, 100.00, 100.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
+            r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
 
             break;
        case 10://Homing X axis

@@ -88,10 +88,11 @@ main
 						eval_poly
 				sin
 				belt_steps
-				abs
-				speed_cntr_Move
-				DualAxisStep
 				DMA_Busy
+				DualAxisStep2
+					Multi_Axis_Enable
+					labs
+					Axis_Interpolate
 				__CC2DW
 		Home
 			FP

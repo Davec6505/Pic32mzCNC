@@ -88,6 +88,7 @@ typedef struct genVars{
  int dira;
  int dirb;
  int dirc;
+ char cir: 1;
 }sVars;
 extern sVars SV;
 #line 3 "C:/Users/Git/Pic32mzCNC/Globals.c"

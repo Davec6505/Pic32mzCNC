@@ -19,6 +19,7 @@
 #define zero 0
 #define Direction(a) (((a) < (0))? (CCW_) : (CW_))
 //Bresenhams differential calculation
+#define BresIncVal(a) ((2)*(a))
 #define BresDiffVal(a,b) ((2)*((a) - (b)))
 
 /////////////////////////////////////////////////////////
@@ -45,7 +46,7 @@
 #define Z_AXIS 2
 
 #define DEFAULT_FEEDRATE 250.0
-#define DEFAULT_MM_PER_ARC_SEGMENT 0.3
+#define DEFAULT_MM_PER_ARC_SEGMENT 0.8
 
 
 // Useful macros
@@ -53,11 +54,6 @@
 #define clear_vector_float(a) memset(a, 0.0, sizeof(float)*N_AXIS)
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-/*
- *FUNCTION POINTER ARRAY FOR TOGGLING BETWEEN LINEAR
- *OUTPUT COMPARE AND CIRCULAR OUTPUT COMPARE
- */
-
 
 ////////////////////////////////////////////////////
 //       ******LINEAR INTERPOLATION******         //
@@ -145,11 +141,12 @@ void SetInitialSizes(STP axis[6]);
 
 //Move inline
 void DualAxisStep(long newx,long newy,int axis_combo);
+void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza);
 void SingleAxisStep(long newxyz,int axis_No);
 
 //Circle move axis
-void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, 
-            uint8_t axis_1,uint8_t axis_linear, double feed_rate,uint8_t invert_feed_rate, 
+void mc_arc(double *position, double *target, double *offset, int axis_0,
+            int axis_1,int axis_linear, double feed_rate,uint8_t invert_feed_rate,
             double radius, uint8_t isclockwise);
 float hypot(float angular_travel, float linear_travel);
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,

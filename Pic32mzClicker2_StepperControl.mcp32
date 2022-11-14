@@ -14,7 +14,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Main.c
+Value=Kinematics.c
 =======
 Value=Main.c
 >>>>>>> patch2
@@ -75,8 +75,10 @@ File3=Kinematics.c
 File4=Kinematics.h
 File5=Serial_Dma.c
 File6=DEFINES.pld
-File7=Config.h
-Count=8
+File7=Globals.h
+File8=GCODE.h
+File9=Settings.h
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

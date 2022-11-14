@@ -14024,6 +14024,7 @@ chtaif_dch4int_bit
 chtaif_dch5int_bit
 chtaif_dch6int_bit
 chtaif_dch7int_bit
+cir
 cke
 cke
 cke
@@ -25328,6 +25329,7 @@ dtwren_usbe5csr0_bit
 dtwren_usbe6csr0_bit
 dtwren_usbe7csr0_bit
 dualaxisstep
+dualaxisstep2
 dualbuf
 dualbuf
 dualbuf

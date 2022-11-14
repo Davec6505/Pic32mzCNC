@@ -68,7 +68,7 @@ extern StepTmr STmr;
 
 //enums
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za}axis_combination ;
+typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
 extern axis_combination axis_xyz;
