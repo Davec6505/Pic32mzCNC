@@ -32,22 +32,23 @@ int i = 0;
 *speed increase due to no 2nd axis interpolation
 *use a dummy axis or increase the speed
 *****************************************************/
-void SingleAxisStep(long newxyz,int axis_No){
-int dir;
-
+void SingleAxisStep(double newxyz,long speed,int axis_No){
+long tempA = 0;
+int dir = 0;
+      Single_Axis_Enable(axis_No);
+      tempA = belt_steps(newxyz);
+      speed_cntr_Move(tempA , speed , axis_No);
+      
 //static long dist;
       /* if(STPS[axis].psingle != newxyz)
              STPS[axis].psingle = newxyz; */
-
-     STPS[axis_No].axis_dir = Direction(newxyz);
+     STPS[axis_No].axis_dir = Direction(tempA);
      SV.Single_Dual = 0;
      STPS[axis_No].psingle  = 0;
      
-     Single_Axis_Enable(axis_No);
-     STPS[axis_No].dist = newxyz - STPS[axis_No].psingle;
-     STPS[axis_No].dist = labs(newxyz);
-     dir = (newxyz < 0)? CCW : CW;
-
+     STPS[axis_No].dist = tempA - STPS[axis_No].psingle;
+     STPS[axis_No].dist = labs(tempA);
+     dir = (tempA < 0)? CCW : CW;
      switch(axis_No){
        case X:
             DIR_StepX = (X_DIR_DIR ^ dir) & 0x0001;//(X_DIR_DIR)?dir:~dir;
@@ -63,7 +64,9 @@ int dir;
             break;
        default: break;
      }
+     
      STPS[axis_No].step_count = 0;
+     STPS[axis_No].mmToTravel = tempA;
      //Start output compare module
      Step_Cycle(axis_No);
 
@@ -72,143 +75,22 @@ int dir;
 //////////////////////////////////////////////////////////
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
-//this mus become more code efficient by supplying pointer
-//arguments ???
-void DualAxisStep(long axis_a,long axis_b,int axis_combo){
-int dirA,dirB,master_axis;
 
 
-   SV.cir = 0;
-   SV.over=0;
-   SV.d2 = 0;
-
-  SV.Single_Dual = 1;
-
-  switch(axis_combo){
-    case xy:
-          // set the enum variable
-          // axis_xyz = (master_axis == 0)? xy:yx;
-          axis_xyz = xy;
-          //set the direction counter for absolute position
-          STPS[X].axis_dir = Direction(axis_a);
-          STPS[Y].axis_dir = Direction(axis_b);
-          //Enable the relevant axis in Stepper.c
-          Multi_Axis_Enable(axis_xyz);
-          //Delta distance to move
-          SV.dx   = axis_a - SV.px;
-          SV.dy   = axis_b - SV.py;
-          
-          // Set direction from sign on step value.
-          //Set the Dir_bits
-          dirA = SV.dx > 0? CW:CCW;
-          dirB = SV.dy > 0? CW:CCW;
-          //inversion mask
-          DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
-          DIR_StepY = (Y_DIR_DIR ^ dirB) & 0x0001;
-          //Remove -ve values
-          SV.dx = labs(SV.dx);
-          SV.dy = labs(SV.dy);
-          //Start values for Bresenhams
-          if(SV.dx >= SV.dy)
-             SV.d2 = BresDiffVal(SV.dy,SV.dx);//2*(SV.dy - SV.dx);
-          else
-             SV.d2 = BresDiffVal(SV.dx,SV.dy);//2* (SV.dx - SV.dy);
-
-          if(SV.dx >= SV.dy){
-             STPS[X].master = 1;
-             STPS[Y].master = 0;
-          }else{
-             STPS[X].master = 0;
-             STPS[Y].master = 1;
-          }
-
-           STPS[X].step_count = 0;
-           STPS[Y].step_count = 0;
-           Axis_Interpolate(X,Y);
-         break;
-    case xz:
-          // set the enum variable
-          axis_xyz = xz;
-          //set the direction counter for absolute position
-          STPS[X].axis_dir = Direction(axis_a);
-          STPS[Z].axis_dir = Direction(axis_b);
-          //Enable the relevant axis in Stepper.c
-          Multi_Axis_Enable(axis_xyz);
-          
-          // Set direction from sign on step value.
-          //Delta distance to move
-          SV.dx   = axis_a - SV.px;
-          SV.dz   = axis_b - SV.pz;
-          //Set the Dir_bits
-          dirA = SV.dx > 0? CW:CCW;
-          dirB = SV.dz > 0? CW:CCW;
-          //Inversion mask
-          DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
-          DIR_StepZ = (Z_DIR_DIR ^ dirB) & 0x0001;
-          //Remove -ve values
-          SV.dx = labs(SV.dx);
-          SV.dz = labs(SV.dz);
-
-          if(SV.dx > SV.dz) 
-             d2 = BresDiffVal(SV.dz,SV.dx);//2*(SV.dz - SV.dx);
-          else 
-             d2 = BresDiffVal(SV.dx,SV.dx);//2* (SV.dx - SV.dz);
-
-          STPS[X].step_count = 0;
-          STPS[Z].step_count = 0;
-          Axis_Interpolate(X,Z);
-         break;
-    case yz:
-          // set the enum variable
-          axis_xyz = yz;
-          STPS[Y].axis_dir = Direction(axis_a);
-          STPS[Z].axis_dir = Direction(axis_b);
-          //Enable the relevant axis in Stepper.c
-          Multi_Axis_Enable(axis_xyz);
-
-          // Set direction from sign on step value.
-          //Delta distance to move
-          SV.dy   = axis_a - SV.pz;
-          SV.dz   = axis_b - SV.py;
-          // direction to move
-          dirA = SV.dy > 0? CW:CCW;
-          dirB = SV.dz > 0? CW:CCW;
-          //Inversion mask
-          DIR_StepY = (Y_DIR_DIR ^ dirA) & 0x0001;
-          DIR_StepZ = (Z_DIR_DIR ^ dirB) & 0x0001;
-          //Remove -ve
-          SV.dy = labs(SV.dy);
-          SV.dz = labs(SV.dz);
-
-         if(SV.dy > SV.dz)
-            SV.d2 = BresDiffVal(SV.dz,SV.dy);//2*(SV.dz - SV.dy);
-         else 
-            SV.d2 = BresDiffVal(SV.dy,SV.dz);//2* (SV.dy - SV.dz);
-
-         STPS[Y].step_count = 0;
-         STPS[Z].step_count = 0;
-         Axis_Interpolate(Y,Z);
-         break;
-    default: break;
-
-  }
-  //leave previous values at 0 for now
-   SV.px = 0;//SV.dx;
-   SV.py = 0;//SV.dy;
-   SV.pz = 0;//SV.dz;
-}
-
-void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza){
+void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed){//,int xyza){
 long tempA,tempB;
 int dirA,dirB;
    SV.over=0;
    SV.d2 = 0;
 
+   tempA = belt_steps(axis_a);
+   tempB = belt_steps(axis_b);
+   
    //Enable the relevant axis in Stepper.c
    SV.Single_Dual = 1;
-  // Single_Axis_Enable(axisA);
-  // Single_Axis_Enable(axisB);
-   Multi_Axis_Enable(xyza);
+   Single_Axis_Enable(axisA);
+   Single_Axis_Enable(axisB);
+  // Multi_Axis_Enable(xyza);
    
    if (!gc.absolute_mode){
      SV.px = 0;
@@ -217,12 +99,12 @@ int dirA,dirB;
    }
    
   //set the direction counter for absolute position
-  STPS[axisA].axis_dir = Direction(axis_a);
-  STPS[axisB].axis_dir = Direction(axis_b);
+  STPS[axisA].axis_dir = Direction(tempA);
+  STPS[axisB].axis_dir = Direction(tempB);
 
   //Delta distance to move
-  SV.dx   = axis_a - SV.px;
-  SV.dy   = axis_b - SV.py;
+  SV.dx   = tempA - SV.px;
+  SV.dy   = tempB - SV.py;
 
   // Set direction from sign on step value.
   //Set the Dir_bits
@@ -231,30 +113,35 @@ int dirA,dirB;
   //inversion mask
   DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
   DIR_StepY = (Y_DIR_DIR ^ dirB) & 0x0001;
+
   //Remove -ve values
-  
   SV.dx = labs(SV.dx);
   SV.dy = labs(SV.dy);
+  
+  
   //Start values for Bresenhams
   if(SV.dx >= SV.dy){
+     if(!SV.cir)
+        speed_cntr_Move(tempA,speed,axisA);
+
      SV.d2 = BresDiffVal(SV.dy,SV.dx);//2*(SV.dy - SV.dx);
-     //speed_cntr_Move(axis_a, 2000,axisA);
      STPS[axisA].master = 1;
      STPS[axisB].master = 0;
   }
   else{
+     if(!SV.cir)
+        speed_cntr_Move(tempB,speed,axisB);
+
      SV.d2 = BresDiffVal(SV.dx,SV.dy);//2* (SV.dx - SV.dy);
-     //speed_cntr_Move(axis_b, 2000,axisB);
      STPS[axisA].master = 0;
      STPS[axisB].master = 1;
   }
-
+  
    STPS[axisA].step_count = 0;
    STPS[axisB].step_count = 0;
-   STPS[axisA].mmToTravel = axis_a;
-   STPS[axisB].mmToTravel = axis_b;
-   STPS[axisA].step_delay  = 2000;
-   STPS[axisB].step_delay = 2000;
+   STPS[axisA].mmToTravel = tempA;
+   STPS[axisB].mmToTravel = tempB;
+
    Axis_Interpolate(axisA,axisB);
    
   //leave previous values at 0 for now
@@ -293,6 +180,7 @@ double y = 0.00;
 double h_x2_div_d = 0.00;
 int axis_plane_a,axis_plane_b;
 
+   
      //use thess arrays to simplify call to arc function
      position[axis_A] = Cur_axis_a;
      position[axis_B] = Cur_axis_b;
@@ -485,6 +373,7 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  int count = 0;
  char n_arc_correction = 3; //to be sorted int global struct???
  
+
   arc_target[axis_linear] = position[axis_linear];
   rads = radius * deg2rad;
   // CCW angle between position and target from circle center. Only one atan2() trig computation required.
@@ -527,8 +416,10 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
   nPy = arc_target[axis_1] = position[axis_1];
   OC5IE_bit = OC2IE_bit = 0;
   i = 0;
+#if DMADebug == -1
   dma_printf("\n[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%d]\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\n[LinPseg:= %f : *pSeg:= %f]",
              cos_T,sin_T,radius,segments,angular_travel,mm_of_travel,linear_travel,linear_per_segment,theta_per_segment);
+#endif
   while(i < segments) { // Increment (segments-1)
 
       if (count < n_arc_correction) {
@@ -545,7 +436,7 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
         r_axis0 = -offset[axis_0]*cos_Ti + offset[axis_1]*sin_Ti;
         r_axis1 = -offset[axis_0]*sin_Ti - offset[axis_1]*cos_Ti;
         count = 0;
-     }
+      }
 
       // Update arc_target location
       arc_target[axis_0] = center_axis0 + r_axis0;
@@ -556,24 +447,25 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
       nPy =  arc_target[axis_1] - position[axis_1];
       position[axis_1] = arc_target[axis_1];
 
-      tempA = belt_steps(nPx);//calcSteps(nPx,8.06);
-      tempB = belt_steps(nPy);//calcSteps(nPy,8.06);
+      STPS[axis_0].step_delay = 1000;
+      STPS[axis_1].step_delay = 1000;
 
-#if DMADebug == 1
+#if DMADebug == -1
      if(!DMA_Busy(1));
        dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f : X:= %l : Y:= %l",
                   i,segments,nPx,nPy,tempA,tempB);
 #endif
+
      SV.cir = 1;
-     DualAxisStep2(tempA, tempB,axis_0,axis_1,xy);
+     DualAxisStep(nPx, nPy,axis_0,axis_1,1000);//,xy);
      
      while(1){
         if(!OC5IE_bit && !OC2IE_bit)
             break;
      }
 
-      // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
-     // if (sys.abort) { return; }
+    // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
+    // if (sys.abort) { return; }
 
    i++;
   }
@@ -582,8 +474,7 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
    while(DMA_Busy(1));
    dma_printf("\n%s","Arc Finnished");
 #endif
-  // Ensure last segment arrives at target location.
-  //mc_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], feed_rate, invert_feed_rate);
+
 }
 
 
@@ -665,15 +556,15 @@ long speed = 0;
 void Home_Axis(double distance,long speed,int axis){
       distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
       distance = (distance < 0.0)? distance : -distance;
-      STPS[axis].mmToTravel = belt_steps(distance);
-      speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
-      SingleAxisStep(STPS[axis].mmToTravel,axis);
+     // STPS[axis].mmToTravel = belt_steps(distance);
+     // speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
+     // SingleAxisStep(STPS[axis].mmToTravel,axis);
 }
 //Re verse
 void Inv_Home_Axis(double distance,long speed,int axis){
       distance = (distance > 10.0)?  10.0 : distance;
       distance *= (distance < 0.0)?  -1.0 : 1.0;
-      STPS[axis].mmToTravel = belt_steps(distance);
-      speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
-      SingleAxisStep(STPS[axis].mmToTravel,axis);
+    //  STPS[axis].mmToTravel = belt_steps(distance);
+    //  speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
+    //  SingleAxisStep(STPS[axis].mmToTravel,axis);
 }

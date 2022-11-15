@@ -25329,7 +25329,6 @@ dtwren_usbe5csr0_bit
 dtwren_usbe6csr0_bit
 dtwren_usbe7csr0_bit
 dualaxisstep
-dualaxisstep2
 dualbuf
 dualbuf
 dualbuf
@@ -40025,7 +40024,6 @@ multi
 multi
 multi
 multi
-multi_axis_enable
 multi_bit
 multi_sbt10elog1_bit
 multi_sbt11elog1_bit

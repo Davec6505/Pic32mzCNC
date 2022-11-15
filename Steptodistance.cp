@@ -380,9 +380,8 @@ extern Homing homing[ 6 ];
 void SetInitialSizes(STP axis[6]);
 
 
-void DualAxisStep(long newx,long newy,int axis_combo);
-void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza);
-void SingleAxisStep(long newxyz,int axis_No);
+void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
 void mc_arc(double *position, double *target, double *offset, int axis_0,
@@ -546,7 +545,6 @@ void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
 void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
-void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
 void Test_CycleX();

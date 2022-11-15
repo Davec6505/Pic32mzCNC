@@ -354,39 +354,6 @@ void Single_Axis_Enable(_axis_ axis_){
     }
 }
 
-//////////////////////////////////////////////////////////
-//      ENABLE / DISABLE  MULTI AXIS  CONTROL           //
-//////////////////////////////////////////////////////////
-void Multi_Axis_Enable(axis_combination axis){
-   switch(axis){
-     case xy:
-          OC5IE_bit = 1;OC5CONbits.ON = 1;  //X
-          OC2IE_bit = 1;OC2CONbits.ON = 1;  //Y
-          break;
-     case xz:
-          OC5IE_bit = 1;OC5CONbits.ON = 1;  //X
-          OC7IE_bit = 1;OC7CONbits.ON = 1;  //Y
-          break;
-     case yz:
-          OC2IE_bit = 1;OC2CONbits.ON = 1;  //Y
-          OC7IE_bit = 1;OC7CONbits.ON = 1;  //Z
-          break;
-     case xa:
-          OC5IE_bit = 1;OC5CONbits.ON = 1;  //Y
-          OC3IE_bit = 1;OC3CONbits.ON = 1;  //Z
-          break;
-     case ya:
-          OC2IE_bit = 1;OC2CONbits.ON = 1;  //Y
-          OC3IE_bit = 1;OC3CONbits.ON = 1;  //Z
-          break;
-     case za:
-          OC7IE_bit = 1;OC7CONbits.ON = 1;  //Y
-          OC3IE_bit = 1;OC3CONbits.ON = 1;  //Z
-          break;
-     default:
-          break;
-   }
-}
 
 void disableOCx(){
      OC5IE_bit = 0;OC5CONbits.ON = 0; //X

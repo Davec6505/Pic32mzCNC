@@ -379,9 +379,8 @@ extern Homing homing[ 6 ];
 void SetInitialSizes(STP axis[6]);
 
 
-void DualAxisStep(long newx,long newy,int axis_combo);
-void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza);
-void SingleAxisStep(long newxyz,int axis_No);
+void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
 void mc_arc(double *position, double *target, double *offset, int axis_0,
@@ -545,7 +544,6 @@ void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
 void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
-void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
 void Test_CycleX();
@@ -887,39 +885,6 @@ void Single_Axis_Enable(_axis_ axis_){
 }
 
 
-
-
-void Multi_Axis_Enable(axis_combination axis){
- switch(axis){
- case xy:
- OC5IE_bit = 1;OC5CONbits.ON = 1;
- OC2IE_bit = 1;OC2CONbits.ON = 1;
- break;
- case xz:
- OC5IE_bit = 1;OC5CONbits.ON = 1;
- OC7IE_bit = 1;OC7CONbits.ON = 1;
- break;
- case yz:
- OC2IE_bit = 1;OC2CONbits.ON = 1;
- OC7IE_bit = 1;OC7CONbits.ON = 1;
- break;
- case xa:
- OC5IE_bit = 1;OC5CONbits.ON = 1;
- OC3IE_bit = 1;OC3CONbits.ON = 1;
- break;
- case ya:
- OC2IE_bit = 1;OC2CONbits.ON = 1;
- OC3IE_bit = 1;OC3CONbits.ON = 1;
- break;
- case za:
- OC7IE_bit = 1;OC7CONbits.ON = 1;
- OC3IE_bit = 1;OC3CONbits.ON = 1;
- break;
- default:
- break;
- }
-}
-
 void disableOCx(){
  OC5IE_bit = 0;OC5CONbits.ON = 0;
  OC2IE_bit = 0;OC2CONbits.ON = 0;
@@ -1086,7 +1051,7 @@ void Axis_Interpolate(int axisA,int axisB){
  }
  }
 }
-#line 567 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 534 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 unsigned int min_(unsigned int x, unsigned int y){
  if(x < y){
  return x;
@@ -1095,7 +1060,7 @@ unsigned int min_(unsigned int x, unsigned int y){
  return y;
  }
 }
-#line 584 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 551 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 static unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;
@@ -1126,7 +1091,7 @@ static unsigned long sqrt_(unsigned long x){
  return xr;
  }
 }
-#line 637 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 604 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 void CycleStop(){
 int ii;
  STmr.uSec = 0;

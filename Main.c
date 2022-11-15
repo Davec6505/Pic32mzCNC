@@ -59,7 +59,7 @@ int xyz_ = 0, i;
 static int cntr;
  // fp = Test_Min;
   PinMode();
-  StepperConstants(5000,5000);
+  StepperConstants(15000,15000);
   oneShotA = 0;
   a=0;
   disableOCx();
@@ -94,7 +94,7 @@ static int cntr;
         EnStepperZ();
         EnStepperA();
         ResetHoming();
-        a = 4;
+        a = 0;
      }
      //X Y Z
      if(Toggle){
@@ -114,89 +114,63 @@ static int cntr;
        }else{
           if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
              a = Temp_Move(a);
-            /* if(a < 9){
-                  a++;
-                  if(a == 9)a=10;
-             } */
+#if DMADebug == 1
+             dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
+                     a,STPS[X].dist,STPS[X].mmToTravel,
+                     STPS[X].step_count);
+#endif
           }
        }
-
-        #if DMADebug == 10
-          dma_printf("\nStep:=\t%l mm2mve:=\t%l: Step:=\t%l",
-                     STPS[X].dist,STPS[X].mmToTravel,
-                     STPS[X].step_count);
-        #endif
-        
      }
-
   }
 }
 
 int Temp_Move(int a){
     switch(a){
       case 0:
-             STPS[Y].mmToTravel = belt_steps(50.00);
-             speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
-             SingleAxisStep(STPS[Y].mmToTravel,Y);
+             SingleAxisStep(50.00,8000,Y);
+             a = 1;
              break;
       case 1:
-             STPS[X].mmToTravel = belt_steps(50.00);
-             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
-             SingleAxisStep(STPS[X].mmToTravel,X);
+             SingleAxisStep(50.00,8000,X);
+             a = 2;
              break;
        case 2:
-             STPS[Y].mmToTravel = belt_steps(-50.00);
-             speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
-             SingleAxisStep(STPS[Y].mmToTravel,Y);
+             SingleAxisStep(-50.00,8000,Y);
+             a = 3;
              break;
       case 3:
-             STPS[X].mmToTravel = belt_steps(-50.00);
-             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
-             SingleAxisStep(STPS[X].mmToTravel,X);
+            SingleAxisStep(-50.00,8000,X);
+            a = 4;
              break;
        case 4:
-             STPS[X].mmToTravel = belt_steps(150.00);
-            // speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
-             STPS[Y].mmToTravel = belt_steps(30.00);
-             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
-             DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
-             a = 9;
+             DualAxisStep(150.00, 100.00,X,Y,8000);
+             a = 5;
              break;
        case 5:
-             STPS[X].mmToTravel = belt_steps(-50.00);
-             //speed_cntr_Move(STPS[X].mmToTravel, 75000,X);
-             STPS[Y].mmToTravel = belt_steps(-100.00);
-             speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
-             DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+             DualAxisStep(-150.00, -100.00,X,Y,8000);
+             a = 6;
              break;
        case 6:
-             STPS[X].mmToTravel = belt_steps(150.00);
-             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
-             STPS[Y].mmToTravel = belt_steps(100.00);
-           //  speed_cntr_Move(STPS[Y].mmToTravel, 5000,Y);
-             DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+             DualAxisStep(150.00, 30.00,X,Y,8000);
+             a = 9;
              break;
        case 7:
-             STPS[X].mmToTravel = belt_steps(-150.00);
-             speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
-             STPS[Y].mmToTravel = belt_steps(-100.00);
-            // speed_cntr_Move(STPS[Y].mmToTravel, 5000,Y);
-             DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+             DualAxisStep(-150.00, -30.00,X,Y,8000);
+             a = 8;
              break;
        case 8:
-             STPS[A].mmToTravel = belt_steps(150.00);
-             speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
-             SingleAxisStep(STPS[A].mmToTravel,A);
+             SingleAxisStep(350.00,10000,A);
+             a = 9;
              break;
        case 9:
             //r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,
             //         double Fin_axis_b,double r, double i, double j, double k,
             //         int axis_A,int axis_B)
-            a = 12;
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
-
+            a = 12;
             break;
-       case 10://Homing X axis
+       case 10://Homing X axis                                                                abcdef
             Home(X);
             break;
        case 11://Homing Y axis
