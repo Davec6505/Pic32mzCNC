@@ -3,6 +3,8 @@
 #define err(x,y) x##y
 #define DMAx_err(x,y) (#x " " #y)
 
+
+Serial serial;
 char rxBuf[200] = {0}  absolute 0xA0002000 ; //resides in flash ??
 char txBuf[200] = {0}  absolute 0xA0002200 ;
 char cherie[] = " CHERIF Error\r";
@@ -47,7 +49,7 @@ void  DMA0(){
     DCH0ECON      =  (146 << 8 ) | 0x30;
     
     //Pattern data
-    DCH0DAT       =  '\r';
+    DCH0DAT       =  '\n';
     
     //Source address as UART_RX
     DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
@@ -78,6 +80,8 @@ void  DMA0(){
     //Set up AutoEnable & Priority as 3       .
     DCH0CONSET      = 0X0000013;
     
+    //set the recieve buffer counts to 0
+    serial.head = serial.tail = serial.diff = 0;
 }
 
 ////////////////////////////////////////
@@ -109,32 +113,70 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
 
     dma0int_flag = DCH0INT & 0x00FF;         //flags to sample in code if needed
 
- // THIS CHANNEL IS AUTOMATICALLY ENABLED AFTER A BLOCK
- // OR ERROR ABORT EVENT, THIS SHOULD TAKE PLACE IF A
- // '\n' HAS BEEN RECIEVED OR 200 BYTES EXCEEDED
-    if (DCH0INTbits.CHBCIF == 1) {
 
-      // LOOPBACK EXAMPLE USE THIS TO SEND DATA
-      // ENABLE DMA1 FOR LOOPBACK
-     // i = strlen(rxBuf)+1;
-     // strncpy(txBuf, rxBuf, i);  // copy RxBuf -> TxBuf  BUFFER_LENGTH
-     // DCH1SSIZ            = i ;  // change the size of block register
-     // DMA1_Enable();             //enabling the dma forces a write
-
-    }
-
-    // CHANNEN ADDRESS ERROR FLAF
+  // CHANNEN ADDRESS ERROR FLAF
     if( CHERIF_bit == 1){       // test error int flag
        //LOOPBACK RECIEVE ERROR COULD BE SPECIFIC MSG
-       strcpy(txBuf,DMAx_err(dma0,cherie));
+       strcpy(rxBuf,DMAx_err(dma0,cherie));
        UART2_Write_Text(txBuf);
        //DCH1SSIZ = 13;           //set block size of transfer
        //DCH1ECONbits.CFORCE = 1 ;// force DMA1 interrupt trigger
     }
-    
+ // THIS CHANNEL IS AUTOMATICALLY ENABLED AFTER A BLOCK
+ // OR ERROR ABORT EVENT, THIS SHOULD TAKE PLACE IF A
+ // '\n' HAS BEEN RECIEVED OR 200 BYTES EXCEEDED
+    if (DCH0INTbits.CHBCIF == 1){
+         i = strlen(rxBuf);
+    }
+
+    // copy RxBuf -> temp_buffer  BUFFER_LENGTH
+    //make sure that head + i don't exceed max buffer length
+    if(serial.head + i > 499)
+       serial.head = 0;
+       
+    strncpy(serial.temp_buffer+serial.head, rxBuf, i);
+    serial.head += i;
+    *(rxBuf+0) = '\0';
     DCH0INTCLR    = 0x000000ff;
     IFS4CLR       = 0x40;
 }
+
+//Head index
+int Get_Head_Value(){
+ return serial.head;
+}
+//Tail index
+int Get_Tail_Value(){
+  return serial.tail;
+}
+//get the difference in indexes
+int Get_Difference(){
+
+  if(serial.head > serial.tail)
+    serial.diff = serial.head - serial.tail;
+  else if(serial.tail > serial.head)
+    serial.diff =  serial.head;
+  else
+    serial.diff = 0;
+    
+  return serial.diff;
+}
+//loopback the message
+int  Loopback(){
+char str[50];
+int dif;
+
+   dif = Get_Difference();
+
+   if(serial.tail + dif > 499)
+      serial.tail = 0;
+      
+    strncpy(str,serial.temp_buffer+serial.tail,dif);
+    dma_printf("\n\t%s",str);
+    //incrament the tail
+    serial.tail += dif;
+}
+
 
 /******************************************************
 * This is the DMA setup for the UART2 transmitter and

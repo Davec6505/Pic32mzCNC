@@ -55,7 +55,7 @@ void main() {
 char txt_[9];
 static char oneshot = 0;
 unsigned char j;
-int xyz_ = 0, i;
+int xyz_ = 0, i,dif;
 static int cntr;
  // fp = Test_Min;
   PinMode();
@@ -71,6 +71,13 @@ static int cntr;
 
      Debounce_Limits(X);
      Debounce_Limits(Y);
+     
+     dif = Get_Difference();
+     if(dif>0){
+       dma_printf("\ntail:= %d : head:= %d : diff:= %d",serial.tail,serial.head,dif);
+       while(DMA_Busy(1));
+         Loopback();
+     }
      
      if(!Toggle){
        LED1 = TMR.clock >> 4;

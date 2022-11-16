@@ -181,31 +181,12 @@ int xtoi(char * s);
 
 typedef void * va_list[1];
 #line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
-extern char txt[];
-extern char rxBuf[];
-extern char txBuf[];
-
-
-
-
-
-
-
-void DMA_global();
-void DMA0();
-void DMA1();
-void DMA0_Enable();
-void DMA0_Disable();
-void DMA1_Enable();
-void DMA1_Disable();
-int DMA_Busy(int channel);
-int dma_printf(char* str,...);
-void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 10 "c:/users/git/pic32mzcnc/gcode.h"
+extern char gcode_instruction[200];
 #line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  uint8_t status_code;
@@ -241,6 +222,44 @@ uint8_t gc_execute_line(char *line);
 
 
 void gc_set_current_position(int32_t x, int32_t y, int32_t z);
+#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
+extern char txt[];
+extern char rxBuf[];
+extern char txBuf[];
+
+typedef struct{
+ char temp_buffer[500];
+ int head;
+ int tail;
+ int diff;
+ char has_data: 1;
+}Serial;
+
+extern Serial serial;
+
+
+
+
+
+
+void DMA_global();
+void DMA0();
+void DMA1();
+void DMA0_Enable();
+void DMA0_Disable();
+int Get_Head_Value();
+int Get_Tail_Value();
+int Get_Difference();
+int Loopback();
+
+
+
+void DMA1_Enable();
+void DMA1_Disable();
+int DMA_Busy(int channel);
+int dma_printf(char* str,...);
+void lTrim(char* d,char* s);
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"

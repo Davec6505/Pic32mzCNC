@@ -31,11 +31,7 @@ main
 		Test_Port_Pins
 		Reset_Min_Limit
 		Reset_Min_Debounce
-	EnStepperX
-	EnStepperY
-	EnStepperZ
-	EnStepperA
-	ResetHoming
+	Get_Difference
 	dma_printf
 		DMA_Busy
 		sprintf
@@ -48,6 +44,16 @@ main
 		strncpy
 		DMA1_Enable
 		__CC2DW
+	DMA_Busy
+	Loopback
+		Get_Difference
+		strncpy
+		dma_printf
+	EnStepperX
+	EnStepperY
+	EnStepperZ
+	EnStepperA
+	ResetHoming
 	Temp_Move
 		SingleAxisStep
 			Single_Axis_Enable
@@ -89,6 +95,8 @@ main
 						eval_poly
 				sin
 				DualAxisStep
+				Test_Port_Pins
+				disableOCx
 				DMA_Busy
 				dma_printf
 		Home
@@ -127,5 +135,7 @@ DMA_CH0_ISR
 	strcpy
 	UART2_Write_Text
 		UART2_Write
+	strlen
+	strncpy
 Timer1Interrupt
 	ClockPulse

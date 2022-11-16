@@ -372,7 +372,7 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  unsigned int i = 0;
  int count = 0;
  char n_arc_correction = 3; //to be sorted int global struct???
- 
+ char limit_error = 0;
 
   arc_target[axis_linear] = position[axis_linear];
   rads = radius * deg2rad;
@@ -460,13 +460,20 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
      DualAxisStep(nPx, nPy,axis_0,axis_1,1000);//,xy);
      
      while(1){
+     
+      if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
+         disableOCx();
+         limit_error = 1;
+      }
+
         if(!OC5IE_bit && !OC2IE_bit)
             break;
      }
 
     // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
     // if (sys.abort) { return; }
-
+    if(limit_error)
+       break;
    i++;
   }
   
