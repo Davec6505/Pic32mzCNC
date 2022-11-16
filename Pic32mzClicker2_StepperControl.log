@@ -21,15 +21,7 @@ hint: 0	1004	interrupt handler (StepX at 0x001B)	Stepper.c
 hint: 0	1004	interrupt handler (StepY at 0x000C)	Stepper.c
 hint: 0	1004	interrupt handler (StepZ at 0x0023)	Stepper.c
 hint: 0	1004	interrupt handler (StepA at 0x0011)	Stepper.c
-<<<<<<< HEAD
-<<<<<<< HEAD
-diagnostics: 654	123	Compiled Successfully	Stepper.c
-=======
-diagnostics: 655	123	Compiled Successfully	Stepper.c
->>>>>>> patch1
-=======
-diagnostics: 622	123	Compiled Successfully	Stepper.c
->>>>>>> patch1
+diagnostics: 623	123	Compiled Successfully	Stepper.c
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 69	123	Compiled Successfully	Steptodistance.c
 hint: 18	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
@@ -72,36 +64,13 @@ diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (X_Min_Limit at 0x0008)	Limits.c
 hint: 0	1004	interrupt handler (Y_Min_Limit at 0x000D)	Limits.c
 diagnostics: 218	123	Compiled Successfully	Limits.c
-<<<<<<< HEAD
-<<<<<<< HEAD
-diagnostics: 0	127	All files Compiled in 1515 ms	 
-=======
 diagnostics: 0	127	All files Compiled in 1000 ms	 
->>>>>>> patch1
-hint: 6	1004	Variable rxBuf has been declared, but not used	Serial_Dma.c
-hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 1066   Dynamic RAM (bytes): 514829	Static RAM (bytes): 1066   Dynamic RAM (bytes): 514829
-=======
-diagnostics: 0	127	All files Compiled in 1031 ms	 
 hint: 0	1144	Used RX: 24 (75%)   Free RX: 8 (25%)	Used RX: 24 (75%)   Free RX: 8 (25%)
 hint: 0	1144	Static RAM (bytes): 1770   Dynamic RAM (bytes): 507381	Static RAM (bytes): 1770   Dynamic RAM (bytes): 507381
->>>>>>> patch1
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
 hint: 0	1144	Used ROM (bytes): 42125 (2%)  Free ROM (bytes): 2055027 (98%)	Used ROM (bytes): 42125 (2%)  Free ROM (bytes): 2055027 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-<<<<<<< HEAD
-<<<<<<< HEAD
-diagnostics: 0	128	Linked in 782 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4250 ms	 
-diagnostics: 0	103	Finished successfully: 11 Nov 2022, 23:07:45	Pic32mzClicker2_StepperControl.mcp32
-=======
-diagnostics: 0	128	Linked in 610 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3141 ms	 
-diagnostics: 0	103	Finished successfully: 14 Nov 2022, 22:13:11	Pic32mzClicker2_StepperControl.mcp32
->>>>>>> patch1
-=======
-diagnostics: 0	128	Linked in 609 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3172 ms	 
-diagnostics: 0	103	Finished successfully: 16 Nov 2022, 22:04:24	Pic32mzClicker2_StepperControl.mcp32
->>>>>>> patch1
+diagnostics: 0	128	Linked in 625 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 3125 ms	 
+diagnostics: 0	103	Finished successfully: 16 Nov 2022, 22:07:13	Pic32mzClicker2_StepperControl.mcp32
