@@ -178,31 +178,12 @@ int xtoi(char * s);
 
 typedef void * va_list[1];
 #line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
-extern char txt[];
-extern char rxBuf[];
-extern char txBuf[];
-
-
-
-
-
-
-
-void DMA_global();
-void DMA0();
-void DMA1();
-void DMA0_Enable();
-void DMA0_Disable();
-void DMA1_Enable();
-void DMA1_Disable();
-int DMA_Busy(int channel);
-int dma_printf(char* str,...);
-void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 10 "c:/users/git/pic32mzcnc/gcode.h"
+extern char gcode_instruction[200];
 #line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  uint8_t status_code;
@@ -238,6 +219,44 @@ uint8_t gc_execute_line(char *line);
 
 
 void gc_set_current_position(int32_t x, int32_t y, int32_t z);
+#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
+extern char txt[];
+extern char rxBuf[];
+extern char txBuf[];
+
+typedef struct{
+ char temp_buffer[500];
+ int head;
+ int tail;
+ int diff;
+ char has_data: 1;
+}Serial;
+
+extern Serial serial;
+
+
+
+
+
+
+void DMA_global();
+void DMA0();
+void DMA1();
+void DMA0_Enable();
+void DMA0_Disable();
+int Get_Head_Value();
+int Get_Tail_Value();
+int Get_Difference();
+int Loopback();
+
+
+
+void DMA1_Enable();
+void DMA1_Disable();
+int DMA_Busy(int channel);
+int dma_printf(char* str,...);
+void lTrim(char* d,char* s);
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -366,9 +385,8 @@ extern Homing homing[ 6 ];
 void SetInitialSizes(STP axis[6]);
 
 
-void DualAxisStep(long newx,long newy,int axis_combo);
-void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza);
-void SingleAxisStep(long newxyz,int axis_No);
+void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
 void mc_arc(double *position, double *target, double *offset, int axis_0,
@@ -449,7 +467,6 @@ void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
 void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
-void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
 void Test_CycleX();
@@ -577,11 +594,11 @@ void main() {
 char txt_[9];
 static char oneshot = 0;
 unsigned char j;
-int xyz_ = 0, i;
+int xyz_ = 0, i,dif;
 static int cntr;
 
  PinMode();
- StepperConstants(5000,5000);
+ StepperConstants(15000,15000);
  oneShotA = 0;
  a=0;
  disableOCx();
@@ -593,6 +610,13 @@ static int cntr;
 
  Debounce_Limits(X);
  Debounce_Limits(Y);
+
+ dif = Get_Difference();
+ if(dif>0){
+ dma_printf("\ntail:= %d : head:= %d : diff:= %d",serial.tail,serial.head,dif);
+ while(DMA_Busy(1));
+ Loopback();
+ }
 
  if(!Toggle){
  LED1 = TMR.clock >> 4;
@@ -616,7 +640,7 @@ static int cntr;
  EnStepperZ();
  EnStepperA();
  ResetHoming();
- a = 4;
+ a = 0;
  }
 
  if(Toggle){
@@ -636,78 +660,61 @@ static int cntr;
  }else{
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
  a = Temp_Move(a);
-#line 121 "C:/Users/Git/Pic32mzCNC/Main.c"
- }
- }
-#line 130 "C:/Users/Git/Pic32mzCNC/Main.c"
- }
 
+ dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
+ a,STPS[X].dist,STPS[X].mmToTravel,
+ STPS[X].step_count);
+
+ }
+ }
+ }
  }
 }
 
 int Temp_Move(int a){
  switch(a){
  case 0:
- STPS[Y].mmToTravel = belt_steps(50.00);
- speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
- SingleAxisStep(STPS[Y].mmToTravel,Y);
+ SingleAxisStep(50.00,8000,Y);
+ a = 1;
  break;
  case 1:
- STPS[X].mmToTravel = belt_steps(50.00);
- speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
- SingleAxisStep(STPS[X].mmToTravel,X);
+ SingleAxisStep(50.00,8000,X);
+ a = 2;
  break;
  case 2:
- STPS[Y].mmToTravel = belt_steps(-50.00);
- speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
- SingleAxisStep(STPS[Y].mmToTravel,Y);
+ SingleAxisStep(-50.00,8000,Y);
+ a = 3;
  break;
  case 3:
- STPS[X].mmToTravel = belt_steps(-50.00);
- speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
- SingleAxisStep(STPS[X].mmToTravel,X);
+ SingleAxisStep(-50.00,8000,X);
+ a = 4;
  break;
  case 4:
- STPS[X].mmToTravel = belt_steps(150.00);
-
- STPS[Y].mmToTravel = belt_steps(30.00);
- speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
- DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
- a = 9;
+ DualAxisStep(150.00, 100.00,X,Y,8000);
+ a = 5;
  break;
  case 5:
- STPS[X].mmToTravel = belt_steps(-50.00);
-
- STPS[Y].mmToTravel = belt_steps(-100.00);
- speed_cntr_Move(STPS[Y].mmToTravel, 8000,Y);
- DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+ DualAxisStep(-150.00, -100.00,X,Y,8000);
+ a = 6;
  break;
  case 6:
- STPS[X].mmToTravel = belt_steps(150.00);
- speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
- STPS[Y].mmToTravel = belt_steps(100.00);
-
- DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+ DualAxisStep(150.00, 30.00,X,Y,8000);
+ a = 9;
  break;
  case 7:
- STPS[X].mmToTravel = belt_steps(-150.00);
- speed_cntr_Move(STPS[X].mmToTravel, 8000,X);
- STPS[Y].mmToTravel = belt_steps(-100.00);
-
- DualAxisStep(STPS[X].mmToTravel, STPS[Y].mmToTravel,xy);
+ DualAxisStep(-150.00, -30.00,X,Y,8000);
+ a = 8;
  break;
  case 8:
- STPS[A].mmToTravel = belt_steps(150.00);
- speed_cntr_Move(STPS[A].mmToTravel, 8000,A);
- SingleAxisStep(STPS[A].mmToTravel,A);
+ SingleAxisStep(350.00,10000,A);
+ a = 9;
  break;
  case 9:
 
 
 
- a = 12;
  r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
-
+ a = 12;
  break;
  case 10:
  Home(X);

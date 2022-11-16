@@ -23330,6 +23330,7 @@ dhen_i2c2con_bit
 dhen_i2c3con_bit
 dhen_i2c4con_bit
 dhen_i2c5con_bit
+diff
 diff0
 diff0
 diff0_bit
@@ -25329,7 +25330,6 @@ dtwren_usbe5csr0_bit
 dtwren_usbe6csr0_bit
 dtwren_usbe7csr0_bit
 dualaxisstep
-dualaxisstep2
 dualbuf
 dualbuf
 dualbuf
@@ -32485,6 +32485,7 @@ gcen_i2c2con_bit
 gcen_i2c3con_bit
 gcen_i2c4con_bit
 gcen_i2c5con_bit
+gcode_instruction
 gcstat
 gcstat
 gcstat
@@ -32511,7 +32512,10 @@ gcstat_i2c2stat_bit
 gcstat_i2c3stat_bit
 gcstat_i2c4stat_bit
 gcstat_i2c5stat_bit
+get_difference
 get_fosc_khz
+get_head_value
+get_tail_value
 getaxisdirection
 glswtrg
 glswtrg
@@ -33122,12 +33126,14 @@ halfsec
 halfsec
 halfsec
 halfsec_bit
+has_data
 hbrxen
 hbrxen
 hbrxen_bit
 hbtxen
 hbtxen
 hbtxen_bit
+head
 hird
 hird0
 hird0_bit
@@ -38619,6 +38625,7 @@ loopback
 loopback
 loopback
 loopback
+loopback
 loopback_bit
 loopback_emacxcfg1_bit
 lpback
@@ -40025,7 +40032,6 @@ multi
 multi
 multi
 multi
-multi_axis_enable
 multi_bit
 multi_sbt10elog1_bit
 multi_sbt11elog1_bit
@@ -56369,6 +56375,7 @@ seq2
 seq2bits
 seq3
 seq3bits
+serial
 serrie
 serrie
 serrie
@@ -62089,6 +62096,7 @@ t9md_bit
 t9pgv
 t9pgv
 t9pgv_bit
+tail
 tan
 tanh
 tas
@@ -62738,6 +62746,7 @@ tcs_t9con_bit
 tdoen
 tdoen
 tdoen_bit
+temp_buffer
 temp_move
 tep
 tep

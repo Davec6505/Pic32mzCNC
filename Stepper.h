@@ -109,7 +109,6 @@ void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
 void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
-void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
 void Test_CycleX();

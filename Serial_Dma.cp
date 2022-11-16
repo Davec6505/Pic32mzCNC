@@ -182,6 +182,8 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 10 "c:/users/git/pic32mzcnc/gcode.h"
+extern char gcode_instruction[200];
 #line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  uint8_t status_code;
@@ -345,9 +347,8 @@ extern Homing homing[ 6 ];
 void SetInitialSizes(STP axis[6]);
 
 
-void DualAxisStep(long newx,long newy,int axis_combo);
-void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza);
-void SingleAxisStep(long newxyz,int axis_No);
+void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
 void mc_arc(double *position, double *target, double *offset, int axis_0,
@@ -428,7 +429,6 @@ void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
 void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
-void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
 void Test_CycleX();
@@ -531,11 +531,21 @@ void LcdI2CConfig();
 void OutPutPulseXYZ();
 int Temp_Move(int a);
 void LCD_Display();
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
 
+typedef struct{
+ char temp_buffer[500];
+ int head;
+ int tail;
+ int diff;
+ char has_data: 1;
+}Serial;
+
+extern Serial serial;
 
 
 
@@ -547,12 +557,20 @@ void DMA0();
 void DMA1();
 void DMA0_Enable();
 void DMA0_Disable();
+int Get_Head_Value();
+int Get_Tail_Value();
+int Get_Difference();
+int Loopback();
+
+
+
 void DMA1_Enable();
 void DMA1_Disable();
 int DMA_Busy(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 6 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+#line 7 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+Serial serial;
 char rxBuf[200] = {0} absolute 0xA0002000 ;
 char txBuf[200] = {0} absolute 0xA0002200 ;
 char cherie[] = " CHERIF Error\r";
@@ -573,7 +591,7 @@ void DMA_global(){
  DMA0();
  DMA1();
 }
-#line 38 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+#line 40 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 void DMA0(){
 
  IEC4CLR = 0x40;
@@ -586,7 +604,7 @@ void DMA0(){
  DCH0ECON = (146 << 8 ) | 0x30;
 
 
- DCH0DAT = '\r';
+ DCH0DAT = '\n';
 
 
  DCH0SSA = KVA_TO_PA(0xBF822230);
@@ -617,12 +635,14 @@ void DMA0(){
 
  DCH0CONSET = 0X0000013;
 
+
+ serial.head = serial.tail = serial.diff = 0;
 }
 
 
 
 void DMA0_Enable(){
-#line 94 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+#line 98 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
  DCH0CONSET |= 1<<7;
 }
 
@@ -643,31 +663,68 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
 
 
 
-
- if (DCH0INTbits.CHBCIF == 1) {
-
-
-
-
-
-
-
-
- }
-
-
  if( CHERIF_bit == 1){
 
- strcpy(txBuf, ("dma0" " " "cherie") );
+ strcpy(rxBuf, ("dma0" " " "cherie") );
  UART2_Write_Text(txBuf);
 
 
  }
 
+
+
+ if (DCH0INTbits.CHBCIF == 1){
+ i = strlen(rxBuf);
+ }
+
+
+
+ if(serial.head + i > 499)
+ serial.head = 0;
+
+ strncpy(serial.temp_buffer+serial.head, rxBuf, i);
+ serial.head += i;
+ *(rxBuf+0) = '\0';
  DCH0INTCLR = 0x000000ff;
  IFS4CLR = 0x40;
 }
-#line 151 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+
+
+int Get_Head_Value(){
+ return serial.head;
+}
+
+int Get_Tail_Value(){
+ return serial.tail;
+}
+
+int Get_Difference(){
+
+ if(serial.head > serial.tail)
+ serial.diff = serial.head - serial.tail;
+ else if(serial.tail > serial.head)
+ serial.diff = serial.head;
+ else
+ serial.diff = 0;
+
+ return serial.diff;
+}
+
+int Loopback(){
+char str[50];
+int dif;
+
+ dif = Get_Difference();
+
+ if(serial.tail + dif > 499)
+ serial.tail = 0;
+
+ strncpy(str,serial.temp_buffer+serial.tail,dif);
+ dma_printf("\n\t%s",str);
+
+ serial.tail += dif;
+}
+#line 193 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 void DMA1(){
 
 

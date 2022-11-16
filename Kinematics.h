@@ -140,9 +140,8 @@ extern Homing homing[NoOfAxis];
 void SetInitialSizes(STP axis[6]);
 
 //Move inline
-void DualAxisStep(long newx,long newy,int axis_combo);
-void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza);
-void SingleAxisStep(long newxyz,int axis_No);
+void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);//,int xyza);
+void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 //Circle move axis
 void mc_arc(double *position, double *target, double *offset, int axis_0,

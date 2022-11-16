@@ -7,7 +7,7 @@
 
 
 
-
+extern char gcode_instruction[200];
 
 
 // Define modal group internal numbers for checking multiple command violations and tracking the

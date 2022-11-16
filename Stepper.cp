@@ -139,28 +139,7 @@ int xtoi(char * s);
 
 typedef void * va_list[1];
 #line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
-extern char txt[];
-extern char rxBuf[];
-extern char txBuf[];
-
-
-
-
-
-
-
-void DMA_global();
-void DMA0();
-void DMA1();
-void DMA0_Enable();
-void DMA0_Disable();
-void DMA1_Enable();
-void DMA1_Disable();
-int DMA_Busy(int channel);
-int dma_printf(char* str,...);
-void lTrim(char* d,char* s);
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 
 
@@ -209,48 +188,13 @@ typedef unsigned long int uintptr_t;
 
 typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 52 "c:/users/git/pic32mzcnc/gcode.h"
-typedef struct {
- uint8_t status_code;
- uint8_t motion_mode;
- uint8_t inverse_feed_rate_mode;
- uint8_t inches_mode;
- uint8_t absolute_mode;
- uint8_t program_flow;
- int8_t spindle_direction;
- uint8_t coolant_mode;
- float feed_rate;
-
- float position[3];
- uint8_t tool;
-
- uint8_t plane_axis_0,
- plane_axis_1,
- plane_axis_2;
- uint8_t coord_select;
- float coord_system[ 6 ];
-
- float coord_offset[ 6 ];
-
-} parser_state_t;
-extern parser_state_t gc;
-
-
-
-void gc_init();
-
-
-uint8_t gc_execute_line(char *line);
-
-
-void gc_set_current_position(int32_t x, int32_t y, int32_t z);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -379,9 +323,8 @@ extern Homing homing[ 6 ];
 void SetInitialSizes(STP axis[6]);
 
 
-void DualAxisStep(long newx,long newy,int axis_combo);
-void DualAxisStep2(long axis_a,long axis_b,int axisA,int axisB,int xyza);
-void SingleAxisStep(long newxyz,int axis_No);
+void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
 void mc_arc(double *position, double *target, double *offset, int axis_0,
@@ -399,6 +342,81 @@ void ResetHoming();
 void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
+#line 10 "c:/users/git/pic32mzcnc/gcode.h"
+extern char gcode_instruction[200];
+#line 52 "c:/users/git/pic32mzcnc/gcode.h"
+typedef struct {
+ uint8_t status_code;
+ uint8_t motion_mode;
+ uint8_t inverse_feed_rate_mode;
+ uint8_t inches_mode;
+ uint8_t absolute_mode;
+ uint8_t program_flow;
+ int8_t spindle_direction;
+ uint8_t coolant_mode;
+ float feed_rate;
+
+ float position[3];
+ uint8_t tool;
+
+ uint8_t plane_axis_0,
+ plane_axis_1,
+ plane_axis_2;
+ uint8_t coord_select;
+ float coord_system[ 6 ];
+
+ float coord_offset[ 6 ];
+
+} parser_state_t;
+extern parser_state_t gc;
+
+
+
+void gc_init();
+
+
+uint8_t gc_execute_line(char *line);
+
+
+void gc_set_current_position(int32_t x, int32_t y, int32_t z);
+#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
+extern char txt[];
+extern char rxBuf[];
+extern char txBuf[];
+
+typedef struct{
+ char temp_buffer[500];
+ int head;
+ int tail;
+ int diff;
+ char has_data: 1;
+}Serial;
+
+extern Serial serial;
+
+
+
+
+
+
+void DMA_global();
+void DMA0();
+void DMA1();
+void DMA0_Enable();
+void DMA0_Disable();
+int Get_Head_Value();
+int Get_Tail_Value();
+int Get_Difference();
+int Loopback();
+
+
+
+void DMA1_Enable();
+void DMA1_Disable();
+int DMA_Busy(int channel);
+int dma_printf(char* str,...);
+void lTrim(char* d,char* s);
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/limits.h"
@@ -545,7 +563,6 @@ void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
 void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
-void Multi_Axis_Enable(axis_combination axis);
 void Single_Axis_Enable(_axis_ axis_);
 
 void Test_CycleX();
@@ -887,39 +904,6 @@ void Single_Axis_Enable(_axis_ axis_){
 }
 
 
-
-
-void Multi_Axis_Enable(axis_combination axis){
- switch(axis){
- case xy:
- OC5IE_bit = 1;OC5CONbits.ON = 1;
- OC2IE_bit = 1;OC2CONbits.ON = 1;
- break;
- case xz:
- OC5IE_bit = 1;OC5CONbits.ON = 1;
- OC7IE_bit = 1;OC7CONbits.ON = 1;
- break;
- case yz:
- OC2IE_bit = 1;OC2CONbits.ON = 1;
- OC7IE_bit = 1;OC7CONbits.ON = 1;
- break;
- case xa:
- OC5IE_bit = 1;OC5CONbits.ON = 1;
- OC3IE_bit = 1;OC3CONbits.ON = 1;
- break;
- case ya:
- OC2IE_bit = 1;OC2CONbits.ON = 1;
- OC3IE_bit = 1;OC3CONbits.ON = 1;
- break;
- case za:
- OC7IE_bit = 1;OC7CONbits.ON = 1;
- OC3IE_bit = 1;OC3CONbits.ON = 1;
- break;
- default:
- break;
- }
-}
-
 void disableOCx(){
  OC5IE_bit = 0;OC5CONbits.ON = 0;
  OC2IE_bit = 0;OC2CONbits.ON = 0;
@@ -1088,9 +1072,13 @@ void Axis_Interpolate(int axisA,int axisB){
  }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 #line 566 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 =======
 #line 567 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
+=======
+#line 534 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 >>>>>>> patch1
 unsigned int min_(unsigned int x, unsigned int y){
  if(x < y){
@@ -1101,9 +1089,13 @@ unsigned int min_(unsigned int x, unsigned int y){
  }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 #line 583 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 =======
 #line 584 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
+=======
+#line 551 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 >>>>>>> patch1
 static unsigned long sqrt_(unsigned long x){
 
@@ -1136,9 +1128,13 @@ static unsigned long sqrt_(unsigned long x){
  }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 #line 636 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 =======
 #line 637 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch1
+=======
+#line 604 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 >>>>>>> patch1
 void CycleStop(){
 int ii;
