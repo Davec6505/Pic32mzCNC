@@ -14,7 +14,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Serial_Dma.c
+Value=Kinematics.c
 =======
 Value=Main.c
 >>>>>>> patch2
@@ -60,7 +60,11 @@ File8=Print.c
 File9=GCODE.c
 File10=Globals.c
 File11=Limits.c
-Count=12
+File12=Settings.c
+File13=Protocol.c
+File14=Nut_Bolts.c
+File15=Planner.c
+Count=16
 [BINARIES]
 Count=0
 [IMAGES]
@@ -69,9 +73,15 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Serial_Dma.c
-File2=Serial_Dma.h
-Count=3
+File1=Planner.c
+File2=Planner.h
+File3=Kinematics.c
+File4=Kinematics.h
+File5=Stepper.h
+File6=Stepper.c
+File7=Globals.h
+File8=Globals.c
+Count=9
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -112,7 +122,11 @@ File8=Print.h
 File9=GCODE.h
 File10=Globals.h
 File11=Limits.h
-Count=12
+File12=Protocol.h
+File13=Nuts_Bolts.h
+File14=Config_adv.h
+File15=Planner.h
+Count=16
 [PLDS]
 File0=DEFINES.pld
 Count=1
@@ -140,6 +154,5 @@ USE_SRS=7
 [EXPANDED_NODES]
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
-14=Header Files
-28=Project Level Defines
-Count=4
+18=Header Files
+Count=3

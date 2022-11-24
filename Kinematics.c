@@ -1,7 +1,7 @@
 #include "Kinematics.h"
 
 const code double max_sizes[]={X_MAX_SIZE,Y_MAX_SIZE,Z_MAX_SIZE,A_MAX_SIZE,B_MAX_SIZE,C_MAX_SIZE};
-Homing homing[NoOfAxis];
+
 
 //////////////////////////////////
 //FUNCTION POINTERS

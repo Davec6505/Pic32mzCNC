@@ -5155,7 +5155,6 @@ axis_xyz
 axisno
 axisno
 axispulse
-axistosample
 b0
 b1
 b10
@@ -18327,7 +18326,6 @@ coe
 coe
 coe_bit
 coe_cm2con_bit
-compocxrunning
 conavail
 conavail0
 conavail0_bit
@@ -19942,8 +19940,6 @@ cwindow4_emacxclrt_bit
 cwindow5
 cwindow5_bit
 cwindow5_emacxclrt_bit
-cyclestart
-cyclestop
 d_a
 d_a
 d_a
@@ -23159,6 +23155,8 @@ delay_80us
 delay_8ms
 delay_cyc
 delay_cyc_long
+delay_ms
+delay_us
 delaycrc
 delaycrc
 delaycrc
@@ -33157,7 +33155,6 @@ hostmode_bit
 hostreq
 hostreq
 hostreq_bit
-howmanyocxrunning
 hr01
 hr01
 hr01
@@ -38915,6 +38912,7 @@ manfc
 manfc
 manfc_bit
 max
+max_
 max_sizes
 mc_arc
 mcen
@@ -44418,6 +44416,7 @@ pktpendie
 pktpendie
 pktpendie
 pktpendie_bit
+plan_init
 plane_axis_0
 plane_axis_1
 plane_axis_2
@@ -46825,6 +46824,7 @@ read
 read_
 read_bit
 read_emacxmcmd_bit
+read_float
 readopcode
 readopcode0
 readopcode0_bit
@@ -60361,6 +60361,7 @@ sqien
 sqien
 sqien_bit
 sqrt
+sqrt_
 sr0a6
 sr0a6
 sr0a6
@@ -61001,7 +61002,6 @@ stepperconstants
 stepx
 stepy
 stepz
-stmr
 stnaddr1
 stnaddr1
 stnaddr1
@@ -61436,6 +61436,7 @@ swrst
 swrst
 swrst_bit
 sys
+sys_sync_current_position
 sysdiv
 sysdiv
 sysdiv
@@ -73442,7 +73443,6 @@ usbwkup_bit
 usbwkupen
 usbwkupen
 usbwkupen_bit
-usec
 userid
 userid
 userid

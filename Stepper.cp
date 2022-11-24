@@ -208,10 +208,7 @@ typedef struct {
  volatile uint8_t execute;
 } system_t;
 extern system_t sys;
-
-
-
-
+#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct genVars{
  int Single_Dual;
  unsigned short running: 1;
@@ -240,7 +237,17 @@ typedef struct genVars{
  char cir: 1;
 }sVars;
 extern sVars SV;
-#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
+
+typedef struct{
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}Homing;
+extern Homing homing[ 6 ];
+
 typedef struct Steps{
 
  signed long microSec;
@@ -265,6 +272,8 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
+ long acc_;
+ long dec_;
 
  long step_count;
 
@@ -299,27 +308,7 @@ typedef struct Steps{
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-
-
-typedef struct{
-char set: 1;
-char home: 1;
-char rev: 1;
-char back: 1;
-char complete: 1;
-unsigned int home_cnt;
-}Homing;
-extern Homing homing[ 6 ];
-
-
-
-
-
-
-
-
-
-
+#line 173 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -502,23 +491,28 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 15 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/planner.h"
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 41 "c:/users/git/pic32mzcnc/planner.h"
+void plan_init(long accel,long decel);
+
+void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+
+unsigned long sqrt_(unsigned long v);
+
+
+unsigned int min_(unsigned long x, unsigned long y);
+
+
+unsigned int max_(unsigned long x, unsigned long y);
+#line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 54 "c:/users/git/pic32mzcnc/stepper.h"
+#line 31 "c:/users/git/pic32mzcnc/stepper.h"
 extern unsigned int Toggle;
 
-
-typedef struct STPT {
-
- long uSec;
-
- int axisTosample;
-
- int howManyOCxRunning;
-
- int compOCxRunning;
-}StepTmr;
-extern StepTmr STmr;
 
 
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
@@ -545,11 +539,7 @@ void DisableStepper();
 void disableOCx();
 
 
-void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
-void speed_cntr_Init_Timer1(void);
-static unsigned long sqrt_(unsigned long v);
-unsigned int min_(unsigned long x, unsigned long y);
-void CalcDly(int axis_No);
+
 void StepperConstants(long accel,long decel);
 
 
@@ -581,11 +571,6 @@ axis_combination axis_xyz;
 unsigned char AxisNo;
 unsigned int Toggle;
 
-
-
-
-
- StepTmr STmr;
 
 
 
@@ -665,99 +650,7 @@ void DisableStepper(){
  EN_StepZ = 1;
  EN_StepA = 1;
 }
-#line 116 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-void speed_cntr_Move(signed long mmSteps, signed long speed, int axis_No){
-int ii;
-char txt_[9];
-long abs_mmSteps = abs(mmSteps);
-
-
-
- if(mmSteps == 1){
- STPS[axis_No].accel_count = -1;
- STPS[axis_No].run_state =  2 ;
- STPS[axis_No].step_delay = 20000;
- SV.running = 1;
-
- }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
-
-
-
- STPS[axis_No].min_delay =  (long)(( (2*3.14159)/ 188 * 781250 )*100)  / speed;
-
-
-
-
- STPS[axis_No].step_delay = abs( (long)(( 781250 *0.676)/100)  * ((sqrt_( (long)( (2*3.14159)/ 188 *2*10000000000)  / SV.acc))/100));
- STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
-
-
- STPS[axis_No].max_step_lim =(speed*speed)/(long)(2.0* (2*3.14159)/ 188 *(double)SV.acc*100.0);
-
-
-
-
-
- if(STPS[axis_No].max_step_lim == 0){
- STPS[axis_No].max_step_lim = 1;
- }
-
-
-
- STPS[axis_No].accel_lim = (abs_mmSteps * SV.dec) / (SV.acc + SV.dec);
-
- if(STPS[axis_No].accel_lim == 0){
- STPS[axis_No].accel_lim = 1;
- }
-
-
- if(STPS[axis_No].accel_lim < STPS[axis_No].max_step_lim){
- STPS[axis_No].decel_val = STPS[axis_No].accel_lim - mmSteps;
- }else{
- STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim *SV.acc)/SV.dec);
- }
-
- if(STPS[axis_No].decel_val == 0)
- STPS[axis_No].decel_val = -1;
-
-
- if(mmSteps < 0){
- STPS[axis_No].decel_start = -(mmSteps - STPS[axis_No].decel_val);
- }
- else {
- STPS[axis_No].decel_start = mmSteps + STPS[axis_No].decel_val;
- }
-
-
-
-
- if(STPS[axis_No].StartUp_delay <= STPS[axis_No].min_delay){
- STPS[axis_No].step_delay = STPS[axis_No].min_delay;
- STPS[axis_No].run_state =  3 ;
- }else{
- STPS[axis_No].step_delay = abs(STPS[axis_No].StartUp_delay);
- STPS[axis_No].run_state =  1 ;
- }
-
- }
-
- STPS[axis_No].step_count = 0;
- STPS[axis_No].rest = 0;
- STPS[axis_No].microSec = 0;
- STPS[axis_No].accel_count = 1;
- STPS[axis_No].dist = 0;
- SV.Tog = 0;
- SV.running = 1;
-
-}
-
-
-
-
-
-
-
-
+#line 105 "C:/Users/Git/Pic32mzCNC/Stepper.c"
 void Step_Cycle(int axis_No){
 
  STPS[axis_No].step_count++;
@@ -815,7 +708,7 @@ void toggleOCx(int axis_No){
 
 
 int Pulse(int axis_No){
-#line 270 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 167 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  switch(STPS[axis_No].run_state) {
  case  0 :
  SV.Tog = 1;
@@ -1067,66 +960,6 @@ void Axis_Interpolate(int axisA,int axisB){
  }else{
  SV.d2 +=  ((2)*((SV.dx) - (SV.dy))) ;
  Step_Cycle(axisA);
- }
- }
-}
-#line 534 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-unsigned int min_(unsigned int x, unsigned int y){
- if(x < y){
- return x;
- }
- else{
- return y;
- }
-}
-#line 551 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-static unsigned long sqrt_(unsigned long x){
-
- register unsigned long xr;
- register unsigned long q2;
- register unsigned char f;
-
- xr = 0;
- q2 = 0x40000000L;
- do
- {
- if((xr + q2) <= x)
- {
- x -= xr + q2;
- f = 1;
- }
- else{
- f = 0;
- }
- xr >>= 1;
- if(f){
- xr += q2;
- }
- } while(q2 >>= 2);
- if(xr < x){
- return xr +1;
- }
- else{
- return xr;
- }
-}
-#line 604 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-void CycleStop(){
-int ii;
- STmr.uSec = 0;
- for(ii = 0;ii< 6 ;ii++){
- STPS[ii].microSec = 0;
- if(ii >  6 )break;
- }
-}
-
-void CycleStart(){
-int ii;
-
- if(SV.Tog == 0){
- for(ii = 0; ii <  6 ;ii++){
- if(ii >  6 )break;
- STPS[ii].microSec++;
  }
  }
 }

@@ -306,13 +306,13 @@ JAL	___CC2DW+0
 NOP	
 ADDIU	R4, SP, 75
 ;Main.c,127 :: 		STPS[X].step_count);
-LW	R3, Offset(_STPS+32)(GP)
+LW	R3, Offset(_STPS+40)(GP)
 ADDIU	SP, SP, -20
 SW	R3, 16(SP)
 ;Main.c,126 :: 		a,STPS[X].dist,STPS[X].mmToTravel,
-LW	R3, Offset(_STPS+68)(GP)
+LW	R3, Offset(_STPS+76)(GP)
 SW	R3, 12(SP)
-LW	R3, Offset(_STPS+36)(GP)
+LW	R3, Offset(_STPS+44)(GP)
 SW	R3, 8(SP)
 SH	R2, 4(SP)
 ;Main.c,125 :: 		dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",

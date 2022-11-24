@@ -58,6 +58,45 @@
 ////////////////////////////////////////////////////
 //       ******LINEAR INTERPOLATION******         //
 ////////////////////////////////////////////////////
+typedef struct genVars{
+  int Single_Dual;
+  unsigned short running: 1;       //running bit
+  unsigned short startPulses: 1;
+  int   Tog;
+  int   AxisNo;
+  long  i;
+  long  d2;
+  long  dx;
+  long  dy;
+  long  dz;
+  long  da;
+  long  px;
+  long  py;
+  long  pz;
+  long  pa;
+  long  over;
+  long  acc;
+  long  dec;
+  int   dirx;
+  int   diry;
+  int   dirz;
+  int   dira;
+  int   dirb;
+  int   dirc;
+  char  cir: 1;
+}sVars;
+extern sVars SV;
+
+typedef struct{
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}Homing;
+extern Homing homing[NoOfAxis];
+
 typedef struct Steps{
    //! micro sec  count value for clock pluse compare
   signed long microSec;
@@ -82,6 +121,8 @@ typedef struct Steps{
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long accel_count;
   long deccl_count;
+  long acc_;
+  long dec_;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long step_count;
   //! Distance calculated to travel
@@ -118,15 +159,7 @@ typedef struct Steps{
 extern STP STPS[NoOfAxis];
 
 
-typedef struct{
-char set: 1;
-char home: 1;
-char rev: 1;
-char back: 1;
-char complete: 1;
-unsigned int home_cnt;
-}Homing;
-extern Homing homing[NoOfAxis];
+
 ////////////////////////////////////////////////////
 //     ******CIRCULAR INTERPOLATION******         //
 ////////////////////////////////////////////////////

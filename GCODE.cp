@@ -232,10 +232,7 @@ typedef struct {
  volatile uint8_t execute;
 } system_t;
 extern system_t sys;
-
-
-
-
+#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct genVars{
  int Single_Dual;
  unsigned short running: 1;
@@ -264,7 +261,17 @@ typedef struct genVars{
  char cir: 1;
 }sVars;
 extern sVars SV;
-#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
+
+typedef struct{
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}Homing;
+extern Homing homing[ 6 ];
+
 typedef struct Steps{
 
  signed long microSec;
@@ -289,6 +296,8 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
+ long acc_;
+ long dec_;
 
  long step_count;
 
@@ -323,27 +332,7 @@ typedef struct Steps{
  char master: 1;
 }STP;
 extern STP STPS[ 6 ];
-
-
-typedef struct{
-char set: 1;
-char home: 1;
-char rev: 1;
-char back: 1;
-char complete: 1;
-unsigned int home_cnt;
-}Homing;
-extern Homing homing[ 6 ];
-
-
-
-
-
-
-
-
-
-
+#line 173 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -368,23 +357,28 @@ void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 15 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/planner.h"
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 41 "c:/users/git/pic32mzcnc/planner.h"
+void plan_init(long accel,long decel);
+
+void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+
+unsigned long sqrt_(unsigned long v);
+
+
+unsigned int min_(unsigned long x, unsigned long y);
+
+
+unsigned int max_(unsigned long x, unsigned long y);
+#line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 54 "c:/users/git/pic32mzcnc/stepper.h"
+#line 31 "c:/users/git/pic32mzcnc/stepper.h"
 extern unsigned int Toggle;
 
-
-typedef struct STPT {
-
- long uSec;
-
- int axisTosample;
-
- int howManyOCxRunning;
-
- int compOCxRunning;
-}StepTmr;
-extern StepTmr STmr;
 
 
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
@@ -411,11 +405,7 @@ void DisableStepper();
 void disableOCx();
 
 
-void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
-void speed_cntr_Init_Timer1(void);
-static unsigned long sqrt_(unsigned long v);
-unsigned int min_(unsigned long x, unsigned long y);
-void CalcDly(int axis_No);
+
 void StepperConstants(long accel,long decel);
 
 

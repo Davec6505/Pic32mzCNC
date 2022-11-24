@@ -18,11 +18,11 @@ NOP
 L__SetInitialSizes101:
 ;Kinematics.c,26 :: 		axis[i].max_travel = max_sizes[i];//SIZE_LIST[i];
 SEH	R3, R5
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R2
 ADDU	R2, R25, R2
-ADDIU	R4, R2, 84
+ADDIU	R4, R2, 92
 SEH	R2, R5
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_max_sizes+0)
@@ -78,13 +78,13 @@ LH	R26, 16(SP)
 LW	R4, 12(SP)
 ;Kinematics.c,45 :: 		STPS[axis_No].axis_dir = Direction(tempA);
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R3, R2, 88
+ADDIU	R3, R2, 96
 SLTI	R2, R4, 0
 BNE	R2, R0, L__SingleAxisStep103
 NOP	
@@ -109,36 +109,36 @@ SH	R2, 0(R3)
 SH	R0, Offset(_SV+0)(GP)
 ;Kinematics.c,47 :: 		STPS[axis_No].psingle  = 0;
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 40
+ADDIU	R2, R2, 48
 SW	R0, 0(R2)
 ;Kinematics.c,49 :: 		STPS[axis_No].dist = tempA - STPS[axis_No].psingle;
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R3, R2, 36
-ADDIU	R2, R2, 40
+ADDIU	R3, R2, 44
+ADDIU	R2, R2, 48
 LW	R2, 0(R2)
 SUBU	R2, R4, R2
 SW	R2, 0(R3)
 ;Kinematics.c,50 :: 		STPS[axis_No].dist = labs(tempA);
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 36
+ADDIU	R2, R2, 44
 SW	R2, 24(SP)
 MOVZ	R25, R4, R0
 JAL	_labs+0
@@ -257,23 +257,23 @@ NOP
 L_SingleAxisStep8:
 ;Kinematics.c,68 :: 		STPS[axis_No].step_count = 0;
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 32
+ADDIU	R2, R2, 40
 SW	R0, 0(R2)
 ;Kinematics.c,69 :: 		STPS[axis_No].mmToTravel = tempA;
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 68
+ADDIU	R2, R2, 76
 SW	R4, 0(R2)
 ; tempA end address is: 16 (R4)
 ;Kinematics.c,71 :: 		Step_Cycle(axis_No);
@@ -352,13 +352,13 @@ SW	R0, Offset(_SV+40)(GP)
 L_DualAxisStep14:
 ;Kinematics.c,102 :: 		STPS[axisA].axis_dir = Direction(tempA);
 SEH	R3, R25
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R3, R2, 88
+ADDIU	R3, R2, 96
 LW	R2, 20(SP)
 SLTI	R2, R2, 0
 BNE	R2, R0, L__DualAxisStep115
@@ -384,13 +384,13 @@ SEB	R2, R4
 SH	R2, 0(R3)
 ;Kinematics.c,103 :: 		STPS[axisB].axis_dir = Direction(tempB);
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R3, R2, 88
+ADDIU	R3, R2, 96
 LW	R2, 24(SP)
 SLTI	R2, R2, 0
 BNE	R2, R0, L__DualAxisStep116
@@ -528,7 +528,7 @@ SLL	R2, R2, 1
 SW	R2, Offset(_SV+12)(GP)
 ;Kinematics.c,128 :: 		STPS[axisA].master = 1;
 SEH	R3, R25
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -540,7 +540,7 @@ ORI	R2, R2, 16
 SB	R2, 0(R3)
 ;Kinematics.c,129 :: 		STPS[axisB].master = 0;
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -582,7 +582,7 @@ SLL	R2, R2, 1
 SW	R2, Offset(_SV+12)(GP)
 ;Kinematics.c,136 :: 		STPS[axisA].master = 0;
 SEH	R3, R25
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -594,7 +594,7 @@ INS	R2, R0, 4, 1
 SB	R2, 0(R3)
 ;Kinematics.c,137 :: 		STPS[axisB].master = 1;
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -608,44 +608,44 @@ SB	R2, 0(R3)
 L_DualAxisStep25:
 ;Kinematics.c,140 :: 		STPS[axisA].step_count = 0;
 SEH	R3, R25
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 32
+ADDIU	R2, R2, 40
 SW	R0, 0(R2)
 ;Kinematics.c,141 :: 		STPS[axisB].step_count = 0;
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 32
+ADDIU	R2, R2, 40
 SW	R0, 0(R2)
 ;Kinematics.c,142 :: 		STPS[axisA].mmToTravel = tempA;
 SEH	R3, R25
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R3, R2, 68
+ADDIU	R3, R2, 76
 LW	R2, 20(SP)
 SW	R2, 0(R3)
 ;Kinematics.c,143 :: 		STPS[axisB].mmToTravel = tempB;
 SEH	R3, R26
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R3, R2, 68
+ADDIU	R3, R2, 76
 LW	R2, 24(SP)
 SW	R2, 0(R3)
 ;Kinematics.c,145 :: 		Axis_Interpolate(axisA,axisB);
@@ -1395,7 +1395,7 @@ SUB.S 	S0, S1, S0
 SWC1	S1, 0(R2)
 ;Kinematics.c,450 :: 		STPS[axis_0].step_delay = 1000;
 SEH	R3, R28
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1406,7 +1406,7 @@ ORI	R2, R0, 1000
 SW	R2, 0(R3)
 ;Kinematics.c,451 :: 		STPS[axis_1].step_delay = 1000;
 LH	R3, 80(SP)
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1972,23 +1972,23 @@ ORI	R2, R2, 16
 SB	R2, 0(R3)
 ;Kinematics.c,555 :: 		STPS[axis].step_count      = 0;
 SEH	R3, R25
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 32
+ADDIU	R2, R2, 40
 SW	R0, 0(R2)
 ;Kinematics.c,556 :: 		STPS[axis].steps_position  = 0;
 SEH	R3, R25
-ORI	R2, R0, 92
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 72
+ADDIU	R2, R2, 80
 SW	R0, 0(R2)
 ;Kinematics.c,553 :: 		if((homing[axis].home_cnt >= 2)&&(!homing[axis].complete)){
 L__Home95:
