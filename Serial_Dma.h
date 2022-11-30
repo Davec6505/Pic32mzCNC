@@ -37,6 +37,8 @@ void DMA0_Disable();
 int  Get_Head_Value();
 int  Get_Tail_Value();
 int  Get_Difference();
+void Get_Line(char *str,int dif);
+void Reset_Ring();
 int  Loopback();
 
 ///////////////////////////////////////////

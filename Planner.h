@@ -7,6 +7,14 @@
 #include "Globals.h"
 
 
+// Useful macros
+#define clear_vector(a) memset(a, 0, sizeof(a))
+#define clear_vector_float(a) memset(a, 0.0, sizeof(float)*N_AXIS)
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+
+
+
 /*! \Brief Frequency of timer1 in [Hz].
  * Newtimer 50000000
  * Modify this according to frequency used. Because of the prescaler setting,
@@ -23,18 +31,45 @@
 /************************************************************************
 * Maths constants. To simplify maths when calculating in speed_cntr_Move().
 * Alpha is stepangle in radians 2*pi/spr in rad  || (1.8 * Pi) / 180
-* Speed = (ALPHA * T1_FREQ) / Step
+* Speed = (ALPHA * T1_FREQ) / Step  {T1_Freq = }
 * acc = ((2 * ALPHA * T1_FREQ)*(Step1 - Step2)) / (Step1*Step2)*(Step1+Step2)
 *************************************************************************/
 #define ALPHA    (2*3.14159)/SPR
-#define A_T_x100 (long)((ALPHA*T1_FREQ)*100)    // (ALPHA / T1_FREQ)*100
-#define T1_FREQ_148 (long)((T1_FREQ*0.676)/100)      // divided by 100 and scaled by 0.676
-#define A_SQ (long)(ALPHA*2*10000000000)                    // ALPHA*2*10000000000
+#define A_T_x100 (long)((ALPHA*T1_FREQ)*100)      // (ALPHA / T_FREQ)*100
+#define T1_FREQ_148 (long)((T1_FREQ*0.676)/100)   // divided by 100 and scaled by 0.676
+#define A_SQ (long)(ALPHA*2*10000000000)          // ALPHA*2*10000000000
 #define A_x20000 (long)(ALPHA*20000)              // ALPHA*20000
 
 //////////////////////////////////////////
 //structs enums and constants
 
+////////////////////////////////////////////////////
+//  ****** INTERPOLATION SPECIFIC  ******         //
+////////////////////////////////////////////////////
+typedef struct genVars{
+  int Single_Dual;
+  unsigned short running: 1;       //running bit
+  unsigned short startPulses: 1;
+  int   Tog;
+  int   AxisNo;
+ // long  i;
+  long  dif;
+  long  dA;
+  long  dB;
+  long  dC;
+  long  prevA;
+  long  prevB;
+  long  prevC;
+  long  over;
+  int   dirx;
+  int   diry;
+  int   dirz;
+  int   dira;
+  int   dirb;
+  int   dirc;
+  char  cir: 1;
+}sVars;
+extern sVars SV;
 
 
 // Initialize the motion plan subsystem
@@ -44,9 +79,4 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 //efficient sqrt interger calculation
 unsigned long sqrt_(unsigned long v);
 
-//return min of long value
-unsigned int min_(unsigned long x, unsigned long y);
-
-//return min of long value
-unsigned int max_(unsigned long x, unsigned long y);
  #endif

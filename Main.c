@@ -59,7 +59,7 @@ int xyz_ = 0, i,dif;
 static int cntr;
  // fp = Test_Min;
   PinMode();
-  StepperConstants(15000,15000);
+  plan_init(15000,15000);
   oneShotA = 0;
   a=0;
   disableOCx();
@@ -71,13 +71,13 @@ static int cntr;
 
      Debounce_Limits(X);
      Debounce_Limits(Y);
-     
-     dif = Get_Difference();
+     Sample_Ringbuffer();
+   /*  dif = Get_Difference();
      if(dif>0){
        dma_printf("\ntail:= %d : head:= %d : diff:= %d",serial.tail,serial.head,dif);
        while(DMA_Busy(1));
          Loopback();
-     }
+     }*/
      
      if(!Toggle){
        LED1 = TMR.clock >> 4;
@@ -107,15 +107,15 @@ static int cntr;
      if(Toggle){
 
        if((a > 19)){
-         if(homing[X].home_cnt >= 2){
-            homing[X].home_cnt = 0;
+         if(STPS[X].homing.home_cnt >= 2){
+            STPS[X].homing.home_cnt = 0;
             a = 11;
-            dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+            dma_printf("\nXCnt:= %d : a:= %d",STPS[X].homing.home_cnt,a);
          }
-         if(homing[Y].home_cnt >= 2){
-            homing[Y].home_cnt = 0;
+         if(STPS[Y].homing.home_cnt >= 2){
+            STPS[Y].homing.home_cnt = 0;
             a = 12;
-            dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+            dma_printf("\nXCnt:= %d : a:= %d",STPS[Y].homing.home_cnt,a);
          }
          Temp_Move(a);
        }else{

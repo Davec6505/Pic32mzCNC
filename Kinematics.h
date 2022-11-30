@@ -39,63 +39,21 @@
 #define  deg2rad    (Pi/180.00)
 
 
-
-
-#define X_AXIS 0 // Axis indexing value
-#define Y_AXIS 1
-#define Z_AXIS 2
-
 #define DEFAULT_FEEDRATE 250.0
 #define DEFAULT_MM_PER_ARC_SEGMENT 0.8
 
 
-// Useful macros
-#define clear_vector(a) memset(a, 0, sizeof(a))
-#define clear_vector_float(a) memset(a, 0.0, sizeof(float)*N_AXIS)
-#define max(a,b) (((a) > (b)) ? (a) : (b))
-#define min(a,b) (((a) < (b)) ? (a) : (b))
 
-////////////////////////////////////////////////////
-//       ******LINEAR INTERPOLATION******         //
-////////////////////////////////////////////////////
-typedef struct genVars{
-  int Single_Dual;
-  unsigned short running: 1;       //running bit
-  unsigned short startPulses: 1;
-  int   Tog;
-  int   AxisNo;
-  long  i;
-  long  d2;
-  long  dx;
-  long  dy;
-  long  dz;
-  long  da;
-  long  px;
-  long  py;
-  long  pz;
-  long  pa;
-  long  over;
-  long  acc;
-  long  dec;
-  int   dirx;
-  int   diry;
-  int   dirz;
-  int   dira;
-  int   dirb;
-  int   dirc;
-  char  cir: 1;
-}sVars;
-extern sVars SV;
 
-typedef struct{
+typedef struct {
 char set: 1;
 char home: 1;
 char rev: 1;
 char back: 1;
 char complete: 1;
 unsigned int home_cnt;
-}Homing;
-extern Homing homing[NoOfAxis];
+}homing_t;
+//extern Homing homing[NoOfAxis];
 
 typedef struct Steps{
    //! micro sec  count value for clock pluse compare
@@ -121,8 +79,8 @@ typedef struct Steps{
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long accel_count;
   long deccl_count;
-  long acc_;
-  long dec_;
+  long acc;
+  long dec;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long step_count;
   //! Distance calculated to travel
@@ -144,7 +102,7 @@ typedef struct Steps{
  //!  the mm to travel
  signed long mmToTravel;
  //!  Real-time machine (aka home) abs position vector in steps.
- long steps_position;
+ long steps_abs_position;
  //! Real-time machine positions in mm or inches
  double mm_position;
  //! Home positions saved if offsets are needed for limit switches
@@ -155,6 +113,8 @@ typedef struct Steps{
  int  axis_dir;
  //! the master axis indicator
  char master: 1;
+ //!Homing specific data
+ homing_t homing;
 }STP;
 extern STP STPS[NoOfAxis];
 

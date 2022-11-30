@@ -49,7 +49,7 @@ void  DMA0(){
     DCH0ECON      =  (146 << 8 ) | 0x30;
     
     //Pattern data
-    DCH0DAT       =  '\n';
+    DCH0DAT       =  0x0A0D;//'\n';
     
     //Source address as UART_RX
     DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
@@ -78,7 +78,7 @@ void  DMA0(){
     IFS4CLR       = 0x40;
     //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0] 
     //Set up AutoEnable & Priority as 3       .
-    DCH0CONSET      = 0X0000013;
+    DCH0CONSET      = 0X0000813;
     
     //set the recieve buffer counts to 0
     serial.head = serial.tail = serial.diff = 0;
@@ -161,6 +161,23 @@ int Get_Difference(){
     
   return serial.diff;
 }
+
+void Reset_Ring(){
+   serial.tail = serial.head = 0;
+}
+
+//read the line from thebuffer
+void Get_Line(char *str,int dif){
+
+   if(serial.tail + dif > 499)
+      serial.tail = 0;
+
+    strncpy(str,serial.temp_buffer+serial.tail,dif);
+
+    //incrament the tail
+    serial.tail += dif;
+}
+
 //loopback the message
 int  Loopback(){
 char str[50];
@@ -296,25 +313,28 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 int dma_printf(const char* str,...){
  //Variable decleration of type va_list
  va_list va;
- int i = 0, j=0,busy;
+ int i = 0, j = 0,busy;
  char buff[200]={0},tmp[20],tmp1[6];
  char *str_arg,*tmp_;
+ 
  //check that str is not null
  if(str == 0)
      return;
+     
  //can only call this once the va_list has bee declared
  //or the compiler throws an undefined error!!! not sure
  //about the compiler not implimenting va_end????
  if(DMA_Busy(1)){
    return 0;
  }
+ 
  //initialize the va_list via themacro va_start(arg1,arg2)
  //arg1 is type va_list and arg2 is type var preceding elipsis
  va_start(va,str);
  
  i = j = 0;
  while(str[i] != '\0'){
-    if(str[i] == '%'){
+   if(str[i] == '%'){
      i++;
      switch(str[i]){
         case 'c':
@@ -374,11 +394,11 @@ int dma_printf(const char* str,...){
              j += strlen(str_arg);
              break;
      }
-    }else{
+  }else{
        *(buff+j) = *(str+i);
        j++;
-    }
-    i++;
+  }
+  i++;
  }
  *(buff+j) = 0;
  strncpy(txBuf,buff,j);

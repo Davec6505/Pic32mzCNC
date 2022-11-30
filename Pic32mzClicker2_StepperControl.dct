@@ -346,7 +346,6 @@ abf2seq3bits
 abort
 abs
 absolute_mode
-acc
 accdec
 ackdt
 ackdt
@@ -19966,7 +19965,6 @@ d_a_i2c2stat_bit
 d_a_i2c3stat_bit
 d_a_i2c4stat_bit
 d_a_i2c5stat_bit
-d2
 da
 dassert
 dassert
@@ -21780,6 +21778,7 @@ day102_bit
 day103
 day103_alrmdate_bit
 day103_bit
+db
 dbgper
 dbgper
 dbgper
@@ -21839,6 +21838,7 @@ dbgper2_bf1devcfg0_bit
 dbgper2_bf2devcfg0_bit
 dbgper2_bit
 dbgper2_ubadevcfg0_bit
+dc
 dch0con
 dch0conbits
 dch0conclr
@@ -23137,7 +23137,6 @@ debug1_bf1devcfg0_bit
 debug1_bf2devcfg0_bit
 debug1_bit
 debug1_ubadevcfg0_bit
-dec
 dec2bcd
 dec2bcd16
 delay_100ms
@@ -23328,6 +23327,7 @@ dhen_i2c2con_bit
 dhen_i2c3con_bit
 dhen_i2c4con_bit
 dhen_i2c5con_bit
+dif
 diff
 diff0
 diff0
@@ -25341,12 +25341,9 @@ dummybytes1
 dummybytes1_bit
 dummybytes2
 dummybytes2_bit
-dx
-dy
 dynfifos
 dynfifos
 dynfifos_bit
-dz
 ebia0en
 ebia0en
 ebia0en
@@ -32513,6 +32510,7 @@ gcstat_i2c5stat_bit
 get_difference
 get_fosc_khz
 get_head_value
+get_line
 get_tail_value
 getaxisdirection
 glswtrg
@@ -33147,7 +33145,6 @@ hold_bit
 home
 home_axis
 homing
-homing
 homing_cnt
 hostmode
 hostmode
@@ -33369,7 +33366,6 @@ hugefrm
 hugefrm_bit
 hugefrm_emacxcfg2_bit
 hypot
-i
 i2c1add
 i2c1addbits
 i2c1addclr
@@ -38912,7 +38908,6 @@ manfc
 manfc
 manfc_bit
 max
-max_
 max_sizes
 mc_arc
 mcen
@@ -39097,7 +39092,6 @@ miimbusy
 miimbusy_bit
 miimbusy_emacxmind_bit
 min
-min_
 min01
 min01
 min01
@@ -40221,6 +40215,7 @@ nb2bipktgp26
 nb2bipktgp26_bit
 nb2bipktgp26_emacxipgr_bit
 newline
+nl
 nmicnt
 nmicnt
 nmicnt
@@ -43745,7 +43740,6 @@ p_i2c4stat_bit
 p_i2c5stat_bit
 p1
 p2
-pa
 packet
 packet
 packet_bit
@@ -45411,6 +45405,9 @@ prestatinv
 prestatinvbits
 prestatset
 prestatsetbits
+preva
+prevb
+prevc
 pri
 pri
 pri
@@ -46111,9 +46108,6 @@ pwrconinv
 pwrconinvbits
 pwrconset
 pwrconsetbits
-px
-py
-pz
 r_or_ijk
 r_w
 r_w
@@ -47146,6 +47140,7 @@ reset_
 reset_bit
 reset_min_debounce
 reset_min_limit
+reset_ring
 reset_usbcsr0_bit
 resethoming
 resetie
@@ -55445,6 +55440,7 @@ samc9_bit
 samp
 samp
 samp_bit
+sample_ringbuffer
 sbcde
 sbcde
 sbcde
@@ -60241,6 +60237,7 @@ spituren_spi3con2_bit
 spituren_spi4con2_bit
 spituren_spi5con2_bit
 spituren_spi6con2_bit
+splitstr
 spllcon
 spllconbits
 spllconclr
@@ -60998,7 +60995,6 @@ step26_bit
 step27
 step27_bit
 stepa
-stepperconstants
 stepx
 stepy
 stepz

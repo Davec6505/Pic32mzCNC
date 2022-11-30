@@ -210,45 +210,16 @@ typedef struct {
  volatile uint8_t execute;
 } system_t;
 extern system_t sys;
-#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
-typedef struct genVars{
- int Single_Dual;
- unsigned short running: 1;
- unsigned short startPulses: 1;
- int Tog;
- int AxisNo;
- long i;
- long d2;
- long dx;
- long dy;
- long dz;
- long da;
- long px;
- long py;
- long pz;
- long pa;
- long over;
- long acc;
- long dec;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- char cir: 1;
-}sVars;
-extern sVars SV;
-
-typedef struct{
+#line 48 "c:/users/git/pic32mzcnc/kinematics.h"
+typedef struct {
 char set: 1;
 char home: 1;
 char rev: 1;
 char back: 1;
 char complete: 1;
 unsigned int home_cnt;
-}Homing;
-extern Homing homing[ 6 ];
+}homing_t;
+
 
 typedef struct Steps{
 
@@ -274,8 +245,8 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
- long acc_;
- long dec_;
+ long acc;
+ long dec;
 
  long step_count;
 
@@ -297,7 +268,7 @@ typedef struct Steps{
 
  signed long mmToTravel;
 
- long steps_position;
+ long steps_abs_position;
 
  double mm_position;
 
@@ -308,9 +279,11 @@ typedef struct Steps{
  int axis_dir;
 
  char master: 1;
+
+ homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-#line 173 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 133 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -398,6 +371,8 @@ void DMA0_Disable();
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
+void Get_Line(char *str,int dif);
+void Reset_Ring();
 int Loopback();
 
 
@@ -453,6 +428,31 @@ void Reset_Min_Debounce(int axis);
 
 char FP(int axis);
 char FN(int axis);
+#line 1 "c:/users/git/pic32mzcnc/protocol.h"
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/git/pic32mzcnc/print.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 28 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+int read_float(char *line, char *char_counter, float *float_ptr);
+
+
+void delay_ms(unsigned int ms);
+
+
+void delay_us(unsigned long us);
+
+
+void sys_sync_current_position();
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 29 "c:/users/git/pic32mzcnc/protocol.h"
+void Sample_Ringbuffer();
+void SplitStr(char *arg[],char *str,char c);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -496,7 +496,16 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 31 "c:/users/git/pic32mzcnc/stepper.h"
+
+
+
+
+
+
+
+
+
+
 extern unsigned int Toggle;
 
 
@@ -505,7 +514,7 @@ typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
-extern axis_combination axis_xyz;
+extern volatile axis_combination axis_xyz;
 
 
 
@@ -526,9 +535,6 @@ void disableOCx();
 
 
 
-void StepperConstants(long accel,long decel);
-
-
 void SingleStepAxis(int axis);
 void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
@@ -547,21 +553,42 @@ void Test_CycleZ();
 void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 41 "c:/users/git/pic32mzcnc/planner.h"
+#line 49 "c:/users/git/pic32mzcnc/planner.h"
+typedef struct genVars{
+ int Single_Dual;
+ unsigned short running: 1;
+ unsigned short startPulses: 1;
+ int Tog;
+ int AxisNo;
+
+ long dif;
+ long dA;
+ long dB;
+ long dC;
+ long prevA;
+ long prevB;
+ long prevC;
+ long over;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
+ char cir: 1;
+}sVars;
+extern sVars SV;
+
+
+
 void plan_init(long accel,long decel);
 
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 
 unsigned long sqrt_(unsigned long v);
-
-
-unsigned int min_(unsigned long x, unsigned long y);
-
-
-unsigned int max_(unsigned long x, unsigned long y);
 #line 4 "C:/Users/Git/Pic32mzCNC/Planner.c"
 sVars SV;
-Homing homing[ 6 ];
+
 
 
 
@@ -569,14 +596,16 @@ void plan_init(long accel,long decel)
 {
 int i = 0;
  for(i = 0; i <  6 ; i++){
- STPS[i].acc_ = accel;
- STPS[i].dec_ = decel;
+ STPS[i].acc = accel;
+ STPS[i].dec = decel;
  }
 }
 #line 31 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void speed_cntr_Move(signed long mmSteps, signed long speed, int axis_No){
 int ii;
 char txt_[9];
+long temp_speed;
+static long last_speed;
 long abs_mmSteps = abs(mmSteps);
 
 
@@ -591,16 +620,24 @@ long abs_mmSteps = abs(mmSteps);
 
 
 
- STPS[axis_No].min_delay =  (long)(( (2*3.14159)/ 188 * 781250 )*100)  / speed;
+ if(STPS[axis_No].run_state !=  0 )
+ temp_speed = last_speed - speed;
+ else
+ temp_speed = speed;
 
 
 
 
- STPS[axis_No].step_delay = abs( (long)(( 781250 *0.676)/100)  * ((sqrt_( (long)( (2*3.14159)/ 188 *2*10000000000)  / SV.acc))/100));
+ STPS[axis_No].min_delay =  (long)(( (2*3.14159)/ 188 * 781250 )*100)  / temp_speed;
+
+
+
+
+ STPS[axis_No].step_delay = abs( (long)(( 781250 *0.676)/100)  * ((sqrt_( (long)( (2*3.14159)/ 188 *2*10000000000)  / STPS[axis_No].acc))/100));
  STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
 
- STPS[axis_No].max_step_lim =(speed*speed)/(long)(2.0* (2*3.14159)/ 188 *(double)SV.acc*100.0);
+ STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(long)(2.0* (2*3.14159)/ 188 *(double)STPS[axis_No].acc*100.0);
 
 
 
@@ -612,7 +649,7 @@ long abs_mmSteps = abs(mmSteps);
 
 
 
- STPS[axis_No].accel_lim = (abs_mmSteps * SV.dec) / (SV.acc + SV.dec);
+ STPS[axis_No].accel_lim = (abs_mmSteps * STPS[axis_No].dec) / (STPS[axis_No].acc + STPS[axis_No].dec);
 
  if(STPS[axis_No].accel_lim == 0){
  STPS[axis_No].accel_lim = 1;
@@ -622,7 +659,7 @@ long abs_mmSteps = abs(mmSteps);
  if(STPS[axis_No].accel_lim < STPS[axis_No].max_step_lim){
  STPS[axis_No].decel_val = STPS[axis_No].accel_lim - mmSteps;
  }else{
- STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim *SV.acc)/SV.dec);
+ STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim *STPS[axis_No].acc)/STPS[axis_No].dec);
  }
 
  if(STPS[axis_No].decel_val == 0)
@@ -651,32 +688,76 @@ long abs_mmSteps = abs(mmSteps);
 
  STPS[axis_No].step_count = 0;
  STPS[axis_No].rest = 0;
- STPS[axis_No].microSec = 0;
  STPS[axis_No].accel_count = 1;
  STPS[axis_No].dist = 0;
  SV.Tog = 0;
  SV.running = 1;
+ last_speed = speed;
 
 }
-#line 127 "C:/Users/Git/Pic32mzCNC/Planner.c"
-unsigned int min_(unsigned int x, unsigned int y){
- if(x < y){
- return x;
+#line 136 "C:/Users/Git/Pic32mzCNC/Planner.c"
+void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,
+ double r, double i, double j, double k, int axis_A,int axis_B,int dir){
+unsigned short isclockwise = 0;
+double inverse_feed_rate = -1;
+double position[ 6 ];
+double target[ 6 ];
+double offset[ 6 ];
+double x = 0.00;
+double y = 0.00;
+double h_x2_div_d = 0.00;
+int axis_plane_a,axis_plane_b;
+
+
+
+ position[axis_A] = Cur_axis_a;
+ position[axis_B] = Cur_axis_b;
+ position[2] = 0;
+ target[axis_A] = Fin_axis_a;
+ target[axis_B] = Fin_axis_b;
+ target[2] = 0;
+ offset[axis_A] = i;
+ offset[axis_B] = j;
+
+ if (r != 0.00) {
+#line 223 "C:/Users/Git/Pic32mzCNC/Planner.c"
+ x = target[axis_plane_a] - position[axis_plane_a];
+
+ y = target[axis_plane_b] - position[axis_plane_b];
+
+
+
+ h_x2_div_d = 4 * r*r - x*x - y*y;
+
+
+ h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
+
+ if (gc.motion_mode ==  3 ) { h_x2_div_d = -h_x2_div_d; }
+#line 257 "C:/Users/Git/Pic32mzCNC/Planner.c"
+ if (r < 0) {
+ h_x2_div_d = -h_x2_div_d;
+ r = -r;
  }
- else{
- return y;
+
+
+ i = 0.5*(x-(y*h_x2_div_d));
+
+ j = 0.5*(y+(x*h_x2_div_d));
+ } else {
+
+
+ r = hypot(i, j);
  }
+
+ isclockwise =  0 ;
+ if (dir ==  0 ) { isclockwise =  1 ; }
+
+
+
+ mc_arc(position, target, offset, axis_A, axis_B, Z,
+  250.0 , gc.inverse_feed_rate_mode,r, isclockwise);
 }
-#line 141 "C:/Users/Git/Pic32mzCNC/Planner.c"
-unsigned int max_(unsigned int x, unsigned int y){
- if(x > y){
- return x;
- }
- else{
- return y;
- }
-}
-#line 158 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 294 "C:/Users/Git/Pic32mzCNC/Planner.c"
 unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;

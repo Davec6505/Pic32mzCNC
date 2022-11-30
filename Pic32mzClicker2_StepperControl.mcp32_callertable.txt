@@ -24,36 +24,37 @@ main
 		OutPutPulseXYZ
 		SetPinMode
 		SetInitialSizes
-	StepperConstants
+	plan_init
 	disableOCx
 	DisableStepper
 	Debounce_Limits
 		Test_Port_Pins
 		Reset_Min_Limit
 		Reset_Min_Debounce
-	Get_Difference
-	dma_printf
-		DMA_Busy
-		sprintf
-			_doprntf
-				isdigit
-				scale
-				fround
-		strcat
-		strlen
-		strncpy
-		DMA1_Enable
-		__CC2DW
-	DMA_Busy
-	Loopback
+	Sample_Ringbuffer
 		Get_Difference
-		strncpy
+		Get_Line
+			strncpy
+		SplitStr
 		dma_printf
+			DMA_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
+		__CC2DW
 	EnStepperX
 	EnStepperY
 	EnStepperZ
 	EnStepperA
 	ResetHoming
+	dma_printf
 	Temp_Move
 		SingleAxisStep
 			Single_Axis_Enable

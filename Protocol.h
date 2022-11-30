@@ -12,4 +12,20 @@
 //#include "report.h"
 #include "Kinematics.h"
 
+
+/////////////////////////////////////////////
+//defines
+#define str_size 20
+#define arr_size 10
+
+
+
+
+
+
+
+/////////////////////////////////////////////
+//function prototypes
+void Sample_Ringbuffer();
+void SplitStr(char *arg[],char *str,char c);
 #endif

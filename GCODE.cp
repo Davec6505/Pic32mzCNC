@@ -209,6 +209,8 @@ void DMA0_Disable();
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
+void Get_Line(char *str,int dif);
+void Reset_Ring();
 int Loopback();
 
 
@@ -232,45 +234,16 @@ typedef struct {
  volatile uint8_t execute;
 } system_t;
 extern system_t sys;
-#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
-typedef struct genVars{
- int Single_Dual;
- unsigned short running: 1;
- unsigned short startPulses: 1;
- int Tog;
- int AxisNo;
- long i;
- long d2;
- long dx;
- long dy;
- long dz;
- long da;
- long px;
- long py;
- long pz;
- long pa;
- long over;
- long acc;
- long dec;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- char cir: 1;
-}sVars;
-extern sVars SV;
-
-typedef struct{
+#line 48 "c:/users/git/pic32mzcnc/kinematics.h"
+typedef struct {
 char set: 1;
 char home: 1;
 char rev: 1;
 char back: 1;
 char complete: 1;
 unsigned int home_cnt;
-}Homing;
-extern Homing homing[ 6 ];
+}homing_t;
+
 
 typedef struct Steps{
 
@@ -296,8 +269,8 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
- long acc_;
- long dec_;
+ long acc;
+ long dec;
 
  long step_count;
 
@@ -319,7 +292,7 @@ typedef struct Steps{
 
  signed long mmToTravel;
 
- long steps_position;
+ long steps_abs_position;
 
  double mm_position;
 
@@ -330,9 +303,11 @@ typedef struct Steps{
  int axis_dir;
 
  char master: 1;
+
+ homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-#line 173 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 133 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -362,21 +337,51 @@ void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 41 "c:/users/git/pic32mzcnc/planner.h"
+#line 49 "c:/users/git/pic32mzcnc/planner.h"
+typedef struct genVars{
+ int Single_Dual;
+ unsigned short running: 1;
+ unsigned short startPulses: 1;
+ int Tog;
+ int AxisNo;
+
+ long dif;
+ long dA;
+ long dB;
+ long dC;
+ long prevA;
+ long prevB;
+ long prevC;
+ long over;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
+ char cir: 1;
+}sVars;
+extern sVars SV;
+
+
+
 void plan_init(long accel,long decel);
 
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 
 unsigned long sqrt_(unsigned long v);
-
-
-unsigned int min_(unsigned long x, unsigned long y);
-
-
-unsigned int max_(unsigned long x, unsigned long y);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 31 "c:/users/git/pic32mzcnc/stepper.h"
+
+
+
+
+
+
+
+
+
+
 extern unsigned int Toggle;
 
 
@@ -385,7 +390,7 @@ typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
-extern axis_combination axis_xyz;
+extern volatile axis_combination axis_xyz;
 
 
 
@@ -404,9 +409,6 @@ int EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
-
-
-void StepperConstants(long accel,long decel);
 
 
 void SingleStepAxis(int axis);
@@ -502,6 +504,31 @@ void Reset_Min_Debounce(int axis);
 
 char FP(int axis);
 char FN(int axis);
+#line 1 "c:/users/git/pic32mzcnc/protocol.h"
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/git/pic32mzcnc/print.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 28 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+int read_float(char *line, char *char_counter, float *float_ptr);
+
+
+void delay_ms(unsigned int ms);
+
+
+void delay_us(unsigned long us);
+
+
+void sys_sync_current_position();
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 29 "c:/users/git/pic32mzcnc/protocol.h"
+void Sample_Ringbuffer();
+void SplitStr(char *arg[],char *str,char c);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;

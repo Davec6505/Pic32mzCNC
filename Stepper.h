@@ -15,15 +15,11 @@
 //defines
 typedef unsigned short UInt8_t;
 
-
-
 // Speed ramp states
 #define STOP  0
 #define ACCEL 1
 #define DECEL 2
 #define RUN   3
-
-
 
 // Constants for accelleration
 
@@ -36,7 +32,7 @@ typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
-extern axis_combination axis_xyz;
+extern volatile axis_combination axis_xyz;
 //enum StepState{STOP,ACCEL,RUN,DECEL};
 
 /////////////////////////////////////////
@@ -55,9 +51,6 @@ int  EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
-
-
-void StepperConstants(long accel,long decel);
 
 //Axis control functions
 void SingleStepAxis(int axis);

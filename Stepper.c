@@ -52,14 +52,6 @@ void SetPinMode(){
 }
 
 /////////////////////////////////
-//Setup constants
-void StepperConstants(long accel,long decel){
-    SV.acc = accel;
-    SV.dec = decel;
-    
-}
-
-/////////////////////////////////
 //Enable Steppers
 void EnStepperX(){
 //  SLP_FLT_StepX = 1;
@@ -106,7 +98,7 @@ void Step_Cycle(int axis_No){
      //keep track of relative position
       STPS[axis_No].step_count++;
      //keep track of absolute position
-      STPS[axis_No].steps_position += STPS[axis_No].axis_dir;
+      STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
       toggleOCx(axis_No);
 }
 
@@ -166,6 +158,7 @@ int Pulse(int axis_No){
 
     switch(STPS[axis_No].run_state) {
       case STOP:
+           STPS[axis_No].run_state  = STOP;
            SV.Tog = 1;
         break;
 
@@ -390,37 +383,31 @@ void StopAxis(int axis){
 
 void Axis_Interpolate(int axisA,int axisB){
 
-   if((STPS[axisA].step_count > SV.dx)||(STPS[axisB].step_count > SV.dy)){
+   if((STPS[axisA].step_count > SV.dA)||(STPS[axisB].step_count > SV.dB)){
         StopAxis(axisA);
         StopAxis(axisB);
         return;
    }
 
-   if(SV.dx >= SV.dy){
+   if(SV.dA >= SV.dB){
       Step_Cycle(axisA);
       if(!SV.cir)
         Pulse(axisA);
-      if(SV.d2 < 0){
-          SV.d2 += BresIncVal(SV.dy);//2*SV.dy;//
+      if(SV.dif < 0){
+          SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
       }else{
-          SV.d2 += BresDiffVal(SV.dy,SV.dx);//2 * (SV.dy - SV.dx);//
+          SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
           Step_Cycle(axisB);
       }
    }else{
       Step_Cycle(axisB);
       if(!SV.cir)
          Pulse(axisB);
-      if(SV.d2 < 0){
-         SV.d2 += BresIncVal(SV.dx);//2 * SV.dx;//
+      if(SV.dif < 0){
+         SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
       }else{
-         SV.d2 += BresDiffVal(SV.dx,SV.dy);//2 * (SV.dx - SV.dy);//
+         SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
          Step_Cycle(axisA);
        }
    }
 }
-
-
-
-
-     
-     
