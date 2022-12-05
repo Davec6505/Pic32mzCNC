@@ -212,13 +212,7 @@ extern parser_state_t gc;
 
 
 
-void gc_init();
-
-
-uint8_t gc_execute_line(char *line);
-
-
-void gc_set_current_position(int32_t x, int32_t y, int32_t z);
+void G_Instruction(int _G_);
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
@@ -564,9 +558,13 @@ void delay_us(unsigned long us);
 
 void sys_sync_current_position();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 29 "c:/users/git/pic32mzcnc/protocol.h"
+#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+void Str_Initialize();
+
 void Sample_Ringbuffer();
-void SplitStr(char *arg[],char *str,char c);
+
+void SplitInstruction(char **arg,char *str,char c);
+int CopyStr(char *to,char *from, int len);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -623,12 +621,13 @@ static int cntr;
 
  disable_steps = 0;
  EnableInterrupts();
+ Toggle = 0;
  while(1){
 
  Debounce_Limits(X);
  Debounce_Limits(Y);
  Sample_Ringbuffer();
-#line 82 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 83 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(!Toggle){
  LED1 = TMR.clock >> 4;
 
@@ -667,10 +666,10 @@ static int cntr;
  a = 12;
  dma_printf("\nXCnt:= %d : a:= %d",STPS[Y].homing.home_cnt,a);
  }
- Temp_Move(a);
+
  }else{
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
- a = Temp_Move(a);
+
 
  dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
  a,STPS[X].dist,STPS[X].mmToTravel,
@@ -679,6 +678,7 @@ static int cntr;
  }
  }
  }
+
  }
 }
 

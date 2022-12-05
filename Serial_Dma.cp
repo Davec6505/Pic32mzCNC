@@ -212,13 +212,7 @@ extern parser_state_t gc;
 
 
 
-void gc_init();
-
-
-uint8_t gc_execute_line(char *line);
-
-
-void gc_set_current_position(int32_t x, int32_t y, int32_t z);
+void G_Instruction(int _G_);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -524,9 +518,13 @@ void delay_us(unsigned long us);
 
 void sys_sync_current_position();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 29 "c:/users/git/pic32mzcnc/protocol.h"
+#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+void Str_Initialize();
+
 void Sample_Ringbuffer();
-void SplitStr(char *arg[],char *str,char c);
+
+void SplitInstruction(char **arg,char *str,char c);
+int CopyStr(char *to,char *from, int len);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -621,7 +619,7 @@ void DMA0(){
  DCH0ECON = (146 << 8 ) | 0x30;
 
 
- DCH0DAT = 0x0A0D;
+ DCH0DAT = '\n';
 
 
  DCH0SSA = KVA_TO_PA(0xBF822230);
@@ -650,7 +648,7 @@ void DMA0(){
  IFS4CLR = 0x40;
 
 
- DCH0CONSET = 0X0000813;
+ DCH0CONSET = 0X0000013;
 
 
  serial.head = serial.tail = serial.diff = 0;
@@ -885,8 +883,8 @@ int dma_printf(const char* str,...){
   __va_start(va, str) ;
 
  i = j = 0;
- while(str[i] != '\0'){
- if(str[i] == '%'){
+ while(str[i]!= '\0'){
+ if(*(str+i) == '%'){
  i++;
  switch(str[i]){
  case 'c':
@@ -899,6 +897,7 @@ int dma_printf(const char* str,...){
  sprintf(tmp1,"%d", __va_arg(va, int) );
  strcat(buff+j, tmp1);
  j += strlen(tmp1);
+
  break;
  case 'u':
 
@@ -953,7 +952,7 @@ int dma_printf(const char* str,...){
  i++;
  }
  *(buff+j) = 0;
- strncpy(txBuf,buff,j);
+ strncpy(txBuf,buff,j-1);
  DCH1SSIZ = j ;
  DMA1_Enable();
  return j;

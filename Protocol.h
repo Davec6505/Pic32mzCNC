@@ -15,8 +15,9 @@
 
 /////////////////////////////////////////////
 //defines
-#define str_size 20
 #define arr_size 10
+#define str_size 60
+
 
 
 
@@ -26,6 +27,11 @@
 
 /////////////////////////////////////////////
 //function prototypes
+//init the array of stringto empty strings
+void Str_Initialize();
+//Get the instruction from the ring buffer
 void Sample_Ringbuffer();
-void SplitStr(char *arg[],char *str,char c);
+//split up the instructin
+void SplitInstruction(char **arg,char *str,char c);
+int CopyStr(char *to,char *from, int len);
 #endif

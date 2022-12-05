@@ -556,13 +556,7 @@ extern parser_state_t gc;
 
 
 
-void gc_init();
-
-
-uint8_t gc_execute_line(char *line);
-
-
-void gc_set_current_position(int32_t x, int32_t y, int32_t z);
+void G_Instruction(int _G_);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/print.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -583,38 +577,72 @@ void delay_us(unsigned long us);
 
 void sys_sync_current_position();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 29 "c:/users/git/pic32mzcnc/protocol.h"
+#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+void Str_Initialize();
+
 void Sample_Ringbuffer();
-void SplitStr(char *arg[],char *str,char c);
+
+void SplitInstruction(char **arg,char *str,char c);
+int CopyStr(char *to,char *from, int len);
 #line 3 "C:/Users/Git/Pic32mzCNC/Protocol.c"
-char nl[] = "\r\n";
+char nl[] = "\n\r";
+char gcode[ 10 ][ 60 ];
+char *test;
+
+void Str_Initialize(){
+int i;
+
+ for(i = 0; i <=  10 ;i++){
+ memset(gcode[i],0, 60 );
+ }
+}
+
 
 void Sample_Ringbuffer(){
-char gcode[ 20 ][ 10 ];
 char str[50];
-int dif = 0;
+char temp[20];
+int dif = 0,i,j;
+int G_Val;
 
 
  dif = Get_Difference();
 
  if(dif > 0){
- Get_Line(str,dif);
 
- SplitStr(gcode,str,0x20);
- dma_printf("\n%s \n%s \n%s \n%s",gcode[0],gcode[1],gcode[2],gcode[3]);
+ Get_Line(str,dif);
+ dma_printf("\n%s",str);
+ while(DMA_Busy(1));
+ SplitInstruction(gcode,str,0x20);
+ switch(gcode[0][0]){
+ case 'G':
+
+ CopyStr(temp,"01", 2);
+ for(i=0;i<2;i++){
+ dma_printf("\n%c",temp[i]);
+ while(DMA_Busy(1));
+ }
+
+
+ dma_printf("\n%s\n%s\n%s\n%s",gcode[0],gcode[1],gcode[2],gcode[3]);
+ while(DMA_Busy(1));
+ break;
+ case 'M':
+ break;
+
+ }
+
  }
 
 }
 
 
 
-void SplitStr(char arg[ 20 ][ 10 ],char *str,char c){
+
+void SplitInstruction(char arg[ 10 ][ 60 ],char *str,char c){
 int i,j;
  i = j = 0;
-
  while(*str != '\0'){
  if(*str == c){
-
  *(arg[i]+j)='\0';
  j = 0;
  i++;
@@ -625,4 +653,10 @@ int i,j;
  str++;
  }
  *(arg[i]+j)='\0';
+}
+
+int CopyStr(char *to,char *from, int len){
+
+ strcpy(to,from);
+ return 1;
 }

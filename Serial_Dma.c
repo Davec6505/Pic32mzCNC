@@ -49,7 +49,7 @@ void  DMA0(){
     DCH0ECON      =  (146 << 8 ) | 0x30;
     
     //Pattern data
-    DCH0DAT       =  0x0A0D;//'\n';
+    DCH0DAT       =  '\n';//0x0A0D;//'\n';
     
     //Source address as UART_RX
     DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
@@ -78,7 +78,7 @@ void  DMA0(){
     IFS4CLR       = 0x40;
     //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0] 
     //Set up AutoEnable & Priority as 3       .
-    DCH0CONSET      = 0X0000813;
+    DCH0CONSET      = 0X0000013;//813 = 2 char e.g. \r\n
     
     //set the recieve buffer counts to 0
     serial.head = serial.tail = serial.diff = 0;
@@ -333,8 +333,8 @@ int dma_printf(const char* str,...){
  va_start(va,str);
  
  i = j = 0;
- while(str[i] != '\0'){
-   if(str[i] == '%'){
+ while(str[i]!= '\0'){
+   if(*(str+i) == '%'){
      i++;
      switch(str[i]){
         case 'c':
@@ -347,6 +347,7 @@ int dma_printf(const char* str,...){
              sprintf(tmp1,"%d",va_arg(va,int));
              strcat(buff+j, tmp1);
              j += strlen(tmp1);
+             
              break;
         case 'u':
              //convert unsigned to decimal
@@ -401,7 +402,7 @@ int dma_printf(const char* str,...){
   i++;
  }
  *(buff+j) = 0;
- strncpy(txBuf,buff,j);
+ strncpy(txBuf,buff,j-1);
  DCH1SSIZ    = j ;
  DMA1_Enable();
  return j;

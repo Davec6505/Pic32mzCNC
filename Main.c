@@ -67,6 +67,7 @@ static int cntr;
   //stepper timeout counter
   disable_steps = 0;
   EnableInterrupts();
+  Toggle = 0;
   while(1){
 
      Debounce_Limits(X);
@@ -117,10 +118,10 @@ static int cntr;
             a = 12;
             dma_printf("\nXCnt:= %d : a:= %d",STPS[Y].homing.home_cnt,a);
          }
-         Temp_Move(a);
+        // Temp_Move(a);
        }else{
           if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-             a = Temp_Move(a);
+            // a = Temp_Move(a);
 #if DMADebug == 1
              dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
                      a,STPS[X].dist,STPS[X].mmToTravel,
@@ -129,6 +130,7 @@ static int cntr;
           }
        }
      }
+    // WDTCONSET = 0x01;
   }
 }
 

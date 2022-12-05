@@ -18390,6 +18390,7 @@ coolant_mode
 coord_offset
 coord_select
 coord_system
+copystr
 cos
 cosc
 cosc
@@ -32453,6 +32454,7 @@ fwmarkie_bit
 fwroverr
 fwroverr
 fwroverr_bit
+g_instruction
 gc
 gcen
 gcen
@@ -32480,7 +32482,7 @@ gcen_i2c2con_bit
 gcen_i2c3con_bit
 gcen_i2c4con_bit
 gcen_i2c5con_bit
-gcode_instruction
+gcode
 gcstat
 gcstat
 gcstat
@@ -60237,7 +60239,7 @@ spituren_spi3con2_bit
 spituren_spi4con2_bit
 spituren_spi5con2_bit
 spituren_spi6con2_bit
-splitstr
+splitinstruction
 spllcon
 spllconbits
 spllconclr
@@ -61174,6 +61176,7 @@ stnaddr67_bit
 stnaddr67_emacxsa0_bit
 stopaxis
 stps
+str_initialize
 strcat
 strchr
 strcmp
@@ -62861,6 +62864,7 @@ terrcnt6_c2trec_bit
 terrcnt7
 terrcnt7_bit
 terrcnt7_c2trec_bit
+test
 test_min
 test_port_pins
 testbp

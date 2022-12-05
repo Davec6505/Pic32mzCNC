@@ -3,7 +3,6 @@
 
 
 void PinMode(){
-
      DI();
      
      SYSKEY = 0xAA996655;
@@ -71,7 +70,7 @@ void PinMode(){
     
 //////////////////////////////////////////////////
 //Memory manager initialize
-  // MM_Init();
+   MM_Init();
    
 //////////////////////////////////////////////////
 //TMR 1 & 8 config
@@ -105,6 +104,10 @@ void PinMode(){
 ////////////////////////////////////////////////
 //Setup platform
   SetInitialSizes(STPS);
+  
+///////////////////////////////////////////////
+//init the planner and the split string array
+  Str_Initialize();
 }
 
 void UartConfig(){

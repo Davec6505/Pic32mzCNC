@@ -526,9 +526,13 @@ void delay_us(unsigned long us);
 
 void sys_sync_current_position();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 29 "c:/users/git/pic32mzcnc/protocol.h"
+#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+void Str_Initialize();
+
 void Sample_Ringbuffer();
-void SplitStr(char *arg[],char *str,char c);
+
+void SplitInstruction(char **arg,char *str,char c);
+int CopyStr(char *to,char *from, int len);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -579,12 +583,8 @@ extern parser_state_t gc;
 
 
 
-void gc_init();
-
-
-uint8_t gc_execute_line(char *line);
-
-
-void gc_set_current_position(int32_t x, int32_t y, int32_t z);
-#line 3 "C:/Users/Git/Pic32mzCNC/GCODE.c"
-char gcode_instruction[200];
+void G_Instruction(int _G_);
+#line 4 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+void G_Instruction(int _G_){
+ dma_printf("\n%d",_G_);
+}
