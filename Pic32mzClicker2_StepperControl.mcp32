@@ -78,9 +78,8 @@ File2=Config.c
 File3=GCODE.c
 File4=GCODE.h
 File5=Serial_Dma.c
-File6=Protocol.asm
-File7=Protocol.c
-Count=8
+File6=Protocol.c
+Count=7
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

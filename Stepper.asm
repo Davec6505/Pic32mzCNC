@@ -154,17 +154,17 @@ NOP
 L_toggleOCx2:
 ;Stepper.c,110 :: 		OC5R   = 0x5;
 ORI	R2, R0, 5
-SW	R2, Offset(-1081849840)(GP)
+SW	R2, Offset(OC5R+0)(GP)
 ;Stepper.c,111 :: 		OC5RS  = STPS[X].step_delay & 0xFFFF;//0x234;
 LW	R2, Offset(_STPS+8)(GP)
 ANDI	R2, R2, 65535
-SW	R2, Offset(-1081849824)(GP)
+SW	R2, Offset(OC5RS+0)(GP)
 ;Stepper.c,112 :: 		TMR2   =  0xFFFF;
 ORI	R2, R0, 65535
-SW	R2, Offset(-1081867760)(GP)
+SW	R2, Offset(TMR2+0)(GP)
 ;Stepper.c,113 :: 		OC5CON =  0x8004; //restart the output compare module
 ORI	R2, R0, 32772
-SW	R2, Offset(-1081849856)(GP)
+SW	R2, Offset(OC5CON+0)(GP)
 ;Stepper.c,114 :: 		break;
 J	L_toggleOCx1
 NOP	
@@ -172,17 +172,17 @@ NOP
 L_toggleOCx3:
 ;Stepper.c,116 :: 		OC2R   = 0x5;
 ORI	R2, R0, 5
-SW	R2, Offset(-1081851376)(GP)
+SW	R2, Offset(OC2R+0)(GP)
 ;Stepper.c,117 :: 		OC2RS  = STPS[Y].step_delay & 0xFFFF;
 LW	R2, Offset(_STPS+112)(GP)
 ANDI	R2, R2, 65535
-SW	R2, Offset(-1081851360)(GP)
+SW	R2, Offset(OC2RS+0)(GP)
 ;Stepper.c,118 :: 		TMR4   =  0xFFFF;
 ORI	R2, R0, 65535
-SW	R2, Offset(-1081866736)(GP)
+SW	R2, Offset(TMR4+0)(GP)
 ;Stepper.c,119 :: 		OC2CON =  0x8004; //restart the output compare module
 ORI	R2, R0, 32772
-SW	R2, Offset(-1081851392)(GP)
+SW	R2, Offset(OC2CON+0)(GP)
 ;Stepper.c,120 :: 		break;
 J	L_toggleOCx1
 NOP	
@@ -190,17 +190,17 @@ NOP
 L_toggleOCx4:
 ;Stepper.c,122 :: 		OC7R   = 0x5;
 ORI	R2, R0, 5
-SW	R2, Offset(-1081848816)(GP)
+SW	R2, Offset(OC7R+0)(GP)
 ;Stepper.c,123 :: 		OC7RS  = STPS[Z].step_delay & 0xFFFF;
 LW	R2, Offset(_STPS+216)(GP)
 ANDI	R2, R2, 65535
-SW	R2, Offset(-1081848800)(GP)
+SW	R2, Offset(OC7RS+0)(GP)
 ;Stepper.c,124 :: 		TMR6   =  0xFFFF;
 ORI	R2, R0, 65535
-SW	R2, Offset(-1081865712)(GP)
+SW	R2, Offset(TMR6+0)(GP)
 ;Stepper.c,125 :: 		OC7CON =  0x8004; //restart the output compare module
 ORI	R2, R0, 32772
-SW	R2, Offset(-1081848832)(GP)
+SW	R2, Offset(OC7CON+0)(GP)
 ;Stepper.c,126 :: 		break;
 J	L_toggleOCx1
 NOP	
@@ -208,17 +208,17 @@ NOP
 L_toggleOCx5:
 ;Stepper.c,128 :: 		OC3R   = 0x5;
 ORI	R2, R0, 5
-SW	R2, Offset(-1081850864)(GP)
+SW	R2, Offset(OC3R+0)(GP)
 ;Stepper.c,129 :: 		OC3RS  = STPS[A].step_delay & 0xFFFF;
 LW	R2, Offset(_STPS+320)(GP)
 ANDI	R2, R2, 65535
-SW	R2, Offset(-1081850848)(GP)
+SW	R2, Offset(OC3RS+0)(GP)
 ;Stepper.c,130 :: 		TMR5   =  0xFFFF;
 ORI	R2, R0, 65535
-SW	R2, Offset(-1081866224)(GP)
+SW	R2, Offset(TMR5+0)(GP)
 ;Stepper.c,131 :: 		OC3CON =  0x800C; //restart the output compare module
 ORI	R2, R0, 32780
-SW	R2, Offset(-1081850880)(GP)
+SW	R2, Offset(OC3CON+0)(GP)
 ;Stepper.c,132 :: 		break;
 J	L_toggleOCx1
 NOP	
@@ -226,17 +226,17 @@ NOP
 L_toggleOCx6:
 ;Stepper.c,134 :: 		OC6R   = 0x5;
 ORI	R2, R0, 5
-SW	R2, Offset(-1081849328)(GP)
+SW	R2, Offset(OC6R+0)(GP)
 ;Stepper.c,135 :: 		OC6RS  = STPS[B].step_delay & 0xFFFF;
 LW	R2, Offset(_STPS+424)(GP)
 ANDI	R2, R2, 65535
-SW	R2, Offset(-1081849312)(GP)
+SW	R2, Offset(OC6RS+0)(GP)
 ;Stepper.c,136 :: 		TMR3   =  0xFFFF;
 ORI	R2, R0, 65535
-SW	R2, Offset(-1081867248)(GP)
+SW	R2, Offset(TMR3+0)(GP)
 ;Stepper.c,137 :: 		OC6CON =  0x800C; //restart the output compare module
 ORI	R2, R0, 32780
-SW	R2, Offset(-1081849344)(GP)
+SW	R2, Offset(OC6CON+0)(GP)
 ;Stepper.c,138 :: 		break;
 J	L_toggleOCx1
 NOP	
@@ -244,17 +244,17 @@ NOP
 L_toggleOCx7:
 ;Stepper.c,140 :: 		OC8R   = 0x5;
 ORI	R2, R0, 5
-SW	R2, Offset(-1081848304)(GP)
+SW	R2, Offset(OC8R+0)(GP)
 ;Stepper.c,141 :: 		OC8RS  = STPS[C].step_delay & 0xFFFF;
 LW	R2, Offset(_STPS+528)(GP)
 ANDI	R2, R2, 65535
-SW	R2, Offset(-1081848288)(GP)
+SW	R2, Offset(OC8RS+0)(GP)
 ;Stepper.c,142 :: 		TMR7   =  0xFFFF;
 ORI	R2, R0, 65535
-SW	R2, Offset(-1081865200)(GP)
+SW	R2, Offset(TMR7+0)(GP)
 ;Stepper.c,143 :: 		OC8CON =  0x800C; //restart the output compare module
 ORI	R2, R0, 32780
-SW	R2, Offset(-1081848320)(GP)
+SW	R2, Offset(OC8CON+0)(GP)
 ;Stepper.c,144 :: 		break;
 J	L_toggleOCx1
 NOP	
@@ -722,60 +722,66 @@ NOP
 ;Stepper.c,224 :: 		case X:
 L_Single_Axis_Enable23:
 ;Stepper.c,225 :: 		OC5IE_bit = 1;OC5CONbits.ON = 1;
-LUI	R2, 2048
-SW	R2, Offset(-1082064696)(GP)
+LUI	R2, BitMask(OC5IE_bit+0)
+ORI	R2, R2, BitMask(OC5IE_bit+0)
+_SX	
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081849848)(GP)
+SW	R2, Offset(OC5CONbits+8)(GP)
 ;Stepper.c,226 :: 		break;
 J	L_Single_Axis_Enable22
 NOP	
 ;Stepper.c,227 :: 		case Y:
 L_Single_Axis_Enable24:
 ;Stepper.c,228 :: 		OC2IE_bit = 1;OC2CONbits.ON = 1;
-ORI	R2, R0, 4096
-SW	R2, Offset(-1082064696)(GP)
+LUI	R2, BitMask(OC2IE_bit+0)
+ORI	R2, R2, BitMask(OC2IE_bit+0)
+_SX	
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081851384)(GP)
+SW	R2, Offset(OC2CONbits+8)(GP)
 ;Stepper.c,229 :: 		break;
 J	L_Single_Axis_Enable22
 NOP	
 ;Stepper.c,230 :: 		case Z:
 L_Single_Axis_Enable25:
 ;Stepper.c,231 :: 		OC7IE_bit = 1;OC7CONbits.ON = 1;
-ORI	R2, R0, 8
-SW	R2, Offset(-1082064680)(GP)
+LUI	R2, BitMask(OC7IE_bit+0)
+ORI	R2, R2, BitMask(OC7IE_bit+0)
+_SX	
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081848824)(GP)
+SW	R2, Offset(OC7CONbits+8)(GP)
 ;Stepper.c,232 :: 		break;
 J	L_Single_Axis_Enable22
 NOP	
 ;Stepper.c,233 :: 		case A:
 L_Single_Axis_Enable26:
 ;Stepper.c,234 :: 		OC3IE_bit = 1;OC3CONbits.ON = 1;
-LUI	R2, 2
-SW	R2, Offset(-1082064696)(GP)
+LUI	R2, BitMask(OC3IE_bit+0)
+ORI	R2, R2, BitMask(OC3IE_bit+0)
+_SX	
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081850872)(GP)
+SW	R2, Offset(OC3CONbits+8)(GP)
 ;Stepper.c,235 :: 		break;
 J	L_Single_Axis_Enable22
 NOP	
 ;Stepper.c,236 :: 		case B:
 L_Single_Axis_Enable27:
 ;Stepper.c,237 :: 		OC6IE_bit = 1;OC6CONbits.ON = 1;
-LUI	R2, 32768
-SW	R2, Offset(-1082064696)(GP)
+LUI	R2, BitMask(OC6IE_bit+0)
+ORI	R2, R2, BitMask(OC6IE_bit+0)
+_SX	
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081849336)(GP)
+SW	R2, Offset(OC6CONbits+8)(GP)
 ;Stepper.c,238 :: 		break;
 J	L_Single_Axis_Enable22
 NOP	
 ;Stepper.c,239 :: 		case C:
 L_Single_Axis_Enable28:
 ;Stepper.c,240 :: 		OC8IE_bit = 1;OC8CONbits.ON = 1;
-ORI	R2, R0, 128
-SW	R2, Offset(-1082064680)(GP)
+LUI	R2, BitMask(OC8IE_bit+0)
+ORI	R2, R2, BitMask(OC8IE_bit+0)
+_SX	
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081848312)(GP)
+SW	R2, Offset(OC8CONbits+8)(GP)
 ;Stepper.c,241 :: 		break;
 J	L_Single_Axis_Enable22
 NOP	
@@ -838,30 +844,36 @@ NOP
 _disableOCx:
 ;Stepper.c,248 :: 		void disableOCx(){
 ;Stepper.c,249 :: 		OC5IE_bit = 0;OC5CONbits.ON = 0; //X
-LUI	R2, 2048
-SW	R2, Offset(-1082064700)(GP)
+LUI	R2, BitMask(OC5IE_bit+0)
+ORI	R2, R2, BitMask(OC5IE_bit+0)
+_SX	
 ORI	R3, R0, 32768
-SW	R3, Offset(-1081849852)(GP)
+SW	R3, Offset(OC5CONbits+4)(GP)
 ;Stepper.c,250 :: 		OC2IE_bit = 0;OC2CONbits.ON = 0; //Y
-ORI	R2, R0, 4096
-SW	R2, Offset(-1082064700)(GP)
-SW	R3, Offset(-1081851388)(GP)
+LUI	R2, BitMask(OC2IE_bit+0)
+ORI	R2, R2, BitMask(OC2IE_bit+0)
+_SX	
+SW	R3, Offset(OC2CONbits+4)(GP)
 ;Stepper.c,251 :: 		OC7IE_bit = 0;OC7CONbits.ON = 0; //Z
-ORI	R2, R0, 8
-SW	R2, Offset(-1082064684)(GP)
-SW	R3, Offset(-1081848828)(GP)
+LUI	R2, BitMask(OC7IE_bit+0)
+ORI	R2, R2, BitMask(OC7IE_bit+0)
+_SX	
+SW	R3, Offset(OC7CONbits+4)(GP)
 ;Stepper.c,253 :: 		OC3IE_bit = 0;OC3CONbits.ON = 0; //A
-LUI	R2, 2
-SW	R2, Offset(-1082064700)(GP)
-SW	R3, Offset(-1081850876)(GP)
+LUI	R2, BitMask(OC3IE_bit+0)
+ORI	R2, R2, BitMask(OC3IE_bit+0)
+_SX	
+SW	R3, Offset(OC3CONbits+4)(GP)
 ;Stepper.c,254 :: 		OC6IE_bit = 0;OC6CONbits.ON = 0; //B
-LUI	R2, 32768
-SW	R2, Offset(-1082064700)(GP)
-SW	R3, Offset(-1081849340)(GP)
+LUI	R2, BitMask(OC6IE_bit+0)
+ORI	R2, R2, BitMask(OC6IE_bit+0)
+_SX	
+SW	R3, Offset(OC6CONbits+4)(GP)
 ;Stepper.c,255 :: 		OC8IE_bit = 0;OC8CONbits.ON = 0; //Z
-ORI	R2, R0, 128
-SW	R2, Offset(-1082064684)(GP)
-SW	R3, Offset(-1081848316)(GP)
+LUI	R2, BitMask(OC8IE_bit+0)
+ORI	R2, R2, BitMask(OC8IE_bit+0)
+_SX	
+SW	R3, Offset(OC8CONbits+4)(GP)
 ;Stepper.c,256 :: 		}
 L_end_disableOCx:
 JR	RA
@@ -883,8 +895,9 @@ MTC0	R30, 12, 0
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
 ;Stepper.c,263 :: 		OC5IF_bit = 0;
-LUI	R2, 2048
-SW	R2, Offset(-1082064828)(GP)
+LUI	R2, BitMask(OC5IF_bit+0)
+ORI	R2, R2, BitMask(OC5IF_bit+0)
+_SX	
 ;Stepper.c,265 :: 		if(SV.Single_Dual == 0){
 LH	R2, Offset(_SV+0)(GP)
 BEQ	R2, R0, L__StepX135
@@ -994,8 +1007,9 @@ MTC0	R30, 12, 0
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
 ;Stepper.c,283 :: 		OC2IF_bit = 0;
-ORI	R2, R0, 4096
-SW	R2, Offset(-1082064828)(GP)
+LUI	R2, BitMask(OC2IF_bit+0)
+ORI	R2, R2, BitMask(OC2IF_bit+0)
+_SX	
 ;Stepper.c,285 :: 		if(SV.Single_Dual == 0){
 LH	R2, Offset(_SV+0)(GP)
 BEQ	R2, R0, L__StepY142
@@ -1105,8 +1119,9 @@ MTC0	R30, 12, 0
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
 ;Stepper.c,303 :: 		OC7IF_bit = 0;
-ORI	R2, R0, 8
-SW	R2, Offset(-1082064812)(GP)
+LUI	R2, BitMask(OC7IF_bit+0)
+ORI	R2, R2, BitMask(OC7IF_bit+0)
+_SX	
 ;Stepper.c,305 :: 		if(SV.Single_Dual == 0){
 LH	R2, Offset(_SV+0)(GP)
 BEQ	R2, R0, L__StepZ149
@@ -1217,8 +1232,9 @@ MTC0	R30, 12, 0
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
 ;Stepper.c,325 :: 		OC3IF_bit = 0;
-LUI	R2, 2
-SW	R2, Offset(-1082064828)(GP)
+LUI	R2, BitMask(OC3IF_bit+0)
+ORI	R2, R2, BitMask(OC3IF_bit+0)
+_SX	
 ;Stepper.c,327 :: 		if(SV.Single_Dual == 0){
 LH	R2, Offset(_SV+0)(GP)
 BEQ	R2, R0, L__StepA156
@@ -1365,44 +1381,48 @@ NOP
 ;Stepper.c,358 :: 		case X:
 L_StopAxis66:
 ;Stepper.c,359 :: 		OC5IE_bit = 0;
-LUI	R2, 2048
-SW	R2, Offset(-1082064700)(GP)
+LUI	R2, BitMask(OC5IE_bit+0)
+ORI	R2, R2, BitMask(OC5IE_bit+0)
+_SX	
 ;Stepper.c,360 :: 		OC5CONbits.ON = 0;
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081849852)(GP)
+SW	R2, Offset(OC5CONbits+4)(GP)
 ;Stepper.c,361 :: 		break;
 J	L_StopAxis65
 NOP	
 ;Stepper.c,362 :: 		case Y:
 L_StopAxis67:
 ;Stepper.c,363 :: 		OC2IE_bit = 0;
-ORI	R2, R0, 4096
-SW	R2, Offset(-1082064700)(GP)
+LUI	R2, BitMask(OC2IE_bit+0)
+ORI	R2, R2, BitMask(OC2IE_bit+0)
+_SX	
 ;Stepper.c,364 :: 		OC2CONbits.ON = 0;
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081851388)(GP)
+SW	R2, Offset(OC2CONbits+4)(GP)
 ;Stepper.c,365 :: 		break;
 J	L_StopAxis65
 NOP	
 ;Stepper.c,366 :: 		case Z:
 L_StopAxis68:
 ;Stepper.c,367 :: 		OC7IE_bit = 0;
-ORI	R2, R0, 8
-SW	R2, Offset(-1082064684)(GP)
+LUI	R2, BitMask(OC7IE_bit+0)
+ORI	R2, R2, BitMask(OC7IE_bit+0)
+_SX	
 ;Stepper.c,368 :: 		OC7CONbits.ON = 0;
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081848828)(GP)
+SW	R2, Offset(OC7CONbits+4)(GP)
 ;Stepper.c,369 :: 		break;
 J	L_StopAxis65
 NOP	
 ;Stepper.c,370 :: 		case A:
 L_StopAxis69:
 ;Stepper.c,371 :: 		OC3IE_bit = 0;
-LUI	R2, 2
-SW	R2, Offset(-1082064700)(GP)
+LUI	R2, BitMask(OC3IE_bit+0)
+ORI	R2, R2, BitMask(OC3IE_bit+0)
+_SX	
 ;Stepper.c,372 :: 		OC3CONbits.ON = 0;
 ORI	R2, R0, 32768
-SW	R2, Offset(-1081850876)(GP)
+SW	R2, Offset(OC3CONbits+4)(GP)
 ;Stepper.c,373 :: 		break;
 J	L_StopAxis65
 NOP	

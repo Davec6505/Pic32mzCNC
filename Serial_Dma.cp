@@ -523,8 +523,9 @@ void Str_Initialize();
 
 void Sample_Ringbuffer();
 
-void SplitInstruction(char **arg,char *str,char c);
-int CopyStr(char *to,char *from, int len);
+int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
+int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int str2int(char *str,int base);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -619,7 +620,7 @@ void DMA0(){
  DCH0ECON = (146 << 8 ) | 0x30;
 
 
- DCH0DAT = '\n';
+ DCH0DAT = 0x0A0D;
 
 
  DCH0SSA = KVA_TO_PA(0xBF822230);
@@ -648,7 +649,7 @@ void DMA0(){
  IFS4CLR = 0x40;
 
 
- DCH0CONSET = 0X0000013;
+ DCH0CONSET = 0X0000813;
 
 
  serial.head = serial.tail = serial.diff = 0;
@@ -897,7 +898,6 @@ int dma_printf(const char* str,...){
  sprintf(tmp1,"%d", __va_arg(va, int) );
  strcat(buff+j, tmp1);
  j += strlen(tmp1);
-
  break;
  case 'u':
 
@@ -952,7 +952,7 @@ int dma_printf(const char* str,...){
  i++;
  }
  *(buff+j) = 0;
- strncpy(txBuf,buff,j-1);
+ strncpy(txBuf,buff,j);
  DCH1SSIZ = j ;
  DMA1_Enable();
  return j;

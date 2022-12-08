@@ -18390,7 +18390,6 @@ coolant_mode
 coord_offset
 coord_select
 coord_system
-copystr
 cos
 cosc
 cosc
@@ -19242,6 +19241,7 @@ cpupg1_bit
 cpupri
 cpupri
 cpupri_bit
+cpystr
 crcapp
 crcapp
 crcapp
@@ -40217,7 +40217,6 @@ nb2bipktgp26
 nb2bipktgp26_bit
 nb2bipktgp26_emacxipgr_bit
 newline
-nl
 nmicnt
 nmicnt
 nmicnt
@@ -60239,7 +60238,6 @@ spituren_spi3con2_bit
 spituren_spi4con2_bit
 spituren_spi5con2_bit
 spituren_spi6con2_bit
-splitinstruction
 spllcon
 spllconbits
 spllconclr
@@ -61176,7 +61174,9 @@ stnaddr67_bit
 stnaddr67_emacxsa0_bit
 stopaxis
 stps
+str
 str_initialize
+str2int
 strcat
 strchr
 strcmp
@@ -61269,6 +61269,7 @@ strncmp
 strncpy
 strpbrk
 strrchr
+strsplit
 strspn
 strstr
 strtok

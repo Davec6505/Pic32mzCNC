@@ -551,8 +551,9 @@ void Str_Initialize();
 
 void Sample_Ringbuffer();
 
-void SplitInstruction(char **arg,char *str,char c);
-int CopyStr(char *to,char *from, int len);
+int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
+int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int str2int(char *str,int base);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;

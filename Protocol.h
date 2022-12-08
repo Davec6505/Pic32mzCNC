@@ -32,6 +32,7 @@ void Str_Initialize();
 //Get the instruction from the ring buffer
 void Sample_Ringbuffer();
 //split up the instructin
-void SplitInstruction(char **arg,char *str,char c);
-int CopyStr(char *to,char *from, int len);
+int strsplit(char arg[arr_size][str_size],char str[250], char c);
+int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int str2int(char *str,int base);
 #endif

@@ -91,19 +91,19 @@ NOP
 J	L_SingleAxisStep3
 NOP	
 L__SingleAxisStep96:
-; ?FLOC___SingleAxisStep?T20 start address is: 20 (R5)
+; ?FLOC___SingleAxisStep?T22 start address is: 20 (R5)
 ORI	R5, R0, 255
-; ?FLOC___SingleAxisStep?T20 end address is: 20 (R5)
+; ?FLOC___SingleAxisStep?T22 end address is: 20 (R5)
 J	L_SingleAxisStep4
 NOP	
 L_SingleAxisStep3:
-; ?FLOC___SingleAxisStep?T20 start address is: 20 (R5)
+; ?FLOC___SingleAxisStep?T22 start address is: 20 (R5)
 ORI	R5, R0, 1
-; ?FLOC___SingleAxisStep?T20 end address is: 20 (R5)
+; ?FLOC___SingleAxisStep?T22 end address is: 20 (R5)
 L_SingleAxisStep4:
-; ?FLOC___SingleAxisStep?T20 start address is: 20 (R5)
+; ?FLOC___SingleAxisStep?T22 start address is: 20 (R5)
 SEB	R2, R5
-; ?FLOC___SingleAxisStep?T20 end address is: 20 (R5)
+; ?FLOC___SingleAxisStep?T22 end address is: 20 (R5)
 SH	R2, 0(R3)
 ;Kinematics.c,46 :: 		SV.Single_Dual = 0;
 SH	R0, Offset(_SV+0)(GP)
@@ -152,20 +152,20 @@ NOP
 J	L_SingleAxisStep5
 NOP	
 L__SingleAxisStep97:
-; ?FLOC___SingleAxisStep?T48 start address is: 8 (R2)
+; ?FLOC___SingleAxisStep?T50 start address is: 8 (R2)
 ORI	R2, R0, 1
-; ?FLOC___SingleAxisStep?T48 end address is: 8 (R2)
+; ?FLOC___SingleAxisStep?T50 end address is: 8 (R2)
 J	L_SingleAxisStep6
 NOP	
 L_SingleAxisStep5:
-; ?FLOC___SingleAxisStep?T48 start address is: 8 (R2)
+; ?FLOC___SingleAxisStep?T50 start address is: 8 (R2)
 MOVZ	R2, R0, R0
-; ?FLOC___SingleAxisStep?T48 end address is: 8 (R2)
+; ?FLOC___SingleAxisStep?T50 end address is: 8 (R2)
 L_SingleAxisStep6:
-; ?FLOC___SingleAxisStep?T48 start address is: 8 (R2)
+; ?FLOC___SingleAxisStep?T50 start address is: 8 (R2)
 ; dir start address is: 20 (R5)
 SEB	R5, R2
-; ?FLOC___SingleAxisStep?T48 end address is: 8 (R2)
+; ?FLOC___SingleAxisStep?T50 end address is: 8 (R2)
 ;Kinematics.c,52 :: 		switch(axis_No){
 J	L_SingleAxisStep7
 NOP	
@@ -376,21 +376,21 @@ NOP
 J	L_DualAxisStep16
 NOP	
 L__DualAxisStep108:
-; ?FLOC___DualAxisStep?T81 start address is: 24 (R6)
+; ?FLOC___DualAxisStep?T83 start address is: 24 (R6)
 ORI	R6, R0, 255
 SEB	R4, R6
-; ?FLOC___DualAxisStep?T81 end address is: 24 (R6)
+; ?FLOC___DualAxisStep?T83 end address is: 24 (R6)
 J	L_DualAxisStep17
 NOP	
 L_DualAxisStep16:
-; ?FLOC___DualAxisStep?T81 start address is: 24 (R6)
+; ?FLOC___DualAxisStep?T83 start address is: 24 (R6)
 ORI	R6, R0, 1
-; ?FLOC___DualAxisStep?T81 end address is: 24 (R6)
+; ?FLOC___DualAxisStep?T83 end address is: 24 (R6)
 SEB	R4, R6
 L_DualAxisStep17:
-; ?FLOC___DualAxisStep?T81 start address is: 16 (R4)
+; ?FLOC___DualAxisStep?T83 start address is: 16 (R4)
 SEB	R2, R4
-; ?FLOC___DualAxisStep?T81 end address is: 16 (R4)
+; ?FLOC___DualAxisStep?T83 end address is: 16 (R4)
 SH	R2, 0(R3)
 ;Kinematics.c,108 :: 		STPS[axisB].axis_dir = Direction(tempB);
 SEH	R3, R26
@@ -408,21 +408,21 @@ NOP
 J	L_DualAxisStep18
 NOP	
 L__DualAxisStep109:
-; ?FLOC___DualAxisStep?T89 start address is: 24 (R6)
+; ?FLOC___DualAxisStep?T91 start address is: 24 (R6)
 ORI	R6, R0, 255
 SEB	R4, R6
-; ?FLOC___DualAxisStep?T89 end address is: 24 (R6)
+; ?FLOC___DualAxisStep?T91 end address is: 24 (R6)
 J	L_DualAxisStep19
 NOP	
 L_DualAxisStep18:
-; ?FLOC___DualAxisStep?T89 start address is: 24 (R6)
+; ?FLOC___DualAxisStep?T91 start address is: 24 (R6)
 ORI	R6, R0, 1
-; ?FLOC___DualAxisStep?T89 end address is: 24 (R6)
+; ?FLOC___DualAxisStep?T91 end address is: 24 (R6)
 SEB	R4, R6
 L_DualAxisStep19:
-; ?FLOC___DualAxisStep?T89 start address is: 16 (R4)
+; ?FLOC___DualAxisStep?T91 start address is: 16 (R4)
 SEB	R2, R4
-; ?FLOC___DualAxisStep?T89 end address is: 16 (R4)
+; ?FLOC___DualAxisStep?T91 end address is: 16 (R4)
 SH	R2, 0(R3)
 ;Kinematics.c,111 :: 		SV.dA   = tempA - SV.prevA;
 LW	R3, Offset(_SV+24)(GP)
@@ -447,20 +447,20 @@ NOP
 J	L_DualAxisStep20
 NOP	
 L__DualAxisStep110:
-; ?FLOC___DualAxisStep?T94 start address is: 8 (R2)
+; ?FLOC___DualAxisStep?T96 start address is: 8 (R2)
 MOVZ	R2, R0, R0
-; ?FLOC___DualAxisStep?T94 end address is: 8 (R2)
+; ?FLOC___DualAxisStep?T96 end address is: 8 (R2)
 J	L_DualAxisStep21
 NOP	
 L_DualAxisStep20:
-; ?FLOC___DualAxisStep?T94 start address is: 8 (R2)
+; ?FLOC___DualAxisStep?T96 start address is: 8 (R2)
 ORI	R2, R0, 1
-; ?FLOC___DualAxisStep?T94 end address is: 8 (R2)
+; ?FLOC___DualAxisStep?T96 end address is: 8 (R2)
 L_DualAxisStep21:
-; ?FLOC___DualAxisStep?T94 start address is: 8 (R2)
+; ?FLOC___DualAxisStep?T96 start address is: 8 (R2)
 ; dirA start address is: 12 (R3)
 SEB	R3, R2
-; ?FLOC___DualAxisStep?T94 end address is: 8 (R2)
+; ?FLOC___DualAxisStep?T96 end address is: 8 (R2)
 ;Kinematics.c,117 :: 		dirB = SV.dB > 0? CW:CCW;
 LW	R2, Offset(_SV+16)(GP)
 SLTI	R2, R2, 1
@@ -469,20 +469,20 @@ NOP
 J	L_DualAxisStep22
 NOP	
 L__DualAxisStep111:
-; ?FLOC___DualAxisStep?T96 start address is: 8 (R2)
+; ?FLOC___DualAxisStep?T98 start address is: 8 (R2)
 MOVZ	R2, R0, R0
-; ?FLOC___DualAxisStep?T96 end address is: 8 (R2)
+; ?FLOC___DualAxisStep?T98 end address is: 8 (R2)
 J	L_DualAxisStep23
 NOP	
 L_DualAxisStep22:
-; ?FLOC___DualAxisStep?T96 start address is: 8 (R2)
+; ?FLOC___DualAxisStep?T98 start address is: 8 (R2)
 ORI	R2, R0, 1
-; ?FLOC___DualAxisStep?T96 end address is: 8 (R2)
+; ?FLOC___DualAxisStep?T98 end address is: 8 (R2)
 L_DualAxisStep23:
-; ?FLOC___DualAxisStep?T96 start address is: 8 (R2)
+; ?FLOC___DualAxisStep?T98 start address is: 8 (R2)
 ; dirB start address is: 16 (R4)
 SEB	R4, R2
-; ?FLOC___DualAxisStep?T96 end address is: 8 (R2)
+; ?FLOC___DualAxisStep?T98 end address is: 8 (R2)
 ;Kinematics.c,119 :: 		DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
 XORI	R2, R3, 1
 ; dirA end address is: 12 (R3)
@@ -694,16 +694,16 @@ NOP
 ; end of _hypot
 _mc_arc:
 ;Kinematics.c,202 :: 		int axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
-ADDIU	SP, SP, -80
+ADDIU	SP, SP, -84
 SW	RA, 0(SP)
-LH	R2, 80(SP)
-SH	R2, 80(SP)
-LH	R2, 82(SP)
-SH	R2, 82(SP)
+LH	R2, 84(SP)
+SH	R2, 84(SP)
+LH	R2, 86(SP)
+SH	R2, 86(SP)
 ; invert_feed_rate start address is: 24 (R6)
-LBU	R6, 84(SP)
+LBU	R6, 88(SP)
 ; isclockwise start address is: 28 (R7)
-LBU	R7, 85(SP)
+LBU	R7, 89(SP)
 ;Kinematics.c,204 :: 		double center_axis0            = position[axis_0] + offset[axis_0];
 SEH	R2, R28
 SLL	R5, R2, 2
@@ -714,7 +714,7 @@ LWC1	S5, 0(R2)
 ADD.S 	S4, S0, S5
 SWC1	S4, 20(SP)
 ;Kinematics.c,205 :: 		double center_axis1             = position[axis_1] + offset[axis_1];
-LH	R2, 80(SP)
+LH	R2, 84(SP)
 SLL	R4, R2, 2
 ADDU	R2, R25, R4
 LWC1	S0, 0(R2)
@@ -723,7 +723,7 @@ LWC1	S3, 0(R2)
 ADD.S 	S2, S0, S3
 SWC1	S2, 24(SP)
 ;Kinematics.c,206 :: 		double linear_travel           = target[axis_linear] - position[axis_linear];
-LH	R2, 82(SP)
+LH	R2, 86(SP)
 SLL	R3, R2, 2
 ADDU	R2, R26, R3
 LWC1	S1, 0(R2)
@@ -765,16 +765,16 @@ MOV.S 	S4, S0
 ;Kinematics.c,224 :: 		unsigned int i = 0;
 ;Kinematics.c,225 :: 		int count = 0;
 MOVZ	R30, R0, R0
-SH	R30, 52(SP)
+SH	R30, 56(SP)
 ORI	R30, R0, 3
-SB	R30, 54(SP)
+SB	R30, 58(SP)
 MOVZ	R30, R0, R0
-SB	R30, 55(SP)
+SB	R30, 59(SP)
 ;Kinematics.c,226 :: 		char n_arc_correction = 3; //to be sorted int global struct???
 ;Kinematics.c,227 :: 		char limit_error = 0;
 ;Kinematics.c,229 :: 		arc_target[axis_linear] = position[axis_linear];
 ADDIU	R3, SP, 36
-LH	R2, 82(SP)
+LH	R2, 86(SP)
 SLL	R2, R2, 2
 ADDU	R3, R3, R2
 ADDU	R2, R25, R2
@@ -919,7 +919,7 @@ NOP
 LWC1	S12, 4(SP)
 CVT36.S 	S0, S0
 MFC1	R2, S0
-SH	R2, 64(SP)
+SH	R2, 68(SP)
 ;Kinematics.c,253 :: 		if (invert_feed_rate)
 BNE	R6, R0, L__mc_arc123
 NOP	
@@ -928,23 +928,23 @@ NOP
 L__mc_arc123:
 ; invert_feed_rate end address is: 24 (R6)
 ;Kinematics.c,254 :: 		feed_rate *= segments;
-LHU	R2, 64(SP)
+LHU	R2, 68(SP)
 MTC1	R2, S0
 CVT32.W 	S0, S0
 MUL.S 	S0, S12, S0
 MOV.S 	S12, S0
 L_mc_arc33:
 ;Kinematics.c,257 :: 		theta_per_segment = angular_travel/segments;
-LHU	R2, 64(SP)
+LHU	R2, 68(SP)
 MTC1	R2, S0
 CVT32.W 	S0, S0
 DIV.S 	S2, S3, S0
 ; angular_travel end address is: 24 (R6)
-SWC1	S2, 56(SP)
+SWC1	S2, 60(SP)
 ;Kinematics.c,261 :: 		linear_per_segment = linear_travel/(double)segments;
 DIV.S 	S0, S6, S0
 ; linear_travel end address is: 48 (R12)
-SWC1	S0, 60(SP)
+SWC1	S0, 64(SP)
 ;Kinematics.c,264 :: 		cos_T = 1-0.5*theta_per_segment*theta_per_segment; // Small angle approximation
 LUI	R2, 16128
 ORI	R2, R2, 0
@@ -955,9 +955,9 @@ LUI	R2, 16256
 ORI	R2, R2, 0
 MTC1	R2, S0
 SUB.S 	S0, S0, S1
-SWC1	S0, 68(SP)
+SWC1	S0, 72(SP)
 ;Kinematics.c,265 :: 		sin_T = theta_per_segment;
-SWC1	S2, 72(SP)
+SWC1	S2, 76(SP)
 ;Kinematics.c,267 :: 		nPx = arc_target[axis_0] = position[axis_0];
 ADDIU	R4, SP, 36
 SEH	R2, R28
@@ -967,26 +967,27 @@ ADDU	R2, R25, R2
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
 ;Kinematics.c,268 :: 		nPy = arc_target[axis_1] = position[axis_1];
-LH	R2, 80(SP)
+LH	R2, 84(SP)
 SLL	R2, R2, 2
 ADDU	R3, R4, R2
 ADDU	R2, R25, R2
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
 ;Kinematics.c,269 :: 		OC5IE_bit = OC2IE_bit = 0;
-ORI	R2, R0, 4096
-SW	R2, Offset(-1082064700)(GP)
-LBU	R2, Offset(-1082064703)(GP)
-EXT	R3, R2, 4, 1
-LBU	R2, Offset(-1082064701)(GP)
-INS	R2, R3, 3, 1
-SB	R2, Offset(-1082064701)(GP)
+LUI	R2, BitMask(OC2IE_bit+0)
+ORI	R2, R2, BitMask(OC2IE_bit+0)
+_SX	
+_LX	
+EXT	R3, R2, BitPos(OC2IE_bit+0), 1
+_LX	
+INS	R2, R3, BitPos(OC5IE_bit+0), 1
+_SX	
 ;Kinematics.c,270 :: 		i = 0;
-SH	R0, 76(SP)
+SH	R0, 80(SP)
 ;Kinematics.c,275 :: 		while(i < segments) { // Increment (segments-1)
 L_mc_arc34:
-LHU	R3, 64(SP)
-LHU	R2, 76(SP)
+LHU	R3, 68(SP)
+LHU	R2, 80(SP)
 SLTU	R2, R2, R3
 BNE	R2, R0, L__mc_arc124
 NOP	
@@ -994,8 +995,8 @@ J	L_mc_arc35
 NOP	
 L__mc_arc124:
 ;Kinematics.c,277 :: 		if (count < n_arc_correction) {
-LBU	R3, 54(SP)
-LH	R2, 52(SP)
+LBU	R3, 58(SP)
+LH	R2, 56(SP)
 SLT	R2, R2, R3
 BNE	R2, R0, L__mc_arc125
 NOP	
@@ -1003,18 +1004,18 @@ J	L_mc_arc36
 NOP	
 L__mc_arc125:
 ;Kinematics.c,279 :: 		r_axisi = r_axis0*sin_T + r_axis1*cos_T;
-LWC1	S1, 72(SP)
+LWC1	S1, 76(SP)
 LWC1	S0, 28(SP)
 MUL.S 	S2, S0, S1
-LWC1	S1, 68(SP)
+LWC1	S1, 72(SP)
 LWC1	S0, 32(SP)
 MUL.S 	S0, S0, S1
 ADD.S 	S3, S2, S0
 ;Kinematics.c,280 :: 		r_axis0 = r_axis0*cos_T - r_axis1*sin_T;
-LWC1	S1, 68(SP)
+LWC1	S1, 72(SP)
 LWC1	S0, 28(SP)
 MUL.S 	S2, S0, S1
-LWC1	S1, 72(SP)
+LWC1	S1, 76(SP)
 LWC1	S0, 32(SP)
 MUL.S 	S0, S0, S1
 SUB.S 	S0, S2, S0
@@ -1022,30 +1023,29 @@ SWC1	S0, 28(SP)
 ;Kinematics.c,281 :: 		r_axis1 = r_axisi;
 SWC1	S3, 32(SP)
 ;Kinematics.c,282 :: 		count++;
-LH	R2, 52(SP)
+LH	R2, 56(SP)
 ADDIU	R2, R2, 1
-SH	R2, 52(SP)
+SH	R2, 56(SP)
 ;Kinematics.c,283 :: 		} else {
 J	L_mc_arc37
 NOP	
 L_mc_arc36:
 ;Kinematics.c,286 :: 		cos_Ti = cos(i*theta_per_segment);
-LHU	R2, 76(SP)
+LHU	R2, 80(SP)
 MTC1	R2, S0
 CVT32.W 	S1, S0
-LWC1	S0, 56(SP)
+LWC1	S0, 60(SP)
 MUL.S 	S0, S1, S0
 SW	R26, 4(SP)
 MOV.S 	S12, S0
 JAL	_cos+0
 NOP	
-; cos_Ti start address is: 40 (R10)
-MOV.S 	S5, S0
+SWC1	S0, 48(SP)
 ;Kinematics.c,287 :: 		sin_Ti = sin(i*theta_per_segment);
-LHU	R2, 76(SP)
+LHU	R2, 80(SP)
 MTC1	R2, S0
 CVT32.W 	S1, S0
-LWC1	S0, 56(SP)
+LWC1	S0, 60(SP)
 MUL.S 	S0, S1, S0
 MOV.S 	S12, S0
 JAL	_sin+0
@@ -1058,9 +1058,10 @@ ADDU	R2, R27, R2
 LWC1	S4, 0(R2)
 MOVZ	R2, R0, R0
 MTC1	R2, S1
-SUB.S 	S1, S1, S4
-MUL.S 	S3, S1, S5
-LH	R2, 80(SP)
+SUB.S 	S2, S1, S4
+LWC1	S1, 48(SP)
+MUL.S 	S3, S2, S1
+LH	R2, 84(SP)
 SLL	R2, R2, 2
 ADDU	R2, R27, R2
 LWC1	S2, 0(R2)
@@ -1072,12 +1073,12 @@ MOVZ	R2, R0, R0
 MTC1	R2, S1
 SUB.S 	S1, S1, S4
 MUL.S 	S1, S1, S0
-MUL.S 	S0, S2, S5
-; cos_Ti end address is: 40 (R10)
+LWC1	S0, 48(SP)
+MUL.S 	S0, S2, S0
 SUB.S 	S0, S1, S0
 SWC1	S0, 32(SP)
 ;Kinematics.c,290 :: 		count = 0;
-SH	R0, 52(SP)
+SH	R0, 56(SP)
 ;Kinematics.c,291 :: 		}
 L_mc_arc37:
 ;Kinematics.c,294 :: 		arc_target[axis_0] = center_axis0 + r_axis0;
@@ -1090,7 +1091,7 @@ LWC1	S0, 20(SP)
 ADD.S 	S0, S0, S1
 SWC1	S0, 0(R2)
 ;Kinematics.c,295 :: 		arc_target[axis_1] = center_axis1 + r_axis1;
-LH	R2, 80(SP)
+LH	R2, 84(SP)
 SLL	R2, R2, 2
 ADDU	R2, R4, R2
 LWC1	S1, 32(SP)
@@ -1098,11 +1099,11 @@ LWC1	S0, 24(SP)
 ADD.S 	S0, S0, S1
 SWC1	S0, 0(R2)
 ;Kinematics.c,296 :: 		arc_target[axis_linear] += linear_per_segment;
-LH	R2, 82(SP)
+LH	R2, 86(SP)
 SLL	R2, R2, 2
 ADDU	R2, R4, R2
 LWC1	S1, 0(R2)
-LWC1	S0, 60(SP)
+LWC1	S0, 64(SP)
 ADD.S 	S0, S1, S0
 SWC1	S0, 0(R2)
 ;Kinematics.c,297 :: 		nPx =  arc_target[axis_0] - position[axis_0];
@@ -1118,7 +1119,7 @@ MOV.S 	S2, S0
 ;Kinematics.c,298 :: 		position[axis_0] = arc_target[axis_0];
 SWC1	S1, 0(R2)
 ;Kinematics.c,299 :: 		nPy =  arc_target[axis_1] - position[axis_1];
-LH	R2, 80(SP)
+LH	R2, 84(SP)
 SLL	R3, R2, 2
 ADDU	R2, R4, R3
 LWC1	S1, 0(R2)
@@ -1140,7 +1141,7 @@ ADDIU	R3, R2, 8
 ORI	R2, R0, 1000
 SW	R2, 0(R3)
 ;Kinematics.c,303 :: 		STPS[axis_1].step_delay = 1000;
-LH	R3, 80(SP)
+LH	R3, 84(SP)
 ORI	R2, R0, 104
 MULTU	R2, R3
 MFLO	R3
@@ -1160,7 +1161,7 @@ SW	R27, 8(SP)
 SW	R26, 12(SP)
 SW	R25, 16(SP)
 ORI	R27, R0, 1000
-LH	R26, 80(SP)
+LH	R26, 84(SP)
 SEH	R25, R28
 MOV.S 	S13, S0
 ; nPy end address is: 0 (R0)
@@ -1195,7 +1196,7 @@ SH	R28, 4(SP)
 SW	R27, 8(SP)
 SW	R26, 12(SP)
 SW	R25, 16(SP)
-LH	R25, 80(SP)
+LH	R25, 84(SP)
 JAL	_Test_Port_Pins+0
 NOP	
 LW	R25, 16(SP)
@@ -1224,19 +1225,19 @@ LW	R27, 8(SP)
 LH	R28, 4(SP)
 ;Kinematics.c,318 :: 		limit_error = 1;
 ORI	R2, R0, 1
-SB	R2, 55(SP)
+SB	R2, 59(SP)
 ;Kinematics.c,319 :: 		}
 L_mc_arc42:
 ;Kinematics.c,321 :: 		if(!OC5IE_bit && !OC2IE_bit)
-LBU	R2, Offset(-1082064701)(GP)
-EXT	R2, R2, 3, 1
+_LX	
+EXT	R2, R2, BitPos(OC5IE_bit+0), 1
 BEQ	R2, R0, L__mc_arc128
 NOP	
 J	L__mc_arc82
 NOP	
 L__mc_arc128:
-LBU	R2, Offset(-1082064703)(GP)
-EXT	R2, R2, 4, 1
+_LX	
+EXT	R2, R2, BitPos(OC2IE_bit+0), 1
 BEQ	R2, R0, L__mc_arc129
 NOP	
 J	L__mc_arc81
@@ -1254,7 +1255,7 @@ J	L_mc_arc38
 NOP	
 L_mc_arc39:
 ;Kinematics.c,327 :: 		if(limit_error)
-LBU	R2, 55(SP)
+LBU	R2, 59(SP)
 BNE	R2, R0, L__mc_arc131
 NOP	
 J	L_mc_arc46
@@ -1265,9 +1266,9 @@ J	L_mc_arc35
 NOP	
 L_mc_arc46:
 ;Kinematics.c,329 :: 		i++;
-LHU	R2, 76(SP)
+LHU	R2, 80(SP)
 ADDIU	R2, R2, 1
-SH	R2, 76(SP)
+SH	R2, 80(SP)
 ;Kinematics.c,330 :: 		}
 J	L_mc_arc34
 NOP	
@@ -1295,14 +1296,14 @@ NOP
 L_mc_arc48:
 ;Kinematics.c,334 :: 		dma_printf("\n%s","Arc Finnished");
 ORI	R30, R0, 10
-SB	R30, 48(SP)
+SB	R30, 52(SP)
 ORI	R30, R0, 37
-SB	R30, 49(SP)
+SB	R30, 53(SP)
 ORI	R30, R0, 115
-SB	R30, 50(SP)
+SB	R30, 54(SP)
 MOVZ	R30, R0, R0
-SB	R30, 51(SP)
-ADDIU	R3, SP, 48
+SB	R30, 55(SP)
+ADDIU	R3, SP, 52
 LUI	R2, hi_addr(?lstr_2_Kinematics+0)
 ORI	R2, R2, lo_addr(?lstr_2_Kinematics+0)
 SH	R28, 4(SP)
@@ -1322,7 +1323,7 @@ LH	R28, 4(SP)
 ;Kinematics.c,337 :: 		}
 L_end_mc_arc:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 80
+ADDIU	SP, SP, 84
 JR	RA
 NOP	
 ; end of _mc_arc
@@ -1335,19 +1336,19 @@ NOP
 J	L_GetAxisDirection49
 NOP	
 L__GetAxisDirection135:
-; ?FLOC___GetAxisDirection?T344 start address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T346 start address is: 8 (R2)
 ORI	R2, R0, 255
-; ?FLOC___GetAxisDirection?T344 end address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T346 end address is: 8 (R2)
 J	L_GetAxisDirection50
 NOP	
 L_GetAxisDirection49:
-; ?FLOC___GetAxisDirection?T344 start address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T346 start address is: 8 (R2)
 ORI	R2, R0, 1
-; ?FLOC___GetAxisDirection?T344 end address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T346 end address is: 8 (R2)
 L_GetAxisDirection50:
-; ?FLOC___GetAxisDirection?T344 start address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T346 start address is: 8 (R2)
 SEB	R2, R2
-; ?FLOC___GetAxisDirection?T344 end address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T346 end address is: 8 (R2)
 ;Kinematics.c,349 :: 		}
 L_end_GetAxisDirection:
 JR	RA
@@ -1643,29 +1644,29 @@ SB	R2, 0(R3)
 ;Kinematics.c,396 :: 		}
 L_Home61:
 ;Kinematics.c,398 :: 		if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-LBU	R2, Offset(-1082064701)(GP)
-EXT	R2, R2, 3, 1
+_LX	
+EXT	R2, R2, BitPos(OC5IE_bit+0), 1
 BEQ	R2, R0, L__Home147
 NOP	
 J	L__Home92
 NOP	
 L__Home147:
-LBU	R2, Offset(-1082064703)(GP)
-EXT	R2, R2, 4, 1
+_LX	
+EXT	R2, R2, BitPos(OC2IE_bit+0), 1
 BEQ	R2, R0, L__Home148
 NOP	
 J	L__Home91
 NOP	
 L__Home148:
-LBU	R2, Offset(-1082064688)(GP)
-EXT	R2, R2, 3, 1
+_LX	
+EXT	R2, R2, BitPos(OC7IE_bit+0), 1
 BEQ	R2, R0, L__Home149
 NOP	
 J	L__Home90
 NOP	
 L__Home149:
-LBU	R2, Offset(-1082064702)(GP)
-EXT	R2, R2, 1, 1
+_LX	
+EXT	R2, R2, BitPos(OC3IE_bit+0), 1
 BEQ	R2, R0, L__Home150
 NOP	
 J	L__Home89
@@ -1816,17 +1817,17 @@ LUI	R2, hi_addr(_max_sizes+0)
 ORI	R2, R2, lo_addr(_max_sizes+0)
 ADDU	R2, R2, R3
 LWC1	S0, 0(R2)
-; ?FLOC___Home_Axis?T554 start address is: 8 (R2)
+; ?FLOC___Home_Axis?T556 start address is: 8 (R2)
 MOV.S 	S1, S0
-; ?FLOC___Home_Axis?T554 end address is: 8 (R2)
+; ?FLOC___Home_Axis?T556 end address is: 8 (R2)
 J	L_Home_Axis70
 NOP	
 L_Home_Axis69:
-; ?FLOC___Home_Axis?T554 start address is: 8 (R2)
+; ?FLOC___Home_Axis?T556 start address is: 8 (R2)
 MOV.S 	S1, S12
-; ?FLOC___Home_Axis?T554 end address is: 8 (R2)
+; ?FLOC___Home_Axis?T556 end address is: 8 (R2)
 L_Home_Axis70:
-; ?FLOC___Home_Axis?T554 start address is: 8 (R2)
+; ?FLOC___Home_Axis?T556 start address is: 8 (R2)
 MOV.S 	S12, S1
 ;Kinematics.c,417 :: 		distance = (distance < 0.0)? distance : -distance;
 MOVZ	R2, R0, R0
@@ -1837,24 +1838,24 @@ NOP
 J	L_Home_Axis71
 NOP	
 L__Home_Axis156:
-; ?FLOC___Home_Axis?T554 end address is: 8 (R2)
-; ?FLOC___Home_Axis?T556 start address is: 0 (R0)
+; ?FLOC___Home_Axis?T556 end address is: 8 (R2)
+; ?FLOC___Home_Axis?T558 start address is: 0 (R0)
 MOV.S 	S0, S12
-; ?FLOC___Home_Axis?T556 end address is: 0 (R0)
+; ?FLOC___Home_Axis?T558 end address is: 0 (R0)
 J	L_Home_Axis72
 NOP	
 L_Home_Axis71:
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 SUB.S 	S0, S0, S12
-; ?FLOC___Home_Axis?T556 start address is: 8 (R2)
+; ?FLOC___Home_Axis?T558 start address is: 8 (R2)
 MOV.S 	S1, S0
-; ?FLOC___Home_Axis?T556 end address is: 8 (R2)
+; ?FLOC___Home_Axis?T558 end address is: 8 (R2)
 MOV.S 	S0, S1
 L_Home_Axis72:
-; ?FLOC___Home_Axis?T556 start address is: 0 (R0)
+; ?FLOC___Home_Axis?T558 start address is: 0 (R0)
 MOV.S 	S12, S0
-; ?FLOC___Home_Axis?T556 end address is: 0 (R0)
+; ?FLOC___Home_Axis?T558 end address is: 0 (R0)
 ;Kinematics.c,421 :: 		}
 L_end_Home_Axis:
 JR	RA
@@ -1874,17 +1875,17 @@ NOP
 L__Inv_Home_Axis158:
 LUI	R2, 16672
 ORI	R2, R2, 0
-; ?FLOC___Inv_Home_Axis?T559 start address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T561 start address is: 8 (R2)
 MTC1	R2, S1
-; ?FLOC___Inv_Home_Axis?T559 end address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T561 end address is: 8 (R2)
 J	L_Inv_Home_Axis74
 NOP	
 L_Inv_Home_Axis73:
-; ?FLOC___Inv_Home_Axis?T559 start address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T561 start address is: 8 (R2)
 MOV.S 	S1, S12
-; ?FLOC___Inv_Home_Axis?T559 end address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T561 end address is: 8 (R2)
 L_Inv_Home_Axis74:
-; ?FLOC___Inv_Home_Axis?T559 start address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T561 start address is: 8 (R2)
 MOV.S 	S12, S1
 ;Kinematics.c,425 :: 		distance *= (distance < 0.0)?  -1.0 : 1.0;
 MOVZ	R2, R0, R0
@@ -1895,24 +1896,24 @@ NOP
 J	L_Inv_Home_Axis75
 NOP	
 L__Inv_Home_Axis159:
-; ?FLOC___Inv_Home_Axis?T559 end address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T561 end address is: 8 (R2)
 LUI	R2, 49024
 ORI	R2, R2, 0
-; ?FLOC___Inv_Home_Axis?T561 start address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T563 start address is: 8 (R2)
 MTC1	R2, S1
-; ?FLOC___Inv_Home_Axis?T561 end address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T563 end address is: 8 (R2)
 J	L_Inv_Home_Axis76
 NOP	
 L_Inv_Home_Axis75:
 LUI	R2, 16256
 ORI	R2, R2, 0
-; ?FLOC___Inv_Home_Axis?T561 start address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T563 start address is: 8 (R2)
 MTC1	R2, S1
-; ?FLOC___Inv_Home_Axis?T561 end address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T563 end address is: 8 (R2)
 L_Inv_Home_Axis76:
-; ?FLOC___Inv_Home_Axis?T561 start address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T563 start address is: 8 (R2)
 MUL.S 	S0, S12, S1
-; ?FLOC___Inv_Home_Axis?T561 end address is: 8 (R2)
+; ?FLOC___Inv_Home_Axis?T563 end address is: 8 (R2)
 MOV.S 	S12, S0
 ;Kinematics.c,429 :: 		}
 L_end_Inv_Home_Axis:

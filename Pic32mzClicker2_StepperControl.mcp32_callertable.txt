@@ -38,6 +38,9 @@ main
 		Get_Difference
 		Get_Line
 			strncpy
+		strsplit
+		cpystr
+		strlen
 		dma_printf
 			DMA_Busy
 			sprintf
@@ -51,9 +54,12 @@ main
 			DMA1_Enable
 			__CC2DW
 		DMA_Busy
-		SplitInstruction
-		CopyStr
-			strcpy
+		atoi
+			isdigit
+		atof
+			strtod
+				isspace
+				isdigit
 		__CC2DW
 	EnStepperX
 	EnStepperY

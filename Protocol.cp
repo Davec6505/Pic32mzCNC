@@ -582,12 +582,15 @@ void Str_Initialize();
 
 void Sample_Ringbuffer();
 
-void SplitInstruction(char **arg,char *str,char c);
-int CopyStr(char *to,char *from, int len);
-#line 3 "C:/Users/Git/Pic32mzCNC/Protocol.c"
-char nl[] = "\n\r";
+int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
+int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int str2int(char *str,int base);
+#line 4 "C:/Users/Git/Pic32mzCNC/Protocol.c"
 char gcode[ 10 ][ 60 ];
+char str[50];
 char *test;
+
+
 
 void Str_Initialize(){
 int i;
@@ -599,10 +602,11 @@ int i;
 
 
 void Sample_Ringbuffer(){
-char str[50];
-char temp[20];
+char temp[6];
 int dif = 0,i,j;
-int G_Val;
+int G_Val,F_Val;
+float XYZ_Val;
+
 
 
  dif = Get_Difference();
@@ -610,21 +614,41 @@ int G_Val;
  if(dif > 0){
 
  Get_Line(str,dif);
- dma_printf("\n%s",str);
- while(DMA_Busy(1));
- SplitInstruction(gcode,str,0x20);
+
+
+
+ strsplit(gcode,str,0x20);
  switch(gcode[0][0]){
  case 'G':
 
- CopyStr(temp,"01", 2);
- for(i=0;i<2;i++){
- dma_printf("\n%c",temp[i]);
+ i = cpystr(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
+ dma_printf("i:=\t%d \n",i);
+ while(DMA_Busy(1))
+ G_Val = atoi(temp);
+ dma_printf("%s\t%s\t%d \n",gcode[0],temp,G_Val);
  while(DMA_Busy(1));
- }
 
-
- dma_printf("\n%s\n%s\n%s\n%s",gcode[0],gcode[1],gcode[2],gcode[3]);
+ i = cpystr(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
+ dma_printf("i:=\t%d \n",i);
+ while(DMA_Busy(1))
+ XYZ_Val = atof(temp);
+ dma_printf("%s\t%s\t%f \n",gcode[1],temp,XYZ_Val);
  while(DMA_Busy(1));
+
+ i = cpystr(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
+ dma_printf("i:=\t%d \n",i);
+ while(DMA_Busy(1))
+ XYZ_Val = atof(temp);
+ dma_printf("%s\t%s\t%f \n",gcode[2],temp,XYZ_Val);
+ while(DMA_Busy(1));
+
+ i = cpystr(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
+ dma_printf("i:=\t%d \n",i);
+ while(DMA_Busy(1))
+ F_Val = atoi(temp);
+ dma_printf("%s  %s  %d \n",gcode[3],temp,F_Val);
+ while(DMA_Busy(1));
+
  break;
  case 'M':
  break;
@@ -634,29 +658,58 @@ int G_Val;
  }
 
 }
-
-
-
-
-void SplitInstruction(char arg[ 10 ][ 60 ],char *str,char c){
-int i,j;
- i = j = 0;
- while(*str != '\0'){
- if(*str == c){
- *(arg[i]+j)='\0';
- j = 0;
- i++;
- str++;
+#line 81 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+int strsplit(char arg[ 10 ][ 60 ],char str[50], char c){
+int i,ii,kk,err,lasti;
+ ii=kk=err=lasti=0;
+ for (i = 0; i < 50;i++){
+ err = i - lasti;
+ if(str[i] == c || err > 49){
+ arg[kk][ii] = 0;
+ kk++;
+ ii=err=0;
+ lasti = i;
+ continue;
+ }else{
+ arg[kk][ii] = str[i];
+ ii++;
  }
- *(arg[i]+j) = *str;
- j++;
- str++;
+
+ if(str[i]==0)
+ break;
  }
- *(arg[i]+j)='\0';
+ return kk;
 }
 
-int CopyStr(char *to,char *from, int len){
+int cpystr(char *strA,const char *strB,int indx,int num_of_char){
+int i;
+char *tmp;
+ tmp = strB+indx;
+ *(tmp+num_of_char)=0;
 
- strcpy(to,from);
- return 1;
+ i = 0;
+ while(*tmp != 0){
+ *strA++ = *tmp++;
+ i++;
+ }
+ *strA = '\0';
+
+ return i;
+}
+
+
+
+
+int str2int(char *str,int base){
+int i, len;
+int result = 0;
+
+ len = strlen(str);
+
+ for(i=0; i<len; i++){
+ result = result * base + ( *(str+i) - 0x30 );
+ while(DMA_Busy(1));
+ }
+
+ return result;
 }
