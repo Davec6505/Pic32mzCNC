@@ -346,7 +346,6 @@ abf2seq3bits
 abort
 abs
 absolute_mode
-acc
 accdec
 ackdt
 ackdt
@@ -5155,7 +5154,6 @@ axis_xyz
 axisno
 axisno
 axispulse
-axistosample
 b0
 b1
 b10
@@ -18327,7 +18325,6 @@ coe
 coe
 coe_bit
 coe_cm2con_bit
-compocxrunning
 conavail
 conavail0
 conavail0_bit
@@ -19244,6 +19241,7 @@ cpupg1_bit
 cpupri
 cpupri
 cpupri_bit
+cpystr
 crcapp
 crcapp
 crcapp
@@ -19942,8 +19940,6 @@ cwindow4_emacxclrt_bit
 cwindow5
 cwindow5_bit
 cwindow5_emacxclrt_bit
-cyclestart
-cyclestop
 d_a
 d_a
 d_a
@@ -19970,7 +19966,6 @@ d_a_i2c2stat_bit
 d_a_i2c3stat_bit
 d_a_i2c4stat_bit
 d_a_i2c5stat_bit
-d2
 da
 dassert
 dassert
@@ -21784,6 +21779,7 @@ day102_bit
 day103
 day103_alrmdate_bit
 day103_bit
+db
 dbgper
 dbgper
 dbgper
@@ -21843,6 +21839,7 @@ dbgper2_bf1devcfg0_bit
 dbgper2_bf2devcfg0_bit
 dbgper2_bit
 dbgper2_ubadevcfg0_bit
+dc
 dch0con
 dch0conbits
 dch0conclr
@@ -23141,7 +23138,6 @@ debug1_bf1devcfg0_bit
 debug1_bf2devcfg0_bit
 debug1_bit
 debug1_ubadevcfg0_bit
-dec
 dec2bcd
 dec2bcd16
 delay_100ms
@@ -23159,6 +23155,8 @@ delay_80us
 delay_8ms
 delay_cyc
 delay_cyc_long
+delay_ms
+delay_us
 delaycrc
 delaycrc
 delaycrc
@@ -23330,6 +23328,7 @@ dhen_i2c2con_bit
 dhen_i2c3con_bit
 dhen_i2c4con_bit
 dhen_i2c5con_bit
+dif
 diff
 diff0
 diff0
@@ -25343,12 +25342,9 @@ dummybytes1
 dummybytes1_bit
 dummybytes2
 dummybytes2_bit
-dx
-dy
 dynfifos
 dynfifos
 dynfifos_bit
-dz
 ebia0en
 ebia0en
 ebia0en
@@ -32458,6 +32454,7 @@ fwmarkie_bit
 fwroverr
 fwroverr
 fwroverr_bit
+g_instruction
 gc
 gcen
 gcen
@@ -32485,7 +32482,7 @@ gcen_i2c2con_bit
 gcen_i2c3con_bit
 gcen_i2c4con_bit
 gcen_i2c5con_bit
-gcode_instruction
+gcode
 gcstat
 gcstat
 gcstat
@@ -32515,6 +32512,7 @@ gcstat_i2c5stat_bit
 get_difference
 get_fosc_khz
 get_head_value
+get_line
 get_tail_value
 getaxisdirection
 glswtrg
@@ -33149,7 +33147,6 @@ hold_bit
 home
 home_axis
 homing
-homing
 homing_cnt
 hostmode
 hostmode
@@ -33157,7 +33154,6 @@ hostmode_bit
 hostreq
 hostreq
 hostreq_bit
-howmanyocxrunning
 hr01
 hr01
 hr01
@@ -33372,7 +33368,6 @@ hugefrm
 hugefrm_bit
 hugefrm_emacxcfg2_bit
 hypot
-i
 i2c1add
 i2c1addbits
 i2c1addclr
@@ -39099,7 +39094,6 @@ miimbusy
 miimbusy_bit
 miimbusy_emacxmind_bit
 min
-min_
 min01
 min01
 min01
@@ -43747,7 +43741,6 @@ p_i2c4stat_bit
 p_i2c5stat_bit
 p1
 p2
-pa
 packet
 packet
 packet_bit
@@ -44418,6 +44411,7 @@ pktpendie
 pktpendie
 pktpendie
 pktpendie_bit
+plan_init
 plane_axis_0
 plane_axis_1
 plane_axis_2
@@ -45412,6 +45406,9 @@ prestatinv
 prestatinvbits
 prestatset
 prestatsetbits
+preva
+prevb
+prevc
 pri
 pri
 pri
@@ -46112,9 +46109,6 @@ pwrconinv
 pwrconinvbits
 pwrconset
 pwrconsetbits
-px
-py
-pz
 r_or_ijk
 r_w
 r_w
@@ -46825,6 +46819,7 @@ read
 read_
 read_bit
 read_emacxmcmd_bit
+read_float
 readopcode
 readopcode0
 readopcode0_bit
@@ -47146,6 +47141,7 @@ reset_
 reset_bit
 reset_min_debounce
 reset_min_limit
+reset_ring
 reset_usbcsr0_bit
 resethoming
 resetie
@@ -55445,6 +55441,7 @@ samc9_bit
 samp
 samp
 samp_bit
+sample_ringbuffer
 sbcde
 sbcde
 sbcde
@@ -60361,6 +60358,7 @@ sqien
 sqien
 sqien_bit
 sqrt
+sqrt_
 sr0a6
 sr0a6
 sr0a6
@@ -60997,11 +60995,9 @@ step26_bit
 step27
 step27_bit
 stepa
-stepperconstants
 stepx
 stepy
 stepz
-stmr
 stnaddr1
 stnaddr1
 stnaddr1
@@ -61178,6 +61174,9 @@ stnaddr67_bit
 stnaddr67_emacxsa0_bit
 stopaxis
 stps
+str
+str_initialize
+str2int
 strcat
 strchr
 strcmp
@@ -61270,6 +61269,7 @@ strncmp
 strncpy
 strpbrk
 strrchr
+strsplit
 strspn
 strstr
 strtok
@@ -61436,6 +61436,7 @@ swrst
 swrst
 swrst_bit
 sys
+sys_sync_current_position
 sysdiv
 sysdiv
 sysdiv
@@ -62864,6 +62865,7 @@ terrcnt6_c2trec_bit
 terrcnt7
 terrcnt7_bit
 terrcnt7_c2trec_bit
+test
 test_min
 test_port_pins
 testbp
@@ -73442,7 +73444,6 @@ usbwkup_bit
 usbwkupen
 usbwkupen
 usbwkupen_bit
-usec
 userid
 userid
 userid

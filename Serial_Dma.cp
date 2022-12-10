@@ -212,13 +212,7 @@ extern parser_state_t gc;
 
 
 
-void gc_init();
-
-
-uint8_t gc_execute_line(char *line);
-
-
-void gc_set_current_position(int32_t x, int32_t y, int32_t z);
+void G_Instruction(int _G_);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -232,39 +226,17 @@ typedef struct {
  volatile uint8_t execute;
 } system_t;
 extern system_t sys;
+#line 48 "c:/users/git/pic32mzcnc/kinematics.h"
+typedef struct {
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}homing_t;
 
 
-
-
-typedef struct genVars{
- int Single_Dual;
- unsigned short running: 1;
- unsigned short startPulses: 1;
- int Tog;
- int AxisNo;
- long i;
- long d2;
- long dx;
- long dy;
- long dz;
- long da;
- long px;
- long py;
- long pz;
- long pa;
- long over;
- long acc;
- long dec;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- char cir: 1;
-}sVars;
-extern sVars SV;
-#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct Steps{
 
  signed long microSec;
@@ -289,6 +261,8 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
+ long acc;
+ long dec;
 
  long step_count;
 
@@ -310,7 +284,7 @@ typedef struct Steps{
 
  signed long mmToTravel;
 
- long steps_position;
+ long steps_abs_position;
 
  double mm_position;
 
@@ -321,29 +295,11 @@ typedef struct Steps{
  int axis_dir;
 
  char master: 1;
+
+ homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-
-
-typedef struct{
-char set: 1;
-char home: 1;
-char rev: 1;
-char back: 1;
-char complete: 1;
-unsigned int home_cnt;
-}Homing;
-extern Homing homing[ 6 ];
-
-
-
-
-
-
-
-
-
-
+#line 133 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -368,30 +324,65 @@ void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 15 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/planner.h"
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 49 "c:/users/git/pic32mzcnc/planner.h"
+typedef struct genVars{
+ int Single_Dual;
+ unsigned short running: 1;
+ unsigned short startPulses: 1;
+ int Tog;
+ int AxisNo;
+
+ long dif;
+ long dA;
+ long dB;
+ long dC;
+ long prevA;
+ long prevB;
+ long prevC;
+ long over;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
+ char cir: 1;
+}sVars;
+extern sVars SV;
+
+
+
+void plan_init(long accel,long decel);
+
+void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+
+unsigned long sqrt_(unsigned long v);
+#line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 54 "c:/users/git/pic32mzcnc/stepper.h"
+
+
+
+
+
+
+
+
+
+
 extern unsigned int Toggle;
 
-
-typedef struct STPT {
-
- long uSec;
-
- int axisTosample;
-
- int howManyOCxRunning;
-
- int compOCxRunning;
-}StepTmr;
-extern StepTmr STmr;
 
 
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
-extern axis_combination axis_xyz;
+extern volatile axis_combination axis_xyz;
 
 
 
@@ -410,13 +401,6 @@ int EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
-
-void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
-void speed_cntr_Init_Timer1(void);
-static unsigned long sqrt_(unsigned long v);
-unsigned int min_(unsigned long x, unsigned long y);
-void CalcDly(int axis_No);
-void StepperConstants(long accel,long decel);
 
 
 void SingleStepAxis(int axis);
@@ -512,6 +496,36 @@ void Reset_Min_Debounce(int axis);
 
 char FP(int axis);
 char FN(int axis);
+#line 1 "c:/users/git/pic32mzcnc/protocol.h"
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/git/pic32mzcnc/print.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 28 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+int read_float(char *line, char *char_counter, float *float_ptr);
+
+
+void delay_ms(unsigned int ms);
+
+
+void delay_us(unsigned long us);
+
+
+void sys_sync_current_position();
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+void Str_Initialize();
+
+void Sample_Ringbuffer();
+
+int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
+int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int str2int(char *str,int base);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -560,6 +574,8 @@ void DMA0_Disable();
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
+void Get_Line(char *str,int dif);
+void Reset_Ring();
 int Loopback();
 
 
@@ -604,7 +620,7 @@ void DMA0(){
  DCH0ECON = (146 << 8 ) | 0x30;
 
 
- DCH0DAT = '\n';
+ DCH0DAT = 0x0A0D;
 
 
  DCH0SSA = KVA_TO_PA(0xBF822230);
@@ -633,7 +649,7 @@ void DMA0(){
  IFS4CLR = 0x40;
 
 
- DCH0CONSET = 0X0000013;
+ DCH0CONSET = 0X0000813;
 
 
  serial.head = serial.tail = serial.diff = 0;
@@ -710,6 +726,23 @@ int Get_Difference(){
  return serial.diff;
 }
 
+void Reset_Ring(){
+ serial.tail = serial.head = 0;
+}
+
+
+void Get_Line(char *str,int dif){
+
+ if(serial.tail + dif > 499)
+ serial.tail = 0;
+
+ strncpy(str,serial.temp_buffer+serial.tail,dif);
+
+
+ serial.tail += dif;
+}
+
+
 int Loopback(){
 char str[50];
 int dif;
@@ -724,7 +757,7 @@ int dif;
 
  serial.tail += dif;
 }
-#line 193 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+#line 210 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 void DMA1(){
 
 
@@ -831,12 +864,14 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 int dma_printf(const char* str,...){
 
  va_list va;
- int i = 0, j=0,busy;
+ int i = 0, j = 0,busy;
  char buff[200]={0},tmp[20],tmp1[6];
  char *str_arg,*tmp_;
 
+
  if(str == 0)
  return;
+
 
 
 
@@ -845,11 +880,12 @@ int dma_printf(const char* str,...){
  }
 
 
+
   __va_start(va, str) ;
 
  i = j = 0;
- while(str[i] != '\0'){
- if(str[i] == '%'){
+ while(str[i]!= '\0'){
+ if(*(str+i) == '%'){
  i++;
  switch(str[i]){
  case 'c':

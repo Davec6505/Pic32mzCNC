@@ -59,39 +59,6 @@ typedef struct {
  volatile uint8_t execute;
 } system_t;
 extern system_t sys;
-
-
-
-
-typedef struct genVars{
- int Single_Dual;
- unsigned short running: 1;
- unsigned short startPulses: 1;
- int Tog;
- int AxisNo;
- long i;
- long d2;
- long dx;
- long dy;
- long dz;
- long da;
- long px;
- long py;
- long pz;
- long pa;
- long over;
- long acc;
- long dec;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- char cir: 1;
-}sVars;
-extern sVars SV;
 #line 3 "C:/Users/Git/Pic32mzCNC/Globals.c"
 char txtL[9];
 system_t sys;
-sVars SV;

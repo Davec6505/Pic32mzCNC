@@ -1,3 +1,6 @@
 #include "GCODE.h"
 
-char gcode_instruction[200];
+
+void G_Instruction(int _G_){
+   dma_printf("\n%d",_G_);
+}

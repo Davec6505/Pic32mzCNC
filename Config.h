@@ -12,7 +12,7 @@
 #include "GCODE.h"
 #include "Globals.h"
 #include "Limits.h"
-
+#include "Protocol.h"
 
 ///////////////////////////////////////////////////
 //DEFINES

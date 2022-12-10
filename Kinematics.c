@@ -1,7 +1,7 @@
 #include "Kinematics.h"
 
 const code double max_sizes[]={X_MAX_SIZE,Y_MAX_SIZE,Z_MAX_SIZE,A_MAX_SIZE,B_MAX_SIZE,C_MAX_SIZE};
-Homing homing[NoOfAxis];
+
 
 //////////////////////////////////
 //FUNCTION POINTERS
@@ -78,10 +78,10 @@ int dir = 0;
 
 
 void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed){//,int xyza){
-long tempA,tempB;
+long tempA,tempB,tempC;
 int dirA,dirB;
    SV.over=0;
-   SV.d2 = 0;
+   SV.dif = 0;
 
    tempA = belt_steps(axis_a);
    tempB = belt_steps(axis_b);
@@ -91,11 +91,16 @@ int dirA,dirB;
    Single_Axis_Enable(axisA);
    Single_Axis_Enable(axisB);
   // Multi_Axis_Enable(xyza);
-   
+  
+  //if in abs mode prev must be cur pos
    if (!gc.absolute_mode){
-     SV.px = 0;
-     SV.py = 0;
-     SV.pz = 0;
+     SV.prevA = 0;
+     SV.prevB = 0;
+     SV.prevC = 0;
+   }else{
+     SV.prevA = 0;
+     SV.prevB = 0;
+     SV.prevC = 0;
    }
    
   //set the direction counter for absolute position
@@ -103,28 +108,28 @@ int dirA,dirB;
   STPS[axisB].axis_dir = Direction(tempB);
 
   //Delta distance to move
-  SV.dx   = tempA - SV.px;
-  SV.dy   = tempB - SV.py;
-
+  SV.dA   = tempA - SV.prevA;
+  SV.dB   = tempB - SV.prevB;
+  SV.dC   = tempC - SV.prevC;
   // Set direction from sign on step value.
   //Set the Dir_bits
-  dirA = SV.dx > 0? CW:CCW;
-  dirB = SV.dy > 0? CW:CCW;
+  dirA = SV.dA > 0? CW:CCW;
+  dirB = SV.dB > 0? CW:CCW;
   //inversion mask
   DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
   DIR_StepY = (Y_DIR_DIR ^ dirB) & 0x0001;
 
   //Remove -ve values
-  SV.dx = labs(SV.dx);
-  SV.dy = labs(SV.dy);
+  SV.dA = labs(SV.dA);
+  SV.dB = labs(SV.dB);
   
   
   //Start values for Bresenhams
-  if(SV.dx >= SV.dy){
+  if(SV.dA >= SV.dB){
      if(!SV.cir)
         speed_cntr_Move(tempA,speed,axisA);
 
-     SV.d2 = BresDiffVal(SV.dy,SV.dx);//2*(SV.dy - SV.dx);
+     SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
      STPS[axisA].master = 1;
      STPS[axisB].master = 0;
   }
@@ -132,7 +137,7 @@ int dirA,dirB;
      if(!SV.cir)
         speed_cntr_Move(tempB,speed,axisB);
 
-     SV.d2 = BresDiffVal(SV.dx,SV.dy);//2* (SV.dx - SV.dy);
+     SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
      STPS[axisA].master = 0;
      STPS[axisB].master = 1;
   }
@@ -158,160 +163,7 @@ int dirA,dirB;
 //     Circular Interpolation taken from Grbl as it uses Rotation matrix     //
 ///////////////////////////////////////////////////////////////////////////////
 
-/*/////////////////////////////////////////////////////////////////////////////
-*GCODE uses either radius or I,J,K for offset / this function can condition
-*for either standard / offset is mostly a byEuropean standard and
-*radius mostly an American standard
-/////////////////////////////////////////////////////////////////////////////*/
 
-//TODO: change function arguments to struct that holds positions, targets etc
-//      as arrays for GCODE sampling and conditioning mostly to compensate for
-//      for 3 axis helix movement/spiraling; for test purposes we keep
-//      axix_linear_per_segment as 0 test 2D plane circle
-void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,
-              double r, double i, double j, double k, int axis_A,int axis_B,int dir){
-unsigned short isclockwise = 0;
-double inverse_feed_rate = -1; // negative inverse_feed_rate means no inverse_feed_rate specified
-double position[NoOfAxis];
-double target[NoOfAxis];
-double offset[NoOfAxis];
-double x = 0.00;
-double y = 0.00;
-double h_x2_div_d = 0.00;
-int axis_plane_a,axis_plane_b;
-
-   
-     //use thess arrays to simplify call to arc function
-     position[axis_A] = Cur_axis_a;
-     position[axis_B] = Cur_axis_b;
-     position[2] = 0;
-     target[axis_A] = Fin_axis_a;
-     target[axis_B] = Fin_axis_b;
-     target[2] = 0;
-     offset[axis_A] = i;
-     offset[axis_B] = j;
-
-     if (r != 0.00) { // Arc Radius Mode
-            /*
-              We need to calculate the center of the circle that has the designated radius and passes
-              through both the current position and the target position. This method calculates the following
-              set of equations where [x,y] is the vector from current to target position, d == magnitude of
-              that vector, h == hypotenuse of the triangle formed by the radius of the circle, the distance to
-              the center of the travel vector. A vector perpendicular to the travel vector [-y,x] is scaled to the
-              length of h [-y/d*h, x/d*h] and added to the center of the travel vector [x/2,y/2] to form the new point
-              [i,j] at [x/2-y/d*h, y/2+x/d*h] which will be the center of our arc.
-              ******************************
-              Equilateral formulae derived as
-              area = 0.5 * d * h
-              a^2 = h^2 + (r/2)^2
-              ? h^2 = r^2 – (r^2/4)
-              ? h^2 = (3r^2)/4  Or h = ½(sqrt(3r))
-              *********************************
-              area formula: h? = 2 × area / r = sqrt(r² - (0.5 × b)²) × b / r
-              *********************************
-              area = ¼(sqrt(3r^2))
-              h = ½ × (sqrt(3 )× r)
-              *********************************
-              d^2 == x^2 + y^2
-              h^2 == r^2 - (d/2)^2
-              i == x/2 - y/d*h
-              j == y/2 + x/d*h
-
-                                                                   O <- [i,j]
-                                                                -  |
-                                                      r      -     |
-                                                          -        |
-                                                       -           | h
-                                                    -              |
-                                      [0,0] ->  C -----------------+--------------- T  <- [x,y]
-                                                | <------ d/2 ---->|
-
-              C - Current position
-              T - Target position
-              O - center of circle that pass through both C and T
-              d - distance from C to T
-              r - designated radius
-              h - distance from center of CT to O
-
-              Expanding the equations:
-
-              d -> sqrt(x^2 + y^2)
-              h -> sqrt(4 * r^2 - x^2 - y^2)/2
-              i -> (x - (y * sqrt(4 * r^2 - x^2 - y^2)) / sqrt(x^2 + y^2)) / 2
-              j -> (y + (x * sqrt(4 * r^2 - x^2 - y^2)) / sqrt(x^2 + y^2)) / 2
-
-              Which can be written:
-
-              i -> (x - (y * sqrt(4 * r^2 - x^2 - y^2))/sqrt(x^2 + y^2))/2
-              j -> (y + (x * sqrt(4 * r^2 - x^2 - y^2))/sqrt(x^2 + y^2))/2
-
-              Which we for size and speed reasons optimize to:
-
-              h_x2_div_d = sqrt(4 * r^2 - x^2 - y^2)/sqrt(x^2 + y^2)
-              i = (x - (y * h_x2_div_d))/2
-              j = (y + (x * h_x2_div_d))/2
-
-            */
-
-            // Calculate the change in position along each selected axis
-            //x = target[gc.plane_axis_0]-gc.position[gc.plane_axis_0];
-            x = target[axis_plane_a] - position[axis_plane_a];
-            //y = target[gc.plane_axis_1]-gc.position[gc.plane_axis_1];
-            y = target[axis_plane_b] - position[axis_plane_b];
-            //clear_vector(offset);
-            // First, use h_x2_div_d to compute 4*h^2 to check if it is negative or r is smaller
-            // than d. If so, the sqrt of a negative number is complex and error out.
-            h_x2_div_d = 4 * r*r - x*x - y*y;
-           // if (h_x2_div_d < 0) { FAIL(STATUS_ARC_RADIUS_ERROR); return(gc.status_code); }
-            // Finish computing h_x2_div_d.
-            h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y); // == -(h * 2 / d)
-            // Invert the sign of h_x2_div_d if the circle is counter clockwise (see sketch below)
-           if (gc.motion_mode == MOTION_MODE_CCW_ARC) { h_x2_div_d = -h_x2_div_d; }
-
-            /* The counter clockwise circle lies to the left of the target direction. When offset is positive,
-               the left hand circle will be generated - when it is negative the right hand circle is generated.
-
-
-                                                             T  <-- Target position
-
-                                                             ^
-                  Clockwise circles with this center         |          Clockwise circles with this center will have
-                  will have > 180 deg of angular travel      |          < 180 deg of angular travel, which is a good thing!
-                                                   \         |          /
-      center of arc when h_x2_div_d is positive ->  x <----- | -----> x <- center of arc when h_x2_div_d is negative
-                                                             |
-                                                             |
-
-                                                             C  <-- Current position                                 */
-
-
-            // Negative R is g-code-alese for "I want a circle with more than 180 degrees of travel" (go figure!),
-            // even though it is advised against ever generating such circles in a single line of g-code. By
-            // inverting the sign of h_x2_div_d the center of the circles is placed on the opposite side of the line of
-            // travel and thus we get the unadvisably long arcs as prescribed.
-            if (r < 0) {
-                h_x2_div_d = -h_x2_div_d;
-                r = -r; // Finished with r. Set to positive for mc_arc
-            }
-            // Complete the operation by calculating the actual center of the arc
-            //offset[gc.plane_axis_0] = 0.5*(x-(y*h_x2_div_d));
-            i =  0.5*(x-(y*h_x2_div_d));
-            //offset[gc.plane_axis_1] = 0.5*(y+(x*h_x2_div_d));
-            j =  0.5*(y+(x*h_x2_div_d));
-          } else {
-            //using this section for understanding 1st
-            // Arc Center Format Offset Mode
-             r = hypot(i, j); // Compute arc radius for mc_arc
-          }
-          // Set clockwise/counter-clockwise sign for mc_arc computations
-          isclockwise = false;
-          if (dir == CW) { isclockwise = true; }
-       //   dma_printf("Radius:=%f\n",r);
-        //  gc.plane_axis_2 =1;
-          // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
-          mc_arc(position, target, offset, axis_A, axis_B, Z,
-                 DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
-}
 
 
 ///////////////////////////////////////////////////////////////////
@@ -503,11 +355,11 @@ int GetAxisDirection(long mm2move){
 void ResetHoming(){
 int i = 0;
    for(i = 0;i< NoOfAxis;i++){
-        homing[i].set = 0;
-        homing[i].complete = 0;
-        homing[i].home_cnt = 0;
-        homing[i].rev = 0;
-        homing[i].home = 0;
+        STPS[i].homing.set = 0;
+        STPS[i].homing.complete = 0;
+        STPS[i].homing.home_cnt = 0;
+        STPS[i].homing.rev = 0;
+        STPS[i].homing.home = 0;
    }
 }
 //////////////////////////////////////////////////////////////////
@@ -515,10 +367,10 @@ int i = 0;
 void Home(int axis){
 long speed = 0;
 
-     if(!homing[axis].set){
-        homing[axis].set = 1;
-        homing[axis].complete = 0;
-        homing[axis].home_cnt = 0;
+     if(!STPS[axis].homing.set){
+        STPS[axis].homing.set = 1;
+        STPS[axis].homing.complete = 0;
+        STPS[axis].homing.home_cnt = 0;
         speed = 2000;
      }else{
         speed = 100;
@@ -532,28 +384,28 @@ long speed = 0;
      else if(axis == Y)
         StopAxis(Y);
 
-     if(!homing[axis].rev){
-         homing[axis].rev = 1;
+     if(!STPS[axis].homing.rev){
+         STPS[axis].homing.rev = 1;
          Inv_Home_Axis(2.0,speed, axis);
      }
-     homing[axis].home_cnt++;
+     STPS[axis].homing.home_cnt++;
    }
    //use falling edge to stop after 1 cycle
    if(FN(axis)){
-     homing[axis].home = 0;
+     STPS[axis].homing.home = 0;
    }
 
    if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
 
-      if(!homing[axis].home){
-        homing[axis].home = 1;
+      if(!STPS[axis].homing.home){
+        STPS[axis].homing.home = 1;
         Home_Axis(-290.00,speed,axis);
       }
 
-      if((homing[axis].home_cnt >= 2)&&(!homing[axis].complete)){
-          homing[axis].complete      = 1;
-          STPS[axis].step_count      = 0;
-          STPS[axis].steps_position  = 0;
+      if((STPS[axis].homing.home_cnt >= 2)&&(!STPS[axis].homing.complete)){
+          STPS[axis].homing.complete      = true;
+          STPS[axis].step_count           = 0;
+          STPS[axis].steps_abs_position   = 0;
       }
    }
    

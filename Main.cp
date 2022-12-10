@@ -212,13 +212,7 @@ extern parser_state_t gc;
 
 
 
-void gc_init();
-
-
-uint8_t gc_execute_line(char *line);
-
-
-void gc_set_current_position(int32_t x, int32_t y, int32_t z);
+void G_Instruction(int _G_);
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
@@ -247,6 +241,8 @@ void DMA0_Disable();
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
+void Get_Line(char *str,int dif);
+void Reset_Ring();
 int Loopback();
 
 
@@ -270,39 +266,17 @@ typedef struct {
  volatile uint8_t execute;
 } system_t;
 extern system_t sys;
+#line 48 "c:/users/git/pic32mzcnc/kinematics.h"
+typedef struct {
+char set: 1;
+char home: 1;
+char rev: 1;
+char back: 1;
+char complete: 1;
+unsigned int home_cnt;
+}homing_t;
 
 
-
-
-typedef struct genVars{
- int Single_Dual;
- unsigned short running: 1;
- unsigned short startPulses: 1;
- int Tog;
- int AxisNo;
- long i;
- long d2;
- long dx;
- long dy;
- long dz;
- long da;
- long px;
- long py;
- long pz;
- long pa;
- long over;
- long acc;
- long dec;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- char cir: 1;
-}sVars;
-extern sVars SV;
-#line 61 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct Steps{
 
  signed long microSec;
@@ -327,6 +301,8 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
+ long acc;
+ long dec;
 
  long step_count;
 
@@ -348,7 +324,7 @@ typedef struct Steps{
 
  signed long mmToTravel;
 
- long steps_position;
+ long steps_abs_position;
 
  double mm_position;
 
@@ -359,29 +335,11 @@ typedef struct Steps{
  int axis_dir;
 
  char master: 1;
+
+ homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-
-
-typedef struct{
-char set: 1;
-char home: 1;
-char rev: 1;
-char back: 1;
-char complete: 1;
-unsigned int home_cnt;
-}Homing;
-extern Homing homing[ 6 ];
-
-
-
-
-
-
-
-
-
-
+#line 133 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -406,30 +364,65 @@ void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 15 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/planner.h"
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 49 "c:/users/git/pic32mzcnc/planner.h"
+typedef struct genVars{
+ int Single_Dual;
+ unsigned short running: 1;
+ unsigned short startPulses: 1;
+ int Tog;
+ int AxisNo;
+
+ long dif;
+ long dA;
+ long dB;
+ long dC;
+ long prevA;
+ long prevB;
+ long prevC;
+ long over;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
+ char cir: 1;
+}sVars;
+extern sVars SV;
+
+
+
+void plan_init(long accel,long decel);
+
+void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+
+unsigned long sqrt_(unsigned long v);
+#line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 54 "c:/users/git/pic32mzcnc/stepper.h"
+
+
+
+
+
+
+
+
+
+
 extern unsigned int Toggle;
 
-
-typedef struct STPT {
-
- long uSec;
-
- int axisTosample;
-
- int howManyOCxRunning;
-
- int compOCxRunning;
-}StepTmr;
-extern StepTmr STmr;
 
 
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
-extern axis_combination axis_xyz;
+extern volatile axis_combination axis_xyz;
 
 
 
@@ -448,13 +441,6 @@ int EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
-
-void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
-void speed_cntr_Init_Timer1(void);
-static unsigned long sqrt_(unsigned long v);
-unsigned int min_(unsigned long x, unsigned long y);
-void CalcDly(int axis_No);
-void StepperConstants(long accel,long decel);
 
 
 void SingleStepAxis(int axis);
@@ -550,6 +536,36 @@ void Reset_Min_Debounce(int axis);
 
 char FP(int axis);
 char FN(int axis);
+#line 1 "c:/users/git/pic32mzcnc/protocol.h"
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/git/pic32mzcnc/print.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 28 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+int read_float(char *line, char *char_counter, float *float_ptr);
+
+
+void delay_ms(unsigned int ms);
+
+
+void delay_us(unsigned long us);
+
+
+void sys_sync_current_position();
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+void Str_Initialize();
+
+void Sample_Ringbuffer();
+
+int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
+int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int str2int(char *str,int base);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -598,7 +614,7 @@ int xyz_ = 0, i,dif;
 static int cntr;
 
  PinMode();
- StepperConstants(15000,15000);
+ plan_init(15000,15000);
  oneShotA = 0;
  a=0;
  disableOCx();
@@ -606,18 +622,13 @@ static int cntr;
 
  disable_steps = 0;
  EnableInterrupts();
+ Toggle = 0;
  while(1){
 
  Debounce_Limits(X);
  Debounce_Limits(Y);
-
- dif = Get_Difference();
- if(dif>0){
- dma_printf("\ntail:= %d : head:= %d : diff:= %d",serial.tail,serial.head,dif);
- while(DMA_Busy(1));
- Loopback();
- }
-
+ Sample_Ringbuffer();
+#line 83 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(!Toggle){
  LED1 = TMR.clock >> 4;
 
@@ -646,20 +657,20 @@ static int cntr;
  if(Toggle){
 
  if((a > 19)){
- if(homing[X].home_cnt >= 2){
- homing[X].home_cnt = 0;
+ if(STPS[X].homing.home_cnt >= 2){
+ STPS[X].homing.home_cnt = 0;
  a = 11;
- dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+ dma_printf("\nXCnt:= %d : a:= %d",STPS[X].homing.home_cnt,a);
  }
- if(homing[Y].home_cnt >= 2){
- homing[Y].home_cnt = 0;
+ if(STPS[Y].homing.home_cnt >= 2){
+ STPS[Y].homing.home_cnt = 0;
  a = 12;
- dma_printf("\nXCnt:= %d : a:= %d",homing[X].home_cnt,a);
+ dma_printf("\nXCnt:= %d : a:= %d",STPS[Y].homing.home_cnt,a);
  }
- Temp_Move(a);
+
  }else{
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
- a = Temp_Move(a);
+
 
  dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
  a,STPS[X].dist,STPS[X].mmToTravel,
@@ -668,6 +679,7 @@ static int cntr;
  }
  }
  }
+
  }
 }
 
