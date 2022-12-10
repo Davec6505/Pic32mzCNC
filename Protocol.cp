@@ -530,33 +530,33 @@ void LCD_Display();
 extern char gcode_instruction[200];
 #line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
- uint8_t status_code;
- uint8_t motion_mode;
- uint8_t inverse_feed_rate_mode;
- uint8_t inches_mode;
- uint8_t absolute_mode;
- uint8_t program_flow;
- int8_t spindle_direction;
- uint8_t coolant_mode;
+ char s;
+ int motion_mode;
+ char inverse_feed_rate_mode;
+ char inches_mode;
+ char absolute_mode;
+ char program_flow;
+ char spindle_direction;
+ char coolant_mode;
+ char tool;
+
+ char plane_axis_0,
+ plane_axis_1,
+ plane_axis_2;
+ char coord_select;
  float feed_rate;
 
  float position[3];
- uint8_t tool;
-
- uint8_t plane_axis_0,
- plane_axis_1,
- plane_axis_2;
- uint8_t coord_select;
  float coord_system[ 6 ];
-
  float coord_offset[ 6 ];
 
+ float next_position[ 6 ];
 } parser_state_t;
 extern parser_state_t gc;
 
 
 
-void G_Instruction(int _G_);
+void G_Instruction(int mode);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/print.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -576,7 +576,6 @@ void delay_us(unsigned long us);
 
 
 void sys_sync_current_position();
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize();
 
@@ -585,6 +584,9 @@ void Sample_Ringbuffer();
 int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
 int cpystr(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
+
+
+ void PrintDebug(char *strA,char *strB,void *ptr);
 #line 4 "C:/Users/Git/Pic32mzCNC/Protocol.c"
 char gcode[ 10 ][ 60 ];
 char str[50];
@@ -621,34 +623,36 @@ float XYZ_Val;
  switch(gcode[0][0]){
  case 'G':
 
+ if (*(*(gcode)+0)=='G'){
  i = cpystr(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
- dma_printf("i:=\t%d \n",i);
- while(DMA_Busy(1))
  G_Val = atoi(temp);
- dma_printf("%s\t%s\t%d \n",gcode[0],temp,G_Val);
- while(DMA_Busy(1));
+ G_Instruction(G_Val);
 
+ PrintDebug(gcode[0],temp,G_Val);
+
+
+ if((*(gcode+1)) != 0){
  i = cpystr(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
- dma_printf("i:=\t%d \n",i);
- while(DMA_Busy(1))
  XYZ_Val = atof(temp);
- dma_printf("%s\t%s\t%f \n",gcode[1],temp,XYZ_Val);
- while(DMA_Busy(1));
+#line 54 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ }
 
+ if((*(gcode+2)) != 0){
  i = cpystr(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
- dma_printf("i:=\t%d \n",i);
- while(DMA_Busy(1))
  XYZ_Val = atof(temp);
- dma_printf("%s\t%s\t%f \n",gcode[2],temp,XYZ_Val);
- while(DMA_Busy(1));
+#line 63 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ }
 
+ if((*(gcode+3)) != 0){
  i = cpystr(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
- dma_printf("i:=\t%d \n",i);
- while(DMA_Busy(1))
  F_Val = atoi(temp);
- dma_printf("%s  %s  %d \n",gcode[3],temp,F_Val);
- while(DMA_Busy(1));
+#line 72 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ }
+ }else if(*(*(gcode+0)+0)=='M'){
 
+ }else{
+ return;
+ }
  break;
  case 'M':
  break;
@@ -658,13 +662,13 @@ float XYZ_Val;
  }
 
 }
-#line 81 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 92 "C:/Users/Git/Pic32mzCNC/Protocol.c"
 int strsplit(char arg[ 10 ][ 60 ],char str[50], char c){
 int i,ii,kk,err,lasti;
  ii=kk=err=lasti=0;
  for (i = 0; i < 50;i++){
  err = i - lasti;
- if(str[i] == c || err > 49){
+ if(str[i] == c || str[i] == '\r' || err > 49){
  arg[kk][ii] = 0;
  kk++;
  ii=err=0;
@@ -712,4 +716,15 @@ int result = 0;
  }
 
  return result;
+}
+
+
+
+void PrintDebug(char *strA,char *strB,void *ptr){
+int G_Val;
+ if(strA[0] == 'G'){
+ G_Val = *(int*)ptr;
+ while(DMA_Busy(1));
+ dma_printf("%s\t%s\t%d\r\n",strA,strB,G_Val);
+ }
 }

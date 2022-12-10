@@ -2,7 +2,7 @@ _SetInitialSizes:
 ;Kinematics.c,20 :: 		void SetInitialSizes(STP axis[6]){
 ;Kinematics.c,21 :: 		int i = 0;
 ;Kinematics.c,23 :: 		gc.absolute_mode = 0;
-SB	R0, Offset(_gc+4)(GP)
+SB	R0, Offset(_gc+6)(GP)
 ;Kinematics.c,25 :: 		for (i = 0;i<NoOfAxis;i++){
 ; i start address is: 20 (R5)
 MOVZ	R5, R0, R0
@@ -336,7 +336,7 @@ LH	R25, 14(SP)
 LH	R26, 12(SP)
 LW	R27, 8(SP)
 ;Kinematics.c,96 :: 		if (!gc.absolute_mode){
-LBU	R2, Offset(_gc+4)(GP)
+LBU	R2, Offset(_gc+6)(GP)
 BEQ	R2, R0, L__DualAxisStep107
 NOP	
 J	L_DualAxisStep14

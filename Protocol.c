@@ -36,34 +36,45 @@ float XYZ_Val;
         switch(gcode[0][0]){
          case 'G':
               //get g instruction
-              i = cpystr(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
-              dma_printf("i:=\t%d \n",i);
-              while(DMA_Busy(1))
-              G_Val = atoi(temp);
-              dma_printf("%s\t%s\t%d \n",gcode[0],temp,G_Val);
-              while(DMA_Busy(1));
-              //get position a
-              i = cpystr(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
-              dma_printf("i:=\t%d \n",i);
-              while(DMA_Busy(1))
-              XYZ_Val = atof(temp);
-              dma_printf("%s\t%s\t%f \n",gcode[1],temp,XYZ_Val);
-              while(DMA_Busy(1));
-              //get position b
-              i = cpystr(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
-              dma_printf("i:=\t%d \n",i);
-              while(DMA_Busy(1))
-              XYZ_Val = atof(temp);
-              dma_printf("%s\t%s\t%f \n",gcode[2],temp,XYZ_Val);
-              while(DMA_Busy(1));
-              //get F value
-              i = cpystr(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
-              dma_printf("i:=\t%d \n",i);
-              while(DMA_Busy(1))
-              F_Val = atoi(temp);
-              dma_printf("%s  %s  %d \n",gcode[3],temp,F_Val);
-              while(DMA_Busy(1));
-              
+              if (*(*(gcode)+0)=='G'){
+                 i = cpystr(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
+                 G_Val = atoi(temp);
+                 G_Instruction(G_Val);
+                 #if ProtoDebug == 1
+                  PrintDebug(gcode[0],temp,G_Val);
+                 #endif
+               //get position a
+               if((*(gcode+1)) != 0){
+                 i = cpystr(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
+                 XYZ_Val = atof(temp);
+                 #if ProtoDebug == 2
+                   while(DMA_Busy(1));
+                   dma_printf("%s\t%s\t%f\r\n",gcode[1],temp,XYZ_Val);
+                 #endif
+                }
+                //get position b
+                if((*(gcode+2)) != 0){
+                  i = cpystr(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
+                  XYZ_Val = atof(temp);
+                  #if ProtoDebug == 2
+                    while(DMA_Busy(1));
+                    dma_printf("%s\t%s\t%f\r\n",gcode[2],temp,XYZ_Val);
+                  #endif
+                }
+                  //get F value
+                if((*(gcode+3)) != 0){
+                  i = cpystr(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
+                  F_Val = atoi(temp);
+                  #if ProtoDebug == 2
+                    while(DMA_Busy(1));
+                    dma_printf("%s  %s  %d\r\n",gcode[3],temp,F_Val);
+                  #endif
+                }
+              }else if(*(*(gcode+0)+0)=='M'){
+                 //m instruction is usually stand alone
+              }else{
+                 return;
+              }
               break;
          case 'M':
               break;
@@ -83,7 +94,7 @@ int i,ii,kk,err,lasti;
     ii=kk=err=lasti=0;
     for (i = 0; i < 50;i++){
         err = i - lasti;
-        if(str[i] == c || err > 49){
+        if(str[i] == c || str[i] == '\r' || err > 49){
           arg[kk][ii] = 0;
           kk++;
           ii=err=0;
@@ -132,3 +143,15 @@ int result = 0;
 
    return result;
 }
+
+
+#if ProtoDebug == 1
+void PrintDebug(char *strA,char *strB,void *ptr){
+int G_Val;
+  if(strA[0] == 'G'){
+      G_Val = *(int*)ptr;
+      while(DMA_Busy(1));
+      dma_printf("%s\t%s\t%d\r\n",strA,strB,G_Val);
+  }
+}
+#endif

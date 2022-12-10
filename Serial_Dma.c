@@ -49,7 +49,7 @@ void  DMA0(){
     DCH0ECON      =  (146 << 8 ) | 0x30;
     
     //Pattern data
-    DCH0DAT       =  0x0A0D;//'\n';
+    DCH0DAT       =  0x0D;//'\r';
     
     //Source address as UART_RX
     DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
@@ -78,7 +78,7 @@ void  DMA0(){
     IFS4CLR       = 0x40;
     //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0] 
     //Set up AutoEnable & Priority as 3       .
-    DCH0CONSET      = 0X0000813;//813 = 2 char e.g. \r\n
+    DCH0CONSET      = 0X0000013;//813 = 2 char e.g. \r\n
     
     //set the recieve buffer counts to 0
     serial.head = serial.tail = serial.diff = 0;
@@ -313,8 +313,8 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 int dma_printf(const char* str,...){
  //Variable decleration of type va_list
  va_list va;
- int i = 0, j = 0,busy;
- char buff[200]={0},tmp[20],tmp1[6];
+ int i = 0, j = 0;
+ char buff[200]={0},tmp[20],tmp1[9];
  char *str_arg,*tmp_;
  
  //check that str is not null
@@ -328,15 +328,15 @@ int dma_printf(const char* str,...){
    return 0;
  }
  
- //initialize the va_list via themacro va_start(arg1,arg2)
+ //initialize the va_list via the macro va_start(arg1,arg2)
  //arg1 is type va_list and arg2 is type var preceding elipsis
  va_start(va,str);
  
  i = j = 0;
- while(str[i]!= '\0'){
+ while(*(str+i) != '\0'){
    if(*(str+i) == '%'){
-     i++;
-     switch(str[i]){
+     i++;  //step over % char
+     switch(*(str+i)){
         case 'c':
              //convert char to ASCII char
              buff[j] = (char)va_arg(va,char);
@@ -398,10 +398,10 @@ int dma_printf(const char* str,...){
        *(buff+j) = *(str+i);
        j++;
   }
-  i++;
+   i++;
  }
- *(buff+j) = 0;
- strncpy(txBuf,buff,j);
+ *(buff+j+1) = 0;
+ strncpy(txBuf,buff,j+1);
  DCH1SSIZ    = j ;
  DMA1_Enable();
  return j;

@@ -73,13 +73,11 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Protocol.h
-File2=Config.c
+File1=Protocol.c
+File2=Protocol.h
 File3=GCODE.c
 File4=GCODE.h
-File5=Serial_Dma.c
-File6=Protocol.c
-Count=7
+Count=5
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -153,4 +151,5 @@ USE_SRS=7
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
 18=Header Files
-Count=3
+36=Project Level Defines
+Count=4

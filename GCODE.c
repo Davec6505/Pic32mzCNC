@@ -1,6 +1,8 @@
 #include "GCODE.h"
 
+parser_state_t gc;
 
-void G_Instruction(int _G_){
-   dma_printf("\n%d",_G_);
+void G_Instruction(int mode){
+   while(DMA_Busy(1));
+   dma_printf("%d\r\n",mode);
 }

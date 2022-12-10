@@ -31,7 +31,7 @@
 #include "Config.h"
 
 //settings_t settings;
-parser_state_t gc;
+//parser_state_t gc;
 STP STPS[NoOfAxis];
 
 static unsigned int disable_steps;

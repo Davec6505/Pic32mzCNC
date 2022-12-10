@@ -525,7 +525,6 @@ void delay_us(unsigned long us);
 
 
 void sys_sync_current_position();
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize();
 
@@ -534,6 +533,9 @@ void Sample_Ringbuffer();
 int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
 int cpystr(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
+
+
+ void PrintDebug(char *strA,char *strB,void *ptr);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -558,34 +560,37 @@ void LCD_Display();
 extern char gcode_instruction[200];
 #line 52 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
- uint8_t status_code;
- uint8_t motion_mode;
- uint8_t inverse_feed_rate_mode;
- uint8_t inches_mode;
- uint8_t absolute_mode;
- uint8_t program_flow;
- int8_t spindle_direction;
- uint8_t coolant_mode;
+ char s;
+ int motion_mode;
+ char inverse_feed_rate_mode;
+ char inches_mode;
+ char absolute_mode;
+ char program_flow;
+ char spindle_direction;
+ char coolant_mode;
+ char tool;
+
+ char plane_axis_0,
+ plane_axis_1,
+ plane_axis_2;
+ char coord_select;
  float feed_rate;
 
  float position[3];
- uint8_t tool;
-
- uint8_t plane_axis_0,
- plane_axis_1,
- plane_axis_2;
- uint8_t coord_select;
  float coord_system[ 6 ];
-
  float coord_offset[ 6 ];
 
+ float next_position[ 6 ];
 } parser_state_t;
 extern parser_state_t gc;
 
 
 
-void G_Instruction(int _G_);
-#line 4 "C:/Users/Git/Pic32mzCNC/GCODE.c"
-void G_Instruction(int _G_){
- dma_printf("\n%d",_G_);
+void G_Instruction(int mode);
+#line 3 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+parser_state_t gc;
+
+void G_Instruction(int mode){
+ while(DMA_Busy(1));
+ dma_printf("%d\r\n",mode);
 }

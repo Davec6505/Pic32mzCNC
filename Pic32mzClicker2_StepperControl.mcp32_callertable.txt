@@ -39,28 +39,32 @@ main
 		Get_Line
 			strncpy
 		strsplit
-		cpystr
 		strlen
-		dma_printf
-			DMA_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
-		DMA_Busy
+		cpystr
 		atoi
 			isdigit
+		G_Instruction
+			DMA_Busy
+			dma_printf
+				DMA_Busy
+				sprintf
+					_doprntf
+						isdigit
+						scale
+						fround
+				strcat
+				strlen
+				strncpy
+				DMA1_Enable
+				__CC2DW
+		PrintDebug
+			DMA_Busy
+			dma_printf
+			__CC2DW
 		atof
 			strtod
 				isspace
 				isdigit
-		__CC2DW
 	EnStepperX
 	EnStepperY
 	EnStepperZ
