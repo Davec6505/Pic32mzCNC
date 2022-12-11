@@ -531,7 +531,7 @@ void Str_Initialize();
 void Sample_Ringbuffer();
 
 int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
-int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
 
 
@@ -587,10 +587,16 @@ extern parser_state_t gc;
 
 
 void G_Instruction(int mode);
+void M_Instruction(int mode);
 #line 3 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 parser_state_t gc;
 
 void G_Instruction(int mode){
+ while(DMA_Busy(1));
+ dma_printf("%d\r\n",mode);
+}
+
+void M_Instruction(int mode){
  while(DMA_Busy(1));
  dma_printf("%d\r\n",mode);
 }

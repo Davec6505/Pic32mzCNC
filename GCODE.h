@@ -77,4 +77,5 @@ extern parser_state_t gc;
 
 // Initialize the parser
 void G_Instruction(int mode);
+void M_Instruction(int mode);
 #endif

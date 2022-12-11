@@ -213,6 +213,7 @@ extern parser_state_t gc;
 
 
 void G_Instruction(int mode);
+void M_Instruction(int mode);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -523,7 +524,7 @@ void Str_Initialize();
 void Sample_Ringbuffer();
 
 int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
-int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
 
 

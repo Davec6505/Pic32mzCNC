@@ -6,3 +6,8 @@ void G_Instruction(int mode){
    while(DMA_Busy(1));
    dma_printf("%d\r\n",mode);
 }
+
+void M_Instruction(int mode){
+   while(DMA_Busy(1));
+   dma_printf("%d\r\n",mode);
+}

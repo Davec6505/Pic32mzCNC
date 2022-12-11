@@ -33,7 +33,7 @@ void Str_Initialize();
 void Sample_Ringbuffer();
 //split up the instructin
 int strsplit(char arg[arr_size][str_size],char str[250], char c);
-int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
 //puerly for debug purposes
   #if ProtoDebug == 1

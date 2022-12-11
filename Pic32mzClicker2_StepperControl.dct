@@ -19241,7 +19241,7 @@ cpupg1_bit
 cpupri
 cpupri
 cpupri_bit
-cpystr
+cpy_val_from_str
 crcapp
 crcapp
 crcapp
@@ -38848,6 +38848,7 @@ lvl8_bit
 lvl9
 lvl9
 lvl9_bit
+m_instruction
 macmaxf
 macmaxf
 macmaxf
