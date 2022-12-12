@@ -182,9 +182,7 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 10 "c:/users/git/pic32mzcnc/gcode.h"
-extern char gcode_instruction[200];
-#line 52 "c:/users/git/pic32mzcnc/gcode.h"
+#line 48 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char s;
  int motion_mode;
@@ -200,6 +198,7 @@ typedef struct {
  plane_axis_1,
  plane_axis_2;
  char coord_select;
+ int frequency;
  float feed_rate;
 
  float position[3];
@@ -212,8 +211,10 @@ extern parser_state_t gc;
 
 
 
-void G_Instruction(int mode);
-void M_Instruction(int mode);
+
+void G_Mode(int mode);
+void M_Instruction(int flow);
+void G_Instruction(char *c,void *any);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -519,16 +520,13 @@ void delay_us(unsigned long us);
 
 void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
-void Str_Initialize();
+void Str_Initialize(char arg[ 10 ][ 60 ]);
 
 void Sample_Ringbuffer();
 
-int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
+int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
-
-
- void PrintDebug(char *strA,char *strB,void *ptr);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -574,6 +572,7 @@ void DMA0();
 void DMA1();
 void DMA0_Enable();
 void DMA0_Disable();
+void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
@@ -623,7 +622,7 @@ void DMA0(){
  DCH0ECON = (146 << 8 ) | 0x30;
 
 
- DCH0DAT = 0x0D;
+ DCH0DAT = 0x0A;
 
 
  DCH0SSA = KVA_TO_PA(0xBF822230);
@@ -662,7 +661,7 @@ void DMA0(){
 
 void DMA0_Enable(){
 #line 98 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
- DCH0CONSET |= 1<<7;
+ DCH0CON |= 1<<7;
 }
 
 
@@ -685,7 +684,7 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
  if( CHERIF_bit == 1){
 
  strcpy(rxBuf, ("dma0" " " "cherie") );
- UART2_Write_Text(txBuf);
+
 
 
  }
@@ -703,9 +702,16 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
 
  strncpy(serial.temp_buffer+serial.head, rxBuf, i);
  serial.head += i;
- *(rxBuf+0) = '\0';
+ memset(rxBuf,0,i);
+
+
  DCH0INTCLR = 0x000000ff;
  IFS4CLR = 0x40;
+}
+
+
+static void Reset_rxBuff(int dif){
+ memset(rxBuf,0,dif);
 }
 
 
@@ -742,6 +748,7 @@ void Get_Line(char *str,int dif){
  strncpy(str,serial.temp_buffer+serial.tail,dif);
 
 
+
  serial.tail += dif;
 }
 
@@ -760,7 +767,7 @@ int dif;
 
  serial.tail += dif;
 }
-#line 210 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+#line 218 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 void DMA1(){
 
 

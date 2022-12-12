@@ -207,6 +207,7 @@ void DMA0();
 void DMA1();
 void DMA0_Enable();
 void DMA0_Disable();
+void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
@@ -526,9 +527,7 @@ void OutPutPulseXYZ();
 int Temp_Move(int a);
 void LCD_Display();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 10 "c:/users/git/pic32mzcnc/gcode.h"
-extern char gcode_instruction[200];
-#line 52 "c:/users/git/pic32mzcnc/gcode.h"
+#line 48 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char s;
  int motion_mode;
@@ -544,6 +543,7 @@ typedef struct {
  plane_axis_1,
  plane_axis_2;
  char coord_select;
+ int frequency;
  float feed_rate;
 
  float position[3];
@@ -556,8 +556,10 @@ extern parser_state_t gc;
 
 
 
-void G_Instruction(int mode);
-void M_Instruction(int mode);
+
+void G_Mode(int mode);
+void M_Instruction(int flow);
+void G_Instruction(char *c,void *any);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/print.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -578,140 +580,132 @@ void delay_us(unsigned long us);
 
 void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
-void Str_Initialize();
+void Str_Initialize(char arg[ 10 ][ 60 ]);
 
 void Sample_Ringbuffer();
 
-int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
+int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
-
-
- void PrintDebug(char *strA,char *strB,void *ptr);
 #line 4 "C:/Users/Git/Pic32mzCNC/Protocol.c"
 char gcode[ 10 ][ 60 ];
-char str[50];
-char *test;
 
-
-
-void Str_Initialize(){
+void Str_Initialize(char arg[ 10 ][ 60 ]){
 int i;
 
  for(i = 0; i <=  10 ;i++){
- memset(gcode[i],0, 60 );
+ memset(arg[i],0, 60 );
+
+
  }
 }
 
 
 void Sample_Ringbuffer(){
+char str[50];
 char temp[6];
-int dif = 0,i,j,num_of_strings;
-int G_Val,EF_Val,M_Val,SE_Val;
+char xyz[5];
+int dif,i,j,num_of_strings;
+int G_Val,F_Val,M_Val,S_Val;
 float XYZ_Val;
 
 
 
+ dif = 0;
  dif = Get_Difference();
 
  if(dif > 0){
-
  Get_Line(str,dif);
-
-
-
  num_of_strings = strsplit(gcode,str,0x20);
- while(DMA_Busy(1));
- dma_printf("num_of_strings:= %d\r\n",num_of_strings);
  switch(gcode[0][0]){
  case 'G':
 
  if (*(*(gcode)+0)=='G'){
  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
  G_Val = atoi(temp);
-
-
- PrintDebug(gcode[0],temp,&G_Val);
-
-
-
-
- if((*(gcode+1)) != 0){
+ G_Mode(G_Val);
+#line 46 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ if(*(*(gcode+1)+0) != 0){
  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
  switch(*(*(gcode+1))) {
  case 'X':
+ case 'x':
  case 'Y':
+ case 'y':
  case 'Z':
+ case 'z':
  case 'A':
- XYZ_Val = atof(temp);
-
- PrintDebug(gcode[1],temp,&XYZ_Val);
-
- break;
+ case 'a':
  case 'E':
  case 'e':
+ XYZ_Val = atof(temp);
+ G_Instruction(gcode[1],&XYZ_Val);
+#line 64 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ break;
  case 'F':
  case 'f':
- EF_Val = atof(temp);
-
- PrintDebug(gcode[1],temp,&EF_Val);
-
+ F_Val = atoi(temp);
+ G_Instruction(*gcode[1],&F_Val);
+#line 72 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
-
  }
  }
 
- if((*(gcode+2)) != 0){
+ if(*(*(gcode+2)+0) != 0){
+ xyz[1] = *(*(gcode+2)+0);
  i = cpy_val_from_str(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
  switch(*(*(gcode+2))) {
  case 'X':
+ case 'x':
  case 'Y':
+ case 'y':
  case 'Z':
+ case 'z':
  case 'A':
- XYZ_Val = atof(temp);
-
- PrintDebug(gcode[2],temp,&XYZ_Val);
-
- break;
+ case 'a':
  case 'E':
  case 'e':
+ XYZ_Val = atof(temp);
+ G_Instruction(gcode[2],&XYZ_Val);
+#line 95 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ break;
  case 'F':
  case 'f':
- EF_Val = atof(temp);
-
- PrintDebug(gcode[2],temp,&EF_Val);
-
+ F_Val = atoi(temp);
+ G_Instruction(gcode[2],&F_Val);
+#line 103 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
 
  }
  }
 
- if((*(gcode+3)) != 0){
+ if(*(*(gcode+3)+0) != 0){
+ xyz[2] = *(*(gcode+3)+0);
  i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
  switch(*(*(gcode+3))) {
  case 'X':
+ case 'x':
  case 'Y':
+ case 'y':
  case 'Z':
+ case 'z':
  case 'A':
- XYZ_Val = atof(temp);
-
- PrintDebug(gcode[3],temp,&XYZ_Val);
-
- break;
+ case 'a':
  case 'E':
  case 'e':
+ XYZ_Val = atof(temp);
+ G_Instruction(gcode[3],&XYZ_Val);
+#line 127 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ break;
  case 'F':
  case 'f':
- EF_Val = atof(temp);
-
- PrintDebug(gcode[3],temp,&EF_Val);
-
+ F_Val = atoi(temp);
+ G_Instruction(gcode[3],&F_Val);
+#line 135 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
 
  }
  }
- }else if(*(*(gcode+0)+0)=='M'){
-
  }else{
  return;
  }
@@ -721,22 +715,15 @@ float XYZ_Val;
 
  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
  M_Val = atoi(temp);
-
-
- PrintDebug(gcode[0],temp,&M_Val);
-
-
-
+#line 154 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  if((*(gcode+1)) != 0){
  switch(*(*(gcode+1))){
  case 'S':
  case 's':
 
  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
- SE_Val = atoi(temp);
-
- PrintDebug(gcode[1],temp,&SE_Val);
-
+ S_Val = atoi(temp);
+#line 164 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  }
  }
@@ -745,26 +732,28 @@ float XYZ_Val;
 
  }
 
+ memset(str,0,30);
 }
-#line 166 "C:/Users/Git/Pic32mzCNC/Protocol.c"
-int strsplit(char arg[ 10 ][ 60 ],char str[50], char c){
-int i,ii,kk,err,lasti;
+#line 179 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+int strsplit(char arg[ 10 ][ 60 ],char *str, char c){
+int i,ii,kk,err,lasti,len;
+ Str_Initialize(arg);
+ len = strlen(str);
  ii=kk=err=lasti=0;
- for (i = 0; i < 50;i++){
+ for (i = 0; i < len;i++){
  err = i - lasti;
- if(str[i] == c || str[i] == '\r' || str[i] == '\n' || err > 49){
- arg[kk][ii] = 0;
- kk++;
+ if(*(str+i) == c || *(str+i) == '\n' || err > 49){
+ arg[kk++][ii] = 0;
  ii=err=0;
  lasti = i;
  continue;
  }else{
- arg[kk][ii] = str[i];
- ii++;
+ arg[kk][ii++] = *(str+i);
  }
- if(str[i]==0)
+ if(*(str+i)==0)
  break;
  }
+ arg[kk][0] = 0;
  return kk;
 }
 
@@ -799,41 +788,4 @@ int result = 0;
  }
 
  return result;
-}
-
-
-
-void PrintDebug(char *strA,char *strB,void *ptr){
-int G_Val;
-float XYZ_Val;
-
- switch(strA[0]){
- case 'G':
- case 'g':
- case 'F':
- case 'f':
- case 'M':
- case 'm':
- case 'S':
- case 's':
- case 'E':
- case 'e':
- G_Val = *(int*)ptr;
- while(DMA_Busy(1));
- dma_printf("%s\t%s\t%d\r\n",strA,strB,G_Val);
- break;
- case 'X':
- case 'x':
- case 'Y':
- case 'y':
- case 'Z':
- case 'z':
- case 'A':
- case 'a':
- XYZ_Val = *(float*)ptr;
- while(DMA_Busy(1));
- dma_printf("%s\t%s\t%f\r\n",strA,strB,XYZ_Val);
- break;
- }
-
 }

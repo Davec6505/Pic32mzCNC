@@ -107,7 +107,7 @@ void PinMode(){
   
 ///////////////////////////////////////////////
 //init the planner and the split string array
-  Str_Initialize();
+ // Str_Initialize();
 }
 
 void UartConfig(){

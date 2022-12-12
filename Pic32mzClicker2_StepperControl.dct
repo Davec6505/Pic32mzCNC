@@ -30296,6 +30296,7 @@ frdy
 frdy
 frdy_bit
 free
+frequency
 freset
 freset
 freset
@@ -32455,6 +32456,7 @@ fwroverr
 fwroverr
 fwroverr_bit
 g_instruction
+g_mode
 gc
 gcen
 gcen
@@ -45564,7 +45566,6 @@ pri7ss2
 pri7ss2_bit
 pri7ss3
 pri7ss3_bit
-printdebug
 priss
 prissbits
 prissclr
@@ -61177,7 +61178,6 @@ stnaddr67_bit
 stnaddr67_emacxsa0_bit
 stopaxis
 stps
-str
 str_initialize
 str2int
 strcat
@@ -62868,7 +62868,6 @@ terrcnt6_c2trec_bit
 terrcnt7
 terrcnt7_bit
 terrcnt7_c2trec_bit
-test
 test_min
 test_port_pins
 testbp

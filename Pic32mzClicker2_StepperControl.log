@@ -39,10 +39,10 @@ diagnostics: 0	122	Compilation Started	stdint.h
 hint: 38	1354	argument may be out of range [axis_No]	Kinematics.c
 hint: 91	1354	argument may be out of range [axisA]	Kinematics.c
 hint: 92	1354	argument may be out of range [axisB]	Kinematics.c
-hint: 203	1163	Variable 'tempA' has been declared, but not used	Kinematics.c
-hint: 203	1163	Variable 'tempB' has been declared, but not used	Kinematics.c
 diagnostics: 429	123	Compiled Successfully	Kinematics.c
 warning: 113	1512	variable 'tempC' might not have been initialized	Kinematics.c
+warning: 308	1512	variable 'tempB' might not have been initialized	Kinematics.c
+warning: 308	1512	variable 'tempA' might not have been initialized	Kinematics.c
 hint: 220	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
 hint: 222	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
 hint: 215	1164	Variable 'rads' has been eliminated by optimizer	Kinematics.c
@@ -50,16 +50,16 @@ diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 76	123	Compiled Successfully	Pins.c
 diagnostics: 0	122	Compilation Started	stdlib.h
 hint: 0	1004	interrupt handler (DMA_CH0_ISR at 0x0086)	Serial_Dma.c
-warning: 195	1503	Result is not defined in function: 'Loopback'	Serial_Dma.c
+warning: 203	1503	Result is not defined in function: 'Loopback'	Serial_Dma.c
 hint: 0	1004	interrupt handler (DMA_CH1_ISR at 0x0087)	Serial_Dma.c
-warning: 322	1503	Result is not defined in function: ''	Serial_Dma.c
-hint: 318	1163	Variable 'tmp_' has been declared, but not used	Serial_Dma.c
-hint: 414	1163	Variable 'temp' has been declared, but not used	Serial_Dma.c
-diagnostics: 432	123	Compiled Successfully	Serial_Dma.c
+warning: 330	1503	Result is not defined in function: ''	Serial_Dma.c
+hint: 326	1163	Variable 'tmp_' has been declared, but not used	Serial_Dma.c
+hint: 422	1163	Variable 'temp' has been declared, but not used	Serial_Dma.c
+diagnostics: 440	123	Compiled Successfully	Serial_Dma.c
 diagnostics: 0	122	Compilation Started	Print.c
 diagnostics: 0	123	Compiled Successfully	Print.c
 diagnostics: 1	122	Compilation Started	Print.c
-diagnostics: 13	123	Compiled Successfully	GCODE.c
+diagnostics: 63	123	Compiled Successfully	GCODE.c
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 4	123	Compiled Successfully	Globals.c
 diagnostics: 0	122	Compilation Started	pins.h
@@ -69,10 +69,15 @@ diagnostics: 218	123	Compiled Successfully	Limits.c
 diagnostics: 0	122	Compilation Started	settings.h
 diagnostics: 0	123	Compiled Successfully	settings.h
 diagnostics: 1	122	Compilation Started	settings.h
+warning: 68	1508	Implicit conversion of int to ptr	Protocol.c
 hint: 21	1163	Variable 'j' has been declared, but not used	Protocol.c
-warning: 190	1505	Suspicious pointer conversion	Protocol.c
-diagnostics: 255	123	Compiled Successfully	Protocol.c
+warning: 204	1505	Suspicious pointer conversion	Protocol.c
+diagnostics: 232	123	Compiled Successfully	Protocol.c
 hint: 21	1164	Variable 'i' has been eliminated by optimizer	Protocol.c
+hint: 21	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
+hint: 22	1164	Variable 'G_Val' has been eliminated by optimizer	Protocol.c
+hint: 22	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
+hint: 22	1164	Variable 'S_Val' has been eliminated by optimizer	Protocol.c
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 129	123	Compiled Successfully	Nut_Bolts.c
 diagnostics: 0	122	Compilation Started	pins.h
@@ -82,13 +87,13 @@ diagnostics: 323	123	Compiled Successfully	Planner.c
 warning: 223	1512	variable 'axis_plane_a' might not have been initialized	Planner.c
 warning: 225	1512	variable 'axis_plane_b' might not have been initialized	Planner.c
 hint: 139	1164	Variable 'inverse_feed_rate' has been eliminated by optimizer	Planner.c
-diagnostics: 0	127	All files Compiled in 2016 ms	 
+diagnostics: 0	127	All files Compiled in 2078 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 2635   Dynamic RAM (bytes): 507381	Static RAM (bytes): 2635   Dynamic RAM (bytes): 507381
+hint: 0	1144	Static RAM (bytes): 2589   Dynamic RAM (bytes): 513649	Static RAM (bytes): 2589   Dynamic RAM (bytes): 513649
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 36144 (2%)  Free ROM (bytes): 2061008 (98%)	Used ROM (bytes): 36144 (2%)  Free ROM (bytes): 2061008 (98%)
+hint: 0	1144	Used ROM (bytes): 35741 (2%)  Free ROM (bytes): 2061411 (98%)	Used ROM (bytes): 35741 (2%)  Free ROM (bytes): 2061411 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 812 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4797 ms	 
-diagnostics: 0	103	Finished successfully: 11 Dec 2022, 09:17:15	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 907 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 5469 ms	 
+diagnostics: 0	103	Finished successfully: 12 Dec 2022, 23:16:18	Pic32mzClicker2_StepperControl.mcp32

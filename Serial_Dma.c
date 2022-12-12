@@ -49,7 +49,7 @@ void  DMA0(){
     DCH0ECON      =  (146 << 8 ) | 0x30;
     
     //Pattern data
-    DCH0DAT       =  0x0D;//'\r';
+    DCH0DAT       =  0x0A;//'\n';
     
     //Source address as UART_RX
     DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
@@ -95,7 +95,7 @@ void DMA0_Enable(){
     *or the bit you need to set, contrary to my initial
     *understanding of SET CLR & INV 'MORE REASEARCH NEEDED'
     *****************************************************/
-   DCH0CONSET  |= 1<<7;
+   DCH0CON  |= 1<<7;
 }
 
 ////////////////////////////////////////
@@ -118,7 +118,7 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
     if( CHERIF_bit == 1){       // test error int flag
        //LOOPBACK RECIEVE ERROR COULD BE SPECIFIC MSG
        strcpy(rxBuf,DMAx_err(dma0,cherie));
-       UART2_Write_Text(txBuf);
+       //UART2_Write_Text(txBuf);
        //DCH1SSIZ = 13;           //set block size of transfer
        //DCH1ECONbits.CFORCE = 1 ;// force DMA1 interrupt trigger
     }
@@ -136,9 +136,16 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
        
     strncpy(serial.temp_buffer+serial.head, rxBuf, i);
     serial.head += i;
-    *(rxBuf+0) = '\0';
+    memset(rxBuf,0,i);
+    //*(rxBuf+0) = '\0';
+
     DCH0INTCLR    = 0x000000ff;
     IFS4CLR       = 0x40;
+}
+
+//reset rxBuff
+static void Reset_rxBuff(int dif){
+  memset(rxBuf,0,dif);
 }
 
 //Head index
@@ -173,8 +180,9 @@ void Get_Line(char *str,int dif){
       serial.tail = 0;
 
     strncpy(str,serial.temp_buffer+serial.tail,dif);
-
-    //incrament the tail
+    
+    //Reset_rxBuff(dif);
+    //incriment the tail
     serial.tail += dif;
 }
 

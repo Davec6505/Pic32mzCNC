@@ -34,6 +34,7 @@ void DMA0();
 void DMA1();
 void DMA0_Enable();
 void DMA0_Disable();
+void Reset_rxBuff(int dif);
 int  Get_Head_Value();
 int  Get_Tail_Value();
 int  Get_Difference();

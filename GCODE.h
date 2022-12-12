@@ -6,10 +6,6 @@
 #include "Kinematics.h"
 
 
-
-extern char gcode_instruction[200];
-
-
 // Define modal group internal numbers for checking multiple command violations and tracking the
 // type of command that is called in the block. A modal group is a group of g-code commands that are
 // mutually exclusive, or cannot exist on the same line, because they each toggle a state or execute
@@ -64,6 +60,7 @@ typedef struct {
        plane_axis_1,
        plane_axis_2;              // The axes of the selected plane
   char  coord_select;             // Active work coordinate system number. Default: 0=G54.
+  int frequency;                  // Speed expressed as Frequency of pulses
   float feed_rate;                // Millimeters/min
 //  float seek_rate;              // Millimeters/min. Will be used in v0.9 when axis independence is installed
   float position[3];              // Where the interpreter considers the tool to be at this point in the code
@@ -76,6 +73,9 @@ extern parser_state_t gc;
 
 
 // Initialize the parser
-void G_Instruction(int mode);
-void M_Instruction(int mode);
+//void G_Instruction(int mode);
+void G_Mode(int mode);
+void M_Instruction(int flow);
+void G_Instruction(char *c,void *any);
+
 #endif

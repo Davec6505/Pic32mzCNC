@@ -182,9 +182,7 @@ typedef void * va_list[1];
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 10 "c:/users/git/pic32mzcnc/gcode.h"
-extern char gcode_instruction[200];
-#line 52 "c:/users/git/pic32mzcnc/gcode.h"
+#line 48 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char s;
  int motion_mode;
@@ -200,6 +198,7 @@ typedef struct {
  plane_axis_1,
  plane_axis_2;
  char coord_select;
+ int frequency;
  float feed_rate;
 
  float position[3];
@@ -212,8 +211,10 @@ extern parser_state_t gc;
 
 
 
-void G_Instruction(int mode);
-void M_Instruction(int mode);
+
+void G_Mode(int mode);
+void M_Instruction(int flow);
+void G_Instruction(char *c,void *any);
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
@@ -239,6 +240,7 @@ void DMA0();
 void DMA1();
 void DMA0_Enable();
 void DMA0_Disable();
+void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
@@ -559,16 +561,13 @@ void delay_us(unsigned long us);
 
 void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
-void Str_Initialize();
+void Str_Initialize(char arg[ 10 ][ 60 ]);
 
 void Sample_Ringbuffer();
 
-int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
+int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
-
-
- void PrintDebug(char *strA,char *strB,void *ptr);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -672,12 +671,7 @@ static int cntr;
 
  }else{
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-
-
- dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
- a,STPS[X].dist,STPS[X].mmToTravel,
- STPS[X].step_count);
-
+#line 130 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  }
  }

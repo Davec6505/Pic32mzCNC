@@ -25,8 +25,6 @@ main
 		OutPutPulseXYZ
 		SetPinMode
 		SetInitialSizes
-		Str_Initialize
-			memset
 	plan_init
 	disableOCx
 	DisableStepper
@@ -39,32 +37,37 @@ main
 		Get_Line
 			strncpy
 		strsplit
-		DMA_Busy
-		dma_printf
-			DMA_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
+			Str_Initialize
+				memset
 			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
-		cpy_val_from_str
 		strlen
+		cpy_val_from_str
 		atoi
 			isdigit
-		PrintDebug
+		G_Mode
 			DMA_Busy
 			dma_printf
+				DMA_Busy
+				sprintf
+					_doprntf
+						isdigit
+						scale
+						fround
+				strcat
+				strlen
+				strncpy
+				DMA1_Enable
+				__CC2DW
 			__CC2DW
 		atof
 			strtod
 				isspace
 				isdigit
-		__CC2DW
+		G_Instruction
+			DMA_Busy
+			dma_printf
+			__CC2DW
+		memset
 	EnStepperX
 	EnStepperY
 	EnStepperZ
@@ -102,9 +105,8 @@ DMA_CH1_ISR
 DMA_CH0_ISR
 	__CC2DW
 	strcpy
-	UART2_Write_Text
-		UART2_Write
 	strlen
 	strncpy
+	memset
 Timer1Interrupt
 	ClockPulse

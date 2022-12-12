@@ -1,6 +1,6 @@
 _main:
 ;Main.c,54 :: 		void main() {
-ADDIU	SP, SP, -84
+ADDIU	SP, SP, -40
 ;Main.c,58 :: 		int xyz_ = 0, i,dif;
 ;Main.c,61 :: 		PinMode();
 JAL	_PinMode+0
@@ -242,32 +242,6 @@ J	L__main36
 NOP	
 L__main54:
 L__main32:
-;Main.c,126 :: 		dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
-ADDIU	R23, SP, 40
-ADDIU	R22, R23, 44
-LUI	R24, hi_addr(?ICS?lstr3_Main+0)
-ORI	R24, R24, lo_addr(?ICS?lstr3_Main+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R3, SP, 40
-;Main.c,128 :: 		STPS[X].step_count);
-LW	R2, Offset(_STPS+40)(GP)
-ADDIU	SP, SP, -20
-SW	R2, 16(SP)
-;Main.c,127 :: 		a,STPS[X].dist,STPS[X].mmToTravel,
-LW	R2, Offset(_STPS+76)(GP)
-SW	R2, 12(SP)
-LW	R2, Offset(_STPS+44)(GP)
-SW	R2, 8(SP)
-LHU	R2, Offset(Main_a+0)(GP)
-SH	R2, 4(SP)
-;Main.c,126 :: 		dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
-SW	R3, 0(SP)
-;Main.c,128 :: 		STPS[X].step_count);
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 20
-;Main.c,123 :: 		if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
 L__main39:
 L__main38:
 L__main37:
