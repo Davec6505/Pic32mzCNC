@@ -49,7 +49,7 @@ void  DMA0(){
     DCH0ECON      =  (146 << 8 ) | 0x30;
     
     //Pattern data
-    DCH0DAT       =  0x0A0D;//'\n';
+    DCH0DAT       =  0x0A;//'\n';
     
     //Source address as UART_RX
     DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
@@ -78,7 +78,7 @@ void  DMA0(){
     IFS4CLR       = 0x40;
     //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0] 
     //Set up AutoEnable & Priority as 3       .
-    DCH0CONSET      = 0X0000813;//813 = 2 char e.g. \r\n
+    DCH0CONSET      = 0X0000013;//813 = 2 char e.g. \r\n
     
     //set the recieve buffer counts to 0
     serial.head = serial.tail = serial.diff = 0;
@@ -95,7 +95,7 @@ void DMA0_Enable(){
     *or the bit you need to set, contrary to my initial
     *understanding of SET CLR & INV 'MORE REASEARCH NEEDED'
     *****************************************************/
-   DCH0CONSET  |= 1<<7;
+   DCH0CON  |= 1<<7;
 }
 
 ////////////////////////////////////////
@@ -118,7 +118,7 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
     if( CHERIF_bit == 1){       // test error int flag
        //LOOPBACK RECIEVE ERROR COULD BE SPECIFIC MSG
        strcpy(rxBuf,DMAx_err(dma0,cherie));
-       UART2_Write_Text(txBuf);
+       //UART2_Write_Text(txBuf);
        //DCH1SSIZ = 13;           //set block size of transfer
        //DCH1ECONbits.CFORCE = 1 ;// force DMA1 interrupt trigger
     }
@@ -136,9 +136,16 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
        
     strncpy(serial.temp_buffer+serial.head, rxBuf, i);
     serial.head += i;
-    *(rxBuf+0) = '\0';
+    memset(rxBuf,0,i);
+    //*(rxBuf+0) = '\0';
+
     DCH0INTCLR    = 0x000000ff;
     IFS4CLR       = 0x40;
+}
+
+//reset rxBuff
+static void Reset_rxBuff(int dif){
+  memset(rxBuf,0,dif);
 }
 
 //Head index
@@ -173,8 +180,9 @@ void Get_Line(char *str,int dif){
       serial.tail = 0;
 
     strncpy(str,serial.temp_buffer+serial.tail,dif);
-
-    //incrament the tail
+    
+    //Reset_rxBuff(dif);
+    //incriment the tail
     serial.tail += dif;
 }
 
@@ -313,8 +321,8 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 int dma_printf(const char* str,...){
  //Variable decleration of type va_list
  va_list va;
- int i = 0, j = 0,busy;
- char buff[200]={0},tmp[20],tmp1[6];
+ int i = 0, j = 0;
+ char buff[200]={0},tmp[20],tmp1[9];
  char *str_arg,*tmp_;
  
  //check that str is not null
@@ -328,15 +336,15 @@ int dma_printf(const char* str,...){
    return 0;
  }
  
- //initialize the va_list via themacro va_start(arg1,arg2)
+ //initialize the va_list via the macro va_start(arg1,arg2)
  //arg1 is type va_list and arg2 is type var preceding elipsis
  va_start(va,str);
  
  i = j = 0;
- while(str[i]!= '\0'){
+ while(*(str+i) != '\0'){
    if(*(str+i) == '%'){
-     i++;
-     switch(str[i]){
+     i++;  //step over % char
+     switch(*(str+i)){
         case 'c':
              //convert char to ASCII char
              buff[j] = (char)va_arg(va,char);
@@ -398,10 +406,10 @@ int dma_printf(const char* str,...){
        *(buff+j) = *(str+i);
        j++;
   }
-  i++;
+   i++;
  }
- *(buff+j) = 0;
- strncpy(txBuf,buff,j);
+ *(buff+j+1) = 0;
+ strncpy(txBuf,buff,j+1);
  DCH1SSIZ    = j ;
  DMA1_Enable();
  return j;

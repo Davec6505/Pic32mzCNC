@@ -1,1 +1,3 @@
-DMADebug=1
+DMADebug=-1
+ProtoDebug=-1
+GcodeDebug=1

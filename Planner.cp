@@ -306,37 +306,39 @@ void ResetHoming();
 void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
-#line 10 "c:/users/git/pic32mzcnc/gcode.h"
-extern char gcode_instruction[200];
-#line 52 "c:/users/git/pic32mzcnc/gcode.h"
+#line 48 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
- uint8_t status_code;
- uint8_t motion_mode;
- uint8_t inverse_feed_rate_mode;
- uint8_t inches_mode;
- uint8_t absolute_mode;
- uint8_t program_flow;
- int8_t spindle_direction;
- uint8_t coolant_mode;
+ char s;
+ int motion_mode;
+ char inverse_feed_rate_mode;
+ char inches_mode;
+ char absolute_mode;
+ char program_flow;
+ char spindle_direction;
+ char coolant_mode;
+ char tool;
+
+ char plane_axis_0,
+ plane_axis_1,
+ plane_axis_2;
+ char coord_select;
+ int frequency;
  float feed_rate;
 
  float position[3];
- uint8_t tool;
-
- uint8_t plane_axis_0,
- plane_axis_1,
- plane_axis_2;
- uint8_t coord_select;
  float coord_system[ 6 ];
-
  float coord_offset[ 6 ];
 
+ float next_position[ 6 ];
 } parser_state_t;
 extern parser_state_t gc;
 
 
 
-void G_Instruction(int _G_);
+
+void G_Mode(int mode);
+void M_Instruction(int flow);
+void G_Instruction(char *c,void *any);
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
@@ -362,6 +364,7 @@ void DMA0();
 void DMA1();
 void DMA0_Enable();
 void DMA0_Disable();
+void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
@@ -443,14 +446,13 @@ void delay_us(unsigned long us);
 
 
 void sys_sync_current_position();
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
-void Str_Initialize();
+void Str_Initialize(char arg[ 10 ][ 60 ]);
 
 void Sample_Ringbuffer();
 
-int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
-int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
+int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;

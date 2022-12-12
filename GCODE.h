@@ -6,10 +6,6 @@
 #include "Kinematics.h"
 
 
-
-extern char gcode_instruction[200];
-
-
 // Define modal group internal numbers for checking multiple command violations and tracking the
 // type of command that is called in the block. A modal group is a group of g-code commands that are
 // mutually exclusive, or cannot exist on the same line, because they each toggle a state or execute
@@ -50,31 +46,36 @@ extern char gcode_instruction[200];
 
 
 typedef struct {
-  uint8_t status_code;             // Parser status for current block
-  uint8_t motion_mode;             // {G0, G1, G2, G3, G80}
-  uint8_t inverse_feed_rate_mode;  // {G93, G94}
-  uint8_t inches_mode;             // 0 = millimeter mode, 1 = inches mode {G20, G21}
-  uint8_t absolute_mode;           // 0 = relative motion, 1 = absolute motion {G90, G91}
-  uint8_t program_flow;            // {M0, M1, M2, M30}
-  int8_t spindle_direction;        // 1 = CW, -1 = CCW, 0 = Stop {M3, M4, M5}
-  uint8_t coolant_mode;            // 0 = Disable, 1 = Flood Enable {M8, M9}
-  float feed_rate;                 // Millimeters/min
-//  float seek_rate;                 // Millimeters/min. Will be used in v0.9 when axis independence is installed
-  float position[3];               // Where the interpreter considers the tool to be at this point in the code
-  uint8_t tool;
-//  uint16_t spindle_speed;          // RPM/100
-  uint8_t plane_axis_0,
-          plane_axis_1,
-          plane_axis_2;            // The axes of the selected plane
-  uint8_t coord_select;            // Active work coordinate system number. Default: 0=G54.
-  float coord_system[NoOfAxis];      // Current work coordinate system (G54+). Stores offset from absolute machine
-                                   // position in mm. Loaded from EEPROM when called.
-  float coord_offset[NoOfAxis];      // Retains the G92 coordinate offset (work coordinates) relative to
-                                   // machine zero in mm. Non-persistent. Cleared upon reset and boot.
+  char s;                          // Parser status for current block
+  int motion_mode;               // {G0, G1, G2, G3, G80}
+  char inverse_feed_rate_mode;    // {G93, G94}
+  char inches_mode;               // 0 = millimeter mode, 1 = inches mode {G20, G21}
+  char absolute_mode;             // 0 = relative motion, 1 = absolute motion {G90, G91}
+  char program_flow;              // {M0, M1, M2, M30}
+  char spindle_direction;         // 1 = CW, -1 = CCW, 0 = Stop {M3, M4, M5}
+  char coolant_mode;              // 0 = Disable, 1 = Flood Enable {M8, M9}
+  char tool;
+  //  uint16_t spindle_speed;     // RPM/100
+  char plane_axis_0,
+       plane_axis_1,
+       plane_axis_2;              // The axes of the selected plane
+  char  coord_select;             // Active work coordinate system number. Default: 0=G54.
+  int frequency;                  // Speed expressed as Frequency of pulses
+  float feed_rate;                // Millimeters/min
+//  float seek_rate;              // Millimeters/min. Will be used in v0.9 when axis independence is installed
+  float position[3];              // Where the interpreter considers the tool to be at this point in the code
+  float coord_system[NoOfAxis];   // Current work coordinate system (G54+). Stores offset from absolute machine                                   // position in mm. Loaded from EEPROM when called.
+  float coord_offset[NoOfAxis];   // Retains the G92 coordinate offset (work coordinates) relative to
+                                  // machine zero in mm. Non-persistent. Cleared upon reset and boot.
+  float next_position[NoOfAxis];  // next position instruction from gcode sender
 } parser_state_t;
 extern parser_state_t gc;
 
 
 // Initialize the parser
-void G_Instruction(int _G_);
+//void G_Instruction(int mode);
+void G_Mode(int mode);
+void M_Instruction(int flow);
+void G_Instruction(char *c,void *any);
+
 #endif

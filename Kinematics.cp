@@ -193,37 +193,39 @@ typedef void * va_list[1];
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 10 "c:/users/git/pic32mzcnc/gcode.h"
-extern char gcode_instruction[200];
-#line 52 "c:/users/git/pic32mzcnc/gcode.h"
+#line 48 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
- uint8_t status_code;
- uint8_t motion_mode;
- uint8_t inverse_feed_rate_mode;
- uint8_t inches_mode;
- uint8_t absolute_mode;
- uint8_t program_flow;
- int8_t spindle_direction;
- uint8_t coolant_mode;
+ char s;
+ int motion_mode;
+ char inverse_feed_rate_mode;
+ char inches_mode;
+ char absolute_mode;
+ char program_flow;
+ char spindle_direction;
+ char coolant_mode;
+ char tool;
+
+ char plane_axis_0,
+ plane_axis_1,
+ plane_axis_2;
+ char coord_select;
+ int frequency;
  float feed_rate;
 
  float position[3];
- uint8_t tool;
-
- uint8_t plane_axis_0,
- plane_axis_1,
- plane_axis_2;
- uint8_t coord_select;
  float coord_system[ 6 ];
-
  float coord_offset[ 6 ];
 
+ float next_position[ 6 ];
 } parser_state_t;
 extern parser_state_t gc;
 
 
 
-void G_Instruction(int _G_);
+
+void G_Mode(int mode);
+void M_Instruction(int flow);
+void G_Instruction(char *c,void *any);
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
@@ -249,6 +251,7 @@ void DMA0();
 void DMA1();
 void DMA0_Enable();
 void DMA0_Disable();
+void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
@@ -342,14 +345,13 @@ void delay_us(unsigned long us);
 
 
 void sys_sync_current_position();
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
-void Str_Initialize();
+void Str_Initialize(char arg[ 10 ][ 60 ]);
 
 void Sample_Ringbuffer();
 
-int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
-int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
+int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -809,7 +811,10 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  nPy = arc_target[axis_1] = position[axis_1];
  OC5IE_bit = OC2IE_bit = 0;
  i = 0;
-#line 275 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+ dma_printf("\n[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%d]\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\n[LinPseg:= %f : *pSeg:= %f]",
+ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel,linear_travel,linear_per_segment,theta_per_segment);
+
  while(i < segments) {
 
  if (count < n_arc_correction) {
@@ -839,7 +844,13 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
 
  STPS[axis_0].step_delay = 1000;
  STPS[axis_1].step_delay = 1000;
-#line 311 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+ if(!DMA_Busy(1));
+ dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f : X:= %l : Y:= %l",
+ i,segments,nPx,nPy,tempA,tempB);
+
+
  SV.cir = 1;
  DualAxisStep(nPx, nPy,axis_0,axis_1,1000);
 
@@ -860,12 +871,7 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  break;
  i++;
  }
-
-
- while(DMA_Busy(1));
- dma_printf("\n%s","Arc Finnished");
-
-
+#line 337 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 }
 
 

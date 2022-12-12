@@ -182,37 +182,39 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 10 "c:/users/git/pic32mzcnc/gcode.h"
-extern char gcode_instruction[200];
-#line 52 "c:/users/git/pic32mzcnc/gcode.h"
+#line 48 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
- uint8_t status_code;
- uint8_t motion_mode;
- uint8_t inverse_feed_rate_mode;
- uint8_t inches_mode;
- uint8_t absolute_mode;
- uint8_t program_flow;
- int8_t spindle_direction;
- uint8_t coolant_mode;
+ char s;
+ int motion_mode;
+ char inverse_feed_rate_mode;
+ char inches_mode;
+ char absolute_mode;
+ char program_flow;
+ char spindle_direction;
+ char coolant_mode;
+ char tool;
+
+ char plane_axis_0,
+ plane_axis_1,
+ plane_axis_2;
+ char coord_select;
+ int frequency;
  float feed_rate;
 
  float position[3];
- uint8_t tool;
-
- uint8_t plane_axis_0,
- plane_axis_1,
- plane_axis_2;
- uint8_t coord_select;
  float coord_system[ 6 ];
-
  float coord_offset[ 6 ];
 
+ float next_position[ 6 ];
 } parser_state_t;
 extern parser_state_t gc;
 
 
 
-void G_Instruction(int _G_);
+
+void G_Mode(int mode);
+void M_Instruction(int flow);
+void G_Instruction(char *c,void *any);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -517,14 +519,13 @@ void delay_us(unsigned long us);
 
 
 void sys_sync_current_position();
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
-void Str_Initialize();
+void Str_Initialize(char arg[ 10 ][ 60 ]);
 
 void Sample_Ringbuffer();
 
-int strsplit(char arg[ 10 ][ 60 ],char str[250], char c);
-int cpystr(char *strA,const char *strB,int indx,int num_of_char);
+int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
+int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -571,6 +572,7 @@ void DMA0();
 void DMA1();
 void DMA0_Enable();
 void DMA0_Disable();
+void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
 int Get_Difference();
@@ -620,7 +622,7 @@ void DMA0(){
  DCH0ECON = (146 << 8 ) | 0x30;
 
 
- DCH0DAT = 0x0A0D;
+ DCH0DAT = 0x0A;
 
 
  DCH0SSA = KVA_TO_PA(0xBF822230);
@@ -649,7 +651,7 @@ void DMA0(){
  IFS4CLR = 0x40;
 
 
- DCH0CONSET = 0X0000813;
+ DCH0CONSET = 0X0000013;
 
 
  serial.head = serial.tail = serial.diff = 0;
@@ -659,7 +661,7 @@ void DMA0(){
 
 void DMA0_Enable(){
 #line 98 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
- DCH0CONSET |= 1<<7;
+ DCH0CON |= 1<<7;
 }
 
 
@@ -682,7 +684,7 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
  if( CHERIF_bit == 1){
 
  strcpy(rxBuf, ("dma0" " " "cherie") );
- UART2_Write_Text(txBuf);
+
 
 
  }
@@ -700,9 +702,16 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
 
  strncpy(serial.temp_buffer+serial.head, rxBuf, i);
  serial.head += i;
- *(rxBuf+0) = '\0';
+ memset(rxBuf,0,i);
+
+
  DCH0INTCLR = 0x000000ff;
  IFS4CLR = 0x40;
+}
+
+
+static void Reset_rxBuff(int dif){
+ memset(rxBuf,0,dif);
 }
 
 
@@ -739,6 +748,7 @@ void Get_Line(char *str,int dif){
  strncpy(str,serial.temp_buffer+serial.tail,dif);
 
 
+
  serial.tail += dif;
 }
 
@@ -757,7 +767,7 @@ int dif;
 
  serial.tail += dif;
 }
-#line 210 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+#line 218 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 void DMA1(){
 
 
@@ -864,8 +874,8 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 int dma_printf(const char* str,...){
 
  va_list va;
- int i = 0, j = 0,busy;
- char buff[200]={0},tmp[20],tmp1[6];
+ int i = 0, j = 0;
+ char buff[200]={0},tmp[20],tmp1[9];
  char *str_arg,*tmp_;
 
 
@@ -884,10 +894,10 @@ int dma_printf(const char* str,...){
   __va_start(va, str) ;
 
  i = j = 0;
- while(str[i]!= '\0'){
+ while(*(str+i) != '\0'){
  if(*(str+i) == '%'){
  i++;
- switch(str[i]){
+ switch(*(str+i)){
  case 'c':
 
  buff[j] = (char) __va_arg(va, char) ;
@@ -951,8 +961,8 @@ int dma_printf(const char* str,...){
  }
  i++;
  }
- *(buff+j) = 0;
- strncpy(txBuf,buff,j);
+ *(buff+j+1) = 0;
+ strncpy(txBuf,buff,j+1);
  DCH1SSIZ = j ;
  DMA1_Enable();
  return j;
