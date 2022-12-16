@@ -77,7 +77,9 @@ File1=Protocol.c
 File2=Protocol.h
 File3=GCODE.c
 File4=GCODE.h
-Count=5
+File5=Kinematics.c
+File6=Kinematics.h
+Count=7
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

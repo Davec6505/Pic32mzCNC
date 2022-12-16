@@ -45,6 +45,10 @@ main
 		atoi
 			isdigit
 		G_Mode
+			Set_Modal_Groups
+			Set_Motion_Mode
+				Select_Plane
+				floor
 			DMA_Busy
 			dma_printf
 				DMA_Busy
@@ -63,11 +67,17 @@ main
 			strtod
 				isspace
 				isdigit
-		G_Instruction
+		Instruction_Values
 			DMA_Busy
 			dma_printf
 			__CC2DW
-		memset
+		M_Instruction
+			Set_M_Modal_Commands
+			Set_M_Commands
+			DMA_Busy
+			dma_printf
+			__CC2DW
+		Check_group_multiple_violations
 	EnStepperX
 	EnStepperY
 	EnStepperZ

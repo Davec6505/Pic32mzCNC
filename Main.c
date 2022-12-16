@@ -179,7 +179,7 @@ int Temp_Move(int a){
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             a = 12;
             break;
-       case 10://Homing X axis                                                                abcdef
+       case 10://Homing X axis
             Home(X);
             break;
        case 11://Homing Y axis

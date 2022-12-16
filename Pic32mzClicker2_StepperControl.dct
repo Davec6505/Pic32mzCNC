@@ -346,7 +346,9 @@ abf2seq3bits
 abort
 abs
 absolute_mode
+absolute_override
 accdec
+acceleration
 ackdt
 ackdt
 ackdt
@@ -5150,6 +5152,7 @@ autoset_usbe5csr0_bit
 autoset_usbe6csr0_bit
 autoset_usbe7csr0_bit
 axis_interpolate
+axis_words
 axis_xyz
 axisno
 axisno
@@ -12376,6 +12379,7 @@ chdsiz9_dch4dsiz_bit
 chdsiz9_dch5dsiz_bit
 chdsiz9_dch6dsiz_bit
 chdsiz9_dch7dsiz_bit
+check_group_multiple_violations
 chedet
 chedet
 chedet
@@ -23140,6 +23144,9 @@ debug1_bit
 debug1_ubadevcfg0_bit
 dec2bcd
 dec2bcd16
+decimal_places
+default_feed_rate
+default_seek_rate
 delay_100ms
 delay_10ms
 delay_10us
@@ -29487,6 +29494,7 @@ filhit3_c2vec_bit
 filhit4
 filhit4_bit
 filhit4_c2vec_bit
+flags
 flash_erase_lowermemory
 flash_erase_page
 flash_erase_uppermemory
@@ -32455,7 +32463,7 @@ fwmarkie_bit
 fwroverr
 fwroverr
 fwroverr_bit
-g_instruction
+g_initialise
 g_mode
 gc
 gcen
@@ -32541,6 +32549,7 @@ group
 group
 group
 group
+group_number
 group0
 group0
 group0
@@ -33150,6 +33159,11 @@ home
 home_axis
 homing
 homing_cnt
+homing_debounce_delay
+homing_dir_mask
+homing_feed_rate
+homing_pulloff
+homing_seek_rate
 hostmode
 hostmode
 hostmode_bit
@@ -33370,6 +33384,7 @@ hugefrm
 hugefrm_bit
 hugefrm_emacxcfg2_bit
 hypot
+i
 i2c1add
 i2c1addbits
 i2c1addclr
@@ -36774,6 +36789,8 @@ initid7_sbt8elog1_bit
 initid7_sbt9elog1_bit
 inittimer1
 inittimer8
+instruction_values
+int_value
 int0ep
 int0ep
 int0ep
@@ -37018,7 +37035,9 @@ inttohex
 inttostr
 inttostrwithzeros
 inv_home_axis
+inverse_feed_rate
 inverse_feed_rate_mode
+invert_mask
 ioancpen
 ioancpen
 ioancpen_bit
@@ -37947,6 +37966,7 @@ iwcol_i2c2stat_bit
 iwcol_i2c3stat_bit
 iwcol_i2c4stat_bit
 iwcol_i2c5stat_bit
+j
 jtagen
 jtagen
 jtagen
@@ -37990,6 +38010,7 @@ jtagen_bf2devcfg0_bit
 jtagen_bit
 jtagen_devcfg0_bit
 jtagen_ubadevcfg0_bit
+junction_deviation
 labs
 lanemode
 lanemode0
@@ -39047,6 +39068,7 @@ memtype1
 memtype1_bit
 memtype2
 memtype2_bit
+microsteps
 mide
 mide
 mide
@@ -39142,9 +39164,11 @@ mm_freememtable
 mm_init
 mm_largestfreememblock
 mm_nrfreeblocksused
+mm_per_arc_segment
 mm_possiblyfragmented
 mm_totalfreememsize
 mm2in
+modal_group_words
 mode
 mode
 mode
@@ -40135,6 +40159,7 @@ mwtd8_emacxmwtd_bit
 mwtd9
 mwtd9_bit
 mwtd9_emacxmwtd_bit
+n_arc_correction
 nak
 nak
 nak_bit
@@ -40277,6 +40302,7 @@ nmikey6
 nmikey6_bit
 nmikey7
 nmikey7_bit
+no_axis_interpolate
 nobkoff
 nobkoff
 nobkoff
@@ -40285,6 +40311,7 @@ nobkoff
 nobkoff
 nobkoff_bit
 nobkoff_emacxcfg2_bit
+non_modal_action
 nopre
 nopre
 nopre
@@ -46039,6 +46066,7 @@ ptwren
 ptwren
 ptwren_bit
 pulse
+pulse_microseconds
 purepre
 purepre
 purepre
@@ -46113,6 +46141,8 @@ pwrconinv
 pwrconinvbits
 pwrconset
 pwrconsetbits
+r
+r
 r_or_ijk
 r_w
 r_w
@@ -55318,7 +55348,6 @@ s
 s
 s
 s
-s
 s_bit
 s_i2c2stat_bit
 s_i2c3stat_bit
@@ -56418,6 +56447,8 @@ setendc
 setendc_bit
 setinitialsizes
 setpinmode
+settings
+settings_init
 setup
 setup
 setup_bit
@@ -60963,6 +60994,7 @@ stattype1_bit
 status
 status
 status_bit
+status_code
 step_cycle
 step1
 step10
@@ -60999,6 +61031,8 @@ step26_bit
 step27
 step27_bit
 stepa
+stepper_idle_lock_time
+steps_per_mm
 stepx
 stepy
 stepz
@@ -74278,6 +74312,7 @@ utxsel1_uefsta_bit
 utxsel1_ughsta_bit
 utxsel1_ujksta_bit
 utxsel1_ulmsta_bit
+value
 vbus
 vbus0
 vbus0_bit

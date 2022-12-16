@@ -474,7 +474,7 @@ ORI	R25, R0, 12
 ;Main.c,181 :: 		break;
 J	L_Temp_Move17
 NOP	
-;Main.c,182 :: 		case 10://Homing X axis                                                                abcdef
+;Main.c,182 :: 		case 10://Homing X axis
 L_Temp_Move28:
 ;Main.c,183 :: 		Home(X);
 SH	R25, 12(SP)

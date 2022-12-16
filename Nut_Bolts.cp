@@ -137,6 +137,34 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 92 "c:/users/git/pic32mzcnc/settings.h"
+typedef struct {
+ float steps_per_mm[3];
+ char microsteps;
+ char pulse_microseconds;
+ float default_feed_rate;
+ float default_seek_rate;
+ char invert_mask;
+ float mm_per_arc_segment;
+ float acceleration;
+ float junction_deviation;
+ char flags;
+ char homing_dir_mask;
+ float homing_feed_rate;
+ float homing_seek_rate;
+ unsigned int homing_debounce_delay;
+ float homing_pulloff;
+ char stepper_idle_lock_time;
+ char decimal_places;
+ char n_arc_correction;
+
+} settings_t;
+extern settings_t settings;
+
+
+
+
+void Settings_Init();
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
@@ -184,10 +212,25 @@ typedef void * va_list[1];
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 48 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 50 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
- char s;
- int motion_mode;
+ uint8_t abort;
+ uint8_t state;
+ int homing;
+ int homing_cnt;
+ uint8_t auto_start;
+ volatile uint8_t execute;
+} system_t;
+extern system_t sys;
+#line 82 "c:/users/git/pic32mzcnc/gcode.h"
+typedef struct {
+ char r: 1;
+ char status_code;
+ char no_axis_interpolate;
  char inverse_feed_rate_mode;
  char inches_mode;
  char absolute_mode;
@@ -200,23 +243,36 @@ typedef struct {
  plane_axis_1,
  plane_axis_2;
  char coord_select;
+ int motion_mode;
  int frequency;
  float feed_rate;
 
- float position[3];
+ float position[ 6 ];
  float coord_system[ 6 ];
  float coord_offset[ 6 ];
 
  float next_position[ 6 ];
+ float R;
+ float I;
+ float J;
 } parser_state_t;
 extern parser_state_t gc;
 
 
 
 
+void G_Initialise();
+static float To_Millimeters(float value);
 void G_Mode(int mode);
+static void Set_Modal_Groups(int mode);
+static char Set_Motion_Mode(int mode);
+
 void M_Instruction(int flow);
-void G_Instruction(char *c,void *any);
+static void Set_M_Modal_Commands(int M_Val);
+static char Set_M_Commands(int M_Val);
+char Check_group_multiple_violations();
+
+void Instruction_Values(char *c,void *any);
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
@@ -259,18 +315,6 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 50 "c:/users/git/pic32mzcnc/globals.h"
-typedef struct {
- uint8_t abort;
- uint8_t state;
- int homing;
- int homing_cnt;
- uint8_t auto_start;
- volatile uint8_t execute;
-} system_t;
-extern system_t sys;
 #line 48 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
