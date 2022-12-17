@@ -34,6 +34,7 @@ main
 		Reset_Min_Debounce
 	Sample_Ringbuffer
 		Get_Difference
+		G_Initialise
 		Get_Line
 			strncpy
 		strsplit
@@ -49,6 +50,16 @@ main
 			Set_Motion_Mode
 				Select_Plane
 				floor
+		atof
+			strtod
+				isspace
+				isdigit
+		Instruction_Values
+		M_Instruction
+			Set_M_Modal_Commands
+			Set_M_Commands
+		Check_group_multiple_violations
+		PrintStatus
 			DMA_Busy
 			dma_printf
 				DMA_Busy
@@ -63,21 +74,7 @@ main
 				DMA1_Enable
 				__CC2DW
 			__CC2DW
-		atof
-			strtod
-				isspace
-				isdigit
-		Instruction_Values
-			DMA_Busy
-			dma_printf
-			__CC2DW
-		M_Instruction
-			Set_M_Modal_Commands
-			Set_M_Commands
-			DMA_Busy
-			dma_printf
-			__CC2DW
-		Check_group_multiple_violations
+		Movement_Condition
 	EnStepperX
 	EnStepperY
 	EnStepperZ

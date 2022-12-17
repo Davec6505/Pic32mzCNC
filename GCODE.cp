@@ -562,6 +562,13 @@ void Sample_Ringbuffer();
 int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
+
+
+
+
+
+
+ void PrintStatus(int state);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -584,11 +591,10 @@ void LCD_Display();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 82 "c:/users/git/pic32mzcnc/gcode.h"
+#line 83 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
- char status_code;
- char no_axis_interpolate;
+ char no_axis_interpolate: 1;
  char inverse_feed_rate_mode;
  char inches_mode;
  char absolute_mode;
@@ -601,6 +607,7 @@ typedef struct {
  plane_axis_1,
  plane_axis_2;
  char coord_select;
+ int status_code;
  int motion_mode;
  int frequency;
  float feed_rate;
@@ -623,14 +630,16 @@ void G_Initialise();
 static float To_Millimeters(float value);
 void G_Mode(int mode);
 static void Set_Modal_Groups(int mode);
-static char Set_Motion_Mode(int mode);
+static int Set_Motion_Mode(int mode);
 
 void M_Instruction(int flow);
 static void Set_M_Modal_Commands(int M_Val);
-static char Set_M_Commands(int M_Val);
-char Check_group_multiple_violations();
+static int Set_M_Commands(int M_Val);
+int Check_group_multiple_violations();
 
-void Instruction_Values(char *c,void *any);
+int Instruction_Values(char *c,void *any);
+
+void Movement_Condition(int motion_mode);
 #line 3 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 parser_state_t gc;
 
@@ -654,7 +663,7 @@ void G_Initialise(){
  axis_words = 0;
  int_value = 0;
  value = 0;
- inverse_feed_rate = -1;
+ inverse_feed_rate = 0;
  absolute_override = 0;
 }
 
@@ -676,12 +685,6 @@ void G_Mode(int mode){
  gc.motion_mode = mode;
  Set_Modal_Groups(mode);
  Set_Motion_Mode(mode);
-
-
-
- while(DMA_Busy(1));
- dma_printf("gc.motion_mode:= %d\n",mode);
-
 }
 
 
@@ -698,7 +701,7 @@ static void Set_Modal_Groups(int mode){
 }
 
 
-static char Set_Motion_Mode(int mode){
+static int Set_Motion_Mode(int mode){
 int i;
  switch(mode){
  case 0: gc.motion_mode =  0 ; break;
@@ -778,44 +781,7 @@ int i;
  }
  }
  }
-
-
-
- switch (gc.motion_mode) {
- case  4 :
- if (axis_words) {  gc.status_code = 6 ; ; }
- break;
- case  0 :
- if (!axis_words) {  gc.status_code = 6 ; ;}
- else {
-
-
- }
- break;
- case  1 :
-
-
-
-
- if (!axis_words) {  gc.status_code = 6 ; ;}
- else {
-
- }
- break;
- case  2 : case  3 :
-
-
- if ( !(  (axis_words &= ~ (1 << gc.plane_axis_2) )  ) ||
- ( !gc.r) ){
-  gc.status_code = 6 ; ;
- } else {
- if (gc.R != 0) {
-
- asm{nop;}
- }
- }
- break;
- }
+ return gc.status_code;
 }
 
 
@@ -825,10 +791,7 @@ void M_Instruction(int flow){
  gc.program_flow = flow;
  Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
-
- while(DMA_Busy(1));
- dma_printf("gc.program_flow:= %d\n",flow);
-
+#line 157 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 }
 
 static void Set_M_Modal_Commands(int flow){
@@ -840,7 +803,7 @@ static void Set_M_Modal_Commands(int flow){
 }
 
 
-static char Set_M_Commands(int flow){
+static int Set_M_Commands(int flow){
 
  switch(flow) {
  case 0: gc.program_flow =  1 ; break;
@@ -850,15 +813,16 @@ static char Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 224 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 181 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  gc.status_code = 3 ; ;break;
  }
+ return gc.status_code;
 }
 
 
-char Check_group_multiple_violations(){
+int Check_group_multiple_violations(){
  if (group_number) {
  if (  ((modal_group_words & (1 << group_number) ) != 0)  ) {
   gc.status_code = 5 ; ;
@@ -877,7 +841,7 @@ char Check_group_multiple_violations(){
 }
 
 
-void Instruction_Values(char *c,void *any){
+int Instruction_Values(char *c,void *any){
 float XYZ_Val;
 int F_Val,S_Val;
 
@@ -918,6 +882,10 @@ int F_Val,S_Val;
  break;
  case 'F':
  F_Val = *(int*)any;
+ if(F_Val < 0){
+  gc.status_code = 13 ; ;
+ break;
+ }
  gc.frequency = F_Val;
  break;
  case 'S':
@@ -927,13 +895,51 @@ int F_Val,S_Val;
  default: gc.status_code = 3 ; ;
  break;
  }
+#line 271 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ return gc.status_code;
+}
 
- while(DMA_Busy(1));
- if(c[0] == 'X' || c[0] == 'Y' || c[0] == 'Z' || c[0] == 'R' || c[0] == 'I' || c[0] == 'J')
- dma_printf("\t%c\t%f\n",c[0],XYZ_Val);
- else if(c[0] == 'F')
- dma_printf("\t%c\t%d\n",c[0],F_Val);
- else if(c[0] == 'S')
- dma_printf("\t%c\t%d\n",c[0],S_Val);
+
+
+
+
+void Movement_Condition(int motion_mode){
+#line 285 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ switch (gc.motion_mode) {
+ case  4 :
+ if (axis_words) {  gc.status_code = 6 ; ; }
+ break;
+ case  0 :
+ if (!axis_words) {  gc.status_code = 6 ; ;}
+ else {
+
+
+ }
+ break;
+ case  1 :
+
+
+
+
+ if (!axis_words) {  gc.status_code = 6 ; ;}
+ else {
+
+
+ }
+ break;
+ case  2 : case  3 :
+
+
+ if ( !(  (axis_words &= ~ (1 << gc.plane_axis_2) )  ) ||
+ ( !gc.r) ){
+  gc.status_code = 6 ; ;
+ } else {
+ if (gc.R != 0) {
+
+ asm{nop;}
+ }
+ }
+ break;
+ }
 
 }

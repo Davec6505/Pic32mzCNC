@@ -336,11 +336,10 @@ void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 82 "c:/users/git/pic32mzcnc/gcode.h"
+#line 83 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
- char status_code;
- char no_axis_interpolate;
+ char no_axis_interpolate: 1;
  char inverse_feed_rate_mode;
  char inches_mode;
  char absolute_mode;
@@ -353,6 +352,7 @@ typedef struct {
  plane_axis_1,
  plane_axis_2;
  char coord_select;
+ int status_code;
  int motion_mode;
  int frequency;
  float feed_rate;
@@ -375,14 +375,16 @@ void G_Initialise();
 static float To_Millimeters(float value);
 void G_Mode(int mode);
 static void Set_Modal_Groups(int mode);
-static char Set_Motion_Mode(int mode);
+static int Set_Motion_Mode(int mode);
 
 void M_Instruction(int flow);
 static void Set_M_Modal_Commands(int M_Val);
-static char Set_M_Commands(int M_Val);
-char Check_group_multiple_violations();
+static int Set_M_Commands(int M_Val);
+int Check_group_multiple_violations();
 
-void Instruction_Values(char *c,void *any);
+int Instruction_Values(char *c,void *any);
+
+void Movement_Condition(int motion_mode);
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
@@ -498,6 +500,13 @@ void Sample_Ringbuffer();
 int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
+
+
+
+
+
+
+ void PrintStatus(int state);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;

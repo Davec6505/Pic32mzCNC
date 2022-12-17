@@ -841,7 +841,7 @@ ORI	R2, R2, 0
 ADDIU	SP, SP, -8
 SB	R6, 5(SP)
 ; r end address is: 0 (R0)
-LBU	R6, Offset(_gc+3)(GP)
+LBU	R6, Offset(_gc+1)(GP)
 SB	R6, 4(SP)
 ;Planner.c,277 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
 ORI	R6, R0, 2

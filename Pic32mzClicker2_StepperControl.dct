@@ -39362,6 +39362,7 @@ month103
 month103_alrmdate_bit
 month103_bit
 motion_mode
+movement_condition
 mpen
 mpen
 mpen
@@ -45593,6 +45594,7 @@ pri7ss2
 pri7ss2_bit
 pri7ss3
 pri7ss3_bit
+printstatus
 priss
 prissbits
 prissclr

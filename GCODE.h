@@ -60,6 +60,7 @@
 #define STATUS_SETTING_READ_FAIL 10
 #define STATUS_IDLE_ERROR 11
 #define STATUS_ALARM_LOCK 12
+#define STATUS_SPEED_ERROR 13
 
 // Define Grbl alarm codes. Less than zero to distinguish alarm error from status error.
 #define ALARM_HARD_LIMIT -1
@@ -81,8 +82,7 @@
 
 typedef struct {
   char r: 1;
-  char status_code;              // Parser status for current block
-  char no_axis_interpolate;      //Single or dual axis for interpolation
+  char no_axis_interpolate: 1;      //Single or dual axis for interpolation
   char inverse_feed_rate_mode;   // {G93, G94}
   char inches_mode;              // 0 = millimeter mode, 1 = inches mode {G20, G21}
   char absolute_mode;            // 0 = relative motion, 1 = absolute motion {G90, G91}
@@ -95,6 +95,7 @@ typedef struct {
        plane_axis_1,
        plane_axis_2;             // The axes of the selected plane
   char  coord_select;            // Active work coordinate system number. Default: 0=G54.
+  int status_code;              // Parser status for current block
   int motion_mode;               // {G0, G1, G2, G3, G80}
   int frequency;                 // Speed expressed as Frequency of pulses
   float feed_rate;               // Millimeters/min
@@ -117,13 +118,14 @@ void G_Initialise();
 static float To_Millimeters(float value);
 void G_Mode(int mode);
 static void Set_Modal_Groups(int mode);
-static char Set_Motion_Mode(int mode);
+static int Set_Motion_Mode(int mode);
 // m instructions
 void M_Instruction(int flow);
 static void Set_M_Modal_Commands(int M_Val);
-static char Set_M_Commands(int M_Val);
-char Check_group_multiple_violations();
+static int Set_M_Commands(int M_Val);
+int Check_group_multiple_violations();
 //all values passed from instruction
-void Instruction_Values(char *c,void *any);
-
+int Instruction_Values(char *c,void *any);
+//movement of axis
+void Movement_Condition(int motion_mode);
 #endif

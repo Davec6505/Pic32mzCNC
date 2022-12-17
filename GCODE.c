@@ -22,7 +22,7 @@ void G_Initialise(){
   axis_words        = 0;
   int_value         = 0;
   value             = 0;
-  inverse_feed_rate = -1;
+  inverse_feed_rate = 0;
   absolute_override = 0;
 }
 
@@ -44,12 +44,6 @@ void G_Mode(int mode){
    gc.motion_mode = mode;
    Set_Modal_Groups(mode);
    Set_Motion_Mode(mode);
-   
-   
-   #if GcodeDebug == 1
-      while(DMA_Busy(1));
-      dma_printf("gc.motion_mode:= %d\n",mode);
-  #endif
 }
 
 //Set the modal group values taken directly from grbl
@@ -66,7 +60,7 @@ static void Set_Modal_Groups(int mode){
 }
 
 //set the G commands as per grbl
-static char Set_Motion_Mode(int mode){
+static int Set_Motion_Mode(int mode){
 int i;
   switch(mode){
     case 0: gc.motion_mode = MOTION_MODE_SEEK; break;
@@ -146,44 +140,7 @@ int i;
       }
   }
  }
- 
- //Motion mode for movement set in 1st and 2nd switch statememnts within
- //this function
- switch (gc.motion_mode) {
-      case MOTION_MODE_CANCEL:
-        if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); } // No axis words allowed while active.
-        break;
-      case MOTION_MODE_SEEK:
-        if (!axis_words) { FAIL(STATUS_INVALID_STATEMENT);}
-        else { 
-           //single axis interpolate at max speed, can be multiple axis at the
-           //same time
-        }
-        break;
-      case MOTION_MODE_LINEAR:
-        // TODO: Inverse time requires F-word with each statement. Need to do a check. Also need
-        // to check for initial F-word upon startup. Maybe just set to zero upon initialization
-        // and after an inverse time move and then check for non-zero feed rate each time. This
-        // should be efficient and effective.
-        if (!axis_words) { FAIL(STATUS_INVALID_STATEMENT);}
-        else { 
-          //run the new line here , consider planner for future
-        }
-        break;
-      case MOTION_MODE_CW_ARC: case MOTION_MODE_CCW_ARC:
-        // Check if at least one of the axes of the selected plane has been specified. If in center
-        // format arc mode, also check for at least one of the IJK axes of the selected plane was sent.
-        if ( !( bit_false(axis_words,bit(gc.plane_axis_2)) ) ||
-             ( !gc.r)/*&& gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 ) */){
-          FAIL(STATUS_INVALID_STATEMENT);
-        } else {
-          if (gc.R != 0) {
-             // Arc Mode radius is passed over to the arc function
-             asm{nop;}
-          }
-        }
-        break;
-    }
+ return gc.status_code;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -208,7 +165,7 @@ static void Set_M_Modal_Commands(int flow){
 }
 
 //M Commands
-static char Set_M_Commands(int flow){
+static int Set_M_Commands(int flow){
 // Set 'M' commands
   switch(flow) {
     case 0: gc.program_flow = PROGRAM_FLOW_PAUSED; break; // Program pause
@@ -225,10 +182,11 @@ static char Set_M_Commands(int flow){
     case 9: gc.coolant_mode = COOLANT_DISABLE; break;
     default: FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
   }
+  return gc.status_code;
 }
 
 // Check for modal group multiple command violations in the current block
-char Check_group_multiple_violations(){
+int Check_group_multiple_violations(){
     if (group_number) {
       if ( bit_istrue(modal_group_words,bit(group_number)) ) {
         FAIL(STATUS_MODAL_GROUP_VIOLATION);
@@ -247,7 +205,7 @@ char Check_group_multiple_violations(){
 }
 
 //{X,Y,Z,A} Movement values
-void Instruction_Values(char *c,void *any){
+int Instruction_Values(char *c,void *any){
 float XYZ_Val;
 int F_Val,S_Val;
 
@@ -288,6 +246,10 @@ int F_Val,S_Val;
             break;
       case 'F':
             F_Val = *(int*)any;
+            if(F_Val < 0){
+               FAIL(STATUS_SPEED_ERROR);
+               break;
+            }
             gc.frequency = F_Val;
             break;
       case 'S':
@@ -306,4 +268,55 @@ int F_Val,S_Val;
       else if(c[0] == 'S')
          dma_printf("\t%c\t%d\n",c[0],S_Val);
   #endif
+  return gc.status_code;
+}
+
+
+///////////////////////////////////////////////////////
+//           MOVEMENT INSTRUCTIONS                   //
+///////////////////////////////////////////////////////
+void Movement_Condition(int motion_mode){
+#if GcodeDebug == 1
+      while(DMA_Busy(1));
+      dma_printf("gc.motion_mode:= %d\n",motion_mode);
+#endif
+  //Motion mode for movement set in 1st and 2nd switch statememnts within
+ //this function
+ switch (gc.motion_mode) {
+    case MOTION_MODE_CANCEL:
+      if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); } // No axis words allowed while active.
+      break;
+    case MOTION_MODE_SEEK:
+      if (!axis_words) { FAIL(STATUS_INVALID_STATEMENT);}
+      else {
+         //single axis interpolate at max speed, can be multiple axis at the
+         //same time
+      }
+      break;
+    case MOTION_MODE_LINEAR:
+      // TODO: Inverse time requires F-word with each statement. Need to do a check. Also need
+      // to check for initial F-word upon startup. Maybe just set to zero upon initialization
+      // and after an inverse time move and then check for non-zero feed rate each time. This
+      // should be efficient and effective.
+      if (!axis_words) { FAIL(STATUS_INVALID_STATEMENT);}
+      else {
+        //run the new line here , consider planner for future
+        
+      }
+      break;
+    case MOTION_MODE_CW_ARC: case MOTION_MODE_CCW_ARC:
+      // Check if at least one of the axes of the selected plane has been specified. If in center
+      // format arc mode, also check for at least one of the IJK axes of the selected plane was sent.
+      if ( !( bit_false(axis_words,bit(gc.plane_axis_2)) ) ||
+           ( !gc.r)/*&& gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 ) */){
+        FAIL(STATUS_INVALID_STATEMENT);
+      } else {
+        if (gc.R != 0) {
+           // Arc Mode radius is passed over to the arc function
+           asm{nop;}
+        }
+      }
+      break;
+ }
+
 }

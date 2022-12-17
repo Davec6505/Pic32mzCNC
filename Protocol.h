@@ -35,8 +35,13 @@ void Sample_Ringbuffer();
 int strsplit(char arg[arr_size][str_size],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
+
+/////////////////////////////////////////////
 //puerly for debug purposes
-  #if ProtoDebug == 1
+#if ProtoDebug == 1
   void PrintDebug(char *strA,char *strB,void *ptr);
-  #endif
+#elif ProtoDebug == 2
+  void PrintStatus(int state);
+#endif
+
 #endif

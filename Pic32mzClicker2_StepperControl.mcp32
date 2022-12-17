@@ -14,7 +14,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=GCODE.c
+Value=DEFINES.pld
 =======
 Value=Main.c
 >>>>>>> patch2
@@ -79,7 +79,8 @@ File3=GCODE.c
 File4=GCODE.h
 File5=Kinematics.c
 File6=Kinematics.h
-Count=7
+File7=DEFINES.pld
+Count=8
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

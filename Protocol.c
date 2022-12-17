@@ -17,6 +17,7 @@ int i;
 ///////////////////////////////////////////////////
 //sample the ring buffer to check for data
 void Sample_Ringbuffer(){
+int status;
 char str[50];
 char temp[6];
 char xyz[6];
@@ -31,6 +32,7 @@ float XYZ_Val;
     dif = Get_Difference();
 
     if(dif > 0){
+       G_Initialise();
        F_1_Once = no_of_axis = 0 ; //for buffer and axis refreshing
        Get_Line(str,dif);
        num_of_strings = strsplit(gcode,str,0x20);
@@ -59,7 +61,7 @@ float XYZ_Val;
                       case 'A':case 'a':
                       case 'E':case 'e':
                        XYZ_Val = atof(temp);
-                       Instruction_Values(gcode[1],&XYZ_Val);
+                       status = Instruction_Values(gcode[1],&XYZ_Val);
                        #if ProtoDebug == 1
                          PrintDebug(gcode[1],temp,&XYZ_Val);
                        #endif
@@ -69,7 +71,7 @@ float XYZ_Val;
                        if(!F_1_Once){
                          F_1_Once = 1;
                          F_Val = atoi(temp);
-                         Instruction_Values(*gcode[1],&F_Val);
+                         status = Instruction_Values(*gcode[1],&F_Val);
 
                        #if ProtoDebug == 1
                          PrintDebug(gcode[1],temp,&F_Val);
@@ -91,7 +93,7 @@ float XYZ_Val;
                       case 'A':case 'a':
                       case 'E':case 'e':
                          XYZ_Val = atof(temp);
-                         Instruction_Values(gcode[2],&XYZ_Val);
+                         status = Instruction_Values(gcode[2],&XYZ_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[2],temp,&XYZ_Val);
                          #endif
@@ -101,7 +103,7 @@ float XYZ_Val;
                          if(!F_1_Once){
                            F_1_Once = 1;
                            F_Val = atoi(temp);
-                           Instruction_Values(gcode[2],&F_Val);
+                           status = Instruction_Values(gcode[2],&F_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[2],temp,&F_Val);
                          #endif
@@ -124,7 +126,7 @@ float XYZ_Val;
                       case 'R':case 'r':
                       case 'I':case 'i':
                          XYZ_Val = atof(temp);
-                         Instruction_Values(gcode[3],&XYZ_Val);
+                         status = Instruction_Values(gcode[3],&XYZ_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[3],temp,&XYZ_Val);
                          #endif
@@ -134,7 +136,7 @@ float XYZ_Val;
                          if(!F_1_Once){
                            F_1_Once = 1;
                            F_Val = atoi(temp);
-                           Instruction_Values(gcode[3],&F_Val);
+                           status = Instruction_Values(gcode[3],&F_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[3],temp,&F_Val);
                          #endif
@@ -152,7 +154,7 @@ float XYZ_Val;
                    switch(*(*(gcode+4))) {
                       case 'J':case 'j':
                          XYZ_Val = atof(temp);
-                         Instruction_Values(gcode[4],&XYZ_Val);
+                         status = Instruction_Values(gcode[4],&XYZ_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[4],temp,&XYZ_Val);
                          #endif
@@ -162,7 +164,7 @@ float XYZ_Val;
                          if(!F_1_Once){
                            F_1_Once = 1;
                            F_Val = atoi(temp);
-                           Instruction_Values(gcode[4],&F_Val);
+                           status = Instruction_Values(gcode[4],&F_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[4],temp,&F_Val);
                          #endif
@@ -189,7 +191,7 @@ float XYZ_Val;
                         if(!F_1_Once){
                          F_1_Once = 1;
                          F_Val = atoi(temp);
-                         Instruction_Values(gcode[5],&F_Val);
+                         status = Instruction_Values(gcode[5],&F_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[5],temp,&F_Val);
                          #endif
@@ -206,7 +208,7 @@ float XYZ_Val;
                    switch(*(*(gcode+6))) {
                       case 'J':case 'j':
                          XYZ_Val = atof(temp);
-                         Instruction_Values(gcode[6],&XYZ_Val);
+                         status = Instruction_Values(gcode[6],&XYZ_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[6],temp,&XYZ_Val);
                          #endif
@@ -216,7 +218,7 @@ float XYZ_Val;
                          if(!F_1_Once){
                            F_1_Once = 1;
                            F_Val = atoi(temp);
-                           Instruction_Values(gcode[6],&F_Val);
+                           status = Instruction_Values(gcode[6],&F_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[6],temp,&F_Val);
                          #endif
@@ -247,7 +249,7 @@ float XYZ_Val;
                        //add more cases when needing more instructions
                            i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
                            S_Val = atoi(temp);
-                           Instruction_Values(gcode[1],&S_Val);
+                           status = Instruction_Values(gcode[1],&S_Val);
                            #if ProtoDebug == 1
                              PrintDebug(gcode[1],temp,&S_Val);
                            #endif
@@ -256,7 +258,11 @@ float XYZ_Val;
                 }
               break;
        }
-         Check_group_multiple_violations();
+          status = Check_group_multiple_violations();
+          #if ProtoDebug == 2
+            PrintStatus(status);
+          #endif
+          Movement_Condition(gc.motion_mode);
     }
 }
 
@@ -321,6 +327,7 @@ int result = 0;
 }
 
 
+
 #if ProtoDebug == 1
 void PrintDebug(char *strA,char *strB,void *ptr){
 int G_Val;
@@ -355,5 +362,10 @@ float XYZ_Val;
               break;
       }
 
+}
+#elif ProtoDebug == 2
+void PrintStatus(int state){
+  while(DMA_Busy(1));
+  dma_printf("gc.status:= %d\n",state);
 }
 #endif
