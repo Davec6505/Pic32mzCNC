@@ -74,7 +74,47 @@
 
 #define SIZE_LIST (double[]){X_MAX_SIZE, Y_MAX_SIZE, Z_MAX_SIZE, A_MAX_SIZE, B_MAX_SIZE, C_MAX_SIZE}
 
+////////////////////////////////////////////////////////////
+//          M CODE SETTINGS AND COMMANDS                  //
+////////////////////////////////////////////////////////////
+//uncomment for coolent
+//#define ENABLE_M7
 
+#define COOLANT_CONTROL_h
+#define COOLANT_MIST_ENABLE 2
+#define COOLANT_FLOOD_ENABLE 1
+#define COOLANT_DISABLE 0 // Must be zero.
 
+////////////////////////////////////////////////////////////
+//                    GLOBAL SETTINGS                     //
+////////////////////////////////////////////////////////////
+ // Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
+typedef struct {
+  float steps_per_mm[3];
+  char microsteps;
+  char pulse_microseconds;
+  float default_feed_rate;
+  float default_seek_rate;
+  char invert_mask;
+  float mm_per_arc_segment;
+  float acceleration;
+  float junction_deviation;
+  char flags;  // Contains default boolean settings
+  char homing_dir_mask;
+  float homing_feed_rate;
+  float homing_seek_rate;
+  unsigned int homing_debounce_delay;
+  float homing_pulloff;
+  char stepper_idle_lock_time; // If max value 255, steppers do not disable.
+  char decimal_places;
+  char n_arc_correction;
+//  uint8_t status_report_mask; // Mask to indicate desired report data.
+} settings_t;
+extern settings_t settings;
+
+//////////////////////////////////////////////////////////////
+//              FUNCTION PROTOTYPES                         //
+//////////////////////////////////////////////////////////////
+void Settings_Init();
 
 #endif

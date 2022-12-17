@@ -25,6 +25,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Stepper.h
 =======
 =======
@@ -64,6 +65,9 @@ Value=Protocol.c
 >>>>>>> patch1
 =======
 Value=GCODE.c
+>>>>>>> patch1
+=======
+Value=DEFINES.pld
 >>>>>>> patch1
 =======
 Value=Main.c
@@ -212,7 +216,14 @@ File1=Protocol.c
 File2=Protocol.h
 File3=GCODE.c
 File4=GCODE.h
+<<<<<<< HEAD
 Count=5
+>>>>>>> patch1
+=======
+File5=Kinematics.c
+File6=Kinematics.h
+File7=DEFINES.pld
+Count=8
 >>>>>>> patch1
 [EEPROM]
 Count=0

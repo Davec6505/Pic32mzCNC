@@ -712,7 +712,7 @@ DIV.S 	S0, S1, S0
 ; h_x2_div_d start address is: 8 (R2)
 MOV.S 	S1, S0
 ;Planner.c,234 :: 		if (gc.motion_mode == MOTION_MODE_CCW_ARC) { h_x2_div_d = -h_x2_div_d; }
-LH	R3, Offset(_gc+2)(GP)
+LH	R3, Offset(_gc+14)(GP)
 ORI	R2, R0, 3
 BEQ	R3, R2, L__r_or_ijk58
 NOP	
@@ -841,7 +841,7 @@ ORI	R2, R2, 0
 ADDIU	SP, SP, -8
 SB	R6, 5(SP)
 ; r end address is: 0 (R0)
-LBU	R6, Offset(_gc+4)(GP)
+LBU	R6, Offset(_gc+1)(GP)
 SB	R6, 4(SP)
 ;Planner.c,277 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
 ORI	R6, R0, 2
