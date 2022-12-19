@@ -46,6 +46,67 @@ main
 		strncpy
 		DMA1_Enable
 		__CC2DW
+	Temp_Move
+		EnStepperX
+		SingleAxisStep
+			Single_Axis_Enable
+			belt_steps
+			speed_cntr_Move
+				abs
+				sqrt_
+			labs
+			Step_Cycle
+				toggleOCx
+		EnStepperY
+		DMA_Busy
+		dma_printf
+		DualAxisStep
+			belt_steps
+			Single_Axis_Enable
+			labs
+			speed_cntr_Move
+			Axis_Interpolate
+				StopAxis
+				Step_Cycle
+				Pulse
+					AccDec
+		EnStepperZ
+		EnStepperA
+		Home
+			FP
+				Test_Min
+			StopAxis
+			Inv_Home_Axis
+			FN
+				Test_Min
+			Home_Axis
+		r_or_ijk
+			sqrt
+				frexp
+				ldexp
+			hypot
+				sqrt
+			mc_arc
+				atan2
+					fabs
+					atan
+						fabs
+						eval_poly
+				hypot
+				fabs
+				floor
+				dma_printf
+				cos
+					sin
+						floor
+						eval_poly
+				sin
+				DMA_Busy
+				DualAxisStep
+				Test_Port_Pins
+				disableOCx
+				__CC2DW
+		__CC2DW
 	Rst_Axisword
 	Sample_Ringbuffer
 		Get_Difference
@@ -74,18 +135,6 @@ main
 			Set_M_Modal_Commands
 			Set_M_Commands
 		Check_group_multiple_violations
-			DMA_Busy
-			dma_printf
-			__CC2DW
-		PrintStatus
-			DMA_Busy
-			dma_printf
-			__CC2DW
-	EnStepperX
-	EnStepperY
-	EnStepperZ
-	EnStepperA
-	ResetHoming
 	__CC2DW
 	__FillZeros
 	ResetSteppers
@@ -94,13 +143,8 @@ StepA
 	SingleStepAxis
 		StopAxis
 		Step_Cycle
-			toggleOCx
 		Pulse
-			AccDec
 	Axis_Interpolate
-		StopAxis
-		Step_Cycle
-		Pulse
 Timer8Interrupt
 StepZ
 	SingleStepAxis

@@ -14,7 +14,7 @@ hint: 58	1163	Variable 'j' has been declared, but not used	Main.c
 hint: 59	1163	Variable 'i' has been declared, but not used	Main.c
 hint: 59	1163	Variable 'dif' has been declared, but not used	Main.c
 hint: 60	1163	Variable 'cntr' has been declared, but not used	Main.c
-diagnostics: 210	123	Compiled Successfully	Main.c
+diagnostics: 163	123	Compiled Successfully	Main.c
 warning: 77	1512	variable 'status_of_gcode' might not have been initialized	Main.c
 hint: 59	1164	Variable 'xyz_' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	pins.h
@@ -79,7 +79,7 @@ warning: 269	1503	Result is not defined in function: ''	Protocol.c
 hint: 25	1163	Variable 'axis_to_run' has been declared, but not used	Protocol.c
 hint: 26	1163	Variable 'j' has been declared, but not used	Protocol.c
 warning: 309	1505	Suspicious pointer conversion	Protocol.c
-diagnostics: 380	123	Compiled Successfully	Protocol.c
+diagnostics: 337	123	Compiled Successfully	Protocol.c
 hint: 24	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
 hint: 26	1164	Variable 'i' has been eliminated by optimizer	Protocol.c
 hint: 26	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
@@ -94,13 +94,13 @@ diagnostics: 323	123	Compiled Successfully	Planner.c
 warning: 223	1512	variable 'axis_plane_a' might not have been initialized	Planner.c
 warning: 225	1512	variable 'axis_plane_b' might not have been initialized	Planner.c
 hint: 139	1164	Variable 'inverse_feed_rate' has been eliminated by optimizer	Planner.c
-diagnostics: 0	127	All files Compiled in 4265 ms	 
+diagnostics: 0	127	All files Compiled in 2063 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 2711   Dynamic RAM (bytes): 513573	Static RAM (bytes): 2711   Dynamic RAM (bytes): 513573
+hint: 0	1144	Static RAM (bytes): 2715   Dynamic RAM (bytes): 507381	Static RAM (bytes): 2715   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 39761 (2%)  Free ROM (bytes): 2057391 (98%)	Used ROM (bytes): 39761 (2%)  Free ROM (bytes): 2057391 (98%)
+hint: 0	1144	Used ROM (bytes): 50191 (2%)  Free ROM (bytes): 2046961 (98%)	Used ROM (bytes): 50191 (2%)  Free ROM (bytes): 2046961 (98%)
 hint: 0	1144	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)	Used BOOTROM (bytes): 800 (1%)  Free BOOTROM (bytes): 146211 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 1047 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 8406 ms	 
-diagnostics: 0	103	Finished successfully: 19 Dec 2022, 08:32:12	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 843 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4750 ms	 
+diagnostics: 0	103	Finished successfully: 19 Dec 2022, 22:50:53	Pic32mzClicker2_StepperControl.mcp32

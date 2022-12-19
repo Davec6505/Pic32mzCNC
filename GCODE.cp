@@ -136,6 +136,7 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 92 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
@@ -262,7 +263,7 @@ typedef struct {
  volatile char execute;
 } system_t;
 extern system_t sys;
-#line 48 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
 char home: 1;
@@ -335,7 +336,7 @@ typedef struct Steps{
  homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-#line 133 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 119 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -561,13 +562,6 @@ int Sample_Ringbuffer();
 int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
-
-
-
-
-
-
- void PrintStatus(int state);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -891,13 +885,6 @@ int Check_group_multiple_violations(){
  }
  group_number =  0 ;
  }
-
-
-
-
-
- while(DMA_Busy(1));
- dma_printf("gc.motion_mode:= %d\n",gc.motion_mode);
 #line 299 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  switch (gc.motion_mode) {
  case  4 :
@@ -913,14 +900,7 @@ int Check_group_multiple_violations(){
  }
  break;
  case  1 :
-
-
-
-
-
- while(DMA_Busy(1));
- dma_printf("axis_words:= %d\n",axis_words);
-
+#line 321 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  if (axis_words == 0) {
   gc.status_code = 6 ; ;
  }else {

@@ -134,6 +134,7 @@ typedef unsigned long int uintptr_t;
 
 typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 92 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
@@ -318,7 +319,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 48 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
 char home: 1;
@@ -391,7 +392,7 @@ typedef struct Steps{
  homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-#line 133 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 119 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -617,13 +618,6 @@ int Sample_Ringbuffer();
 int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
-
-
-
-
-
-
- void PrintStatus(int state);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -690,114 +684,82 @@ int status_of_gcode;
  axis_to_run = Get_Axisword();
  if(axis_to_run){
  while(DMA_Busy(1));
- dma_printf("axis_to_run:= %d\n",axis_to_run&0xff);
+ dma_printf("axis_to_run:= %d\n",axis_to_run);
+ Temp_Move(axis_to_run);
  axis_to_run = Rst_Axisword();
  }
 
  status_of_gcode = Sample_Ringbuffer();
-#line 97 "C:/Users/Git/Pic32mzCNC/Main.c"
- if(!Toggle){
+
+
  LED1 = TMR.clock >> 4;
+
+
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
 
- }
 
- if(!SW2){
- Toggle = 0;
- disable_steps = 0;
- disableOCx();
- }
 
- if((!SW1)&&(!Toggle)){
- LED1 = 0;
- Toggle = 1;
- EnStepperX();
- EnStepperY();
- EnStepperZ();
- EnStepperA();
- ResetHoming();
- a = 0;
- }
 
- if(Toggle){
 
- if((a > 19)){
- if(STPS[X].homing.home_cnt >= 2){
- STPS[X].homing.home_cnt = 0;
- a = 11;
- dma_printf("\nXCnt:= %d : a:= %d",STPS[X].homing.home_cnt,a);
- }
- if(STPS[Y].homing.home_cnt >= 2){
- STPS[Y].homing.home_cnt = 0;
- a = 12;
- dma_printf("\nXCnt:= %d : a:= %d",STPS[Y].homing.home_cnt,a);
- }
-
- }else{
- if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-#line 144 "C:/Users/Git/Pic32mzCNC/Main.c"
- }
- }
- }
-
+ WDTCONSET = 0x01;
  }
 }
 
+
 int Temp_Move(int a){
  switch(a){
- case 0:
- SingleAxisStep(50.00,8000,Y);
- a = 1;
- break;
  case 1:
- SingleAxisStep(50.00,8000,X);
- a = 2;
+ EnStepperX();
+ SingleAxisStep(gc.next_position[X],gc.frequency,X);
  break;
  case 2:
- SingleAxisStep(-50.00,8000,Y);
- a = 3;
+ EnStepperY();
+ SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
  break;
  case 3:
- SingleAxisStep(-50.00,8000,X);
- a = 4;
+ while(DMA_Busy(1));
+ dma_printf("X:= %d | Y:=%d\n",gc.next_position[X],gc.next_position[Y]);
+ EnStepperX();EnStepperY();
+ DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
  break;
  case 4:
- DualAxisStep(150.00, 100.00,X,Y,8000);
- a = 5;
+ EnStepperZ();
+ SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
  break;
  case 5:
- DualAxisStep(-150.00, -100.00,X,Y,8000);
- a = 6;
+ EnStepperX();EnStepperZ();
+ DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
  break;
  case 6:
- DualAxisStep(150.00, 30.00,X,Y,8000);
- a = 9;
- break;
- case 7:
- DualAxisStep(-150.00, -30.00,X,Y,8000);
- a = 8;
+ EnStepperY();EnStepperZ();
+ DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
  break;
  case 8:
- SingleAxisStep(350.00,10000,A);
- a = 9;
+ EnStepperA();
+ SingleAxisStep(gc.next_position[A],gc.frequency,A);
  break;
  case 9:
-
-
-
- r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
- a = 12;
+ EnStepperX();EnStepperA();
+ DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
  break;
  case 10:
- Home(X);
- break;
- case 11:
- Home(Y);
+ EnStepperY();EnStepperA();
+ DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
  break;
  case 12:
-
+ EnStepperZ();EnStepperA();
+ DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
+ break;
+ case 13:
+ Home(X);
+ break;
+ case 14:
+ Home(Y);
+ break;
+ case 15:
+ r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
  break;
  default: a = 0;
  break;

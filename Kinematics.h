@@ -2,6 +2,7 @@
 #define KINEMATICS_H
 
 #include <stdint.h>
+#include "Config_adv.h"
 #include "Settings.h"
 #include "Stepper.h"
 #include  "Serial_Dma.h"
@@ -28,21 +29,6 @@
 //Bit direction for outputs
 #define CW  0
 #define CCW 1
-
-
-
-//Circle defines and consts
-// Decide how many axis you would like to ru
-//#define  Pi         3.141593
-//#define  M_PI       3.1416
-//#define  rad2deg    (180.00/Pi)
-//#define  deg2rad    (Pi/180.00)
-
-
-#define DEFAULT_FEEDRATE 250.0
-#define DEFAULT_MM_PER_ARC_SEGMENT 0.8
-
-
 
 
 typedef struct {

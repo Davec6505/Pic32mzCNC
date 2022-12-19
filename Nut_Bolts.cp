@@ -136,6 +136,7 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 92 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
@@ -320,7 +321,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 48 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
 char home: 1;
@@ -393,7 +394,7 @@ typedef struct Steps{
  homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-#line 133 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 119 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -605,13 +606,6 @@ int Sample_Ringbuffer();
 int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
-
-
-
-
-
-
- void PrintStatus(int state);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
