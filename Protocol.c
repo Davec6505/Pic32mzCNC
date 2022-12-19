@@ -16,14 +16,16 @@ int i;
 
 ///////////////////////////////////////////////////
 //sample the ring buffer to check for data
-void Sample_Ringbuffer(){
+int Sample_Ringbuffer(){
 int status;
 char str[50];
 char temp[6];
 char xyz[6];
 char F_1_Once,no_of_axis;
+char axis_to_run;
 int dif,i,j,num_of_strings;
 int G_Val,F_Val,M_Val,S_Val;
+int motion_mode;
 float XYZ_Val;
 
     //read head and tail pointer difference
@@ -41,8 +43,12 @@ float XYZ_Val;
               //get g instruction
               if (*(*(gcode)+0)=='G'){
                  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
-                 G_Val = atoi(temp);
-                 G_Mode(G_Val);
+                 if(i < 3)
+                   G_Val = atoi(temp);
+                 else  //counter g28.1 etc
+                   G_Val = (int)(atof(temp)*10.0);
+                   
+                 motion_mode = G_Mode(G_Val);
                  #if ProtoDebug == 1
                   PrintDebug(gcode[0],temp,&G_Val);
                  #endif
@@ -259,11 +265,15 @@ float XYZ_Val;
               break;
        }
           status = Check_group_multiple_violations();
+          if(status)
+             return;
+
           #if ProtoDebug == 2
             PrintStatus(status);
           #endif
-          Movement_Condition(gc.motion_mode);
+
     }
+    return status;
 }
 
 
@@ -366,6 +376,6 @@ float XYZ_Val;
 #elif ProtoDebug == 2
 void PrintStatus(int state){
   while(DMA_Busy(1));
-  dma_printf("gc.status:= %d\n",state);
+  dma_printf("status:= %d\n",state);
 }
 #endif

@@ -54,9 +54,11 @@ static unsigned int a;
 void main() {
 char txt_[9];
 static char oneshot = 0;
+int axis_to_run = 0;
 unsigned char j;
 int xyz_ = 0, i,dif;
 static int cntr;
+int status_of_gcode;
  // fp = Test_Min;
   PinMode();
   plan_init(15000,15000);
@@ -72,7 +74,19 @@ static int cntr;
 
      Debounce_Limits(X);
      Debounce_Limits(Y);
-     Sample_Ringbuffer();
+     if(!status_of_gcode)
+        axis_to_run = Get_Axisword();
+     if(axis_to_run){
+           while(DMA_Busy(1));
+           dma_printf("axis_to_run:= %d\n",axis_to_run&0xff);
+           axis_to_run = Rst_Axisword();
+     }
+        
+     status_of_gcode = Sample_Ringbuffer();
+
+
+
+     
    /*  dif = Get_Difference();
      if(dif>0){
        dma_printf("\ntail:= %d : head:= %d : diff:= %d",serial.tail,serial.head,dif);

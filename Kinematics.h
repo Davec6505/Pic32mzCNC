@@ -32,11 +32,11 @@
 
 
 //Circle defines and consts
-// Decide how many axis you would like to run
-#define  Pi         3.141593
-#define  M_PI       3.1416
-#define  rad2deg    (180.00/Pi)
-#define  deg2rad    (Pi/180.00)
+// Decide how many axis you would like to ru
+//#define  Pi         3.141593
+//#define  M_PI       3.1416
+//#define  rad2deg    (180.00/Pi)
+//#define  deg2rad    (Pi/180.00)
 
 
 #define DEFAULT_FEEDRATE 250.0

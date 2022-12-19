@@ -31,8 +31,8 @@ div_t div(int number, int denom);
 ldiv_t ldiv(long number, long denom);
 uldiv_t uldiv(unsigned long number, unsigned long denom);
 long labs(long x);
-long int max(long int a, long int b);
-long int min(long int a, long int b);
+long max(long a, long int b);
+long min(long a, long int b);
 void srand(unsigned x);
 int rand();
 int xtoi(char * s);
@@ -212,16 +212,15 @@ void Settings_Init();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 50 "c:/users/git/pic32mzcnc/globals.h"
+#line 60 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
- uint8_t abort;
- uint8_t state;
+ char abort;
+ char state;
  int homing;
  int homing_cnt;
- uint8_t auto_start;
- volatile uint8_t execute;
+ char auto_start;
+ volatile char execute;
 } system_t;
 extern system_t sys;
 #line 83 "c:/users/git/pic32mzcnc/gcode.h"
@@ -250,18 +249,22 @@ typedef struct {
  float coord_offset[ 6 ];
 
  float next_position[ 6 ];
+ float offset[3];
  float R;
  float I;
  float J;
+ float K;
 } parser_state_t;
 extern parser_state_t gc;
 
-
+enum IJK{I,J,K};
 
 
 void G_Initialise();
+int Get_Axisword();
+int Rst_Axisword();
 static float To_Millimeters(float value);
-void G_Mode(int mode);
+int G_Mode(int mode);
 static void Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 
@@ -272,7 +275,7 @@ int Check_group_multiple_violations();
 
 int Instruction_Values(char *c,void *any);
 
-void Movement_Condition(int motion_mode);
+void Movement_Condition();
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 48 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
@@ -489,9 +492,9 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 22 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 34 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
@@ -568,7 +571,7 @@ void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 
-void Sample_Ringbuffer();
+int Sample_Ringbuffer();
 
 int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);

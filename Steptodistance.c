@@ -8,7 +8,7 @@
 // p   = leadscrew pitch
 // uStep = micro steps
 #include "Steptodistance.h"
-
+#include "Globals.h"
 
 ////////////////////////////////////////////
 //Calculate the setp count to move for
@@ -31,7 +31,7 @@ double temp = 0.00;
 long belt_steps(double move_distance){
  double temp = 0;
   temp = (SPRU/(BELT_PITCH*PULLEY_TOOTH_COUNT))*move_distance;
-  return (signed long)temp;
+  return (long)temp;
 }
 
 ///////////////////////////////////////////
@@ -65,5 +65,5 @@ double circ,cirDivision,stepsToMove;
   stepsToMove = cirDivision * SPRU;
 
 
-  return (signed long)stepsToMove;
+  return (long)stepsToMove;
 }

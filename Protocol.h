@@ -30,7 +30,7 @@
 //init the array of stringto empty strings
 void Str_Initialize(char arg[arr_size][str_size]);
 //Get the instruction from the ring buffer
-void Sample_Ringbuffer();
+int Sample_Ringbuffer();
 //split up the instructin
 int strsplit(char arg[arr_size][str_size],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);

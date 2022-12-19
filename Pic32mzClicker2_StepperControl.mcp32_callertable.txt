@@ -32,6 +32,21 @@ main
 		Test_Port_Pins
 		Reset_Min_Limit
 		Reset_Min_Debounce
+	Get_Axisword
+	DMA_Busy
+	dma_printf
+		DMA_Busy
+		sprintf
+			_doprntf
+				isdigit
+				scale
+				fround
+		strcat
+		strlen
+		strncpy
+		DMA1_Enable
+		__CC2DW
+	Rst_Axisword
 	Sample_Ringbuffer
 		Get_Difference
 		G_Initialise
@@ -45,42 +60,32 @@ main
 		cpy_val_from_str
 		atoi
 			isdigit
-		G_Mode
-			Set_Modal_Groups
-			Set_Motion_Mode
-				Select_Plane
-				floor
 		atof
 			strtod
 				isspace
 				isdigit
+		G_Mode
+			Set_Modal_Groups
+			Set_Motion_Mode
+				Select_Plane
 		Instruction_Values
+			To_Millimeters
 		M_Instruction
 			Set_M_Modal_Commands
 			Set_M_Commands
 		Check_group_multiple_violations
+			DMA_Busy
+			dma_printf
+			__CC2DW
 		PrintStatus
 			DMA_Busy
 			dma_printf
-				DMA_Busy
-				sprintf
-					_doprntf
-						isdigit
-						scale
-						fround
-				strcat
-				strlen
-				strncpy
-				DMA1_Enable
-				__CC2DW
 			__CC2DW
-		Movement_Condition
 	EnStepperX
 	EnStepperY
 	EnStepperZ
 	EnStepperA
 	ResetHoming
-	dma_printf
 	__CC2DW
 	__FillZeros
 	ResetSteppers
