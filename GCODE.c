@@ -48,7 +48,7 @@ static void Select_Plane(long x,long y,long z){
 
 // {G 0,1,2,3,80}
 int G_Mode(int mode){
-  // gc.motion_mode = mode;
+   gc.inches_mode = 0;//temp for debugging
    Set_Modal_Groups(mode);
    return Set_Motion_Mode(mode);
 }
@@ -341,6 +341,3 @@ int Check_group_multiple_violations(){
  }
   return gc.status_code;
 }
-
-
-

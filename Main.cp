@@ -342,7 +342,7 @@ typedef struct Steps{
 
  unsigned short stopAxis: 1;
 
- unsigned char run_state ;
+ unsigned int run_state ;
 
  long step_delay;
 
@@ -457,20 +457,7 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 unsigned long sqrt_(unsigned long v);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-
-
-
-
-
-
-
-
-
-
-extern unsigned int Toggle;
-
-
-
+#line 31 "c:/users/git/pic32mzcnc/stepper.h"
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -480,7 +467,7 @@ extern volatile axis_combination axis_xyz;
 
 
 
-
+extern long test;
 
 
 void SetPinMode();
@@ -490,7 +477,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
-int EnableSteppers(int steppers);
+void EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
@@ -525,7 +512,7 @@ extern struct Timer TMR;
 
 void InitTimer1();
 void InitTimer8();
-void ClockPulse();
+static void ClockPulse();
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
@@ -637,45 +624,37 @@ void LcdI2CConfig();
 void OutPutPulseXYZ();
 int Temp_Move(int a);
 void LCD_Display();
-#line 35 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 37 "C:/Users/Git/Pic32mzCNC/Main.c"
 STP STPS[ 6 ];
-
-static unsigned int disable_steps;
-char DMA_Buff[200];
-char txt_[9];
-bit testISR;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
-char uart_rd;
-
-
-
-unsigned int ii;
-unsigned long testOcr;
-static unsigned int a;
 
 
 
 
-void main() {
-char txt_[9];
-static char oneshot = 0;
-int axis_to_run = 0;
-unsigned char j;
-int xyz_ = 0, i,dif;
-static int cntr;
-int status_of_gcode;
+static unsigned int disable_steps;
 
+
+
+void Conditin_Externs(){
  PinMode();
  plan_init(15000,15000);
- oneShotA = 0;
- a=0;
  disableOCx();
  DisableStepper();
 
  disable_steps = 0;
+}
+
+
+void main() {
+int axis_to_run,dif,status_of_gcode;
+static int cntr,a;
+
+
+ Conditin_Externs();
+ cntr = a = axis_to_run = dif = status_of_gcode = 0;
  EnableInterrupts();
- Toggle = 0;
+
  while(1){
 
  Debounce_Limits(X);
@@ -683,13 +662,23 @@ int status_of_gcode;
  if(!status_of_gcode)
  axis_to_run = Get_Axisword();
  if(axis_to_run){
- while(DMA_Busy(1));
- dma_printf("axis_to_run:= %d\n",axis_to_run);
+
+
+
+ EnableSteppers(2);
  Temp_Move(axis_to_run);
  axis_to_run = Rst_Axisword();
  }
 
  status_of_gcode = Sample_Ringbuffer();
+
+
+ if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
+ while(DMA_Busy(1));
+ dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",(STPS[X].run_state&0xff),STPS[X].step_count,SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+ }
+
+
 
 
  LED1 = TMR.clock >> 4;
@@ -703,6 +692,7 @@ int status_of_gcode;
 
 
 
+
  WDTCONSET = 0x01;
  }
 }
@@ -711,45 +701,37 @@ int status_of_gcode;
 int Temp_Move(int a){
  switch(a){
  case 1:
- EnStepperX();
  SingleAxisStep(gc.next_position[X],gc.frequency,X);
  break;
  case 2:
- EnStepperY();
  SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
  break;
  case 3:
  while(DMA_Busy(1));
- dma_printf("X:= %d | Y:=%d\n",gc.next_position[X],gc.next_position[Y]);
- EnStepperX();EnStepperY();
+ dma_printf("X:= %f | Y:=%f\n",gc.next_position[X],gc.next_position[Y]);
  DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+
+
  break;
  case 4:
- EnStepperZ();
  SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
  break;
  case 5:
- EnStepperX();EnStepperZ();
  DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
  break;
  case 6:
- EnStepperY();EnStepperZ();
  DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
  break;
  case 8:
- EnStepperA();
  SingleAxisStep(gc.next_position[A],gc.frequency,A);
  break;
  case 9:
- EnStepperX();EnStepperA();
  DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
  break;
  case 10:
- EnStepperY();EnStepperA();
  DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
  break;
  case 12:
- EnStepperZ();EnStepperA();
  DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
  break;
  case 13:

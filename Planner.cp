@@ -261,7 +261,7 @@ typedef struct Steps{
 
  unsigned short stopAxis: 1;
 
- unsigned char run_state ;
+ unsigned int run_state ;
 
  long step_delay;
 
@@ -538,7 +538,7 @@ extern struct Timer TMR;
 
 void InitTimer1();
 void InitTimer8();
-void ClockPulse();
+static void ClockPulse();
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
@@ -547,20 +547,7 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-
-
-
-
-
-
-
-
-
-
-extern unsigned int Toggle;
-
-
-
+#line 31 "c:/users/git/pic32mzcnc/stepper.h"
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -570,7 +557,7 @@ extern volatile axis_combination axis_xyz;
 
 
 
-
+extern long test;
 
 
 void SetPinMode();
@@ -580,7 +567,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
-int EnableSteppers(int steppers);
+void EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
@@ -684,7 +671,7 @@ long abs_mmSteps = abs(mmSteps);
 
 
 
- STPS[axis_No].step_delay = abs( (long)(( 781250 *0.676)/100)  * ((sqrt_( (long)( (2*3.14159)/ 188 *2*10000000000)  / STPS[axis_No].acc))/100));
+ STPS[axis_No].step_delay = labs( (long)(( 781250 *0.676)/100)  * ((sqrt_( (long)( (2*3.14159)/ 188 *2*10000000000)  / STPS[axis_No].acc))/100));
  STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
 
@@ -726,12 +713,11 @@ long abs_mmSteps = abs(mmSteps);
 
 
 
-
  if(STPS[axis_No].StartUp_delay <= STPS[axis_No].min_delay){
  STPS[axis_No].step_delay = STPS[axis_No].min_delay;
  STPS[axis_No].run_state =  3 ;
  }else{
- STPS[axis_No].step_delay = abs(STPS[axis_No].StartUp_delay);
+ STPS[axis_No].step_delay = labs(STPS[axis_No].StartUp_delay);
  STPS[axis_No].run_state =  1 ;
  }
 
@@ -746,7 +732,7 @@ long abs_mmSteps = abs(mmSteps);
  last_speed = speed;
 
 }
-#line 136 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 135 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir){
 unsigned short isclockwise = 0;
@@ -771,7 +757,7 @@ int axis_plane_a,axis_plane_b;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 223 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 222 "C:/Users/Git/Pic32mzCNC/Planner.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -784,7 +770,7 @@ int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (gc.motion_mode ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 257 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 256 "C:/Users/Git/Pic32mzCNC/Planner.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -808,7 +794,7 @@ int axis_plane_a,axis_plane_b;
  mc_arc(position, target, offset, axis_A, axis_B, Z,
   250.0 , gc.inverse_feed_rate_mode,r, isclockwise);
 }
-#line 294 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 293 "C:/Users/Git/Pic32mzCNC/Planner.c"
 unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;

@@ -1,3 +1,4 @@
 DMADebug=-1
 ProtoDebug=-1
 GcodeDebug=-1
+StepperDebug=1

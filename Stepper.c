@@ -7,10 +7,8 @@ char txt_A[9];
 _axis_ _axis;
 axis_combination axis_xyz;
 
-
-unsigned char AxisNo;
-unsigned int Toggle;
-
+//unsigned int Toggle;
+long test;
  
 
 //////////////////////////////////
@@ -75,6 +73,15 @@ void EnStepperA(){
    EN_StepA       = 0;
 }
 
+void EnableSteppers(int steppers){
+int i;
+  for(i=0;i<steppers;i++){
+    if(i==0) EN_StepX       = 0;
+    if(i==1) EN_StepY       = 0;
+    if(i==2) EN_StepZ       = 0;
+    if(i==3) EN_StepA       = 0;
+  }
+}
 
 void DisableStepper(){
    EN_StepX      = 1;
@@ -82,11 +89,6 @@ void DisableStepper(){
    EN_StepZ      = 1;
    EN_StepA      = 1;
 }
-
-
-
-//speedRampData STPS;
-
 
 
 /////////////////////////////////////////////////
@@ -100,6 +102,7 @@ void Step_Cycle(int axis_No){
      //keep track of absolute position
       STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
       toggleOCx(axis_No);
+
 }
 
 
@@ -107,12 +110,14 @@ void Step_Cycle(int axis_No){
 void toggleOCx(int axis_No){
       switch(axis_No){
         case X:
+             OC5IF_bit = 0;
              OC5R   = 0x5;
              OC5RS  = STPS[X].step_delay & 0xFFFF;//0x234;
              TMR2   =  0xFFFF;
              OC5CON =  0x8004; //restart the output compare module
              break;
         case Y:
+             OC2IF_bit = 0;
              OC2R   = 0x5;
              OC2RS  = STPS[Y].step_delay & 0xFFFF;
              TMR4   =  0xFFFF;
@@ -169,9 +174,9 @@ int Pulse(int axis_No){
              STPS[axis_No].step_delay = STPS[axis_No].min_delay;
              STPS[axis_No].run_state  = RUN;
         }
-        if(STPS[axis_No].step_delay > STPS[axis_No].accel_lim){
+        /*if(STPS[axis_No].step_delay > STPS[axis_No].accel_lim){
              STPS[axis_No].run_state  = RUN;
-        }
+        }*/
         //if the peak of the triangle is before max_accel_limit
         //then start to decel
         if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
@@ -244,6 +249,29 @@ void Single_Axis_Enable(_axis_ axis_){
     }
 }
 
+void StopAxis(int axis){
+  switch(axis){
+   case X:
+         OC5IE_bit = 0;
+         OC5CONbits.ON = 0;
+         break;
+   case Y:
+         OC2IE_bit = 0;
+         OC2CONbits.ON = 0;
+         break;
+   case Z:
+        OC7IE_bit = 0;
+        OC7CONbits.ON = 0;
+        break;
+   case A:
+        OC3IE_bit = 0;
+        OC3CONbits.ON = 0;
+        break;
+   default : break;
+  }
+  STPS[axis].stopAxis = 1;
+}
+
 
 void disableOCx(){
      OC5IE_bit = 0;OC5CONbits.ON = 0; //X
@@ -261,7 +289,7 @@ void disableOCx(){
 //////////////////////////////////////////////////////////
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
      OC5IF_bit = 0;
-     
+
      if(SV.Single_Dual == 0){
         SingleStepAxis(X);
      }else{
@@ -353,39 +381,21 @@ void SingleStepAxis(int axis){
     }
 }
 
-void StopAxis(int axis){
-  switch(axis){
-   case X:
-         OC5IE_bit = 0;
-         OC5CONbits.ON = 0;
-         break;
-   case Y:
-         OC2IE_bit = 0;
-         OC2CONbits.ON = 0;
-         break;
-   case Z:
-        OC7IE_bit = 0;
-        OC7CONbits.ON = 0;
-        break;
-   case A:
-        OC3IE_bit = 0;
-        OC3CONbits.ON = 0;
-        break;
-   default : break;
-  }
-  STPS[axis].stopAxis = 1;
-}
-
 ////////////////////////////////////////////////////////
 //   INTERPOLATE MULTI AXIS USING BRESENHAMS ALGO     //
 //       MASTER AXIS CONTROLS THE ACCELERATION        //
 ////////////////////////////////////////////////////////
 
 void Axis_Interpolate(int axisA,int axisB){
-
+static int cnt;
+      cnt++;
+      if(cnt > 5){
+        LED2=!LED2;
+        cnt = 0;
+      }
    if((STPS[axisA].step_count > SV.dA)||(STPS[axisB].step_count > SV.dB)){
-        StopAxis(axisA);
-        StopAxis(axisB);
+        //StopAxis(axisA);
+        //StopAxis(axisB);
         return;
    }
 

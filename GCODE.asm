@@ -101,6 +101,8 @@ _G_Mode:
 ;GCODE.c,50 :: 		int G_Mode(int mode){
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
+;GCODE.c,51 :: 		gc.inches_mode = 0;//temp for debugging
+SB	R0, Offset(_gc+2)(GP)
 ;GCODE.c,52 :: 		Set_Modal_Groups(mode);
 JAL	GCODE_Set_Modal_Groups+0
 NOP	

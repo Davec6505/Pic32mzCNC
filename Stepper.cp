@@ -259,7 +259,7 @@ typedef struct Steps{
 
  unsigned short stopAxis: 1;
 
- unsigned char run_state ;
+ unsigned int run_state ;
 
  long step_delay;
 
@@ -536,7 +536,7 @@ extern struct Timer TMR;
 
 void InitTimer1();
 void InitTimer8();
-void ClockPulse();
+static void ClockPulse();
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
@@ -582,20 +582,7 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 unsigned long sqrt_(unsigned long v);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-
-
-
-
-
-
-
-
-
-
-extern unsigned int Toggle;
-
-
-
+#line 31 "c:/users/git/pic32mzcnc/stepper.h"
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -605,7 +592,7 @@ extern volatile axis_combination axis_xyz;
 
 
 
-
+extern long test;
 
 
 void SetPinMode();
@@ -615,7 +602,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
-int EnableSteppers(int steppers);
+void EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
@@ -646,9 +633,7 @@ _axis_ _axis;
 axis_combination axis_xyz;
 
 
-unsigned char AxisNo;
-unsigned int Toggle;
-
+long test;
 
 
 
@@ -713,6 +698,15 @@ void EnStepperA(){
  EN_StepA = 0;
 }
 
+void EnableSteppers(int steppers){
+int i;
+ for(i=0;i<steppers;i++){
+ if(i==0) EN_StepX = 0;
+ if(i==1) EN_StepY = 0;
+ if(i==2) EN_StepZ = 0;
+ if(i==3) EN_StepA = 0;
+ }
+}
 
 void DisableStepper(){
  EN_StepX = 1;
@@ -720,13 +714,20 @@ void DisableStepper(){
  EN_StepZ = 1;
  EN_StepA = 1;
 }
-#line 97 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+
+
+
+
+
+
+
 void Step_Cycle(int axis_No){
 
  STPS[axis_No].step_count++;
 
  STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
  toggleOCx(axis_No);
+
 }
 
 
@@ -734,12 +735,14 @@ void Step_Cycle(int axis_No){
 void toggleOCx(int axis_No){
  switch(axis_No){
  case X:
+ OC5IF_bit = 0;
  OC5R = 0x5;
  OC5RS = STPS[X].step_delay & 0xFFFF;
  TMR2 = 0xFFFF;
  OC5CON = 0x8004;
  break;
  case Y:
+ OC2IF_bit = 0;
  OC2R = 0x5;
  OC2RS = STPS[Y].step_delay & 0xFFFF;
  TMR4 = 0xFFFF;
@@ -778,7 +781,7 @@ void toggleOCx(int axis_No){
 
 
 int Pulse(int axis_No){
-#line 159 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 164 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  switch(STPS[axis_No].run_state) {
  case  0 :
  STPS[axis_No].run_state =  0 ;
@@ -792,11 +795,7 @@ int Pulse(int axis_No){
  STPS[axis_No].step_delay = STPS[axis_No].min_delay;
  STPS[axis_No].run_state =  3 ;
  }
- if(STPS[axis_No].step_delay > STPS[axis_No].accel_lim){
- STPS[axis_No].run_state =  3 ;
- }
-
-
+#line 182 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
  STPS[axis_No].accel_count = STPS[axis_No].decel_val;
  STPS[axis_No].rest = 0;
@@ -865,6 +864,29 @@ void Single_Axis_Enable(_axis_ axis_){
  default:
  break;
  }
+}
+
+void StopAxis(int axis){
+ switch(axis){
+ case X:
+ OC5IE_bit = 0;
+ OC5CONbits.ON = 0;
+ break;
+ case Y:
+ OC2IE_bit = 0;
+ OC2CONbits.ON = 0;
+ break;
+ case Z:
+ OC7IE_bit = 0;
+ OC7CONbits.ON = 0;
+ break;
+ case A:
+ OC3IE_bit = 0;
+ OC3CONbits.ON = 0;
+ break;
+ default : break;
+ }
+ STPS[axis].stopAxis = 1;
 }
 
 
@@ -976,39 +998,21 @@ void SingleStepAxis(int axis){
  }
 }
 
-void StopAxis(int axis){
- switch(axis){
- case X:
- OC5IE_bit = 0;
- OC5CONbits.ON = 0;
- break;
- case Y:
- OC2IE_bit = 0;
- OC2CONbits.ON = 0;
- break;
- case Z:
- OC7IE_bit = 0;
- OC7CONbits.ON = 0;
- break;
- case A:
- OC3IE_bit = 0;
- OC3CONbits.ON = 0;
- break;
- default : break;
- }
- STPS[axis].stopAxis = 1;
-}
-
 
 
 
 
 
 void Axis_Interpolate(int axisA,int axisB){
-
+static int cnt;
+ cnt++;
+ if(cnt > 5){
+ LED2=!LED2;
+ cnt = 0;
+ }
  if((STPS[axisA].step_count > SV.dA)||(STPS[axisB].step_count > SV.dB)){
- StopAxis(axisA);
- StopAxis(axisB);
+
+
  return;
  }
 

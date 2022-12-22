@@ -30,46 +30,40 @@
 
 #include "Config.h"
 
+//////////////////////////////////////////
+//external scope variables
 //settings_t settings;
 //parser_state_t gc;
 STP STPS[NoOfAxis];
-
-static unsigned int disable_steps;
-char DMA_Buff[200];
-char txt_[9];
-bit testISR;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
-char uart_rd;
+
 
 //////////////////////////////////////////
-// temp vars
-unsigned int ii;
-unsigned long testOcr;
-static unsigned int a;
-//static unsigned int disable_steps = 0;
-//char (*fp)(int);
+//file scope vars
+static unsigned int disable_steps;//stepper timeout
+
 /////////////////////////////////////////
-//main function
-void main() {
-char txt_[9];
-static char oneshot = 0;
-int axis_to_run = 0;
-unsigned char j;
-int xyz_ = 0, i,dif;
-static int cntr;
-int status_of_gcode;
- // fp = Test_Min;
+//condition externs
+void Conditin_Externs(){
   PinMode();
   plan_init(15000,15000);
-  oneShotA = 0;
-  a=0;
   disableOCx();
   DisableStepper();
   //stepper timeout counter
   disable_steps = 0;
+}
+/////////////////////////////////////////
+//main function
+void main() {
+int axis_to_run,dif,status_of_gcode;
+static int cntr,a;
+ // fp = Test_Min;
+ 
+  Conditin_Externs();
+  cntr = a = axis_to_run = dif = status_of_gcode = 0;
   EnableInterrupts();
-  Toggle = 0;
+  
   while(1){
 
      Debounce_Limits(X);
@@ -77,14 +71,24 @@ int status_of_gcode;
      if(!status_of_gcode)
         axis_to_run = Get_Axisword();
      if(axis_to_run){
-           while(DMA_Busy(1));
-           dma_printf("axis_to_run:= %d\n",axis_to_run);
+
+        //   while(DMA_Busy(1));
+        //   dma_printf("axis_to_run:= %d\n",axis_to_run);
+           EnableSteppers(2);
            Temp_Move(axis_to_run);
            axis_to_run = Rst_Axisword();
      }
         
      status_of_gcode = Sample_Ringbuffer();
-
+     //temp debug for steppers
+     #if StepperDebug == 1
+     if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
+       while(DMA_Busy(1));
+       dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",(STPS[X].run_state&0xff),STPS[X].step_count,SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+      }
+     #endif
+     
+     
       #ifdef LED_STATUS
        LED1 = TMR.clock >> 4;
       #endif
@@ -92,6 +96,7 @@ int status_of_gcode;
       #ifdef RESET_STEPPER_TIME
        if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
            disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
+           
       #endif
 
 
@@ -105,45 +110,37 @@ int status_of_gcode;
 int Temp_Move(int a){
     switch(a){
       case 1: //b0000 0001
-             EnStepperX();
              SingleAxisStep(gc.next_position[X],gc.frequency,X);
              break;
       case 2://b0000 0010
-             EnStepperY();
              SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
              break;
        case 3://b0000 0011
              while(DMA_Busy(1));
-             dma_printf("X:= %d | Y:=%d\n",gc.next_position[X],gc.next_position[Y]);
-             EnStepperX();EnStepperY();
+             dma_printf("X:= %f | Y:=%f\n",gc.next_position[X],gc.next_position[Y]);
              DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+             //while(DMA_Busy(1));
+             //dma_printf("SdlyX:=%l\taccX:=%l\tdecX:=%l\n",STPS[X].StartUp_delay,STPS[X].max_step_lim,STPS[X].decel_start);
              break;
       case 4://b0000 0100
-            EnStepperZ();
             SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
              break;
        case 5://b0000 0101
-             EnStepperX();EnStepperZ();
              DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
              break;
        case 6://b0000 0110
-             EnStepperY();EnStepperZ();
              DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
              break;
        case 8://b0000 1000
-            EnStepperA();
             SingleAxisStep(gc.next_position[A],gc.frequency,A);
              break;
        case 9://b0000 1001
-            EnStepperX();EnStepperA();
             DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
             break;
        case 10://b0000 1010
-            EnStepperY();EnStepperA();
             DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
             break;
        case 12://b0000 1100
-            EnStepperZ();EnStepperA();
             DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
             break;
        case 13://Homing X axis

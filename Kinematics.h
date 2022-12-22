@@ -53,7 +53,7 @@ typedef struct Steps{
   //! axis to stop 1st
   unsigned short stopAxis: 1;
   //! What part of the speed ramp we are in.
-  unsigned char run_state ;
+  unsigned int run_state ;
   //! Peroid of next timer delay. At start this value set the accelration rate.
   long step_delay;
   //! What step_pos to start decelaration
