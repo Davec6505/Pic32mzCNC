@@ -24,6 +24,7 @@ void InitTimer1(){
 
   PR1           = 62500;
   TMR1          = 0;
+  
 }
 
 
@@ -64,7 +65,7 @@ void Timer8Interrupt() iv IVT_TIMER_8 ilevel 3 ics ICS_SRS {
 
 //////////////////////////////////////////
 //Do Clock pulses
-void ClockPulse(){
+static void ClockPulse(){
  ms100++;
  ms300++;
  ms500++;
@@ -99,8 +100,9 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
    if(TMR.P1 && !TMR.P2){
       TMR.P2 = 1;
       TMR.disable_cnt++;
-      if(TMR.disable_cnt > sec_to_disable)
+      if(TMR.disable_cnt > sec_to_disable){
           DisableStepper();
+      }
    }else if(!TMR.P1 && TMR.P2)
       TMR.P2 = 0;
       

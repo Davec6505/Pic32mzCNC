@@ -24,7 +24,7 @@ typedef unsigned short UInt8_t;
 // Constants for accelleration
 
 //! Stop and Start toggle bit
-extern  unsigned int Toggle;
+//extern  unsigned int Toggle;
 
 
 //enums
@@ -37,7 +37,7 @@ extern volatile axis_combination axis_xyz;
 
 /////////////////////////////////////////
 //global variables
-
+extern long test;
 /////////////////////////////////////////
 //function prototypes
 void SetPinMode();
@@ -47,7 +47,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
-int  EnableSteppers(int steppers);
+void EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 

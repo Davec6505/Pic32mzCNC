@@ -75,8 +75,8 @@
 
 
 //mm or inches
-#define MM_PER_INCH (25.40)
-#define INCH_PER_MM (0.0393701)
+//#define MM_PER_INCH (25.40)
+//#define INCH_PER_MM (0.0393701)
 
 
 
@@ -105,18 +105,22 @@ typedef struct {
   float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
                                  // machine zero in mm. Non-persistent. Cleared upon reset and boot.
   float next_position[NoOfAxis]; // Target position instruction from gcode sender
+  float offset[3];               // I,J,K for arc
   float R;
   float I;
   float J;
+  float K;
 } parser_state_t;
 extern parser_state_t gc;
 
-
+enum IJK{I,J,K};
 // Initialize the parser
 //G Instructions
 void G_Initialise();
+int Get_Axisword();
+int Rst_Axisword();
 static float To_Millimeters(float value);
-void G_Mode(int mode);
+int G_Mode(int mode);
 static void Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 // m instructions
@@ -127,5 +131,5 @@ int Check_group_multiple_violations();
 //all values passed from instruction
 int Instruction_Values(char *c,void *any);
 //movement of axis
-void Movement_Condition(int motion_mode);
+void Movement_Condition();
 #endif

@@ -1,37 +1,109 @@
 main
-	PinMode
-		set_performance_mode
-		Unlock_IOLOCK
-		PPS_Mapping_NoLock
-			_PPS_MAPPING
-				Unlock_IOLOCK
-				Lock_IOLOCK
-		Lock_IOLOCK
-		MM_Init
-		InitTimer1
-		UartConfig
-			UART2_Init_Advanced
-				UART_Calc_BRG
-			UART_Set_Active
-		Uart2InterruptSetup
-		Limit_Initialize
-			X_Min_Limit_Setup
-			Y_Min_Limit_Setup
-		DMA_global
-			DMA0
-			DMA1
-		DMA0_Enable
-		DMA1_Enable
-		OutPutPulseXYZ
-		SetPinMode
-		SetInitialSizes
-	plan_init
-	disableOCx
-	DisableStepper
+	Conditin_Externs
+		PinMode
+			set_performance_mode
+			Unlock_IOLOCK
+			PPS_Mapping_NoLock
+				_PPS_MAPPING
+					Unlock_IOLOCK
+					Lock_IOLOCK
+			Lock_IOLOCK
+			MM_Init
+			InitTimer1
+			UartConfig
+				UART2_Init_Advanced
+					UART_Calc_BRG
+				UART_Set_Active
+			Uart2InterruptSetup
+			Limit_Initialize
+				X_Min_Limit_Setup
+				Y_Min_Limit_Setup
+			DMA_global
+				DMA0
+				DMA1
+			DMA0_Enable
+			DMA1_Enable
+			OutPutPulseXYZ
+			SetPinMode
+			SetInitialSizes
+		plan_init
+		disableOCx
+		DisableStepper
 	Debounce_Limits
 		Test_Port_Pins
 		Reset_Min_Limit
 		Reset_Min_Debounce
+	Get_Axisword
+	EnableSteppers
+	Temp_Move
+		SingleAxisStep
+			Single_Axis_Enable
+			belt_steps
+			speed_cntr_Move
+				abs
+				sqrt_
+				labs
+			labs
+			Step_Cycle
+				toggleOCx
+		DMA_Busy
+		dma_printf
+			DMA_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
+		DualAxisStep
+			belt_steps
+			Single_Axis_Enable
+			labs
+			speed_cntr_Move
+			Axis_Interpolate
+				Step_Cycle
+				Pulse
+					AccDec
+		Home
+			FP
+				Test_Min
+			StopAxis
+			Inv_Home_Axis
+			FN
+				Test_Min
+			Home_Axis
+		r_or_ijk
+			sqrt
+				frexp
+				ldexp
+			hypot
+				sqrt
+			mc_arc
+				atan2
+					fabs
+					atan
+						fabs
+						eval_poly
+				hypot
+				fabs
+				floor
+				dma_printf
+				cos
+					sin
+						floor
+						eval_poly
+				sin
+				DMA_Busy
+				DualAxisStep
+				Test_Port_Pins
+				disableOCx
+				__CC2DW
+		__CC2DW
+	Rst_Axisword
 	Sample_Ringbuffer
 		Get_Difference
 		G_Initialise
@@ -45,41 +117,21 @@ main
 		cpy_val_from_str
 		atoi
 			isdigit
-		G_Mode
-			Set_Modal_Groups
-			Set_Motion_Mode
-				Select_Plane
-				floor
 		atof
 			strtod
 				isspace
 				isdigit
+		G_Mode
+			Set_Modal_Groups
+			Set_Motion_Mode
+				Select_Plane
 		Instruction_Values
+			To_Millimeters
 		M_Instruction
 			Set_M_Modal_Commands
 			Set_M_Commands
 		Check_group_multiple_violations
-		PrintStatus
-			DMA_Busy
-			dma_printf
-				DMA_Busy
-				sprintf
-					_doprntf
-						isdigit
-						scale
-						fround
-				strcat
-				strlen
-				strncpy
-				DMA1_Enable
-				__CC2DW
-			__CC2DW
-		Movement_Condition
-	EnStepperX
-	EnStepperY
-	EnStepperZ
-	EnStepperA
-	ResetHoming
+	DMA_Busy
 	dma_printf
 	__CC2DW
 	__FillZeros
@@ -89,13 +141,8 @@ StepA
 	SingleStepAxis
 		StopAxis
 		Step_Cycle
-			toggleOCx
 		Pulse
-			AccDec
 	Axis_Interpolate
-		StopAxis
-		Step_Cycle
-		Pulse
 Timer8Interrupt
 StepZ
 	SingleStepAxis

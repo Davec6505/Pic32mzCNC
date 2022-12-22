@@ -5152,9 +5152,7 @@ autoset_usbe5csr0_bit
 autoset_usbe6csr0_bit
 autoset_usbe7csr0_bit
 axis_interpolate
-axis_words
 axis_xyz
-axisno
 axisno
 axispulse
 b0
@@ -14213,7 +14211,6 @@ clkstatset
 clkstatsetbits
 clock
 clock
-clockpulse
 clrdt
 clrdt
 clrdt
@@ -18354,6 +18351,7 @@ conclkdiv4
 conclkdiv4_bit
 conclkdiv5
 conclkdiv5_bit
+conditin_externs
 conemptyie
 conemptyie
 conemptyie_bit
@@ -23633,7 +23631,6 @@ divswen_bit
 divswen_refo2con_bit
 divswen_refo3con_bit
 divswen_refo4con_bit
-dma_buff
 dma_busy
 dma_ch0_isr
 dma_ch1_isr
@@ -27764,6 +27761,7 @@ en_stepa
 en_stepx
 en_stepy
 en_stepz
+enablesteppers
 endcmp
 endcmp
 endcmp
@@ -32519,6 +32517,7 @@ gcstat_i2c2stat_bit
 gcstat_i2c3stat_bit
 gcstat_i2c4stat_bit
 gcstat_i2c5stat_bit
+get_axisword
 get_difference
 get_fosc_khz
 get_head_value
@@ -36456,7 +36455,6 @@ igntur_spi3con2_bit
 igntur_spi4con2_bit
 igntur_spi5con2_bit
 igntur_spi6con2_bit
-ii
 in2mm
 inches_mode
 incm
@@ -38011,6 +38009,7 @@ jtagen_bit
 jtagen_devcfg0_bit
 jtagen_ubadevcfg0_bit
 junction_deviation
+k
 labs
 lanemode
 lanemode0
@@ -39362,7 +39361,6 @@ month103
 month103_alrmdate_bit
 month103_bit
 motion_mode
-movement_condition
 mpen
 mpen
 mpen
@@ -43130,6 +43128,7 @@ off210
 off210bits
 off213
 off213bits
+offset
 on
 on
 on
@@ -45594,7 +45593,6 @@ pri7ss2
 pri7ss2_bit
 pri7ss3
 pri7ss3_bit
-printstatus
 priss
 prissbits
 prissclr
@@ -48561,6 +48559,7 @@ rslp_bit
 rslp_refo2con_bit
 rslp_refo3con_bit
 rslp_refo4con_bit
+rst_axisword
 rstbug
 rswrst
 rswrstbits
@@ -62904,6 +62903,7 @@ terrcnt6_c2trec_bit
 terrcnt7
 terrcnt7_bit
 terrcnt7_c2trec_bit
+test
 test_min
 test_port_pins
 testbp
@@ -62914,14 +62914,12 @@ testbp
 testbp
 testbp_bit
 testbp_emacxtest_bit
-testisr
 testj
 testj
 testj_bit
 testk
 testk
 testk_bit
-testocr
 testpause
 testpause
 testpause
@@ -63175,7 +63173,6 @@ tmr9invbits
 tmr9set
 tmr9setbits
 tog
-toggle
 toggleocx
 tolower
 ton
@@ -71085,7 +71082,6 @@ txstate2
 txstate2_bit
 txstate3
 txstate3_bit
-txt_
 txt_a
 txta
 txtb
@@ -72029,7 +72025,6 @@ uabstainv
 uabstaset
 uabtxreg
 uart_data_ready
-uart_rd
 uart_rd_ptr
 uart_rdy_ptr
 uart_read

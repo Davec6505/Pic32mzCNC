@@ -26,6 +26,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Stepper.h
 =======
 =======
@@ -68,6 +69,9 @@ Value=GCODE.c
 >>>>>>> patch1
 =======
 Value=DEFINES.pld
+>>>>>>> patch1
+=======
+Value=Stepper.c
 >>>>>>> patch1
 =======
 Value=Main.c
@@ -129,6 +133,7 @@ ActiveImageIndex=-1
 <<<<<<< HEAD
 <<<<<<< HEAD
 File0=Main.c
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -224,6 +229,23 @@ File5=Kinematics.c
 File6=Kinematics.h
 File7=DEFINES.pld
 Count=8
+>>>>>>> patch1
+=======
+File1=GCODE.c
+File2=GCODE.h
+File3=Protocol.c
+File4=Protocol.h
+File5=Kinematics.c
+File6=Kinematics.h
+File7=Stepper.c
+File8=Stepper.h
+File9=DEFINES.pld
+File10=Planner.h
+File11=Planner.c
+File12=Timers.h
+File13=Timers.c
+File14=Config.c
+Count=15
 >>>>>>> patch1
 [EEPROM]
 Count=0

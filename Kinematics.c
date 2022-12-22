@@ -146,10 +146,11 @@ int dirA,dirB;
    STPS[axisB].step_count = 0;
    STPS[axisA].mmToTravel = tempA;
    STPS[axisB].mmToTravel = tempB;
-
+   
    Axis_Interpolate(axisA,axisB);
    
-  //leave previous values at 0 for now
+  //leave previous values at 0 for now this will
+  //be implimented at a later stage.
   // SV.px = SV.dx;
   // SV.py = SV.dy;
   // SV.pz = SV.dz;

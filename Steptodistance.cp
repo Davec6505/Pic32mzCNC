@@ -118,9 +118,9 @@ extern settings_t settings;
 
 
 void Settings_Init();
-#line 22 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 34 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
@@ -158,8 +158,8 @@ div_t div(int number, int denom);
 ldiv_t ldiv(long number, long denom);
 uldiv_t uldiv(unsigned long number, unsigned long denom);
 long labs(long x);
-long int max(long int a, long int b);
-long int min(long int a, long int b);
+long max(long a, long int b);
+long min(long a, long int b);
 void srand(unsigned x);
 int rand();
 int xtoi(char * s);
@@ -220,24 +220,24 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 50 "c:/users/git/pic32mzcnc/globals.h"
+#line 60 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
- uint8_t abort;
- uint8_t state;
+ char abort;
+ char state;
  int homing;
  int homing_cnt;
- uint8_t auto_start;
- volatile uint8_t execute;
+ char auto_start;
+ volatile char execute;
 } system_t;
 extern system_t sys;
-#line 48 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
 char home: 1;
@@ -260,7 +260,7 @@ typedef struct Steps{
 
  unsigned short stopAxis: 1;
 
- unsigned char run_state ;
+ unsigned int run_state ;
 
  long step_delay;
 
@@ -310,7 +310,7 @@ typedef struct Steps{
  homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-#line 133 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 119 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -361,18 +361,22 @@ typedef struct {
  float coord_offset[ 6 ];
 
  float next_position[ 6 ];
+ float offset[3];
  float R;
  float I;
  float J;
+ float K;
 } parser_state_t;
 extern parser_state_t gc;
 
-
+enum IJK{I,J,K};
 
 
 void G_Initialise();
+int Get_Axisword();
+int Rst_Axisword();
 static float To_Millimeters(float value);
-void G_Mode(int mode);
+int G_Mode(int mode);
 static void Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 
@@ -383,7 +387,7 @@ int Check_group_multiple_violations();
 
 int Instruction_Values(char *c,void *any);
 
-void Movement_Condition(int motion_mode);
+void Movement_Condition();
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
@@ -494,18 +498,11 @@ void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 
-void Sample_Ringbuffer();
+int Sample_Ringbuffer();
 
 int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
-
-
-
-
-
-
- void PrintStatus(int state);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -540,7 +537,7 @@ extern struct Timer TMR;
 
 void InitTimer1();
 void InitTimer8();
-void ClockPulse();
+static void ClockPulse();
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
@@ -586,20 +583,7 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 unsigned long sqrt_(unsigned long v);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-
-
-
-
-
-
-
-
-
-
-extern unsigned int Toggle;
-
-
-
+#line 31 "c:/users/git/pic32mzcnc/stepper.h"
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -609,7 +593,7 @@ extern volatile axis_combination axis_xyz;
 
 
 
-
+extern long test;
 
 
 void SetPinMode();
@@ -619,7 +603,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
-int EnableSteppers(int steppers);
+void EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
@@ -643,14 +627,15 @@ void Test_CycleZ();
 void Test_CycleA();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 22 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 34 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
 double mm2in(double mm);
 double in2mm(double inch);
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 17 "C:/Users/Git/Pic32mzCNC/Steptodistance.c"
 long leadscrew_steps(double move_distance){
 double temp = 0.00;
@@ -669,7 +654,7 @@ double temp = 0.00;
 long belt_steps(double move_distance){
  double temp = 0;
  temp = ( ( 188 * 32 ) /( 2 * 20 ))*move_distance;
- return (signed long)temp;
+ return (long)temp;
 }
 
 
@@ -703,5 +688,5 @@ double circ,cirDivision,stepsToMove;
  stepsToMove = cirDivision *  ( 188 * 32 ) ;
 
 
- return (signed long)stepsToMove;
+ return (long)stepsToMove;
 }

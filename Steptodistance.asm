@@ -16,7 +16,7 @@ LUI	R2, 17174
 ORI	R2, R2, 0
 MTC1	R2, S0
 MUL.S 	S0, S0, S12
-;Steptodistance.c,34 :: 		return (signed long)temp;
+;Steptodistance.c,34 :: 		return (long)temp;
 CVT36.S 	S0, S0
 MFC1	R2, S0
 ;Steptodistance.c,35 :: 		}
@@ -62,7 +62,7 @@ LUI	R2, 17852
 ORI	R2, R2, 0
 MTC1	R2, S0
 MUL.S 	S0, S1, S0
-;Steptodistance.c,68 :: 		return (signed long)stepsToMove;
+;Steptodistance.c,68 :: 		return (long)stepsToMove;
 CVT36.S 	S0, S0
 MFC1	R2, S0
 ;Steptodistance.c,69 :: 		}

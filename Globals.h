@@ -3,20 +3,30 @@
 
 ///////////////////////////////////////////////////
 //includes
-#include <stdint.h>
+//#include <stdint.h>
 #include "Settings.h"
 
+//mm or inches
+#define MM_PER_INCH (25.40)
+#define INCH_PER_MM (0.0393701)
+
+//Circle defines and consts
+#define  Pi         3.141593
+#define  M_PI       3.1416
+#define  rad2deg    (180.00/Pi)
+#define  deg2rad    (Pi/180.00)
 
 
+ //basis macros
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
 // Bit field and masking macros
-#define bit(n) (1 << n)
-#define bit_true(x,mask) (x |= mask)
-#define bit_false(x,mask) (x &= ~mask)
-#define bit_toggle(x,mask) (x ^= mask)
-#define bit_istrue(x,mask) ((x & mask) != 0)
+#define bit(n)              (1 << n)
+#define bit_true(x,mask)    (x |= mask)
+#define bit_false(x,mask)   (x &= ~mask)
+#define bit_toggle(x,mask)  (x ^= mask)
+#define bit_istrue(x,mask)  ((x & mask) != 0)
 #define bit_isfalse(x,mask) ((x & mask) == 0)
 
 // Define system executor bit map. Used internally by runtime protocol as runtime command flags,
@@ -48,12 +58,12 @@
 
 // Define global system variables
 typedef struct {
-  uint8_t abort;                      // System abort flag. Forces exit back to main loop for reset.
-  uint8_t state;                      // Tracks the current state of Grbl.
+  char abort;                      // System abort flag. Forces exit back to main loop for reset.
+  char state;                      // Tracks the current state of Grbl.
   int  homing;                     //track the axis homing -1 = none, 0 = x, 1 = y, 2 = z etc
   int homing_cnt;                 //count the homing bounce
-  uint8_t auto_start;                 // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
-  volatile uint8_t execute;           // Global system runtime executor bitflag variable. See EXEC bitmasks.
+  char auto_start;                 // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
+  volatile char execute;           // Global system runtime executor bitflag variable. See EXEC bitmasks.
 } system_t;
 extern system_t sys;
 

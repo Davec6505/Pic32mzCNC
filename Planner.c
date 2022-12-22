@@ -60,7 +60,7 @@ long abs_mmSteps = abs(mmSteps);
     // Set accelration by calc the first (c0) step delay .
     // step_delay = 1/T_Freq*sqrt(2*alpha/accel)
     // step_delay = ( T_Freq*0.676/100 ) * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-    STPS[axis_No].step_delay = abs(T1_FREQ_148 * ((sqrt_(A_SQ / STPS[axis_No].acc))/100));
+    STPS[axis_No].step_delay = labs(T1_FREQ_148 * ((sqrt_(A_SQ / STPS[axis_No].acc))/100));
     STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
     // Find out after how many steps does the speed hits the max speed limit.
@@ -101,13 +101,12 @@ long abs_mmSteps = abs(mmSteps);
     }
 
     //find the position at which to start decelerating from
-
     // If the maximum speed is so low that we won't need to go via accelration state.
     if(STPS[axis_No].StartUp_delay <= STPS[axis_No].min_delay){
       STPS[axis_No].step_delay = STPS[axis_No].min_delay;
       STPS[axis_No].run_state = RUN;
     }else{
-       STPS[axis_No].step_delay = abs(STPS[axis_No].StartUp_delay);
+       STPS[axis_No].step_delay = labs(STPS[axis_No].StartUp_delay);
        STPS[axis_No].run_state = ACCEL;
     }
 

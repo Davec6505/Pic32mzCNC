@@ -5,12 +5,15 @@
 #include "built_in.h"
 #include "Settings.h"
 
+
 ///////////////////////////////////////////////
 //constants and defines
 
+//redefined here as I dont want to include GCODE here
+//#define MM_PER_INCH (25.40)
+//#define INCH_PER_MM (0.0393701)
 
-#define MM_PER_INCH (25.40)
-#define INCH_PER_MM (0.0393701)
+
 #define temp_M_STEP 0.032
 #define INVERSE_M_STEP (1/temp_M_STEP)       // 1/Stepper micro steps setting
 #define SPRU (SPR*M_STEP)   // SPR * micro stepping of stepper drive

@@ -137,6 +137,7 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 92 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
@@ -199,8 +200,8 @@ div_t div(int number, int denom);
 ldiv_t ldiv(long number, long denom);
 uldiv_t uldiv(unsigned long number, unsigned long denom);
 long labs(long x);
-long int max(long int a, long int b);
-long int min(long int a, long int b);
+long max(long a, long int b);
+long min(long a, long int b);
 void srand(unsigned x);
 int rand();
 int xtoi(char * s);
@@ -252,19 +253,18 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 50 "c:/users/git/pic32mzcnc/globals.h"
+#line 60 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
- uint8_t abort;
- uint8_t state;
+ char abort;
+ char state;
  int homing;
  int homing_cnt;
- uint8_t auto_start;
- volatile uint8_t execute;
+ char auto_start;
+ volatile char execute;
 } system_t;
 extern system_t sys;
-#line 48 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
 char home: 1;
@@ -287,7 +287,7 @@ typedef struct Steps{
 
  unsigned short stopAxis: 1;
 
- unsigned char run_state ;
+ unsigned int run_state ;
 
  long step_delay;
 
@@ -337,7 +337,7 @@ typedef struct Steps{
  homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-#line 133 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 119 "c:/users/git/pic32mzcnc/kinematics.h"
 void SetInitialSizes(STP axis[6]);
 
 
@@ -402,20 +402,7 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 unsigned long sqrt_(unsigned long v);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-
-
-
-
-
-
-
-
-
-
-extern unsigned int Toggle;
-
-
-
+#line 31 "c:/users/git/pic32mzcnc/stepper.h"
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -425,7 +412,7 @@ extern volatile axis_combination axis_xyz;
 
 
 
-
+extern long test;
 
 
 void SetPinMode();
@@ -435,7 +422,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
-int EnableSteppers(int steppers);
+void EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
@@ -470,7 +457,7 @@ extern struct Timer TMR;
 
 void InitTimer1();
 void InitTimer8();
-void ClockPulse();
+static void ClockPulse();
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
@@ -479,9 +466,9 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 22 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 34 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
@@ -583,18 +570,22 @@ typedef struct {
  float coord_offset[ 6 ];
 
  float next_position[ 6 ];
+ float offset[3];
  float R;
  float I;
  float J;
+ float K;
 } parser_state_t;
 extern parser_state_t gc;
 
-
+enum IJK{I,J,K};
 
 
 void G_Initialise();
+int Get_Axisword();
+int Rst_Axisword();
 static float To_Millimeters(float value);
-void G_Mode(int mode);
+int G_Mode(int mode);
 static void Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 
@@ -605,7 +596,7 @@ int Check_group_multiple_violations();
 
 int Instruction_Values(char *c,void *any);
 
-void Movement_Condition(int motion_mode);
+void Movement_Condition();
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/print.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -628,18 +619,11 @@ void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 
-void Sample_Ringbuffer();
+int Sample_Ringbuffer();
 
 int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 int str2int(char *str,int base);
-
-
-
-
-
-
- void PrintStatus(int state);
 #line 5 "C:/Users/Git/Pic32mzCNC/Protocol.c"
 char gcode[ 10 ][ 60 ];
 
@@ -655,14 +639,16 @@ int i;
 
 
 
-void Sample_Ringbuffer(){
+int Sample_Ringbuffer(){
 int status;
 char str[50];
 char temp[6];
 char xyz[6];
 char F_1_Once,no_of_axis;
+char axis_to_run;
 int dif,i,j,num_of_strings;
 int G_Val,F_Val,M_Val,S_Val;
+int motion_mode;
 float XYZ_Val;
 
 
@@ -680,9 +666,13 @@ float XYZ_Val;
 
  if (*(*(gcode)+0)=='G'){
  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
+ if(i < 3)
  G_Val = atoi(temp);
- G_Mode(G_Val);
-#line 54 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ else
+ G_Val = (int)(atof(temp)*10.0);
+
+ motion_mode = G_Mode(G_Val);
+#line 60 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  if(*(*(gcode+1)+0) != 0){
  xyz[0] = *(*(gcode+1)+0); no_of_axis++;
  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
@@ -694,7 +684,7 @@ float XYZ_Val;
  case 'E':case 'e':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[1],&XYZ_Val);
-#line 68 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 74 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  case 'F':
  case 'f':
@@ -702,7 +692,7 @@ float XYZ_Val;
  F_1_Once = 1;
  F_Val = atoi(temp);
  status = Instruction_Values(*gcode[1],&F_Val);
-#line 79 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 85 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
  break;
  }
@@ -721,7 +711,7 @@ float XYZ_Val;
  case 'E':case 'e':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[2],&XYZ_Val);
-#line 100 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 106 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  case 'F':
  case 'f':
@@ -729,7 +719,7 @@ float XYZ_Val;
  F_1_Once = 1;
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[2],&F_Val);
-#line 110 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 116 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
  break;
 
@@ -750,7 +740,7 @@ float XYZ_Val;
  case 'I':case 'i':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[3],&XYZ_Val);
-#line 133 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 139 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  case 'F':
  case 'f':
@@ -758,7 +748,7 @@ float XYZ_Val;
  F_1_Once = 1;
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[3],&F_Val);
-#line 143 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 149 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
  break;
 
@@ -774,7 +764,7 @@ float XYZ_Val;
  case 'J':case 'j':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[4],&XYZ_Val);
-#line 161 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 167 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  case 'F':
  case 'f':
@@ -782,7 +772,7 @@ float XYZ_Val;
  F_1_Once = 1;
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[4],&F_Val);
-#line 171 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 177 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
  break;
 
@@ -797,7 +787,7 @@ float XYZ_Val;
  case 'J':case 'j':
  XYZ_Val = atof(temp);
  Instruction_Values(gcode[5],&XYZ_Val);
-#line 188 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 194 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  case 'F':
  case 'f':
@@ -805,7 +795,7 @@ float XYZ_Val;
  F_1_Once = 1;
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[5],&F_Val);
-#line 198 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 204 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
  break;
 
@@ -820,7 +810,7 @@ float XYZ_Val;
  case 'J':case 'j':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[6],&XYZ_Val);
-#line 215 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 221 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  case 'F':
  case 'f':
@@ -828,7 +818,7 @@ float XYZ_Val;
  F_1_Once = 1;
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[6],&F_Val);
-#line 225 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 231 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
  break;
 
@@ -844,7 +834,7 @@ float XYZ_Val;
  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
  M_Val = atoi(temp);
  M_Instruction(M_Val);
-#line 245 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 251 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  if((*(gcode+1)) != 0){
  switch(*(*(gcode+1))){
  case 'S':
@@ -853,18 +843,18 @@ float XYZ_Val;
  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
  S_Val = atoi(temp);
  status = Instruction_Values(gcode[1],&S_Val);
-#line 256 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 262 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  }
  }
  break;
  }
  status = Check_group_multiple_violations();
-
- PrintStatus(status);
-
- Movement_Condition(gc.motion_mode);
+ if(status)
+ return;
+#line 275 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
+ return status;
 }
 
 
@@ -925,9 +915,4 @@ int result = 0;
  }
 
  return result;
-}
-#line 367 "C:/Users/Git/Pic32mzCNC/Protocol.c"
-void PrintStatus(int state){
- while(DMA_Busy(1));
- dma_printf("gc.status:= %d\n",state);
 }

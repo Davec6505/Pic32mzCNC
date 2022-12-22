@@ -30,64 +30,137 @@
 
 #include "Config.h"
 
+//////////////////////////////////////////
+//external scope variables
 //settings_t settings;
 //parser_state_t gc;
 STP STPS[NoOfAxis];
-
-static unsigned int disable_steps;
-char DMA_Buff[200];
-char txt_[9];
-bit testISR;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
-char uart_rd;
+
 
 //////////////////////////////////////////
-// temp vars
-unsigned int ii;
-unsigned long testOcr;
-static unsigned int a;
-//static unsigned int disable_steps = 0;
-//char (*fp)(int);
+//file scope vars
+static unsigned int disable_steps;//stepper timeout
+
 /////////////////////////////////////////
-//main function
-void main() {
-char txt_[9];
-static char oneshot = 0;
-unsigned char j;
-int xyz_ = 0, i,dif;
-static int cntr;
- // fp = Test_Min;
+//condition externs
+void Conditin_Externs(){
   PinMode();
   plan_init(15000,15000);
-  oneShotA = 0;
-  a=0;
   disableOCx();
   DisableStepper();
   //stepper timeout counter
   disable_steps = 0;
+}
+/////////////////////////////////////////
+//main function
+void main() {
+int axis_to_run,dif,status_of_gcode;
+static int cntr,a;
+ // fp = Test_Min;
+ 
+  Conditin_Externs();
+  cntr = a = axis_to_run = dif = status_of_gcode = 0;
   EnableInterrupts();
-  Toggle = 0;
+  
   while(1){
 
      Debounce_Limits(X);
      Debounce_Limits(Y);
-     Sample_Ringbuffer();
-   /*  dif = Get_Difference();
-     if(dif>0){
-       dma_printf("\ntail:= %d : head:= %d : diff:= %d",serial.tail,serial.head,dif);
-       while(DMA_Busy(1));
-         Loopback();
-     }*/
-     
-     if(!Toggle){
-       LED1 = TMR.clock >> 4;
+     if(!status_of_gcode)
+        axis_to_run = Get_Axisword();
+     if(axis_to_run){
 
+        //   while(DMA_Busy(1));
+        //   dma_printf("axis_to_run:= %d\n",axis_to_run);
+           EnableSteppers(2);
+           Temp_Move(axis_to_run);
+           axis_to_run = Rst_Axisword();
+     }
+        
+     status_of_gcode = Sample_Ringbuffer();
+     //temp debug for steppers
+     #if StepperDebug == 1
+     if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
+       while(DMA_Busy(1));
+       dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",(STPS[X].run_state&0xff),STPS[X].step_count,SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+      }
+     #endif
+     
+     
+      #ifdef LED_STATUS
+       LED1 = TMR.clock >> 4;
+      #endif
+      
+      #ifdef RESET_STEPPER_TIME
        if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
            disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
+           
+      #endif
 
-     }
+
          
+
+     WDTCONSET = 0x01;
+  }
+}
+
+
+int Temp_Move(int a){
+    switch(a){
+      case 1: //b0000 0001
+             SingleAxisStep(gc.next_position[X],gc.frequency,X);
+             break;
+      case 2://b0000 0010
+             SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
+             break;
+       case 3://b0000 0011
+             while(DMA_Busy(1));
+             dma_printf("X:= %f | Y:=%f\n",gc.next_position[X],gc.next_position[Y]);
+             DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+             //while(DMA_Busy(1));
+             //dma_printf("SdlyX:=%l\taccX:=%l\tdecX:=%l\n",STPS[X].StartUp_delay,STPS[X].max_step_lim,STPS[X].decel_start);
+             break;
+      case 4://b0000 0100
+            SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
+             break;
+       case 5://b0000 0101
+             DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
+             break;
+       case 6://b0000 0110
+             DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
+             break;
+       case 8://b0000 1000
+            SingleAxisStep(gc.next_position[A],gc.frequency,A);
+             break;
+       case 9://b0000 1001
+            DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
+            break;
+       case 10://b0000 1010
+            DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
+            break;
+       case 12://b0000 1100
+            DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
+            break;
+       case 13://Homing X axis
+            Home(X);
+            break;
+       case 14://Homing Y axis
+            Home(Y);
+            break;
+       case 15://Homing Y axis
+            r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
+            break;
+        default: a = 0;
+              break;
+    }
+    
+    return a;
+}
+
+/* 
+ *temp disabled code to get gcode send working
      if(!SW2){
        Toggle  = 0;
        disable_steps = 0;
@@ -129,68 +202,4 @@ static int cntr;
 #endif
           }
        }
-     }
-    // WDTCONSET = 0x01;
-  }
-}
-
-int Temp_Move(int a){
-    switch(a){
-      case 0:
-             SingleAxisStep(50.00,8000,Y);
-             a = 1;
-             break;
-      case 1:
-             SingleAxisStep(50.00,8000,X);
-             a = 2;
-             break;
-       case 2:
-             SingleAxisStep(-50.00,8000,Y);
-             a = 3;
-             break;
-      case 3:
-            SingleAxisStep(-50.00,8000,X);
-            a = 4;
-             break;
-       case 4:
-             DualAxisStep(150.00, 100.00,X,Y,8000);
-             a = 5;
-             break;
-       case 5:
-             DualAxisStep(-150.00, -100.00,X,Y,8000);
-             a = 6;
-             break;
-       case 6:
-             DualAxisStep(150.00, 30.00,X,Y,8000);
-             a = 9;
-             break;
-       case 7:
-             DualAxisStep(-150.00, -30.00,X,Y,8000);
-             a = 8;
-             break;
-       case 8:
-             SingleAxisStep(350.00,10000,A);
-             a = 9;
-             break;
-       case 9:
-            //r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,
-            //         double Fin_axis_b,double r, double i, double j, double k,
-            //         int axis_A,int axis_B)
-            r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
-            a = 12;
-            break;
-       case 10://Homing X axis
-            Home(X);
-            break;
-       case 11://Homing Y axis
-            Home(Y);
-            break;
-       case 12://Homing Y axis
-
-            break;
-        default: a = 0;
-              break;
-    }
-    
-    return a;
-}
+}*/

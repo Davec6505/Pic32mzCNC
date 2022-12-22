@@ -2,6 +2,7 @@
 #define KINEMATICS_H
 
 #include <stdint.h>
+#include "Config_adv.h"
 #include "Settings.h"
 #include "Stepper.h"
 #include  "Serial_Dma.h"
@@ -30,21 +31,6 @@
 #define CCW 1
 
 
-
-//Circle defines and consts
-// Decide how many axis you would like to run
-#define  Pi         3.141593
-#define  M_PI       3.1416
-#define  rad2deg    (180.00/Pi)
-#define  deg2rad    (Pi/180.00)
-
-
-#define DEFAULT_FEEDRATE 250.0
-#define DEFAULT_MM_PER_ARC_SEGMENT 0.8
-
-
-
-
 typedef struct {
 char set: 1;
 char home: 1;
@@ -67,7 +53,7 @@ typedef struct Steps{
   //! axis to stop 1st
   unsigned short stopAxis: 1;
   //! What part of the speed ramp we are in.
-  unsigned char run_state ;
+  unsigned int run_state ;
   //! Peroid of next timer delay. At start this value set the accelration rate.
   long step_delay;
   //! What step_pos to start decelaration
