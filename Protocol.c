@@ -14,10 +14,14 @@ int i;
   }
 }
 
+void Str_clear(char *str,int len){
+   memset(str,0,len);
+}
+
 ///////////////////////////////////////////////////
 //sample the ring buffer to check for data
 int Sample_Ringbuffer(){
-static int motion_mode;
+static int motion_mode,str_len;
 int status;
 char str[50];
 char temp[9];
@@ -25,7 +29,7 @@ char xyz[6];
 char F_1_Once,no_of_axis;
 char axis_to_run;
 int dif,i,j,num_of_strings;
-int G_Val,F_Val,M_Val,S_Val;
+int G_Val,F_Val,M_Val,S_Val,O_Val,P_Val;
 float XYZ_Val;
 
     //read head and tail pointer difference
@@ -36,16 +40,23 @@ float XYZ_Val;
     if(dif > 0){
        G_Initialise();
        F_1_Once = no_of_axis = 0 ; //for buffer and axis refreshing
-       Get_Line(str,dif);          //get the line sent from PC
-       
+
+       Str_clear(str,str_len);    //reset the string to empty
+       Get_Line(str,dif);         //get the line sent from PC
+       str_len = strlen(str);
        //split up the line into string array using SPC seperator
        num_of_strings = strsplit(gcode,str,0x20);
-       
+       #if ProtoDebug == 2
+       for(i=0;i<num_of_strings;i++){
+         while(DMA_Busy(1));
+         dma_printf("%s\n",gcode[i]);
+       }
+       #endif
        //condition each string by seperating the 1st char from the value
        //e.g. G01  => 'G' "01" and extract the numeral from value
        //GCODE standard is usuall capitals = making compensation for
        //Lowercase in the invent of a GCODE set sending lowercase
-        switch(gcode[0][0]){
+        switch(*(*gcode+0)+0){
          case 'G':case 'g':
               //1st char usually 'G'
               if (*(*(gcode)+0)=='G'){
@@ -71,7 +82,7 @@ float XYZ_Val;
                //G00/G01 X12.5 Y14.7 F0.2;
                //G02/G03 X12.5 Y14.7 I1.0 J2.0 F0.2;
                //G10 Lnn Pnn Xnn Ynn Znn offsets can be G10 Pn Rnn Snn
-               if(*(*(gcode+1)+0) != 0){
+                if(*(*(gcode+1)+0) != 0){
                  no_of_axis++;
                  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
                  switch(*(*(gcode+1)+0)) {
@@ -85,18 +96,33 @@ float XYZ_Val;
                          PrintDebug(*gcode[1],temp,&XYZ_Val);
                        #endif
                        break;
-                    case 'F':case 'f':
                     case 'L':case 'l':
-                    case 'P':case 'p':
-                    case 'S':case 's':
-                       if(!F_1_Once){//check validity of this
-                         F_1_Once = 1;
-                         F_Val = atoi(temp);
-                         status = Instruction_Values(gcode[1],&F_Val);
+                          O_Val = atoi(temp);
+                          status = Instruction_Values(gcode[1],&O_Val);
                        #if ProtoDebug == 1
-                         PrintDebug(*gcode[1],temp,&F_Val);
+                          PrintDebug(*gcode[1],temp,&O_Val);
                        #endif
-                       }
+                       break;
+                    case 'F':case 'f':
+                          O_Val = atoi(temp);
+                          status = Instruction_Values(gcode[1],&O_Val);
+                       #if ProtoDebug == 1
+                          PrintDebug(*gcode[1],temp,&O_Val);
+                       #endif
+                       break;
+                    case 'P':case 'p':
+                          O_Val = atoi(temp);
+                          status = Instruction_Values(gcode[1],&O_Val);
+                       #if ProtoDebug == 1
+                          PrintDebug(*gcode[1],temp,&O_Val);
+                       #endif
+                       break;
+                    case 'S':case 's':
+                         O_Val = atoi(temp);
+                         status = Instruction_Values(gcode[1],&O_Val);
+                       #if ProtoDebug == 1
+                         PrintDebug(*gcode[1],temp,&O_Val);
+                       #endif
                        break;
                  }
                 }
@@ -107,7 +133,7 @@ float XYZ_Val;
                 if(*(*(gcode+2)+0) != 0){
                    no_of_axis++;
                    i = cpy_val_from_str(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
-                   switch(*(*(gcode+2))) {
+                   switch(*(*(gcode+2)+0)) {
                       case 'X':case 'x':
                       case 'Y':case 'y':
                       case 'Z':case 'z':
@@ -118,19 +144,34 @@ float XYZ_Val;
                            PrintDebug(*gcode[2],temp,&XYZ_Val);
                          #endif
                          break;
-                      case 'F':case 'f':
-                      case 'P':case 'p':  //other as msec in dwell
-                      case 'S':case 's':  //other as in sec in dwell
-                         if(!F_1_Once){
-                           F_1_Once = 1;
-                           F_Val = atoi(temp);
-                           status = Instruction_Values(gcode[2],&F_Val);
-                         #if ProtoDebug == 1
-                           PrintDebug(*gcode[2],temp,&F_Val);
-                         #endif
-                         }
-                         break;
-
+                    case 'L':case 'l':
+                          O_Val = atoi(temp);
+                          status = Instruction_Values(gcode[2],&O_Val);
+                       #if ProtoDebug == 1
+                          PrintDebug(*gcode[2],temp,&O_Val);
+                       #endif
+                       break;
+                    case 'F':case 'f':
+                          O_Val = atoi(temp);
+                          status = Instruction_Values(gcode[2],&O_Val);
+                       #if ProtoDebug == 1
+                          PrintDebug(*gcode[2],temp,&O_Val);
+                       #endif
+                       break;
+                    case 'P':case 'p':
+                          O_Val = atoi(temp);
+                          status = Instruction_Values(gcode[2],&O_Val);
+                       #if ProtoDebug == 1
+                          PrintDebug(*gcode[2],temp,&O_Val);
+                       #endif
+                       break;
+                    case 'S':case 's':
+                         O_Val = atoi(temp);
+                         status = Instruction_Values(gcode[2],&O_Val);
+                       #if ProtoDebug == 1
+                         PrintDebug(*gcode[2],temp,&O_Val);
+                       #endif
+                       break;
                    }
                 }
                   //get  pos c value
@@ -139,11 +180,9 @@ float XYZ_Val;
                 if(*(*(gcode+3)+0) != 0){
                   no_of_axis++;
                   i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
-                   switch(*(*(gcode+3))) {
-                      case 'X':case 'x':
-                      case 'Y':case 'y':
-                      case 'Z':case 'z':
-                      case 'R':case 'r':
+                   switch(*(*(gcode+3)+0)) {
+                      case 'X':case 'x':case 'Y':case 'y':
+                      case 'Z':case 'z':case 'R':case 'r':
                       case 'I':case 'i':
                          XYZ_Val = atof(temp);
                          status = Instruction_Values(gcode[3],&XYZ_Val);
@@ -151,18 +190,13 @@ float XYZ_Val;
                            PrintDebug(*gcode[3],temp,&XYZ_Val);
                          #endif
                          break;
-                      case 'F':
-                      case 'f':
-                         if(!F_1_Once){
-                           F_1_Once = 1;
-                           F_Val = atoi(temp);
-                           status = Instruction_Values(gcode[3],&F_Val);
+                      case 'F': case 'f':
+                          O_Val = atoi(temp);
+                          status = Instruction_Values(gcode[3],&O_Val);
                          #if ProtoDebug == 1
-                           PrintDebug(*gcode[3],temp,&F_Val);
+                          PrintDebug(*gcode[3],temp,&O_Val);
                          #endif
-                         }
                          break;
-
                    }
                 }
 
@@ -181,16 +215,12 @@ float XYZ_Val;
                            PrintDebug(*gcode[4],temp,&XYZ_Val);
                          #endif
                          break;
-                      case 'F':
-                      case 'f':
-                         if(!F_1_Once){
-                           F_1_Once = 1;
-                           F_Val = atoi(temp);
-                           status = Instruction_Values(gcode[4],&F_Val);
+                      case 'F':case 'f':
+                           O_Val = atoi(temp);
+                           status = Instruction_Values(gcode[4],&O_Val);
                          #if ProtoDebug == 1
-                           PrintDebug(*gcode[4],temp,&F_Val);
+                           PrintDebug(*gcode[4],temp,&O_Val);
                          #endif
-                         }
                          break;
 
                    }
@@ -210,18 +240,13 @@ float XYZ_Val;
                            PrintDebug(*gcode[5],temp,&XYZ_Val);
                          #endif
                          break;
-                      case 'F':
-                      case 'f':
-                       // if(!F_1_Once){
-                         F_1_Once = 1;
-                         F_Val = atoi(temp);
-                         status = Instruction_Values(gcode[5],&F_Val);
+                      case 'F':case 'f':
+                         O_Val = atoi(temp);
+                         status = Instruction_Values(gcode[5],&O_Val);
                          #if ProtoDebug == 1
-                           PrintDebug(*gcode[5],temp,&F_Val);
+                           PrintDebug(*gcode[5],temp,&O_Val);
                          #endif
-                      //  }
                          break;
-
                    }
                 }
                   //get  pos f value; gcodes should not go beyond this
@@ -236,16 +261,12 @@ float XYZ_Val;
                            PrintDebug(gcode[6],temp,&XYZ_Val);
                          #endif
                          break;
-                      case 'F':
-                      case 'f':
-                         if(!F_1_Once){
-                           F_1_Once = 1;
-                           F_Val = atoi(temp);
-                           status = Instruction_Values(gcode[6],&F_Val);
+                      case 'F':case 'f':
+                           O_Val = atoi(temp);
+                           status = Instruction_Values(gcode[6],&O_Val);
                          #if ProtoDebug == 1
-                           PrintDebug(gcode[6],temp,&F_Val);
+                           PrintDebug(gcode[6],temp,&O_Val);
                          #endif
-                         }
                          break;
 
                    }
@@ -334,6 +355,7 @@ float XYZ_Val;
               break;
 
        }
+       ret:
        status = Check_group_multiple_violations();
       // if(!status)
       //  status =  Motion_mode();
@@ -414,6 +436,8 @@ float XYZ_Val;
          case 'M':case 'm':
          case 'S':case 's':
          case 'P':case 'p':
+         case 'L':case 'l':
+         case 'T':case 't':
               G_Val = *(int*)ptr;
               while(DMA_Busy(1));
               dma_printf("%c\t%s\t%d\n",c,strB,G_Val);

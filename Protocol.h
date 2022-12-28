@@ -29,6 +29,7 @@
 //function prototypes
 //init the array of stringto empty strings
 void Str_Initialize(char arg[arr_size][str_size]);
+void Str_clear(char *str,int len);
 //Get the instruction from the ring buffer
 int Sample_Ringbuffer();
 //split up the instructin

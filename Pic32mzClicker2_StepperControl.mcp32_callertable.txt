@@ -113,13 +113,15 @@ main
 	Sample_Ringbuffer
 		Get_Difference
 		G_Initialise
+		Str_clear
+			memset
 		Get_Line
 			strncpy
+		strlen
 		strsplit
 			Str_Initialize
 				memset
 			strlen
-		strlen
 		cpy_val_from_str
 		atoi
 			isdigit
@@ -144,9 +146,10 @@ main
 			Set_M_Modal_Commands
 			Set_M_Commands
 		Check_group_multiple_violations
-			Rst_modalword
+			Rst_modalgroup
 			DMA_Busy
 			dma_printf
+			Rst_modalword
 			__CC2DW
 	DMA_Busy
 	dma_printf

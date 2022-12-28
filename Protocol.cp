@@ -139,7 +139,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 123 "c:/users/git/pic32mzcnc/settings.h"
+#line 130 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  float steps_per_mm[ 6 ];
@@ -658,6 +658,7 @@ void delay_us(unsigned long us);
 void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
+void Str_clear(char *str,int len);
 
 int Sample_Ringbuffer();
 
@@ -682,10 +683,14 @@ int i;
  }
 }
 
+void Str_clear(char *str,int len){
+ memset(str,0,len);
+}
+
 
 
 int Sample_Ringbuffer(){
-static int motion_mode;
+static int motion_mode,str_len;
 int status;
 char str[50];
 char temp[9];
@@ -693,7 +698,7 @@ char xyz[6];
 char F_1_Once,no_of_axis;
 char axis_to_run;
 int dif,i,j,num_of_strings;
-int G_Val,F_Val,M_Val,S_Val;
+int G_Val,F_Val,M_Val,S_Val,O_Val,P_Val;
 float XYZ_Val;
 
 
@@ -704,16 +709,14 @@ float XYZ_Val;
  if(dif > 0){
  G_Initialise();
  F_1_Once = no_of_axis = 0 ;
- Get_Line(str,dif);
 
+ Str_clear(str,str_len);
+ Get_Line(str,dif);
+ str_len = strlen(str);
 
  num_of_strings = strsplit(gcode,str,0x20);
-
-
-
-
-
- switch(gcode[0][0]){
+#line 59 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ switch(*(*gcode+0)+0){
  case 'G':case 'g':
 
  if (*(*(gcode)+0)=='G'){
@@ -753,18 +756,33 @@ float XYZ_Val;
  PrintDebug(*gcode[1],temp,&XYZ_Val);
 
  break;
- case 'F':case 'f':
  case 'L':case 'l':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[1],&O_Val);
+
+ PrintDebug(*gcode[1],temp,&O_Val);
+
+ break;
+ case 'F':case 'f':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[1],&O_Val);
+
+ PrintDebug(*gcode[1],temp,&O_Val);
+
+ break;
  case 'P':case 'p':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[1],&O_Val);
+
+ PrintDebug(*gcode[1],temp,&O_Val);
+
+ break;
  case 'S':case 's':
- if(!F_1_Once){
- F_1_Once = 1;
- F_Val = atoi(temp);
- status = Instruction_Values(gcode[1],&F_Val);
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[1],&O_Val);
 
- PrintDebug(*gcode[1],temp,&F_Val);
+ PrintDebug(*gcode[1],temp,&O_Val);
 
- }
  break;
  }
  }
@@ -775,7 +793,7 @@ float XYZ_Val;
  if(*(*(gcode+2)+0) != 0){
  no_of_axis++;
  i = cpy_val_from_str(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
- switch(*(*(gcode+2))) {
+ switch(*(*(gcode+2)+0)) {
  case 'X':case 'x':
  case 'Y':case 'y':
  case 'Z':case 'z':
@@ -786,19 +804,34 @@ float XYZ_Val;
  PrintDebug(*gcode[2],temp,&XYZ_Val);
 
  break;
- case 'F':case 'f':
- case 'P':case 'p':
- case 'S':case 's':
- if(!F_1_Once){
- F_1_Once = 1;
- F_Val = atoi(temp);
- status = Instruction_Values(gcode[2],&F_Val);
+ case 'L':case 'l':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[2],&O_Val);
 
- PrintDebug(*gcode[2],temp,&F_Val);
+ PrintDebug(*gcode[2],temp,&O_Val);
 
- }
  break;
+ case 'F':case 'f':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[2],&O_Val);
 
+ PrintDebug(*gcode[2],temp,&O_Val);
+
+ break;
+ case 'P':case 'p':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[2],&O_Val);
+
+ PrintDebug(*gcode[2],temp,&O_Val);
+
+ break;
+ case 'S':case 's':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[2],&O_Val);
+
+ PrintDebug(*gcode[2],temp,&O_Val);
+
+ break;
  }
  }
 
@@ -807,11 +840,9 @@ float XYZ_Val;
  if(*(*(gcode+3)+0) != 0){
  no_of_axis++;
  i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
- switch(*(*(gcode+3))) {
- case 'X':case 'x':
- case 'Y':case 'y':
- case 'Z':case 'z':
- case 'R':case 'r':
+ switch(*(*(gcode+3)+0)) {
+ case 'X':case 'x':case 'Y':case 'y':
+ case 'Z':case 'z':case 'R':case 'r':
  case 'I':case 'i':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[3],&XYZ_Val);
@@ -819,18 +850,13 @@ float XYZ_Val;
  PrintDebug(*gcode[3],temp,&XYZ_Val);
 
  break;
- case 'F':
- case 'f':
- if(!F_1_Once){
- F_1_Once = 1;
- F_Val = atoi(temp);
- status = Instruction_Values(gcode[3],&F_Val);
+ case 'F': case 'f':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[3],&O_Val);
 
- PrintDebug(*gcode[3],temp,&F_Val);
+ PrintDebug(*gcode[3],temp,&O_Val);
 
- }
  break;
-
  }
  }
 
@@ -849,16 +875,12 @@ float XYZ_Val;
  PrintDebug(*gcode[4],temp,&XYZ_Val);
 
  break;
- case 'F':
- case 'f':
- if(!F_1_Once){
- F_1_Once = 1;
- F_Val = atoi(temp);
- status = Instruction_Values(gcode[4],&F_Val);
+ case 'F':case 'f':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[4],&O_Val);
 
- PrintDebug(*gcode[4],temp,&F_Val);
+ PrintDebug(*gcode[4],temp,&O_Val);
 
- }
  break;
 
  }
@@ -878,18 +900,13 @@ float XYZ_Val;
  PrintDebug(*gcode[5],temp,&XYZ_Val);
 
  break;
- case 'F':
- case 'f':
+ case 'F':case 'f':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[5],&O_Val);
 
- F_1_Once = 1;
- F_Val = atoi(temp);
- status = Instruction_Values(gcode[5],&F_Val);
-
- PrintDebug(*gcode[5],temp,&F_Val);
-
+ PrintDebug(*gcode[5],temp,&O_Val);
 
  break;
-
  }
  }
 
@@ -904,16 +921,12 @@ float XYZ_Val;
  PrintDebug(gcode[6],temp,&XYZ_Val);
 
  break;
- case 'F':
- case 'f':
- if(!F_1_Once){
- F_1_Once = 1;
- F_Val = atoi(temp);
- status = Instruction_Values(gcode[6],&F_Val);
+ case 'F':case 'f':
+ O_Val = atoi(temp);
+ status = Instruction_Values(gcode[6],&O_Val);
 
- PrintDebug(gcode[6],temp,&F_Val);
+ PrintDebug(gcode[6],temp,&O_Val);
 
- }
  break;
 
  }
@@ -1002,6 +1015,7 @@ float XYZ_Val;
  break;
 
  }
+ ret:
  status = Check_group_multiple_violations();
 
 
@@ -1082,6 +1096,8 @@ float XYZ_Val;
  case 'M':case 'm':
  case 'S':case 's':
  case 'P':case 'p':
+ case 'L':case 'l':
+ case 'T':case 't':
  G_Val = *(int*)ptr;
  while(DMA_Busy(1));
  dma_printf("%c\t%s\t%d\n",c,strB,G_Val);

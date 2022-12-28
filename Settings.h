@@ -28,6 +28,13 @@
 #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
 #define DEFAULT_DECIMAL_PLACES 3
 #define DEFAULT_N_ARC_CORRECTION 25
+
+#define N_COORDINATE_SYSTEM 6  // Number of supported work coordinate systems (from index 1)
+#define SETTING_INDEX_NCOORD N_COORDINATE_SYSTEM+1 // Total number of system stored (from index 0)
+// NOTE: Work coordinate indices are (0=G54, 1=G55, ... , 6=G59)
+#define SETTING_INDEX_G28    N_COORDINATE_SYSTEM    // Home position 1
+#define SETTING_INDEX_G30    N_COORDINATE_SYSTEM+1  // Home position 2
+// #define SETTING_INDEX_G92    N_COORDINATE_SYSTEM+2  // Coordinate offset (G92.2,G92.3 not supported)
   
 // Define bit flag masks for the boolean settings in settings.flag.
 #define BITFLAG_REPORT_INCHES      bit(0)

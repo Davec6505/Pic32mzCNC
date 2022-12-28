@@ -138,7 +138,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 123 "c:/users/git/pic32mzcnc/settings.h"
+#line 130 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  float steps_per_mm[ 6 ];
@@ -624,6 +624,7 @@ char FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
+void Str_clear(char *str,int len);
 
 int Sample_Ringbuffer();
 

@@ -61220,6 +61220,7 @@ stnaddr67_bit
 stnaddr67_emacxsa0_bit
 stopaxis
 stps
+str_clear
 str_initialize
 strcat
 strchr

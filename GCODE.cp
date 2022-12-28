@@ -138,7 +138,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 123 "c:/users/git/pic32mzcnc/settings.h"
+#line 130 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  float steps_per_mm[ 6 ];
@@ -556,6 +556,7 @@ void delay_us(unsigned long us);
 void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
+void Str_clear(char *str,int len);
 
 int Sample_Ringbuffer();
 
@@ -770,17 +771,20 @@ int i = 0;
 
 
  if(group_number > 0) {
- if(group_number != last_group_number)
- modal_group_words = 0;
 
-
- if (  ((modal_group_words & (1 << group_number) ) != 0)  ) {
-  status_code = 5 ; ;
- return status_code;
- } else {
-  (modal_group_words |= (1 << group_number) ) ;
   status_code = 0 ; ;
- }
+ if(group_number ==  0 )
+  status_code = 5 ; ;
+
+ if(group_number != last_group_number)
+ Rst_modalgroup();
+
+  (modal_group_words |= (1 << group_number) ) ;
+
+
+ while(DMA_Busy(1));
+ dma_printf("group_number:= %d\n",group_number);
+
 
  last_group_number = group_number;
  if (group_number ==  1 ){
@@ -791,8 +795,8 @@ int i = 0;
  }
 
  while(DMA_Busy(1));
- dma_printf("group_number:= %d\tnon_modal_action:= %d\tnon_modal_words:=%d\n",
- group_number,non_modal_action,non_modal_words);
+ dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
+ non_modal_action,non_modal_words);
 
  last_non_modal_action = non_modal_action;
  return status_code;
@@ -877,7 +881,7 @@ int i = 0;
 
 int Instruction_Values(char *c,void *any){
 float XYZ_Val;
-int F_Val,S_Val;
+int F_Val,O_Val;
 
  switch(c[0]){
  case 'X':
@@ -931,29 +935,35 @@ int F_Val,S_Val;
  if(F_Val < 0){
   status_code = 13 ; ;
  }
-#line 291 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 294 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  gc.frequency = F_Val;
  break;
  case 'P':
- S_Val = *(int*)any;
- if(S_Val < 0){
+ O_Val = *(int*)any;
+ if(O_Val < 0){
   status_code = 13 ; ;
  }
- gc.P = S_Val;
+ gc.P = O_Val;
  gc.S = -1;
  break;
  case 'S':
- S_Val = *(int*)any;
- if(S_Val < 0){
+ O_Val = *(int*)any;
+ if(O_Val < 0){
   status_code = 13 ; ;
  }
- gc.S = S_Val;
+ gc.S = O_Val;
  gc.P = -1;
  break;
-
+ case 'L':
+ O_Val = *(int*)any;
+ if(O_Val < 0){
+  status_code = 13 ; ;
+ }
+ gc.L = O_Val;
+ break;
  default: status_code = 3 ; ;break;
  }
-#line 321 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 330 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }
 
@@ -1020,7 +1030,7 @@ int i;
  case 921: non_modal_action =  8 ; break;
  default:  status_code = 3 ; ;break;
  }
-
+  status_code = 0 ; ;
 
 
 
@@ -1066,7 +1076,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 436 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 445 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  status_code = 3 ; ;break;

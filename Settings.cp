@@ -1,6 +1,6 @@
 #line 1 "C:/Users/Git/Pic32mzCNC/Settings.c"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 123 "c:/users/git/pic32mzcnc/settings.h"
+#line 130 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  float steps_per_mm[ 6 ];

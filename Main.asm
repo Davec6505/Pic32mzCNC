@@ -31,7 +31,7 @@ NOP
 ; end of _Conditin_Externs
 _main:
 ;Main.c,59 :: 		void main() {
-ADDIU	SP, SP, -36
+ADDIU	SP, SP, -40
 ;Main.c,60 :: 		int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
 ;Main.c,65 :: 		Conditin_Externs();
 JAL	_Conditin_Externs+0
@@ -52,20 +52,18 @@ JAL	_Debounce_Limits+0
 NOP	
 ;Main.c,75 :: 		if(!status_of_gcode){
 LH	R2, 2(SP)
-BEQ	R2, R0, L__main68
+BEQ	R2, R0, L__main76
 NOP	
 J	L_main2
 NOP	
-L__main68:
+L__main76:
 ;Main.c,77 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
-; modal_group start address is: 16 (R4)
-SEH	R4, R2
+SH	R2, 4(SP)
 ;Main.c,78 :: 		switch(modal_group){
 J	L_main3
 NOP	
-; modal_group end address is: 16 (R4)
 ;Main.c,79 :: 		case 0:break;
 L_main5:
 J	L_main4
@@ -81,6 +79,7 @@ NOP
 ;Main.c,82 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
+SH	R2, 4(SP)
 ;Main.c,83 :: 		break;
 J	L_main4
 NOP	
@@ -91,11 +90,11 @@ JAL	_Get_Axisword+0
 NOP	
 SH	R2, 0(SP)
 ;Main.c,86 :: 		if(axis_to_run){
-BNE	R2, R0, L__main70
+BNE	R2, R0, L__main78
 NOP	
 J	L_main8
 NOP	
-L__main70:
+L__main78:
 ;Main.c,87 :: 		EnableSteppers(2);
 ORI	R25, R0, 2
 JAL	_EnableSteppers+0
@@ -149,77 +148,75 @@ J	L_main4
 NOP	
 ;Main.c,106 :: 		}
 L_main3:
-; modal_group start address is: 16 (R4)
-SEH	R2, R4
-BNE	R2, R0, L__main72
+LH	R2, 4(SP)
+BNE	R2, R0, L__main80
 NOP	
 J	L_main5
 NOP	
-L__main72:
-SEH	R3, R4
+L__main80:
+LH	R3, 4(SP)
 ORI	R2, R0, 2
-BNE	R3, R2, L__main74
+BNE	R3, R2, L__main82
 NOP	
 J	L_main6
 NOP	
-L__main74:
-SEH	R3, R4
+L__main82:
+LH	R3, 4(SP)
 ORI	R2, R0, 4
-BNE	R3, R2, L__main76
+BNE	R3, R2, L__main84
 NOP	
 J	L_main7
 NOP	
-L__main76:
-SEH	R3, R4
+L__main84:
+LH	R3, 4(SP)
 ORI	R2, R0, 8
-BNE	R3, R2, L__main78
+BNE	R3, R2, L__main86
 NOP	
 J	L_main9
 NOP	
-L__main78:
-SEH	R3, R4
+L__main86:
+LH	R3, 4(SP)
 ORI	R2, R0, 16
-BNE	R3, R2, L__main80
+BNE	R3, R2, L__main88
 NOP	
 J	L_main10
 NOP	
-L__main80:
-SEH	R3, R4
+L__main88:
+LH	R3, 4(SP)
 ORI	R2, R0, 32
-BNE	R3, R2, L__main82
+BNE	R3, R2, L__main90
 NOP	
 J	L_main11
 NOP	
-L__main82:
-SEH	R3, R4
+L__main90:
+LH	R3, 4(SP)
 ORI	R2, R0, 64
-BNE	R3, R2, L__main84
+BNE	R3, R2, L__main92
 NOP	
 J	L_main12
 NOP	
-L__main84:
-SEH	R3, R4
+L__main92:
+LH	R3, 4(SP)
 ORI	R2, R0, 128
-BNE	R3, R2, L__main86
+BNE	R3, R2, L__main94
 NOP	
 J	L_main13
 NOP	
-L__main86:
-SEH	R3, R4
+L__main94:
+LH	R3, 4(SP)
 ORI	R2, R0, 256
-BNE	R3, R2, L__main88
+BNE	R3, R2, L__main96
 NOP	
 J	L_main14
 NOP	
-L__main88:
-SEH	R3, R4
-; modal_group end address is: 16 (R4)
+L__main96:
+LH	R3, 4(SP)
 ORI	R2, R0, 512
-BNE	R3, R2, L__main90
+BNE	R3, R2, L__main98
 NOP	
 J	L_main15
 NOP	
-L__main90:
+L__main98:
 L_main4:
 ;Main.c,107 :: 		}
 L_main2:
@@ -236,11 +233,11 @@ _SX
 ;Main.c,117 :: 		if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
 LHU	R2, Offset(Main_disable_steps+0)(GP)
 SLTIU	R2, R2, 11
-BNE	R2, R0, L__main91
+BNE	R2, R0, L__main99
 NOP	
 J	L_main16
 NOP	
-L__main91:
+L__main99:
 ;Main.c,118 :: 		disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
 LHU	R26, Offset(Main_disable_steps+0)(GP)
 ORI	R25, R0, 10
@@ -251,31 +248,31 @@ SH	R2, Offset(Main_disable_steps+0)(GP)
 L_main16:
 ;Main.c,125 :: 		if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
 LHU	R2, Offset(_STPS+6)(GP)
-BEQ	R2, R0, L__main92
+BEQ	R2, R0, L__main100
 NOP	
-J	L__main65
+J	L__main73
 NOP	
-L__main92:
+L__main100:
 LHU	R2, Offset(_STPS+110)(GP)
-BEQ	R2, R0, L__main93
+BEQ	R2, R0, L__main101
 NOP	
-J	L__main64
+J	L__main72
 NOP	
-L__main93:
+L__main101:
 J	L_main19
 NOP	
-L__main65:
-L__main64:
+L__main73:
+L__main72:
 ;Main.c,126 :: 		while(DMA_Busy(1));
 L_main20:
 ORI	R25, R0, 1
 JAL	_DMA_Busy+0
 NOP	
-BNE	R2, R0, L__main95
+BNE	R2, R0, L__main103
 NOP	
 J	L_main21
 NOP	
-L__main95:
+L__main103:
 J	L_main20
 NOP	
 L_main21:
@@ -283,13 +280,13 @@ L_main21:
 LHU	R2, Offset(_STPS+6)(GP)
 ANDI	R4, R2, 255
 ;Main.c,127 :: 		dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
-ADDIU	R23, SP, 4
+ADDIU	R23, SP, 6
 ADDIU	R22, R23, 31
 LUI	R24, hi_addr(?ICS?lstr1_Main+0)
 ORI	R24, R24, lo_addr(?ICS?lstr1_Main+0)
 JAL	___CC2DW+0
 NOP	
-ADDIU	R3, SP, 4
+ADDIU	R3, SP, 6
 ;Main.c,129 :: 		SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
 LW	R2, Offset(_STPS+8)(GP)
 ADDIU	SP, SP, -28
@@ -368,11 +365,11 @@ ORI	R25, R0, 1
 JAL	_DMA_Busy+0
 NOP	
 LH	R25, 12(SP)
-BNE	R2, R0, L__Temp_Move99
+BNE	R2, R0, L__Temp_Move107
 NOP	
 J	L_Temp_Move28
 NOP	
-L__Temp_Move99:
+L__Temp_Move107:
 J	L_Temp_Move27
 NOP	
 L_Temp_Move28:
@@ -574,95 +571,95 @@ NOP
 L_Temp_Move22:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L__Temp_Move101
+BNE	R3, R2, L__Temp_Move109
 NOP	
 J	L_Temp_Move24
 NOP	
-L__Temp_Move101:
+L__Temp_Move109:
 SEH	R3, R25
 ORI	R2, R0, 2
-BNE	R3, R2, L__Temp_Move103
+BNE	R3, R2, L__Temp_Move111
 NOP	
 J	L_Temp_Move25
 NOP	
-L__Temp_Move103:
+L__Temp_Move111:
 SEH	R3, R25
 ORI	R2, R0, 3
-BNE	R3, R2, L__Temp_Move105
+BNE	R3, R2, L__Temp_Move113
 NOP	
 J	L_Temp_Move26
 NOP	
-L__Temp_Move105:
+L__Temp_Move113:
 SEH	R3, R25
 ORI	R2, R0, 4
-BNE	R3, R2, L__Temp_Move107
+BNE	R3, R2, L__Temp_Move115
 NOP	
 J	L_Temp_Move29
 NOP	
-L__Temp_Move107:
+L__Temp_Move115:
 SEH	R3, R25
 ORI	R2, R0, 5
-BNE	R3, R2, L__Temp_Move109
+BNE	R3, R2, L__Temp_Move117
 NOP	
 J	L_Temp_Move30
 NOP	
-L__Temp_Move109:
+L__Temp_Move117:
 SEH	R3, R25
 ORI	R2, R0, 6
-BNE	R3, R2, L__Temp_Move111
+BNE	R3, R2, L__Temp_Move119
 NOP	
 J	L_Temp_Move31
 NOP	
-L__Temp_Move111:
+L__Temp_Move119:
 SEH	R3, R25
 ORI	R2, R0, 8
-BNE	R3, R2, L__Temp_Move113
+BNE	R3, R2, L__Temp_Move121
 NOP	
 J	L_Temp_Move32
 NOP	
-L__Temp_Move113:
+L__Temp_Move121:
 SEH	R3, R25
 ORI	R2, R0, 9
-BNE	R3, R2, L__Temp_Move115
+BNE	R3, R2, L__Temp_Move123
 NOP	
 J	L_Temp_Move33
 NOP	
-L__Temp_Move115:
+L__Temp_Move123:
 SEH	R3, R25
 ORI	R2, R0, 10
-BNE	R3, R2, L__Temp_Move117
+BNE	R3, R2, L__Temp_Move125
 NOP	
 J	L_Temp_Move34
 NOP	
-L__Temp_Move117:
+L__Temp_Move125:
 SEH	R3, R25
 ORI	R2, R0, 12
-BNE	R3, R2, L__Temp_Move119
+BNE	R3, R2, L__Temp_Move127
 NOP	
 J	L_Temp_Move35
 NOP	
-L__Temp_Move119:
+L__Temp_Move127:
 SEH	R3, R25
 ORI	R2, R0, 13
-BNE	R3, R2, L__Temp_Move121
+BNE	R3, R2, L__Temp_Move129
 NOP	
 J	L_Temp_Move36
 NOP	
-L__Temp_Move121:
+L__Temp_Move129:
 SEH	R3, R25
 ORI	R2, R0, 14
-BNE	R3, R2, L__Temp_Move123
+BNE	R3, R2, L__Temp_Move131
 NOP	
 J	L_Temp_Move37
 NOP	
-L__Temp_Move123:
+L__Temp_Move131:
 SEH	R3, R25
 ORI	R2, R0, 15
-BNE	R3, R2, L__Temp_Move125
+BNE	R3, R2, L__Temp_Move133
 NOP	
 J	L_Temp_Move38
 NOP	
-L__Temp_Move125:
+L__Temp_Move133:
 J	L_Temp_Move39
 NOP	
 L_Temp_Move23:
@@ -692,11 +689,11 @@ MOVZ	R5, R0, R0
 ;Main.c,197 :: 		if(gc.S > 0){ //wait in seconds
 LH	R2, Offset(_gc+146)(GP)
 SLTI	R2, R2, 1
-BEQ	R2, R0, L__Non_Modal_Actions127
+BEQ	R2, R0, L__Non_Modal_Actions135
 NOP	
 J	L_Non_Modal_Actions43
 NOP	
-L__Non_Modal_Actions127:
+L__Non_Modal_Actions135:
 ;Main.c,198 :: 		dly_time = gc.S * 1000;
 LH	R3, Offset(_gc+146)(GP)
 ORI	R2, R0, 1000
@@ -712,11 +709,11 @@ L_Non_Modal_Actions44:
 SEH	R3, R5
 SEH	R2, R4
 SLT	R2, R3, R2
-BNE	R2, R0, L__Non_Modal_Actions128
+BNE	R2, R0, L__Non_Modal_Actions136
 NOP	
 J	L_Non_Modal_Actions45
 NOP	
-L__Non_Modal_Actions128:
+L__Non_Modal_Actions136:
 ;Main.c,200 :: 		LED2 = TMR.clock >> 1;
 LBU	R2, Offset(_TMR+0)(GP)
 SRL	R3, R2, 1
@@ -746,11 +743,11 @@ L_Non_Modal_Actions43:
 ; i start address is: 20 (R5)
 LH	R2, Offset(_gc+144)(GP)
 SLTI	R2, R2, 1
-BEQ	R2, R0, L__Non_Modal_Actions129
+BEQ	R2, R0, L__Non_Modal_Actions137
 NOP	
 J	L_Non_Modal_Actions49
 NOP	
-L__Non_Modal_Actions129:
+L__Non_Modal_Actions137:
 ;Main.c,205 :: 		dly_time = (unsigned long)gc.P;
 LH	R2, Offset(_gc+144)(GP)
 ; dly_time start address is: 16 (R4)
@@ -764,11 +761,11 @@ L_Non_Modal_Actions50:
 SEH	R3, R5
 SEH	R2, R4
 SLT	R2, R3, R2
-BNE	R2, R0, L__Non_Modal_Actions130
+BNE	R2, R0, L__Non_Modal_Actions138
 NOP	
 J	L_Non_Modal_Actions51
 NOP	
-L__Non_Modal_Actions130:
+L__Non_Modal_Actions138:
 ;Main.c,207 :: 		LED2 = TMR.clock >> 1;
 LBU	R2, Offset(_TMR+0)(GP)
 SRL	R3, R2, 1
@@ -803,121 +800,158 @@ J	L_Non_Modal_Actions41
 NOP	
 ;Main.c,214 :: 		case 4:
 L_Non_Modal_Actions54:
-;Main.c,218 :: 		break;
-J	L_Non_Modal_Actions41
-NOP	
-;Main.c,219 :: 		case 8:
-L_Non_Modal_Actions55:
-;Main.c,220 :: 		break;
-J	L_Non_Modal_Actions41
-NOP	
-;Main.c,221 :: 		case 16:
-L_Non_Modal_Actions56:
-;Main.c,222 :: 		break;
-J	L_Non_Modal_Actions41
-NOP	
-;Main.c,223 :: 		case 32:
-L_Non_Modal_Actions57:
-;Main.c,224 :: 		break;
-J	L_Non_Modal_Actions41
-NOP	
-;Main.c,225 :: 		case 64:
-L_Non_Modal_Actions58:
-;Main.c,226 :: 		break;
-J	L_Non_Modal_Actions41
-NOP	
-;Main.c,227 :: 		case 128:
-L_Non_Modal_Actions59:
-;Main.c,228 :: 		break;
-J	L_Non_Modal_Actions41
-NOP	
-;Main.c,229 :: 		case 256:
-L_Non_Modal_Actions60:
-;Main.c,230 :: 		break;
-J	L_Non_Modal_Actions41
-NOP	
-;Main.c,231 :: 		case 512:
-L_Non_Modal_Actions61:
-;Main.c,232 :: 		break;
-J	L_Non_Modal_Actions41
-NOP	
-;Main.c,233 :: 		default: action = -1; //error in action msg ???
-L_Non_Modal_Actions62:
-ORI	R25, R0, 65535
-;Main.c,234 :: 		break;
-J	L_Non_Modal_Actions41
-NOP	
-;Main.c,235 :: 		}
-L_Non_Modal_Actions40:
-SEH	R3, R25
+;Main.c,227 :: 		if(gc.L != 2 && gc.L != 20)
+LH	R3, Offset(_gc+14)(GP)
 ORI	R2, R0, 2
-BNE	R3, R2, L__Non_Modal_Actions132
-NOP	
-J	L_Non_Modal_Actions42
-NOP	
-L__Non_Modal_Actions132:
-SEH	R3, R25
-ORI	R2, R0, 4
-BNE	R3, R2, L__Non_Modal_Actions134
-NOP	
-J	L_Non_Modal_Actions54
-NOP	
-L__Non_Modal_Actions134:
-SEH	R3, R25
-ORI	R2, R0, 8
-BNE	R3, R2, L__Non_Modal_Actions136
-NOP	
-J	L_Non_Modal_Actions55
-NOP	
-L__Non_Modal_Actions136:
-SEH	R3, R25
-ORI	R2, R0, 16
-BNE	R3, R2, L__Non_Modal_Actions138
-NOP	
-J	L_Non_Modal_Actions56
-NOP	
-L__Non_Modal_Actions138:
-SEH	R3, R25
-ORI	R2, R0, 32
 BNE	R3, R2, L__Non_Modal_Actions140
 NOP	
-J	L_Non_Modal_Actions57
+J	L__Non_Modal_Actions70
 NOP	
 L__Non_Modal_Actions140:
-SEH	R3, R25
-ORI	R2, R0, 64
+LH	R3, Offset(_gc+14)(GP)
+ORI	R2, R0, 20
 BNE	R3, R2, L__Non_Modal_Actions142
+NOP	
+J	L__Non_Modal_Actions69
+NOP	
+L__Non_Modal_Actions142:
+L__Non_Modal_Actions68:
+;Main.c,228 :: 		return -1;
+ORI	R2, R0, 65535
+J	L_end_Non_Modal_Actions
+NOP	
+;Main.c,227 :: 		if(gc.L != 2 && gc.L != 20)
+L__Non_Modal_Actions70:
+L__Non_Modal_Actions69:
+;Main.c,229 :: 		if (gc.L == 20) {
+LH	R3, Offset(_gc+14)(GP)
+ORI	R2, R0, 20
+BEQ	R3, R2, L__Non_Modal_Actions143
 NOP	
 J	L_Non_Modal_Actions58
 NOP	
-L__Non_Modal_Actions142:
-SEH	R3, R25
-ORI	R2, R0, 128
-BNE	R3, R2, L__Non_Modal_Actions144
-NOP	
+L__Non_Modal_Actions143:
+;Main.c,233 :: 		} else {
 J	L_Non_Modal_Actions59
 NOP	
-L__Non_Modal_Actions144:
+L_Non_Modal_Actions58:
+;Main.c,244 :: 		}
+L_Non_Modal_Actions59:
+;Main.c,245 :: 		break;
+J	L_Non_Modal_Actions41
+NOP	
+;Main.c,246 :: 		case 8:
+L_Non_Modal_Actions60:
+;Main.c,247 :: 		break;
+J	L_Non_Modal_Actions41
+NOP	
+;Main.c,248 :: 		case 16:
+L_Non_Modal_Actions61:
+;Main.c,249 :: 		break;
+J	L_Non_Modal_Actions41
+NOP	
+;Main.c,250 :: 		case 32:
+L_Non_Modal_Actions62:
+;Main.c,251 :: 		break;
+J	L_Non_Modal_Actions41
+NOP	
+;Main.c,252 :: 		case 64:
+L_Non_Modal_Actions63:
+;Main.c,253 :: 		break;
+J	L_Non_Modal_Actions41
+NOP	
+;Main.c,254 :: 		case 128:
+L_Non_Modal_Actions64:
+;Main.c,255 :: 		break;
+J	L_Non_Modal_Actions41
+NOP	
+;Main.c,256 :: 		case 256:
+L_Non_Modal_Actions65:
+;Main.c,257 :: 		break;
+J	L_Non_Modal_Actions41
+NOP	
+;Main.c,258 :: 		case 512:
+L_Non_Modal_Actions66:
+;Main.c,259 :: 		break;
+J	L_Non_Modal_Actions41
+NOP	
+;Main.c,260 :: 		default: action = -1; //error in action msg ???
+L_Non_Modal_Actions67:
+ORI	R25, R0, 65535
+;Main.c,261 :: 		break;
+J	L_Non_Modal_Actions41
+NOP	
+;Main.c,262 :: 		}
+L_Non_Modal_Actions40:
 SEH	R3, R25
-ORI	R2, R0, 256
-BNE	R3, R2, L__Non_Modal_Actions146
+ORI	R2, R0, 2
+BNE	R3, R2, L__Non_Modal_Actions145
+NOP	
+J	L_Non_Modal_Actions42
+NOP	
+L__Non_Modal_Actions145:
+SEH	R3, R25
+ORI	R2, R0, 4
+BNE	R3, R2, L__Non_Modal_Actions147
+NOP	
+J	L_Non_Modal_Actions54
+NOP	
+L__Non_Modal_Actions147:
+SEH	R3, R25
+ORI	R2, R0, 8
+BNE	R3, R2, L__Non_Modal_Actions149
 NOP	
 J	L_Non_Modal_Actions60
 NOP	
-L__Non_Modal_Actions146:
+L__Non_Modal_Actions149:
 SEH	R3, R25
-ORI	R2, R0, 512
-BNE	R3, R2, L__Non_Modal_Actions148
+ORI	R2, R0, 16
+BNE	R3, R2, L__Non_Modal_Actions151
 NOP	
 J	L_Non_Modal_Actions61
 NOP	
-L__Non_Modal_Actions148:
+L__Non_Modal_Actions151:
+SEH	R3, R25
+ORI	R2, R0, 32
+BNE	R3, R2, L__Non_Modal_Actions153
+NOP	
 J	L_Non_Modal_Actions62
 NOP	
+L__Non_Modal_Actions153:
+SEH	R3, R25
+ORI	R2, R0, 64
+BNE	R3, R2, L__Non_Modal_Actions155
+NOP	
+J	L_Non_Modal_Actions63
+NOP	
+L__Non_Modal_Actions155:
+SEH	R3, R25
+ORI	R2, R0, 128
+BNE	R3, R2, L__Non_Modal_Actions157
+NOP	
+J	L_Non_Modal_Actions64
+NOP	
+L__Non_Modal_Actions157:
+SEH	R3, R25
+ORI	R2, R0, 256
+BNE	R3, R2, L__Non_Modal_Actions159
+NOP	
+J	L_Non_Modal_Actions65
+NOP	
+L__Non_Modal_Actions159:
+SEH	R3, R25
+ORI	R2, R0, 512
+BNE	R3, R2, L__Non_Modal_Actions161
+NOP	
+J	L_Non_Modal_Actions66
+NOP	
+L__Non_Modal_Actions161:
+J	L_Non_Modal_Actions67
+NOP	
 L_Non_Modal_Actions41:
-;Main.c,236 :: 		return action;
+;Main.c,263 :: 		return action;
 SEH	R2, R25
-;Main.c,237 :: 		}
+;Main.c,264 :: 		}
 L_end_Non_Modal_Actions:
 JR	RA
 NOP	

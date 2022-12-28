@@ -212,9 +212,36 @@ int dly_time,i;
            LED2 = false;
           break;
      case 4: 
+          /******************************************************************
+           *! L1 sets the offsets of the specified tool relative to the head
+           *  reference point to the specified values.
+           *! L2 sets the current workplace coordinate offsets to the specified
+           *  values.
+           *! L20 adjusts the current workplace coordinate offsets so
+           *  that the current tool head position has the specified coordinates.
+           ******************************************************************/
           //G10 setting of offsets 
           //[G10 L1 P2 X17.8 Y-19.3 Z0.0]
           //[G10 P1 R140 S205]
+          //P index is EEPROM coordinate data indexing / recipe.
+          if(gc.L != 2 && gc.L != 20)
+             return -1;
+          if (gc.L == 20) {
+            // settings_write_coord_data(int_value,gc.position);
+             // Update system coordinate system if currently active.
+            // if (gc.coord_select == int_value) { memcpy(gc.coord_system,gc.position,sizeof(gc.position)); }
+          } else {
+           /* float coord_data[N_AXIS];
+            if (!settings_read_coord_data(int_value,coord_data)) { return(STATUS_SETTING_READ_FAIL); }
+            // Update axes defined only in block. Always in machine coordinates. Can change non-active system.
+            uint8_t i;
+            for (i=0; i<N_AXIS; i++) { // Axes indices are consistent, so loop may be used.
+              if ( bit_istrue(axis_words,bit(i)) ) { coord_data[i] = target[i]; }
+            }
+            settings_write_coord_data(int_value,coord_data);
+            // Update system coordinate system if currently active.
+            if (gc.coord_select == int_value) { memcpy(gc.coord_system,coord_data,sizeof(coord_data)); } */
+          }
           break;
      case 8:
           break;

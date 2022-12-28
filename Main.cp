@@ -136,7 +136,7 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 123 "c:/users/git/pic32mzcnc/settings.h"
+#line 130 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  float steps_per_mm[ 6 ];
@@ -636,6 +636,7 @@ void delay_us(unsigned long us);
 void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
+void Str_clear(char *str,int len);
 
 int Sample_Ringbuffer();
 
@@ -848,9 +849,16 @@ int dly_time,i;
  LED2 =  0 ;
  break;
  case 4:
+#line 227 "C:/Users/Git/Pic32mzCNC/Main.c"
+ if(gc.L != 2 && gc.L != 20)
+ return -1;
+ if (gc.L == 20) {
 
 
 
+ } else {
+#line 244 "C:/Users/Git/Pic32mzCNC/Main.c"
+ }
  break;
  case 8:
  break;

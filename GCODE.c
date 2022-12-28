@@ -121,18 +121,21 @@ int i = 0;
     //non modal codes have effect only on the lines on which they occur
     //these codes will need the full instruction in one line
  if(group_number > 0) {
-   if(group_number != last_group_number)
-      modal_group_words = 0;
-
-    //initially modal_group_words will == 0, reset after this block
-   if ( bit_istrue(modal_group_words,bit(group_number)) ) {
+ 
+   FAIL(STATUS_OK);
+   if(group_number == MODAL_GROUP_NONE)
       FAIL(STATUS_MODAL_GROUP_VIOLATION);
-      return status_code;
-   } else {
-      bit_true(modal_group_words,bit(group_number));
-      FAIL(STATUS_OK);
-   }
+   
+   if(group_number != last_group_number)
+      Rst_modalgroup();
+      
+   bit_true(modal_group_words,bit(group_number));
 
+   #if GcodeDebug == 2
+     while(DMA_Busy(1));
+     dma_printf("group_number:= %d\n",group_number);
+   #endif
+   
    last_group_number = group_number;
    if (group_number == MODAL_GROUP_0){
      //if the non modal action has changed reset its state
@@ -142,8 +145,8 @@ int i = 0;
      }
      #if GcodeDebug == 2
        while(DMA_Busy(1));
-       dma_printf("group_number:= %d\tnon_modal_action:= %d\tnon_modal_words:=%d\n",
-       group_number,non_modal_action,non_modal_words);
+       dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
+       non_modal_action,non_modal_words);
      #endif
      last_non_modal_action = non_modal_action;
      return status_code;
@@ -228,7 +231,7 @@ int i = 0;
 //{X,Y,Z,A} Movement values
 int Instruction_Values(char *c,void *any){
 float XYZ_Val;
-int F_Val,S_Val;
+int F_Val,O_Val;
 
    switch(c[0]){
       case 'X':
@@ -291,22 +294,28 @@ int F_Val,S_Val;
             gc.frequency = F_Val;
             break;
       case 'P':
-            S_Val = *(int*)any;
-            if(S_Val < 0){
+            O_Val = *(int*)any;
+            if(O_Val < 0){
                FAIL(STATUS_SPEED_ERROR);
             }
-            gc.P = S_Val;
+            gc.P = O_Val;
             gc.S = -1;
             break;
       case 'S':
-            S_Val = *(int*)any;
-            if(S_Val < 0){
+            O_Val = *(int*)any;
+            if(O_Val < 0){
                FAIL(STATUS_SPEED_ERROR);
             }
-            gc.S = S_Val;
+            gc.S = O_Val;
             gc.P = -1;
             break;
-      //case 'L': l = trunc(value); break; //L2 tells the G10 we’re setting standard work offsets
+      case 'L': 
+            O_Val = *(int*)any;
+            if(O_Val < 0){
+               FAIL(STATUS_SPEED_ERROR);
+            }
+            gc.L = O_Val;
+       break; //L2 tells the G10 we’re setting standard work offsets
       default:FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
    }
   #if GcodeDebug == 1
@@ -315,8 +324,8 @@ int F_Val,S_Val;
          dma_printf("\t%c\t%f\n",c[0],XYZ_Val);
       else if(c[0] == 'F')
          dma_printf("\t%c\t%d\n",c[0],F_Val);
-      else if(c[0] == 'S')
-         dma_printf("\t%c\t%d\n",c[0],S_Val);
+      else if(c[0] == 'S' ||  c[0] == 'P' || c[0] == 'L')
+         dma_printf("\t%c\t%d\n",c[0],O_Val);
   #endif
   return status_code;
 }
@@ -384,8 +393,8 @@ int i;
     case 921: non_modal_action = NON_MODAL_RESET_COORDINATE_OFFSET; break;
     default: FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
   }
-    // [G54,G55,...,G59]: Coordinate system selection to be implimented
-  
+  FAIL(STATUS_OK);
+  // [G54,G55,...,G59]: Coordinate system selection to be implimented
   // [G0,G1,G2,G3,G80]: Perform motion modes.
   // NOTE: Commands G10,G28,G30,G92 lock out and prevent axis words from use in motion modes.
   // Enter motion modes only if there are axis words or a motion mode command word in the block.
