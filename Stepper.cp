@@ -89,26 +89,27 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 92 "c:/users/git/pic32mzcnc/settings.h"
+#line 123 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[3];
- char microsteps;
- char pulse_microseconds;
+ unsigned long p_msec;
+ float steps_per_mm[ 6 ];
  float default_feed_rate;
  float default_seek_rate;
- char invert_mask;
+ float homing_feed_rate;
+ float homing_seek_rate;
+ float homing_pulloff;
  float mm_per_arc_segment;
  float acceleration;
  float junction_deviation;
+ unsigned int homing_debounce_delay;
  char flags;
  char homing_dir_mask;
- float homing_feed_rate;
- float homing_seek_rate;
- unsigned int homing_debounce_delay;
- float homing_pulloff;
  char stepper_idle_lock_time;
  char decimal_places;
  char n_arc_correction;
+ char microsteps;
+ char pulse_microseconds;
+ char invert_mask;
 
 } settings_t;
 extern settings_t settings;
@@ -116,7 +117,7 @@ extern settings_t settings;
 
 
 
-void Settings_Init();
+void Settings_Init(char reset_all);
 #line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
 #line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
@@ -226,7 +227,7 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 60 "c:/users/git/pic32mzcnc/globals.h"
+#line 70 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
  char abort;
  char state;
@@ -309,8 +310,17 @@ typedef struct Steps{
  homing_t homing;
 }STP;
 extern STP STPS[ 6 ];
-#line 119 "c:/users/git/pic32mzcnc/kinematics.h"
+
+
+
+
+
+
+
 void SetInitialSizes(STP axis[6]);
+
+
+static void Set_Axisdirection(long temp,int axis);
 
 
 void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
@@ -320,9 +330,8 @@ void SingleAxisStep(double newxyz,long speed,int axis_No);
 void mc_arc(double *position, double *target, double *offset, int axis_0,
  int axis_1,int axis_linear, double feed_rate,uint8_t invert_feed_rate,
  double radius, uint8_t isclockwise);
+
 float hypot(float angular_travel, float linear_travel);
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
- double r, double i, double j, double k, int axis_A,int axis_B,int dir);
 
 
 int GetAxisDirection(long mm2move);
@@ -332,9 +341,10 @@ void ResetHoming();
 void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
+void mc_dwell(float sec);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 83 "c:/users/git/pic32mzcnc/gcode.h"
+#line 116 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
@@ -350,9 +360,10 @@ typedef struct {
  plane_axis_1,
  plane_axis_2;
  char coord_select;
- int status_code;
- int motion_mode;
+
+
  int frequency;
+ int L;
  float feed_rate;
 
  float position[ 6 ];
@@ -365,6 +376,8 @@ typedef struct {
  float I;
  float J;
  float K;
+ int P;
+ int S;
 } parser_state_t;
 extern parser_state_t gc;
 
@@ -372,21 +385,37 @@ enum IJK{I,J,K};
 
 
 void G_Initialise();
+
+int Get_modalgroup();
+int Rst_modalgroup();
+
+int Get_modalword();
+int Rst_modalword();
+
 int Get_Axisword();
 int Rst_Axisword();
-static float To_Millimeters(float value);
+
+int Get_motionmode();
+int Rst_motionmode();
+
 int G_Mode(int mode);
-static void Set_Modal_Groups(int mode);
-static int Set_Motion_Mode(int mode);
 
 void M_Instruction(int flow);
-static void Set_M_Modal_Commands(int M_Val);
-static int Set_M_Commands(int M_Val);
+
+static float To_Millimeters(float value);
+
 int Check_group_multiple_violations();
+int Motion_mode();
 
 int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
+
+
+static int Set_Modal_Groups(int mode);
+static int Set_Motion_Mode(int mode);
+static void Set_M_Modal_Commands(int M_Val);
+static int Set_M_Commands(int M_Val);
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
@@ -499,9 +528,14 @@ void Str_Initialize(char arg[ 10 ][ 60 ]);
 
 int Sample_Ringbuffer();
 
-int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
-int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
-int str2int(char *str,int base);
+static int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
+static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
+static int str2int(char *str,int base);
+
+
+
+
+ static void PrintDebug(char c,char *strB,void *ptr);
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
@@ -519,8 +553,11 @@ void set_performance_mode();
 void Uart2InterruptSetup();
 void LcdI2CConfig();
 void OutPutPulseXYZ();
+
+
 int Temp_Move(int a);
-void LCD_Display();
+
+int Non_Modal_Actions(int action);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 11 "c:/users/git/pic32mzcnc/timers.h"
@@ -580,9 +617,12 @@ void plan_init(long accel,long decel);
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 
 unsigned long sqrt_(unsigned long v);
+
+void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
+ double r, double i, double j, double k, int axis_A,int axis_B,int dir);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 31 "c:/users/git/pic32mzcnc/stepper.h"
+#line 32 "c:/users/git/pic32mzcnc/stepper.h"
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -718,129 +758,6 @@ void DisableStepper(){
 
 
 
-
-
-
-void Step_Cycle(int axis_No){
-
- STPS[axis_No].step_count++;
-
- STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
- toggleOCx(axis_No);
-
-}
-
-
-
-void toggleOCx(int axis_No){
- switch(axis_No){
- case X:
- OC5IF_bit = 0;
- OC5R = 0x5;
- OC5RS = STPS[X].step_delay & 0xFFFF;
- TMR2 = 0xFFFF;
- OC5CON = 0x8004;
- break;
- case Y:
- OC2IF_bit = 0;
- OC2R = 0x5;
- OC2RS = STPS[Y].step_delay & 0xFFFF;
- TMR4 = 0xFFFF;
- OC2CON = 0x8004;
- break;
- case Z:
- OC7R = 0x5;
- OC7RS = STPS[Z].step_delay & 0xFFFF;
- TMR6 = 0xFFFF;
- OC7CON = 0x8004;
- break;
- case A:
- OC3R = 0x5;
- OC3RS = STPS[A].step_delay & 0xFFFF;
- TMR5 = 0xFFFF;
- OC3CON = 0x800C;
- break;
- case B:
- OC6R = 0x5;
- OC6RS = STPS[B].step_delay & 0xFFFF;
- TMR3 = 0xFFFF;
- OC6CON = 0x800C;
- break;
- case C:
- OC8R = 0x5;
- OC8RS = STPS[C].step_delay & 0xFFFF;
- TMR7 = 0xFFFF;
- OC8CON = 0x800C;
- break;
- default:
- break;
- }
-
-}
-
-
-
-int Pulse(int axis_No){
-#line 164 "C:/Users/Git/Pic32mzCNC/Stepper.c"
- switch(STPS[axis_No].run_state) {
- case  0 :
- STPS[axis_No].run_state =  0 ;
- SV.Tog = 1;
- break;
-
- case  1 :
-
- AccDec(axis_No);
- if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
- STPS[axis_No].step_delay = STPS[axis_No].min_delay;
- STPS[axis_No].run_state =  3 ;
- }
-#line 182 "C:/Users/Git/Pic32mzCNC/Stepper.c"
- if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
- STPS[axis_No].accel_count = STPS[axis_No].decel_val;
- STPS[axis_No].rest = 0;
- STPS[axis_No].run_state =  2 ;
- }
- break;
-
- case  3 :
- STPS[axis_No].step_delay = STPS[axis_No].min_delay;
-
-
-
- if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
- STPS[axis_No].accel_count = STPS[axis_No].decel_val;
- STPS[axis_No].rest = 0;
- STPS[axis_No].run_state =  2 ;
- }
- break;
-
- case  2 :
-
- AccDec(axis_No);
-
-
- if(STPS[axis_No].accel_count > -1 ){
- STPS[axis_No].run_state =  0 ;
- }
- break;
- default:break;
- }
- return axis_No;
-}
-
-
-
-void AccDec(int axis_No){
- STPS[axis_No].accel_count++;
- STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
- STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
- STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
-}
-
-
-
-
 void Single_Axis_Enable(_axis_ axis_){
  switch(axis_){
  case X:
@@ -902,6 +819,133 @@ void disableOCx(){
 
 
 
+void toggleOCx(int axis_No){
+ switch(axis_No){
+ case X:
+ OC5IF_bit = 0;
+ OC5R = 0x5;
+ OC5RS = STPS[X].step_delay & 0xFFFF;
+ TMR2 = 0xFFFF;
+ OC5CON = 0x8004;
+ break;
+ case Y:
+ OC2IF_bit = 0;
+ OC2R = 0x5;
+ OC2RS = STPS[Y].step_delay & 0xFFFF;
+ TMR4 = 0xFFFF;
+ OC2CON = 0x8004;
+ break;
+ case Z:
+ OC7R = 0x5;
+ OC7RS = STPS[Z].step_delay & 0xFFFF;
+ TMR6 = 0xFFFF;
+ OC7CON = 0x8004;
+ break;
+ case A:
+ OC3R = 0x5;
+ OC3RS = STPS[A].step_delay & 0xFFFF;
+ TMR5 = 0xFFFF;
+ OC3CON = 0x800C;
+ break;
+ case B:
+ OC6R = 0x5;
+ OC6RS = STPS[B].step_delay & 0xFFFF;
+ TMR3 = 0xFFFF;
+ OC6CON = 0x800C;
+ break;
+ case C:
+ OC8R = 0x5;
+ OC8RS = STPS[C].step_delay & 0xFFFF;
+ TMR7 = 0xFFFF;
+ OC8CON = 0x800C;
+ break;
+ default:
+ break;
+ }
+
+}
+
+
+
+
+
+
+void Step_Cycle(int axis_No){
+
+ STPS[axis_No].step_count++;
+
+ STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
+ toggleOCx(axis_No);
+
+}
+
+
+int Pulse(int axis_No){
+#line 224 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+ switch(STPS[axis_No].run_state) {
+ case  0 :
+ STPS[axis_No].run_state =  0 ;
+ SV.Tog = 1;
+ break;
+
+ case  1 :
+
+ AccDec(axis_No);
+ if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
+ STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+
+ }
+ if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
+ STPS[axis_No].run_state =  3 ;
+ }
+
+
+ if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+ STPS[axis_No].accel_count = STPS[axis_No].decel_val;
+ STPS[axis_No].rest = 0;
+ STPS[axis_No].run_state =  2 ;
+ }
+ break;
+
+ case  3 :
+ STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+
+
+
+ if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+ STPS[axis_No].accel_count = STPS[axis_No].decel_val;
+ STPS[axis_No].rest = 0;
+ STPS[axis_No].run_state =  2 ;
+ }
+ break;
+
+ case  2 :
+
+ AccDec(axis_No);
+
+
+ if(STPS[axis_No].accel_count > -1 ){
+ STPS[axis_No].run_state =  0 ;
+ }
+ break;
+ default:break;
+ }
+ return axis_No;
+}
+
+
+
+void AccDec(int axis_No){
+ STPS[axis_No].accel_count++;
+ STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
+ STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
+ STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
+}
+
+
+
+
+
 
 
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
@@ -923,8 +967,6 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
 
 
 
-
-
 void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
  OC2IF_bit = 0;
 
@@ -941,8 +983,6 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
  }
  }
 }
-
-
 
 
 void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
@@ -963,8 +1003,6 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
  }
 
 }
-
-
 
 
 void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
@@ -991,7 +1029,7 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 void SingleStepAxis(int axis){
  if(STPS[axis].step_count >= STPS[axis].dist){
- StopAxis(axis);
+ return;
  }
  else{
  Step_Cycle(axis);
@@ -1039,66 +1077,3 @@ static int cnt;
  }
  }
 }
-<<<<<<< HEAD
-#line 535 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-unsigned int min_(unsigned int x, unsigned int y){
- if(x < y){
- return x;
- }
- else{
- return y;
- }
-}
-#line 552 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-static unsigned long sqrt_(unsigned long x){
-
- register unsigned long xr;
- register unsigned long q2;
- register unsigned char f;
-
- xr = 0;
- q2 = 0x40000000L;
- do
- {
- if((xr + q2) <= x)
- {
- x -= xr + q2;
- f = 1;
- }
- else{
- f = 0;
- }
- xr >>= 1;
- if(f){
- xr += q2;
- }
- } while(q2 >>= 2);
- if(xr < x){
- return xr +1;
- }
- else{
- return xr;
- }
-}
-#line 605 "C:/Users/Git/Pic32mzCNC/Stepper.c"
-void CycleStop(){
-int ii;
- STmr.uSec = 0;
- for(ii = 0;ii< 6 ;ii++){
- STPS[ii].microSec = 0;
- if(ii >  6 )break;
- }
-}
-
-void CycleStart(){
-int ii;
-
- if(SV.Tog == 0){
- for(ii = 0; ii <  6 ;ii++){
- if(ii >  6 )break;
- STPS[ii].microSec++;
- }
- }
-}
-=======
->>>>>>> patch1

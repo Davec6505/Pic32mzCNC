@@ -15,6 +15,7 @@
 //defines
 typedef unsigned short UInt8_t;
 
+
 // Speed ramp states
 #define STOP  0
 #define ACCEL 1

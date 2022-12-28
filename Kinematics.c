@@ -27,29 +27,12 @@ int i = 0;
   }
 }
 
-/*****************************************************
-*single axix step rate need to be doubled to compensate
-*speed increase due to no 2nd axis interpolation
-*use a dummy axis or increase the speed
-*****************************************************/
-void SingleAxisStep(double newxyz,long speed,int axis_No){
-long tempA = 0;
-int dir = 0;
-      Single_Axis_Enable(axis_No);
-      tempA = belt_steps(newxyz);
-      speed_cntr_Move(tempA , speed , axis_No);
-      
-//static long dist;
-      /* if(STPS[axis].psingle != newxyz)
-             STPS[axis].psingle = newxyz; */
-     STPS[axis_No].axis_dir = Direction(tempA);
-     SV.Single_Dual = 0;
-     STPS[axis_No].psingle  = 0;
-     
-     STPS[axis_No].dist = tempA - STPS[axis_No].psingle;
-     STPS[axis_No].dist = labs(tempA);
-     dir = (tempA < 0)? CCW : CW;
-     switch(axis_No){
+//////////////////////////////////////////////////////////
+//                 SET AXIS DIRECTION                   //
+//////////////////////////////////////////////////////////
+static void Set_Axisdirection(long temp,int axis){
+     int dir = (temp < 0)? CCW : CW;
+     switch(axis){
        case X:
             DIR_StepX = (X_DIR_DIR ^ dir) & 0x0001;//(X_DIR_DIR)?dir:~dir;
             break;
@@ -64,7 +47,34 @@ int dir = 0;
             break;
        default: break;
      }
-     
+}
+
+/*single axis step rate may needs to be "doubled"?? in order
+ *to compensate for the speed increase [due to no 2nd axis
+ *interpolation], a possible solution is to use a dummy
+ *axis. Increaseing the speed of single axis is slightly
+ *more complicated than just doubling the spped, code
+ *execution time for the 2nd axis needs to be considered
+ *[still to be decided as to whether a dummy axis or speed
+ *calculation should be used????]*/
+///////////////////////////////////////////////////////////
+//                SINGLE AXIS MOVEMENT                   //
+///////////////////////////////////////////////////////////
+void SingleAxisStep(double newxyz,long speed,int axis_No){
+long tempA = 0;
+int dir = 0;
+      Single_Axis_Enable(axis_No);
+      tempA = belt_steps(newxyz);
+      speed_cntr_Move(tempA , speed , axis_No);
+      
+//static long dist;
+      /* if(STPS[axis].psingle != newxyz)
+             STPS[axis].psingle = newxyz; */
+     Set_Axisdirection(tempA,axis_No);
+     STPS[axis_No].axis_dir = Direction(tempA);
+     SV.Single_Dual = 0;
+     STPS[axis_No].psingle  = 0;
+     STPS[axis_No].dist = labs(tempA) - STPS[axis_No].psingle;
      STPS[axis_No].step_count = 0;
      STPS[axis_No].mmToTravel = tempA;
      //Start output compare module
@@ -75,8 +85,6 @@ int dir = 0;
 //////////////////////////////////////////////////////////
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
-
-
 void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed){//,int xyza){
 long tempA,tempB,tempC;
 int dirA,dirB;
@@ -104,25 +112,19 @@ int dirA,dirB;
    }
    
   //set the direction counter for absolute position
+  Set_Axisdirection(tempA,axisA);
   STPS[axisA].axis_dir = Direction(tempA);
+  Set_Axisdirection(tempB,axisB);
   STPS[axisB].axis_dir = Direction(tempB);
 
   //Delta distance to move
   SV.dA   = tempA - SV.prevA;
   SV.dB   = tempB - SV.prevB;
   SV.dC   = tempC - SV.prevC;
-  // Set direction from sign on step value.
-  //Set the Dir_bits
-  dirA = SV.dA > 0? CW:CCW;
-  dirB = SV.dB > 0? CW:CCW;
-  //inversion mask
-  DIR_StepX = (X_DIR_DIR ^ dirA) & 0x0001;
-  DIR_StepY = (Y_DIR_DIR ^ dirB) & 0x0001;
 
   //Remove -ve values
   SV.dA = labs(SV.dA);
   SV.dB = labs(SV.dB);
-  
   
   //Start values for Bresenhams
   if(SV.dA >= SV.dB){
@@ -163,15 +165,6 @@ int dirA,dirB;
 ///////////////////////////////////////////////////////////////////////////////
 //     Circular Interpolation taken from Grbl as it uses Rotation matrix     //
 ///////////////////////////////////////////////////////////////////////////////
-
-
-
-
-///////////////////////////////////////////////////////////////////
-//returns hypotinuse of a triangle
-float hypot(float angular_travel, float linear_travel){
-      return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
-}
 
 
   /* Vector rotation by transformation matrix: r is the original vector, r_T is the rotated vector,
@@ -337,7 +330,12 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
 
 }
 
-
+/*!
+ *returns hypotinuse of a triangle
+ */
+float hypot(float angular_travel, float linear_travel){
+      return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
+}
 
 
 ///////////////////////////////////////////////////////////////////
@@ -428,3 +426,4 @@ void Inv_Home_Axis(double distance,long speed,int axis){
     //  speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
     //  SingleAxisStep(STPS[axis].mmToTravel,axis);
 }
+

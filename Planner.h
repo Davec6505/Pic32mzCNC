@@ -78,5 +78,8 @@ void plan_init(long accel,long decel);
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 //efficient sqrt interger calculation
 unsigned long sqrt_(unsigned long v);
+//calculation of vectors for radius
+void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
+              double r, double i, double j, double k, int axis_A,int axis_B,int dir);
 
  #endif

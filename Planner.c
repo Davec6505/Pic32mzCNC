@@ -30,10 +30,9 @@ int i = 0;
  ***********************************************************************/
 void speed_cntr_Move(signed long mmSteps, signed long speed, int axis_No){
 int ii;
-char txt_[9];
 long temp_speed;
 static long last_speed;
-long abs_mmSteps = abs(mmSteps);
+long abs_mmSteps = labs(mmSteps);
   // If moving only 1 step then set accel counter
   // and run state to decellerate -ve acc count value
   // is for addition to step couter.
@@ -63,7 +62,7 @@ long abs_mmSteps = abs(mmSteps);
     STPS[axis_No].step_delay = labs(T1_FREQ_148 * ((sqrt_(A_SQ / STPS[axis_No].acc))/100));
     STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
-    // Find out after how many steps does the speed hits the max speed limit.
+    // Find out after how many Steps before the speed hits the max speed limit.
     STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(long)(2.0*ALPHA*(double)STPS[axis_No].acc*100.0);
 
 
@@ -115,11 +114,9 @@ long abs_mmSteps = abs(mmSteps);
   STPS[axis_No].step_count  = 0;
   STPS[axis_No].rest        = 0;
   STPS[axis_No].accel_count = 1;
-  STPS[axis_No].dist        = 0;
   SV.Tog                    = 0;
   SV.running                = 1;
   last_speed                = speed;
-
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -230,7 +227,7 @@ int axis_plane_a,axis_plane_b;
             // Finish computing h_x2_div_d.
             h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y); // == -(h * 2 / d)
             // Invert the sign of h_x2_div_d if the circle is counter clockwise (see sketch below)
-           if (gc.motion_mode == MOTION_MODE_CCW_ARC) { h_x2_div_d = -h_x2_div_d; }
+           if (Get_motionmode() == MOTION_MODE_CCW_ARC) { h_x2_div_d = -h_x2_div_d; }
 
             /* The counter clockwise circle lies to the left of the target direction. When offset is positive,
                the left hand circle will be generated - when it is negative the right hand circle is generated.
@@ -280,6 +277,8 @@ int axis_plane_a,axis_plane_b;
 ////////////////////////////////////////////////
 //              CALCULATIONS                  //
 ////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
 
 /*!
  *    brief Square root routine.

@@ -105,18 +105,15 @@ typedef struct Steps{
 extern STP STPS[NoOfAxis];
 
 
-
-////////////////////////////////////////////////////
-//     ******CIRCULAR INTERPOLATION******         //
-////////////////////////////////////////////////////
-
-
-
 ///////////////////////////////////////////
-//FUNCTION PROTOTYPES
+//         FUNCTION PROTOTYPES           //
+///////////////////////////////////////////
 
 //initialize the axis values
 void SetInitialSizes(STP axis[6]);
+
+//set the direction of axis
+static void Set_Axisdirection(long temp,int axis);
 
 //Move inline
 void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);//,int xyza);
@@ -126,9 +123,8 @@ void SingleAxisStep(double newxyz,long speed,int axis_No);
 void mc_arc(double *position, double *target, double *offset, int axis_0,
             int axis_1,int axis_linear, double feed_rate,uint8_t invert_feed_rate,
             double radius, uint8_t isclockwise);
+
 float hypot(float angular_travel, float linear_travel);
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
-              double r, double i, double j, double k, int axis_A,int axis_B,int dir);
 
 //Directional values
 int GetAxisDirection(long mm2move);
@@ -138,4 +134,5 @@ void ResetHoming();
 void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
+void mc_dwell(float sec);
 #endif

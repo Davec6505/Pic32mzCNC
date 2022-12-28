@@ -1,3 +1,36 @@
+/*******************************************************************************
+ *Standard Modal groups for G-codes are as follows:
+
+Group 1 {G00, G01, G02, G03, G33, G38.x, G73, G76, G80, G81, G82, G84, G85, 
+         G86, G87, G88, G89} motion – This is a group of G-codes for motion 
+         called current motion mode — one is always in effect.
+Group 2 {G17, G18, G19, G17.1, G17.2, G17.3} plane selection
+Group 3 {G90, G91} distance mode
+Group 4 {G90.1, G91.1} arc IJK distance mode
+Group 5 {G93, G94} feed rate mode
+Group 6 {G20, G21} units
+Group 7 {G40, G41, G42, G41.1, G42.1} cutter radius compensation
+Group 8 {G43, G43.1, G49} tool length offset
+Group 10 {G98, G99} return mode in canned cycles
+Group 12 {G54, G55, G56, G57, G58, G59, G59.1, G59.2, G59.3} 
+         coordinate system selection
+Group 13 {G61, G61.1, G64} path control mode
+Group 14 {G96, G97} spindle speed mode
+Group 15 {G07, G08} lathe diameter mode
+Modal groups for M-codes are as follows:
+
+Group 4 {M00, M01, M02, M30, M60} stopping
+Group 7 {M03, M04, M05} spindle turning
+Group 8 {M07, M08, M09} coolant (special case: M07 and M08 may be 
+        active at the same time)
+Group 9 {M48, M49} enable/disable feed and speed override controls
+Group 10 {operator defined M100 to M199}
+Non-modal G-codes are as follows:
+
+Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
+******************************************************************************/
+
+
 #ifndef GCODE_H
 #define GCODE_H
 
@@ -31,19 +64,19 @@
 #define MOTION_MODE_CCW_ARC 3  // G3
 #define MOTION_MODE_CANCEL 4 // G80
 
+#define NON_MODAL_NONE 0
+#define NON_MODAL_DWELL 1                   // G4
+#define NON_MODAL_SET_COORDINATE_DATA 2     // G10
+#define NON_MODAL_GO_HOME_0 3               // G28
+#define NON_MODAL_SET_HOME_0 4              // G28.1
+#define NON_MODAL_GO_HOME_1 5               // G30
+#define NON_MODAL_SET_HOME_1 6              // G30.1
+#define NON_MODAL_SET_COORDINATE_OFFSET 7   // G92
+#define NON_MODAL_RESET_COORDINATE_OFFSET 8 //G92.1
+
 #define PROGRAM_FLOW_RUNNING 0
 #define PROGRAM_FLOW_PAUSED 1 // M0, M1
 #define PROGRAM_FLOW_COMPLETED 2 // M2, M30
-
-#define NON_MODAL_NONE 0
-#define NON_MODAL_DWELL 1 // G4
-#define NON_MODAL_SET_COORDINATE_DATA 2 // G10
-#define NON_MODAL_GO_HOME_0 3 // G28
-#define NON_MODAL_SET_HOME_0 4 // G28.1
-#define NON_MODAL_GO_HOME_1 5 // G30
-#define NON_MODAL_SET_HOME_1 6 // G30.1
-#define NON_MODAL_SET_COORDINATE_OFFSET 7 // G92
-#define NON_MODAL_RESET_COORDINATE_OFFSET 8 //G92.1
 
 
 // Define Grbl status codes.
@@ -95,9 +128,10 @@ typedef struct {
        plane_axis_1,
        plane_axis_2;             // The axes of the selected plane
   char  coord_select;            // Active work coordinate system number. Default: 0=G54.
-  int status_code;              // Parser status for current block
-  int motion_mode;               // {G0, G1, G2, G3, G80}
+ // int status_code;              // Parser status for current block
+ // int motion_mode;               // {G0, G1, G2, G3, G80}
   int frequency;                 // Speed expressed as Frequency of pulses
+  int L;                         //L2 tells the G10 we’re setting standard work offsets
   float feed_rate;               // Millimeters/min
 //  float seek_rate;             // Millimeters/min. Will be used in v0.9 when axis independence is installed
   float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
@@ -110,6 +144,8 @@ typedef struct {
   float I;
   float J;
   float K;
+  int P;               //Pause as in msec
+  int S;               //Pause as in sec
 } parser_state_t;
 extern parser_state_t gc;
 
@@ -117,19 +153,36 @@ enum IJK{I,J,K};
 // Initialize the parser
 //G Instructions
 void G_Initialise();
+
+int Get_modalgroup();
+int Rst_modalgroup();
+
+int Get_modalword();
+int Rst_modalword();
+
 int Get_Axisword();
 int Rst_Axisword();
-static float To_Millimeters(float value);
+
+int Get_motionmode();
+int Rst_motionmode();
+
 int G_Mode(int mode);
-static void Set_Modal_Groups(int mode);
-static int Set_Motion_Mode(int mode);
 // m instructions
 void M_Instruction(int flow);
-static void Set_M_Modal_Commands(int M_Val);
-static int Set_M_Commands(int M_Val);
+
+static float To_Millimeters(float value);
+
 int Check_group_multiple_violations();
+int Motion_mode();
 //all values passed from instruction
 int Instruction_Values(char *c,void *any);
 //movement of axis
 void Movement_Condition();
+
+
+static int Set_Modal_Groups(int mode);
+static int Set_Motion_Mode(int mode);
+static void Set_M_Modal_Commands(int M_Val);
+static int Set_M_Commands(int M_Val);
+
 #endif

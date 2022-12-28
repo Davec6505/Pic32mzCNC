@@ -34,6 +34,7 @@
 //external scope variables
 //settings_t settings;
 //parser_state_t gc;
+system_t sys;
 STP STPS[NoOfAxis];
 bit oneShotA; sfr;
 bit oneShotB; sfr;
@@ -56,8 +57,9 @@ void Conditin_Externs(){
 /////////////////////////////////////////
 //main function
 void main() {
-int axis_to_run,dif,status_of_gcode;
-static int cntr,a;
+int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
+static int cntr = 0,a = 0;
+
  // fp = Test_Min;
  
   Conditin_Externs();
@@ -65,34 +67,52 @@ static int cntr,a;
   EnableInterrupts();
   
   while(1){
-
+     //continously test the limits
      Debounce_Limits(X);
      Debounce_Limits(Y);
-     if(!status_of_gcode)
-        axis_to_run = Get_Axisword();
-     if(axis_to_run){
-
-        //   while(DMA_Busy(1));
-        //   dma_printf("axis_to_run:= %d\n",axis_to_run);
-           EnableSteppers(2);
-           Temp_Move(axis_to_run);
-           axis_to_run = Rst_Axisword();
+     
+     //continously check the communication channel
+    if(!status_of_gcode){
+      //get the modal_group
+      modal_group = Get_modalgroup();
+       switch(modal_group){
+          case 0:break;
+          case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
+               modal_action = Non_Modal_Actions(Get_modalword());
+               modal_group = Rst_modalgroup();
+               break;
+          case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
+              axis_to_run = Get_Axisword();
+              if(axis_to_run){
+                EnableSteppers(2);
+                Temp_Move(axis_to_run);
+                axis_to_run = Rst_Axisword();
+              }
+               break;
+          case 8://MODAL_GROUP_2  [G17,G18,G19] Plane selection
+               break;
+          case 16://MODAL_GROUP_3 [G90,G91] Distance mode
+               break;
+          case 32://MODAL_GROUP_4 [M0,M1,M2,M30] Stopping
+               break;
+          case 64://MODAL_GROUP_5 [G93,G94] Feed rate mode
+               break;
+          case 128://MODAL_GROUP_6 [G20,G21] Units
+               break;
+          case 256://MODAL_GROUP_7 [M3,M4,M5] Spindle turning
+               break;
+          case 512://MODAL_GROUP_12 [G54,G55,G56,G57,G58,G59] Coordinate system selection
+               break;
+       }
      }
-        
      status_of_gcode = Sample_Ringbuffer();
-     //temp debug for steppers
-     #if StepperDebug == 1
-     if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
-       while(DMA_Busy(1));
-       dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",(STPS[X].run_state&0xff),STPS[X].step_count,SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
-      }
-     #endif
      
-     
+      //code execution confirmation led on clicker2 board
       #ifdef LED_STATUS
        LED1 = TMR.clock >> 4;
       #endif
       
+      //disable the steppers after a long idle state, switch off in "Settings.h"
       #ifdef RESET_STEPPER_TIME
        if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
            disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
@@ -100,8 +120,16 @@ static int cntr,a;
       #endif
 
 
+     //temp debug for steppers
+     #if StepperDebug == 1
+     if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
+       while(DMA_Busy(1));
+       dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+                 (STPS[X].run_state&0xff),STPS[X].step_count,
+                  SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+      }
+     #endif
          
-
      WDTCONSET = 0x01;
   }
 }
@@ -158,6 +186,53 @@ int Temp_Move(int a){
     
     return a;
 }
+
+int Non_Modal_Actions(int action){
+//[b0=10ms | b1=100ms | b2 = 300ms | b4=500ms | b5 = 1sec]
+int dly_time,i;
+   switch(action){
+     case 2:
+           i = 0;
+           //G04 [P/S] PAUSE MACHINE INSTRUCTION
+           if(gc.S > 0){ //wait in seconds
+             dly_time = gc.S * 1000;
+             while(i < dly_time){
+              LED2 = TMR.clock >> 1;
+              Delay_ms(1);
+              i++;
+             }
+           }else if(gc.P > 0){ //wait in msec
+             dly_time = (unsigned long)gc.P;
+             while(i < dly_time){
+              LED2 = TMR.clock >> 1;
+              Delay_ms(1);
+              i++;
+             }
+           }
+           LED2 = false;
+          break;
+     case 4:
+          break;
+     case 8:
+          break;
+     case 16:
+          break;
+     case 32:
+          break;
+     case 64:
+          break;
+     case 128:
+          break;
+     case 256:
+          break;
+     case 512:
+          break;
+     default: action = -1; //error in action msg ???
+          break;
+   }
+  return action;
+}
+
 
 /* 
  *temp disabled code to get gcode send working

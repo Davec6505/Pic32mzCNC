@@ -346,7 +346,6 @@ abf2seq3bits
 abort
 abs
 absolute_mode
-absolute_override
 accdec
 acceleration
 ackdt
@@ -18389,6 +18388,7 @@ conthrise
 conthrise
 conthrise_bit
 coolant_mode
+coord_data
 coord_offset
 coord_select
 coord_system
@@ -19243,7 +19243,6 @@ cpupg1_bit
 cpupri
 cpupri
 cpupri_bit
-cpy_val_from_str
 crcapp
 crcapp
 crcapp
@@ -32522,6 +32521,9 @@ get_difference
 get_fosc_khz
 get_head_value
 get_line
+get_modalgroup
+get_modalword
+get_motionmode
 get_tail_value
 getaxisdirection
 glswtrg
@@ -38010,6 +38012,7 @@ jtagen_devcfg0_bit
 jtagen_ubadevcfg0_bit
 junction_deviation
 k
+l
 labs
 lanemode
 lanemode0
@@ -39167,7 +39170,6 @@ mm_per_arc_segment
 mm_possiblyfragmented
 mm_totalfreememsize
 mm2in
-modal_group_words
 mode
 mode
 mode
@@ -39360,7 +39362,6 @@ month102_bit
 month103
 month103_alrmdate_bit
 month103_bit
-motion_mode
 mpen
 mpen
 mpen
@@ -40311,6 +40312,7 @@ nobkoff
 nobkoff_bit
 nobkoff_emacxcfg2_bit
 non_modal_action
+non_modal_actions
 nopre
 nopre
 nopre
@@ -43765,11 +43767,13 @@ p
 p
 p
 p
+p
 p_bit
 p_i2c2stat_bit
 p_i2c3stat_bit
 p_i2c4stat_bit
 p_i2c5stat_bit
+p_msec
 p1
 p2
 packet
@@ -48560,6 +48564,9 @@ rslp_refo2con_bit
 rslp_refo3con_bit
 rslp_refo4con_bit
 rst_axisword
+rst_modalgroup
+rst_modalword
+rst_motionmode
 rstbug
 rswrst
 rswrstbits
@@ -55349,6 +55356,7 @@ s
 s
 s
 s
+s
 s_bit
 s_i2c2stat_bit
 s_i2c3stat_bit
@@ -60995,7 +61003,6 @@ stattype1_bit
 status
 status
 status_bit
-status_code
 step_cycle
 step1
 step10
@@ -61214,7 +61221,6 @@ stnaddr67_emacxsa0_bit
 stopaxis
 stps
 str_initialize
-str2int
 strcat
 strchr
 strcmp
@@ -61307,7 +61313,6 @@ strncmp
 strncpy
 strpbrk
 strrchr
-strsplit
 strspn
 strstr
 strtok
@@ -71095,7 +71100,6 @@ txthrif_bit
 txthrise
 txthrise
 txthrise_bit
-txtl
 txwarn
 txwarn
 txwarn

@@ -33,6 +33,10 @@ main
 		Test_Port_Pins
 		Reset_Min_Limit
 		Reset_Min_Debounce
+	Get_modalgroup
+	Non_Modal_Actions
+	Get_modalword
+	Rst_modalgroup
 	Get_Axisword
 	EnableSteppers
 	Temp_Move
@@ -40,9 +44,9 @@ main
 			Single_Axis_Enable
 			belt_steps
 			speed_cntr_Move
-				abs
-				sqrt_
 				labs
+				sqrt_
+			Set_Axisdirection
 			labs
 			Step_Cycle
 				toggleOCx
@@ -62,6 +66,7 @@ main
 		DualAxisStep
 			belt_steps
 			Single_Axis_Enable
+			Set_Axisdirection
 			labs
 			speed_cntr_Move
 			Axis_Interpolate
@@ -82,6 +87,7 @@ main
 				ldexp
 			hypot
 				sqrt
+			Get_motionmode
 			mc_arc
 				atan2
 					fabs
@@ -125,12 +131,19 @@ main
 			Set_Modal_Groups
 			Set_Motion_Mode
 				Select_Plane
+		PrintDebug
+			DMA_Busy
+			dma_printf
+			__CC2DW
 		Instruction_Values
 			To_Millimeters
 		M_Instruction
 			Set_M_Modal_Commands
 			Set_M_Commands
 		Check_group_multiple_violations
+			DMA_Busy
+			dma_printf
+			__CC2DW
 	DMA_Busy
 	dma_printf
 	__CC2DW
@@ -139,7 +152,6 @@ main
 		DisableStepper
 StepA
 	SingleStepAxis
-		StopAxis
 		Step_Cycle
 		Pulse
 	Axis_Interpolate

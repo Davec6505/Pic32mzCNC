@@ -6,6 +6,12 @@
 //#include <stdint.h>
 #include "Settings.h"
 
+
+#define true 1
+#define TRUE 1
+#define false 0
+#define FALSE 0
+
 //mm or inches
 #define MM_PER_INCH (25.40)
 #define INCH_PER_MM (0.0393701)
@@ -56,6 +62,10 @@
 #define STATE_CHECK_MODE 7 // G-code check mode. Locks out planner and motion only.
 #define STATE_JOG        8 // Jogging mode is unique like homing.
 
+
+//////////////////////////////////////////
+//structs enums and constants
+
 // Define global system variables
 typedef struct {
   char abort;                      // System abort flag. Forces exit back to main loop for reset.
@@ -66,11 +76,5 @@ typedef struct {
   volatile char execute;           // Global system runtime executor bitflag variable. See EXEC bitmasks.
 } system_t;
 extern system_t sys;
-
-
-//////////////////////////////////////////
-//structs enums and constants
-
-
 
 #endif

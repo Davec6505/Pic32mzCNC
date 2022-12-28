@@ -1,19 +1,50 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+
+
 ////////////////////////////////////////////////////////////
 //                  Global usage defines                  //
 ////////////////////////////////////////////////////////////
-
-#define true 1
-#define TRUE 1
-#define false 0
-#define FALSE 0
+#define DEFAULT_X_STEPS_PER_MM 250.0
+#define DEFAULT_Y_STEPS_PER_MM 250.0
+#define DEFAULT_Z_STEPS_PER_MM 250.0
+#define DEFAULT_A_STEPS_PER_MM 250.0
+#define DEFAULT_MM_PER_ARC_SEGMENT 0.1
+#define DEFAULT_RAPID_FEEDRATE 500.0 // mm/min
+#define DEFAULT_FEEDRATE 250.0
+#define DEFAULT_ACCELERATION (10.0*60*60) // 10 mm/min^2
+#define DEFAULT_JUNCTION_DEVIATION 0.05 // mm
+#define DEFAULT_REPORT_INCHES 0 // false
+#define DEFAULT_AUTO_START 1 // true
+#define DEFAULT_INVERT_ST_ENABLE 0 // false
+#define DEFAULT_HARD_LIMIT_ENABLE 0  // false
+#define DEFAULT_HOMING_ENABLE 0  // false
+#define DEFAULT_HOMING_DIR_MASK 0 // move positive dir
+#define DEFAULT_HOMING_RAPID_FEEDRATE 250.0 // mm/min
+#define DEFAULT_HOMING_FEEDRATE 25.0 // mm/min
+#define DEFAULT_HOMING_DEBOUNCE_DELAY 100 // msec (0-65k)
+#define DEFAULT_HOMING_PULLOFF 1.0 // mm
+#define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
+#define DEFAULT_DECIMAL_PLACES 3
+#define DEFAULT_N_ARC_CORRECTION 25
+  
+// Define bit flag masks for the boolean settings in settings.flag.
+#define BITFLAG_REPORT_INCHES      bit(0)
+#define BITFLAG_AUTO_START         bit(1)
+#define BITFLAG_INVERT_ST_ENABLE   bit(2)
+#define BITFLAG_HARD_LIMIT_ENABLE  bit(3)
+#define BITFLAG_HOMING_ENABLE      bit(4)
 
 ////////////////////////////////////////////////////////////
 //              Stepper Motor Settings                    //
 ////////////////////////////////////////////////////////////
-#define  NoOfAxis   6
+#define  NoOfAxis    6
+#define  _X          0
+#define  _Y          1
+#define  _Z          2
+#define  _A          3
+
 //! Number of (full)steps per round on stepper motor in use.
 #define SPR 188               // 200 Steps per rev
 #define M_STEP 32               //Stepper drive micro steps setting
@@ -90,24 +121,25 @@
 ////////////////////////////////////////////////////////////
  // Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
 typedef struct {
-  float steps_per_mm[3];
-  char microsteps;
-  char pulse_microseconds;
+  unsigned long p_msec;
+  float steps_per_mm[NoOfAxis];
   float default_feed_rate;
   float default_seek_rate;
-  char invert_mask;
+  float homing_feed_rate;
+  float homing_seek_rate;
+  float homing_pulloff;
   float mm_per_arc_segment;
   float acceleration;
   float junction_deviation;
+  unsigned int homing_debounce_delay;
   char flags;  // Contains default boolean settings
   char homing_dir_mask;
-  float homing_feed_rate;
-  float homing_seek_rate;
-  unsigned int homing_debounce_delay;
-  float homing_pulloff;
   char stepper_idle_lock_time; // If max value 255, steppers do not disable.
   char decimal_places;
   char n_arc_correction;
+  char microsteps;
+  char pulse_microseconds;
+  char invert_mask;
 //  uint8_t status_report_mask; // Mask to indicate desired report data.
 } settings_t;
 extern settings_t settings;
@@ -115,6 +147,6 @@ extern settings_t settings;
 //////////////////////////////////////////////////////////////
 //              FUNCTION PROTOTYPES                         //
 //////////////////////////////////////////////////////////////
-void Settings_Init();
+void Settings_Init(char reset_all);
 
 #endif

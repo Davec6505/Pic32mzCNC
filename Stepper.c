@@ -90,137 +90,6 @@ void DisableStepper(){
    EN_StepA      = 1;
 }
 
-
-/////////////////////////////////////////////////
-//       STEPS CYCLE CONTROL SECTION           //
-/////////////////////////////////////////////////
-
-//Step cycle out of for loop
-void Step_Cycle(int axis_No){
-     //keep track of relative position
-      STPS[axis_No].step_count++;
-     //keep track of absolute position
-      STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
-      toggleOCx(axis_No);
-
-}
-
-
-//toggle the OCxCON regs
-void toggleOCx(int axis_No){
-      switch(axis_No){
-        case X:
-             OC5IF_bit = 0;
-             OC5R   = 0x5;
-             OC5RS  = STPS[X].step_delay & 0xFFFF;//0x234;
-             TMR2   =  0xFFFF;
-             OC5CON =  0x8004; //restart the output compare module
-             break;
-        case Y:
-             OC2IF_bit = 0;
-             OC2R   = 0x5;
-             OC2RS  = STPS[Y].step_delay & 0xFFFF;
-             TMR4   =  0xFFFF;
-             OC2CON =  0x8004; //restart the output compare module
-             break;
-        case Z:
-             OC7R   = 0x5;
-             OC7RS  = STPS[Z].step_delay & 0xFFFF;
-             TMR6   =  0xFFFF;
-             OC7CON =  0x8004; //restart the output compare module
-             break;
-        case A:
-             OC3R   = 0x5;
-             OC3RS  = STPS[A].step_delay & 0xFFFF;
-             TMR5   =  0xFFFF;
-             OC3CON =  0x800C; //restart the output compare module
-             break;
-        case B:
-             OC6R   = 0x5;
-             OC6RS  = STPS[B].step_delay & 0xFFFF;
-             TMR3   =  0xFFFF;
-             OC6CON =  0x800C; //restart the output compare module
-             break;
-        case C:
-             OC8R   = 0x5;
-             OC8RS  = STPS[C].step_delay & 0xFFFF;
-             TMR7   =  0xFFFF;
-             OC8CON =  0x800C; //restart the output compare module
-             break;
-        default:
-             break;
-      }
-
-}
-
- 
-//reset the pulse
-int Pulse(int axis_No){
-
-/*if(!STPS[axis_No].PLS_Step_ ){
-      STPS[axis_No].PLS_Step_   = 1;
-    }*/
-
-    switch(STPS[axis_No].run_state) {
-      case STOP:
-           STPS[axis_No].run_state  = STOP;
-           SV.Tog = 1;
-        break;
-
-      case ACCEL:
-        //taylor series calculation for acc
-        AccDec(axis_No);
-        if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
-             STPS[axis_No].step_delay = STPS[axis_No].min_delay;
-             STPS[axis_No].run_state  = RUN;
-        }
-        /*if(STPS[axis_No].step_delay > STPS[axis_No].accel_lim){
-             STPS[axis_No].run_state  = RUN;
-        }*/
-        //if the peak of the triangle is before max_accel_limit
-        //then start to decel
-        if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
-          STPS[axis_No].accel_count = STPS[axis_No].decel_val;
-          STPS[axis_No].rest        = 0;
-          STPS[axis_No].run_state   = DECEL;
-        }
-        break;
-
-      case RUN:
-        STPS[axis_No].step_delay = STPS[axis_No].min_delay;
-        
-        // Check for decelration start position.
-        // Start decelration with same delay as accel ended with.
-        if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
-             STPS[axis_No].accel_count = STPS[axis_No].decel_val;
-             STPS[axis_No].rest        = 0;
-             STPS[axis_No].run_state   =  DECEL;
-        }
-        break;
-
-      case DECEL:
-        //taylor series calculation for dec
-        AccDec(axis_No);
-        
-        // Check for final step
-        if(STPS[axis_No].accel_count > -1 ){
-         STPS[axis_No].run_state = STOP;
-        }
-        break;
-      default:break;
-    }
-  return axis_No;
-}
-
-
-//Accel Decel calculation and test
-void AccDec(int axis_No){
-          STPS[axis_No].accel_count++;
-          STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
-          STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
-          STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
-}
-
 //////////////////////////////////////////////////////////
 //      ENABLE / DISABLE  SINGLE AXIS  CONTROL          //
 //////////////////////////////////////////////////////////
@@ -284,9 +153,140 @@ void disableOCx(){
 }
 
 
+//toggle the OCxCON regs
+void toggleOCx(int axis_No){
+      switch(axis_No){
+        case X:
+             OC5IF_bit = 0;
+             OC5R   = 0x5;
+             OC5RS  = STPS[X].step_delay & 0xFFFF;//0x234;
+             TMR2   =  0xFFFF;
+             OC5CON =  0x8004; //restart the output compare module
+             break;
+        case Y:
+             OC2IF_bit = 0;
+             OC2R   = 0x5;
+             OC2RS  = STPS[Y].step_delay & 0xFFFF;
+             TMR4   =  0xFFFF;
+             OC2CON =  0x8004; //restart the output compare module
+             break;
+        case Z:
+             OC7R   = 0x5;
+             OC7RS  = STPS[Z].step_delay & 0xFFFF;
+             TMR6   =  0xFFFF;
+             OC7CON =  0x8004; //restart the output compare module
+             break;
+        case A:
+             OC3R   = 0x5;
+             OC3RS  = STPS[A].step_delay & 0xFFFF;
+             TMR5   =  0xFFFF;
+             OC3CON =  0x800C; //restart the output compare module
+             break;
+        case B:
+             OC6R   = 0x5;
+             OC6RS  = STPS[B].step_delay & 0xFFFF;
+             TMR3   =  0xFFFF;
+             OC6CON =  0x800C; //restart the output compare module
+             break;
+        case C:
+             OC8R   = 0x5;
+             OC8RS  = STPS[C].step_delay & 0xFFFF;
+             TMR7   =  0xFFFF;
+             OC8CON =  0x800C; //restart the output compare module
+             break;
+        default:
+             break;
+      }
+
+}
+
+/////////////////////////////////////////////////
+//       STEPS CYCLE CONTROL SECTION           //
+/////////////////////////////////////////////////
+
+//Step cycle out of for loop
+void Step_Cycle(int axis_No){
+     //keep track of relative position
+      STPS[axis_No].step_count++;
+     //keep track of absolute position
+      STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
+      toggleOCx(axis_No);
+
+}
+
+//reset the pulse
+int Pulse(int axis_No){
+
+/*if(!STPS[axis_No].PLS_Step_ ){
+      STPS[axis_No].PLS_Step_   = 1;
+    }*/
+
+    switch(STPS[axis_No].run_state) {
+      case STOP:
+           STPS[axis_No].run_state  = STOP;
+           SV.Tog = 1;
+        break;
+
+      case ACCEL:
+        //taylor series calculation for acc
+        AccDec(axis_No);
+        if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
+             STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+             //STPS[axis_No].run_state  = RUN;
+        }
+        if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
+             STPS[axis_No].run_state  = RUN;
+        }
+        //if the peak of the triangle is before max_accel_limit
+        //then start to decel
+        if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+          STPS[axis_No].accel_count = STPS[axis_No].decel_val;
+          STPS[axis_No].rest        = 0;
+          STPS[axis_No].run_state   = DECEL;
+        }
+        break;
+
+      case RUN:
+        STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+        
+        // Check for decelration start position.
+        // Start decelration with same delay as accel ended with.
+        if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+             STPS[axis_No].accel_count = STPS[axis_No].decel_val;
+             STPS[axis_No].rest        = 0;
+             STPS[axis_No].run_state   =  DECEL;
+        }
+        break;
+
+      case DECEL:
+        //taylor series calculation for dec
+        AccDec(axis_No);
+        
+        // Check for final step
+        if(STPS[axis_No].accel_count > -1 ){
+         STPS[axis_No].run_state = STOP;
+        }
+        break;
+      default:break;
+    }
+  return axis_No;
+}
+
+
+//Accel Decel calculation and test
+void AccDec(int axis_No){
+          STPS[axis_No].accel_count++;
+          STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
+          STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
+          STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
+}
+
+
+
 //////////////////////////////////////////////////////////
-//            X AXIS PULSE CONTROL                      //
+//               ISR PULSE CONTROL                      //
 //////////////////////////////////////////////////////////
+// X AXIS ISR
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
      OC5IF_bit = 0;
 
@@ -305,9 +305,7 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
 }
 
 
-//////////////////////////////////////////////////////////
-//            Y AXIS PULSE CONTROL                      //
-//////////////////////////////////////////////////////////
+//Y AXIS ISR
 void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
    OC2IF_bit = 0;
 
@@ -325,9 +323,7 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
    }
 }
 
-//////////////////////////////////////////////////////////
-//            Z AXIS PULSE CONTROL                      //
-//////////////////////////////////////////////////////////
+//Z AXIS ISR
 void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
    OC7IF_bit = 0;
 
@@ -347,9 +343,7 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
 
 }
 
-//////////////////////////////////////////////////////////
-//            A AXIS PULSE CONTROL                      //
-//////////////////////////////////////////////////////////
+// A AXIS ISR
 void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
    OC3IF_bit = 0;
 
@@ -374,7 +368,7 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 void SingleStepAxis(int axis){
     if(STPS[axis].step_count >= STPS[axis].dist){
-      StopAxis(axis);
+      return;//StopAxis(axis);
     }
     else{
       Step_Cycle(axis);

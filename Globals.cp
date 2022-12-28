@@ -1,26 +1,27 @@
 #line 1 "C:/Users/Git/Pic32mzCNC/Globals.c"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 92 "c:/users/git/pic32mzcnc/settings.h"
+#line 123 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[3];
- char microsteps;
- char pulse_microseconds;
+ unsigned long p_msec;
+ float steps_per_mm[ 6 ];
  float default_feed_rate;
  float default_seek_rate;
- char invert_mask;
+ float homing_feed_rate;
+ float homing_seek_rate;
+ float homing_pulloff;
  float mm_per_arc_segment;
  float acceleration;
  float junction_deviation;
+ unsigned int homing_debounce_delay;
  char flags;
  char homing_dir_mask;
- float homing_feed_rate;
- float homing_seek_rate;
- unsigned int homing_debounce_delay;
- float homing_pulloff;
  char stepper_idle_lock_time;
  char decimal_places;
  char n_arc_correction;
+ char microsteps;
+ char pulse_microseconds;
+ char invert_mask;
 
 } settings_t;
 extern settings_t settings;
@@ -28,8 +29,8 @@ extern settings_t settings;
 
 
 
-void Settings_Init();
-#line 60 "c:/users/git/pic32mzcnc/globals.h"
+void Settings_Init(char reset_all);
+#line 70 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
  char abort;
  char state;
@@ -39,6 +40,3 @@ typedef struct {
  volatile char execute;
 } system_t;
 extern system_t sys;
-#line 3 "C:/Users/Git/Pic32mzCNC/Globals.c"
-char txtL[9];
-system_t sys;
