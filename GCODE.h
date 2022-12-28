@@ -34,11 +34,18 @@ Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
 #ifndef GCODE_H
 #define GCODE_H
 
+///////////////////////////////////////////////////////////////////////////////
+//                             INCLUDES                                      //                           //
+///////////////////////////////////////////////////////////////////////////////
 #include <stdint.h>
 #include "Config.h"
 #include "Kinematics.h"
 #include "Settings.h"
 #include "Globals.h"
+
+///////////////////////////////////////////////////////////////////////////////
+//                             DEFINES                                       //
+///////////////////////////////////////////////////////////////////////////////
 
 // Define modal group internal numbers for checking multiple command violations and tracking the
 // type of command that is called in the block. A modal group is a group of g-code commands that are
@@ -107,11 +114,10 @@ Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
 #define MESSAGE_DISABLED 5
 
 
-//mm or inches
-//#define MM_PER_INCH (25.40)
-//#define INCH_PER_MM (0.0393701)
 
-
+///////////////////////////////////////////////////////////////////////////////
+//                          STRUCTS UNIONS & ENUMS                           //
+///////////////////////////////////////////////////////////////////////////////
 
 typedef struct {
   char r: 1;
@@ -135,7 +141,8 @@ typedef struct {
   float feed_rate;               // Millimeters/min
 //  float seek_rate;             // Millimeters/min. Will be used in v0.9 when axis independence is installed
   float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
-  float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine                                   // position in mm. Loaded from EEPROM when called.
+  float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine                                   
+                                 // position in mm. Loaded from EEPROM when called.
   float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
                                  // machine zero in mm. Non-persistent. Cleared upon reset and boot.
   float next_position[NoOfAxis]; // Target position instruction from gcode sender
@@ -150,8 +157,12 @@ typedef struct {
 extern parser_state_t gc;
 
 enum IJK{I,J,K};
-// Initialize the parser
-//G Instructions
+
+
+///////////////////////////////////////////////////////////////////////////////
+//                             FUNCTION PROTOTYPES                           //
+///////////////////////////////////////////////////////////////////////////////
+
 void G_Initialise();
 
 int Get_modalgroup();

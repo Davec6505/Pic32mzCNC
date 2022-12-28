@@ -1,3 +1,21 @@
+/*******************************************************************************
+*************  RepRap Commonly used parameter qualifiers are :  ****************
+*Pnnn or Paaa - Main parameter
+*Rnnn - other parameter
+*Snnn - other parameter, also often used to modify command behaviour (S0~S9)
+*Tnnn - typically Tool number, trigger number for M581 and M582
+*Xnnn, Ynnn, Znnn - parameter associated with an axis
+*Fnnn - feedrate
+*Hnnn or Hn:n:n - Height or Heater/sensor number
+*En or En:n:n - Parameter associated with extruder 0,1, etc. to 5
+*Dn or Dn:n:n - Extruder drive -For extruders E0 correspond to drive 0, 
+                E1 to drive 1 (M563)
+*Rn - enable value - for different hardware needing positive or negative
+      signal to be enabled - M569
+*Bnnn - Safe printing radius (M665), baud rate (M575)
+*Wnnn - Maximum value of accumulated Integral - M301 & M304
+*Sometimes a "-1" value is used to cancel a command
+*******************************************************************************/
 #include "GCODE.h"
 
 parser_state_t gc;
@@ -96,7 +114,7 @@ void M_Instruction(int flow){
 ///////////////////////////////////////////////////////
 // Check for modal group multiple command violations in the current block
 int Check_group_multiple_violations(){
-static int last_group_number;
+static int last_group_number,last_non_modal_action;
 int i = 0;
     //A machining system may be in many modes at the same time,
     // with one mode from each modal group being in effect.
@@ -109,17 +127,25 @@ int i = 0;
     //initially modal_group_words will == 0, reset after this block
    if ( bit_istrue(modal_group_words,bit(group_number)) ) {
       FAIL(STATUS_MODAL_GROUP_VIOLATION);
+      return status_code;
    } else {
       bit_true(modal_group_words,bit(group_number));
       FAIL(STATUS_OK);
    }
-#if GcodeDebug == 2
-   while(DMA_Busy(1));
-   dma_printf("group_number:= %d\tnon_modal_action:= %d\n",group_number,non_modal_action);
-#endif
+
    last_group_number = group_number;
    if (group_number == MODAL_GROUP_0){
-     bit_true( non_modal_words,bit( non_modal_action));
+     //if the non modal action has changed reset its state
+     if(non_modal_action != last_non_modal_action){
+        Rst_modalword();
+        bit_true( non_modal_words,bit( non_modal_action));
+     }
+     #if GcodeDebug == 2
+       while(DMA_Busy(1));
+       dma_printf("group_number:= %d\tnon_modal_action:= %d\tnon_modal_words:=%d\n",
+       group_number,non_modal_action,non_modal_words);
+     #endif
+     last_non_modal_action = non_modal_action;
      return status_code;
    }
  }
@@ -378,6 +404,10 @@ int i;
     if (status_code) { return(status_code); }
 
  }
+#if GcodeDebug == 2
+   while(DMA_Busy(1));
+   dma_printf("non_modal_action:= %d\n",non_modal_action);
+#endif
  return motion_mode;
 }
 
@@ -409,8 +439,3 @@ static int Set_M_Commands(int flow){
   }
   return status_code;
 }
-
-
-
-
-

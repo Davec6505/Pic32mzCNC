@@ -236,7 +236,7 @@ typedef struct {
  volatile char execute;
 } system_t;
 extern system_t sys;
-#line 116 "c:/users/git/pic32mzcnc/gcode.h"
+#line 122 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
@@ -260,6 +260,7 @@ typedef struct {
 
  float position[ 6 ];
  float coord_system[ 6 ];
+
  float coord_offset[ 6 ];
 
  float next_position[ 6 ];
@@ -274,6 +275,10 @@ typedef struct {
 extern parser_state_t gc;
 
 enum IJK{I,J,K};
+
+
+
+
 
 
 void G_Initialise();

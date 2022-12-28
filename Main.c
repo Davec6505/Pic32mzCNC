@@ -211,7 +211,10 @@ int dly_time,i;
            }
            LED2 = false;
           break;
-     case 4:
+     case 4: 
+          //G10 setting of offsets 
+          //[G10 L1 P2 X17.8 Y-19.3 Z0.0]
+          //[G10 P1 R140 S205]
           break;
      case 8:
           break;

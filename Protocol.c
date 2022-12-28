@@ -36,21 +36,31 @@ float XYZ_Val;
     if(dif > 0){
        G_Initialise();
        F_1_Once = no_of_axis = 0 ; //for buffer and axis refreshing
-       Get_Line(str,dif);
+       Get_Line(str,dif);          //get the line sent from PC
+       
+       //split up the line into string array using SPC seperator
        num_of_strings = strsplit(gcode,str,0x20);
+       
+       //condition each string by seperating the 1st char from the value
+       //e.g. G01  => 'G' "01" and extract the numeral from value
+       //GCODE standard is usuall capitals = making compensation for
+       //Lowercase in the invent of a GCODE set sending lowercase
         switch(gcode[0][0]){
          case 'G':case 'g':
-              //get g instruction
+              //1st char usually 'G'
               if (*(*(gcode)+0)=='G'){
                  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
-                 if(i < 3){
+                 if(i < 3){ //G00 - G99
                    G_Val = atoi(temp);
+                   //Compensation for G28,G30 & G92 have other codes with 
+                   //decimal places, resulting in G280,G300 etc
                    if(G_Val == 28 || G_Val == 30 || G_Val == 92)
                       G_Val *= 10;
-                 }else{  //counter g28.1 etc
+                 }else{  
+                  //G28.1,G30.1 & G92.1 resulting in G281,G301 etc
                    G_Val = (int)(atof(temp)*10.0);
                  }
-                   
+                 
                  motion_mode = G_Mode(G_Val);
                  #if ProtoDebug == 1
                   PrintDebug(*(*(gcode)+0),temp,&G_Val);
@@ -60,6 +70,7 @@ float XYZ_Val;
                //get position a
                //G00/G01 X12.5 Y14.7 F0.2;
                //G02/G03 X12.5 Y14.7 I1.0 J2.0 F0.2;
+               //G10 Lnn Pnn Xnn Ynn Znn offsets can be G10 Pn Rnn Snn
                if(*(*(gcode+1)+0) != 0){
                  no_of_axis++;
                  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
@@ -71,18 +82,19 @@ float XYZ_Val;
                        XYZ_Val = atof(temp);
                        status = Instruction_Values(gcode[1],&XYZ_Val);
                        #if ProtoDebug == 1
-                         PrintDebug(*(*(gcode+1)+0),temp,&XYZ_Val);
+                         PrintDebug(*gcode[1],temp,&XYZ_Val);
                        #endif
                        break;
                     case 'F':case 'f':
+                    case 'L':case 'l':
                     case 'P':case 'p':
                     case 'S':case 's':
-                       if(!F_1_Once){
+                       if(!F_1_Once){//check validity of this
                          F_1_Once = 1;
                          F_Val = atoi(temp);
                          status = Instruction_Values(gcode[1],&F_Val);
                        #if ProtoDebug == 1
-                         PrintDebug(*(*(gcode+1)+0),temp,&F_Val);
+                         PrintDebug(*gcode[1],temp,&F_Val);
                        #endif
                        }
                        break;
@@ -91,10 +103,12 @@ float XYZ_Val;
                 //get position b
                //G00/G01 X12.5 Y14.7 F0.2;
                //G02/G03 X12.5 Y14.7 I1.0 J2.0 F0.2;
+               //G10 Pnn  toolnumber
                 if(*(*(gcode+2)+0) != 0){
                    no_of_axis++;
                    i = cpy_val_from_str(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
                    switch(*(*(gcode+2))) {
+                      case 'X':case 'x':
                       case 'Y':case 'y':
                       case 'Z':case 'z':
                       case 'A':case 'a':
@@ -120,11 +134,15 @@ float XYZ_Val;
                    }
                 }
                   //get  pos c value
+                  //G10 X0.00 offset
                   //G02/G03 = R2.0 /  I1.0 / F0.2;
                 if(*(*(gcode+3)+0) != 0){
                   no_of_axis++;
                   i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
                    switch(*(*(gcode+3))) {
+                      case 'X':case 'x':
+                      case 'Y':case 'y':
+                      case 'Z':case 'z':
                       case 'R':case 'r':
                       case 'I':case 'i':
                          XYZ_Val = atof(temp);
@@ -148,11 +166,14 @@ float XYZ_Val;
                    }
                 }
 
-                  //get  pos c value
+                  //get  pos d value
+                  //G10 Y0.00 offset
                   //G02/G03 = J1.0 / F0.2;
                 if(*(*(gcode+4)+0) != 0){
                   i = cpy_val_from_str(temp,(*(gcode+4)),1,strlen(*(gcode+4)));
                    switch(*(*(gcode+4))) {
+                      case 'Y':case 'y':
+                      case 'Z':case 'z':
                       case 'J':case 'j':
                          XYZ_Val = atof(temp);
                          status = Instruction_Values(gcode[4],&XYZ_Val);
@@ -174,12 +195,14 @@ float XYZ_Val;
 
                    }
                 }
-                  //get  pos c value
+                  //get  pos e value
+                  //G10 Z0.00 offset
                   //G02/G03 = J1.0 / F0.2;
                 if(*(*(gcode+5)+0) != 0){
                   xyz[4] = *(*(gcode+5)+0);no_of_axis++;
                   i = cpy_val_from_str(temp,(*(gcode+5)),1,strlen(*(gcode+5)));
                    switch(*(*(gcode+5))) {
+                      case 'Z':case 'z':
                       case 'J':case 'j':
                          XYZ_Val = atof(temp);
                          Instruction_Values(gcode[5],&XYZ_Val);
@@ -189,19 +212,19 @@ float XYZ_Val;
                          break;
                       case 'F':
                       case 'f':
-                        if(!F_1_Once){
+                       // if(!F_1_Once){
                          F_1_Once = 1;
                          F_Val = atoi(temp);
                          status = Instruction_Values(gcode[5],&F_Val);
                          #if ProtoDebug == 1
                            PrintDebug(*gcode[5],temp,&F_Val);
                          #endif
-                        }
+                      //  }
                          break;
 
                    }
                 }
-                  //get  pos c value
+                  //get  pos f value; gcodes should not go beyond this
                   //G02/G03 = J1.0 / F0.2;
                 if(*(*(gcode+6)+0) != 0){
                   i = cpy_val_from_str(temp,(*(gcode+6)),1,strlen(*(gcode+6)));
@@ -285,14 +308,14 @@ float XYZ_Val;
                          break;
                       case 'F':
                       case 'f':
-                         if(!F_1_Once){
+                       //  if(!F_1_Once){
                            F_1_Once = 1;
                            F_Val = atoi(temp);
                            status = Instruction_Values(gcode[2],&F_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[1],temp,&F_Val);
                          #endif
-                         }
+                        // }
                          break;
 
                    }

@@ -560,7 +560,7 @@ int Non_Modal_Actions(int action);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 116 "c:/users/git/pic32mzcnc/gcode.h"
+#line 122 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
@@ -584,6 +584,7 @@ typedef struct {
 
  float position[ 6 ];
  float coord_system[ 6 ];
+
  float coord_offset[ 6 ];
 
  float next_position[ 6 ];
@@ -598,6 +599,10 @@ typedef struct {
 extern parser_state_t gc;
 
 enum IJK{I,J,K};
+
+
+
+
 
 
 void G_Initialise();
@@ -700,7 +705,14 @@ float XYZ_Val;
  G_Initialise();
  F_1_Once = no_of_axis = 0 ;
  Get_Line(str,dif);
+
+
  num_of_strings = strsplit(gcode,str,0x20);
+
+
+
+
+
  switch(gcode[0][0]){
  case 'G':case 'g':
 
@@ -708,15 +720,19 @@ float XYZ_Val;
  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
  if(i < 3){
  G_Val = atoi(temp);
+
+
  if(G_Val == 28 || G_Val == 30 || G_Val == 92)
  G_Val *= 10;
  }else{
+
  G_Val = (int)(atof(temp)*10.0);
  }
 
  motion_mode = G_Mode(G_Val);
 
  PrintDebug(*(*(gcode)+0),temp,&G_Val);
+
 
 
 
@@ -734,10 +750,11 @@ float XYZ_Val;
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[1],&XYZ_Val);
 
- PrintDebug(*(*(gcode+1)+0),temp,&XYZ_Val);
+ PrintDebug(*gcode[1],temp,&XYZ_Val);
 
  break;
  case 'F':case 'f':
+ case 'L':case 'l':
  case 'P':case 'p':
  case 'S':case 's':
  if(!F_1_Once){
@@ -745,7 +762,7 @@ float XYZ_Val;
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[1],&F_Val);
 
- PrintDebug(*(*(gcode+1)+0),temp,&F_Val);
+ PrintDebug(*gcode[1],temp,&F_Val);
 
  }
  break;
@@ -754,10 +771,12 @@ float XYZ_Val;
 
 
 
+
  if(*(*(gcode+2)+0) != 0){
  no_of_axis++;
  i = cpy_val_from_str(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
  switch(*(*(gcode+2))) {
+ case 'X':case 'x':
  case 'Y':case 'y':
  case 'Z':case 'z':
  case 'A':case 'a':
@@ -784,10 +803,14 @@ float XYZ_Val;
  }
 
 
+
  if(*(*(gcode+3)+0) != 0){
  no_of_axis++;
  i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
  switch(*(*(gcode+3))) {
+ case 'X':case 'x':
+ case 'Y':case 'y':
+ case 'Z':case 'z':
  case 'R':case 'r':
  case 'I':case 'i':
  XYZ_Val = atof(temp);
@@ -813,9 +836,12 @@ float XYZ_Val;
 
 
 
+
  if(*(*(gcode+4)+0) != 0){
  i = cpy_val_from_str(temp,(*(gcode+4)),1,strlen(*(gcode+4)));
  switch(*(*(gcode+4))) {
+ case 'Y':case 'y':
+ case 'Z':case 'z':
  case 'J':case 'j':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[4],&XYZ_Val);
@@ -839,10 +865,12 @@ float XYZ_Val;
  }
 
 
+
  if(*(*(gcode+5)+0) != 0){
  xyz[4] = *(*(gcode+5)+0);no_of_axis++;
  i = cpy_val_from_str(temp,(*(gcode+5)),1,strlen(*(gcode+5)));
  switch(*(*(gcode+5))) {
+ case 'Z':case 'z':
  case 'J':case 'j':
  XYZ_Val = atof(temp);
  Instruction_Values(gcode[5],&XYZ_Val);
@@ -852,14 +880,14 @@ float XYZ_Val;
  break;
  case 'F':
  case 'f':
- if(!F_1_Once){
+
  F_1_Once = 1;
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[5],&F_Val);
 
  PrintDebug(*gcode[5],temp,&F_Val);
 
- }
+
  break;
 
  }
@@ -948,14 +976,14 @@ float XYZ_Val;
  break;
  case 'F':
  case 'f':
- if(!F_1_Once){
+
  F_1_Once = 1;
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[2],&F_Val);
 
  PrintDebug(gcode[1],temp,&F_Val);
 
- }
+
  break;
 
  }

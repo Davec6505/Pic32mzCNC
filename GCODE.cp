@@ -592,7 +592,7 @@ int Non_Modal_Actions(int action);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 116 "c:/users/git/pic32mzcnc/gcode.h"
+#line 122 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
@@ -616,6 +616,7 @@ typedef struct {
 
  float position[ 6 ];
  float coord_system[ 6 ];
+
  float coord_offset[ 6 ];
 
  float next_position[ 6 ];
@@ -630,6 +631,10 @@ typedef struct {
 extern parser_state_t gc;
 
 enum IJK{I,J,K};
+
+
+
+
 
 
 void G_Initialise();
@@ -664,7 +669,7 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static void Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
-#line 3 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 21 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 parser_state_t gc;
 
 
@@ -750,7 +755,7 @@ void M_Instruction(int flow){
 
  Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
-#line 92 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 110 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 }
 
 
@@ -758,7 +763,7 @@ void M_Instruction(int flow){
 
 
 int Check_group_multiple_violations(){
-static int last_group_number;
+static int last_group_number,last_non_modal_action;
 int i = 0;
 
 
@@ -771,17 +776,25 @@ int i = 0;
 
  if (  ((modal_group_words & (1 << group_number) ) != 0)  ) {
   status_code = 5 ; ;
+ return status_code;
  } else {
   (modal_group_words |= (1 << group_number) ) ;
   status_code = 0 ; ;
  }
 
- while(DMA_Busy(1));
- dma_printf("group_number:= %d\tnon_modal_action:= %d\n",group_number,non_modal_action);
-
  last_group_number = group_number;
  if (group_number ==  1 ){
+
+ if(non_modal_action != last_non_modal_action){
+ Rst_modalword();
   (non_modal_words |= (1 << non_modal_action) ) ;
+ }
+
+ while(DMA_Busy(1));
+ dma_printf("group_number:= %d\tnon_modal_action:= %d\tnon_modal_words:=%d\n",
+ group_number,non_modal_action,non_modal_words);
+
+ last_non_modal_action = non_modal_action;
  return status_code;
  }
  }
@@ -918,7 +931,7 @@ int F_Val,S_Val;
  if(F_Val < 0){
   status_code = 13 ; ;
  }
-#line 265 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 291 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  gc.frequency = F_Val;
  break;
  case 'P':
@@ -940,7 +953,7 @@ int F_Val,S_Val;
 
  default: status_code = 3 ; ;break;
  }
-#line 295 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 321 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }
 
@@ -1027,6 +1040,10 @@ int i;
  if (status_code) { return(status_code); }
 
  }
+
+ while(DMA_Busy(1));
+ dma_printf("non_modal_action:= %d\n",non_modal_action);
+
  return motion_mode;
 }
 
@@ -1049,7 +1066,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 406 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 436 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  status_code = 3 ; ;break;
