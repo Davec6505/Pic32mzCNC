@@ -2130,14 +2130,14 @@ ADDU	R2, R3, R2
 SH	R2, 14(SP)
 ; i end address is: 16 (R4)
 SEH	R3, R4
-;Protocol.c,420 :: 		while(DMA_Busy(1));
+;Protocol.c,420 :: 		while(DMA_IsOn(1));
 L_Protocol_str2int137:
 ; i start address is: 12 (R3)
 SH	R3, 4(SP)
 SH	R26, 6(SP)
 SW	R25, 8(SP)
 ORI	R25, R0, 1
-JAL	_DMA_Busy+0
+JAL	_DMA_IsOn+0
 NOP	
 LW	R25, 8(SP)
 LH	R26, 6(SP)
@@ -2202,7 +2202,7 @@ LH	R2, 0(R27)
 ; G_Val start address is: 12 (R3)
 SEH	R3, R2
 ; G_Val end address is: 12 (R3)
-;Protocol.c,442 :: 		while(DMA_Busy(1));
+;Protocol.c,442 :: 		while(DMA_IsOn(1));
 L_Protocol_PrintDebug155:
 ; G_Val start address is: 12 (R3)
 SH	R3, 4(SP)
@@ -2210,7 +2210,7 @@ SW	R27, 8(SP)
 SW	R26, 12(SP)
 SB	R25, 16(SP)
 ORI	R25, R0, 1
-JAL	_DMA_Busy+0
+JAL	_DMA_IsOn+0
 NOP	
 LBU	R25, 16(SP)
 LW	R26, 12(SP)
@@ -2268,7 +2268,7 @@ LWC1	S0, 0(R27)
 MOV.S 	S1, S0
 ; XYZ_Val end address is: 8 (R2)
 MOV.S 	S16, S1
-;Protocol.c,450 :: 		while(DMA_Busy(1));
+;Protocol.c,450 :: 		while(DMA_IsOn(1));
 L_Protocol_PrintDebug165:
 ; XYZ_Val start address is: 128 (R32)
 SWC1	S16, 4(SP)
@@ -2276,7 +2276,7 @@ SW	R27, 8(SP)
 SW	R26, 12(SP)
 SB	R25, 16(SP)
 ORI	R25, R0, 1
-JAL	_DMA_Busy+0
+JAL	_DMA_IsOn+0
 NOP	
 LBU	R25, 16(SP)
 LW	R26, 12(SP)

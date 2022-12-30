@@ -8,7 +8,7 @@
 #include "GCODE.h"
 
 #define NULL 0
-
+#define _DMACON_SUSPEND_MASK (1<<12)
 
 extern char txt[];
 extern char rxBuf[];
@@ -46,7 +46,10 @@ int  Loopback();
 //trmit
 void DMA1_Enable();
 void DMA1_Disable();
+int DMA_IsOn(int channel);
 int  DMA_Busy(int channel);
+int  DMA_Suspend(int channel);
+int  DMA_Resume(int channel);
 int  dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #endif

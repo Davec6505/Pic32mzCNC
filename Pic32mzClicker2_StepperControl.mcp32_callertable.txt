@@ -35,6 +35,28 @@ main
 		Reset_Min_Debounce
 	Get_modalgroup
 	Non_Modal_Actions
+		Settings_Write_Coord_Data
+			NVMWriteWord
+				NVMUnlock
+					DMA_Suspend
+						DMA_Busy
+					NVMWait
+					DMA_Resume
+						DMA_Busy
+		DMA_IsOn
+		dma_printf
+			DMA_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
+		__CC2DW
 	Get_modalword
 	Rst_modalgroup
 	Get_Axisword
@@ -50,19 +72,8 @@ main
 			labs
 			Step_Cycle
 				toggleOCx
-		DMA_Busy
+		DMA_IsOn
 		dma_printf
-			DMA_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
 		DualAxisStep
 			belt_steps
 			Single_Axis_Enable
@@ -133,11 +144,11 @@ main
 			Set_Modal_Groups
 			Set_Motion_Mode
 				Select_Plane
-				DMA_Busy
+				DMA_IsOn
 				dma_printf
 				__CC2DW
 		PrintDebug
-			DMA_Busy
+			DMA_IsOn
 			dma_printf
 			__CC2DW
 		Instruction_Values
@@ -147,11 +158,11 @@ main
 			Set_M_Commands
 		Check_group_multiple_violations
 			Rst_modalgroup
-			DMA_Busy
+			DMA_IsOn
 			dma_printf
 			Rst_modalword
 			__CC2DW
-	DMA_Busy
+	DMA_IsOn
 	dma_printf
 	__CC2DW
 	__FillZeros

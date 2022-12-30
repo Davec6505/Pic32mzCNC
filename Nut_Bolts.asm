@@ -38,11 +38,11 @@ SB	R2, 1(SP)
 ;Nut_Bolts.c,32 :: 		if (c == '-') {
 ANDI	R3, R3, 255
 ORI	R2, R0, 45
-BEQ	R3, R2, L__read_float57
+BEQ	R3, R2, L__read_float37
 NOP	
 J	L_read_float0
 NOP	
-L__read_float57:
+L__read_float37:
 ; c end address is: 28 (R7)
 ;Nut_Bolts.c,33 :: 		isnegative = true;
 LBU	R2, 1(SP)
@@ -65,11 +65,11 @@ L_read_float0:
 ; c start address is: 28 (R7)
 ANDI	R3, R7, 255
 ORI	R2, R0, 43
-BEQ	R3, R2, L__read_float58
+BEQ	R3, R2, L__read_float38
 NOP	
-J	L__read_float50
+J	L__read_float30
 NOP	
-L__read_float58:
+L__read_float38:
 ; c end address is: 28 (R7)
 ;Nut_Bolts.c,36 :: 		c = *ptr++;
 LBU	R2, 0(R8)
@@ -86,7 +86,7 @@ MOVZ	R3, R7, R0
 ;Nut_Bolts.c,37 :: 		}
 J	L_read_float2
 NOP	
-L__read_float50:
+L__read_float30:
 ;Nut_Bolts.c,35 :: 		} else if (c == '+') {
 MOVZ	R3, R8, R0
 ANDI	R2, R7, 255
@@ -127,36 +127,36 @@ ANDI	R8, R2, 255
 ;Nut_Bolts.c,42 :: 		if (c <= 9) {
 ANDI	R2, R2, 255
 SLTIU	R2, R2, 10
-BNE	R2, R0, L__read_float59
+BNE	R2, R0, L__read_float39
 NOP	
 J	L_read_float5
 NOP	
-L__read_float59:
+L__read_float39:
 ;Nut_Bolts.c,43 :: 		ndigit++;
 ADDIU	R2, R5, 1
 ANDI	R5, R2, 255
 ;Nut_Bolts.c,44 :: 		if (ndigit <= MAX_INT_DIGITS) {
 ANDI	R2, R2, 255
 SLTIU	R2, R2, 9
-BNE	R2, R0, L__read_float60
+BNE	R2, R0, L__read_float40
 NOP	
 J	L_read_float6
 NOP	
-L__read_float60:
+L__read_float40:
 ;Nut_Bolts.c,45 :: 		if (isdecimal) { exp--; }
 LBU	R2, 1(SP)
 EXT	R2, R2, 1, 1
-BNE	R2, R0, L__read_float62
+BNE	R2, R0, L__read_float42
 NOP	
-J	L__read_float51
+J	L__read_float31
 NOP	
-L__read_float62:
+L__read_float42:
 ADDIU	R2, R6, -1
 SEB	R6, R2
 ; exp end address is: 24 (R6)
 J	L_read_float7
 NOP	
-L__read_float51:
+L__read_float31:
 L_read_float7:
 ;Nut_Bolts.c,46 :: 		intval = (((intval << 2) + intval) << 1) + c; // intval*10 + c
 ; exp start address is: 24 (R6)
@@ -178,11 +178,11 @@ L_read_float6:
 ; intval start address is: 28 (R7)
 LBU	R2, 1(SP)
 EXT	R2, R2, 1, 1
-BEQ	R2, R0, L__read_float63
+BEQ	R2, R0, L__read_float43
 NOP	
-J	L__read_float52
+J	L__read_float32
 NOP	
-L__read_float63:
+L__read_float43:
 ADDIU	R2, R6, 1
 ; exp end address is: 24 (R6)
 ; exp start address is: 12 (R3)
@@ -191,7 +191,7 @@ SEB	R3, R2
 SEB	R6, R3
 J	L_read_float9
 NOP	
-L__read_float52:
+L__read_float32:
 L_read_float9:
 ;Nut_Bolts.c,49 :: 		}
 ; exp start address is: 24 (R6)
@@ -208,19 +208,19 @@ L_read_float5:
 ANDI	R3, R8, 255
 ; c end address is: 32 (R8)
 ORI	R2, R0, 254
-BEQ	R3, R2, L__read_float64
+BEQ	R3, R2, L__read_float44
 NOP	
-J	L__read_float49
+J	L__read_float29
 NOP	
-L__read_float64:
+L__read_float44:
 LBU	R2, 1(SP)
 EXT	R2, R2, 1, 1
-BEQ	R2, R0, L__read_float65
+BEQ	R2, R0, L__read_float45
 NOP	
-J	L__read_float48
+J	L__read_float28
 NOP	
-L__read_float65:
-L__read_float47:
+L__read_float45:
+L__read_float27:
 ;Nut_Bolts.c,51 :: 		isdecimal = true;
 LBU	R2, 1(SP)
 ORI	R2, R2, 2
@@ -229,8 +229,8 @@ SB	R2, 1(SP)
 J	L_read_float14
 NOP	
 ;Nut_Bolts.c,50 :: 		} else if (c == (('.'-'0') & 0xff)  &&  !(isdecimal)) {
-L__read_float49:
-L__read_float48:
+L__read_float29:
+L__read_float28:
 ;Nut_Bolts.c,53 :: 		break;
 J	L_read_float4
 NOP	
@@ -255,11 +255,11 @@ J	L_read_float3
 NOP	
 L_read_float4:
 ;Nut_Bolts.c,59 :: 		if (!ndigit) { return(false); };
-BEQ	R5, R0, L__read_float66
+BEQ	R5, R0, L__read_float46
 NOP	
 J	L_read_float15
 NOP	
-L__read_float66:
+L__read_float46:
 ; intval end address is: 28 (R7)
 ; exp end address is: 24 (R6)
 ; ndigit end address is: 20 (R5)
@@ -281,11 +281,11 @@ MOV.S 	S2, S1
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 C.EQ.S 	0, S1, S0
-BC1F	0, L__read_float67
+BC1F	0, L__read_float47
 NOP	
-J	L__read_float55
+J	L__read_float35
 NOP	
-L__read_float67:
+L__read_float47:
 ; exp end address is: 24 (R6)
 ; ptr end address is: 16 (R4)
 ; fval end address is: 16 (R4)
@@ -299,11 +299,11 @@ L_read_float17:
 ; ptr start address is: 12 (R3)
 SEB	R2, R5
 SLTI	R2, R2, -1
-BNE	R2, R0, L__read_float68
+BNE	R2, R0, L__read_float48
 NOP	
 J	L_read_float18
 NOP	
-L__read_float68:
+L__read_float48:
 ;Nut_Bolts.c,69 :: 		fval *= 0.01;
 LUI	R2, 15395
 ORI	R2, R2, 55050
@@ -320,11 +320,11 @@ L_read_float18:
 ;Nut_Bolts.c,72 :: 		if (exp < 0) {
 SEB	R2, R5
 SLTI	R2, R2, 0
-BNE	R2, R0, L__read_float69
+BNE	R2, R0, L__read_float49
 NOP	
 J	L_read_float19
 NOP	
-L__read_float69:
+L__read_float49:
 ; exp end address is: 20 (R5)
 ;Nut_Bolts.c,73 :: 		fval *= 0.1;
 LUI	R2, 15820
@@ -343,17 +343,17 @@ L_read_float19:
 ; exp start address is: 20 (R5)
 SEB	R2, R5
 SLTI	R2, R2, 1
-BEQ	R2, R0, L__read_float70
+BEQ	R2, R0, L__read_float50
 NOP	
-J	L__read_float54
+J	L__read_float34
 NOP	
-L__read_float70:
+L__read_float50:
 ; exp end address is: 20 (R5)
 SEB	R4, R5
 ;Nut_Bolts.c,75 :: 		do {
 J	L_read_float22
 NOP	
-L__read_float53:
+L__read_float33:
 ;Nut_Bolts.c,77 :: 		} while (--exp > 0);
 ;Nut_Bolts.c,75 :: 		do {
 L_read_float22:
@@ -375,11 +375,11 @@ SEB	R4, R2
 ; exp end address is: 16 (R4)
 SEB	R2, R2
 SLTI	R2, R2, 1
-BNE	R2, R0, L__read_float71
+BNE	R2, R0, L__read_float51
 NOP	
-J	L__read_float53
+J	L__read_float33
 NOP	
-L__read_float71:
+L__read_float51:
 ; exp end address is: 16 (R4)
 ; fval end address is: 8 (R2)
 ; ptr end address is: 12 (R3)
@@ -388,7 +388,7 @@ MOVZ	R2, R3, R0
 ;Nut_Bolts.c,78 :: 		}
 J	L_read_float21
 NOP	
-L__read_float54:
+L__read_float34:
 ;Nut_Bolts.c,74 :: 		} else if (exp > 0) {
 MOV.S 	S0, S1
 MOVZ	R2, R3, R0
@@ -408,7 +408,7 @@ MOVZ	R3, R2, R0
 MOV.S 	S1, S0
 J	L_read_float16
 NOP	
-L__read_float55:
+L__read_float35:
 ;Nut_Bolts.c,67 :: 		if (fval != 0) {
 MOV.S 	S1, S2
 MOVZ	R3, R4, R0
@@ -419,11 +419,11 @@ L_read_float16:
 ; ptr start address is: 12 (R3)
 LBU	R2, 1(SP)
 EXT	R2, R2, 0, 1
-BNE	R2, R0, L__read_float73
+BNE	R2, R0, L__read_float53
 NOP	
 J	L_read_float25
 NOP	
-L__read_float73:
+L__read_float53:
 ;Nut_Bolts.c,83 :: 		*float_ptr = -fval;
 MOVZ	R2, R0, R0
 MTC1	R2, S0
@@ -453,128 +453,75 @@ ADDIU	SP, SP, 4
 JR	RA
 NOP	
 ; end of _read_float
-_delay_ms:
-;Nut_Bolts.c,96 :: 		void delay_ms(uint16_t ms)
-;Nut_Bolts.c,98 :: 		while ( ms-- ) { Delay_ms(1); }
-L_delay_ms27:
-ANDI	R3, R25, 65535
-ADDIU	R2, R25, -1
-ANDI	R25, R2, 65535
-BNE	R3, R0, L__delay_ms76
+_flt2ulong:
+;Nut_Bolts.c,94 :: 		unsigned long flt2ulong(float f_){
+ADDIU	SP, SP, -24
+SW	RA, 0(SP)
+SW	R25, 4(SP)
+SW	R26, 8(SP)
+SW	R27, 12(SP)
+SWC1	S12, 20(SP)
+;Nut_Bolts.c,95 :: 		unsigned long ul_ = 0;
+MOVZ	R30, R0, R0
+SW	R30, 16(SP)
+;Nut_Bolts.c,96 :: 		memcpy(&ul_,&f_,sizeof(f_));
+ADDIU	R3, SP, 20
+ADDIU	R2, SP, 16
+ORI	R27, R0, 4
+MOVZ	R26, R3, R0
+MOVZ	R25, R2, R0
+JAL	_memcpy+0
 NOP	
-J	L_delay_ms28
-NOP	
-L__delay_ms76:
-LUI	R24, 1
-ORI	R24, R24, 1130
-L_delay_ms29:
-ADDIU	R24, R24, -1
-BNE	R24, R0, L_delay_ms29
-NOP	
-J	L_delay_ms27
-NOP	
-L_delay_ms28:
+;Nut_Bolts.c,98 :: 		return ul_;
+LW	R2, 16(SP)
 ;Nut_Bolts.c,99 :: 		}
-L_end_delay_ms:
+;Nut_Bolts.c,98 :: 		return ul_;
+;Nut_Bolts.c,99 :: 		}
+L_end_flt2ulong:
+LW	R27, 12(SP)
+LW	R26, 8(SP)
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 24
 JR	RA
 NOP	
-; end of _delay_ms
-_delay_us:
-;Nut_Bolts.c,105 :: 		void delay_us(uint32_t us)
-;Nut_Bolts.c,107 :: 		while (us) {
-L_delay_us31:
-BNE	R25, R0, L__delay_us79
-NOP	
-J	L_delay_us32
-NOP	
-L__delay_us79:
-;Nut_Bolts.c,108 :: 		if (us < 10) {
-SLTIU	R2, R25, 10
-BNE	R2, R0, L__delay_us80
-NOP	
-J	L_delay_us33
-NOP	
-L__delay_us80:
-;Nut_Bolts.c,109 :: 		Delay_us(1);
-LUI	R24, 0
-ORI	R24, R24, 66
-L_delay_us34:
-ADDIU	R24, R24, -1
-BNE	R24, R0, L_delay_us34
-NOP	
-;Nut_Bolts.c,110 :: 		us--;
-ADDIU	R2, R25, -1
+; end of _flt2ulong
+_ulong2flt:
+;Nut_Bolts.c,102 :: 		float ulong2flt(unsigned long ul_){
+ADDIU	SP, SP, -24
+SW	RA, 0(SP)
+SW	R25, 4(SP)
+SW	R26, 8(SP)
+SW	R27, 12(SP)
+SW	R25, 20(SP)
+;Nut_Bolts.c,103 :: 		float f_ = 0.0;
+MOVZ	R30, R0, R0
+SW	R30, 16(SP)
+;Nut_Bolts.c,104 :: 		memcpy(&f_,&ul_,sizeof(ul_));
+ADDIU	R3, SP, 20
+ADDIU	R2, SP, 16
+ORI	R27, R0, 4
+MOVZ	R26, R3, R0
 MOVZ	R25, R2, R0
-;Nut_Bolts.c,111 :: 		} else if (us < 100) {
-J	L_delay_us36
+JAL	_memcpy+0
 NOP	
-L_delay_us33:
-SLTIU	R2, R25, 100
-BNE	R2, R0, L__delay_us81
-NOP	
-J	L_delay_us37
-NOP	
-L__delay_us81:
-;Nut_Bolts.c,112 :: 		Delay_us(10);
-LUI	R24, 0
-ORI	R24, R24, 666
-L_delay_us38:
-ADDIU	R24, R24, -1
-BNE	R24, R0, L_delay_us38
-NOP	
-;Nut_Bolts.c,113 :: 		us -= 10;
-ADDIU	R2, R25, -10
-MOVZ	R25, R2, R0
-;Nut_Bolts.c,114 :: 		} else if (us < 1000) {
-J	L_delay_us40
-NOP	
-L_delay_us37:
-SLTIU	R2, R25, 1000
-BNE	R2, R0, L__delay_us82
-NOP	
-J	L_delay_us41
-NOP	
-L__delay_us82:
-;Nut_Bolts.c,115 :: 		Delay_us(100);
-LUI	R24, 0
-ORI	R24, R24, 6666
-L_delay_us42:
-ADDIU	R24, R24, -1
-BNE	R24, R0, L_delay_us42
-NOP	
-;Nut_Bolts.c,116 :: 		us -= 100;
-ADDIU	R2, R25, -100
-MOVZ	R25, R2, R0
-;Nut_Bolts.c,117 :: 		} else {
-J	L_delay_us44
-NOP	
-L_delay_us41:
-;Nut_Bolts.c,118 :: 		Delay_ms(1);
-LUI	R24, 1
-ORI	R24, R24, 1130
-L_delay_us45:
-ADDIU	R24, R24, -1
-BNE	R24, R0, L_delay_us45
-NOP	
-;Nut_Bolts.c,119 :: 		us -= 1000;
-ADDIU	R2, R25, -1000
-MOVZ	R25, R2, R0
-;Nut_Bolts.c,120 :: 		}
-L_delay_us44:
-L_delay_us40:
-L_delay_us36:
-;Nut_Bolts.c,121 :: 		}
-J	L_delay_us31
-NOP	
-L_delay_us32:
-;Nut_Bolts.c,122 :: 		}
-L_end_delay_us:
+;Nut_Bolts.c,106 :: 		return f_;
+LWC1	S0, 16(SP)
+;Nut_Bolts.c,107 :: 		}
+;Nut_Bolts.c,106 :: 		return f_;
+;Nut_Bolts.c,107 :: 		}
+L_end_ulong2flt:
+LW	R27, 12(SP)
+LW	R26, 8(SP)
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 24
 JR	RA
 NOP	
-; end of _delay_us
+; end of _ulong2flt
 _sys_sync_current_position:
-;Nut_Bolts.c,125 :: 		void sys_sync_current_position()
-;Nut_Bolts.c,129 :: 		}
+;Nut_Bolts.c,111 :: 		void sys_sync_current_position()
+;Nut_Bolts.c,115 :: 		}
 L_end_sys_sync_current_position:
 JR	RA
 NOP	

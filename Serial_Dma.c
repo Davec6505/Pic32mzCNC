@@ -270,21 +270,72 @@ void DMA1_Enable(){
 }
 
 ////////////////////////////////////////
-//DMA1 off control
+//DMA1 off control ?? should compliment
+//need to come back to this eventually
 void DMA1_Disable(){
     DCH1CON |= 1<<7;
 }
 
 ///////////////////////////////////////
-//Get the status of the respective DMA
-//channel, decide whether or not to send
-//new data  [1 = busy || 0 = free]
-int DMA_Busy(int channel){
+//Check if DMA channel on bit15 is true
+int DMA_IsOn(int channel){
    if(channel == 0)
      return (DCH0CON & 0x8000)>>15;
    else
      return (DCH1CON & 0x8000)>>15;
 }
+///////////////////////////////////////
+//Get the status of the respective DMA
+//channel, decide whether or not to send
+//new data  [1 = busy || 0 = free]
+//checking the state od the DMABUSY bit 11
+int DMA_Busy(int channel){
+   if(channel == 0)
+     return (DCH0CON & 0x800)>>11;
+   else
+     return (DCH1CON & 0x800)>>11;
+}
+
+////////////////////////////////////////
+//DMA SUSPEND bit12 force to true to 
+//suspend the channel
+int DMA_Suspend(int channel){
+int state_of_channel = 0;
+  if(channel == 0){
+      DCH0CONSET = (1 << 12);
+  } else{
+      DCH1CONSET = (1 << 12);
+  }
+//wait for channel to finnish
+  while(DMA_Busy(channel));
+  
+//return the state of the SUSPEND bit
+  if(channel == 0)
+     return (DCH0CON & 0x1000)>>12;
+  else
+     return (DCH1CON & 0x1000)>>12;
+}
+
+////////////////////////////////////////
+//DMA resume the SUSPEND by forcing bit12
+//to false
+int DMA_Resume(int channel){
+int state_of_channel;
+  if(channel == 0){
+      DCH0CONCLR = (1 << 12);
+  } else{
+      DCH1CONCLR = (1 << 12);
+  }
+  //wait for channel to finnish
+  while(DMA_Busy(channel));
+  
+  //return the state of the SUSPEND bit
+  if(channel == 0)
+     return (DCH0CON & 0x1000)>>12;
+  else
+     return (DCH1CON & 0x1000)>>12;
+}
+
 
 /////////////////////////////////////////////////////
 //UART2 TX Interrupt should be handed automatically

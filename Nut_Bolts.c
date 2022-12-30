@@ -90,36 +90,22 @@ int read_float(char *line, uint8_t *char_counter, float *float_ptr)
   return(true);
 }
 
+// Convert a floating point to a unsigned long for flash write
+unsigned long flt2ulong(float f_){
+unsigned long ul_ = 0;
+  memcpy(&ul_,&f_,sizeof(f_));
 
-// Delays variable defined milliseconds. Compiler compatibility fix for _delay_ms(),
-// which only accepts constants in future compiler releases.
-void delay_ms(uint16_t ms)
-{
-  while ( ms-- ) { Delay_ms(1); }
+  return ul_;
 }
 
+//Convert a unsigned long back to a floating point from flash memory
+float ulong2flt(unsigned long ul_){
+float f_ = 0.0;
+ memcpy(&f_,&ul_,sizeof(ul_));
 
-// Delays variable defined microseconds. Compiler compatibility fix for _delay_us(),
-// which only accepts constants in future compiler releases. Written to perform more
-// efficiently with larger delays, as the counter adds parasitic time in each iteration.
-void delay_us(uint32_t us)
-{
-  while (us) {
-    if (us < 10) {
-      Delay_us(1);
-      us--;
-    } else if (us < 100) {
-      Delay_us(10);
-      us -= 10;
-    } else if (us < 1000) {
-      Delay_us(100);
-      us -= 100;
-    } else {
-      Delay_ms(1);
-      us -= 1000;
-    }
-  }
+return f_;
 }
+
 
 // Syncs all internal position vectors to the current system position.
 void sys_sync_current_position()

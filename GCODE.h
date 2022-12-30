@@ -44,8 +44,20 @@ Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
 #include "Globals.h"
 
 ///////////////////////////////////////////////////////////////////////////////
+//                             MACROS                                        //
+///////////////////////////////////////////////////////////////////////////////
+#define FAIL(status) status_code = status;
+
+
+///////////////////////////////////////////////////////////////////////////////
 //                             DEFINES                                       //
 ///////////////////////////////////////////////////////////////////////////////
+
+//G54, G55, G56, G57, G58 and G59 are datum shift G-Codes. 
+//This series of commands tell the CNC control which datum we are using. 
+//Once the machine reads one of these codes it will continue to work 
+//from this position until a new one is called upon
+#define NUMBER_OF_DATUMS 9
 
 // Define modal group internal numbers for checking multiple command violations and tracking the
 // type of command that is called in the block. A modal group is a group of g-code commands that are
@@ -140,13 +152,13 @@ typedef struct {
   int L;                         //L2 tells the G10 we’re setting standard work offsets
   float feed_rate;               // Millimeters/min
 //  float seek_rate;             // Millimeters/min. Will be used in v0.9 when axis independence is installed
-  float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
-  float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine                                   
+  volatile float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
+//  volatile float coord_system[6];  // Current work coordinate system (G54+). Stores offset from absolute machine
                                  // position in mm. Loaded from EEPROM when called.
-  float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
+  volatile float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
                                  // machine zero in mm. Non-persistent. Cleared upon reset and boot.
-  float next_position[NoOfAxis]; // Target position instruction from gcode sender
-  float offset[3];               // I,J,K for arc
+  volatile float next_position[NoOfAxis]; // Target position instruction from gcode sender
+  volatile float offset[3];               // I,J,K for arc
   float R;
   float I;
   float J;
@@ -155,6 +167,16 @@ typedef struct {
   int S;               //Pause as in sec
 } parser_state_t;
 extern parser_state_t gc;
+
+
+typedef struct{
+ volatile float x_offset;
+ volatile float y_offset;
+ volatile float z_offset;
+ volatile float a_offset;
+}coord_offsets;
+extern coord_offsets coord_offset;
+
 
 enum IJK{I,J,K};
 

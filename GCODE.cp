@@ -138,7 +138,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 130 "c:/users/git/pic32mzcnc/settings.h"
+#line 137 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  float steps_per_mm[ 6 ];
@@ -162,11 +162,6 @@ typedef struct {
 
 } settings_t;
 extern settings_t settings;
-
-
-
-
-void Settings_Init(char reset_all);
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
@@ -248,13 +243,51 @@ int Loopback();
 
 void DMA1_Enable();
 void DMA1_Disable();
+int DMA_IsOn(int channel);
 int DMA_Busy(int channel);
+int DMA_Suspend(int channel);
+int DMA_Resume(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 70 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/string.h"
+
+
+
+
+
+void * memchr(void *p, char n, unsigned int v);
+int memcmp(void *s1, void *s2, int n);
+void * memcpy(void * d1, void * s1, int n);
+void * memmove(void * to, void * from, int n);
+void * memset(void * p1, char character, int n);
+char * strcat(char * to, char * from);
+char * strchr(char * ptr, char chr);
+int strcmp(char * s1, char * s2);
+char * strcpy(char * to, char * from);
+int strlen(char * s);
+char * strncat(char * to, char * from, int size);
+char * strncpy(char * to, char * from, int size);
+int strspn(char * str1, char * str2);
+char strcspn(char * s1, char * s2);
+int strncmp(char * s1, char * s2, char len);
+char * strpbrk(char * s1, char * s2);
+char * strrchr(char *ptr, char chr);
+char * strstr(char * s1, char * s2);
+char * strtok(char * s1, char * s2);
+#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (void* address, unsigned long _data);
+unsigned int NVMWriteRow (void* address, void* _data);
+unsigned int NVMErasePage(void* address);
+unsigned int NVMUnlock(unsigned int nvmop);
+unsigned int NVMWait();
+
+unsigned long ReadFlashWord(const unsigned long *addr);
+#line 77 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
  char abort;
  char state;
@@ -264,6 +297,22 @@ typedef struct {
  volatile char execute;
 } system_t;
 extern system_t sys;
+
+
+
+typedef struct{
+ volatile float x_coord;
+ volatile float y_coord;
+ volatile float z_coord;
+ volatile float a_coord;
+}coord_sys;
+
+
+
+
+
+void Settings_Init(char reset_all);
+int Settings_Write_Coord_Data(int coord_select,float *coord);
 #line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
@@ -547,10 +596,10 @@ char FN(int axis);
 int read_float(char *line, char *char_counter, float *float_ptr);
 
 
-void delay_ms(unsigned int ms);
+unsigned int flt2ulong(float f_);
 
 
-void delay_us(unsigned long us);
+float ulong2flt(unsigned int ui_) ;
 
 
 void sys_sync_current_position();
@@ -593,7 +642,7 @@ int Non_Modal_Actions(int action);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 122 "c:/users/git/pic32mzcnc/gcode.h"
+#line 134 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
@@ -615,13 +664,13 @@ typedef struct {
  int L;
  float feed_rate;
 
- float position[ 6 ];
- float coord_system[ 6 ];
+ volatile float position[ 6 ];
 
- float coord_offset[ 6 ];
 
- float next_position[ 6 ];
- float offset[3];
+ volatile float coord_offset[ 6 ];
+
+ volatile float next_position[ 6 ];
+ volatile float offset[3];
  float R;
  float I;
  float J;
@@ -630,6 +679,16 @@ typedef struct {
  int S;
 } parser_state_t;
 extern parser_state_t gc;
+
+
+typedef struct{
+ volatile float x_offset;
+ volatile float y_offset;
+ volatile float z_offset;
+ volatile float a_offset;
+}coord_offsets;
+extern coord_offsets coord_offset;
+
 
 enum IJK{I,J,K};
 
@@ -672,8 +731,7 @@ static void Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
 #line 21 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 parser_state_t gc;
-
-
+coord_offsets coord_offset;
 
 float coord_data[ 6 ];
 
@@ -756,7 +814,7 @@ void M_Instruction(int flow){
 
  Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
-#line 110 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 109 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 }
 
 
@@ -782,7 +840,7 @@ int i = 0;
   (modal_group_words |= (1 << group_number) ) ;
 
 
- while(DMA_Busy(1));
+ while(DMA_IsOn(1));
  dma_printf("group_number:= %d\n",group_number);
 
 
@@ -794,7 +852,7 @@ int i = 0;
   (non_modal_words |= (1 << non_modal_action) ) ;
  }
 
- while(DMA_Busy(1));
+ while(DMA_IsOn(1));
  dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
  non_modal_action,non_modal_words);
 
@@ -810,7 +868,7 @@ int i = 0;
  if (  ((axis_words & (1 << i) ) != 0) ) {
  if (!absolute_override) {
  if (gc.absolute_mode) {
- gc.next_position[i] += gc.position[i] + gc.coord_system[i] + gc.coord_offset[i];
+
  } else {
 
 
@@ -846,7 +904,7 @@ int i = 0;
 
 
 
- while(DMA_Busy(1));
+ while(DMA_IsOn(1));
  dma_printf("axis_words:= %d\n",(int)axis_words & 0x00FF);
 
  if (axis_words == 0) {
@@ -935,7 +993,7 @@ int F_Val,O_Val;
  if(F_Val < 0){
   status_code = 13 ; ;
  }
-#line 294 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 293 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  gc.frequency = F_Val;
  break;
  case 'P':
@@ -963,7 +1021,7 @@ int F_Val,O_Val;
  break;
  default: status_code = 3 ; ;break;
  }
-#line 330 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 329 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }
 
@@ -1051,7 +1109,7 @@ int i;
 
  }
 
- while(DMA_Busy(1));
+ while(DMA_IsOn(1));
  dma_printf("non_modal_action:= %d\n",non_modal_action);
 
  return motion_mode;
@@ -1076,7 +1134,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 445 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 444 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  status_code = 3 ; ;break;

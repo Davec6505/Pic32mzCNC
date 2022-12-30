@@ -2,10 +2,17 @@
 #define SETTINGS_H
 
 
+///////////////////////////////////////////////////////////////////////////////
+//                             DEFINES                                       //
+///////////////////////////////////////////////////////////////////////////////
+//G54, G55, G56, G57, G58 and G59 are datum shift G-Codes.
+//This series of commands tell the CNC control which datum we are using.
+//Once the machine reads one of these codes it will continue to work
+//from this position until a new one is called upon
+#define NUMBER_OF_DATUMS 9
 
-////////////////////////////////////////////////////////////
-//                  Global usage defines                  //
-////////////////////////////////////////////////////////////
+
+
 #define DEFAULT_X_STEPS_PER_MM 250.0
 #define DEFAULT_Y_STEPS_PER_MM 250.0
 #define DEFAULT_Z_STEPS_PER_MM 250.0
@@ -46,7 +53,7 @@
 ////////////////////////////////////////////////////////////
 //              Stepper Motor Settings                    //
 ////////////////////////////////////////////////////////////
-#define  NoOfAxis    6
+#define NoOfAxis 6
 #define  _X          0
 #define  _Y          1
 #define  _Z          2
@@ -123,9 +130,9 @@
 #define COOLANT_FLOOD_ENABLE 1
 #define COOLANT_DISABLE 0 // Must be zero.
 
-////////////////////////////////////////////////////////////
-//                    GLOBAL SETTINGS                     //
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//                          STRUCTS UNIONS & ENUMS                           //
+///////////////////////////////////////////////////////////////////////////////
  // Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
 typedef struct {
   unsigned long p_msec;
@@ -151,9 +158,6 @@ typedef struct {
 } settings_t;
 extern settings_t settings;
 
-//////////////////////////////////////////////////////////////
-//              FUNCTION PROTOTYPES                         //
-//////////////////////////////////////////////////////////////
-void Settings_Init(char reset_all);
+
 
 #endif

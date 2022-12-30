@@ -417,7 +417,7 @@ int result = 0;
 
   for(i=0; i<len; i++){
      result = result * base + ( *(str+i) - 0x30 );
-     while(DMA_Busy(1));
+     while(DMA_IsOn(1));
   }
 
    return result;
@@ -439,7 +439,7 @@ float XYZ_Val;
          case 'L':case 'l':
          case 'T':case 't':
               G_Val = *(int*)ptr;
-              while(DMA_Busy(1));
+              while(DMA_IsOn(1));
               dma_printf("%c\t%s\t%d\n",c,strB,G_Val);
               break;
          case 'X':case 'x':
@@ -447,7 +447,7 @@ float XYZ_Val;
          case 'Z':case 'z':
          case 'A':case 'a':
               XYZ_Val = *(float*)ptr;
-              while(DMA_Busy(1));
+              while(DMA_IsOn(1));
               dma_printf("%c\t%s\t%f\n",c,strB,XYZ_Val);
               break;
          default:break;
@@ -457,7 +457,7 @@ float XYZ_Val;
 
 #elif ProtoDebug == 2
 static void PrintStatus(int state){
-  while(DMA_Busy(1));
+  while(DMA_IsOn(1));
   dma_printf("status:= %d\n",state);
 }
 #endif

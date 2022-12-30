@@ -19,8 +19,7 @@
 #include "GCODE.h"
 
 parser_state_t gc;
-
-#define FAIL(status) status_code = status;
+coord_offsets coord_offset;
 
 float coord_data[NoOfAxis];
 
@@ -104,7 +103,7 @@ void M_Instruction(int flow){
  Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
 #if GcodeDebug == 1
- while(DMA_Busy(1));
+ while(DMA_IsOn(1));
  dma_printf("gc.program_flow:= %d\n",flow);
 #endif
 }
@@ -132,7 +131,7 @@ int i = 0;
    bit_true(modal_group_words,bit(group_number));
 
    #if GcodeDebug == 2
-     while(DMA_Busy(1));
+     while(DMA_IsOn(1));
      dma_printf("group_number:= %d\n",group_number);
    #endif
    
@@ -144,7 +143,7 @@ int i = 0;
         bit_true( non_modal_words,bit( non_modal_action));
      }
      #if GcodeDebug == 2
-       while(DMA_Busy(1));
+       while(DMA_IsOn(1));
        dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
        non_modal_action,non_modal_words);
      #endif
@@ -160,7 +159,7 @@ int i = 0;
       if ( bit_istrue(axis_words,bit(i))) {
         if (!absolute_override) { // Do not update target in absolute override mode
           if (gc.absolute_mode) {
-            gc.next_position[i] += gc.position[i] + gc.coord_system[i] + gc.coord_offset[i]; // Absolute mode
+            //gc.next_position[i] += gc.position[i] + gc.coord_system[i] + gc.coord_offset[i]; // Absolute mode
           } else {
             //assuming gc.next position doesnt go to 0.00 when finnishing a move!!!
             //however it is being reset????
@@ -196,7 +195,7 @@ int i = 0;
       // and after an inverse time move and then check for non-zero feed rate each time. This
       // should be efficient and effective.
       #if GcodeDebug == 2
-       while(DMA_Busy(1));
+       while(DMA_IsOn(1));
        dma_printf("axis_words:= %d\n",(int)axis_words & 0x00FF);
       #endif
       if (axis_words == 0) {
@@ -319,7 +318,7 @@ int F_Val,O_Val;
       default:FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
    }
   #if GcodeDebug == 1
-      while(DMA_Busy(1));
+      while(DMA_IsOn(1));
       if(c[0] == 'X' || c[0] == 'Y' || c[0] == 'Z' || c[0] == 'R' || c[0] == 'I' || c[0] == 'J')
          dma_printf("\t%c\t%f\n",c[0],XYZ_Val);
       else if(c[0] == 'F')
@@ -414,7 +413,7 @@ int i;
 
  }
 #if GcodeDebug == 2
-   while(DMA_Busy(1));
+   while(DMA_IsOn(1));
    dma_printf("non_modal_action:= %d\n",non_modal_action);
 #endif
  return motion_mode;

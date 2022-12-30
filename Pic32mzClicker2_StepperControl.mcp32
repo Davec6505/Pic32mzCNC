@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Protocol.c
+Value=GCODE.h
 =======
 =======
 >>>>>>> patch1
@@ -118,10 +118,10 @@ File8=Print.c
 File9=GCODE.c
 File10=Globals.c
 File11=Limits.c
-File12=Settings.c
-File13=Protocol.c
-File14=Nut_Bolts.c
-File15=Planner.c
+File12=Protocol.c
+File13=Nut_Bolts.c
+File14=Planner.c
+File15=Flash_R_W.c
 Count=16
 [BINARIES]
 Count=0
@@ -133,14 +133,16 @@ ActiveImageIndex=-1
 File0=GCODE.c
 File1=GCODE.h
 File2=Main.c
-File3=Protocol.c
-File4=Protocol.h
-File5=DEFINES.pld
-File6=Globals.h
-File7=Settings.c
-File8=Settings.h
-File9=Serial_Dma.c
-Count=10
+File3=Protocol.h
+File4=Globals.h
+File5=Settings.h
+File6=Flash_R_W.c
+File7=Flash_R_W.h
+File8=Nut_Bolts.c
+File9=Nuts_Bolts.h
+File10=Globals.c
+File11=Protocol.c
+Count=12
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -152,7 +154,9 @@ File4=pic32mz.xml
 File5=grbl.xml
 File6=OUTPUT_COMPARE.xml
 File7=Interrupts.xml
-Count=8
+File8=Flash_Prgm.xml
+File9=Flasg_gen.xml
+Count=10
 [OTHER_FILES]
 File0=AVR_StepperAccDec.pdf
 File1=DMA_Pic32.pdf
@@ -160,7 +164,10 @@ File2=Clicker2_Dwg.pdf
 File3=PIC32MZ2048EFH100.pdf
 File4=OUTPUT Compare.pdf
 File5=Interrupts pic32.pdf
-Count=6
+File6=Flash_Prgm.pdf
+File7=Pic32_Flash_Prgm_60001121g.pdf
+File8=Flash_60001193B.pdf
+Count=9
 [SEARCH_PATH]
 Path0=..\..\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\
 Path1=E:\Downloads\CNC _Papers\
@@ -185,7 +192,8 @@ File12=Protocol.h
 File13=Nuts_Bolts.h
 File14=Config_adv.h
 File15=Planner.h
-Count=16
+File16=Flash_R_W.h
+Count=17
 [PLDS]
 File0=DEFINES.pld
 Count=1
@@ -213,6 +221,4 @@ USE_SRS=7
 [EXPANDED_NODES]
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
-18=Header Files
-36=Project Level Defines
-Count=4
+Count=2

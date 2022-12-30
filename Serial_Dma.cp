@@ -177,7 +177,7 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 130 "c:/users/git/pic32mzcnc/settings.h"
+#line 137 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  float steps_per_mm[ 6 ];
@@ -201,11 +201,6 @@ typedef struct {
 
 } settings_t;
 extern settings_t settings;
-
-
-
-
-void Settings_Init(char reset_all);
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -215,7 +210,42 @@ void Settings_Init(char reset_all);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 70 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/string.h"
+
+
+
+
+
+void * memchr(void *p, char n, unsigned int v);
+int memcmp(void *s1, void *s2, int n);
+void * memcpy(void * d1, void * s1, int n);
+void * memmove(void * to, void * from, int n);
+void * memset(void * p1, char character, int n);
+char * strcat(char * to, char * from);
+char * strchr(char * ptr, char chr);
+int strcmp(char * s1, char * s2);
+char * strcpy(char * to, char * from);
+int strlen(char * s);
+char * strncat(char * to, char * from, int size);
+char * strncpy(char * to, char * from, int size);
+int strspn(char * str1, char * str2);
+char strcspn(char * s1, char * s2);
+int strncmp(char * s1, char * s2, char len);
+char * strpbrk(char * s1, char * s2);
+char * strrchr(char *ptr, char chr);
+char * strstr(char * s1, char * s2);
+char * strtok(char * s1, char * s2);
+#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (void* address, unsigned long _data);
+unsigned int NVMWriteRow (void* address, void* _data);
+unsigned int NVMErasePage(void* address);
+unsigned int NVMUnlock(unsigned int nvmop);
+unsigned int NVMWait();
+
+unsigned long ReadFlashWord(const unsigned long *addr);
+#line 77 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
  char abort;
  char state;
@@ -225,7 +255,23 @@ typedef struct {
  volatile char execute;
 } system_t;
 extern system_t sys;
-#line 122 "c:/users/git/pic32mzcnc/gcode.h"
+
+
+
+typedef struct{
+ volatile float x_coord;
+ volatile float y_coord;
+ volatile float z_coord;
+ volatile float a_coord;
+}coord_sys;
+
+
+
+
+
+void Settings_Init(char reset_all);
+int Settings_Write_Coord_Data(int coord_select,float *coord);
+#line 134 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
@@ -247,13 +293,13 @@ typedef struct {
  int L;
  float feed_rate;
 
- float position[ 6 ];
- float coord_system[ 6 ];
+ volatile float position[ 6 ];
 
- float coord_offset[ 6 ];
 
- float next_position[ 6 ];
- float offset[3];
+ volatile float coord_offset[ 6 ];
+
+ volatile float next_position[ 6 ];
+ volatile float offset[3];
  float R;
  float I;
  float J;
@@ -262,6 +308,16 @@ typedef struct {
  int S;
 } parser_state_t;
 extern parser_state_t gc;
+
+
+typedef struct{
+ volatile float x_offset;
+ volatile float y_offset;
+ volatile float z_offset;
+ volatile float a_offset;
+}coord_offsets;
+extern coord_offsets coord_offset;
+
 
 enum IJK{I,J,K};
 
@@ -586,10 +642,10 @@ char FN(int axis);
 int read_float(char *line, char *char_counter, float *float_ptr);
 
 
-void delay_ms(unsigned int ms);
+unsigned int flt2ulong(float f_);
 
 
-void delay_us(unsigned long us);
+float ulong2flt(unsigned int ui_) ;
 
 
 void sys_sync_current_position();
@@ -667,7 +723,10 @@ int Loopback();
 
 void DMA1_Enable();
 void DMA1_Disable();
+int DMA_IsOn(int channel);
 int DMA_Busy(int channel);
+int DMA_Suspend(int channel);
+int DMA_Resume(int channel);
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 7 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
@@ -907,8 +966,18 @@ void DMA1_Enable(){
 
 
 
+
 void DMA1_Disable(){
  DCH1CON |= 1<<7;
+}
+
+
+
+int DMA_IsOn(int channel){
+ if(channel == 0)
+ return (DCH0CON & 0x8000)>>15;
+ else
+ return (DCH1CON & 0x8000)>>15;
 }
 
 
@@ -917,10 +986,51 @@ void DMA1_Disable(){
 
 int DMA_Busy(int channel){
  if(channel == 0)
- return (DCH0CON & 0x8000)>>15;
+ return (DCH0CON & 0x800)>>11;
  else
- return (DCH1CON & 0x8000)>>15;
+ return (DCH1CON & 0x800)>>11;
 }
+
+
+
+
+int DMA_Suspend(int channel){
+int state_of_channel = 0;
+ if(channel == 0){
+ DCH0CONSET = (1 << 12);
+ } else{
+ DCH1CONSET = (1 << 12);
+ }
+
+ while(DMA_Busy(channel));
+
+
+ if(channel == 0)
+ return (DCH0CON & 0x1000)>>12;
+ else
+ return (DCH1CON & 0x1000)>>12;
+}
+
+
+
+
+int DMA_Resume(int channel){
+int state_of_channel;
+ if(channel == 0){
+ DCH0CONCLR = (1 << 12);
+ } else{
+ DCH1CONCLR = (1 << 12);
+ }
+
+ while(DMA_Busy(channel));
+
+
+ if(channel == 0)
+ return (DCH0CON & 0x1000)>>12;
+ else
+ return (DCH1CON & 0x1000)>>12;
+}
+
 
 
 

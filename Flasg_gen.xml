@@ -1,0 +1,13 @@
+<Flasg_gen>
+	<Attributes>
+		<Url></Url>
+		<Image></Image>
+		<File>Flash_60001193B.pdf</File>
+	</Attributes>
+	<Events>
+		<OnLeftClick></OnLeftClick>
+		<OnRightClick></OnRightClick>
+		<OnDblClick>OpenFile</OnDblClick>
+		<OnMouseOver></OnMouseOver>
+	</Events>
+</Flasg_gen>

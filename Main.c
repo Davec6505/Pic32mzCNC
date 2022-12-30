@@ -24,6 +24,8 @@
 * code can easily be modified for any C compiler Ide.
 * The intention is to move this on the the new Necto Studio which is now open
 * source.
+*
+* Using Flash memory to store data instead of Eprom  ac:Flash_Prgm &  ac:Flasg_gen
 *******************************************************************************/
 
 
@@ -36,6 +38,7 @@
 //parser_state_t gc;
 system_t sys;
 STP STPS[NoOfAxis];
+settings_t settings;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
 
@@ -123,7 +126,7 @@ static int cntr = 0,a = 0;
      //temp debug for steppers
      #if StepperDebug == 1
      if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
-       while(DMA_Busy(1));
+       while(DMA_IsOn(1));
        dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
                  (STPS[X].run_state&0xff),STPS[X].step_count,
                   SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
@@ -144,10 +147,10 @@ int Temp_Move(int a){
              SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
              break;
        case 3://b0000 0011
-             while(DMA_Busy(1));
+             while(DMA_IsOn(1));
              dma_printf("X:= %f | Y:=%f\n",gc.next_position[X],gc.next_position[Y]);
              DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
-             //while(DMA_Busy(1));
+             //while(DMA_IsOn(1));
              //dma_printf("SdlyX:=%l\taccX:=%l\tdecX:=%l\n",STPS[X].StartUp_delay,STPS[X].max_step_lim,STPS[X].decel_start);
              break;
       case 4://b0000 0100
@@ -189,7 +192,7 @@ int Temp_Move(int a){
 
 int Non_Modal_Actions(int action){
 //[b0=10ms | b1=100ms | b2 = 300ms | b4=500ms | b5 = 1sec]
-int dly_time,i;
+int dly_time,i,result;
    switch(action){
      case 2:
            i = 0;
@@ -227,7 +230,9 @@ int dly_time,i;
           if(gc.L != 2 && gc.L != 20)
              return -1;
           if (gc.L == 20) {
-            // settings_write_coord_data(int_value,gc.position);
+              result = Settings_Write_Coord_Data(gc.P,gc.next_position );
+              while(DMA_IsOn(1));
+              dma_printf("res:= %d\n",result);
              // Update system coordinate system if currently active.
             // if (gc.coord_select == int_value) { memcpy(gc.coord_system,gc.position,sizeof(gc.position)); }
           } else {
@@ -242,6 +247,7 @@ int dly_time,i;
             // Update system coordinate system if currently active.
             if (gc.coord_select == int_value) { memcpy(gc.coord_system,coord_data,sizeof(coord_data)); } */
           }
+
           break;
      case 8:
           break;

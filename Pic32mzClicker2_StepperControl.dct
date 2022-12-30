@@ -199,6 +199,7 @@ _uart_high_speed
 _uart_low_speed
 _uart_one_stopbit
 _uart_two_stopbits
+a_offset
 a10m
 a10m
 a10m
@@ -18390,6 +18391,7 @@ conthrise_bit
 coolant_mode
 coord_data
 coord_offset
+coord_offset
 coord_select
 coord_system
 cos
@@ -23159,8 +23161,6 @@ delay_80us
 delay_8ms
 delay_cyc
 delay_cyc_long
-delay_ms
-delay_us
 delaycrc
 delaycrc
 delaycrc
@@ -23634,7 +23634,10 @@ dma_busy
 dma_ch0_isr
 dma_ch1_isr
 dma_global
+dma_ison
 dma_printf
+dma_resume
+dma_suspend
 dma0
 dma0
 dma0_disable
@@ -29500,6 +29503,7 @@ flash_write_row
 flash_write_word
 floattostr
 floor
+flt2ulong
 flten0
 flten0
 flten0
@@ -40416,6 +40420,7 @@ nvmdata3inv
 nvmdata3invbits
 nvmdata3set
 nvmdata3setbits
+nvmerasepage
 nvmkey
 nvmkeybits
 nvmop
@@ -40591,6 +40596,10 @@ nvmsrcaddrinv
 nvmsrcaddrinvbits
 nvmsrcaddrset
 nvmsrcaddrsetbits
+nvmunlock
+nvmwait
+nvmwriterow
+nvmwriteword
 ob0e
 ob0e
 ob0e
@@ -46858,6 +46867,7 @@ read_
 read_bit
 read_emacxmcmd_bit
 read_float
+readflashword
 readopcode
 readopcode0
 readopcode0_bit
@@ -56458,6 +56468,7 @@ setinitialsizes
 setpinmode
 settings
 settings_init
+settings_write_coord_data
 setup
 setup
 setup_bit
@@ -72727,6 +72738,7 @@ ulmstaclr
 ulmstainv
 ulmstaset
 ulmtxreg
+ulong2flt
 underrun
 underrun
 underrun
@@ -81430,11 +81442,13 @@ x_min_limit
 x_min_limit
 x_min_limit_dir
 x_min_limit_setup
+x_offset
 xtoi
 y_min_limit
 y_min_limit
 y_min_limit_dir
 y_min_limit_setup
+y_offset
 year01
 year01
 year01
@@ -81459,3 +81473,4 @@ year102
 year102_bit
 year103
 year103_bit
+z_offset

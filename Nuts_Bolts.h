@@ -27,11 +27,11 @@
 // a pointer to the result variable. Returns true when it succeeds
 int read_float(char *line, char *char_counter, float *float_ptr);
 
-// Delays variable-defined milliseconds. Compiler compatibility fix for _delay_ms().
-void delay_ms(unsigned int ms);
+//Conversion from float to unsigned long keeping byte order
+unsigned int flt2ulong(float f_);
 
-// Delays variable-defined microseconds. Compiler compatibility fix for _delay_us().
-void delay_us(unsigned long us);
+//Conversion from unsigned long to float keeping byte order
+float ulong2flt(unsigned int ui_) ;
 
 // Syncs Grbl's gcode and planner position variables with the system position.
 void sys_sync_current_position();

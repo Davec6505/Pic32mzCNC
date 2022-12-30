@@ -1,0 +1,13 @@
+<Flash_Prgm>
+	<Attributes>
+		<Url></Url>
+		<Image></Image>
+		<File>Flash_Prgm.pdf</File>
+	</Attributes>
+	<Events>
+		<OnLeftClick></OnLeftClick>
+		<OnRightClick></OnRightClick>
+		<OnDblClick>OpenFile</OnDblClick>
+		<OnMouseOver></OnMouseOver>
+	</Events>
+</Flash_Prgm>
