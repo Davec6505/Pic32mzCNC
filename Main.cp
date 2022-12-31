@@ -237,15 +237,33 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void* address, unsigned long _data);
+#line 35 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
-unsigned int NVMUnlock(unsigned int nvmop);
-unsigned int NVMWait();
+static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVM_WR_Set();
+static unsigned int NVM_WR_Wait();
+static unsigned int NVM_WREN_Wait();
+static unsigned int NVM_WREN_Rst();
+unsigned long NVMRead(unsigned long addr);
+unsigned long ReadFlashWord(void *addr);
+#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 28 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+int read_float(char *line, char *char_counter, float *float_ptr);
 
-unsigned long ReadFlashWord(const unsigned long *addr);
-#line 77 "c:/users/git/pic32mzcnc/globals.h"
+
+unsigned long flt2ulong(float f_);
+
+
+float ulong2flt(unsigned long ui_) ;
+
+
+void sys_sync_current_position();
+#line 82 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
  char abort;
  char state;
@@ -270,7 +288,7 @@ typedef struct{
 
 
 void Settings_Init(char reset_all);
-int Settings_Write_Coord_Data(int coord_select,float *coord);
+int Settings_Write_Coord_Data(unsigned long addr,int coord_select,float *coord);
 #line 134 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
@@ -396,9 +414,10 @@ int Loopback();
 void DMA1_Enable();
 void DMA1_Disable();
 int DMA_IsOn(int channel);
-int DMA_Busy(int channel);
-int DMA_Suspend(int channel);
-int DMA_Resume(int channel);
+int DMA_CH_Busy(int channel);
+int DMA_Busy();
+int DMA_Suspend();
+int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -679,20 +698,6 @@ char FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 28 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-int read_float(char *line, char *char_counter, float *float_ptr);
-
-
-unsigned int flt2ulong(float f_);
-
-
-float ulong2flt(unsigned int ui_) ;
-
-
-void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
@@ -707,7 +712,8 @@ static int str2int(char *str,int base);
 
 
  static void PrintDebug(char c,char *strB,void *ptr);
-#line 27 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
 extern bit oneShotB; sfr;
@@ -729,14 +735,16 @@ void OutPutPulseXYZ();
 int Temp_Move(int a);
 
 int Non_Modal_Actions(int action);
-#line 39 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 40 "C:/Users/Git/Pic32mzCNC/Main.c"
 system_t sys;
 STP STPS[ 6 ];
 settings_t settings;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
-
-
+const unsigned long Addre = 0xBD030000;
+unsigned long *ptr;
+unsigned long data_;
+unsigned long rowbuff[128]={0};
 
 
 static unsigned int disable_steps;
@@ -887,6 +895,8 @@ int Temp_Move(int a){
 int Non_Modal_Actions(int action){
 
 int dly_time,i,result;
+float test;
+unsigned long test_flash,*addr;
  switch(action){
  case 2:
  i = 0;
@@ -909,17 +919,31 @@ int dly_time,i,result;
  LED2 =  0 ;
  break;
  case 4:
-#line 230 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 235 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
- result = Settings_Write_Coord_Data(gc.P,gc.next_position );
+
+
+
+
+
+
+ result = Settings_Write_Coord_Data(Addre,gc.P,gc.next_position );
  while(DMA_IsOn(1));
  dma_printf("res:= %d\n",result);
 
 
+
+ ptr = Addre;
+ test_flash = *ptr;
+ test = ulong2flt(test_flash);
+ while(DMA_IsOn(1));
+ dma_printf("ptr:= $l\ttest_flash:= %l\ttest:= %f\n",ptr,test_flash,test);
+
+
  } else {
-#line 249 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 268 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
 
  break;

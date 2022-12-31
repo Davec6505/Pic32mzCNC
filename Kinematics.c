@@ -297,7 +297,7 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
       STPS[axis_1].step_delay = 1000;
 
 #if DMADebug == -1
-     if(!DMA_Busy(1));
+     if(!DMA_IsOn(1));
        dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f : X:= %l : Y:= %l",
                   i,segments,nPx,nPy,tempA,tempB);
 #endif
@@ -426,4 +426,3 @@ void Inv_Home_Axis(double distance,long speed,int axis){
     //  speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
     //  SingleAxisStep(STPS[axis].mmToTravel,axis);
 }
-

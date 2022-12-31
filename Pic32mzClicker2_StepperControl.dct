@@ -3642,6 +3642,7 @@ addrbytes1
 addrbytes1_bit
 addrbytes2
 addrbytes2_bit
+addre
 adevcfg0
 adevcfg0bits
 adevcfg1
@@ -20019,6 +20020,7 @@ data
 data
 data
 data
+data_
 data0
 data0_adcdata0_bit
 data0_adcdata1_bit
@@ -23631,6 +23633,7 @@ divswen_refo2con_bit
 divswen_refo3con_bit
 divswen_refo4con_bit
 dma_busy
+dma_ch_busy
 dma_ch0_isr
 dma_ch1_isr
 dma_global
@@ -40588,6 +40591,7 @@ nvmpwpinv
 nvmpwpinvbits
 nvmpwpset
 nvmpwpsetbits
+nvmread
 nvmsrcaddr
 nvmsrcaddrbits
 nvmsrcaddrclr
@@ -40596,8 +40600,6 @@ nvmsrcaddrinv
 nvmsrcaddrinvbits
 nvmsrcaddrset
 nvmsrcaddrsetbits
-nvmunlock
-nvmwait
 nvmwriterow
 nvmwriteword
 ob0e
@@ -46030,6 +46032,7 @@ pten8
 pten8_bit
 pten9
 pten9_bit
+ptr
 ptrden
 ptrden
 ptrden
@@ -47827,6 +47830,7 @@ rotrim8_bit
 rotrim8_refo2trim_bit
 rotrim8_refo3trim_bit
 rotrim8_refo4trim_bit
+rowbuff
 rpa14r
 rpa14r
 rpa14r0

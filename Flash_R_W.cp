@@ -237,7 +237,22 @@ extern settings_t settings;
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
-#line 77 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 28 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+int read_float(char *line, char *char_counter, float *float_ptr);
+
+
+unsigned long flt2ulong(float f_);
+
+
+float ulong2flt(unsigned long ui_) ;
+
+
+void sys_sync_current_position();
+#line 82 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
  char abort;
  char state;
@@ -262,7 +277,7 @@ typedef struct{
 
 
 void Settings_Init(char reset_all);
-int Settings_Write_Coord_Data(int coord_select,float *coord);
+int Settings_Write_Coord_Data(unsigned long addr,int coord_select,float *coord);
 #line 134 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
@@ -627,20 +642,6 @@ char FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 28 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-int read_float(char *line, char *char_counter, float *float_ptr);
-
-
-unsigned int flt2ulong(float f_);
-
-
-float ulong2flt(unsigned int ui_) ;
-
-
-void sys_sync_current_position();
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
@@ -655,7 +656,8 @@ static int str2int(char *str,int base);
 
 
  static void PrintDebug(char c,char *strB,void *ptr);
-#line 27 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
 extern bit oneShotB; sfr;
@@ -716,25 +718,29 @@ int Loopback();
 void DMA1_Enable();
 void DMA1_Disable();
 int DMA_IsOn(int channel);
-int DMA_Busy(int channel);
-int DMA_Suspend(int channel);
-int DMA_Resume(int channel);
+int DMA_CH_Busy(int channel);
+int DMA_Busy();
+int DMA_Suspend();
+int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void* address, unsigned long _data);
+#line 35 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
-unsigned int NVMUnlock(unsigned int nvmop);
-unsigned int NVMWait();
-
-unsigned long ReadFlashWord(const unsigned long *addr);
-#line 50 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
-unsigned int NVMWriteWord (void* address, unsigned long _data){
+static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVM_WR_Set();
+static unsigned int NVM_WR_Wait();
+static unsigned int NVM_WREN_Wait();
+static unsigned int NVM_WREN_Rst();
+unsigned long NVMRead(unsigned long addr);
+unsigned long ReadFlashWord(void *addr);
+#line 51 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
+unsigned int NVMWriteWord (void *address, unsigned long _data){
 unsigned int res;
 
 
- NVMADDR = (unsigned long) address;
+ NVMADDR = *(unsigned long*)address;
 
 
  NVMDATA0 = _data;
@@ -763,70 +769,119 @@ return res;
 unsigned int NVMErasePage(void* address){
 unsigned int res;
 
-NVMADDR = (unsigned long) address;
+ NVMADDR = (unsigned long) address;
 
-res = NVMUnlock(0x4004);
+ res = NVMUnlock(0x4004);
 
-return res;
+ return res;
 }
-#line 115 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
-unsigned int NVMUnlock (unsigned int nvmop){
-unsigned int status;
-unsigned int dma_susp0,dma_susp1;
+#line 116 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
+static unsigned int NVMUnlock (unsigned int nvmop){
+unsigned int I_status,status;
+unsigned int dma_susp=0;
 
- status = (unsigned int)DI();
- while(!dma_susp0 && !dma_susp1){
- dma_susp0 = DMA_Suspend(0);
- dma_susp1 =DMA_Suspend(1);
+ NVMCON = 0x0;
+
+
+ I_status = (unsigned int)DI();
+
+
+ while(!dma_susp){
+ dma_susp = DMA_Suspend();
  }
 
 
+
+ while(NVM_WREN_Rst());
+ NVMCON = nvmop & 0x00000007;
+
  NVMCON = nvmop & 0x00004007;
 
+ while(!NVM_WREN_Wait());
 
- Delay_ms(5);
 
  NVMKEY = 0x0;
  NVMKEY = 0xAA996655;
  NVMKEY = 0x556699AA;
 
 
- NVMCONSET = 1 << 15;
+ status = NVM_WR_Set();
 
 
- while( NVMWait());
+
+ while(NVM_WR_Wait());
 
 
- DMA_Resume(0);
- DMA_Resume(1);
+ while(dma_susp){
+ dma_susp = DMA_Resume();
+ }
 
 
- if (status & 0x0001)
+ if (I_status)
  EI();
- else
- DI();
 
 
- NVMCONCLR = 0x0004000;
+ NVMCONCLR |= 0x0004000;
 
 
- return (NVMCON & 0x3000);
+ return (NVMCON & 0x3000)>>12;
 }
 
 
 
-unsigned int NVMWait(){
+
+static unsigned int NVM_WR_Set(){
+
+ NVMCONSET |= 1 << 15;
+ return NVM_WR_Wait();
+}
+
+
+static unsigned int NVM_WR_Wait(){
  return (NVMCON & 0x8000) >> 15;
 }
 
+static unsigned int NVM_WREN_Rst(){
+ NVMCONCLR |= 1<<14;
+ while(NVM_WREN_Wait());
+ return (NVMCON & 4000)>>14;
+}
 
 
 
-unsigned long ReadFlashWord(const unsigned long *addr){
+static unsigned int NVM_WREN_Wait(){
+ return (NVMCON & 0x4000) >> 14;
+}
+
+
+
+
+unsigned long ReadFlashWord(void *addr){
 unsigned long val;
-unsigned long add;
- add = *addr;
- val = ( *((unsigned long*)(add)) );
+
+ val = *((unsigned long*)addr);
 
  return val;
+}
+
+unsigned long NVMRead(unsigned long addr){
+unsigned char buff[512] = {0};
+unsigned int i,j;
+unsigned char *ptr;
+unsigned long Val;
+
+ ptr = (unsigned char*)addr;
+ i = 0;
+
+ for(j = 0;j < 512;j++){
+ buff[j] = ptr[j];
+ while(DMA_IsOn(1));
+ dma_printf("buff[%d]:= %d\n",j,(int)buff[j]);
+ }
+ Val = buff[3];
+ Val =(Val<<8)| buff[2];
+ Val =(Val<<8)| buff[1];
+ Val =(Val<<8)| buff[0];
+
+
 }

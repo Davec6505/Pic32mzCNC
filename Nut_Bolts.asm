@@ -464,7 +464,7 @@ SWC1	S12, 20(SP)
 ;Nut_Bolts.c,95 :: 		unsigned long ul_ = 0;
 MOVZ	R30, R0, R0
 SW	R30, 16(SP)
-;Nut_Bolts.c,96 :: 		memcpy(&ul_,&f_,sizeof(f_));
+;Nut_Bolts.c,96 :: 		memcpy(&ul_,&f_,sizeof(unsigned long));
 ADDIU	R3, SP, 20
 ADDIU	R2, SP, 16
 ORI	R27, R0, 4
@@ -497,7 +497,7 @@ SW	R25, 20(SP)
 ;Nut_Bolts.c,103 :: 		float f_ = 0.0;
 MOVZ	R30, R0, R0
 SW	R30, 16(SP)
-;Nut_Bolts.c,104 :: 		memcpy(&f_,&ul_,sizeof(ul_));
+;Nut_Bolts.c,104 :: 		memcpy(&f_,&ul_,sizeof(float));
 ADDIU	R3, SP, 20
 ADDIU	R2, SP, 16
 ORI	R27, R0, 4

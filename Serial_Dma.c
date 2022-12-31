@@ -89,20 +89,14 @@ void  DMA0(){
 void DMA0_Enable(){
    //CHEN[7]
    //Turn on DMA0
-   /******************************************************
-    *"A new understanding" [SET CLR INV] will affect the
-    *the entire word with 0's as well as 1's , this meand
-    *or the bit you need to set, contrary to my initial
-    *understanding of SET CLR & INV 'MORE REASEARCH NEEDED'
-    *****************************************************/
-   DCH0CON  |= 1<<7;
+   DCH0CONSET  = 1<<7;
 }
 
 ////////////////////////////////////////
 //DMA0 off control
 void DMA0_Disable(){
   //Disable DAM0 module and clear priority level
-   DCH0CONCLR  |= 1<<7;
+   DCH0CONCLR  = 1<<7;
    //DCH0CONbits.CHEN = 0;
 }
 
@@ -266,14 +260,14 @@ void DMA1(){
 ////////////////////////////////////////
 //DMA1 on control
 void DMA1_Enable(){
-   DCH1CON |= 1<<7;
+   DCH1CONSET = 1<<7;
 }
 
 ////////////////////////////////////////
 //DMA1 off control ?? should compliment
 //need to come back to this eventually
 void DMA1_Disable(){
-    DCH1CON |= 1<<7;
+    DCH1CONCLR = 1<<7;
 }
 
 ///////////////////////////////////////
@@ -288,54 +282,42 @@ int DMA_IsOn(int channel){
 //Get the status of the respective DMA
 //channel, decide whether or not to send
 //new data  [1 = busy || 0 = free]
-//checking the state od the DMABUSY bit 11
-int DMA_Busy(int channel){
+//checking the state oF the DMABUSY bit 15
+//FOR EACH CHANNEL
+int DMA_CH_Busy(int channel){
    if(channel == 0)
-     return (DCH0CON & 0x800)>>11;
+     return (DCH0CON & 0x8000)>>15;
    else
-     return (DCH1CON & 0x800)>>11;
+     return (DCH1CON & 0x8000)>>15;
 }
+
 
 ////////////////////////////////////////
 //DMA SUSPEND bit12 force to true to 
 //suspend the channel
-int DMA_Suspend(int channel){
-int state_of_channel = 0;
-  if(channel == 0){
-      DCH0CONSET = (1 << 12);
-  } else{
-      DCH1CONSET = (1 << 12);
-  }
-//wait for channel to finnish
-  while(DMA_Busy(channel));
+int DMA_Suspend(){
+  DMACONSET = (1 << 12);
   
 //return the state of the SUSPEND bit
-  if(channel == 0)
-     return (DCH0CON & 0x1000)>>12;
-  else
-     return (DCH1CON & 0x1000)>>12;
+  return (DMACON & 0x1000)>>12;
 }
 
 ////////////////////////////////////////
 //DMA resume the SUSPEND by forcing bit12
 //to false
-int DMA_Resume(int channel){
-int state_of_channel;
-  if(channel == 0){
-      DCH0CONCLR = (1 << 12);
-  } else{
-      DCH1CONCLR = (1 << 12);
-  }
-  //wait for channel to finnish
-  while(DMA_Busy(channel));
-  
-  //return the state of the SUSPEND bit
-  if(channel == 0)
-     return (DCH0CON & 0x1000)>>12;
-  else
-     return (DCH1CON & 0x1000)>>12;
+int DMA_Resume(){
+  DMACONCLR = (1 << 12);
+
+ //return the SUSPEN bit state
+  return (DMACON & 0x1000)>>12;
 }
 
+////////////////////////////////////////
+//Global DMA busy bit not channel busy bit!
+//DMACON.DMABUSY
+int DMA_Busy(){
+ return (DMACON & 0x800)>>11;
+}
 
 /////////////////////////////////////////////////////
 //UART2 TX Interrupt should be handed automatically
@@ -383,7 +365,7 @@ int dma_printf(const char* str,...){
  //can only call this once the va_list has bee declared
  //or the compiler throws an undefined error!!! not sure
  //about the compiler not implimenting va_end????
- if(DMA_Busy(1)){
+ if(DMA_CH_Busy(1)){
    return 0;
  }
  

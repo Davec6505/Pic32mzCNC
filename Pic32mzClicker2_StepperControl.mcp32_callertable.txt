@@ -36,26 +36,32 @@ main
 	Get_modalgroup
 	Non_Modal_Actions
 		Settings_Write_Coord_Data
-			NVMWriteWord
-				NVMUnlock
-					DMA_Suspend
-						DMA_Busy
-					NVMWait
-					DMA_Resume
-						DMA_Busy
+			flt2ulong
+				memcpy
+			DMA_IsOn
+			dma_printf
+				DMA_CH_Busy
+				sprintf
+					_doprntf
+						isdigit
+						scale
+						fround
+				strcat
+				strlen
+				strncpy
+				DMA1_Enable
+				__CC2DW
+			Flash_Write_Word
+				Flash_Do_Execute
+					RestoreInterrupts
+					DmaSuspend
+					DmaResume
+						DmaSuspend
+			__CC2DW
 		DMA_IsOn
 		dma_printf
-			DMA_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
+		ulong2flt
+			memcpy
 		__CC2DW
 	Get_modalword
 	Rst_modalgroup
@@ -114,7 +120,7 @@ main
 						floor
 						eval_poly
 				sin
-				DMA_Busy
+				DMA_IsOn
 				DualAxisStep
 				Test_Port_Pins
 				disableOCx

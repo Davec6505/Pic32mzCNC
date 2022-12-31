@@ -28,10 +28,10 @@
 int read_float(char *line, char *char_counter, float *float_ptr);
 
 //Conversion from float to unsigned long keeping byte order
-unsigned int flt2ulong(float f_);
+unsigned long flt2ulong(float f_);
 
 //Conversion from unsigned long to float keeping byte order
-float ulong2flt(unsigned int ui_) ;
+float ulong2flt(unsigned long ui_) ;
 
 // Syncs Grbl's gcode and planner position variables with the system position.
 void sys_sync_current_position();

@@ -113,7 +113,7 @@ Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
 #define STATUS_IDLE_ERROR 11
 #define STATUS_ALARM_LOCK 12
 #define STATUS_SPEED_ERROR 13
-
+#define STATUS_EI_ERROR 14
 // Define Grbl alarm codes. Less than zero to distinguish alarm error from status error.
 #define ALARM_HARD_LIMIT -1
 #define ALARM_ABORT_CYCLE -2

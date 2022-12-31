@@ -608,10 +608,10 @@ char FN(int axis);
 int read_float(char *line, char *char_counter, float *float_ptr);
 
 
-unsigned int flt2ulong(float f_);
+unsigned long flt2ulong(float f_);
 
 
-float ulong2flt(unsigned int ui_) ;
+float ulong2flt(unsigned long ui_) ;
 
 
 void sys_sync_current_position();
@@ -629,7 +629,8 @@ static int str2int(char *str,int base);
 
 
  static void PrintDebug(char c,char *strB,void *ptr);
-#line 27 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
 extern bit oneShotB; sfr;
@@ -690,20 +691,25 @@ int Loopback();
 void DMA1_Enable();
 void DMA1_Disable();
 int DMA_IsOn(int channel);
-int DMA_Busy(int channel);
-int DMA_Suspend(int channel);
-int DMA_Resume(int channel);
+int DMA_CH_Busy(int channel);
+int DMA_Busy();
+int DMA_Suspend();
+int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void* address, unsigned long _data);
+#line 35 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
-unsigned int NVMUnlock(unsigned int nvmop);
-unsigned int NVMWait();
-
-unsigned long ReadFlashWord(const unsigned long *addr);
-#line 77 "c:/users/git/pic32mzcnc/globals.h"
+static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVM_WR_Set();
+static unsigned int NVM_WR_Wait();
+static unsigned int NVM_WREN_Wait();
+static unsigned int NVM_WREN_Rst();
+unsigned long NVMRead(unsigned long addr);
+unsigned long ReadFlashWord(void *addr);
+#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 82 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
  char abort;
  char state;
@@ -728,9 +734,10 @@ typedef struct{
 
 
 void Settings_Init(char reset_all);
-int Settings_Write_Coord_Data(int coord_select,float *coord);
+int Settings_Write_Coord_Data(unsigned long addr,int coord_select,float *coord);
 #line 5 "C:/Users/Git/Pic32mzCNC/Globals.c"
 coord_sys coord_system[ 9 ];
+
 
 
 void Settings_Init(char reset_all){
@@ -753,14 +760,22 @@ void Settings_Init(char reset_all){
  settings.n_arc_correction =  25 ;
  }
 }
-#line 57 "C:/Users/Git/Pic32mzCNC/Globals.c"
-int Settings_Write_Coord_Data(int coord_select,float *coord){
-int i,res=0;
-unsigned long addr =  0x1D079ff6; ;
+#line 58 "C:/Users/Git/Pic32mzCNC/Globals.c"
+int Settings_Write_Coord_Data(unsigned long addr,int coord_select,float *coord){
+int res=0;
+unsigned long wdata[512]={0};
+unsigned long i,add = addr;
+ i = 0;
 
- for (i=0;i<sizeof(coord);i++){
- res = NVMWriteWord(addr*coord_select*i,coord[i]);
- }
+ wdata[i] = flt2ulong(coord[i]);
+ while(DMA_IsOn(1));
+ dma_printf("%f\t%l\n",coord[i],wdata[i]);
+
+ Flash_Write_Word(addr+i,wdata[i]);
+
+
+
+
 
  return res;
 }

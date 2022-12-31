@@ -5,6 +5,7 @@
 coord_sys coord_system[NUMBER_OF_DATUMS];
 
 
+
 void Settings_Init(char reset_all){
  if(reset_all){
   settings.steps_per_mm[_X] = DEFAULT_X_STEPS_PER_MM;
@@ -54,13 +55,21 @@ P      Value        Coordinate System        G code
 
 ///////////////////////////////////////////////////////////////////
 //here we want to write the new recipe to flash and set the coordinate
-int Settings_Write_Coord_Data(int coord_select,float *coord){
-int i,res=0;
-unsigned long addr = FLASH_Settings_PAddr;
+int Settings_Write_Coord_Data(unsigned long  addr,int coord_select,float *coord){
+int res=0;
+unsigned long wdata[512]={0};
+unsigned long i,add = addr;
+    i = 0;
+ // for (i=0;i<3;i++){
+    wdata[i] = flt2ulong(coord[i]);
+    while(DMA_IsOn(1));
+    dma_printf("%f\t%l\n",coord[i],wdata[i]);
 
-   for (i=0;i<sizeof(coord);i++){
-      res = NVMWriteWord(addr*coord_select*i,coord[i]);
-   }
-   
+    Flash_Write_Word(addr+i,wdata[i]);
+  //  res = NVMWriteWord(addr,wdata[i]);
+  //  if(res)break;
+
+ // }
+  // Flash_Write_Row(addr,wdata);
    return res;
 }

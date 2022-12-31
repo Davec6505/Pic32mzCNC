@@ -93,7 +93,7 @@ int read_float(char *line, uint8_t *char_counter, float *float_ptr)
 // Convert a floating point to a unsigned long for flash write
 unsigned long flt2ulong(float f_){
 unsigned long ul_ = 0;
-  memcpy(&ul_,&f_,sizeof(f_));
+  memcpy(&ul_,&f_,sizeof(unsigned long));
 
   return ul_;
 }
@@ -101,7 +101,7 @@ unsigned long ul_ = 0;
 //Convert a unsigned long back to a floating point from flash memory
 float ulong2flt(unsigned long ul_){
 float f_ = 0.0;
- memcpy(&f_,&ul_,sizeof(ul_));
+ memcpy(&f_,&ul_,sizeof(float));
 
 return f_;
 }

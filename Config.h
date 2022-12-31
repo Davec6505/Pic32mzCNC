@@ -13,6 +13,7 @@
 #include "Globals.h"
 #include "Limits.h"
 #include "Protocol.h"
+#include "Flash_R_W.h"
 
 ///////////////////////////////////////////////////
 //DEFINES

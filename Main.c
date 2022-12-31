@@ -32,6 +32,7 @@
 
 #include "Config.h"
 
+
 //////////////////////////////////////////
 //external scope variables
 //settings_t settings;
@@ -41,8 +42,10 @@ STP STPS[NoOfAxis];
 settings_t settings;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
-
-
+const unsigned long  Addre = 0xBD030000;
+unsigned long *ptr;
+unsigned long data_;
+unsigned long rowbuff[128]={0};
 //////////////////////////////////////////
 //file scope vars
 static unsigned int disable_steps;//stepper timeout
@@ -193,6 +196,8 @@ int Temp_Move(int a){
 int Non_Modal_Actions(int action){
 //[b0=10ms | b1=100ms | b2 = 300ms | b4=500ms | b5 = 1sec]
 int dly_time,i,result;
+float test;
+unsigned long test_flash,*addr;
    switch(action){
      case 2:
            i = 0;
@@ -230,9 +235,23 @@ int dly_time,i,result;
           if(gc.L != 2 && gc.L != 20)
              return -1;
           if (gc.L == 20) {
-              result = Settings_Write_Coord_Data(gc.P,gc.next_position );
+
+              //addr = FLASH_Settings_VAddr;
+              //NVMErasePage(addr);
+              //NVMWriteRow(addr,0);
+              //ptr = (unsigned long*)Addre;
+              //Flash_Write_Row(Addre,rowbuff);
+              result = Settings_Write_Coord_Data(Addre,gc.P,gc.next_position );
               while(DMA_IsOn(1));
               dma_printf("res:= %d\n",result);
+              //test_flash = flt2ulong(gc.next_position[0]);
+              //Flash_Erase_Page(Addre);            // erase page           // erase page
+              //Flash_Write_Word(Addre,test_flash); // write one word
+              ptr = Addre;
+              test_flash = *ptr;//ReadFlashWord(Addre);//NVMRead(Addre);//
+              test = ulong2flt(test_flash);
+              while(DMA_IsOn(1));
+              dma_printf("ptr:= $l\ttest_flash:= %l\ttest:= %f\n",ptr,test_flash,test);
              // Update system coordinate system if currently active.
             // if (gc.coord_select == int_value) { memcpy(gc.coord_system,gc.position,sizeof(gc.position)); }
           } else {

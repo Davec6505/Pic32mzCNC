@@ -19,6 +19,7 @@
 
 #include "Flash_R_W.h"
 
+
 /*
  *When programming or erasing Flash memory, the physical addresses 
  *is always the address used for the target operation.
@@ -34,7 +35,7 @@
  // physical address 
  * NVMDATA0 = 0x12345678; // value
  // set the operation, assumes 
- * WREN = 0NVMCONbits.NVMOP = 0x1; // NVMOP for Word programming
+ * WREN = NVMCONbits.NVMOP = 0x1; // NVMOP for Word programming
  // Enable Flash for write operation and set the NVMOP 
  * NVMCONbits.WREN = 1;
  // Start programming
@@ -47,11 +48,11 @@
  if(NVMCON & 0x3000)
  // mask for WRERR and LVDERR{// process errors}
 */
-unsigned int NVMWriteWord (void* address, unsigned long _data){
+unsigned int NVMWriteWord (void *address, unsigned long _data){
 unsigned int res;
 
   // Load address to program into NVMADDR register
-  NVMADDR = (unsigned long) address;
+  NVMADDR = *(unsigned long*)address;
 
   // Load data into NVMDATA register
   NVMDATA0 = _data; // value
@@ -79,12 +80,12 @@ return res;
 
 unsigned int NVMErasePage(void* address){
 unsigned int res;
-// Set NVMADDR to the Start Address of page to erase
-NVMADDR = (unsigned long) address;
-// Unlock and Erase Page
-res = NVMUnlock(0x4004);
-// Return Result
-return res;
+  // Set NVMADDR to the Start Address of page to erase
+  NVMADDR = (unsigned long) address;
+  // Unlock and Erase Page
+  res = NVMUnlock(0x4004);
+  // Return Result
+  return res;
 }
 
 //Before entering this sequence of events the PHY add and
@@ -112,64 +113,112 @@ return res;
  * if(int_status & 0x00000001) {asm volatile(“ei”);}
  *}
  */
-unsigned int NVMUnlock (unsigned int nvmop){
-unsigned int status;
-unsigned int dma_susp0,dma_susp1;   // storage for current DMA state
+static unsigned int NVMUnlock (unsigned int nvmop){
+unsigned int I_status,status;
+unsigned int dma_susp=0;   // storage for current DMA state
+ //Reset NVMCON resister
+ NVMCON = 0x0;
+ 
 // Suspend or Disable all Interrupts
- status = (unsigned int)DI();
- while(!dma_susp0 && !dma_susp1){
-  dma_susp0 = DMA_Suspend(0);
-  dma_susp1 =DMA_Suspend(1);
+ I_status = (unsigned int)DI();
+ 
+ //Suspend all DMA actions
+ while(!dma_susp){
+  dma_susp = DMA_Suspend();
  }
-// Enable Flash Write/Erase Operations and Select
-// Flash operation to perform
- NVMCON = nvmop & 0x00004007;
 
-//Wait for LDV circuit to energise
- Delay_ms(5);
+// Enable Flash Write/Erase Operations and Select
+// [WREN][NVMOP]
+ while(NVM_WREN_Rst());
+ NVMCON = nvmop & 0x00000007;
+
+ NVMCON = nvmop & 0x00004007;
+ //Wait for WREN
+ while(!NVM_WREN_Wait());
+
 // Write Keys
  NVMKEY = 0x0;
  NVMKEY = 0xAA996655;
  NVMKEY = 0x556699AA;
 
-//[WR] Start the operation using the Set Register
- NVMCONSET = 1 << 15;
+// Wait WR bit to set
+ status = NVM_WR_Set();
+ //NVMCONSET = 1 << 15;
 
-// Wait for operation to complete
- while( NVMWait());
-
-//Restore DMA activity
- DMA_Resume(0);
- DMA_Resume(1);
+//status = 1;
+ while(NVM_WR_Wait());
  
-// Restore Interrupts
- if (status & 0x0001)
-  EI();
- else
-  DI();  //set an alarm here
-  
-// Disable NVM write enable
- NVMCONCLR = 0x0004000;
+ //Resume all DMA actions
+ while(dma_susp){
+   dma_susp = DMA_Resume();
+ }
 
+// Restore Interrupts
+ if (I_status)
+   EI();
+
+// Disable NVM WREN enable
+ NVMCONCLR |= 0x0004000;
+ 
 // Return WRERR and LVDERR Error Status Bits
- return (NVMCON & 0x3000);
+ return (NVMCON & 0x3000)>>12;
+}
+
+
+//////////////////////////////////////////////////////////
+//Set the WR bit and return its state;
+static unsigned int NVM_WR_Set(){
+//[WR] Start the operation using the Set Register
+   NVMCONSET |= 1 << 15;
+   return NVM_WR_Wait();
+}
+/////////////////////////////////////////////////////////
+//Wait for NVM WR to complete resets to false when done
+static unsigned int NVM_WR_Wait(){
+   return (NVMCON & 0x8000) >> 15;
+}
+
+static unsigned int NVM_WREN_Rst(){
+   NVMCONCLR |= 1<<14;
+   while(NVM_WREN_Wait());
+   return (NVMCON & 4000)>>14;
 }
 
 /////////////////////////////////////////////////////////
 //Wait for NVM WR to complete resets to false when done
-unsigned int NVMWait(){
-   return (NVMCON & 0x8000) >> 15;
+static unsigned int NVM_WREN_Wait(){
+   return (NVMCON & 0x4000) >> 14;
 }
 
 /////////////////////////////////////////////////////////
 //Read a 32bit word from flash
 //const argument stops the src from being changed
-unsigned long ReadFlashWord(const unsigned long *addr){
+unsigned long ReadFlashWord(void *addr){
 unsigned long val;
-unsigned long add;
-    add = *addr;
-    val = ( *((unsigned long*)(add)) ); //<=== CRASHES HERE
 
-   return val;//0xafffafff;
+    val = *((unsigned long*)addr);
+
+   return val;
 }
-//Reading from flash
+
+unsigned long NVMRead(unsigned long addr){
+unsigned char buff[512] = {0};
+unsigned int i,j;
+unsigned char *ptr;
+unsigned long Val;
+
+  ptr = (unsigned char*)addr;
+  i = 0;
+   //for(i = 0;i < 144;i++){
+       for(j = 0;j < 512;j++){
+          buff[j] = ptr[j];
+          while(DMA_IsOn(1));
+          dma_printf("buff[%d]:= %d\n",j,(int)buff[j]);
+       }
+       Val = buff[3];
+       Val =(Val<<8)| buff[2];
+       Val =(Val<<8)| buff[1];
+       Val =(Val<<8)| buff[0];
+   // i += 4;
+  //}
+}

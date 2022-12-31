@@ -7,7 +7,12 @@
 //#include <stdint.h>
 #include "Settings.h"
 #include "Flash_R_W.h"
+#include "Nuts_Bolts.h"
 //#include "GCODE.h"
+
+///////////////////////////////////////////////////////////////////////////////
+//                             MACROS                                        //
+///////////////////////////////////////////////////////////////////////////////
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -98,5 +103,5 @@ typedef struct{
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
 void Settings_Init(char reset_all);
-int Settings_Write_Coord_Data(int coord_select,float *coord);
+int Settings_Write_Coord_Data(unsigned long  addr,int coord_select,float *coord);
 #endif
