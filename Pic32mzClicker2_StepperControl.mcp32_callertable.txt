@@ -39,13 +39,19 @@ main
 			__CC2DW
 			flt2ulong
 				memcpy
-			NVMWriteWord
-				NVM_ERROR_Rst
+			NVMWriteQuad
+				NVMUnlock
+					DMA_Suspend
 					NVM_WREN_Set
 						NVM_WREN_Wait
-					NVM_WR_Set
-						NVM_WR_Wait
+					NVM_WREN_Wait
+					DMA_Resume
 					NVM_WR_Wait
+					NVM_WREN_Rst
+						NVM_WREN_Wait
+			NVMReadRow
+				ulong2flt
+					memcpy
 				DMA_IsOn
 				dma_printf
 					DMA_CH_Busy
@@ -59,24 +65,7 @@ main
 					strncpy
 					DMA1_Enable
 					__CC2DW
-				NVMUnlock
-					DMA_Suspend
-					NVM_WREN_Set
-					NVM_WREN_Wait
-					DMA_Resume
-					NVM_WR_Wait
-					NVM_WREN_Rst
-						NVM_WREN_Wait
 				__CC2DW
-		DMA_IsOn
-		dma_printf
-		NVMReadRow
-			ulong2flt
-				memcpy
-			DMA_IsOn
-			dma_printf
-			__CC2DW
-		__CC2DW
 	Get_modalword
 	Rst_modalgroup
 	Get_Axisword

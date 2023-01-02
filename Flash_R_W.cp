@@ -277,7 +277,7 @@ typedef struct{
 
 
 void Settings_Init(char reset_all);
-int Settings_Write_Coord_Data(unsigned long addr,int coord_select,float *coord);
+int Settings_Write_Coord_Data(int coord_select,float *coord);
 #line 134 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
@@ -724,11 +724,12 @@ int DMA_Suspend();
 int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (unsigned long address, unsigned long _data);
+#line 54 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (void *address, unsigned long _data);
+unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
-static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVMUnlock();
 static unsigned int NVM_ERROR_Rst();
 static unsigned int NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
@@ -737,62 +738,105 @@ static unsigned int NVM_WREN_Wait();
 static unsigned int NVM_WREN_Rst();
 void NVMReadRow(unsigned long addr);
 unsigned long NVMReadWord(void *addr);
-#line 51 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
-unsigned int NVMWriteWord (unsigned long address, unsigned long _data){
+#line 25 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
+unsigned int NVMWriteWord (void *address, unsigned long _data){
 unsigned int res;
-unsigned long padd = address;
+unsigned long padd;
 
 
- NVM_ERROR_Rst();
-
-
- padd &=  0x1FFFFFFF ;
+ padd = *(unsigned long*)address &  0x1FFFFFFF ;
 
 
  NVMADDR = padd;
- while(DMA_IsOn(1));
- dma_printf("address:= %l\n",NVMADDR);
+
+
 
 
  NVMDATA0 = _data;
 
 
- res = NVMUnlock (0x4001);
+ NVMCONSET = 1;
+
+ res = NVMUnlock ();
 
 
  return res;
 }
+
+
+
+unsigned int NVMWriteQuad (void *address, unsigned long *_data){
+unsigned int res;
+unsigned long padd;
+
+
+ padd = *(unsigned long*)address &  0x1FFFFFFF ;
+
+
+ NVMADDR = padd;
+
+
+
+
+ NVMDATA0 = *(_data+0);
+ NVMDATA1 = *(_data+1);
+ NVMDATA2 = *(_data+2);
+ NVMDATA3 = *(_data+3);
+
+ NVMCONSET = 2;
+
+ res = NVMUnlock ();
+
+
+ return res;
+}
+
 
 
 unsigned int NVMWriteRow (void* address, void* _data){
 unsigned int res;
-
-NVMADDR = (unsigned long)address;
-
-
-NVMSRCADDR = (unsigned long) _data;
+unsigned long padd,src_padd;
 
 
-res = NVMUnlock(0x4003);
+ padd = *(unsigned long*)address &  0x1FFFFFFF ;
+
+
+ NVMADDR = padd;
+
+
+ src_padd = *(unsigned long*)_data &  0x1FFFFFFF ;
+
+
+ NVMSRCADDR = src_padd ;
+
+
+ NVMCONSET = 3;
+
+
+res = NVMUnlock();
 
 return res;
 }
 
+
+
 unsigned int NVMErasePage(void* address){
 unsigned int res;
 
+
  NVMADDR = (unsigned long) address;
 
- res = NVMUnlock(0x4004);
+ res = NVMUnlock();
 
  return res;
 }
 
 
 
-static unsigned int NVMUnlock (unsigned int nvmop){
+static unsigned int NVMUnlock (){
 unsigned int I_status,status;
 unsigned int dma_susp=0;
+
 
 
  I_status = (unsigned int)DI();

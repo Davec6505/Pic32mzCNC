@@ -238,11 +238,12 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (unsigned long address, unsigned long _data);
+#line 54 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (void *address, unsigned long _data);
+unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
-static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVMUnlock();
 static unsigned int NVM_ERROR_Rst();
 static unsigned int NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
@@ -291,7 +292,7 @@ typedef struct{
 
 
 void Settings_Init(char reset_all);
-int Settings_Write_Coord_Data(unsigned long addr,int coord_select,float *coord);
+int Settings_Write_Coord_Data(int coord_select,float *coord);
 #line 134 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;

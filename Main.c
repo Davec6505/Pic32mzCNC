@@ -42,10 +42,8 @@ STP STPS[NoOfAxis];
 settings_t settings;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
-const code unsigned long  Addre = FLASH_Settings_VAddr; //0x1D078007;//
-unsigned long  Add = FLASH_Settings_VAddr;
-unsigned long *ptr;
-unsigned long data_;
+
+
 unsigned long rowbuff[128]={0};
 //////////////////////////////////////////
 //file scope vars
@@ -236,18 +234,11 @@ unsigned long test_flash,*addr;
           if(gc.L != 2 && gc.L != 20)
              return -1;
           if (gc.L == 20) {
-
-              result = Settings_Write_Coord_Data(Addre,gc.P,gc.next_position );
-              if(result){
-                while(DMA_IsOn(1));
-                dma_printf("res:= %d\n",result);
+              //write the Pnn coordinates to flash recipe
+              result = Settings_Write_Coord_Data(gc.P,gc.next_position );
+              if(result){ //response if write to flash failed
+                return NVM_COORDINATE_WRITE_ERROR;
               }
-              NVMReadRow(Add);
-             // ptr = Add;
-              //test_flash = *ptr;//ReadFlashWord(Addre);//NVMRead(Addre);//
-             // test = ulong2flt(*ptr);//test_flash);
-             // while(DMA_IsOn(1));
-             // dma_printf("ptr:= %l\ttest_flash:= %l\ttest:= %f\n",ptr,test_flash,test);
              // Update system coordinate system if currently active.
              // if (gc.coord_select == int_value) { memcpy(gc.coord_system,gc.position,sizeof(gc.position)); }
           } else {

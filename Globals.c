@@ -55,10 +55,22 @@ P      Value        Coordinate System        G code
 
 ///////////////////////////////////////////////////////////////////
 //here we want to write the new recipe to flash and set the coordinate
-int Settings_Write_Coord_Data(unsigned long  addr,int coord_select,float *coord){
+int Settings_Write_Coord_Data(int coord_select,float *coord){
 int res=0;
-unsigned long wdata[512]={0};
-unsigned long j,i,add = addr;
+unsigned long wdata[4]={0};
+unsigned long j,i,add;
+ switch(coord_select){
+   case 0:break;
+   case 1: add = FLASH_Settings_VAddr_P1;break;
+   case 2: add = FLASH_Settings_VAddr_P2;break;
+   case 3: add = FLASH_Settings_VAddr_P3;break;
+   case 4: add = FLASH_Settings_VAddr_P4;break;
+   case 5: add = FLASH_Settings_VAddr_P5;break;
+   case 6: add = FLASH_Settings_VAddr_P6;break;
+   case 7: add = FLASH_Settings_VAddr_P7;break;
+   case 8: add = FLASH_Settings_VAddr_P8;break;
+   case 9: add = FLASH_Settings_VAddr_P9;break;
+ }
 
  // while(DMA_IsOn(1));
  // dma_printf("%l\n",addr);
@@ -66,13 +78,20 @@ unsigned long j,i,add = addr;
    j = i = 0;
   for (i=0;i<3;i++){
     wdata[i] = flt2ulong(coord[i]);
+    
    // while(DMA_IsOn(1));
    // dma_printf("%f\t%l\n",coord[i],wdata[i]);
 
-   // Flash_Write_Word(addr+i*4,wdata[i]);
-    res = NVMWriteWord(addr+i*4,wdata[i]);
-    if(res)break;
+    //Flash_Write_Word(addr+i*4,wdata[i]);
+    //res = NVMWriteWord(addr+i*4,wdata[i]);
   }
+  res = NVMWriteQuad(&add,wdata);
+  
+  #if FlashDebug == 1
+  add = FLASH_Settings_VAddr_P1;
+  Delay_us(100);
+  NVMReadRow(add);
+  #endif
   // Flash_Write_Row(addr,wdata);
    return res;
 }

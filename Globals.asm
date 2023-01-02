@@ -1,11 +1,11 @@
 _Settings_Init:
 ;Globals.c,9 :: 		void Settings_Init(char reset_all){
 ;Globals.c,10 :: 		if(reset_all){
-BNE	R25, R0, L__Settings_Init8
+BNE	R25, R0, L__Settings_Init20
 NOP	
 J	L_Settings_Init0
 NOP	
-L__Settings_Init8:
+L__Settings_Init20:
 ;Globals.c,11 :: 		settings.steps_per_mm[_X] = DEFAULT_X_STEPS_PER_MM;
 LUI	R2, 17274
 ORI	R2, R2, 0
@@ -74,105 +74,237 @@ JR	RA
 NOP	
 ; end of _Settings_Init
 _Settings_Write_Coord_Data:
-;Globals.c,58 :: 		int Settings_Write_Coord_Data(unsigned long  addr,int coord_select,float *coord){
-ADDIU	SP, SP, -2072
+;Globals.c,58 :: 		int Settings_Write_Coord_Data(int coord_select,float *coord){
+ADDIU	SP, SP, -40
 SW	RA, 0(SP)
 ;Globals.c,59 :: 		int res=0;
-; res start address is: 12 (R3)
-MOVZ	R3, R0, R0
-;Globals.c,60 :: 		unsigned long wdata[512]={0};
+;Globals.c,60 :: 		unsigned long wdata[4]={0};
 ADDIU	R23, SP, 20
-ADDIU	R22, R23, 2048
+ADDIU	R22, R23, 16
 LUI	R24, hi_addr(?ICSSettings_Write_Coord_Data_wdata_L0+0)
 ORI	R24, R24, lo_addr(?ICSSettings_Write_Coord_Data_wdata_L0+0)
 JAL	___CC2DW+0
 NOP	
-;Globals.c,67 :: 		for (i=0;i<3;i++){
-; i start address is: 20 (R5)
-MOVZ	R5, R0, R0
-; res end address is: 12 (R3)
-; i end address is: 20 (R5)
+;Globals.c,62 :: 		switch(coord_select){
+J	L_Settings_Write_Coord_Data1
+NOP	
+;Globals.c,63 :: 		case 0:break;
+L_Settings_Write_Coord_Data3:
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,64 :: 		case 1: add = FLASH_Settings_VAddr_P1;break;
+L_Settings_Write_Coord_Data4:
+LUI	R2, 48408
+ORI	R2, R2, 27136
+SW	R2, 16(SP)
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,65 :: 		case 2: add = FLASH_Settings_VAddr_P2;break;
+L_Settings_Write_Coord_Data5:
+LUI	R2, 48408
+ORI	R2, R2, 27152
+SW	R2, 16(SP)
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,66 :: 		case 3: add = FLASH_Settings_VAddr_P3;break;
+L_Settings_Write_Coord_Data6:
+LUI	R2, 48408
+ORI	R2, R2, 27168
+SW	R2, 16(SP)
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,67 :: 		case 4: add = FLASH_Settings_VAddr_P4;break;
+L_Settings_Write_Coord_Data7:
+LUI	R2, 48408
+ORI	R2, R2, 27184
+SW	R2, 16(SP)
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,68 :: 		case 5: add = FLASH_Settings_VAddr_P5;break;
+L_Settings_Write_Coord_Data8:
+LUI	R2, 48408
+ORI	R2, R2, 27200
+SW	R2, 16(SP)
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,69 :: 		case 6: add = FLASH_Settings_VAddr_P6;break;
+L_Settings_Write_Coord_Data9:
+LUI	R2, 48408
+ORI	R2, R2, 27216
+SW	R2, 16(SP)
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,70 :: 		case 7: add = FLASH_Settings_VAddr_P7;break;
+L_Settings_Write_Coord_Data10:
+LUI	R2, 48408
+ORI	R2, R2, 27232
+SW	R2, 16(SP)
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,71 :: 		case 8: add = FLASH_Settings_VAddr_P8;break;
+L_Settings_Write_Coord_Data11:
+LUI	R2, 48408
+ORI	R2, R2, 27248
+SW	R2, 16(SP)
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,72 :: 		case 9: add = FLASH_Settings_VAddr_P9;break;
+L_Settings_Write_Coord_Data12:
+LUI	R2, 48408
+ORI	R2, R2, 27264
+SW	R2, 16(SP)
+J	L_Settings_Write_Coord_Data2
+NOP	
+;Globals.c,73 :: 		}
 L_Settings_Write_Coord_Data1:
-; i start address is: 20 (R5)
-; res start address is: 12 (R3)
-SLTIU	R2, R5, 3
-BNE	R2, R0, L__Settings_Write_Coord_Data10
+SEH	R2, R25
+BNE	R2, R0, L__Settings_Write_Coord_Data23
 NOP	
-J	L__Settings_Write_Coord_Data5
+J	L_Settings_Write_Coord_Data3
 NOP	
-L__Settings_Write_Coord_Data10:
-; res end address is: 12 (R3)
-;Globals.c,68 :: 		wdata[i] = flt2ulong(coord[i]);
-ADDIU	R2, SP, 20
-SLL	R3, R5, 2
-ADDU	R2, R2, R3
-SW	R2, 2068(SP)
-ADDU	R2, R27, R3
-SW	R5, 4(SP)
-SW	R27, 8(SP)
-SH	R26, 12(SP)
-SW	R25, 16(SP)
-LWC1	S12, 0(R2)
-JAL	_flt2ulong+0
-NOP	
-LW	R25, 16(SP)
-LH	R26, 12(SP)
-LW	R27, 8(SP)
-LW	R5, 4(SP)
-LW	R3, 2068(SP)
-SW	R2, 0(R3)
-;Globals.c,73 :: 		res = NVMWriteWord(addr+i*4,wdata[i]);
-ADDIU	R2, SP, 20
-SLL	R4, R5, 2
-ADDU	R2, R2, R4
-LW	R3, 0(R2)
-ADDU	R2, R25, R4
-SW	R5, 4(SP)
-SW	R27, 8(SP)
-SH	R26, 12(SP)
-SW	R25, 16(SP)
-MOVZ	R26, R3, R0
-MOVZ	R25, R2, R0
-JAL	_NVMWriteWord+0
-NOP	
-LW	R25, 16(SP)
-LH	R26, 12(SP)
-LW	R27, 8(SP)
-LW	R5, 4(SP)
-; res start address is: 12 (R3)
-ANDI	R3, R2, 65535
-;Globals.c,74 :: 		if(res)break;
-BNE	R2, R0, L__Settings_Write_Coord_Data12
+L__Settings_Write_Coord_Data23:
+SEH	R3, R25
+ORI	R2, R0, 1
+BNE	R3, R2, L__Settings_Write_Coord_Data25
 NOP	
 J	L_Settings_Write_Coord_Data4
 NOP	
-L__Settings_Write_Coord_Data12:
-; i end address is: 20 (R5)
-SEH	R2, R3
-J	L_Settings_Write_Coord_Data2
+L__Settings_Write_Coord_Data25:
+SEH	R3, R25
+ORI	R2, R0, 2
+BNE	R3, R2, L__Settings_Write_Coord_Data27
 NOP	
-L_Settings_Write_Coord_Data4:
-;Globals.c,67 :: 		for (i=0;i<3;i++){
-; i start address is: 20 (R5)
-ADDIU	R2, R5, 1
-MOVZ	R5, R2, R0
-;Globals.c,75 :: 		}
-; res end address is: 12 (R3)
-; i end address is: 20 (R5)
-J	L_Settings_Write_Coord_Data1
+J	L_Settings_Write_Coord_Data5
 NOP	
-L__Settings_Write_Coord_Data5:
-;Globals.c,67 :: 		for (i=0;i<3;i++){
-SEH	R2, R3
-;Globals.c,75 :: 		}
+L__Settings_Write_Coord_Data27:
+SEH	R3, R25
+ORI	R2, R0, 3
+BNE	R3, R2, L__Settings_Write_Coord_Data29
+NOP	
+J	L_Settings_Write_Coord_Data6
+NOP	
+L__Settings_Write_Coord_Data29:
+SEH	R3, R25
+ORI	R2, R0, 4
+BNE	R3, R2, L__Settings_Write_Coord_Data31
+NOP	
+J	L_Settings_Write_Coord_Data7
+NOP	
+L__Settings_Write_Coord_Data31:
+SEH	R3, R25
+ORI	R2, R0, 5
+BNE	R3, R2, L__Settings_Write_Coord_Data33
+NOP	
+J	L_Settings_Write_Coord_Data8
+NOP	
+L__Settings_Write_Coord_Data33:
+SEH	R3, R25
+ORI	R2, R0, 6
+BNE	R3, R2, L__Settings_Write_Coord_Data35
+NOP	
+J	L_Settings_Write_Coord_Data9
+NOP	
+L__Settings_Write_Coord_Data35:
+SEH	R3, R25
+ORI	R2, R0, 7
+BNE	R3, R2, L__Settings_Write_Coord_Data37
+NOP	
+J	L_Settings_Write_Coord_Data10
+NOP	
+L__Settings_Write_Coord_Data37:
+SEH	R3, R25
+ORI	R2, R0, 8
+BNE	R3, R2, L__Settings_Write_Coord_Data39
+NOP	
+J	L_Settings_Write_Coord_Data11
+NOP	
+L__Settings_Write_Coord_Data39:
+SEH	R3, R25
+ORI	R2, R0, 9
+BNE	R3, R2, L__Settings_Write_Coord_Data41
+NOP	
+J	L_Settings_Write_Coord_Data12
+NOP	
+L__Settings_Write_Coord_Data41:
 L_Settings_Write_Coord_Data2:
-;Globals.c,77 :: 		return res;
-; res start address is: 8 (R2)
-; res end address is: 8 (R2)
-;Globals.c,78 :: 		}
+;Globals.c,79 :: 		for (i=0;i<3;i++){
+; i start address is: 16 (R4)
+MOVZ	R4, R0, R0
+; i end address is: 16 (R4)
+L_Settings_Write_Coord_Data13:
+; i start address is: 16 (R4)
+SLTIU	R2, R4, 3
+BNE	R2, R0, L__Settings_Write_Coord_Data42
+NOP	
+J	L_Settings_Write_Coord_Data14
+NOP	
+L__Settings_Write_Coord_Data42:
+;Globals.c,80 :: 		wdata[i] = flt2ulong(coord[i]);
+ADDIU	R2, SP, 20
+SLL	R3, R4, 2
+ADDU	R2, R2, R3
+SW	R2, 36(SP)
+ADDU	R2, R26, R3
+SW	R4, 4(SP)
+SW	R26, 8(SP)
+SH	R25, 12(SP)
+LWC1	S12, 0(R2)
+JAL	_flt2ulong+0
+NOP	
+LH	R25, 12(SP)
+LW	R26, 8(SP)
+LW	R4, 4(SP)
+LW	R3, 36(SP)
+SW	R2, 0(R3)
+;Globals.c,79 :: 		for (i=0;i<3;i++){
+ADDIU	R2, R4, 1
+MOVZ	R4, R2, R0
+;Globals.c,87 :: 		}
+; i end address is: 16 (R4)
+J	L_Settings_Write_Coord_Data13
+NOP	
+L_Settings_Write_Coord_Data14:
+;Globals.c,88 :: 		res = NVMWriteQuad(&add,wdata);
+ADDIU	R3, SP, 20
+ADDIU	R2, SP, 16
+SW	R26, 4(SP)
+SH	R25, 8(SP)
+MOVZ	R26, R3, R0
+MOVZ	R25, R2, R0
+JAL	_NVMWriteQuad+0
+NOP	
+LH	R25, 8(SP)
+LW	R26, 4(SP)
+; res start address is: 12 (R3)
+ANDI	R3, R2, 65535
+;Globals.c,91 :: 		add = FLASH_Settings_VAddr_P1;
+LUI	R2, 48408
+ORI	R2, R2, 27136
+SW	R2, 16(SP)
+;Globals.c,92 :: 		Delay_us(100);
+LUI	R24, 0
+ORI	R24, R24, 6666
+L_Settings_Write_Coord_Data16:
+ADDIU	R24, R24, -1
+BNE	R24, R0, L_Settings_Write_Coord_Data16
+NOP	
+;Globals.c,93 :: 		NVMReadRow(add);
+SH	R3, 4(SP)
+SW	R26, 8(SP)
+SH	R25, 12(SP)
+LW	R25, 16(SP)
+JAL	_NVMReadRow+0
+NOP	
+LH	R25, 12(SP)
+LW	R26, 8(SP)
+LH	R3, 4(SP)
+;Globals.c,96 :: 		return res;
+SEH	R2, R3
+; res end address is: 12 (R3)
+;Globals.c,97 :: 		}
 L_end_Settings_Write_Coord_Data:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 2072
+ADDIU	SP, SP, 40
 JR	RA
 NOP	
 ; end of _Settings_Write_Coord_Data

@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Flash_R_W.c
+Value=Globals.c
 =======
 =======
 >>>>>>> patch1
@@ -138,7 +138,8 @@ File4=Flash_R_W.h
 File5=Nut_Bolts.c
 File6=Nuts_Bolts.h
 File7=Globals.c
-Count=8
+File8=DEFINES.pld
+Count=9
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -218,4 +219,5 @@ USE_SRS=7
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
 18=Header Files
-Count=3
+37=Project Level Defines
+Count=4

@@ -103,5 +103,5 @@ typedef struct{
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
 void Settings_Init(char reset_all);
-int Settings_Write_Coord_Data(unsigned long  addr,int coord_select,float *coord);
+int Settings_Write_Coord_Data(int coord_select,float *coord);
 #endif

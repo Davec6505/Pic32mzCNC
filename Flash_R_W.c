@@ -20,89 +20,106 @@
 #include "Flash_R_W.h"
 
 
-/*
- *When programming or erasing Flash memory, the physical addresses 
- *is always the address used for the target operation.
-*/
-//unsigned long  FLASH_Settings_VAddr = 0x9D07A000;
-//unsigned long  FLASH_Settings_PAddr = 0x1D07A000;
-
-
+///////////////////////////////////////////////////////
 //Write a single 32bit word to flash address and data
-/*
- * Set up Address and Data Registers
- * NVMADDR= 0x1D008000;
- // physical address 
- * NVMDATA0 = 0x12345678; // value
- // set the operation, assumes 
- * NVMCONbits.NVMOP = 0x1; // NVMOP for Word programming
- // Enable Flash for write operation and set the NVMOP 
- * NVMCONbits.WREN = 1;
- // Start programming
- * NVMInitiateOperation(); // see Example 52-1
- // Wait for WR bit to clear
- while(NVMCONbits.WR);
- // Disable future Flash Write/Erase operations
- NVMCONbits.WREN = 0;
- // Check Error Status
- if(NVMCON & 0x3000)
- // mask for WRERR and LVDERR{// process errors}
-*/
-unsigned int NVMWriteWord (unsigned long address, unsigned long _data){
+unsigned int NVMWriteWord (void *address, unsigned long _data){
 unsigned int res;
-unsigned long padd = address;
+unsigned long padd;// = address;
 
-  //reset the Error flags
-  NVM_ERROR_Rst();
-  
   //translate the Vadd to Phy add
-  padd &= FLASH_PADDRESS_OFFSET;
+  padd = *(unsigned long*)address & FLASH_PADDRESS_TRANSLATE;
 
   // Load address to program into NVMADDR register
   NVMADDR = padd;
-  while(DMA_IsOn(1));
-  dma_printf("address:= %l\n",NVMADDR);
+  //while(DMA_IsOn(1));
+  //dma_printf("address:= %l\n",NVMADDR);
   
   // Load data into NVMDATA register
   NVMDATA0 = _data; // value
-
+  
+  //Word type of data transfer to take place
+  NVMCONSET = 1;
   // Unlock and Write Word
-  res = NVMUnlock (0x4001);
+  res = NVMUnlock ();
 
   // Return Result
   return res;
 }
 
+//////////////////////////////////////////////////////
+//4 words to be written to flash at once
+unsigned int NVMWriteQuad (void *address, unsigned long *_data){
+unsigned int res;
+unsigned long padd;
 
+  //translate the Vadd to Phy add
+  padd = *(unsigned long*)address & FLASH_PADDRESS_TRANSLATE;
+
+  // Load address to program into NVMADDR register
+  NVMADDR = padd;
+  //while(DMA_IsOn(1));
+  //dma_printf("address:= %l\n",NVMADDR);
+
+  // Load data into NVMDATA register
+  NVMDATA0 = *(_data+0); // value
+  NVMDATA1 = *(_data+1); // value
+  NVMDATA2 = *(_data+2); // value
+  NVMDATA3 = *(_data+3); // value
+  //Word type of data transfer to take place
+  NVMCONSET = 2;
+  // Unlock and Write Word
+  res = NVMUnlock ();
+
+  // Return Result
+  return res;
+}
+
+/////////////////////////////////////////////////////
+//Row of 128 words to be written to flash
 unsigned int NVMWriteRow (void* address, void* _data){
 unsigned int res;
-// Set NVMADDR to Start Address of row to program
-NVMADDR = (unsigned long)address;
+unsigned long padd,src_padd;
+//NVMOP = 3
+  //translate address to phy address
+  padd = *(unsigned long*)address & FLASH_PADDRESS_TRANSLATE;
+  
+  // Set NVMADDR to Start Address of row to program
+  NVMADDR = padd;
 
-// Set NVMSRCADDR to the SRAM data buffer Address
-NVMSRCADDR = (unsigned long) _data;
+  //translate address to phy address
+  src_padd = *(unsigned long*)_data & FLASH_PADDRESS_TRANSLATE;
+  
+  // Set NVMSRCADDR to the SRAM data buffer Address
+  NVMSRCADDR = src_padd ;
 
+  //Row type of data transfer to take place
+  NVMCONSET = 3;
+  
 // Unlock and Write Row
-res = NVMUnlock(0x4003);
+res = NVMUnlock();
 // Return Result
 return res;
 }
 
+/////////////////////////////////////////////////////
+//Erase a whole page of flash 16kbytes
 unsigned int NVMErasePage(void* address){
 unsigned int res;
+ //NVMOP = 4
   // Set NVMADDR to the Start Address of page to erase
   NVMADDR = (unsigned long) address;
   // Unlock and Erase Page
-  res = NVMUnlock(0x4004);
+  res = NVMUnlock();
   // Return Result
   return res;
 }
 
 //Before entering this sequence of events the PHY add and
 // srcadd must be loaded into NVMADDR & NVMSRCADDR
-static unsigned int NVMUnlock (unsigned int nvmop){
+static unsigned int NVMUnlock (){
 unsigned int I_status,status;
 unsigned int dma_susp=0;   // storage for current DMA state
+
 
 // Suspend or Disable all Interrupts
  I_status = (unsigned int)DI();
@@ -110,7 +127,7 @@ unsigned int dma_susp=0;   // storage for current DMA state
  //Suspend all DMA actions
  while(!dma_susp)
   dma_susp = DMA_Suspend();
- 
+
  //Set the WREN bit to allow program flash write
  NVM_WREN_Set();
  

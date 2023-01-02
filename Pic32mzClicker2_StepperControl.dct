@@ -3324,7 +3324,6 @@ adcurdyis0
 adcurdyis0_bit
 adcurdyis1
 adcurdyis1_bit
-add
 add10
 add10
 add10
@@ -3643,7 +3642,6 @@ addrbytes1
 addrbytes1_bit
 addrbytes2
 addrbytes2_bit
-addre
 adevcfg0
 adevcfg0bits
 adevcfg1
@@ -20021,7 +20019,6 @@ data
 data
 data
 data
-data_
 data0
 data0_adcdata0_bit
 data0_adcdata1_bit
@@ -40602,6 +40599,7 @@ nvmsrcaddrinv
 nvmsrcaddrinvbits
 nvmsrcaddrset
 nvmsrcaddrsetbits
+nvmwritequad
 nvmwriterow
 nvmwriteword
 ob0e
@@ -46034,7 +46032,6 @@ pten8
 pten8_bit
 pten9
 pten9_bit
-ptr
 ptrden
 ptrden
 ptrden
