@@ -11,10 +11,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 //                             DEFINES                                       //
 ///////////////////////////////////////////////////////////////////////////////
-#define  FLASH_Settings_VAddr 0x9D079FFF//A000 //page31
-#define  FLASH_Settings_PAddr 0x1D079FFF//A000  //page31
+#define  FLASH_PADDRESS_OFFSET 0x1FFFFFFF
+#define  FLASH_Settings_VAddr  0xBD030000//0x9D079000
+#define  FLASH_Settings_PAddr  0x1D030000//0x1D079000
 
-#define  Ul   unsigned long
+#define NVM_ERROR_RST_MASK  0x0000C000
+#define NVM_WRITE_ENABLE_MASK 0x00004000
+#define NVM_WREN_ENABLE 0x00004000
+
+#define UL unsigned long
 
 
 
@@ -32,14 +37,16 @@
 //extern unsigned long  FLASH_Settings_PAddr;// = 0x1D079ff6;
 //////////////////////////////////////////////////
 //FUNCTION PROTOTYPE
-unsigned int NVMWriteWord (void *address, unsigned long _data);
+unsigned int NVMWriteWord (unsigned long address, unsigned long _data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
 static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVM_ERROR_Rst();
 static unsigned int NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
+static unsigned int NVM_WREN_Set();
 static unsigned int NVM_WREN_Wait();
 static unsigned int NVM_WREN_Rst();
-unsigned long NVMRead(unsigned long addr);
-unsigned long ReadFlashWord(void *addr);
+void NVMReadRow(unsigned long addr);
+unsigned long NVMReadWord(void *addr);
 #endif

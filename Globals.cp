@@ -697,17 +697,19 @@ int DMA_Suspend();
 int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 35 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void *address, unsigned long _data);
+#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (unsigned long address, unsigned long _data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
 static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVM_ERROR_Rst();
 static unsigned int NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
+static unsigned int NVM_WREN_Set();
 static unsigned int NVM_WREN_Wait();
 static unsigned int NVM_WREN_Rst();
-unsigned long NVMRead(unsigned long addr);
-unsigned long ReadFlashWord(void *addr);
+void NVMReadRow(unsigned long addr);
+unsigned long NVMReadWord(void *addr);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 82 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
@@ -764,18 +766,21 @@ void Settings_Init(char reset_all){
 int Settings_Write_Coord_Data(unsigned long addr,int coord_select,float *coord){
 int res=0;
 unsigned long wdata[512]={0};
-unsigned long i,add = addr;
- i = 0;
+unsigned long j,i,add = addr;
 
+
+
+
+ j = i = 0;
+ for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
- while(DMA_IsOn(1));
- dma_printf("%f\t%l\n",coord[i],wdata[i]);
-
- Flash_Write_Word(addr+i,wdata[i]);
 
 
 
 
+ res = NVMWriteWord(addr+i*4,wdata[i]);
+ if(res)break;
+ }
 
  return res;
 }

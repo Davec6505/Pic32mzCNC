@@ -35,7 +35,7 @@
  // physical address 
  * NVMDATA0 = 0x12345678; // value
  // set the operation, assumes 
- * WREN = NVMCONbits.NVMOP = 0x1; // NVMOP for Word programming
+ * NVMCONbits.NVMOP = 0x1; // NVMOP for Word programming
  // Enable Flash for write operation and set the NVMOP 
  * NVMCONbits.WREN = 1;
  // Start programming
@@ -48,17 +48,27 @@
  if(NVMCON & 0x3000)
  // mask for WRERR and LVDERR{// process errors}
 */
-unsigned int NVMWriteWord (void *address, unsigned long _data){
+unsigned int NVMWriteWord (unsigned long address, unsigned long _data){
 unsigned int res;
+unsigned long padd = address;
+
+  //reset the Error flags
+  NVM_ERROR_Rst();
+  
+  //translate the Vadd to Phy add
+  padd &= FLASH_PADDRESS_OFFSET;
 
   // Load address to program into NVMADDR register
-  NVMADDR = *(unsigned long*)address;
-
+  NVMADDR = padd;
+  while(DMA_IsOn(1));
+  dma_printf("address:= %l\n",NVMADDR);
+  
   // Load data into NVMDATA register
   NVMDATA0 = _data; // value
+
   // Unlock and Write Word
   res = NVMUnlock (0x4001);
-  
+
   // Return Result
   return res;
 }
@@ -67,7 +77,7 @@ unsigned int res;
 unsigned int NVMWriteRow (void* address, void* _data){
 unsigned int res;
 // Set NVMADDR to Start Address of row to program
-NVMADDR = (unsigned long) address;
+NVMADDR = (unsigned long)address;
 
 // Set NVMSRCADDR to the SRAM data buffer Address
 NVMSRCADDR = (unsigned long) _data;
@@ -90,65 +100,34 @@ unsigned int res;
 
 //Before entering this sequence of events the PHY add and
 // srcadd must be loaded into NVMADDR & NVMSRCADDR
-/*
- *{ 
- * int int_status; // storage for current Interrupt Enable state 
- * int dma_susp;   // storage for current DMA state 
- * // Disable Interrupts 
- * asm volatile(“di%0” : “=r”(int_status)); 
- * // Disable DMA 
- * if(!(dma_susp=DMACONbits.SUSPEND)) {
- *   DMACONSET=_DMACON_SUSPEND_MASK;// suspend
- *   while((DMACONbits.DMABUSY));// wait to be actually suspended
- * } 
- * NVMKEY = 0x0;
- * NVMKEY = 0xAA996655; 
- * NVMKEY = 0x556699AA; 
- * NVMCONSET = 1 << 15;// must be an atomic instruction 
- * // Restore DMA 
- * if(!dma_susp) {
- *   DMACONCLR=_DMACON_SUSPEND_MASK;  // resume DMA activity
- * } 
- * // Restore Interrupts
- * if(int_status & 0x00000001) {asm volatile(“ei”);}
- *}
- */
 static unsigned int NVMUnlock (unsigned int nvmop){
 unsigned int I_status,status;
 unsigned int dma_susp=0;   // storage for current DMA state
- //Reset NVMCON resister
- NVMCON = 0x0;
- 
+
 // Suspend or Disable all Interrupts
  I_status = (unsigned int)DI();
  
  //Suspend all DMA actions
- while(!dma_susp){
+ while(!dma_susp)
   dma_susp = DMA_Suspend();
- }
-
-// Enable Flash Write/Erase Operations and Select
-// [WREN][NVMOP]
- while(NVM_WREN_Rst());
- NVMCON = nvmop & 0x00000007;
-
- NVMCON = nvmop & 0x00004007;
- //Wait for WREN
+ 
+ //Set the WREN bit to allow program flash write
+ NVM_WREN_Set();
+ 
+//Wait for WREN
  while(!NVM_WREN_Wait());
-
+ 
+// wait at least 6 us for LVD start-up
+ Delay_us(20);
+  
 // Write Keys
  NVMKEY = 0x0;
  NVMKEY = 0xAA996655;
  NVMKEY = 0x556699AA;
+// Wait WR bit to set must be automic
+ NVMCONSET = 1 << 15;
 
-// Wait WR bit to set
- status = NVM_WR_Set();
- //NVMCONSET = 1 << 15;
-
-//status = 1;
- while(NVM_WR_Wait());
- 
- //Resume all DMA actions
+//Resume all DMA actions
  while(dma_susp){
    dma_susp = DMA_Resume();
  }
@@ -157,13 +136,32 @@ unsigned int dma_susp=0;   // storage for current DMA state
  if (I_status)
    EI();
 
-// Disable NVM WREN enable
- NVMCONCLR |= 0x0004000;
+//status = 1;
+ while(NVM_WR_Wait());
+ 
+//Reset the WREN bit, disables flash programming
+ while(NVM_WREN_Rst());
  
 // Return WRERR and LVDERR Error Status Bits
  return (NVMCON & 0x3000)>>12;
 }
 
+//////////////////////////////////////////////////////////
+//Reset Error flags of the NVMCON registor
+static unsigned int NVM_ERROR_Rst(){
+unsigned int error= 0;
+ NVMCON = 0;
+//Reset the NVM Error flags by writing 0 to NVMOP and
+//setting [WR] & [WREN]
+ NVM_WREN_Set();
+//Wait for WR
+ NVM_WR_Set();
+ //wait for WR to reset
+ while(NVM_WR_Wait());
+ 
+ // Return WRERR and LVDERR Error Status Bits
+ return (NVMCON & 0x3000)>>12;
+}
 
 //////////////////////////////////////////////////////////
 //Set the WR bit and return its state;
@@ -172,14 +170,25 @@ static unsigned int NVM_WR_Set(){
    NVMCONSET |= 1 << 15;
    return NVM_WR_Wait();
 }
+
 /////////////////////////////////////////////////////////
 //Wait for NVM WR to complete resets to false when done
 static unsigned int NVM_WR_Wait(){
    return (NVMCON & 0x8000) >> 15;
 }
 
+////////////////////////////////////////////////////////
+//Set the WREN bit and wait
+static unsigned int NVM_WREN_Set(){
+   NVMCONSET = 1 << 14;
+   while(!NVM_WREN_Wait());
+   return (NVMCON & 4000)>>14;
+}
+
+////////////////////////////////////////////////////////
+//Reset the WREN bit and wait
 static unsigned int NVM_WREN_Rst(){
-   NVMCONCLR |= 1<<14;
+   NVMCONCLR = 1<<14;
    while(NVM_WREN_Wait());
    return (NVMCON & 4000)>>14;
 }
@@ -193,7 +202,7 @@ static unsigned int NVM_WREN_Wait(){
 /////////////////////////////////////////////////////////
 //Read a 32bit word from flash
 //const argument stops the src from being changed
-unsigned long ReadFlashWord(void *addr){
+unsigned long NVMReadWord(void *addr){
 unsigned long val;
 
     val = *((unsigned long*)addr);
@@ -201,24 +210,23 @@ unsigned long val;
    return val;
 }
 
-unsigned long NVMRead(unsigned long addr){
-unsigned char buff[512] = {0};
-unsigned int i,j;
-unsigned char *ptr;
-unsigned long Val;
+void NVMReadRow(unsigned long addr){
+unsigned long buff[128] = {0};
+unsigned long i,j;
+unsigned long*ptr;
+float val;
 
-  ptr = (unsigned char*)addr;
+  ptr = (unsigned long*)addr;
   i = 0;
    //for(i = 0;i < 144;i++){
-       for(j = 0;j < 512;j++){
-          buff[j] = ptr[j];
+       for(j = 0;j < 128;j++){
+          buff[j] = *(ptr+j);
+          if(buff[j] < 0xFFFFFFFF)
+            val = ulong2flt(buff[j]);
+          else val = 0.00;
+          
           while(DMA_IsOn(1));
-          dma_printf("buff[%d]:= %d\n",j,(int)buff[j]);
+          dma_printf("val:= %f\tbuff[%l]:= %l\n",val,j,buff[j]);
        }
-       Val = buff[3];
-       Val =(Val<<8)| buff[2];
-       Val =(Val<<8)| buff[1];
-       Val =(Val<<8)| buff[0];
-   // i += 4;
-  //}
+
 }

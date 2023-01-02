@@ -237,17 +237,19 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 35 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void *address, unsigned long _data);
+#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (unsigned long address, unsigned long _data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
 static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVM_ERROR_Rst();
 static unsigned int NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
+static unsigned int NVM_WREN_Set();
 static unsigned int NVM_WREN_Wait();
 static unsigned int NVM_WREN_Rst();
-unsigned long NVMRead(unsigned long addr);
-unsigned long ReadFlashWord(void *addr);
+void NVMReadRow(unsigned long addr);
+unsigned long NVMReadWord(void *addr);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -741,7 +743,8 @@ STP STPS[ 6 ];
 settings_t settings;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
-const unsigned long Addre = 0xBD030000;
+const code unsigned long Addre =  0xBD030000 ;
+unsigned long Add =  0xBD030000 ;
 unsigned long *ptr;
 unsigned long data_;
 unsigned long rowbuff[128]={0};
@@ -919,31 +922,26 @@ unsigned long test_flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 235 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 236 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
 
-
-
-
-
-
  result = Settings_Write_Coord_Data(Addre,gc.P,gc.next_position );
+ if(result){
  while(DMA_IsOn(1));
  dma_printf("res:= %d\n",result);
+ }
+ NVMReadRow(Add);
 
 
 
- ptr = Addre;
- test_flash = *ptr;
- test = ulong2flt(test_flash);
- while(DMA_IsOn(1));
- dma_printf("ptr:= $l\ttest_flash:= %l\ttest:= %f\n",ptr,test_flash,test);
+
+
 
 
  } else {
-#line 268 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 264 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
 
  break;

@@ -42,7 +42,8 @@ STP STPS[NoOfAxis];
 settings_t settings;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
-const unsigned long  Addre = 0xBD030000;
+const code unsigned long  Addre = FLASH_Settings_VAddr; //0x1D078007;//
+unsigned long  Add = FLASH_Settings_VAddr;
 unsigned long *ptr;
 unsigned long data_;
 unsigned long rowbuff[128]={0};
@@ -236,24 +237,19 @@ unsigned long test_flash,*addr;
              return -1;
           if (gc.L == 20) {
 
-              //addr = FLASH_Settings_VAddr;
-              //NVMErasePage(addr);
-              //NVMWriteRow(addr,0);
-              //ptr = (unsigned long*)Addre;
-              //Flash_Write_Row(Addre,rowbuff);
               result = Settings_Write_Coord_Data(Addre,gc.P,gc.next_position );
-              while(DMA_IsOn(1));
-              dma_printf("res:= %d\n",result);
-              //test_flash = flt2ulong(gc.next_position[0]);
-              //Flash_Erase_Page(Addre);            // erase page           // erase page
-              //Flash_Write_Word(Addre,test_flash); // write one word
-              ptr = Addre;
-              test_flash = *ptr;//ReadFlashWord(Addre);//NVMRead(Addre);//
-              test = ulong2flt(test_flash);
-              while(DMA_IsOn(1));
-              dma_printf("ptr:= $l\ttest_flash:= %l\ttest:= %f\n",ptr,test_flash,test);
+              if(result){
+                while(DMA_IsOn(1));
+                dma_printf("res:= %d\n",result);
+              }
+              NVMReadRow(Add);
+             // ptr = Add;
+              //test_flash = *ptr;//ReadFlashWord(Addre);//NVMRead(Addre);//
+             // test = ulong2flt(*ptr);//test_flash);
+             // while(DMA_IsOn(1));
+             // dma_printf("ptr:= %l\ttest_flash:= %l\ttest:= %f\n",ptr,test_flash,test);
              // Update system coordinate system if currently active.
-            // if (gc.coord_select == int_value) { memcpy(gc.coord_system,gc.position,sizeof(gc.position)); }
+             // if (gc.coord_select == int_value) { memcpy(gc.coord_system,gc.position,sizeof(gc.position)); }
           } else {
            /* float coord_data[N_AXIS];
             if (!settings_read_coord_data(int_value,coord_data)) { return(STATUS_SETTING_READ_FAIL); }

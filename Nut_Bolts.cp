@@ -239,17 +239,19 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 35 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void *address, unsigned long _data);
+#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (unsigned long address, unsigned long _data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
 static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVM_ERROR_Rst();
 static unsigned int NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
+static unsigned int NVM_WREN_Set();
 static unsigned int NVM_WREN_Wait();
 static unsigned int NVM_WREN_Rst();
-unsigned long NVMRead(unsigned long addr);
-unsigned long ReadFlashWord(void *addr);
+void NVMReadRow(unsigned long addr);
+unsigned long NVMReadWord(void *addr);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 82 "c:/users/git/pic32mzcnc/globals.h"
 typedef struct {
@@ -818,7 +820,7 @@ int read_float(char *line, uint8_t *char_counter, float *float_ptr)
 
 unsigned long flt2ulong(float f_){
 unsigned long ul_ = 0;
- memcpy(&ul_,&f_,sizeof(unsigned long));
+ memcpy(&ul_,&f_,sizeof(float));
 
  return ul_;
 }
@@ -826,7 +828,7 @@ unsigned long ul_ = 0;
 
 float ulong2flt(unsigned long ul_){
 float f_ = 0.0;
- memcpy(&f_,&ul_,sizeof(float));
+ memcpy(&f_,&ul_,sizeof(unsigned long ));
 
 return f_;
 }

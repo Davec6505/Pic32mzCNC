@@ -249,17 +249,19 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 35 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void *address, unsigned long _data);
+#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (unsigned long address, unsigned long _data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
 static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVM_ERROR_Rst();
 static unsigned int NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
+static unsigned int NVM_WREN_Set();
 static unsigned int NVM_WREN_Wait();
 static unsigned int NVM_WREN_Rst();
-unsigned long NVMRead(unsigned long addr);
-unsigned long ReadFlashWord(void *addr);
+void NVMReadRow(unsigned long addr);
+unsigned long NVMReadWord(void *addr);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"

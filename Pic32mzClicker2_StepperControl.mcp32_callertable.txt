@@ -36,32 +36,46 @@ main
 	Get_modalgroup
 	Non_Modal_Actions
 		Settings_Write_Coord_Data
+			__CC2DW
 			flt2ulong
+				memcpy
+			NVMWriteWord
+				NVM_ERROR_Rst
+					NVM_WREN_Set
+						NVM_WREN_Wait
+					NVM_WR_Set
+						NVM_WR_Wait
+					NVM_WR_Wait
+				DMA_IsOn
+				dma_printf
+					DMA_CH_Busy
+					sprintf
+						_doprntf
+							isdigit
+							scale
+							fround
+					strcat
+					strlen
+					strncpy
+					DMA1_Enable
+					__CC2DW
+				NVMUnlock
+					DMA_Suspend
+					NVM_WREN_Set
+					NVM_WREN_Wait
+					DMA_Resume
+					NVM_WR_Wait
+					NVM_WREN_Rst
+						NVM_WREN_Wait
+				__CC2DW
+		DMA_IsOn
+		dma_printf
+		NVMReadRow
+			ulong2flt
 				memcpy
 			DMA_IsOn
 			dma_printf
-				DMA_CH_Busy
-				sprintf
-					_doprntf
-						isdigit
-						scale
-						fround
-				strcat
-				strlen
-				strncpy
-				DMA1_Enable
-				__CC2DW
-			Flash_Write_Word
-				Flash_Do_Execute
-					RestoreInterrupts
-					DmaSuspend
-					DmaResume
-						DmaSuspend
 			__CC2DW
-		DMA_IsOn
-		dma_printf
-		ulong2flt
-			memcpy
 		__CC2DW
 	Get_modalword
 	Rst_modalgroup

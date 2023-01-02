@@ -58,18 +58,21 @@ P      Value        Coordinate System        G code
 int Settings_Write_Coord_Data(unsigned long  addr,int coord_select,float *coord){
 int res=0;
 unsigned long wdata[512]={0};
-unsigned long i,add = addr;
-    i = 0;
- // for (i=0;i<3;i++){
+unsigned long j,i,add = addr;
+
+ // while(DMA_IsOn(1));
+ // dma_printf("%l\n",addr);
+  
+   j = i = 0;
+  for (i=0;i<3;i++){
     wdata[i] = flt2ulong(coord[i]);
-    while(DMA_IsOn(1));
-    dma_printf("%f\t%l\n",coord[i],wdata[i]);
+   // while(DMA_IsOn(1));
+   // dma_printf("%f\t%l\n",coord[i],wdata[i]);
 
-    Flash_Write_Word(addr+i,wdata[i]);
-  //  res = NVMWriteWord(addr,wdata[i]);
-  //  if(res)break;
-
- // }
+   // Flash_Write_Word(addr+i*4,wdata[i]);
+    res = NVMWriteWord(addr+i*4,wdata[i]);
+    if(res)break;
+  }
   // Flash_Write_Row(addr,wdata);
    return res;
 }

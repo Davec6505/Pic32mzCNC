@@ -724,26 +724,38 @@ int DMA_Suspend();
 int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 35 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void *address, unsigned long _data);
+#line 40 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (unsigned long address, unsigned long _data);
 unsigned int NVMWriteRow (void* address, void* _data);
 unsigned int NVMErasePage(void* address);
 static unsigned int NVMUnlock(unsigned int nvmop);
+static unsigned int NVM_ERROR_Rst();
 static unsigned int NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
+static unsigned int NVM_WREN_Set();
 static unsigned int NVM_WREN_Wait();
 static unsigned int NVM_WREN_Rst();
-unsigned long NVMRead(unsigned long addr);
-unsigned long ReadFlashWord(void *addr);
+void NVMReadRow(unsigned long addr);
+unsigned long NVMReadWord(void *addr);
 #line 51 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
-unsigned int NVMWriteWord (void *address, unsigned long _data){
+unsigned int NVMWriteWord (unsigned long address, unsigned long _data){
 unsigned int res;
+unsigned long padd = address;
 
 
- NVMADDR = *(unsigned long*)address;
+ NVM_ERROR_Rst();
+
+
+ padd &=  0x1FFFFFFF ;
+
+
+ NVMADDR = padd;
+ while(DMA_IsOn(1));
+ dma_printf("address:= %l\n",NVMADDR);
 
 
  NVMDATA0 = _data;
+
 
  res = NVMUnlock (0x4001);
 
@@ -755,7 +767,7 @@ unsigned int res;
 unsigned int NVMWriteRow (void* address, void* _data){
 unsigned int res;
 
-NVMADDR = (unsigned long) address;
+NVMADDR = (unsigned long)address;
 
 
 NVMSRCADDR = (unsigned long) _data;
@@ -775,41 +787,35 @@ unsigned int res;
 
  return res;
 }
-#line 116 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
+
+
+
 static unsigned int NVMUnlock (unsigned int nvmop){
 unsigned int I_status,status;
 unsigned int dma_susp=0;
-
- NVMCON = 0x0;
 
 
  I_status = (unsigned int)DI();
 
 
- while(!dma_susp){
+ while(!dma_susp)
  dma_susp = DMA_Suspend();
- }
 
 
+ NVM_WREN_Set();
 
- while(NVM_WREN_Rst());
- NVMCON = nvmop & 0x00000007;
-
- NVMCON = nvmop & 0x00004007;
 
  while(!NVM_WREN_Wait());
+
+
+ Delay_us(20);
 
 
  NVMKEY = 0x0;
  NVMKEY = 0xAA996655;
  NVMKEY = 0x556699AA;
 
-
- status = NVM_WR_Set();
-
-
-
- while(NVM_WR_Wait());
+ NVMCONSET = 1 << 15;
 
 
  while(dma_susp){
@@ -821,12 +827,31 @@ unsigned int dma_susp=0;
  EI();
 
 
- NVMCONCLR |= 0x0004000;
+ while(NVM_WR_Wait());
+
+
+ while(NVM_WREN_Rst());
 
 
  return (NVMCON & 0x3000)>>12;
 }
 
+
+
+static unsigned int NVM_ERROR_Rst(){
+unsigned int error= 0;
+ NVMCON = 0;
+
+
+ NVM_WREN_Set();
+
+ NVM_WR_Set();
+
+ while(NVM_WR_Wait());
+
+
+ return (NVMCON & 0x3000)>>12;
+}
 
 
 
@@ -837,12 +862,23 @@ static unsigned int NVM_WR_Set(){
 }
 
 
+
 static unsigned int NVM_WR_Wait(){
  return (NVMCON & 0x8000) >> 15;
 }
 
+
+
+static unsigned int NVM_WREN_Set(){
+ NVMCONSET = 1 << 14;
+ while(!NVM_WREN_Wait());
+ return (NVMCON & 4000)>>14;
+}
+
+
+
 static unsigned int NVM_WREN_Rst(){
- NVMCONCLR |= 1<<14;
+ NVMCONCLR = 1<<14;
  while(NVM_WREN_Wait());
  return (NVMCON & 4000)>>14;
 }
@@ -856,7 +892,7 @@ static unsigned int NVM_WREN_Wait(){
 
 
 
-unsigned long ReadFlashWord(void *addr){
+unsigned long NVMReadWord(void *addr){
 unsigned long val;
 
  val = *((unsigned long*)addr);
@@ -864,24 +900,23 @@ unsigned long val;
  return val;
 }
 
-unsigned long NVMRead(unsigned long addr){
-unsigned char buff[512] = {0};
-unsigned int i,j;
-unsigned char *ptr;
-unsigned long Val;
+void NVMReadRow(unsigned long addr){
+unsigned long buff[128] = {0};
+unsigned long i,j;
+unsigned long*ptr;
+float val;
 
- ptr = (unsigned char*)addr;
+ ptr = (unsigned long*)addr;
  i = 0;
 
- for(j = 0;j < 512;j++){
- buff[j] = ptr[j];
- while(DMA_IsOn(1));
- dma_printf("buff[%d]:= %d\n",j,(int)buff[j]);
- }
- Val = buff[3];
- Val =(Val<<8)| buff[2];
- Val =(Val<<8)| buff[1];
- Val =(Val<<8)| buff[0];
+ for(j = 0;j < 128;j++){
+ buff[j] = *(ptr+j);
+ if(buff[j] < 0xFFFFFFFF)
+ val = ulong2flt(buff[j]);
+ else val = 0.00;
 
+ while(DMA_IsOn(1));
+ dma_printf("val:= %f\tbuff[%l]:= %l\n",val,j,buff[j]);
+ }
 
 }
