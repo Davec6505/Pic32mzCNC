@@ -36,22 +36,7 @@ main
 	Get_modalgroup
 	Non_Modal_Actions
 		Settings_Write_Coord_Data
-			__CC2DW
-			flt2ulong
-				memcpy
-			NVMWriteQuad
-				NVMUnlock
-					DMA_Suspend
-					NVM_WREN_Set
-						NVM_WREN_Wait
-					NVM_WREN_Wait
-					DMA_Resume
-					NVM_WR_Wait
-					NVM_WREN_Rst
-						NVM_WREN_Wait
-			NVMReadRow
-				ulong2flt
-					memcpy
+			Save_Row_From_Flash
 				DMA_IsOn
 				dma_printf
 					DMA_CH_Busy
@@ -66,6 +51,28 @@ main
 					DMA1_Enable
 					__CC2DW
 				__CC2DW
+			NVMErasePage
+				NVMUnlock
+					DMA_Suspend
+					DMA_Busy
+					DMA_Resume
+					NVM_WR_Wait
+			DMA_IsOn
+			dma_printf
+			flt2ulong
+				memcpy
+			NVMWriteRow
+				DMA_IsOn
+				dma_printf
+				NVMUnlock
+				__CC2DW
+			NVMReadRow
+				ulong2flt
+					memcpy
+				DMA_IsOn
+				dma_printf
+				__CC2DW
+			__CC2DW
 	Get_modalword
 	Rst_modalgroup
 	Get_Axisword

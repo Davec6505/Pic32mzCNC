@@ -518,7 +518,7 @@ JR	RA
 NOP	
 ; end of _DMA1_Disable
 _DMA_IsOn:
-;Serial_Dma.c,275 :: 		int DMA_IsOn(int channel){
+;Serial_Dma.c,275 :: 		unsigned int DMA_IsOn(int channel){
 ;Serial_Dma.c,276 :: 		if(channel == 0)
 SEH	R2, R25
 BEQ	R2, R0, L__DMA_IsOn70
@@ -543,7 +543,7 @@ JR	RA
 NOP	
 ; end of _DMA_IsOn
 _DMA_CH_Busy:
-;Serial_Dma.c,287 :: 		int DMA_CH_Busy(int channel){
+;Serial_Dma.c,287 :: 		unsigned int DMA_CH_Busy(int channel){
 ;Serial_Dma.c,288 :: 		if(channel == 0)
 SEH	R2, R25
 BEQ	R2, R0, L__DMA_CH_Busy72
@@ -568,11 +568,11 @@ JR	RA
 NOP	
 ; end of _DMA_CH_Busy
 _DMA_Suspend:
-;Serial_Dma.c,298 :: 		int DMA_Suspend(){
+;Serial_Dma.c,298 :: 		unsigned int DMA_Suspend(){
 ;Serial_Dma.c,299 :: 		DMACONSET = (1 << 12);
 ORI	R2, R0, 4096
 SW	R2, Offset(DMACONSET+0)(GP)
-;Serial_Dma.c,302 :: 		return (DMACON & 0x1000)>>12;
+;Serial_Dma.c,302 :: 		return ((DMACON & 0x1000)>>12);
 LW	R2, Offset(DMACON+0)(GP)
 ANDI	R2, R2, 4096
 SRL	R2, R2, 12
@@ -582,7 +582,7 @@ JR	RA
 NOP	
 ; end of _DMA_Suspend
 _DMA_Resume:
-;Serial_Dma.c,308 :: 		int DMA_Resume(){
+;Serial_Dma.c,308 :: 		unsigned int DMA_Resume(){
 ;Serial_Dma.c,309 :: 		DMACONCLR = (1 << 12);
 ORI	R2, R0, 4096
 SW	R2, Offset(DMACONCLR+0)(GP)
@@ -596,8 +596,8 @@ JR	RA
 NOP	
 ; end of _DMA_Resume
 _DMA_Busy:
-;Serial_Dma.c,318 :: 		int DMA_Busy(){
-;Serial_Dma.c,319 :: 		return (DMACON & 0x800)>>11;
+;Serial_Dma.c,318 :: 		unsigned int DMA_Busy(){
+;Serial_Dma.c,319 :: 		return ((DMACON & 0x800)>>11);
 LW	R2, Offset(DMACON+0)(GP)
 ANDI	R2, R2, 2048
 SRL	R2, R2, 11

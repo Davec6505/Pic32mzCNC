@@ -37,10 +37,8 @@ unsigned long padd;// = address;
   // Load data into NVMDATA register
   NVMDATA0 = _data; // value
   
-  //Word type of data transfer to take place
-  NVMCONSET = 1;
   // Unlock and Write Word
-  res = NVMUnlock ();
+  res = NVMUnlock (0x4001);
 
   // Return Result
   return res;
@@ -57,18 +55,15 @@ unsigned long padd;
 
   // Load address to program into NVMADDR register
   NVMADDR = padd;
-  //while(DMA_IsOn(1));
-  //dma_printf("address:= %l\n",NVMADDR);
 
   // Load data into NVMDATA register
   NVMDATA0 = *(_data+0); // value
   NVMDATA1 = *(_data+1); // value
   NVMDATA2 = *(_data+2); // value
   NVMDATA3 = *(_data+3); // value
-  //Word type of data transfer to take place
-  NVMCONSET = 2;
+  
   // Unlock and Write Word
-  res = NVMUnlock ();
+  res = NVMUnlock (0x4002);
 
   // Return Result
   return res;
@@ -76,96 +71,103 @@ unsigned long padd;
 
 /////////////////////////////////////////////////////
 //Row of 128 words to be written to flash
-unsigned int NVMWriteRow (void* address, void* _data){
+unsigned int NVMWriteRow (void  *address, void *_data){
 unsigned int res;
 unsigned long padd,src_padd;
 //NVMOP = 3
+
   //translate address to phy address
-  padd = *(unsigned long*)address & FLASH_PADDRESS_TRANSLATE;
-  
   // Set NVMADDR to Start Address of row to program
-  NVMADDR = padd;
+  //Dereference the address to get the value
+  NVMADDR = *(unsigned long*)address & FLASH_PADDRESS_TRANSLATE;
 
   //translate address to phy address
-  src_padd = *(unsigned long*)_data & FLASH_PADDRESS_TRANSLATE;
-  
   // Set NVMSRCADDR to the SRAM data buffer Address
-  NVMSRCADDR = src_padd ;
-
-  //Row type of data transfer to take place
-  NVMCONSET = 3;
+  //no need to dereference use the start address
+  NVMSRCADDR = (unsigned long)_data & FLASH_PADDRESS_TRANSLATE;
+  #if FlahDebug == 2
+   while(DMA_IsOn(1));
+   dma_printf("add:= %l\tsrc_padd:= %l\n",NVMADDR,NVMSRCADDR);
+  #endif
   
-// Unlock and Write Row
-res = NVMUnlock();
-// Return Result
-return res;
+ // Unlock and Write Row
+ res = NVMUnlock(0x4003);
+ 
+ // Return Result
+ return res;
 }
 
 /////////////////////////////////////////////////////
 //Erase a whole page of flash 16kbytes
-unsigned int NVMErasePage(void* address){
+unsigned int NVMErasePage(unsigned long address){
 unsigned int res;
- //NVMOP = 4
-  // Set NVMADDR to the Start Address of page to erase
-  NVMADDR = (unsigned long) address;
+unsigned long padd;
+
+  //translate the Vadd to Phy add
+  // Load address to program into NVMADDR register
+  NVMADDR = address & FLASH_PADDRESS_TRANSLATE;
+  
   // Unlock and Erase Page
-  res = NVMUnlock();
+  res = NVMUnlock(0x4004);
+  
   // Return Result
   return res;
 }
 
 //Before entering this sequence of events the PHY add and
 // srcadd must be loaded into NVMADDR & NVMSRCADDR
-static unsigned int NVMUnlock (){
-unsigned int I_status,status;
-unsigned int dma_susp=0;   // storage for current DMA state
-
-
+static unsigned int NVMUnlock (unsigned long nvmop){
+unsigned int I_status = 0;
+unsigned int dma_ = 0;
+//unsigned int dma_susp=0;   // storage for current DMA state
+ NVMCON &= 0xFFF0;
+ NVMCON |=  nvmop; //Set NVMOP bits
+ //NVMCON |= 0X4000;
+ 
 // Suspend or Disable all Interrupts
- I_status = (unsigned int)DI();
- 
- //Suspend all DMA actions
- while(!dma_susp)
-  dma_susp = DMA_Suspend();
+  I_status = (unsigned int)DI();
 
- //Set the WREN bit to allow program flash write
- NVM_WREN_Set();
- 
-//Wait for WREN
- while(!NVM_WREN_Wait());
- 
-// wait at least 6 us for LVD start-up
- Delay_us(20);
-  
-// Write Keys
- NVMKEY = 0x0;
- NVMKEY = 0xAA996655;
- NVMKEY = 0x556699AA;
-// Wait WR bit to set must be automic
- NVMCONSET = 1 << 15;
-
-//Resume all DMA actions
- while(dma_susp){
-   dma_susp = DMA_Resume();
+   //Suspend all DMA actions
+ dma_ = DMA_Suspend();
+ if(dma_){
+  LED2 = false;
+  while(DMA_Busy());
  }
 
-// Restore Interrupts
- if (I_status)
-   EI();
+// wait at least 6 us for LVD start-up
+#if FlashDebug == 2
+  Delay_ms(150);
+  LED2 = true;
+#endif
+  
+// Write Keys
+ NVMKEY = 0x0U;
+ NVMKEY = 0xAA996655;
+ NVMKEY = 0x556699AA;
+ NVMCONSET = 0x8000;//1 << 15;
+ asm{NOP};
+ 
+ //Resume all DMA actions
+ DMA_Resume();
 
+// Restore Interrupts
+ if (I_status != 0)
+    EI();
+    
+//Reset the WREN bit, disables flash programming
+  NVMCONCLR = 0x4000;
+ //NVM_WREN_Rst();
+ 
 //status = 1;
  while(NVM_WR_Wait());
- 
-//Reset the WREN bit, disables flash programming
- while(NVM_WREN_Rst());
- 
 // Return WRERR and LVDERR Error Status Bits
  return (NVMCON & 0x3000)>>12;
 }
 
+//NVM Key sequence
 //////////////////////////////////////////////////////////
 //Reset Error flags of the NVMCON registor
-static unsigned int NVM_ERROR_Rst(){
+ unsigned int NVM_ERROR_Rst(){
 unsigned int error= 0;
  NVMCON = 0;
 //Reset the NVM Error flags by writing 0 to NVMOP and
@@ -182,10 +184,10 @@ unsigned int error= 0;
 
 //////////////////////////////////////////////////////////
 //Set the WR bit and return its state;
-static unsigned int NVM_WR_Set(){
+static void NVM_WR_Set(){
 //[WR] Start the operation using the Set Register
-   NVMCONSET |= 1 << 15;
-   return NVM_WR_Wait();
+   NVMCON |= 1 << 15;
+   while(!NVM_WR_Wait());
 }
 
 /////////////////////////////////////////////////////////
@@ -196,18 +198,16 @@ static unsigned int NVM_WR_Wait(){
 
 ////////////////////////////////////////////////////////
 //Set the WREN bit and wait
-static unsigned int NVM_WREN_Set(){
-   NVMCONSET = 1 << 14;
+static void NVM_WREN_Set(){
+   NVMCON |= 1 << 14;
    while(!NVM_WREN_Wait());
-   return (NVMCON & 4000)>>14;
 }
 
 ////////////////////////////////////////////////////////
 //Reset the WREN bit and wait
-static unsigned int NVM_WREN_Rst(){
-   NVMCONCLR = 1<<14;
+static void NVM_WREN_Rst(){
+   NVMCONCLR |= 1<<14;
    while(NVM_WREN_Wait());
-   return (NVMCON & 4000)>>14;
 }
 
 /////////////////////////////////////////////////////////
@@ -227,10 +227,50 @@ unsigned long val;
    return val;
 }
 
+////////////////////////////////////////////////////////
+//Unlock page
+void NVM_PWPAGE_Lock(){
+unsigned long padd;// = address;
+unsigned int I_status;
+unsigned int dma_susp=0;   // storage for current DMA state
+ // Suspend or Disable all Interrupts
+ I_status = (unsigned int)DI();
+
+ //Suspend all DMA actions
+ while(!dma_susp)
+  dma_susp = DMA_Suspend();
+  
+  //Word type of data transfer to take place
+ NVMCONSET = 4;
+  //Set the WREN bit to allow program flash write
+ NVM_WREN_Set();
+
+
+ // Write Keys
+ NVMKEY = 0x0U;
+ NVMKEY = 0xAA996655;
+ NVMKEY = 0x556699AA;
+ NVMPWPCLR = 0x8000C000;
+  
+//Resume all DMA actions
+ while(dma_susp){
+   dma_susp = DMA_Resume();
+ }
+
+// Restore Interrupts
+ if (I_status)
+   EI();
+   
+   //Reset the WREN bit, disables flash programming
+ NVM_WREN_Rst();
+
+
+}
+
 void NVMReadRow(unsigned long addr){
 unsigned long buff[128] = {0};
 unsigned long i,j;
-unsigned long*ptr;
+unsigned long *ptr;
 float val;
 
   ptr = (unsigned long*)addr;

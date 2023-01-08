@@ -46,11 +46,11 @@ int  Loopback();
 //trmit
 void DMA1_Enable();
 void DMA1_Disable();
-int DMA_IsOn(int channel);
-int DMA_CH_Busy(int channel);
-int DMA_Busy();
-int DMA_Suspend();
-int DMA_Resume();
+unsigned int DMA_IsOn(int channel);
+unsigned int DMA_CH_Busy(int channel);
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #endif

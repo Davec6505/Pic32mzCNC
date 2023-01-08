@@ -6545,6 +6545,7 @@ bufcnt6
 bufcnt6_bit
 bufcnt7
 bufcnt7_bit
+buff
 bursten
 bursten
 bursten_bit
@@ -40357,6 +40358,8 @@ notvalid
 notvalid_bit
 notvalid_emacxmind_bit
 nr_free_blocks
+nvm_error_rst
+nvm_pwpage_lock
 nvmaddr
 nvmaddrbits
 nvmaddrclr
@@ -55497,6 +55500,7 @@ samp
 samp
 samp_bit
 sample_ringbuffer
+save_row_from_flash
 sbcde
 sbcde
 sbcde

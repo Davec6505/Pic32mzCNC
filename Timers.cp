@@ -238,18 +238,19 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 54 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 55 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
-unsigned int NVMErasePage(void* address);
-static unsigned int NVMUnlock();
-static unsigned int NVM_ERROR_Rst();
-static unsigned int NVM_WR_Set();
+unsigned int NVMErasePage(unsigned long address);
+static unsigned int NVMUnlock(unsigned long nvmop);
+unsigned int NVM_ERROR_Rst();
+static void NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
-static unsigned int NVM_WREN_Set();
+static void NVM_WREN_Set();
+static void NVM_WREN_Rst();
 static unsigned int NVM_WREN_Wait();
-static unsigned int NVM_WREN_Rst();
+void NVM_PWPAGE_Lock();
 void NVMReadRow(unsigned long addr);
 unsigned long NVMReadWord(void *addr);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
@@ -292,7 +293,8 @@ typedef struct{
 
 
 void Settings_Init(char reset_all);
-int Settings_Write_Coord_Data(int coord_select,float *coord);
+unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+void Save_Row_From_Flash(unsigned long addr);
 #line 134 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
@@ -417,11 +419,11 @@ int Loopback();
 
 void DMA1_Enable();
 void DMA1_Disable();
-int DMA_IsOn(int channel);
-int DMA_CH_Busy(int channel);
-int DMA_Busy();
-int DMA_Suspend();
-int DMA_Resume();
+unsigned int DMA_IsOn(int channel);
+unsigned int DMA_CH_Busy(int channel);
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"

@@ -272,7 +272,7 @@ void DMA1_Disable(){
 
 ///////////////////////////////////////
 //Check if DMA channel on bit15 is true
-int DMA_IsOn(int channel){
+unsigned int DMA_IsOn(int channel){
    if(channel == 0)
      return (DCH0CON & 0x8000)>>15;
    else
@@ -284,7 +284,7 @@ int DMA_IsOn(int channel){
 //new data  [1 = busy || 0 = free]
 //checking the state oF the DMABUSY bit 15
 //FOR EACH CHANNEL
-int DMA_CH_Busy(int channel){
+unsigned int DMA_CH_Busy(int channel){
    if(channel == 0)
      return (DCH0CON & 0x8000)>>15;
    else
@@ -295,19 +295,19 @@ int DMA_CH_Busy(int channel){
 ////////////////////////////////////////
 //DMA SUSPEND bit12 force to true to 
 //suspend the channel
-int DMA_Suspend(){
+unsigned int DMA_Suspend(){
   DMACONSET = (1 << 12);
-  
+  //while(DMA_Busy());
 //return the state of the SUSPEND bit
-  return (DMACON & 0x1000)>>12;
+  return ((DMACON & 0x1000)>>12);
 }
 
 ////////////////////////////////////////
 //DMA resume the SUSPEND by forcing bit12
 //to false
-int DMA_Resume(){
+unsigned int DMA_Resume(){
   DMACONCLR = (1 << 12);
-
+  //while(DMA_Busy());
  //return the SUSPEN bit state
   return (DMACON & 0x1000)>>12;
 }
@@ -315,8 +315,8 @@ int DMA_Resume(){
 ////////////////////////////////////////
 //Global DMA busy bit not channel busy bit!
 //DMACON.DMABUSY
-int DMA_Busy(){
- return (DMACON & 0x800)>>11;
+unsigned int DMA_Busy(){
+ return ((DMACON & 0x800)>>11);
 }
 
 /////////////////////////////////////////////////////

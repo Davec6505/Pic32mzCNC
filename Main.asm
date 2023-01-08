@@ -1,26 +1,26 @@
 _Conditin_Externs:
-;Main.c,53 :: 		void Conditin_Externs(){
+;Main.c,52 :: 		void Conditin_Externs(){
 ADDIU	SP, SP, -12
 SW	RA, 0(SP)
-;Main.c,54 :: 		PinMode();
+;Main.c,53 :: 		PinMode();
 SW	R25, 4(SP)
 SW	R26, 8(SP)
 JAL	_PinMode+0
 NOP	
-;Main.c,55 :: 		plan_init(15000,15000);
+;Main.c,54 :: 		plan_init(15000,15000);
 ORI	R26, R0, 15000
 ORI	R25, R0, 15000
 JAL	_plan_init+0
 NOP	
-;Main.c,56 :: 		disableOCx();
+;Main.c,55 :: 		disableOCx();
 JAL	_disableOCx+0
 NOP	
-;Main.c,57 :: 		DisableStepper();
+;Main.c,56 :: 		DisableStepper();
 JAL	_DisableStepper+0
 NOP	
-;Main.c,59 :: 		disable_steps = 0;
+;Main.c,58 :: 		disable_steps = 0;
 SH	R0, Offset(Main_disable_steps+0)(GP)
-;Main.c,60 :: 		}
+;Main.c,59 :: 		}
 L_end_Conditin_Externs:
 LW	R26, 8(SP)
 LW	R25, 4(SP)
@@ -31,14 +31,14 @@ NOP
 ; end of _Conditin_Externs
 _main:
 ;Main.c,63 :: 		void main() {
-ADDIU	SP, SP, -36
+ADDIU	SP, SP, -40
 ;Main.c,64 :: 		int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
-;Main.c,69 :: 		Conditin_Externs();
+;Main.c,68 :: 		Conditin_Externs();
 JAL	_Conditin_Externs+0
 NOP	
-;Main.c,70 :: 		cntr = a = axis_to_run = dif = status_of_gcode = 0;
+;Main.c,69 :: 		cntr = a = axis_to_run = dif = status_of_gcode = 0;
 SH	R0, 2(SP)
-;Main.c,71 :: 		EnableInterrupts();
+;Main.c,70 :: 		EnableInterrupts();
 EI	R30
 ;Main.c,73 :: 		while(1){
 L_main0:
@@ -60,12 +60,10 @@ L__main77:
 ;Main.c,81 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
-; modal_group start address is: 16 (R4)
-SEH	R4, R2
+SH	R2, 4(SP)
 ;Main.c,82 :: 		switch(modal_group){
 J	L_main3
 NOP	
-; modal_group end address is: 16 (R4)
 ;Main.c,83 :: 		case 0:break;
 L_main5:
 J	L_main4
@@ -81,6 +79,7 @@ NOP
 ;Main.c,86 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
+SH	R2, 4(SP)
 ;Main.c,87 :: 		break;
 J	L_main4
 NOP	
@@ -149,71 +148,69 @@ J	L_main4
 NOP	
 ;Main.c,110 :: 		}
 L_main3:
-; modal_group start address is: 16 (R4)
-SEH	R2, R4
+LH	R2, 4(SP)
 BNE	R2, R0, L__main81
 NOP	
 J	L_main5
 NOP	
 L__main81:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 2
 BNE	R3, R2, L__main83
 NOP	
 J	L_main6
 NOP	
 L__main83:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 4
 BNE	R3, R2, L__main85
 NOP	
 J	L_main7
 NOP	
 L__main85:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 8
 BNE	R3, R2, L__main87
 NOP	
 J	L_main9
 NOP	
 L__main87:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 16
 BNE	R3, R2, L__main89
 NOP	
 J	L_main10
 NOP	
 L__main89:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 32
 BNE	R3, R2, L__main91
 NOP	
 J	L_main11
 NOP	
 L__main91:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 64
 BNE	R3, R2, L__main93
 NOP	
 J	L_main12
 NOP	
 L__main93:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 128
 BNE	R3, R2, L__main95
 NOP	
 J	L_main13
 NOP	
 L__main95:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 256
 BNE	R3, R2, L__main97
 NOP	
 J	L_main14
 NOP	
 L__main97:
-SEH	R3, R4
-; modal_group end address is: 16 (R4)
+LH	R3, 4(SP)
 ORI	R2, R0, 512
 BNE	R3, R2, L__main99
 NOP	
@@ -283,13 +280,13 @@ L_main21:
 LHU	R2, Offset(_STPS+6)(GP)
 ANDI	R4, R2, 255
 ;Main.c,131 :: 		dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
-ADDIU	R23, SP, 4
+ADDIU	R23, SP, 6
 ADDIU	R22, R23, 31
 LUI	R24, hi_addr(?ICS?lstr1_Main+0)
 ORI	R24, R24, lo_addr(?ICS?lstr1_Main+0)
 JAL	___CC2DW+0
 NOP	
-ADDIU	R3, SP, 4
+ADDIU	R3, SP, 6
 ;Main.c,133 :: 		SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
 LW	R2, Offset(_STPS+8)(GP)
 ADDIU	SP, SP, -28

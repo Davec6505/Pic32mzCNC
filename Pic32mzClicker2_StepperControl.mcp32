@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Globals.c
+Value=Flash_R_W.c
 =======
 =======
 >>>>>>> patch1
@@ -131,15 +131,14 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Globals.h
-File2=Settings.h
+File1=Globals.c
+File2=Globals.h
 File3=Flash_R_W.c
 File4=Flash_R_W.h
-File5=Nut_Bolts.c
-File6=Nuts_Bolts.h
-File7=Globals.c
-File8=DEFINES.pld
-Count=9
+File5=Serial_Dma.c
+File6=Serial_Dma.h
+File7=DEFINES.pld
+Count=8
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

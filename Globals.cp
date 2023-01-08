@@ -690,25 +690,26 @@ int Loopback();
 
 void DMA1_Enable();
 void DMA1_Disable();
-int DMA_IsOn(int channel);
-int DMA_CH_Busy(int channel);
-int DMA_Busy();
-int DMA_Suspend();
-int DMA_Resume();
+unsigned int DMA_IsOn(int channel);
+unsigned int DMA_CH_Busy(int channel);
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 54 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 55 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
-unsigned int NVMErasePage(void* address);
-static unsigned int NVMUnlock();
-static unsigned int NVM_ERROR_Rst();
-static unsigned int NVM_WR_Set();
+unsigned int NVMErasePage(unsigned long address);
+static unsigned int NVMUnlock(unsigned long nvmop);
+unsigned int NVM_ERROR_Rst();
+static void NVM_WR_Set();
 static unsigned int NVM_WR_Wait();
-static unsigned int NVM_WREN_Set();
+static void NVM_WREN_Set();
+static void NVM_WREN_Rst();
 static unsigned int NVM_WREN_Wait();
-static unsigned int NVM_WREN_Rst();
+void NVM_PWPAGE_Lock();
 void NVMReadRow(unsigned long addr);
 unsigned long NVMReadWord(void *addr);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
@@ -737,10 +738,13 @@ typedef struct{
 
 
 void Settings_Init(char reset_all);
-int Settings_Write_Coord_Data(int coord_select,float *coord);
+unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+void Save_Row_From_Flash(unsigned long addr);
 #line 5 "C:/Users/Git/Pic32mzCNC/Globals.c"
 coord_sys coord_system[ 9 ];
 
+
+volatile unsigned long buff[128]= {0} absolute 0xA0000000 ;
 
 
 void Settings_Init(char reset_all){
@@ -763,44 +767,97 @@ void Settings_Init(char reset_all){
  settings.n_arc_correction =  25 ;
  }
 }
-#line 58 "C:/Users/Git/Pic32mzCNC/Globals.c"
-int Settings_Write_Coord_Data(int coord_select,float *coord){
-int res=0;
+#line 60 "C:/Users/Git/Pic32mzCNC/Globals.c"
+unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
+unsigned int error = 0;
+int recipe,res=0;
 unsigned long wdata[4]={0};
 unsigned long j,i,add;
- switch(coord_select){
- case 0:break;
- case 1: add =  0xBD186A00 ;break;
- case 2: add =  0xBD186A10 ;break;
- case 3: add =  0xBD186A20 ;break;
- case 4: add =  0xBD186A30 ;break;
- case 5: add =  0xBD186A40 ;break;
- case 6: add =  0xBD186A50 ;break;
- case 7: add =  0xBD186A60 ;break;
- case 8: add =  0xBD186A70 ;break;
- case 9: add =  0xBD186A80 ;break;
+
+ add = (unsigned long) 0xBD1BC000 ;
+
+
+ recipe = coord_select;
+
+
+
+ Save_Row_From_Flash(add);
+ asm{NOP};
+
+
+
+ error = NVMErasePage(add);
+
+
+ if(error){
+
+ while(DMA_IsOn(1));
+ dma_printf("error:= %d\n",error);
+
+ return error;
  }
 
 
-
+ switch(recipe){
+ case 0:break;
+ case 1: add = (unsigned long) 0xBD1BC000 ;break;
+ case 2: add = (unsigned long) 0xBD1BC010 ;break;
+ case 3: add = (unsigned long) 0xBD1BC020 ;break;
+ case 4: add = (unsigned long) 0xBD1BC030 ;break;
+ case 5: add = (unsigned long) 0xBD1BC040 ;break;
+ case 6: add = (unsigned long) 0xBD1BC050 ;break;
+ case 7: add = (unsigned long) 0xBD1BC060 ;break;
+ case 8: add = (unsigned long) 0xBD1BC070 ;break;
+ case 9: add = (unsigned long) 0xBD1BC080 ;break;
+ }
 
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
 
-
+ while(DMA_IsOn(1));
+ dma_printf("%f\t%l\n",coord[i],wdata[i]);
 
 
 
 
  }
- res = NVMWriteQuad(&add,wdata);
+
+ i = (recipe-1)*4 ;
+
+ for(j = 0;j<4;j++){
+ buff[i] = wdata[j];
+ i++;
+ }
 
 
- add =  0xBD186A00 ;
- Delay_us(100);
+
+ add = (unsigned long) 0xBD1BC000 ;
+ res = NVMWriteRow(&add,buff);
+
+
+ add = (unsigned long) 0xBD1BC000 ;
  NVMReadRow(add);
 
 
  return res;
+}
+
+
+
+
+
+void Save_Row_From_Flash(unsigned long addr){
+unsigned long i,j;
+unsigned long *ptr;
+
+ ptr = addr;
+
+ for(j = 0;j < 128;j++){
+ buff[j] = *(ptr+j);
+
+ while(DMA_IsOn(1));
+ dma_printf("buff[%l]:= %l\n",j,buff[j]);
+
+ }
 }

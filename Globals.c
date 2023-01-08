@@ -4,6 +4,8 @@
 //with a array
 coord_sys coord_system[NUMBER_OF_DATUMS];
 
+//temp buffer to save flash settings to
+volatile unsigned long buff[128]= {0} absolute 0xA0000000 ;
 
 
 void Settings_Init(char reset_all){
@@ -55,43 +57,96 @@ P      Value        Coordinate System        G code
 
 ///////////////////////////////////////////////////////////////////
 //here we want to write the new recipe to flash and set the coordinate
-int Settings_Write_Coord_Data(int coord_select,float *coord){
-int res=0;
+unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
+unsigned int error = 0;
+int recipe,res=0;
 unsigned long wdata[4]={0};
 unsigned long j,i,add;
- switch(coord_select){
-   case 0:break;
-   case 1: add = FLASH_Settings_VAddr_P1;break;
-   case 2: add = FLASH_Settings_VAddr_P2;break;
-   case 3: add = FLASH_Settings_VAddr_P3;break;
-   case 4: add = FLASH_Settings_VAddr_P4;break;
-   case 5: add = FLASH_Settings_VAddr_P5;break;
-   case 6: add = FLASH_Settings_VAddr_P6;break;
-   case 7: add = FLASH_Settings_VAddr_P7;break;
-   case 8: add = FLASH_Settings_VAddr_P8;break;
-   case 9: add = FLASH_Settings_VAddr_P9;break;
+
+ add = (unsigned long)FLASH_Settings_VAddr_P1;
+
+//save the coordinate P value
+ recipe = coord_select;
+//condition the address to start at the beginning of the page
+
+//Read the saved Row from flash first
+ Save_Row_From_Flash(add);
+ asm{NOP};
+  //NVMReadRow(add);
+ //Erase the page in order to over write the values
+// add = (unsigned long)FLASH_Settings_VAddr_P1;
+ error = NVMErasePage(add);
+
+// Flash_Erase_Page(add);
+ if(error){
+   #if FlashDebug == 1
+     while(DMA_IsOn(1));
+     dma_printf("error:= %d\n",error);
+   #endif
+   return error;
  }
 
- // while(DMA_IsOn(1));
- // dma_printf("%l\n",addr);
-  
+
+ switch(recipe){
+   case 0:break;
+   case 1: add = (unsigned long)FLASH_Settings_VAddr_P1;break;
+   case 2: add = (unsigned long)FLASH_Settings_VAddr_P2;break;
+   case 3: add = (unsigned long)FLASH_Settings_VAddr_P3;break;
+   case 4: add = (unsigned long)FLASH_Settings_VAddr_P4;break;
+   case 5: add = (unsigned long)FLASH_Settings_VAddr_P5;break;
+   case 6: add = (unsigned long)FLASH_Settings_VAddr_P6;break;
+   case 7: add = (unsigned long)FLASH_Settings_VAddr_P7;break;
+   case 8: add = (unsigned long)FLASH_Settings_VAddr_P8;break;
+   case 9: add = (unsigned long)FLASH_Settings_VAddr_P9;break;
+ }
+
    j = i = 0;
   for (i=0;i<3;i++){
     wdata[i] = flt2ulong(coord[i]);
-    
-   // while(DMA_IsOn(1));
-   // dma_printf("%f\t%l\n",coord[i],wdata[i]);
-
-    //Flash_Write_Word(addr+i*4,wdata[i]);
-    //res = NVMWriteWord(addr+i*4,wdata[i]);
+   #if FlashDebug == 1
+    while(DMA_IsOn(1));
+    dma_printf("%f\t%l\n",coord[i],wdata[i]);
+   #endif
+    //in order to write single word change the addresses from0x10 incraments
+    //to 0x4 incraments
+    //res = NVMWriteWord(add+i*4,wdata[i]);
   }
-  res = NVMWriteQuad(&add,wdata);
+ 
+  i = (recipe-1)*4 ; //place the new data into the correct position
+  //put the new data into the relevant slot e.g. P1,2,3,4...
+  for(j = 0;j<4;j++){
+     buff[i] =  wdata[j];
+     i++;
+  }
   
+  //Write 4 double words at once
+  //res = NVMWriteQuad(&add,wdata);
+  add = (unsigned long)FLASH_Settings_VAddr_P1;
+  res = NVMWriteRow(&add,buff);
+  //Flash_Write_Row(add,buff);
   #if FlashDebug == 1
-  add = FLASH_Settings_VAddr_P1;
-  Delay_us(100);
-  NVMReadRow(add);
+    add = (unsigned long)FLASH_Settings_VAddr_P1;
+    NVMReadRow(add);
   #endif
-  // Flash_Write_Row(addr,wdata);
+
    return res;
+}
+
+
+/////////////////////////////////////////////////////
+//Save current page to a temp buffer, this is to
+//push original setting back after a page errase
+void Save_Row_From_Flash(unsigned long addr){
+unsigned long i,j;
+unsigned long *ptr;
+
+ ptr = addr;
+
+ for(j = 0;j < 128;j++){
+    buff[j] = *(ptr+j);
+    #if FlashDebug == 1
+     while(DMA_IsOn(1));
+     dma_printf("buff[%l]:= %l\n",j,buff[j]);
+    #endif
+ }
 }

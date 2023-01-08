@@ -28,8 +28,6 @@
 * Using Flash memory to store data instead of Eprom  ac:Flash_Prgm &  ac:Flasg_gen
 *******************************************************************************/
 
-
-
 #include "Config.h"
 
 
@@ -61,16 +59,17 @@ void Conditin_Externs(){
 }
 /////////////////////////////////////////
 //main function
+
 void main() {
 int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
 static int cntr = 0,a = 0;
 
- // fp = Test_Min;
  
   Conditin_Externs();
   cntr = a = axis_to_run = dif = status_of_gcode = 0;
   EnableInterrupts();
   
+ // LED2 = true;  //use this LED2 to debug various issues
   while(1){
      //continously test the limits
      Debounce_Limits(X);
