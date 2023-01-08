@@ -62,10 +62,7 @@ main
 			flt2ulong
 				memcpy
 			NVMWriteRow
-				DMA_IsOn
-				dma_printf
 				NVMUnlock
-				__CC2DW
 			NVMReadRow
 				ulong2flt
 					memcpy

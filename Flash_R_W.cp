@@ -797,15 +797,14 @@ unsigned long padd,src_padd;
 
 
 
+
  NVMADDR = *(unsigned long*)address &  0x1FFFFFFF ;
 
 
 
+
  NVMSRCADDR = (unsigned long)_data &  0x1FFFFFFF ;
- while(DMA_IsOn(1));
- dma_printf("add:= %l\tsrc_padd:= %l\n",NVMADDR,NVMSRCADDR);
-
-
+#line 94 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
  res = NVMUnlock(0x4003);
 
 
@@ -848,7 +847,7 @@ unsigned int dma_ = 0;
  LED2 =  0 ;
  while(DMA_Busy());
  }
-#line 140 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
+#line 144 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
  NVMKEY = 0x0U;
  NVMKEY = 0xAA996655;
  NVMKEY = 0x556699AA;

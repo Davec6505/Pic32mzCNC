@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Flash_R_W.c
+Value=Main.c
 =======
 =======
 >>>>>>> patch1
@@ -135,10 +135,7 @@ File1=Globals.c
 File2=Globals.h
 File3=Flash_R_W.c
 File4=Flash_R_W.h
-File5=Serial_Dma.c
-File6=Serial_Dma.h
-File7=DEFINES.pld
-Count=8
+Count=5
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -204,11 +201,10 @@ File6=Sprinti
 File7=Sprintl
 File8=Conversions
 File9=C_Math
-File10=FLASH
-File11=FFT
-File12=TwiddleFactors
-File13=MemManager
-Count=14
+File10=FFT
+File11=TwiddleFactors
+File12=MemManager
+Count=13
 [INTERRUPT_DEFS]
 EBASE=9FC01000
 VECTOR_SPACEING=32

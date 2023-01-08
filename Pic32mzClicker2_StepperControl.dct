@@ -29497,12 +29497,6 @@ filhit4
 filhit4_bit
 filhit4_c2vec_bit
 flags
-flash_erase_lowermemory
-flash_erase_page
-flash_erase_uppermemory
-flash_write_quadword
-flash_write_row
-flash_write_word
 floattostr
 floor
 flt2ulong
