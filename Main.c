@@ -148,8 +148,8 @@ int Temp_Move(int a){
              SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
              break;
        case 3://b0000 0011
-             while(DMA_IsOn(1));
-             dma_printf("X:= %f | Y:=%f\n",gc.next_position[X],gc.next_position[Y]);
+             //while(DMA_IsOn(1));
+             //dma_printf("X:= %f | Y:=%f\n",gc.next_position[X],gc.next_position[Y]);
              DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
              //while(DMA_IsOn(1));
              //dma_printf("SdlyX:=%l\taccX:=%l\tdecX:=%l\n",STPS[X].StartUp_delay,STPS[X].max_step_lim,STPS[X].decel_start);
@@ -193,9 +193,10 @@ int Temp_Move(int a){
 
 int Non_Modal_Actions(int action){
 //[b0=10ms | b1=100ms | b2 = 300ms | b4=500ms | b5 = 1sec]
-int dly_time,i,result;
-float test;
-unsigned long test_flash,*addr;
+int dly_time,i,result,axis_words,indx,temp_axis,axis_cnt,temp;
+float coord_data[NoOfAxis];
+float a_val;
+unsigned long _flash,*addr;
    switch(action){
      case 2:
            i = 0;
@@ -233,24 +234,55 @@ unsigned long test_flash,*addr;
           if(gc.L != 2 && gc.L != 20)
              return -1;
           if (gc.L == 20) {
-              //write the Pnn coordinates to flash recipe
-              result = Settings_Write_Coord_Data(gc.P,gc.next_position );
+              //write the Pnn coordinates to flash recipe for active system
+              result = Settings_Write_Coord_Data((int)gc.P,gc.next_position );
               if(result){ //response if write to flash failed
                 return NVM_COORDINATE_WRITE_ERROR;
               }
-             // Update system coordinate system if currently active.
-             // if (gc.coord_select == int_value) { memcpy(gc.coord_system,gc.position,sizeof(gc.position)); }
+             // Update system coordinate system if currently active with G54 - G59
+              if (gc.coord_select > 0) {
+                 memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
+              }
           } else {
-           /* float coord_data[N_AXIS];
-            if (!settings_read_coord_data(int_value,coord_data)) { return(STATUS_SETTING_READ_FAIL); }
-            // Update axes defined only in block. Always in machine coordinates. Can change non-active system.
-            uint8_t i;
-            for (i=0; i<N_AXIS; i++) { // Axes indices are consistent, so loop may be used.
-              if ( bit_istrue(axis_words,bit(i)) ) { coord_data[i] = target[i]; }
-            }
-            settings_write_coord_data(int_value,coord_data);
-            // Update system coordinate system if currently active.
-            if (gc.coord_select == int_value) { memcpy(gc.coord_system,coord_data,sizeof(coord_data)); } */
+            //Retrieve the data from flash into buff
+            if(!Save_Row_From_Flash(FLASH_Settings_VAddr_P1))return;
+            
+            //use P to get to the start of the rescipe P1,2,3... in the buff
+            //array in Globals.c which is indexed by 4 for now a axis x,y,z,a
+            temp = indx = (gc.P-1) & 0xFF;
+            indx *= 4;
+            axis_cnt = 0;
+           // Update axes defined only in block. Always in machine coordinates. 
+           //Can change non-active system.
+             axis_words = Get_Axisword();
+             for(i = 0; i < 3;i++){
+                temp_axis = (axis_words >> i) & 1;
+                //find missing axis
+                if(temp_axis == 0){
+                   axis_cnt++;
+                   if(axis_cnt > 2)break;
+                   _flash = buff[indx];
+                   coord_data[i] = ulong2flt(_flash);;
+                #if MainDebug == 1
+                 while(DMA_IsOn(1));
+                 dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
+                             temp_axis,i,coord_data[i],indx);
+                #endif
+                }else{
+                  coord_data[i] = gc.next_position[i];
+                                  #if MainDebug == 1
+                 while(DMA_IsOn(1));
+                 dma_printf("gc.next_position[%d]:= %f\n"
+                             ,i,gc.next_position[i]);
+                #endif
+                }
+                indx++;
+             }
+             
+            result = Settings_Write_Coord_Data((int)gc.P,coord_data);
+            
+          // Update current coordinate system if currently active.
+            memcpy(gc.coord_system,coord_data,sizeof(coord_data));
           }
 
           break;

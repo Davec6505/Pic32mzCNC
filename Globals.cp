@@ -4,7 +4,7 @@
 #line 137 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
- float steps_per_mm[ 6 ];
+ unsigned long steps_per_mm[ 6 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -260,7 +260,7 @@ typedef struct {
  float feed_rate;
 
  volatile float position[ 6 ];
-
+ volatile float coord_system[ 6 ];
 
  volatile float coord_offset[ 6 ];
 
@@ -319,6 +319,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
+void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -624,11 +625,6 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -712,8 +708,16 @@ static unsigned int NVM_WREN_Wait();
 void NVM_PWPAGE_Lock();
 void NVMReadRow(unsigned long addr);
 unsigned long NVMReadWord(void *addr);
+unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-#line 82 "c:/users/git/pic32mzcnc/globals.h"
+#line 80 "c:/users/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buff[128];
+
+
+
+
+
+
 typedef struct {
  char abort;
  char state;
@@ -739,12 +743,13 @@ typedef struct{
 
 void Settings_Init(char reset_all);
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
-void Save_Row_From_Flash(unsigned long addr);
+
+int Save_Row_From_Flash(unsigned long addr);
 #line 5 "C:/Users/Git/Pic32mzCNC/Globals.c"
 coord_sys coord_system[ 9 ];
 
 
-volatile unsigned long buff[128]= {0} absolute 0xA0000000 ;
+unsigned long volatile buff[128]= {0} absolute 0xA0000000 ;
 
 
 void Settings_Init(char reset_all){
@@ -767,12 +772,14 @@ void Settings_Init(char reset_all){
  settings.n_arc_correction =  25 ;
  }
 }
-#line 60 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 61 "C:/Users/Git/Pic32mzCNC/Globals.c"
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
+float ptr;
 unsigned int error = 0;
-int recipe,res=0;
+int res=0,recipe = 0;
 unsigned long wdata[4]={0};
-unsigned long j,i,add;
+unsigned long j,i;
+unsigned long add;
 
  add = (unsigned long) 0xBD1BC000 ;
 
@@ -780,23 +787,17 @@ unsigned long j,i,add;
  recipe = coord_select;
 
 
-
  Save_Row_From_Flash(add);
- asm{NOP};
 
 
 
- error = NVMErasePage(add);
+ error = (int)NVMErasePage(add);
 
 
  if(error){
-
- while(DMA_IsOn(1));
- dma_printf("error:= %d\n",error);
-
+#line 87 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
-
 
  switch(recipe){
  case 0:break;
@@ -814,13 +815,7 @@ unsigned long j,i,add;
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-
- while(DMA_IsOn(1));
- dma_printf("%f\t%l\n",coord[i],wdata[i]);
-
-
-
-
+#line 113 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  i = (recipe-1)*4 ;
@@ -832,14 +827,9 @@ unsigned long j,i,add;
 
 
 
- add = (unsigned long) 0xBD1BC000 ;
+
  res = NVMWriteRow(&add,buff);
-
-
- add = (unsigned long) 0xBD1BC000 ;
- NVMReadRow(add);
-
-
+#line 132 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -847,17 +837,16 @@ unsigned long j,i,add;
 
 
 
-void Save_Row_From_Flash(unsigned long addr){
-unsigned long i,j;
+int Save_Row_From_Flash(unsigned long addr){
+unsigned long i,j,data_count;
 unsigned long *ptr;
-
  ptr = addr;
-
+ data_count = 0;
  for(j = 0;j < 128;j++){
  buff[j] = *(ptr+j);
-
- while(DMA_IsOn(1));
- dma_printf("buff[%l]:= %l\n",j,buff[j]);
-
+ if(buff[j] != -1)data_count++;
+#line 151 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
+
+ return data_count;
 }

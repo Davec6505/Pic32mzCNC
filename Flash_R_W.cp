@@ -206,7 +206,7 @@ typedef unsigned long long uintmax_t;
 #line 137 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
- float steps_per_mm[ 6 ];
+ unsigned long steps_per_mm[ 6 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -252,7 +252,14 @@ float ulong2flt(unsigned long ui_) ;
 
 
 void sys_sync_current_position();
-#line 82 "c:/users/git/pic32mzcnc/globals.h"
+#line 80 "c:/users/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buff[128];
+
+
+
+
+
+
 typedef struct {
  char abort;
  char state;
@@ -278,7 +285,8 @@ typedef struct{
 
 void Settings_Init(char reset_all);
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
-void Save_Row_From_Flash(unsigned long addr);
+
+int Save_Row_From_Flash(unsigned long addr);
 #line 134 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
@@ -302,7 +310,7 @@ typedef struct {
  float feed_rate;
 
  volatile float position[ 6 ];
-
+ volatile float coord_system[ 6 ];
 
  volatile float coord_offset[ 6 ];
 
@@ -361,6 +369,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
+void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -652,11 +661,6 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -740,6 +744,7 @@ static unsigned int NVM_WREN_Wait();
 void NVM_PWPAGE_Lock();
 void NVMReadRow(unsigned long addr);
 unsigned long NVMReadWord(void *addr);
+unsigned long Get_Address_Pval(int recipe);
 #line 25 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
 unsigned int NVMWriteWord (void *address, unsigned long _data){
 unsigned int res;
@@ -993,4 +998,23 @@ float val;
  dma_printf("val:= %f\tbuff[%l]:= %l\n",val,j,buff[j]);
  }
 
+}
+
+
+
+unsigned long Get_Address_Pval(int recipe){
+unsigned long addr = 0;
+ switch(recipe){
+ case 0:break;
+ case 1:addr =(unsigned long) 0xBD1BC000 ;break;
+ case 2:addr =(unsigned long) 0xBD1BC010 ;break;
+ case 3:addr =(unsigned long) 0xBD1BC020 ;break;
+ case 4:addr =(unsigned long) 0xBD1BC030 ;break;
+ case 5:addr =(unsigned long) 0xBD1BC040 ;break;
+ case 6:addr =(unsigned long) 0xBD1BC050 ;break;
+ case 7:addr =(unsigned long) 0xBD1BC060 ;break;
+ case 8:addr =(unsigned long) 0xBD1BC070 ;break;
+ case 9:addr =(unsigned long) 0xBD1BC080 ;break;
+ }
+ return addr;
 }

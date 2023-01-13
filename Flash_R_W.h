@@ -66,4 +66,5 @@ static unsigned int NVM_WREN_Wait();
 void NVM_PWPAGE_Lock();
 void NVMReadRow(unsigned long addr);
 unsigned long NVMReadWord(void *addr);
+unsigned long Get_Address_Pval(int recipe);
 #endif

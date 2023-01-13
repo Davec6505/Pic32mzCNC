@@ -5,7 +5,7 @@
 coord_sys coord_system[NUMBER_OF_DATUMS];
 
 //temp buffer to save flash settings to
-volatile unsigned long buff[128]= {0} absolute 0xA0000000 ;
+unsigned long volatile buff[128]= {0} absolute 0xA0000000 ;
 
 
 void Settings_Init(char reset_all){
@@ -53,29 +53,30 @@ P      Value        Coordinate System        G code
  *These work offsets are registered into the machine to hold the distance 
  *from the X, Y, Z position to part of the datum.
 *******************************************************************/
+///////////////////////////////////////////////////////////////////
 
 
 ///////////////////////////////////////////////////////////////////
 //here we want to write the new recipe to flash and set the coordinate
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
+float ptr;
 unsigned int error = 0;
-int recipe,res=0;
+int res=0,recipe = 0;
 unsigned long wdata[4]={0};
-unsigned long j,i,add;
+unsigned long j,i;
+unsigned long add;
 
  add = (unsigned long)FLASH_Settings_VAddr_P1;
 
 //save the coordinate P value
  recipe = coord_select;
-//condition the address to start at the beginning of the page
 
 //Read the saved Row from flash first
  Save_Row_From_Flash(add);
- asm{NOP};
-  //NVMReadRow(add);
- //Erase the page in order to over write the values
+
+//Erase the page in order to over write the values
 // add = (unsigned long)FLASH_Settings_VAddr_P1;
- error = NVMErasePage(add);
+ error = (int)NVMErasePage(add);
 
 // Flash_Erase_Page(add);
  if(error){
@@ -85,7 +86,6 @@ unsigned long j,i,add;
    #endif
    return error;
  }
-
 
  switch(recipe){
    case 0:break;
@@ -121,7 +121,7 @@ unsigned long j,i,add;
   
   //Write 4 double words at once
   //res = NVMWriteQuad(&add,wdata);
-  add = (unsigned long)FLASH_Settings_VAddr_P1;
+ // add = (unsigned long)FLASH_Settings_VAddr_P1;
   res = NVMWriteRow(&add,buff);
   //Flash_Write_Row(add,buff);
   #if FlashDebug == 1
@@ -136,17 +136,19 @@ unsigned long j,i,add;
 /////////////////////////////////////////////////////
 //Save current page to a temp buffer, this is to
 //push original setting back after a page errase
-void Save_Row_From_Flash(unsigned long addr){
-unsigned long i,j;
+int Save_Row_From_Flash(unsigned long addr){
+unsigned long i,j,data_count;
 unsigned long *ptr;
-
  ptr = addr;
-
+ data_count = 0;
  for(j = 0;j < 128;j++){
     buff[j] = *(ptr+j);
+    if(buff[j] != -1)data_count++;
     #if FlashDebug == 1
      while(DMA_IsOn(1));
      dma_printf("buff[%l]:= %l\n",j,buff[j]);
     #endif
  }
+ //return the number of indices that hold data
+ return data_count;
 }

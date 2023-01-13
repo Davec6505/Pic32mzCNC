@@ -287,3 +287,22 @@ float val;
        }
 
 }
+
+/////////////////////////////////////////////////////////////////////
+//Get the address of the P value in G10 Lnnn Pnnn Xnnn Ynnn Znnn Annn
+unsigned long Get_Address_Pval(int recipe){
+unsigned long addr = 0;
+   switch(recipe){
+   case 0:break;
+   case 1:addr =(unsigned long)FLASH_Settings_VAddr_P1;break;
+   case 2:addr =(unsigned long)FLASH_Settings_VAddr_P2;break;
+   case 3:addr =(unsigned long)FLASH_Settings_VAddr_P3;break;
+   case 4:addr =(unsigned long)FLASH_Settings_VAddr_P4;break;
+   case 5:addr =(unsigned long)FLASH_Settings_VAddr_P5;break;
+   case 6:addr =(unsigned long)FLASH_Settings_VAddr_P6;break;
+   case 7:addr =(unsigned long)FLASH_Settings_VAddr_P7;break;
+   case 8:addr =(unsigned long)FLASH_Settings_VAddr_P8;break;
+   case 9:addr =(unsigned long)FLASH_Settings_VAddr_P9;break;
+ }
+ return addr;
+}

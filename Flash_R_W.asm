@@ -146,11 +146,11 @@ SH	R30, 8(SP)
 JAL	_DMA_Suspend+0
 NOP	
 ;Flash_R_W.c,132 :: 		if(dma_){
-BNE	R2, R0, L_Flash_R_W_NVMUnlock32
+BNE	R2, R0, L_Flash_R_W_NVMUnlock44
 NOP	
 J	L_Flash_R_W_NVMUnlock0
 NOP	
-L_Flash_R_W_NVMUnlock32:
+L_Flash_R_W_NVMUnlock44:
 ;Flash_R_W.c,133 :: 		LED2 = false;
 _LX	
 INS	R2, R0, BitPos(LED2+0), 1
@@ -161,11 +161,11 @@ SW	R25, 4(SP)
 JAL	_DMA_Busy+0
 NOP	
 LW	R25, 4(SP)
-BNE	R2, R0, L_Flash_R_W_NVMUnlock34
+BNE	R2, R0, L_Flash_R_W_NVMUnlock46
 NOP	
 J	L_Flash_R_W_NVMUnlock2
 NOP	
-L_Flash_R_W_NVMUnlock34:
+L_Flash_R_W_NVMUnlock46:
 J	L_Flash_R_W_NVMUnlock1
 NOP	
 L_Flash_R_W_NVMUnlock2:
@@ -193,11 +193,11 @@ NOP
 LW	R25, 4(SP)
 ;Flash_R_W.c,154 :: 		if (I_status != 0)
 LHU	R2, 8(SP)
-BNE	R2, R0, L_Flash_R_W_NVMUnlock36
+BNE	R2, R0, L_Flash_R_W_NVMUnlock48
 NOP	
 J	L_Flash_R_W_NVMUnlock3
 NOP	
-L_Flash_R_W_NVMUnlock36:
+L_Flash_R_W_NVMUnlock48:
 ;Flash_R_W.c,155 :: 		EI();
 EI	R30
 L_Flash_R_W_NVMUnlock3:
@@ -208,11 +208,11 @@ SW	R2, Offset(NVMCONCLR+0)(GP)
 L_Flash_R_W_NVMUnlock4:
 JAL	Flash_R_W_NVM_WR_Wait+0
 NOP	
-BNE	R2, R0, L_Flash_R_W_NVMUnlock38
+BNE	R2, R0, L_Flash_R_W_NVMUnlock50
 NOP	
 J	L_Flash_R_W_NVMUnlock5
 NOP	
-L_Flash_R_W_NVMUnlock38:
+L_Flash_R_W_NVMUnlock50:
 J	L_Flash_R_W_NVMUnlock4
 NOP	
 L_Flash_R_W_NVMUnlock5:
@@ -244,11 +244,11 @@ NOP
 L_NVM_ERROR_Rst6:
 JAL	Flash_R_W_NVM_WR_Wait+0
 NOP	
-BNE	R2, R0, L__NVM_ERROR_Rst41
+BNE	R2, R0, L__NVM_ERROR_Rst53
 NOP	
 J	L_NVM_ERROR_Rst7
 NOP	
-L__NVM_ERROR_Rst41:
+L__NVM_ERROR_Rst53:
 J	L_NVM_ERROR_Rst6
 NOP	
 L_NVM_ERROR_Rst7:
@@ -275,11 +275,11 @@ SW	R2, Offset(NVMCON+0)(GP)
 L_Flash_R_W_NVM_WR_Set8:
 JAL	Flash_R_W_NVM_WR_Wait+0
 NOP	
-BEQ	R2, R0, L_Flash_R_W_NVM_WR_Set43
+BEQ	R2, R0, L_Flash_R_W_NVM_WR_Set55
 NOP	
 J	L_Flash_R_W_NVM_WR_Set9
 NOP	
-L_Flash_R_W_NVM_WR_Set43:
+L_Flash_R_W_NVM_WR_Set55:
 J	L_Flash_R_W_NVM_WR_Set8
 NOP	
 L_Flash_R_W_NVM_WR_Set9:
@@ -313,11 +313,11 @@ SW	R2, Offset(NVMCON+0)(GP)
 L_Flash_R_W_NVM_WREN_Set10:
 JAL	Flash_R_W_NVM_WREN_Wait+0
 NOP	
-BEQ	R2, R0, L_Flash_R_W_NVM_WREN_Set46
+BEQ	R2, R0, L_Flash_R_W_NVM_WREN_Set58
 NOP	
 J	L_Flash_R_W_NVM_WREN_Set11
 NOP	
-L_Flash_R_W_NVM_WREN_Set46:
+L_Flash_R_W_NVM_WREN_Set58:
 J	L_Flash_R_W_NVM_WREN_Set10
 NOP	
 L_Flash_R_W_NVM_WREN_Set11:
@@ -340,11 +340,11 @@ SW	R2, Offset(NVMCONCLR+0)(GP)
 L_Flash_R_W_NVM_WREN_Rst12:
 JAL	Flash_R_W_NVM_WREN_Wait+0
 NOP	
-BNE	R2, R0, L_Flash_R_W_NVM_WREN_Rst49
+BNE	R2, R0, L_Flash_R_W_NVM_WREN_Rst61
 NOP	
 J	L_Flash_R_W_NVM_WREN_Rst13
 NOP	
-L_Flash_R_W_NVM_WREN_Rst49:
+L_Flash_R_W_NVM_WREN_Rst61:
 J	L_Flash_R_W_NVM_WREN_Rst12
 NOP	
 L_Flash_R_W_NVM_WREN_Rst13:
@@ -391,11 +391,11 @@ ANDI	R3, R4, 65535
 ;Flash_R_W.c,240 :: 		while(!dma_susp)
 L_NVM_PWPAGE_Lock14:
 ; dma_susp start address is: 12 (R3)
-BEQ	R3, R0, L__NVM_PWPAGE_Lock53
+BEQ	R3, R0, L__NVM_PWPAGE_Lock65
 NOP	
 J	L_NVM_PWPAGE_Lock15
 NOP	
-L__NVM_PWPAGE_Lock53:
+L__NVM_PWPAGE_Lock65:
 ; dma_susp end address is: 12 (R3)
 ;Flash_R_W.c,241 :: 		dma_susp = DMA_Suspend();
 JAL	_DMA_Suspend+0
@@ -433,11 +433,11 @@ ANDI	R2, R3, 65535
 ;Flash_R_W.c,256 :: 		while(dma_susp){
 L_NVM_PWPAGE_Lock16:
 ; dma_susp start address is: 8 (R2)
-BNE	R2, R0, L__NVM_PWPAGE_Lock55
+BNE	R2, R0, L__NVM_PWPAGE_Lock67
 NOP	
 J	L_NVM_PWPAGE_Lock17
 NOP	
-L__NVM_PWPAGE_Lock55:
+L__NVM_PWPAGE_Lock67:
 ; dma_susp end address is: 8 (R2)
 ;Flash_R_W.c,257 :: 		dma_susp = DMA_Resume();
 JAL	_DMA_Resume+0
@@ -450,11 +450,11 @@ NOP
 L_NVM_PWPAGE_Lock17:
 ;Flash_R_W.c,261 :: 		if (I_status)
 LHU	R2, 4(SP)
-BNE	R2, R0, L__NVM_PWPAGE_Lock57
+BNE	R2, R0, L__NVM_PWPAGE_Lock69
 NOP	
 J	L_NVM_PWPAGE_Lock18
 NOP	
-L__NVM_PWPAGE_Lock57:
+L__NVM_PWPAGE_Lock69:
 ;Flash_R_W.c,262 :: 		EI();
 EI	R30
 L_NVM_PWPAGE_Lock18:
@@ -489,11 +489,11 @@ MOVZ	R6, R5, R0
 L_NVMReadRow19:
 ; j start address is: 24 (R6)
 SLTIU	R2, R6, 128
-BNE	R2, R0, L__NVMReadRow59
+BNE	R2, R0, L__NVMReadRow71
 NOP	
 J	L_NVMReadRow20
 NOP	
-L__NVMReadRow59:
+L__NVMReadRow71:
 ;Flash_R_W.c,280 :: 		buff[j] = *(ptr+j);
 ADDIU	R5, SP, 44
 SLL	R4, R6, 2
@@ -507,11 +507,11 @@ SLL	R2, R6, 2
 ADDU	R2, R5, R2
 LW	R2, 0(R2)
 SLTIU	R2, R2, 65535
-BNE	R2, R0, L__NVMReadRow60
+BNE	R2, R0, L__NVMReadRow72
 NOP	
 J	L_NVMReadRow22
 NOP	
-L__NVMReadRow60:
+L__NVMReadRow72:
 ;Flash_R_W.c,282 :: 		val = ulong2flt(buff[j]);
 ADDIU	R3, SP, 44
 SLL	R2, R6, 2
@@ -543,11 +543,11 @@ JAL	_DMA_IsOn+0
 NOP	
 LW	R25, 8(SP)
 LW	R4, 4(SP)
-BNE	R2, R0, L__NVMReadRow62
+BNE	R2, R0, L__NVMReadRow74
 NOP	
 J	L_NVMReadRow25
 NOP	
-L__NVMReadRow62:
+L__NVMReadRow74:
 J	L_NVMReadRow24
 NOP	
 L_NVMReadRow25:
@@ -594,3 +594,172 @@ ADDIU	SP, SP, 556
 JR	RA
 NOP	
 ; end of _NVMReadRow
+_Get_Address_Pval:
+;Flash_R_W.c,293 :: 		unsigned long Get_Address_Pval(int recipe){
+;Flash_R_W.c,294 :: 		unsigned long addr = 0;
+; addr start address is: 16 (R4)
+MOVZ	R4, R0, R0
+;Flash_R_W.c,295 :: 		switch(recipe){
+J	L_Get_Address_Pval26
+NOP	
+;Flash_R_W.c,296 :: 		case 0:break;
+L_Get_Address_Pval28:
+MOVZ	R2, R4, R0
+; addr end address is: 16 (R4)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,297 :: 		case 1:addr =(unsigned long)FLASH_Settings_VAddr_P1;break;
+L_Get_Address_Pval29:
+; addr start address is: 8 (R2)
+LUI	R2, 48411
+ORI	R2, R2, 49152
+; addr end address is: 8 (R2)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,298 :: 		case 2:addr =(unsigned long)FLASH_Settings_VAddr_P2;break;
+L_Get_Address_Pval30:
+; addr start address is: 8 (R2)
+LUI	R2, 48411
+ORI	R2, R2, 49168
+; addr end address is: 8 (R2)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,299 :: 		case 3:addr =(unsigned long)FLASH_Settings_VAddr_P3;break;
+L_Get_Address_Pval31:
+; addr start address is: 8 (R2)
+LUI	R2, 48411
+ORI	R2, R2, 49184
+; addr end address is: 8 (R2)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,300 :: 		case 4:addr =(unsigned long)FLASH_Settings_VAddr_P4;break;
+L_Get_Address_Pval32:
+; addr start address is: 8 (R2)
+LUI	R2, 48411
+ORI	R2, R2, 49200
+; addr end address is: 8 (R2)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,301 :: 		case 5:addr =(unsigned long)FLASH_Settings_VAddr_P5;break;
+L_Get_Address_Pval33:
+; addr start address is: 8 (R2)
+LUI	R2, 48411
+ORI	R2, R2, 49216
+; addr end address is: 8 (R2)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,302 :: 		case 6:addr =(unsigned long)FLASH_Settings_VAddr_P6;break;
+L_Get_Address_Pval34:
+; addr start address is: 8 (R2)
+LUI	R2, 48411
+ORI	R2, R2, 49232
+; addr end address is: 8 (R2)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,303 :: 		case 7:addr =(unsigned long)FLASH_Settings_VAddr_P7;break;
+L_Get_Address_Pval35:
+; addr start address is: 8 (R2)
+LUI	R2, 48411
+ORI	R2, R2, 49248
+; addr end address is: 8 (R2)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,304 :: 		case 8:addr =(unsigned long)FLASH_Settings_VAddr_P8;break;
+L_Get_Address_Pval36:
+; addr start address is: 8 (R2)
+LUI	R2, 48411
+ORI	R2, R2, 49264
+; addr end address is: 8 (R2)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,305 :: 		case 9:addr =(unsigned long)FLASH_Settings_VAddr_P9;break;
+L_Get_Address_Pval37:
+; addr start address is: 8 (R2)
+LUI	R2, 48411
+ORI	R2, R2, 49280
+; addr end address is: 8 (R2)
+J	L_Get_Address_Pval27
+NOP	
+;Flash_R_W.c,306 :: 		}
+L_Get_Address_Pval26:
+; addr start address is: 16 (R4)
+SEH	R2, R25
+BNE	R2, R0, L__Get_Address_Pval77
+NOP	
+J	L_Get_Address_Pval28
+NOP	
+L__Get_Address_Pval77:
+SEH	R3, R25
+ORI	R2, R0, 1
+BNE	R3, R2, L__Get_Address_Pval79
+NOP	
+J	L_Get_Address_Pval29
+NOP	
+L__Get_Address_Pval79:
+SEH	R3, R25
+ORI	R2, R0, 2
+BNE	R3, R2, L__Get_Address_Pval81
+NOP	
+J	L_Get_Address_Pval30
+NOP	
+L__Get_Address_Pval81:
+SEH	R3, R25
+ORI	R2, R0, 3
+BNE	R3, R2, L__Get_Address_Pval83
+NOP	
+J	L_Get_Address_Pval31
+NOP	
+L__Get_Address_Pval83:
+SEH	R3, R25
+ORI	R2, R0, 4
+BNE	R3, R2, L__Get_Address_Pval85
+NOP	
+J	L_Get_Address_Pval32
+NOP	
+L__Get_Address_Pval85:
+SEH	R3, R25
+ORI	R2, R0, 5
+BNE	R3, R2, L__Get_Address_Pval87
+NOP	
+J	L_Get_Address_Pval33
+NOP	
+L__Get_Address_Pval87:
+SEH	R3, R25
+ORI	R2, R0, 6
+BNE	R3, R2, L__Get_Address_Pval89
+NOP	
+J	L_Get_Address_Pval34
+NOP	
+L__Get_Address_Pval89:
+SEH	R3, R25
+ORI	R2, R0, 7
+BNE	R3, R2, L__Get_Address_Pval91
+NOP	
+J	L_Get_Address_Pval35
+NOP	
+L__Get_Address_Pval91:
+SEH	R3, R25
+ORI	R2, R0, 8
+BNE	R3, R2, L__Get_Address_Pval93
+NOP	
+J	L_Get_Address_Pval36
+NOP	
+L__Get_Address_Pval93:
+SEH	R3, R25
+ORI	R2, R0, 9
+BNE	R3, R2, L__Get_Address_Pval95
+NOP	
+J	L_Get_Address_Pval37
+NOP	
+L__Get_Address_Pval95:
+; addr end address is: 16 (R4)
+MOVZ	R2, R4, R0
+L_Get_Address_Pval27:
+;Flash_R_W.c,307 :: 		return addr;
+; addr start address is: 8 (R2)
+; addr end address is: 8 (R2)
+;Flash_R_W.c,308 :: 		}
+L_end_Get_Address_Pval:
+JR	RA
+NOP	
+; end of _Get_Address_Pval

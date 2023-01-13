@@ -18395,6 +18395,7 @@ coord_offset
 coord_offset
 coord_select
 coord_system
+coord_system
 cos
 cosc
 cosc
@@ -32463,6 +32464,7 @@ fwroverr_bit
 g_initialise
 g_mode
 gc
+gc_set_current_position
 gcen
 gcen
 gcen
@@ -32516,6 +32518,7 @@ gcstat_i2c2stat_bit
 gcstat_i2c3stat_bit
 gcstat_i2c4stat_bit
 gcstat_i2c5stat_bit
+get_address_pval
 get_axisword
 get_difference
 get_fosc_khz

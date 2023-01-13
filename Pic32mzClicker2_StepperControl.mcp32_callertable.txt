@@ -1,4 +1,6 @@
 main
+	__CC2DW
+	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -34,43 +36,40 @@ main
 		Reset_Min_Limit
 		Reset_Min_Debounce
 	Get_modalgroup
+	Get_modalword
 	Non_Modal_Actions
 		Settings_Write_Coord_Data
+			__CC2DW
 			Save_Row_From_Flash
-				DMA_IsOn
-				dma_printf
-					DMA_CH_Busy
-					sprintf
-						_doprntf
-							isdigit
-							scale
-							fround
-					strcat
-					strlen
-					strncpy
-					DMA1_Enable
-					__CC2DW
-				__CC2DW
 			NVMErasePage
 				NVMUnlock
 					DMA_Suspend
 					DMA_Busy
 					DMA_Resume
 					NVM_WR_Wait
-			DMA_IsOn
-			dma_printf
 			flt2ulong
 				memcpy
 			NVMWriteRow
 				NVMUnlock
-			NVMReadRow
-				ulong2flt
-					memcpy
-				DMA_IsOn
-				dma_printf
-				__CC2DW
+		memcpy
+		Save_Row_From_Flash
+		Get_Axisword
+		ulong2flt
+			memcpy
+		DMA_IsOn
+		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
 			__CC2DW
-	Get_modalword
+		__CC2DW
 	Rst_modalgroup
 	Get_Axisword
 	EnableSteppers
@@ -85,8 +84,6 @@ main
 			labs
 			Step_Cycle
 				toggleOCx
-		DMA_IsOn
-		dma_printf
 		DualAxisStep
 			belt_steps
 			Single_Axis_Enable
@@ -132,7 +129,6 @@ main
 				Test_Port_Pins
 				disableOCx
 				__CC2DW
-		__CC2DW
 	Rst_Axisword
 	Sample_Ringbuffer
 		Get_Difference
@@ -160,10 +156,6 @@ main
 				DMA_IsOn
 				dma_printf
 				__CC2DW
-		PrintDebug
-			DMA_IsOn
-			dma_printf
-			__CC2DW
 		Instruction_Values
 			To_Millimeters
 		M_Instruction
@@ -175,10 +167,6 @@ main
 			dma_printf
 			Rst_modalword
 			__CC2DW
-	DMA_IsOn
-	dma_printf
-	__CC2DW
-	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepA

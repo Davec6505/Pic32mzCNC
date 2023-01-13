@@ -93,7 +93,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 137 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
- float steps_per_mm[ 6 ];
+ unsigned long steps_per_mm[ 6 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -265,6 +265,7 @@ static unsigned int NVM_WREN_Wait();
 void NVM_PWPAGE_Lock();
 void NVMReadRow(unsigned long addr);
 unsigned long NVMReadWord(void *addr);
+unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -280,7 +281,14 @@ float ulong2flt(unsigned long ui_) ;
 
 
 void sys_sync_current_position();
-#line 82 "c:/users/git/pic32mzcnc/globals.h"
+#line 80 "c:/users/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buff[128];
+
+
+
+
+
+
 typedef struct {
  char abort;
  char state;
@@ -306,7 +314,8 @@ typedef struct{
 
 void Settings_Init(char reset_all);
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
-void Save_Row_From_Flash(unsigned long addr);
+
+int Save_Row_From_Flash(unsigned long addr);
 #line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
@@ -437,7 +446,7 @@ typedef struct {
  float feed_rate;
 
  volatile float position[ 6 ];
-
+ volatile float coord_system[ 6 ];
 
  volatile float coord_offset[ 6 ];
 
@@ -496,6 +505,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
+void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -607,11 +617,6 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;

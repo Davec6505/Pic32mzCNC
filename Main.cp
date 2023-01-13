@@ -139,7 +139,7 @@ typedef unsigned long long uintmax_t;
 #line 137 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
- float steps_per_mm[ 6 ];
+ unsigned long steps_per_mm[ 6 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -252,6 +252,7 @@ static unsigned int NVM_WREN_Wait();
 void NVM_PWPAGE_Lock();
 void NVMReadRow(unsigned long addr);
 unsigned long NVMReadWord(void *addr);
+unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -267,7 +268,14 @@ float ulong2flt(unsigned long ui_) ;
 
 
 void sys_sync_current_position();
-#line 82 "c:/users/git/pic32mzcnc/globals.h"
+#line 80 "c:/users/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buff[128];
+
+
+
+
+
+
 typedef struct {
  char abort;
  char state;
@@ -293,7 +301,8 @@ typedef struct{
 
 void Settings_Init(char reset_all);
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
-void Save_Row_From_Flash(unsigned long addr);
+
+int Save_Row_From_Flash(unsigned long addr);
 #line 134 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
@@ -317,7 +326,7 @@ typedef struct {
  float feed_rate;
 
  volatile float position[ 6 ];
-
+ volatile float coord_system[ 6 ];
 
  volatile float coord_offset[ 6 ];
 
@@ -376,6 +385,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
+void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -712,11 +722,6 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -826,20 +831,7 @@ static int cntr = 0,a = 0;
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
-
-
-
-
-
-
- if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
- while(DMA_IsOn(1));
- dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
- (STPS[X].run_state&0xff),STPS[X].step_count,
- SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
- }
-
-
+#line 137 "C:/Users/Git/Pic32mzCNC/Main.c"
  WDTCONSET = 0x01;
  }
 }
@@ -854,8 +846,8 @@ int Temp_Move(int a){
  SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
  break;
  case 3:
- while(DMA_IsOn(1));
- dma_printf("X:= %f | Y:=%f\n",gc.next_position[X],gc.next_position[Y]);
+
+
  DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
 
 
@@ -899,9 +891,10 @@ int Temp_Move(int a){
 
 int Non_Modal_Actions(int action){
 
-int dly_time,i,result;
-float test;
-unsigned long test_flash,*addr;
+int dly_time,i,result,axis_words,indx,temp_axis,axis_cnt,temp;
+float coord_data[ 6 ];
+float a_val;
+unsigned long _flash,*addr;
  switch(action){
  case 2:
  i = 0;
@@ -924,19 +917,59 @@ unsigned long test_flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 233 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 234 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
 
- result = Settings_Write_Coord_Data(gc.P,gc.next_position );
+ result = Settings_Write_Coord_Data((int)gc.P,gc.next_position );
  if(result){
  return  1 ;
  }
 
-
+ if (gc.coord_select > 0) {
+ memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
+ }
  } else {
-#line 254 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+ if(!Save_Row_From_Flash( 0xBD1BC000 ))return;
+
+
+
+ temp = indx = (gc.P-1) & 0xFF;
+ indx *= 4;
+ axis_cnt = 0;
+
+
+ axis_words = Get_Axisword();
+ for(i = 0; i < 3;i++){
+ temp_axis = (axis_words >> i) & 1;
+
+ if(temp_axis == 0){
+ axis_cnt++;
+ if(axis_cnt > 2)break;
+ _flash = buff[indx];
+ coord_data[i] = ulong2flt(_flash);;
+
+ while(DMA_IsOn(1));
+ dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
+ temp_axis,i,coord_data[i],indx);
+
+ }else{
+ coord_data[i] = gc.next_position[i];
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.next_position[%d]:= %f\n"
+ ,i,gc.next_position[i]);
+
+ }
+ indx++;
+ }
+
+ result = Settings_Write_Coord_Data((int)gc.P,coord_data);
+
+
+ memcpy(gc.coord_system,coord_data,sizeof(coord_data));
  }
 
  break;

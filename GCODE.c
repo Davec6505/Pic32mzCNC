@@ -138,10 +138,10 @@ int i = 0;
    last_group_number = group_number;
    if (group_number == MODAL_GROUP_0){
      //if the non modal action has changed reset its state
-     if(non_modal_action != last_non_modal_action){
+     ///if(non_modal_action != last_non_modal_action){
         Rst_modalword();
         bit_true( non_modal_words,bit( non_modal_action));
-     }
+     //}
      #if GcodeDebug == 2
        while(DMA_IsOn(1));
        dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
@@ -329,6 +329,20 @@ int F_Val,O_Val;
   return status_code;
 }
 
+// Sets g-code parser position in mm. Input in steps. Called by the system abort and hard
+// limit pull-off routines.
+// don't know yet ????????????
+void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z){
+int i;
+float temp[3];
+  for(i=0;i<3;i++){
+      temp[i] = ulong2flt(settings.steps_per_mm[i]);
+  }
+  gc.position[X] = x/temp[X];
+  gc.position[Y] = y/temp[Y];
+  gc.position[Z] = z/temp[Z];
+}
+
 /////////////////////////////////////////////////////////////
 //                file scope functions                     //
 /////////////////////////////////////////////////////////////
@@ -337,12 +351,9 @@ static float To_Millimeters(float value){
 }
 
 //select the working plane
-static void Select_Plane(long x,long y,long z){
-  gc.position[X] = x/settings.steps_per_mm[X];
-  gc.position[Y] = y/settings.steps_per_mm[Y];
-  gc.position[Z] = z/settings.steps_per_mm[Z];
+static void Select_Plane(int axis_combo){
+   axis_xyz = axis_combo;
 }
-
 
 //Set the modal group values taken directly from grbl
 static int Set_Modal_Groups(int mode){
@@ -370,14 +381,14 @@ int i;
     case 3: motion_mode    = MOTION_MODE_CCW_ARC; break;
     case 4: non_modal_action  = NON_MODAL_DWELL;     break;
     case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
-    case 17: Select_Plane(X, Y, Z); break;
-    case 18: Select_Plane(X, Z, Y); break;
-    case 19: Select_Plane(Y, Z, X); break;
+    case 17: Select_Plane(xy); break;
+    case 18: Select_Plane(xz); break;
+    case 19: Select_Plane(yz); break;
     case 20: gc.inches_mode = 1; break;
     case 21: gc.inches_mode = 0; break;
     case 53: absolute_override = true; break;
     case 54: case 55: case 56: case 57: case 58: case 59:
-             gc.coord_select = int_value-54;
+             gc.coord_select = (mode - 54)+1;//int_value-54;
              break;
     case 80: motion_mode = MOTION_MODE_CANCEL; break;
     case 90: gc.absolute_mode = true; break;

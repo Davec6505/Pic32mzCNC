@@ -12,11 +12,11 @@ L_Str_Initialize0:
 ; i start address is: 20 (R5)
 SEH	R2, R5
 SLTI	R2, R2, 11
-BNE	R2, R0, L__Str_Initialize177
+BNE	R2, R0, L__Str_Initialize148
 NOP	
 J	L_Str_Initialize1
 NOP	
-L__Str_Initialize177:
+L__Str_Initialize148:
 ;Protocol.c,13 :: 		memset(arg[i],0,str_size);
 SEH	R3, R5
 ORI	R2, R0, 60
@@ -69,7 +69,7 @@ NOP
 ; end of _Str_clear
 _Sample_Ringbuffer:
 ;Protocol.c,23 :: 		int Sample_Ringbuffer(){
-ADDIU	SP, SP, -108
+ADDIU	SP, SP, -104
 SW	RA, 0(SP)
 ;Protocol.c,38 :: 		dif = Get_Difference();
 SW	R25, 4(SP)
@@ -83,11 +83,11 @@ SEH	R3, R2
 ;Protocol.c,40 :: 		if(dif > 0){
 SEH	R2, R2
 SLTI	R2, R2, 1
-BEQ	R2, R0, L__Sample_Ringbuffer180
+BEQ	R2, R0, L__Sample_Ringbuffer151
 NOP	
 J	L_Sample_Ringbuffer3
 NOP	
-L__Sample_Ringbuffer180:
+L__Sample_Ringbuffer151:
 ;Protocol.c,41 :: 		G_Initialise();
 SH	R3, 20(SP)
 JAL	_G_Initialise+0
@@ -122,7 +122,7 @@ JAL	Protocol_strsplit+0
 NOP	
 ;Protocol.c,59 :: 		switch(*(*gcode+0)+0){
 LBU	R2, Offset(_gcode+0)(GP)
-SH	R2, 104(SP)
+SH	R2, 100(SP)
 J	L_Sample_Ringbuffer4
 NOP	
 ;Protocol.c,60 :: 		case 'G':case 'g':
@@ -131,11 +131,11 @@ L_Sample_Ringbuffer7:
 ;Protocol.c,62 :: 		if (*(*(gcode)+0)=='G'){
 LBU	R3, Offset(_gcode+0)(GP)
 ORI	R2, R0, 71
-BEQ	R3, R2, L__Sample_Ringbuffer181
+BEQ	R3, R2, L__Sample_Ringbuffer152
 NOP	
 J	L_Sample_Ringbuffer8
 NOP	
-L__Sample_Ringbuffer181:
+L__Sample_Ringbuffer152:
 ;Protocol.c,63 :: 		i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
 LUI	R25, hi_addr(_gcode+0)
 ORI	R25, R25, lo_addr(_gcode+0)
@@ -152,51 +152,58 @@ NOP
 ;Protocol.c,64 :: 		if(i < 3){ //G00 - G99
 SEH	R2, R2
 SLTI	R2, R2, 3
-BNE	R2, R0, L__Sample_Ringbuffer182
+BNE	R2, R0, L__Sample_Ringbuffer153
 NOP	
 J	L_Sample_Ringbuffer9
 NOP	
-L__Sample_Ringbuffer182:
+L__Sample_Ringbuffer153:
 ;Protocol.c,65 :: 		G_Val = atoi(temp);
 ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 90(SP)
+; G_Val start address is: 16 (R4)
+SEH	R4, R2
 ;Protocol.c,68 :: 		if(G_Val == 28 || G_Val == 30 || G_Val == 92)
 SEH	R3, R2
 ORI	R2, R0, 28
-BNE	R3, R2, L__Sample_Ringbuffer184
+BNE	R3, R2, L__Sample_Ringbuffer155
 NOP	
-J	L__Sample_Ringbuffer175
+J	L__Sample_Ringbuffer146
 NOP	
-L__Sample_Ringbuffer184:
-LH	R3, 90(SP)
+L__Sample_Ringbuffer155:
+SEH	R3, R4
 ORI	R2, R0, 30
-BNE	R3, R2, L__Sample_Ringbuffer186
+BNE	R3, R2, L__Sample_Ringbuffer157
 NOP	
-J	L__Sample_Ringbuffer174
+J	L__Sample_Ringbuffer145
 NOP	
-L__Sample_Ringbuffer186:
-LH	R3, 90(SP)
+L__Sample_Ringbuffer157:
+SEH	R3, R4
 ORI	R2, R0, 92
-BNE	R3, R2, L__Sample_Ringbuffer188
+BNE	R3, R2, L__Sample_Ringbuffer159
 NOP	
-J	L__Sample_Ringbuffer173
+J	L__Sample_Ringbuffer144
 NOP	
-L__Sample_Ringbuffer188:
+L__Sample_Ringbuffer159:
+SEH	R2, R4
 J	L_Sample_Ringbuffer12
 NOP	
-L__Sample_Ringbuffer175:
-L__Sample_Ringbuffer174:
-L__Sample_Ringbuffer173:
+L__Sample_Ringbuffer146:
+L__Sample_Ringbuffer145:
+L__Sample_Ringbuffer144:
 ;Protocol.c,69 :: 		G_Val *= 10;
-LH	R3, 90(SP)
 ORI	R2, R0, 10
-MUL	R2, R3, R2
-SH	R2, 90(SP)
+MUL	R2, R4, R2
+; G_Val end address is: 16 (R4)
+; G_Val start address is: 12 (R3)
+SEH	R3, R2
+; G_Val end address is: 12 (R3)
+SEH	R2, R3
 L_Sample_Ringbuffer12:
 ;Protocol.c,70 :: 		}else{
+; G_Val start address is: 8 (R2)
+; G_Val end address is: 8 (R2)
 J	L_Sample_Ringbuffer13
 NOP	
 L_Sample_Ringbuffer9:
@@ -211,28 +218,25 @@ MTC1	R2, S1
 MUL.S 	S0, S0, S1
 CVT36.S 	S0, S0
 MFC1	R2, S0
-SH	R2, 90(SP)
+; G_Val start address is: 12 (R3)
+SEH	R3, R2
+; G_Val end address is: 12 (R3)
+SEH	R2, R3
 ;Protocol.c,73 :: 		}
 L_Sample_Ringbuffer13:
 ;Protocol.c,75 :: 		motion_mode = G_Mode(G_Val);
-LH	R25, 90(SP)
+; G_Val start address is: 8 (R2)
+SEH	R25, R2
+; G_Val end address is: 8 (R2)
 JAL	_G_Mode+0
-NOP	
-;Protocol.c,77 :: 		PrintDebug(*(*(gcode)+0),temp,&G_Val);
-ADDIU	R3, SP, 90
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+0)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,85 :: 		if(*(*(gcode+1)+0) != 0){
 LBU	R2, Offset(_gcode+60)(GP)
-BNE	R2, R0, L__Sample_Ringbuffer190
+BNE	R2, R0, L__Sample_Ringbuffer161
 NOP	
 J	L_Sample_Ringbuffer14
 NOP	
-L__Sample_Ringbuffer190:
+L__Sample_Ringbuffer161:
 ;Protocol.c,87 :: 		i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
 LUI	R25, hi_addr(_gcode+60)
 ORI	R25, R25, lo_addr(_gcode+60)
@@ -266,21 +270,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atof+0
 NOP	
-SWC1	S0, 100(SP)
+SWC1	S0, 96(SP)
 ;Protocol.c,94 :: 		status = Instruction_Values(gcode[1],&XYZ_Val);
-ADDIU	R2, SP, 100
+ADDIU	R2, SP, 96
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+60)
 ORI	R25, R25, lo_addr(_gcode+60)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,96 :: 		PrintDebug(*gcode[1],temp,&XYZ_Val);
-ADDIU	R3, SP, 100
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+60)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,98 :: 		break;
 J	L_Sample_Ringbuffer16
@@ -293,21 +289,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,101 :: 		status = Instruction_Values(gcode[1],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+60)
 ORI	R25, R25, lo_addr(_gcode+60)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,103 :: 		PrintDebug(*gcode[1],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+60)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,105 :: 		break;
 J	L_Sample_Ringbuffer16
@@ -320,21 +308,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,108 :: 		status = Instruction_Values(gcode[1],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+60)
 ORI	R25, R25, lo_addr(_gcode+60)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,110 :: 		PrintDebug(*gcode[1],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+60)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,112 :: 		break;
 J	L_Sample_Ringbuffer16
@@ -347,21 +327,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,115 :: 		status = Instruction_Values(gcode[1],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+60)
 ORI	R25, R25, lo_addr(_gcode+60)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,117 :: 		PrintDebug(*gcode[1],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+60)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,119 :: 		break;
 J	L_Sample_Ringbuffer16
@@ -374,21 +346,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,122 :: 		status = Instruction_Values(gcode[1],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+60)
 ORI	R25, R25, lo_addr(_gcode+60)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,124 :: 		PrintDebug(*gcode[1],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+60)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,126 :: 		break;
 J	L_Sample_Ringbuffer16
@@ -397,126 +361,126 @@ NOP
 L_Sample_Ringbuffer15:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 88
-BNE	R3, R2, L__Sample_Ringbuffer192
+BNE	R3, R2, L__Sample_Ringbuffer163
 NOP	
 J	L_Sample_Ringbuffer17
 NOP	
-L__Sample_Ringbuffer192:
+L__Sample_Ringbuffer163:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 120
-BNE	R3, R2, L__Sample_Ringbuffer194
+BNE	R3, R2, L__Sample_Ringbuffer165
 NOP	
 J	L_Sample_Ringbuffer18
 NOP	
-L__Sample_Ringbuffer194:
+L__Sample_Ringbuffer165:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 89
-BNE	R3, R2, L__Sample_Ringbuffer196
+BNE	R3, R2, L__Sample_Ringbuffer167
 NOP	
 J	L_Sample_Ringbuffer19
 NOP	
-L__Sample_Ringbuffer196:
+L__Sample_Ringbuffer167:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 121
-BNE	R3, R2, L__Sample_Ringbuffer198
+BNE	R3, R2, L__Sample_Ringbuffer169
 NOP	
 J	L_Sample_Ringbuffer20
 NOP	
-L__Sample_Ringbuffer198:
+L__Sample_Ringbuffer169:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 90
-BNE	R3, R2, L__Sample_Ringbuffer200
+BNE	R3, R2, L__Sample_Ringbuffer171
 NOP	
 J	L_Sample_Ringbuffer21
 NOP	
-L__Sample_Ringbuffer200:
+L__Sample_Ringbuffer171:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 122
-BNE	R3, R2, L__Sample_Ringbuffer202
+BNE	R3, R2, L__Sample_Ringbuffer173
 NOP	
 J	L_Sample_Ringbuffer22
 NOP	
-L__Sample_Ringbuffer202:
+L__Sample_Ringbuffer173:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 65
-BNE	R3, R2, L__Sample_Ringbuffer204
+BNE	R3, R2, L__Sample_Ringbuffer175
 NOP	
 J	L_Sample_Ringbuffer23
 NOP	
-L__Sample_Ringbuffer204:
+L__Sample_Ringbuffer175:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 97
-BNE	R3, R2, L__Sample_Ringbuffer206
+BNE	R3, R2, L__Sample_Ringbuffer177
 NOP	
 J	L_Sample_Ringbuffer24
 NOP	
-L__Sample_Ringbuffer206:
+L__Sample_Ringbuffer177:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 76
-BNE	R3, R2, L__Sample_Ringbuffer208
+BNE	R3, R2, L__Sample_Ringbuffer179
 NOP	
 J	L_Sample_Ringbuffer25
 NOP	
-L__Sample_Ringbuffer208:
+L__Sample_Ringbuffer179:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 108
-BNE	R3, R2, L__Sample_Ringbuffer210
+BNE	R3, R2, L__Sample_Ringbuffer181
 NOP	
 J	L_Sample_Ringbuffer26
 NOP	
-L__Sample_Ringbuffer210:
+L__Sample_Ringbuffer181:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 70
-BNE	R3, R2, L__Sample_Ringbuffer212
+BNE	R3, R2, L__Sample_Ringbuffer183
 NOP	
 J	L_Sample_Ringbuffer27
 NOP	
-L__Sample_Ringbuffer212:
+L__Sample_Ringbuffer183:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 102
-BNE	R3, R2, L__Sample_Ringbuffer214
+BNE	R3, R2, L__Sample_Ringbuffer185
 NOP	
 J	L_Sample_Ringbuffer28
 NOP	
-L__Sample_Ringbuffer214:
+L__Sample_Ringbuffer185:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 80
-BNE	R3, R2, L__Sample_Ringbuffer216
+BNE	R3, R2, L__Sample_Ringbuffer187
 NOP	
 J	L_Sample_Ringbuffer29
 NOP	
-L__Sample_Ringbuffer216:
+L__Sample_Ringbuffer187:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 112
-BNE	R3, R2, L__Sample_Ringbuffer218
+BNE	R3, R2, L__Sample_Ringbuffer189
 NOP	
 J	L_Sample_Ringbuffer30
 NOP	
-L__Sample_Ringbuffer218:
+L__Sample_Ringbuffer189:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 83
-BNE	R3, R2, L__Sample_Ringbuffer220
+BNE	R3, R2, L__Sample_Ringbuffer191
 NOP	
 J	L_Sample_Ringbuffer31
 NOP	
-L__Sample_Ringbuffer220:
+L__Sample_Ringbuffer191:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 115
-BNE	R3, R2, L__Sample_Ringbuffer222
+BNE	R3, R2, L__Sample_Ringbuffer193
 NOP	
 J	L_Sample_Ringbuffer32
 NOP	
-L__Sample_Ringbuffer222:
+L__Sample_Ringbuffer193:
 L_Sample_Ringbuffer16:
 ;Protocol.c,128 :: 		}
 L_Sample_Ringbuffer14:
 ;Protocol.c,133 :: 		if(*(*(gcode+2)+0) != 0){
 LBU	R2, Offset(_gcode+120)(GP)
-BNE	R2, R0, L__Sample_Ringbuffer224
+BNE	R2, R0, L__Sample_Ringbuffer195
 NOP	
 J	L_Sample_Ringbuffer33
 NOP	
-L__Sample_Ringbuffer224:
+L__Sample_Ringbuffer195:
 ;Protocol.c,135 :: 		i = cpy_val_from_str(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
 LUI	R25, hi_addr(_gcode+120)
 ORI	R25, R25, lo_addr(_gcode+120)
@@ -550,21 +514,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atof+0
 NOP	
-SWC1	S0, 100(SP)
+SWC1	S0, 96(SP)
 ;Protocol.c,142 :: 		status = Instruction_Values(gcode[2],&XYZ_Val);
-ADDIU	R2, SP, 100
+ADDIU	R2, SP, 96
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+120)
 ORI	R25, R25, lo_addr(_gcode+120)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,144 :: 		PrintDebug(*gcode[2],temp,&XYZ_Val);
-ADDIU	R3, SP, 100
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+120)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,146 :: 		break;
 J	L_Sample_Ringbuffer35
@@ -577,21 +533,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,149 :: 		status = Instruction_Values(gcode[2],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+120)
 ORI	R25, R25, lo_addr(_gcode+120)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,151 :: 		PrintDebug(*gcode[2],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+120)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,153 :: 		break;
 J	L_Sample_Ringbuffer35
@@ -604,21 +552,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,156 :: 		status = Instruction_Values(gcode[2],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+120)
 ORI	R25, R25, lo_addr(_gcode+120)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,158 :: 		PrintDebug(*gcode[2],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+120)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,160 :: 		break;
 J	L_Sample_Ringbuffer35
@@ -631,21 +571,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,163 :: 		status = Instruction_Values(gcode[2],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+120)
 ORI	R25, R25, lo_addr(_gcode+120)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,165 :: 		PrintDebug(*gcode[2],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+120)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,167 :: 		break;
 J	L_Sample_Ringbuffer35
@@ -658,21 +590,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,170 :: 		status = Instruction_Values(gcode[2],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+120)
 ORI	R25, R25, lo_addr(_gcode+120)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,172 :: 		PrintDebug(*gcode[2],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+120)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,174 :: 		break;
 J	L_Sample_Ringbuffer35
@@ -681,126 +605,126 @@ NOP
 L_Sample_Ringbuffer34:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 88
-BNE	R3, R2, L__Sample_Ringbuffer226
+BNE	R3, R2, L__Sample_Ringbuffer197
 NOP	
 J	L_Sample_Ringbuffer36
 NOP	
-L__Sample_Ringbuffer226:
+L__Sample_Ringbuffer197:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 120
-BNE	R3, R2, L__Sample_Ringbuffer228
+BNE	R3, R2, L__Sample_Ringbuffer199
 NOP	
 J	L_Sample_Ringbuffer37
 NOP	
-L__Sample_Ringbuffer228:
+L__Sample_Ringbuffer199:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 89
-BNE	R3, R2, L__Sample_Ringbuffer230
+BNE	R3, R2, L__Sample_Ringbuffer201
 NOP	
 J	L_Sample_Ringbuffer38
 NOP	
-L__Sample_Ringbuffer230:
+L__Sample_Ringbuffer201:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 121
-BNE	R3, R2, L__Sample_Ringbuffer232
+BNE	R3, R2, L__Sample_Ringbuffer203
 NOP	
 J	L_Sample_Ringbuffer39
 NOP	
-L__Sample_Ringbuffer232:
+L__Sample_Ringbuffer203:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 90
-BNE	R3, R2, L__Sample_Ringbuffer234
+BNE	R3, R2, L__Sample_Ringbuffer205
 NOP	
 J	L_Sample_Ringbuffer40
 NOP	
-L__Sample_Ringbuffer234:
+L__Sample_Ringbuffer205:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 122
-BNE	R3, R2, L__Sample_Ringbuffer236
+BNE	R3, R2, L__Sample_Ringbuffer207
 NOP	
 J	L_Sample_Ringbuffer41
 NOP	
-L__Sample_Ringbuffer236:
+L__Sample_Ringbuffer207:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 65
-BNE	R3, R2, L__Sample_Ringbuffer238
+BNE	R3, R2, L__Sample_Ringbuffer209
 NOP	
 J	L_Sample_Ringbuffer42
 NOP	
-L__Sample_Ringbuffer238:
+L__Sample_Ringbuffer209:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 97
-BNE	R3, R2, L__Sample_Ringbuffer240
+BNE	R3, R2, L__Sample_Ringbuffer211
 NOP	
 J	L_Sample_Ringbuffer43
 NOP	
-L__Sample_Ringbuffer240:
+L__Sample_Ringbuffer211:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 76
-BNE	R3, R2, L__Sample_Ringbuffer242
+BNE	R3, R2, L__Sample_Ringbuffer213
 NOP	
 J	L_Sample_Ringbuffer44
 NOP	
-L__Sample_Ringbuffer242:
+L__Sample_Ringbuffer213:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 108
-BNE	R3, R2, L__Sample_Ringbuffer244
+BNE	R3, R2, L__Sample_Ringbuffer215
 NOP	
 J	L_Sample_Ringbuffer45
 NOP	
-L__Sample_Ringbuffer244:
+L__Sample_Ringbuffer215:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 70
-BNE	R3, R2, L__Sample_Ringbuffer246
+BNE	R3, R2, L__Sample_Ringbuffer217
 NOP	
 J	L_Sample_Ringbuffer46
 NOP	
-L__Sample_Ringbuffer246:
+L__Sample_Ringbuffer217:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 102
-BNE	R3, R2, L__Sample_Ringbuffer248
+BNE	R3, R2, L__Sample_Ringbuffer219
 NOP	
 J	L_Sample_Ringbuffer47
 NOP	
-L__Sample_Ringbuffer248:
+L__Sample_Ringbuffer219:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 80
-BNE	R3, R2, L__Sample_Ringbuffer250
+BNE	R3, R2, L__Sample_Ringbuffer221
 NOP	
 J	L_Sample_Ringbuffer48
 NOP	
-L__Sample_Ringbuffer250:
+L__Sample_Ringbuffer221:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 112
-BNE	R3, R2, L__Sample_Ringbuffer252
+BNE	R3, R2, L__Sample_Ringbuffer223
 NOP	
 J	L_Sample_Ringbuffer49
 NOP	
-L__Sample_Ringbuffer252:
+L__Sample_Ringbuffer223:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 83
-BNE	R3, R2, L__Sample_Ringbuffer254
+BNE	R3, R2, L__Sample_Ringbuffer225
 NOP	
 J	L_Sample_Ringbuffer50
 NOP	
-L__Sample_Ringbuffer254:
+L__Sample_Ringbuffer225:
 LBU	R3, Offset(_gcode+120)(GP)
 ORI	R2, R0, 115
-BNE	R3, R2, L__Sample_Ringbuffer256
+BNE	R3, R2, L__Sample_Ringbuffer227
 NOP	
 J	L_Sample_Ringbuffer51
 NOP	
-L__Sample_Ringbuffer256:
+L__Sample_Ringbuffer227:
 L_Sample_Ringbuffer35:
 ;Protocol.c,176 :: 		}
 L_Sample_Ringbuffer33:
 ;Protocol.c,180 :: 		if(*(*(gcode+3)+0) != 0){
 LBU	R2, Offset(_gcode+180)(GP)
-BNE	R2, R0, L__Sample_Ringbuffer258
+BNE	R2, R0, L__Sample_Ringbuffer229
 NOP	
 J	L_Sample_Ringbuffer52
 NOP	
-L__Sample_Ringbuffer258:
+L__Sample_Ringbuffer229:
 ;Protocol.c,182 :: 		i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
 LUI	R25, hi_addr(_gcode+180)
 ORI	R25, R25, lo_addr(_gcode+180)
@@ -835,21 +759,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atof+0
 NOP	
-SWC1	S0, 100(SP)
+SWC1	S0, 96(SP)
 ;Protocol.c,188 :: 		status = Instruction_Values(gcode[3],&XYZ_Val);
-ADDIU	R2, SP, 100
+ADDIU	R2, SP, 96
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+180)
 ORI	R25, R25, lo_addr(_gcode+180)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,190 :: 		PrintDebug(*gcode[3],temp,&XYZ_Val);
-ADDIU	R3, SP, 100
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+180)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,192 :: 		break;
 J	L_Sample_Ringbuffer54
@@ -862,21 +778,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,195 :: 		status = Instruction_Values(gcode[3],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+180)
 ORI	R25, R25, lo_addr(_gcode+180)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,197 :: 		PrintDebug(*gcode[3],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+180)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,199 :: 		break;
 J	L_Sample_Ringbuffer54
@@ -885,98 +793,98 @@ NOP
 L_Sample_Ringbuffer53:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 88
-BNE	R3, R2, L__Sample_Ringbuffer260
+BNE	R3, R2, L__Sample_Ringbuffer231
 NOP	
 J	L_Sample_Ringbuffer55
 NOP	
-L__Sample_Ringbuffer260:
+L__Sample_Ringbuffer231:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 120
-BNE	R3, R2, L__Sample_Ringbuffer262
+BNE	R3, R2, L__Sample_Ringbuffer233
 NOP	
 J	L_Sample_Ringbuffer56
 NOP	
-L__Sample_Ringbuffer262:
+L__Sample_Ringbuffer233:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 89
-BNE	R3, R2, L__Sample_Ringbuffer264
+BNE	R3, R2, L__Sample_Ringbuffer235
 NOP	
 J	L_Sample_Ringbuffer57
 NOP	
-L__Sample_Ringbuffer264:
+L__Sample_Ringbuffer235:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 121
-BNE	R3, R2, L__Sample_Ringbuffer266
+BNE	R3, R2, L__Sample_Ringbuffer237
 NOP	
 J	L_Sample_Ringbuffer58
 NOP	
-L__Sample_Ringbuffer266:
+L__Sample_Ringbuffer237:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 90
-BNE	R3, R2, L__Sample_Ringbuffer268
+BNE	R3, R2, L__Sample_Ringbuffer239
 NOP	
 J	L_Sample_Ringbuffer59
 NOP	
-L__Sample_Ringbuffer268:
+L__Sample_Ringbuffer239:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 122
-BNE	R3, R2, L__Sample_Ringbuffer270
+BNE	R3, R2, L__Sample_Ringbuffer241
 NOP	
 J	L_Sample_Ringbuffer60
 NOP	
-L__Sample_Ringbuffer270:
+L__Sample_Ringbuffer241:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 82
-BNE	R3, R2, L__Sample_Ringbuffer272
+BNE	R3, R2, L__Sample_Ringbuffer243
 NOP	
 J	L_Sample_Ringbuffer61
 NOP	
-L__Sample_Ringbuffer272:
+L__Sample_Ringbuffer243:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 114
-BNE	R3, R2, L__Sample_Ringbuffer274
+BNE	R3, R2, L__Sample_Ringbuffer245
 NOP	
 J	L_Sample_Ringbuffer62
 NOP	
-L__Sample_Ringbuffer274:
+L__Sample_Ringbuffer245:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 73
-BNE	R3, R2, L__Sample_Ringbuffer276
+BNE	R3, R2, L__Sample_Ringbuffer247
 NOP	
 J	L_Sample_Ringbuffer63
 NOP	
-L__Sample_Ringbuffer276:
+L__Sample_Ringbuffer247:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 105
-BNE	R3, R2, L__Sample_Ringbuffer278
+BNE	R3, R2, L__Sample_Ringbuffer249
 NOP	
 J	L_Sample_Ringbuffer64
 NOP	
-L__Sample_Ringbuffer278:
+L__Sample_Ringbuffer249:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 70
-BNE	R3, R2, L__Sample_Ringbuffer280
+BNE	R3, R2, L__Sample_Ringbuffer251
 NOP	
 J	L_Sample_Ringbuffer65
 NOP	
-L__Sample_Ringbuffer280:
+L__Sample_Ringbuffer251:
 LBU	R3, Offset(_gcode+180)(GP)
 ORI	R2, R0, 102
-BNE	R3, R2, L__Sample_Ringbuffer282
+BNE	R3, R2, L__Sample_Ringbuffer253
 NOP	
 J	L_Sample_Ringbuffer66
 NOP	
-L__Sample_Ringbuffer282:
+L__Sample_Ringbuffer253:
 L_Sample_Ringbuffer54:
 ;Protocol.c,201 :: 		}
 L_Sample_Ringbuffer52:
 ;Protocol.c,206 :: 		if(*(*(gcode+4)+0) != 0){
 LBU	R2, Offset(_gcode+240)(GP)
-BNE	R2, R0, L__Sample_Ringbuffer284
+BNE	R2, R0, L__Sample_Ringbuffer255
 NOP	
 J	L_Sample_Ringbuffer67
 NOP	
-L__Sample_Ringbuffer284:
+L__Sample_Ringbuffer255:
 ;Protocol.c,207 :: 		i = cpy_val_from_str(temp,(*(gcode+4)),1,strlen(*(gcode+4)));
 LUI	R25, hi_addr(_gcode+240)
 ORI	R25, R25, lo_addr(_gcode+240)
@@ -1007,21 +915,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atof+0
 NOP	
-SWC1	S0, 100(SP)
+SWC1	S0, 96(SP)
 ;Protocol.c,213 :: 		status = Instruction_Values(gcode[4],&XYZ_Val);
-ADDIU	R2, SP, 100
+ADDIU	R2, SP, 96
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+240)
 ORI	R25, R25, lo_addr(_gcode+240)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,215 :: 		PrintDebug(*gcode[4],temp,&XYZ_Val);
-ADDIU	R3, SP, 100
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+240)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,217 :: 		break;
 J	L_Sample_Ringbuffer69
@@ -1034,21 +934,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,220 :: 		status = Instruction_Values(gcode[4],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+240)
 ORI	R25, R25, lo_addr(_gcode+240)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,222 :: 		PrintDebug(*gcode[4],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+240)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,224 :: 		break;
 J	L_Sample_Ringbuffer69
@@ -1057,70 +949,70 @@ NOP
 L_Sample_Ringbuffer68:
 LBU	R3, Offset(_gcode+240)(GP)
 ORI	R2, R0, 89
-BNE	R3, R2, L__Sample_Ringbuffer286
+BNE	R3, R2, L__Sample_Ringbuffer257
 NOP	
 J	L_Sample_Ringbuffer70
 NOP	
-L__Sample_Ringbuffer286:
+L__Sample_Ringbuffer257:
 LBU	R3, Offset(_gcode+240)(GP)
 ORI	R2, R0, 121
-BNE	R3, R2, L__Sample_Ringbuffer288
+BNE	R3, R2, L__Sample_Ringbuffer259
 NOP	
 J	L_Sample_Ringbuffer71
 NOP	
-L__Sample_Ringbuffer288:
+L__Sample_Ringbuffer259:
 LBU	R3, Offset(_gcode+240)(GP)
 ORI	R2, R0, 90
-BNE	R3, R2, L__Sample_Ringbuffer290
+BNE	R3, R2, L__Sample_Ringbuffer261
 NOP	
 J	L_Sample_Ringbuffer72
 NOP	
-L__Sample_Ringbuffer290:
+L__Sample_Ringbuffer261:
 LBU	R3, Offset(_gcode+240)(GP)
 ORI	R2, R0, 122
-BNE	R3, R2, L__Sample_Ringbuffer292
+BNE	R3, R2, L__Sample_Ringbuffer263
 NOP	
 J	L_Sample_Ringbuffer73
 NOP	
-L__Sample_Ringbuffer292:
+L__Sample_Ringbuffer263:
 LBU	R3, Offset(_gcode+240)(GP)
 ORI	R2, R0, 74
-BNE	R3, R2, L__Sample_Ringbuffer294
+BNE	R3, R2, L__Sample_Ringbuffer265
 NOP	
 J	L_Sample_Ringbuffer74
 NOP	
-L__Sample_Ringbuffer294:
+L__Sample_Ringbuffer265:
 LBU	R3, Offset(_gcode+240)(GP)
 ORI	R2, R0, 106
-BNE	R3, R2, L__Sample_Ringbuffer296
+BNE	R3, R2, L__Sample_Ringbuffer267
 NOP	
 J	L_Sample_Ringbuffer75
 NOP	
-L__Sample_Ringbuffer296:
+L__Sample_Ringbuffer267:
 LBU	R3, Offset(_gcode+240)(GP)
 ORI	R2, R0, 70
-BNE	R3, R2, L__Sample_Ringbuffer298
+BNE	R3, R2, L__Sample_Ringbuffer269
 NOP	
 J	L_Sample_Ringbuffer76
 NOP	
-L__Sample_Ringbuffer298:
+L__Sample_Ringbuffer269:
 LBU	R3, Offset(_gcode+240)(GP)
 ORI	R2, R0, 102
-BNE	R3, R2, L__Sample_Ringbuffer300
+BNE	R3, R2, L__Sample_Ringbuffer271
 NOP	
 J	L_Sample_Ringbuffer77
 NOP	
-L__Sample_Ringbuffer300:
+L__Sample_Ringbuffer271:
 L_Sample_Ringbuffer69:
 ;Protocol.c,227 :: 		}
 L_Sample_Ringbuffer67:
 ;Protocol.c,231 :: 		if(*(*(gcode+5)+0) != 0){
 LBU	R2, Offset(_gcode+300)(GP)
-BNE	R2, R0, L__Sample_Ringbuffer302
+BNE	R2, R0, L__Sample_Ringbuffer273
 NOP	
 J	L_Sample_Ringbuffer78
 NOP	
-L__Sample_Ringbuffer302:
+L__Sample_Ringbuffer273:
 ;Protocol.c,232 :: 		xyz[4] = *(*(gcode+5)+0);no_of_axis++;
 ADDIU	R2, SP, 83
 ADDIU	R3, R2, 4
@@ -1153,21 +1045,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atof+0
 NOP	
-SWC1	S0, 100(SP)
+SWC1	S0, 96(SP)
 ;Protocol.c,238 :: 		Instruction_Values(gcode[5],&XYZ_Val);
-ADDIU	R2, SP, 100
+ADDIU	R2, SP, 96
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+300)
 ORI	R25, R25, lo_addr(_gcode+300)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,240 :: 		PrintDebug(*gcode[5],temp,&XYZ_Val);
-ADDIU	R3, SP, 100
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+300)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,242 :: 		break;
 J	L_Sample_Ringbuffer80
@@ -1180,21 +1064,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,245 :: 		status = Instruction_Values(gcode[5],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+300)
 ORI	R25, R25, lo_addr(_gcode+300)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,247 :: 		PrintDebug(*gcode[5],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-LBU	R25, Offset(_gcode+300)(GP)
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,249 :: 		break;
 J	L_Sample_Ringbuffer80
@@ -1203,56 +1079,56 @@ NOP
 L_Sample_Ringbuffer79:
 LBU	R3, Offset(_gcode+300)(GP)
 ORI	R2, R0, 90
-BNE	R3, R2, L__Sample_Ringbuffer304
+BNE	R3, R2, L__Sample_Ringbuffer275
 NOP	
 J	L_Sample_Ringbuffer81
 NOP	
-L__Sample_Ringbuffer304:
+L__Sample_Ringbuffer275:
 LBU	R3, Offset(_gcode+300)(GP)
 ORI	R2, R0, 122
-BNE	R3, R2, L__Sample_Ringbuffer306
+BNE	R3, R2, L__Sample_Ringbuffer277
 NOP	
 J	L_Sample_Ringbuffer82
 NOP	
-L__Sample_Ringbuffer306:
+L__Sample_Ringbuffer277:
 LBU	R3, Offset(_gcode+300)(GP)
 ORI	R2, R0, 74
-BNE	R3, R2, L__Sample_Ringbuffer308
+BNE	R3, R2, L__Sample_Ringbuffer279
 NOP	
 J	L_Sample_Ringbuffer83
 NOP	
-L__Sample_Ringbuffer308:
+L__Sample_Ringbuffer279:
 LBU	R3, Offset(_gcode+300)(GP)
 ORI	R2, R0, 106
-BNE	R3, R2, L__Sample_Ringbuffer310
+BNE	R3, R2, L__Sample_Ringbuffer281
 NOP	
 J	L_Sample_Ringbuffer84
 NOP	
-L__Sample_Ringbuffer310:
+L__Sample_Ringbuffer281:
 LBU	R3, Offset(_gcode+300)(GP)
 ORI	R2, R0, 70
-BNE	R3, R2, L__Sample_Ringbuffer312
+BNE	R3, R2, L__Sample_Ringbuffer283
 NOP	
 J	L_Sample_Ringbuffer85
 NOP	
-L__Sample_Ringbuffer312:
+L__Sample_Ringbuffer283:
 LBU	R3, Offset(_gcode+300)(GP)
 ORI	R2, R0, 102
-BNE	R3, R2, L__Sample_Ringbuffer314
+BNE	R3, R2, L__Sample_Ringbuffer285
 NOP	
 J	L_Sample_Ringbuffer86
 NOP	
-L__Sample_Ringbuffer314:
+L__Sample_Ringbuffer285:
 L_Sample_Ringbuffer80:
 ;Protocol.c,251 :: 		}
 L_Sample_Ringbuffer78:
 ;Protocol.c,254 :: 		if(*(*(gcode+6)+0) != 0){
 LBU	R2, Offset(_gcode+360)(GP)
-BNE	R2, R0, L__Sample_Ringbuffer316
+BNE	R2, R0, L__Sample_Ringbuffer287
 NOP	
 J	L_Sample_Ringbuffer87
 NOP	
-L__Sample_Ringbuffer316:
+L__Sample_Ringbuffer287:
 ;Protocol.c,255 :: 		i = cpy_val_from_str(temp,(*(gcode+6)),1,strlen(*(gcode+6)));
 LUI	R25, hi_addr(_gcode+360)
 ORI	R25, R25, lo_addr(_gcode+360)
@@ -1277,22 +1153,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atof+0
 NOP	
-SWC1	S0, 100(SP)
+SWC1	S0, 96(SP)
 ;Protocol.c,259 :: 		status = Instruction_Values(gcode[6],&XYZ_Val);
-ADDIU	R2, SP, 100
+ADDIU	R2, SP, 96
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+360)
 ORI	R25, R25, lo_addr(_gcode+360)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,261 :: 		PrintDebug(gcode[6],temp,&XYZ_Val);
-ADDIU	R3, SP, 100
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-ORI	R25, R0, lo_addr(_gcode+360)
-ANDI	R25, R25, 255
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,263 :: 		break;
 J	L_Sample_Ringbuffer89
@@ -1305,22 +1172,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 96(SP)
+SH	R2, 92(SP)
 ;Protocol.c,266 :: 		status = Instruction_Values(gcode[6],&O_Val);
-ADDIU	R2, SP, 96
+ADDIU	R2, SP, 92
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+360)
 ORI	R25, R25, lo_addr(_gcode+360)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,268 :: 		PrintDebug(gcode[6],temp,&O_Val);
-ADDIU	R3, SP, 96
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-ORI	R25, R0, lo_addr(_gcode+360)
-ANDI	R25, R25, 255
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,270 :: 		break;
 J	L_Sample_Ringbuffer89
@@ -1329,32 +1187,32 @@ NOP
 L_Sample_Ringbuffer88:
 LBU	R3, Offset(_gcode+360)(GP)
 ORI	R2, R0, 74
-BNE	R3, R2, L__Sample_Ringbuffer318
+BNE	R3, R2, L__Sample_Ringbuffer289
 NOP	
 J	L_Sample_Ringbuffer90
 NOP	
-L__Sample_Ringbuffer318:
+L__Sample_Ringbuffer289:
 LBU	R3, Offset(_gcode+360)(GP)
 ORI	R2, R0, 106
-BNE	R3, R2, L__Sample_Ringbuffer320
+BNE	R3, R2, L__Sample_Ringbuffer291
 NOP	
 J	L_Sample_Ringbuffer91
 NOP	
-L__Sample_Ringbuffer320:
+L__Sample_Ringbuffer291:
 LBU	R3, Offset(_gcode+360)(GP)
 ORI	R2, R0, 70
-BNE	R3, R2, L__Sample_Ringbuffer322
+BNE	R3, R2, L__Sample_Ringbuffer293
 NOP	
 J	L_Sample_Ringbuffer92
 NOP	
-L__Sample_Ringbuffer322:
+L__Sample_Ringbuffer293:
 LBU	R3, Offset(_gcode+360)(GP)
 ORI	R2, R0, 102
-BNE	R3, R2, L__Sample_Ringbuffer324
+BNE	R3, R2, L__Sample_Ringbuffer295
 NOP	
 J	L_Sample_Ringbuffer93
 NOP	
-L__Sample_Ringbuffer324:
+L__Sample_Ringbuffer295:
 L_Sample_Ringbuffer89:
 ;Protocol.c,273 :: 		}
 L_Sample_Ringbuffer87:
@@ -1392,29 +1250,19 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 94(SP)
 ;Protocol.c,283 :: 		M_Instruction(M_Val);     //debugging instructions
 SEH	R25, R2
 JAL	_M_Instruction+0
-NOP	
-;Protocol.c,285 :: 		PrintDebug(gcode[0],temp,&M_Val);
-ADDIU	R3, SP, 94
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-ORI	R25, R0, lo_addr(_gcode+0)
-ANDI	R25, R25, 255
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,289 :: 		if((*(gcode+1)) != 0){
 MOVZ	R3, R0, R0
 LUI	R2, hi_addr(_gcode+60)
 ORI	R2, R2, lo_addr(_gcode+60)
-BNE	R3, R2, L__Sample_Ringbuffer326
+BNE	R3, R2, L__Sample_Ringbuffer297
 NOP	
 J	L_Sample_Ringbuffer97
 NOP	
-L__Sample_Ringbuffer326:
+L__Sample_Ringbuffer297:
 ;Protocol.c,290 :: 		switch(*(*(gcode+1))){
 J	L_Sample_Ringbuffer98
 NOP	
@@ -1443,22 +1291,13 @@ NOP
 SEH	R2, R2
 MTC1	R2, S0
 CVT32.W 	S0, S0
-SWC1	S0, 100(SP)
+SWC1	S0, 96(SP)
 ;Protocol.c,296 :: 		status = Instruction_Values(gcode[0],&XYZ_Val);
-ADDIU	R2, SP, 100
+ADDIU	R2, SP, 96
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+0)
 ORI	R25, R25, lo_addr(_gcode+0)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,298 :: 		PrintDebug(gcode[0],temp,&XYZ_Val);
-ADDIU	R3, SP, 100
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-ORI	R25, R0, lo_addr(_gcode+0)
-ANDI	R25, R25, 255
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,300 :: 		break;
 J	L_Sample_Ringbuffer99
@@ -1467,18 +1306,18 @@ NOP
 L_Sample_Ringbuffer98:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 83
-BNE	R3, R2, L__Sample_Ringbuffer328
+BNE	R3, R2, L__Sample_Ringbuffer299
 NOP	
 J	L_Sample_Ringbuffer100
 NOP	
-L__Sample_Ringbuffer328:
+L__Sample_Ringbuffer299:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 115
-BNE	R3, R2, L__Sample_Ringbuffer330
+BNE	R3, R2, L__Sample_Ringbuffer301
 NOP	
 J	L_Sample_Ringbuffer101
 NOP	
-L__Sample_Ringbuffer330:
+L__Sample_Ringbuffer301:
 L_Sample_Ringbuffer99:
 ;Protocol.c,302 :: 		}
 L_Sample_Ringbuffer97:
@@ -1498,11 +1337,11 @@ L_Sample_Ringbuffer109:
 ;Protocol.c,306 :: 		if(*(*(gcode)+0)=='X'){
 LBU	R3, Offset(_gcode+0)(GP)
 ORI	R2, R0, 88
-BEQ	R3, R2, L__Sample_Ringbuffer331
+BEQ	R3, R2, L__Sample_Ringbuffer302
 NOP	
 J	L_Sample_Ringbuffer110
 NOP	
-L__Sample_Ringbuffer331:
+L__Sample_Ringbuffer302:
 ;Protocol.c,307 :: 		i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
 LUI	R25, hi_addr(_gcode+0)
 ORI	R25, R25, lo_addr(_gcode+0)
@@ -1521,32 +1360,23 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atof+0
 NOP	
-SWC1	S0, 100(SP)
+SWC1	S0, 96(SP)
 ;Protocol.c,309 :: 		status = Instruction_Values(gcode[0],&XYZ_Val);
-ADDIU	R2, SP, 100
+ADDIU	R2, SP, 96
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+0)
 ORI	R25, R25, lo_addr(_gcode+0)
 JAL	_Instruction_Values+0
 NOP	
-;Protocol.c,311 :: 		PrintDebug(gcode[0],temp,&XYZ_Val);
-ADDIU	R3, SP, 100
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-ORI	R25, R0, lo_addr(_gcode+0)
-ANDI	R25, R25, 255
-JAL	Protocol_PrintDebug+0
-NOP	
 ;Protocol.c,313 :: 		}
 L_Sample_Ringbuffer110:
 ;Protocol.c,317 :: 		if(*(*(gcode+1)+0) != 0){
 LBU	R2, Offset(_gcode+60)(GP)
-BNE	R2, R0, L__Sample_Ringbuffer333
+BNE	R2, R0, L__Sample_Ringbuffer304
 NOP	
 J	L_Sample_Ringbuffer111
 NOP	
-L__Sample_Ringbuffer333:
+L__Sample_Ringbuffer304:
 ;Protocol.c,318 :: 		xyz[1] = *(*(gcode+1)+0);no_of_axis++;
 ADDIU	R2, SP, 83
 ADDIU	R3, R2, 1
@@ -1582,22 +1412,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atof+0
 NOP	
-SWC1	S0, 100(SP)
+SWC1	S0, 96(SP)
 ;Protocol.c,325 :: 		status = Instruction_Values(gcode[1],&XYZ_Val);
-ADDIU	R2, SP, 100
+ADDIU	R2, SP, 96
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+60)
 ORI	R25, R25, lo_addr(_gcode+60)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,327 :: 		PrintDebug(gcode[1],temp,&XYZ_Val);
-ADDIU	R3, SP, 100
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-ORI	R25, R0, lo_addr(_gcode+60)
-ANDI	R25, R25, 255
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,329 :: 		break;
 J	L_Sample_Ringbuffer113
@@ -1611,22 +1432,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 92(SP)
+SH	R2, 90(SP)
 ;Protocol.c,335 :: 		status = Instruction_Values(gcode[2],&F_Val);
-ADDIU	R2, SP, 92
+ADDIU	R2, SP, 90
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+120)
 ORI	R25, R25, lo_addr(_gcode+120)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,337 :: 		PrintDebug(gcode[1],temp,&F_Val);
-ADDIU	R3, SP, 92
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-ORI	R25, R0, lo_addr(_gcode+60)
-ANDI	R25, R25, 255
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,340 :: 		break;
 J	L_Sample_Ringbuffer113
@@ -1635,60 +1447,60 @@ NOP
 L_Sample_Ringbuffer112:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 89
-BNE	R3, R2, L__Sample_Ringbuffer335
+BNE	R3, R2, L__Sample_Ringbuffer306
 NOP	
 J	L_Sample_Ringbuffer114
 NOP	
-L__Sample_Ringbuffer335:
+L__Sample_Ringbuffer306:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 121
-BNE	R3, R2, L__Sample_Ringbuffer337
+BNE	R3, R2, L__Sample_Ringbuffer308
 NOP	
 J	L_Sample_Ringbuffer115
 NOP	
-L__Sample_Ringbuffer337:
+L__Sample_Ringbuffer308:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 90
-BNE	R3, R2, L__Sample_Ringbuffer339
+BNE	R3, R2, L__Sample_Ringbuffer310
 NOP	
 J	L_Sample_Ringbuffer116
 NOP	
-L__Sample_Ringbuffer339:
+L__Sample_Ringbuffer310:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 122
-BNE	R3, R2, L__Sample_Ringbuffer341
+BNE	R3, R2, L__Sample_Ringbuffer312
 NOP	
 J	L_Sample_Ringbuffer117
 NOP	
-L__Sample_Ringbuffer341:
+L__Sample_Ringbuffer312:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 65
-BNE	R3, R2, L__Sample_Ringbuffer343
+BNE	R3, R2, L__Sample_Ringbuffer314
 NOP	
 J	L_Sample_Ringbuffer118
 NOP	
-L__Sample_Ringbuffer343:
+L__Sample_Ringbuffer314:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 97
-BNE	R3, R2, L__Sample_Ringbuffer345
+BNE	R3, R2, L__Sample_Ringbuffer316
 NOP	
 J	L_Sample_Ringbuffer119
 NOP	
-L__Sample_Ringbuffer345:
+L__Sample_Ringbuffer316:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 70
-BNE	R3, R2, L__Sample_Ringbuffer347
+BNE	R3, R2, L__Sample_Ringbuffer318
 NOP	
 J	L_Sample_Ringbuffer120
 NOP	
-L__Sample_Ringbuffer347:
+L__Sample_Ringbuffer318:
 LBU	R3, Offset(_gcode+60)(GP)
 ORI	R2, R0, 102
-BNE	R3, R2, L__Sample_Ringbuffer349
+BNE	R3, R2, L__Sample_Ringbuffer320
 NOP	
 J	L_Sample_Ringbuffer121
 NOP	
-L__Sample_Ringbuffer349:
+L__Sample_Ringbuffer320:
 L_Sample_Ringbuffer113:
 ;Protocol.c,343 :: 		}
 L_Sample_Ringbuffer111:
@@ -1700,11 +1512,11 @@ L_Sample_Ringbuffer122:
 ;Protocol.c,347 :: 		if (*(*(gcode)+0)=='F'){
 LBU	R3, Offset(_gcode+0)(GP)
 ORI	R2, R0, 70
-BEQ	R3, R2, L__Sample_Ringbuffer350
+BEQ	R3, R2, L__Sample_Ringbuffer321
 NOP	
 J	L_Sample_Ringbuffer123
 NOP	
-L__Sample_Ringbuffer350:
+L__Sample_Ringbuffer321:
 ;Protocol.c,348 :: 		i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
 LUI	R25, hi_addr(_gcode+0)
 ORI	R25, R25, lo_addr(_gcode+0)
@@ -1723,22 +1535,13 @@ ADDIU	R2, SP, 74
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
-SH	R2, 92(SP)
+SH	R2, 90(SP)
 ;Protocol.c,350 :: 		status = Instruction_Values(gcode[0],&F_Val);
-ADDIU	R2, SP, 92
+ADDIU	R2, SP, 90
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gcode+0)
 ORI	R25, R25, lo_addr(_gcode+0)
 JAL	_Instruction_Values+0
-NOP	
-;Protocol.c,352 :: 		PrintDebug(gcode[6],temp,&F_Val);
-ADDIU	R3, SP, 92
-ADDIU	R2, SP, 74
-MOVZ	R27, R3, R0
-MOVZ	R26, R2, R0
-ORI	R25, R0, lo_addr(_gcode+360)
-ANDI	R25, R25, 255
-JAL	Protocol_PrintDebug+0
 NOP	
 ;Protocol.c,354 :: 		}
 L_Sample_Ringbuffer123:
@@ -1747,98 +1550,98 @@ J	L_Sample_Ringbuffer5
 NOP	
 ;Protocol.c,357 :: 		}
 L_Sample_Ringbuffer4:
-LH	R4, 104(SP)
+LH	R4, 100(SP)
 SEH	R3, R4
 ORI	R2, R0, 71
-BNE	R3, R2, L__Sample_Ringbuffer352
+BNE	R3, R2, L__Sample_Ringbuffer323
 NOP	
 J	L_Sample_Ringbuffer6
 NOP	
-L__Sample_Ringbuffer352:
+L__Sample_Ringbuffer323:
 SEH	R3, R4
 ORI	R2, R0, 103
-BNE	R3, R2, L__Sample_Ringbuffer354
+BNE	R3, R2, L__Sample_Ringbuffer325
 NOP	
 J	L_Sample_Ringbuffer7
 NOP	
-L__Sample_Ringbuffer354:
+L__Sample_Ringbuffer325:
 SEH	R3, R4
 ORI	R2, R0, 77
-BNE	R3, R2, L__Sample_Ringbuffer356
+BNE	R3, R2, L__Sample_Ringbuffer327
 NOP	
 J	L_Sample_Ringbuffer95
 NOP	
-L__Sample_Ringbuffer356:
+L__Sample_Ringbuffer327:
 SEH	R3, R4
 ORI	R2, R0, 109
-BNE	R3, R2, L__Sample_Ringbuffer358
+BNE	R3, R2, L__Sample_Ringbuffer329
 NOP	
 J	L_Sample_Ringbuffer96
 NOP	
-L__Sample_Ringbuffer358:
+L__Sample_Ringbuffer329:
 SEH	R3, R4
 ORI	R2, R0, 88
-BNE	R3, R2, L__Sample_Ringbuffer360
+BNE	R3, R2, L__Sample_Ringbuffer331
 NOP	
 J	L_Sample_Ringbuffer102
 NOP	
-L__Sample_Ringbuffer360:
+L__Sample_Ringbuffer331:
 SEH	R3, R4
 ORI	R2, R0, 120
-BNE	R3, R2, L__Sample_Ringbuffer362
+BNE	R3, R2, L__Sample_Ringbuffer333
 NOP	
 J	L_Sample_Ringbuffer103
 NOP	
-L__Sample_Ringbuffer362:
+L__Sample_Ringbuffer333:
 SEH	R3, R4
 ORI	R2, R0, 89
-BNE	R3, R2, L__Sample_Ringbuffer364
+BNE	R3, R2, L__Sample_Ringbuffer335
 NOP	
 J	L_Sample_Ringbuffer104
 NOP	
-L__Sample_Ringbuffer364:
+L__Sample_Ringbuffer335:
 SEH	R3, R4
 ORI	R2, R0, 121
-BNE	R3, R2, L__Sample_Ringbuffer366
+BNE	R3, R2, L__Sample_Ringbuffer337
 NOP	
 J	L_Sample_Ringbuffer105
 NOP	
-L__Sample_Ringbuffer366:
+L__Sample_Ringbuffer337:
 SEH	R3, R4
 ORI	R2, R0, 90
-BNE	R3, R2, L__Sample_Ringbuffer368
+BNE	R3, R2, L__Sample_Ringbuffer339
 NOP	
 J	L_Sample_Ringbuffer106
 NOP	
-L__Sample_Ringbuffer368:
+L__Sample_Ringbuffer339:
 SEH	R3, R4
 ORI	R2, R0, 122
-BNE	R3, R2, L__Sample_Ringbuffer370
+BNE	R3, R2, L__Sample_Ringbuffer341
 NOP	
 J	L_Sample_Ringbuffer107
 NOP	
-L__Sample_Ringbuffer370:
+L__Sample_Ringbuffer341:
 SEH	R3, R4
 ORI	R2, R0, 65
-BNE	R3, R2, L__Sample_Ringbuffer372
+BNE	R3, R2, L__Sample_Ringbuffer343
 NOP	
 J	L_Sample_Ringbuffer108
 NOP	
-L__Sample_Ringbuffer372:
+L__Sample_Ringbuffer343:
 SEH	R3, R4
 ORI	R2, R0, 97
-BNE	R3, R2, L__Sample_Ringbuffer374
+BNE	R3, R2, L__Sample_Ringbuffer345
 NOP	
 J	L_Sample_Ringbuffer109
 NOP	
-L__Sample_Ringbuffer374:
+L__Sample_Ringbuffer345:
 SEH	R3, R4
 ORI	R2, R0, 70
-BNE	R3, R2, L__Sample_Ringbuffer376
+BNE	R3, R2, L__Sample_Ringbuffer347
 NOP	
 J	L_Sample_Ringbuffer122
 NOP	
-L__Sample_Ringbuffer376:
+L__Sample_Ringbuffer347:
 L_Sample_Ringbuffer5:
 ;Protocol.c,359 :: 		status = Check_group_multiple_violations();
 JAL	_Check_group_multiple_violations+0
@@ -1857,7 +1660,7 @@ LW	R27, 12(SP)
 LW	R26, 8(SP)
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 108
+ADDIU	SP, SP, 104
 JR	RA
 NOP	
 ; end of _Sample_Ringbuffer
@@ -1902,11 +1705,11 @@ L_Protocol_strsplit124:
 SEH	R3, R5
 SEH	R2, R4
 SLT	R2, R3, R2
-BNE	R2, R0, L_Protocol_strsplit378
+BNE	R2, R0, L_Protocol_strsplit349
 NOP	
 J	L_Protocol_strsplit125
 NOP	
-L_Protocol_strsplit378:
+L_Protocol_strsplit349:
 ;Protocol.c,375 :: 		err = i - lasti; //test if string in string is < 49
 SUBU	R2, R5, R7
 ; err start address is: 36 (R9)
@@ -1917,35 +1720,35 @@ ADDU	R2, R26, R2
 LBU	R2, 0(R2)
 ANDI	R3, R2, 255
 ANDI	R2, R27, 255
-BNE	R3, R2, L_Protocol_strsplit380
+BNE	R3, R2, L_Protocol_strsplit351
 NOP	
-J	L_Protocol_strsplit171
+J	L_Protocol_strsplit142
 NOP	
-L_Protocol_strsplit380:
+L_Protocol_strsplit351:
 SEH	R2, R5
 ADDU	R2, R26, R2
 LBU	R2, 0(R2)
 ANDI	R3, R2, 255
 ORI	R2, R0, 10
-BNE	R3, R2, L_Protocol_strsplit382
+BNE	R3, R2, L_Protocol_strsplit353
 NOP	
-J	L_Protocol_strsplit170
+J	L_Protocol_strsplit141
 NOP	
-L_Protocol_strsplit382:
+L_Protocol_strsplit353:
 SEH	R2, R9
 ; err end address is: 36 (R9)
 SLTI	R2, R2, 50
-BNE	R2, R0, L_Protocol_strsplit383
+BNE	R2, R0, L_Protocol_strsplit354
 NOP	
-J	L_Protocol_strsplit169
+J	L_Protocol_strsplit140
 NOP	
-L_Protocol_strsplit383:
+L_Protocol_strsplit354:
 J	L_Protocol_strsplit129
 NOP	
 ; lasti end address is: 28 (R7)
-L_Protocol_strsplit171:
-L_Protocol_strsplit170:
-L_Protocol_strsplit169:
+L_Protocol_strsplit142:
+L_Protocol_strsplit141:
+L_Protocol_strsplit140:
 ;Protocol.c,377 :: 		arg[kk++][ii] = 0;
 SEH	R3, R6
 ORI	R2, R0, 60
@@ -1988,11 +1791,11 @@ SEH	R2, R5
 ADDU	R2, R26, R2
 LBU	R2, 0(R2)
 ANDI	R2, R2, 255
-BEQ	R2, R0, L_Protocol_strsplit384
+BEQ	R2, R0, L_Protocol_strsplit355
 NOP	
 J	L_Protocol_strsplit131
 NOP	
-L_Protocol_strsplit384:
+L_Protocol_strsplit355:
 ; len end address is: 16 (R4)
 ; lasti end address is: 28 (R7)
 ; ii end address is: 32 (R8)
@@ -2063,11 +1866,11 @@ L_Protocol_cpy_val_from_str132:
 ; tmp start address is: 16 (R4)
 LBU	R2, 0(R4)
 ANDI	R2, R2, 255
-BNE	R2, R0, L_Protocol_cpy_val_from_str387
+BNE	R2, R0, L_Protocol_cpy_val_from_str358
 NOP	
 J	L_Protocol_cpy_val_from_str133
 NOP	
-L_Protocol_cpy_val_from_str387:
+L_Protocol_cpy_val_from_str358:
 ;Protocol.c,401 :: 		*strA++ = *tmp++;
 LBU	R2, 0(R4)
 SB	R2, 0(R25)
@@ -2113,11 +1916,11 @@ L_Protocol_str2int134:
 SEH	R3, R4
 LH	R2, 12(SP)
 SLT	R2, R3, R2
-BNE	R2, R0, L_Protocol_str2int389
+BNE	R2, R0, L_Protocol_str2int360
 NOP	
 J	L_Protocol_str2int135
 NOP	
-L_Protocol_str2int389:
+L_Protocol_str2int360:
 ;Protocol.c,419 :: 		result = result * base + ( *(str+i) - 0x30 );
 LH	R2, 14(SP)
 MUL	R3, R2, R26
@@ -2142,11 +1945,11 @@ NOP
 LW	R25, 8(SP)
 LH	R26, 6(SP)
 LH	R3, 4(SP)
-BNE	R2, R0, L_Protocol_str2int391
+BNE	R2, R0, L_Protocol_str2int362
 NOP	
 J	L_Protocol_str2int138
 NOP	
-L_Protocol_str2int391:
+L_Protocol_str2int362:
 J	L_Protocol_str2int137
 NOP	
 L_Protocol_str2int138:
@@ -2169,321 +1972,3 @@ ADDIU	SP, SP, 16
 JR	RA
 NOP	
 ; end of Protocol_str2int
-Protocol_PrintDebug:
-;Protocol.c,429 :: 		static void PrintDebug(char c,char *strB,void *ptr){
-ADDIU	SP, SP, -40
-SW	RA, 0(SP)
-;Protocol.c,433 :: 		switch(c){
-J	L_Protocol_PrintDebug139
-NOP	
-;Protocol.c,434 :: 		case 'G':case 'g':
-L_Protocol_PrintDebug141:
-L_Protocol_PrintDebug142:
-;Protocol.c,435 :: 		case 'F':case 'f':
-L_Protocol_PrintDebug143:
-L_Protocol_PrintDebug144:
-;Protocol.c,436 :: 		case 'M':case 'm':
-L_Protocol_PrintDebug145:
-L_Protocol_PrintDebug146:
-;Protocol.c,437 :: 		case 'S':case 's':
-L_Protocol_PrintDebug147:
-L_Protocol_PrintDebug148:
-;Protocol.c,438 :: 		case 'P':case 'p':
-L_Protocol_PrintDebug149:
-L_Protocol_PrintDebug150:
-;Protocol.c,439 :: 		case 'L':case 'l':
-L_Protocol_PrintDebug151:
-L_Protocol_PrintDebug152:
-;Protocol.c,440 :: 		case 'T':case 't':
-L_Protocol_PrintDebug153:
-L_Protocol_PrintDebug154:
-;Protocol.c,441 :: 		G_Val = *(int*)ptr;
-LH	R2, 0(R27)
-; G_Val start address is: 12 (R3)
-SEH	R3, R2
-; G_Val end address is: 12 (R3)
-;Protocol.c,442 :: 		while(DMA_IsOn(1));
-L_Protocol_PrintDebug155:
-; G_Val start address is: 12 (R3)
-SH	R3, 4(SP)
-SW	R27, 8(SP)
-SW	R26, 12(SP)
-SB	R25, 16(SP)
-ORI	R25, R0, 1
-JAL	_DMA_IsOn+0
-NOP	
-LBU	R25, 16(SP)
-LW	R26, 12(SP)
-LW	R27, 8(SP)
-LH	R3, 4(SP)
-BNE	R2, R0, L_Protocol_PrintDebug394
-NOP	
-J	L_Protocol_PrintDebug156
-NOP	
-L_Protocol_PrintDebug394:
-J	L_Protocol_PrintDebug155
-NOP	
-L_Protocol_PrintDebug156:
-;Protocol.c,443 :: 		dma_printf("%c\t%s\t%d\n",c,strB,G_Val);
-ADDIU	R23, SP, 17
-ADDIU	R22, R23, 10
-LUI	R24, hi_addr(?ICSProtocol_?lstr1_Protocol+0)
-ORI	R24, R24, lo_addr(?ICSProtocol_?lstr1_Protocol+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R2, SP, 17
-SW	R27, 4(SP)
-; G_Val end address is: 12 (R3)
-SW	R26, 8(SP)
-SB	R25, 12(SP)
-ADDIU	SP, SP, -16
-SH	R3, 12(SP)
-SW	R26, 8(SP)
-SB	R25, 4(SP)
-SW	R2, 0(SP)
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 16
-LBU	R25, 12(SP)
-LW	R26, 8(SP)
-LW	R27, 4(SP)
-;Protocol.c,444 :: 		break;
-J	L_Protocol_PrintDebug140
-NOP	
-;Protocol.c,445 :: 		case 'X':case 'x':
-L_Protocol_PrintDebug157:
-L_Protocol_PrintDebug158:
-;Protocol.c,446 :: 		case 'Y':case 'y':
-L_Protocol_PrintDebug159:
-L_Protocol_PrintDebug160:
-;Protocol.c,447 :: 		case 'Z':case 'z':
-L_Protocol_PrintDebug161:
-L_Protocol_PrintDebug162:
-;Protocol.c,448 :: 		case 'A':case 'a':
-L_Protocol_PrintDebug163:
-L_Protocol_PrintDebug164:
-;Protocol.c,449 :: 		XYZ_Val = *(float*)ptr;
-LWC1	S0, 0(R27)
-; XYZ_Val start address is: 8 (R2)
-MOV.S 	S1, S0
-; XYZ_Val end address is: 8 (R2)
-MOV.S 	S16, S1
-;Protocol.c,450 :: 		while(DMA_IsOn(1));
-L_Protocol_PrintDebug165:
-; XYZ_Val start address is: 128 (R32)
-SWC1	S16, 4(SP)
-SW	R27, 8(SP)
-SW	R26, 12(SP)
-SB	R25, 16(SP)
-ORI	R25, R0, 1
-JAL	_DMA_IsOn+0
-NOP	
-LBU	R25, 16(SP)
-LW	R26, 12(SP)
-LW	R27, 8(SP)
-LWC1	S16, 4(SP)
-BNE	R2, R0, L_Protocol_PrintDebug396
-NOP	
-J	L_Protocol_PrintDebug166
-NOP	
-L_Protocol_PrintDebug396:
-J	L_Protocol_PrintDebug165
-NOP	
-L_Protocol_PrintDebug166:
-;Protocol.c,451 :: 		dma_printf("%c\t%s\t%f\n",c,strB,XYZ_Val);
-ADDIU	R23, SP, 27
-ADDIU	R22, R23, 10
-LUI	R24, hi_addr(?ICSProtocol_?lstr2_Protocol+0)
-ORI	R24, R24, lo_addr(?ICSProtocol_?lstr2_Protocol+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R2, SP, 27
-SW	R27, 4(SP)
-; XYZ_Val end address is: 128 (R32)
-SW	R26, 8(SP)
-SB	R25, 12(SP)
-ADDIU	SP, SP, -16
-SWC1	S16, 12(SP)
-SW	R26, 8(SP)
-SB	R25, 4(SP)
-SW	R2, 0(SP)
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 16
-LBU	R25, 12(SP)
-LW	R26, 8(SP)
-LW	R27, 4(SP)
-;Protocol.c,452 :: 		break;
-J	L_Protocol_PrintDebug140
-NOP	
-;Protocol.c,453 :: 		default:break;
-L_Protocol_PrintDebug167:
-J	L_Protocol_PrintDebug140
-NOP	
-;Protocol.c,454 :: 		}
-L_Protocol_PrintDebug139:
-ANDI	R3, R25, 255
-ORI	R2, R0, 71
-BNE	R3, R2, L_Protocol_PrintDebug398
-NOP	
-J	L_Protocol_PrintDebug141
-NOP	
-L_Protocol_PrintDebug398:
-ANDI	R3, R25, 255
-ORI	R2, R0, 103
-BNE	R3, R2, L_Protocol_PrintDebug400
-NOP	
-J	L_Protocol_PrintDebug142
-NOP	
-L_Protocol_PrintDebug400:
-ANDI	R3, R25, 255
-ORI	R2, R0, 70
-BNE	R3, R2, L_Protocol_PrintDebug402
-NOP	
-J	L_Protocol_PrintDebug143
-NOP	
-L_Protocol_PrintDebug402:
-ANDI	R3, R25, 255
-ORI	R2, R0, 102
-BNE	R3, R2, L_Protocol_PrintDebug404
-NOP	
-J	L_Protocol_PrintDebug144
-NOP	
-L_Protocol_PrintDebug404:
-ANDI	R3, R25, 255
-ORI	R2, R0, 77
-BNE	R3, R2, L_Protocol_PrintDebug406
-NOP	
-J	L_Protocol_PrintDebug145
-NOP	
-L_Protocol_PrintDebug406:
-ANDI	R3, R25, 255
-ORI	R2, R0, 109
-BNE	R3, R2, L_Protocol_PrintDebug408
-NOP	
-J	L_Protocol_PrintDebug146
-NOP	
-L_Protocol_PrintDebug408:
-ANDI	R3, R25, 255
-ORI	R2, R0, 83
-BNE	R3, R2, L_Protocol_PrintDebug410
-NOP	
-J	L_Protocol_PrintDebug147
-NOP	
-L_Protocol_PrintDebug410:
-ANDI	R3, R25, 255
-ORI	R2, R0, 115
-BNE	R3, R2, L_Protocol_PrintDebug412
-NOP	
-J	L_Protocol_PrintDebug148
-NOP	
-L_Protocol_PrintDebug412:
-ANDI	R3, R25, 255
-ORI	R2, R0, 80
-BNE	R3, R2, L_Protocol_PrintDebug414
-NOP	
-J	L_Protocol_PrintDebug149
-NOP	
-L_Protocol_PrintDebug414:
-ANDI	R3, R25, 255
-ORI	R2, R0, 112
-BNE	R3, R2, L_Protocol_PrintDebug416
-NOP	
-J	L_Protocol_PrintDebug150
-NOP	
-L_Protocol_PrintDebug416:
-ANDI	R3, R25, 255
-ORI	R2, R0, 76
-BNE	R3, R2, L_Protocol_PrintDebug418
-NOP	
-J	L_Protocol_PrintDebug151
-NOP	
-L_Protocol_PrintDebug418:
-ANDI	R3, R25, 255
-ORI	R2, R0, 108
-BNE	R3, R2, L_Protocol_PrintDebug420
-NOP	
-J	L_Protocol_PrintDebug152
-NOP	
-L_Protocol_PrintDebug420:
-ANDI	R3, R25, 255
-ORI	R2, R0, 84
-BNE	R3, R2, L_Protocol_PrintDebug422
-NOP	
-J	L_Protocol_PrintDebug153
-NOP	
-L_Protocol_PrintDebug422:
-ANDI	R3, R25, 255
-ORI	R2, R0, 116
-BNE	R3, R2, L_Protocol_PrintDebug424
-NOP	
-J	L_Protocol_PrintDebug154
-NOP	
-L_Protocol_PrintDebug424:
-ANDI	R3, R25, 255
-ORI	R2, R0, 88
-BNE	R3, R2, L_Protocol_PrintDebug426
-NOP	
-J	L_Protocol_PrintDebug157
-NOP	
-L_Protocol_PrintDebug426:
-ANDI	R3, R25, 255
-ORI	R2, R0, 120
-BNE	R3, R2, L_Protocol_PrintDebug428
-NOP	
-J	L_Protocol_PrintDebug158
-NOP	
-L_Protocol_PrintDebug428:
-ANDI	R3, R25, 255
-ORI	R2, R0, 89
-BNE	R3, R2, L_Protocol_PrintDebug430
-NOP	
-J	L_Protocol_PrintDebug159
-NOP	
-L_Protocol_PrintDebug430:
-ANDI	R3, R25, 255
-ORI	R2, R0, 121
-BNE	R3, R2, L_Protocol_PrintDebug432
-NOP	
-J	L_Protocol_PrintDebug160
-NOP	
-L_Protocol_PrintDebug432:
-ANDI	R3, R25, 255
-ORI	R2, R0, 90
-BNE	R3, R2, L_Protocol_PrintDebug434
-NOP	
-J	L_Protocol_PrintDebug161
-NOP	
-L_Protocol_PrintDebug434:
-ANDI	R3, R25, 255
-ORI	R2, R0, 122
-BNE	R3, R2, L_Protocol_PrintDebug436
-NOP	
-J	L_Protocol_PrintDebug162
-NOP	
-L_Protocol_PrintDebug436:
-ANDI	R3, R25, 255
-ORI	R2, R0, 65
-BNE	R3, R2, L_Protocol_PrintDebug438
-NOP	
-J	L_Protocol_PrintDebug163
-NOP	
-L_Protocol_PrintDebug438:
-ANDI	R3, R25, 255
-ORI	R2, R0, 97
-BNE	R3, R2, L_Protocol_PrintDebug440
-NOP	
-J	L_Protocol_PrintDebug164
-NOP	
-L_Protocol_PrintDebug440:
-J	L_Protocol_PrintDebug167
-NOP	
-L_Protocol_PrintDebug140:
-;Protocol.c,455 :: 		return;
-;Protocol.c,456 :: 		}
-L_end_PrintDebug:
-LW	RA, 0(SP)
-ADDIU	SP, SP, 40
-JR	RA
-NOP	
-; end of Protocol_PrintDebug

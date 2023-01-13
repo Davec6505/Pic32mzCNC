@@ -141,7 +141,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 137 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
- float steps_per_mm[ 6 ];
+ unsigned long steps_per_mm[ 6 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -295,6 +295,7 @@ static unsigned int NVM_WREN_Wait();
 void NVM_PWPAGE_Lock();
 void NVMReadRow(unsigned long addr);
 unsigned long NVMReadWord(void *addr);
+unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
@@ -310,7 +311,14 @@ float ulong2flt(unsigned long ui_) ;
 
 
 void sys_sync_current_position();
-#line 82 "c:/users/git/pic32mzcnc/globals.h"
+#line 80 "c:/users/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buff[128];
+
+
+
+
+
+
 typedef struct {
  char abort;
  char state;
@@ -336,7 +344,8 @@ typedef struct{
 
 void Settings_Init(char reset_all);
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
-void Save_Row_From_Flash(unsigned long addr);
+
+int Save_Row_From_Flash(unsigned long addr);
 #line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
@@ -622,11 +631,6 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -676,7 +680,7 @@ typedef struct {
  float feed_rate;
 
  volatile float position[ 6 ];
-
+ volatile float coord_system[ 6 ];
 
  volatile float coord_offset[ 6 ];
 
@@ -735,6 +739,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
+void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -858,10 +863,10 @@ int i = 0;
  last_group_number = group_number;
  if (group_number ==  1 ){
 
- if(non_modal_action != last_non_modal_action){
+
  Rst_modalword();
   (non_modal_words |= (1 << non_modal_action) ) ;
- }
+
 
  while(DMA_IsOn(1));
  dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
@@ -1039,17 +1044,28 @@ int F_Val,O_Val;
 
 
 
+void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z){
+int i;
+float temp[3];
+ for(i=0;i<3;i++){
+ temp[i] = ulong2flt(settings.steps_per_mm[i]);
+ }
+ gc.position[X] = x/temp[X];
+ gc.position[Y] = y/temp[Y];
+ gc.position[Z] = z/temp[Z];
+}
+
+
+
+
 static float To_Millimeters(float value){
  return(gc.inches_mode) ? (value *  (25.40) ) : value;
 }
 
 
-static void Select_Plane(long x,long y,long z){
- gc.position[X] = x/settings.steps_per_mm[X];
- gc.position[Y] = y/settings.steps_per_mm[Y];
- gc.position[Z] = z/settings.steps_per_mm[Z];
+static void Select_Plane(int axis_combo){
+ axis_xyz = axis_combo;
 }
-
 
 
 static int Set_Modal_Groups(int mode){
@@ -1077,14 +1093,14 @@ int i;
  case 3: motion_mode =  3 ; break;
  case 4: non_modal_action =  1 ; break;
  case 10: non_modal_action =  2 ; break;
- case 17: Select_Plane(X, Y, Z); break;
- case 18: Select_Plane(X, Z, Y); break;
- case 19: Select_Plane(Y, Z, X); break;
+ case 17: Select_Plane(xy); break;
+ case 18: Select_Plane(xz); break;
+ case 19: Select_Plane(yz); break;
  case 20: gc.inches_mode = 1; break;
  case 21: gc.inches_mode = 0; break;
  case 53: absolute_override =  1 ; break;
  case 54: case 55: case 56: case 57: case 58: case 59:
- gc.coord_select = int_value-54;
+ gc.coord_select = (mode - 54)+1;
  break;
  case 80: motion_mode =  4 ; break;
  case 90: gc.absolute_mode =  1 ; break;
@@ -1145,7 +1161,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 444 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 455 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  status_code = 3 ; ;break;

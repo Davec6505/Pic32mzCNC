@@ -153,7 +153,7 @@ typedef struct {
   float feed_rate;               // Millimeters/min
 //  float seek_rate;             // Millimeters/min. Will be used in v0.9 when axis independence is installed
   volatile float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
-//  volatile float coord_system[6];  // Current work coordinate system (G54+). Stores offset from absolute machine
+  volatile float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine
                                  // position in mm. Loaded from EEPROM when called.
   volatile float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
                                  // machine zero in mm. Non-persistent. Cleared upon reset and boot.
@@ -211,7 +211,8 @@ int Motion_mode();
 int Instruction_Values(char *c,void *any);
 //movement of axis
 void Movement_Condition();
-
+//update current position ??? prehaps move to another location
+void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);

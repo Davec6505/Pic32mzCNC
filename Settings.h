@@ -136,7 +136,7 @@
  // Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
 typedef struct {
   unsigned long p_msec;
-  float steps_per_mm[NoOfAxis];
+  unsigned long steps_per_mm[NoOfAxis];
   float default_feed_rate;
   float default_seek_rate;
   float homing_feed_rate;
