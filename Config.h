@@ -35,17 +35,18 @@ extern bit oneShotB; sfr;
 
 ////////////////////////////////////////////////////
 //function prototypes
-void PinMode(); //pin mode configuration
-void UartConfig();//setupUart
+void PinMode();             //pin mode configuration
+void UartConfig();          //setupUart
 void set_performance_mode();//sys clk performance setup
-void Uart2InterruptSetup();//uart2 interrupt on recieve
-void LcdI2CConfig();//configure the i2c_lcd 4line 16ch display
-void OutPutPulseXYZ(); // setup output pulse OC3
+void Uart2InterruptSetup(); //uart2 interrupt on recieve turned off
+//void LcdI2CConfig();      //configure the i2c_lcd 4line 16ch display
+void OutPutPulseXYZ();      // setup output pulse OC3
 
-//movement from gcode instruction, mostly modal
-int Temp_Move(int a);
 //non modal actions from gcode instruction
-int Non_Modal_Actions(int action);
+int Modal_Group_Actions0(int action);
+//movement from gcode instruction, mostly modal
+int Modal_Group_Actions1(int action);
+
 
 
 

@@ -19,15 +19,14 @@
 #include "GCODE.h"
 
 parser_state_t gc;
-coord_offsets coord_offset;
 
+volatile int status_code;  // Status of instructions
 float coord_data[NoOfAxis];
 
 static volatile char axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
 static char absolute_override;
 static volatile int modal_group_words;  // Bitflag variable to track and check modal group words in block
 static volatile int non_modal_words;    // Bitflags to track non-modal actions
-static volatile int status_code;             // Status of instructions
 static volatile int motion_mode;
 int group_number;
 int non_modal_action;
@@ -388,9 +387,9 @@ int i;
     case 21: gc.inches_mode = 0; break;
     case 53: absolute_override = true; break;
     case 54: case 55: case 56: case 57: case 58: case 59:
-             gc.coord_select = (mode - 54)+1;//int_value-54;
+             gc.coord_select = (mode - 53);//G54-53 == 1...;
              break;
-    case 80: motion_mode = MOTION_MODE_CANCEL; break;
+    case 80: gc.motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
     case 90: gc.absolute_mode = true; break;
     case 91: gc.absolute_mode = false; break;
     case 93: gc.inverse_feed_rate_mode = true; break;

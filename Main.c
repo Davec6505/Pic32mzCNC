@@ -82,14 +82,14 @@ static int cntr = 0,a = 0;
        switch(modal_group){
           case 0:break;
           case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
-               modal_action = Non_Modal_Actions(Get_modalword());
+               modal_action = Modal_Group_Actions0(Get_modalword());
                modal_group = Rst_modalgroup();
                break;
           case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
               axis_to_run = Get_Axisword();
               if(axis_to_run){
                 EnableSteppers(2);
-                Temp_Move(axis_to_run);
+                Modal_Group_Actions1(axis_to_run);
                 axis_to_run = Rst_Axisword();
               }
                break;
@@ -138,9 +138,211 @@ static int cntr = 0,a = 0;
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//                        GROUP_0  NON MODAL ACTIONS                          //
+////////////////////////////////////////////////////////////////////////////////
+int Modal_Group_Actions0(int action){
+//[b0=10ms | b1=100ms | b2 = 300ms | b4=500ms | b5 = 1sec]
+int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
+unsigned long _data;
+float coord_data[NoOfAxis];
+float a_val;
 
-int Temp_Move(int a){
-    switch(a){
+//actions below are focused on the bit positions hence the
+//numbering system grows 2^n
+unsigned long _flash,*addr;
+   switch(action){
+     case 2:  //NON_MODAL_DWELL
+           i = 0;
+           //G04 [P/S] PAUSE MACHINE INSTRUCTION
+           if(gc.S > 0){ //wait in seconds
+             dly_time = gc.S * 1000;
+             while(i < dly_time){
+              LED2 = TMR.clock >> 1;
+              Delay_ms(1);
+              i++;
+             }
+           }else if(gc.P > 0){ //wait in msec
+             dly_time = (unsigned long)gc.P;
+             while(i < dly_time){
+              LED2 = TMR.clock >> 1;
+              Delay_ms(1);
+              i++;
+             }
+           }
+           LED2 = false;
+          break;
+     case 4:  //NON_MODAL_SET_COORDINATE_DATA
+          /******************************************************************
+           *! L1 sets the offsets of the specified tool relative to the head
+           *  reference point to the specified values.
+           *! L2 sets the current workplace coordinate offsets to the specified
+           *  values.
+           *! L20 adjusts the current workplace coordinate offsets so
+           *  that the current tool head position has the specified coordinates.
+           ******************************************************************/
+          //G10 setting of offsets
+          //[G10 L1 P2 X17.8 Y-19.3 Z0.0]
+          //[G10 P1 R140 S205]
+          //P index is EEPROM coordinate data indexing / recipe.
+          if(gc.L != 2 && gc.L != 20)
+             return -1;
+          if (gc.L == 20) {
+              //write the Pnn coordinates to flash recipe for active system
+              result = Settings_Write_Coord_Data((int)gc.P,gc.next_position );
+              if(result){ //response if write to flash failed
+                return NVM_COORDINATE_WRITE_ERROR;
+              }
+             // Update system coordinate system if currently active with G54 - G59
+              if (gc.coord_select > 0) {
+                 memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
+              }
+          } else {
+            //Retrieve the data from flash into buff
+            if(!Save_Row_From_Flash(FLASH_Settings_VAddr_P1))return;
+
+            //use P to get to the start of the rescipe P1,2,3... in the buff
+            //array in Globals.c which is indexed by 4 for now a axis x,y,z,a
+            temp = indx = (gc.P-1) & 0xFF;
+            indx *= 4;
+            axis_cnt = 0;
+           // Update axes defined only in block. Always in machine coordinates.
+           //Can change non-active system.
+             axis_words = Get_Axisword();
+             for(i = 0; i < 3;i++){
+                temp_axis = (axis_words >> i) & 1;
+                //find missing axis
+                if(temp_axis == 0){
+                   axis_cnt++;
+                   if(axis_cnt > 2)break;
+                   _flash = buff[indx];
+                   coord_data[i] = ulong2flt(_flash);;
+                #if MainDebug == 1
+                 while(DMA_IsOn(1));
+                 dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
+                             temp_axis,i,coord_data[i],indx);
+                #endif
+                }else{
+                  coord_data[i] = gc.next_position[i];
+                                  #if MainDebug == 1
+                 while(DMA_IsOn(1));
+                 dma_printf("gc.next_position[%d]:= %f\n"
+                             ,i,gc.next_position[i]);
+                #endif
+                }
+                indx++;
+             }
+
+            result = Settings_Write_Coord_Data((int)gc.P,coord_data);
+
+          // Update current coordinate system if currently active.
+            memcpy(gc.coord_system,coord_data,sizeof(coord_data));
+          }
+
+          break;
+     case  8:  //NON_MODAL_GO_HOME_0_BIT
+     case 32:  //NON_MODAL_GO_HOME_1_BIT
+          // Move to intermediate position before going home. 
+          //Obeys current coordinate system and offsets and absolute and incremental modes.
+          axis_words = Get_Axisword();
+          #if MainDebug == 1
+           while(DMA_IsOn(1));
+           dma_printf("axis_words:= %d\n",axis_words);
+          #endif
+          if (axis_words) {
+            // Apply absolute mode coordinate offsets or incremental mode offsets.
+            for (i=0; i<NoOfAxis; i++){ // Axes indices are consistent, so loop may be used.
+              if ( bit_istrue(axis_words,bit(i+1)) ) {
+                if (gc.absolute_mode) {
+                  gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i];
+                } else {
+                  gc.next_position[i] += gc.position[i];
+                }
+              } else {
+                gc.next_position[i] = gc.position[i];
+              }
+              //move each axis to the intermediate position prior to homing
+              SingleAxisStep(gc.next_position[i],settings.default_seek_rate,i);
+              while(GET_RunState(i));
+            }
+          }
+          // Retreive G28/30 go-home position data (in machine coordinates) from FLASH
+          temp = SETTING_INDEX_G28;  //home to zero pos / at limits
+          //home to 1st index P1
+          if (action == NON_MODAL_GO_HOME_1_BIT){temp = SETTING_INDEX_G30;}
+          i = (temp)*4 ; //place the new data into the correct position
+          //put the new data into the relevant slot e.g. P1,2,3,4...
+          //and run to these coordinates
+          for(j = 0;j<4;j++){
+               _data = buff[i];
+               coord_system[temp].coord[j] = ulong2flt(_data);
+               #if MainDebug == 1
+               while(DMA_IsOn(1));
+               dma_printf("coord[%d]:= %f\n",j,_data);
+               #endif
+               i++;
+               //this will take the axis Home without bounce may still need to
+               //impliment plan ahead
+               SingleAxisStep(coord_system[temp].coord[j],settings.default_seek_rate,j);
+               while(GET_RunState(j));
+          }
+          axis_words = 0; // Axis words used. Lock out from motion modes by clearing flags.
+          break;
+     case 16:
+          break;
+     case 53:
+           axis_words = Get_Axisword();
+          // Convert all target position data to machine coordinates for executing motion. Apply
+          // absolute mode coordinate offsets or incremental mode offsets.
+          // NOTE: Tool offsets may be appended to these conversions when/if this feature is added.
+          for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used to save flash space.
+            if ( bit_istrue(axis_words,bit(i)) ) {
+             if (!gc.absolute_override) {
+              if (!gc.absolute_mode) { // Do not update target in absolute override mode
+                  gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i]; // Absolute mode
+              } else {
+                  gc.next_position[i] += gc.position[i]; // Incremental mode
+              }
+             } else {
+              gc.next_position[i] = gc.position[i]; // No axis word in block. Keep same axis position.
+             }
+            }
+          }
+          break;
+     case 64:   //NON_MODAL_SET_HOME_1
+          temp = SETTING_INDEX_G28;
+          if (action == NON_MODAL_SET_HOME_1_BIT) { temp = SETTING_INDEX_G30; }
+          Settings_Write_Coord_Data(temp,gc.position);
+          break;
+     case 128:  //NON_MODAL_SET_COORDINATE_OFFSET
+          axis_words = Get_Axisword();
+          if (!axis_words) { // No axis words
+             FAIL(STATUS_INVALID_STATEMENT);
+          } else {
+          // Update axes defined only in block. Offsets current system to defined value. Does not update when
+          // active coordinate system is selected, but is still active unless G92.1 disables it.
+           for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used.
+            if (bit_istrue(axis_words,bit(i)) ) {
+              gc.coord_offset[i] = gc.position[i]-gc.coord_system[i]-gc.next_position[i];
+            }
+           }
+          }
+          axis_words = 0; // Axis words used. Lock out from motion modes by clearing flags.
+     case 256: //NON_MODAL_RESET_COORDINATE_OFFSET
+          break;
+     case 512:
+          break;
+     default: action = -1; //error in action msg ???
+          break;
+   }
+  return action;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//                            GROUP_1 MODAL ACTIONS                           //
+////////////////////////////////////////////////////////////////////////////////
+int Modal_Group_Actions1(int action){
+    switch(action){
       case 1: //b0000 0001
              SingleAxisStep(gc.next_position[X],gc.frequency,X);
              break;
@@ -184,127 +386,14 @@ int Temp_Move(int a){
        case 15://Homing Y axis
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
-        default: a = 0;
+        default: action = 0;
               break;
     }
     
-    return a;
+    return action;
 }
 
-int Non_Modal_Actions(int action){
-//[b0=10ms | b1=100ms | b2 = 300ms | b4=500ms | b5 = 1sec]
-int dly_time,i,result,axis_words,indx,temp_axis,axis_cnt,temp;
-float coord_data[NoOfAxis];
-float a_val;
-unsigned long _flash,*addr;
-   switch(action){
-     case 2:
-           i = 0;
-           //G04 [P/S] PAUSE MACHINE INSTRUCTION
-           if(gc.S > 0){ //wait in seconds
-             dly_time = gc.S * 1000;
-             while(i < dly_time){
-              LED2 = TMR.clock >> 1;
-              Delay_ms(1);
-              i++;
-             }
-           }else if(gc.P > 0){ //wait in msec
-             dly_time = (unsigned long)gc.P;
-             while(i < dly_time){
-              LED2 = TMR.clock >> 1;
-              Delay_ms(1);
-              i++;
-             }
-           }
-           LED2 = false;
-          break;
-     case 4: 
-          /******************************************************************
-           *! L1 sets the offsets of the specified tool relative to the head
-           *  reference point to the specified values.
-           *! L2 sets the current workplace coordinate offsets to the specified
-           *  values.
-           *! L20 adjusts the current workplace coordinate offsets so
-           *  that the current tool head position has the specified coordinates.
-           ******************************************************************/
-          //G10 setting of offsets 
-          //[G10 L1 P2 X17.8 Y-19.3 Z0.0]
-          //[G10 P1 R140 S205]
-          //P index is EEPROM coordinate data indexing / recipe.
-          if(gc.L != 2 && gc.L != 20)
-             return -1;
-          if (gc.L == 20) {
-              //write the Pnn coordinates to flash recipe for active system
-              result = Settings_Write_Coord_Data((int)gc.P,gc.next_position );
-              if(result){ //response if write to flash failed
-                return NVM_COORDINATE_WRITE_ERROR;
-              }
-             // Update system coordinate system if currently active with G54 - G59
-              if (gc.coord_select > 0) {
-                 memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
-              }
-          } else {
-            //Retrieve the data from flash into buff
-            if(!Save_Row_From_Flash(FLASH_Settings_VAddr_P1))return;
-            
-            //use P to get to the start of the rescipe P1,2,3... in the buff
-            //array in Globals.c which is indexed by 4 for now a axis x,y,z,a
-            temp = indx = (gc.P-1) & 0xFF;
-            indx *= 4;
-            axis_cnt = 0;
-           // Update axes defined only in block. Always in machine coordinates. 
-           //Can change non-active system.
-             axis_words = Get_Axisword();
-             for(i = 0; i < 3;i++){
-                temp_axis = (axis_words >> i) & 1;
-                //find missing axis
-                if(temp_axis == 0){
-                   axis_cnt++;
-                   if(axis_cnt > 2)break;
-                   _flash = buff[indx];
-                   coord_data[i] = ulong2flt(_flash);;
-                #if MainDebug == 1
-                 while(DMA_IsOn(1));
-                 dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
-                             temp_axis,i,coord_data[i],indx);
-                #endif
-                }else{
-                  coord_data[i] = gc.next_position[i];
-                                  #if MainDebug == 1
-                 while(DMA_IsOn(1));
-                 dma_printf("gc.next_position[%d]:= %f\n"
-                             ,i,gc.next_position[i]);
-                #endif
-                }
-                indx++;
-             }
-             
-            result = Settings_Write_Coord_Data((int)gc.P,coord_data);
-            
-          // Update current coordinate system if currently active.
-            memcpy(gc.coord_system,coord_data,sizeof(coord_data));
-          }
 
-          break;
-     case 8:
-          break;
-     case 16:
-          break;
-     case 32:
-          break;
-     case 64:
-          break;
-     case 128:
-          break;
-     case 256:
-          break;
-     case 512:
-          break;
-     default: action = -1; //error in action msg ???
-          break;
-   }
-  return action;
-}
 
 
 /* 
@@ -339,10 +428,10 @@ unsigned long _flash,*addr;
             a = 12;
             dma_printf("\nXCnt:= %d : a:= %d",STPS[Y].homing.home_cnt,a);
          }
-        // Temp_Move(a);
+        // Modal_Group1(a);
        }else{
           if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-            // a = Temp_Move(a);
+            // a = Modal_Group1(a);
 #if DMADebug == 1
              dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
                      a,STPS[X].dist,STPS[X].mmToTravel,

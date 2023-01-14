@@ -1,10 +1,10 @@
 #line 1 "C:/Users/Git/Pic32mzCNC/Globals.c"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 137 "c:/users/git/pic32mzcnc/settings.h"
+#line 142 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
- unsigned long steps_per_mm[ 6 ];
+ unsigned long steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -237,12 +237,16 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 134 "c:/users/git/pic32mzcnc/gcode.h"
+#line 50 "c:/users/git/pic32mzcnc/gcode.h"
+extern volatile int status_code;
+#line 147 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
+ char motion_mode;
  char inverse_feed_rate_mode;
  char inches_mode;
+ char absolute_override;
  char absolute_mode;
  char program_flow;
  char spindle_direction;
@@ -259,12 +263,12 @@ typedef struct {
  int L;
  float feed_rate;
 
- volatile float position[ 6 ];
- volatile float coord_system[ 6 ];
+ volatile float position[ 4 ];
+ volatile float coord_system[ 4 ];
 
- volatile float coord_offset[ 6 ];
+ volatile float coord_offset[ 4 ];
 
- volatile float next_position[ 6 ];
+ volatile float next_position[ 4 ];
  volatile float offset[3];
  float R;
  float I;
@@ -274,15 +278,6 @@ typedef struct {
  int S;
 } parser_state_t;
 extern parser_state_t gc;
-
-
-typedef struct{
- volatile float x_offset;
- volatile float y_offset;
- volatile float z_offset;
- volatile float a_offset;
-}coord_offsets;
-extern coord_offsets coord_offset;
 
 
 enum IJK{I,J,K};
@@ -398,7 +393,7 @@ typedef struct Steps{
 
  homing_t homing;
 }STP;
-extern STP STPS[ 6 ];
+extern STP STPS[ 4 ];
 
 
 
@@ -500,6 +495,8 @@ void EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
+
+unsigned int GET_RunState(int axis_No);
 
 
 void SingleStepAxis(int axis);
@@ -641,13 +638,13 @@ void PinMode();
 void UartConfig();
 void set_performance_mode();
 void Uart2InterruptSetup();
-void LcdI2CConfig();
+
 void OutPutPulseXYZ();
 
 
-int Temp_Move(int a);
+int Modal_Group_Actions0(int action);
 
-int Non_Modal_Actions(int action);
+int Modal_Group_Actions1(int action);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
@@ -693,7 +690,7 @@ unsigned int DMA_Suspend();
 unsigned int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 55 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 62 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
@@ -717,7 +714,6 @@ extern unsigned long volatile buff[128];
 
 
 
-
 typedef struct {
  char abort;
  char state;
@@ -731,12 +727,10 @@ extern system_t sys;
 
 
 typedef struct{
- volatile float x_coord;
- volatile float y_coord;
- volatile float z_coord;
- volatile float a_coord;
+ volatile float coord[ 4 ];
+ volatile float coord_offset[ 4 ];
 }coord_sys;
-
+extern coord_sys coord_system[ 9 ];
 
 
 
@@ -793,14 +787,14 @@ unsigned long add;
 
  error = (int)NVMErasePage(add);
 
-
  if(error){
-#line 87 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 86 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
  switch(recipe){
  case 0:break;
+
  case 1: add = (unsigned long) 0xBD1BC000 ;break;
  case 2: add = (unsigned long) 0xBD1BC010 ;break;
  case 3: add = (unsigned long) 0xBD1BC020 ;break;
@@ -810,12 +804,19 @@ unsigned long add;
  case 7: add = (unsigned long) 0xBD1BC060 ;break;
  case 8: add = (unsigned long) 0xBD1BC070 ;break;
  case 9: add = (unsigned long) 0xBD1BC080 ;break;
+
+ case 10: add = (unsigned long) 0xBD1BC090 ;break;
+ case 11: add = (unsigned long) 0xBD1BC0A0 ;break;
+ case 12: add = (unsigned long) 0xBD1BC0B0 ;break;
+ case 13: add = (unsigned long) 0xBD1BC0C0 ;break;
+ case 14: add = (unsigned long) 0xBD1BC0D0 ;break;
+ case 15: add = (unsigned long) 0xBD1BC0E0 ;break;
  }
 
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 113 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 120 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  i = (recipe-1)*4 ;
@@ -829,7 +830,7 @@ unsigned long add;
 
 
  res = NVMWriteRow(&add,buff);
-#line 132 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 139 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -845,7 +846,7 @@ unsigned long *ptr;
  for(j = 0;j < 128;j++){
  buff[j] = *(ptr+j);
  if(buff[j] != -1)data_count++;
-#line 151 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 158 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  return data_count;

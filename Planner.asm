@@ -8,7 +8,7 @@ MOVZ	R4, R0, R0
 L_plan_init0:
 ; i start address is: 16 (R4)
 SEH	R2, R4
-SLTI	R2, R2, 6
+SLTI	R2, R2, 4
 BNE	R2, R0, L__plan_init41
 NOP	
 J	L_plan_init1
@@ -567,20 +567,20 @@ NOP
 ; end of _speed_cntr_Move
 _r_or_ijk:
 ;Planner.c,133 :: 		double r, double i, double j, double k, int axis_A,int axis_B,int dir){
-ADDIU	SP, SP, -124
+ADDIU	SP, SP, -100
 SW	RA, 0(SP)
 SW	R25, 4(SP)
 SW	R26, 8(SP)
 SW	R27, 12(SP)
 SW	R28, 16(SP)
 ; r start address is: 144 (R36)
-LWC1	S18, 124(SP)
+LWC1	S18, 100(SP)
 ; i start address is: 8 (R2)
-LWC1	S1, 128(SP)
+LWC1	S1, 104(SP)
 ; j start address is: 16 (R4)
-LWC1	S2, 132(SP)
+LWC1	S2, 108(SP)
 ; k start address is: 0 (R0)
-LWC1	S0, 136(SP)
+LWC1	S0, 112(SP)
 ; k end address is: 0 (R0)
 ;Planner.c,134 :: 		unsigned short isclockwise = 0;
 ;Planner.c,135 :: 		double inverse_feed_rate = -1; // negative inverse_feed_rate means no inverse_feed_rate specified
@@ -602,7 +602,7 @@ SWC1	S13, 0(R2)
 ADDIU	R2, R3, 8
 SW	R0, 0(R2)
 ;Planner.c,149 :: 		target[axis_A] = Fin_axis_a;
-ADDIU	R3, SP, 68
+ADDIU	R3, SP, 60
 SEH	R2, R25
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
@@ -616,7 +616,7 @@ SWC1	S15, 0(R2)
 ADDIU	R2, R3, 8
 SW	R0, 0(R2)
 ;Planner.c,152 :: 		offset[axis_A] = i;
-ADDIU	R3, SP, 92
+ADDIU	R3, SP, 76
 SEH	R2, R25
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
@@ -638,8 +638,8 @@ L__r_or_ijk57:
 ; i end address is: 8 (R2)
 ; j end address is: 16 (R4)
 ;Planner.c,219 :: 		x = target[axis_plane_a] - position[axis_plane_a];
-ADDIU	R5, SP, 68
-LH	R2, 116(SP)
+ADDIU	R5, SP, 60
+LH	R2, 92(SP)
 SLL	R3, R2, 2
 ADDU	R2, R5, R3
 LWC1	S1, 0(R2)
@@ -650,7 +650,7 @@ SUB.S 	S3, S1, S0
 ; x start address is: 128 (R32)
 MOV.S 	S16, S3
 ;Planner.c,221 :: 		y = target[axis_plane_b] - position[axis_plane_b];
-LH	R2, 118(SP)
+LH	R2, 94(SP)
 SLL	R3, R2, 2
 ADDU	R2, R5, R3
 LWC1	S1, 0(R2)
@@ -678,7 +678,7 @@ LH	R25, 20(SP)
 MOVZ	R2, R0, R0
 MTC1	R2, S1
 SUB.S 	S0, S1, S0
-SWC1	S0, 120(SP)
+SWC1	S0, 96(SP)
 SWC1	S17, 20(SP)
 SWC1	S16, 24(SP)
 SWC1	S18, 28(SP)
@@ -695,7 +695,7 @@ LH	R27, 32(SP)
 LWC1	S18, 28(SP)
 LWC1	S16, 24(SP)
 LWC1	S17, 20(SP)
-LWC1	S1, 120(SP)
+LWC1	S1, 96(SP)
 DIV.S 	S0, S1, S0
 ; h_x2_div_d start address is: 152 (R38)
 MOV.S 	S19, S0
@@ -839,8 +839,8 @@ L__r_or_ijk39:
 L_r_or_ijk23:
 ;Planner.c,273 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
 ; isclockwise start address is: 24 (R6)
-ADDIU	R5, SP, 92
-ADDIU	R4, SP, 68
+ADDIU	R5, SP, 76
+ADDIU	R4, SP, 60
 ADDIU	R3, SP, 44
 ;Planner.c,274 :: 		DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
 LUI	R2, 17274
@@ -848,7 +848,7 @@ ORI	R2, R2, 0
 ADDIU	SP, SP, -8
 SB	R6, 5(SP)
 ; r end address is: 0 (R0)
-LBU	R6, Offset(_gc+1)(GP)
+LBU	R6, Offset(_gc+2)(GP)
 SB	R6, 4(SP)
 ;Planner.c,273 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
 ORI	R6, R0, 2
@@ -876,7 +876,7 @@ LW	R27, 12(SP)
 LW	R26, 8(SP)
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 124
+ADDIU	SP, SP, 100
 JR	RA
 NOP	
 ; end of _r_or_ijk

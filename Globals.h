@@ -82,7 +82,6 @@ extern unsigned long volatile buff[128];
 ///////////////////////////////////////////////////////////////////////////////
 //                          STRUCTS UNIONS & ENUMS                           //
 ///////////////////////////////////////////////////////////////////////////////
-
 // Define global system variables
 typedef struct {
   char abort;                      // System abort flag. Forces exit back to main loop for reset.
@@ -97,12 +96,10 @@ extern system_t sys;
 ////////////////////////////////////////////
 //9 different coordinates can be saved
 typedef struct{
- volatile float x_coord;
- volatile float y_coord;
- volatile float z_coord;
- volatile float a_coord;
+ volatile float coord[NoOfAxis];
+ volatile float coord_offset[NoOfAxis];
 }coord_sys;
-//extern coord_sys coord_system[NUMBER_OF_DATUMS];
+extern coord_sys coord_system[NUMBER_OF_DATUMS];
 
 ///////////////////////////////////////////////////////////////////////////////
 //                             FUNCTION PROTOTYPES                           //

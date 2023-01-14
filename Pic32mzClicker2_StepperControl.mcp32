@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=GCODE.h
+Value=Main.c
 =======
 =======
 >>>>>>> patch1
@@ -135,9 +135,9 @@ File1=GCODE.c
 File2=GCODE.h
 File3=Globals.c
 File4=Globals.h
-File5=DEFINES.pld
-File6=Stepper.h
-File7=Settings.h
+File5=Settings.h
+File6=Flash_R_W.c
+File7=Flash_R_W.h
 Count=8
 [EEPROM]
 Count=0

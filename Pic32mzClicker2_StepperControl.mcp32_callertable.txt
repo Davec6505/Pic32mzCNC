@@ -37,7 +37,7 @@ main
 		Reset_Min_Debounce
 	Get_modalgroup
 	Get_modalword
-	Non_Modal_Actions
+	Modal_Group_Actions0
 		Settings_Write_Coord_Data
 			__CC2DW
 			Save_Row_From_Flash
@@ -69,11 +69,6 @@ main
 			strncpy
 			DMA1_Enable
 			__CC2DW
-		__CC2DW
-	Rst_modalgroup
-	Get_Axisword
-	EnableSteppers
-	Temp_Move
 		SingleAxisStep
 			Single_Axis_Enable
 			belt_steps
@@ -84,6 +79,13 @@ main
 			labs
 			Step_Cycle
 				toggleOCx
+		GET_RunState
+		__CC2DW
+	Rst_modalgroup
+	Get_Axisword
+	EnableSteppers
+	Modal_Group_Actions1
+		SingleAxisStep
 		DualAxisStep
 			belt_steps
 			Single_Axis_Enable

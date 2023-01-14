@@ -28,6 +28,13 @@
 #define  FLASH_Settings_VAddr_P8  0xBD1BC070//0xBD079000
 #define  FLASH_Settings_VAddr_P9  0xBD1BC080//0xBD079000
 
+//G54,55,56,57,58,59
+#define  FLASH_Settings_VAddr_G54 0xBD1BC090//0xBD079000
+#define  FLASH_Settings_VAddr_G55 0xBD1BC0A0//0xBD079000
+#define  FLASH_Settings_VAddr_G56 0xBD1BC0B0//0xBD079000
+#define  FLASH_Settings_VAddr_G57 0xBD1BC0C0//0xBD079000
+#define  FLASH_Settings_VAddr_G58 0xBD1BC0D0//0xBD079000
+#define  FLASH_Settings_VAddr_G59 0xBD1BC0E0//0xBD079000
 //Flash specific masks
 #define NVM_ERROR_RST_MASK  0x0000C000
 #define NVM_WRITE_ENABLE_MASK 0x00004000

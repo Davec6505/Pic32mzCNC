@@ -120,7 +120,7 @@ void UartConfig(){
 
 ////////////////////////////////////////////////
 //Uart 2 interrupt setup, make sure that for DMA
-//the interrupt is turned of for this module,
+//the interrupt is turned off for this module,
 //only use the IRQ from the DMA controller but
 //itis important it set up the irelx bits of the
 // 8 level deep interrupt buffer specific to the

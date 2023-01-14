@@ -1,7 +1,7 @@
 #include "Globals.h"
 
-//coordinates saved to flash - easier to work
-//with a array
+//coordinates struct - easier to work when extracted from flash
+//holds coord[] and coord_offset[]
 coord_sys coord_system[NUMBER_OF_DATUMS];
 
 //temp buffer to save flash settings to
@@ -78,7 +78,6 @@ unsigned long add;
 // add = (unsigned long)FLASH_Settings_VAddr_P1;
  error = (int)NVMErasePage(add);
 
-// Flash_Erase_Page(add);
  if(error){
    #if FlashDebug == 1
      while(DMA_IsOn(1));
@@ -89,6 +88,7 @@ unsigned long add;
 
  switch(recipe){
    case 0:break;
+   //P1,2,3,4,5,6,7,8,9
    case 1: add = (unsigned long)FLASH_Settings_VAddr_P1;break;
    case 2: add = (unsigned long)FLASH_Settings_VAddr_P2;break;
    case 3: add = (unsigned long)FLASH_Settings_VAddr_P3;break;
@@ -98,11 +98,18 @@ unsigned long add;
    case 7: add = (unsigned long)FLASH_Settings_VAddr_P7;break;
    case 8: add = (unsigned long)FLASH_Settings_VAddr_P8;break;
    case 9: add = (unsigned long)FLASH_Settings_VAddr_P9;break;
+   //G54,55,56,57,58,59
+   case 10: add = (unsigned long)FLASH_Settings_VAddr_G54;break;
+   case 11: add = (unsigned long)FLASH_Settings_VAddr_G55;break;
+   case 12: add = (unsigned long)FLASH_Settings_VAddr_G56;break;
+   case 13: add = (unsigned long)FLASH_Settings_VAddr_G57;break;
+   case 14: add = (unsigned long)FLASH_Settings_VAddr_G58;break;
+   case 15: add = (unsigned long)FLASH_Settings_VAddr_G59;break;
  }
 
-   j = i = 0;
-  for (i=0;i<3;i++){
-    wdata[i] = flt2ulong(coord[i]);
+ j = i = 0;
+ for (i=0;i<3;i++){
+   wdata[i] = flt2ulong(coord[i]);
    #if FlashDebug == 1
     while(DMA_IsOn(1));
     dma_printf("%f\t%l\n",coord[i],wdata[i]);
@@ -110,20 +117,20 @@ unsigned long add;
     //in order to write single word change the addresses from0x10 incraments
     //to 0x4 incraments
     //res = NVMWriteWord(add+i*4,wdata[i]);
-  }
+ }
  
-  i = (recipe-1)*4 ; //place the new data into the correct position
+ i = (recipe-1)*4 ; //place the new data into the correct position
   //put the new data into the relevant slot e.g. P1,2,3,4...
-  for(j = 0;j<4;j++){
-     buff[i] =  wdata[j];
-     i++;
-  }
+ for(j = 0;j<4;j++){
+   buff[i] =  wdata[j];
+   i++;
+ }
   
   //Write 4 double words at once
   //res = NVMWriteQuad(&add,wdata);
  // add = (unsigned long)FLASH_Settings_VAddr_P1;
   res = NVMWriteRow(&add,buff);
-  //Flash_Write_Row(add,buff);
+
   #if FlashDebug == 1
     add = (unsigned long)FLASH_Settings_VAddr_P1;
     NVMReadRow(add);

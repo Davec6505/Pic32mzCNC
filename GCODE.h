@@ -47,7 +47,7 @@ Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
 //                             MACROS                                        //
 ///////////////////////////////////////////////////////////////////////////////
 #define FAIL(status) status_code = status;
-
+extern volatile int status_code;   // Status of instructions
 
 ///////////////////////////////////////////////////////////////////////////////
 //                             DEFINES                                       //
@@ -83,21 +83,31 @@ Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
 #define MOTION_MODE_CCW_ARC 3  // G3
 #define MOTION_MODE_CANCEL 4 // G80
 
+////////////////////////////////////////////////////////
+//NON MODAL DEFINES AND THEIR RESPECTIVE BITS
 #define NON_MODAL_NONE 0
-#define NON_MODAL_DWELL 1                   // G4
-#define NON_MODAL_SET_COORDINATE_DATA 2     // G10
-#define NON_MODAL_GO_HOME_0 3               // G28
-#define NON_MODAL_SET_HOME_0 4              // G28.1
-#define NON_MODAL_GO_HOME_1 5               // G30
-#define NON_MODAL_SET_HOME_1 6              // G30.1
-#define NON_MODAL_SET_COORDINATE_OFFSET 7   // G92
-#define NON_MODAL_RESET_COORDINATE_OFFSET 8 //G92.1
+#define NON_MODAL_DWELL 1                         // G4
+#define NON_MODAL_SET_COORDINATE_DATA 2           // G10
+#define NON_MODAL_GO_HOME_0 3                     // G28
+#define NON_MODAL_GO_HOME_0_BIT bit(3)            // G28
+#define NON_MODAL_SET_HOME_0 4                    // G28.1
+#define NON_MODAL_SET_HOME_0_BIT bit(4)
+#define NON_MODAL_GO_HOME_1 5                     // G30
+#define NON_MODAL_GO_HOME_1_BIT bit(5)
+#define NON_MODAL_SET_HOME_1 6                    // G30.1
+#define NON_MODAL_SET_HOME_1_BIT bit(6)
+#define NON_MODAL_SET_COORDINATE_OFFSET 7         // G92
+#define NON_MODAL_SET_COORDINATE_OFFSET_BIT bit(7)
+#define NON_MODAL_RESET_COORDINATE_OFFSET 8       //G92.1
+#define NON_MODAL_RESET_COORDINATE_OFFSET_BIT bit(8)
 
+////////////////////////////////////////////////////////
+//PROGRAM FLOW VALUES
 #define PROGRAM_FLOW_RUNNING 0
 #define PROGRAM_FLOW_PAUSED 1 // M0, M1
 #define PROGRAM_FLOW_COMPLETED 2 // M2, M30
 
-
+////////////////////////////////////////////////////////
 // Define Grbl status codes.
 #define STATUS_OK 0
 #define STATUS_BAD_NUMBER_FORMAT 1
@@ -114,10 +124,13 @@ Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
 #define STATUS_ALARM_LOCK 12
 #define STATUS_SPEED_ERROR 13
 #define STATUS_EI_ERROR 14
+
+////////////////////////////////////////////////////////
 // Define Grbl alarm codes. Less than zero to distinguish alarm error from status error.
 #define ALARM_HARD_LIMIT -1
 #define ALARM_ABORT_CYCLE -2
 
+///////////////////////////////////////////////////////
 // Define Grbl feedback message codes.
 #define MESSAGE_CRITICAL_EVENT 1
 #define MESSAGE_ALARM_LOCK 2
@@ -133,9 +146,11 @@ Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
 
 typedef struct {
   char r: 1;
-  char no_axis_interpolate: 1;      //Single or dual axis for interpolation
+  char no_axis_interpolate: 1;   //Single or dual axis for interpolation
+  char motion_mode;              // {G0, G1, G2, G3, G80}
   char inverse_feed_rate_mode;   // {G93, G94}
   char inches_mode;              // 0 = millimeter mode, 1 = inches mode {G20, G21}
+  char absolute_override;
   char absolute_mode;            // 0 = relative motion, 1 = absolute motion {G90, G91}
   char program_flow;             // {M0, M1, M2, M30}
   char spindle_direction;        // 1 = CW, -1 = CCW, 0 = Stop {M3, M4, M5}
@@ -167,15 +182,6 @@ typedef struct {
   int S;               //Pause as in sec
 } parser_state_t;
 extern parser_state_t gc;
-
-
-typedef struct{
- volatile float x_offset;
- volatile float y_offset;
- volatile float z_offset;
- volatile float a_offset;
-}coord_offsets;
-extern coord_offsets coord_offset;
 
 
 enum IJK{I,J,K};

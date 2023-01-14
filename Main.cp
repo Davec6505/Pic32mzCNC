@@ -136,10 +136,10 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 137 "c:/users/git/pic32mzcnc/settings.h"
+#line 142 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
- unsigned long steps_per_mm[ 6 ];
+ unsigned long steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -237,7 +237,7 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 55 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 62 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
@@ -275,7 +275,6 @@ extern unsigned long volatile buff[128];
 
 
 
-
 typedef struct {
  char abort;
  char state;
@@ -289,12 +288,10 @@ extern system_t sys;
 
 
 typedef struct{
- volatile float x_coord;
- volatile float y_coord;
- volatile float z_coord;
- volatile float a_coord;
+ volatile float coord[ 4 ];
+ volatile float coord_offset[ 4 ];
 }coord_sys;
-
+extern coord_sys coord_system[ 9 ];
 
 
 
@@ -303,12 +300,16 @@ void Settings_Init(char reset_all);
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
 
 int Save_Row_From_Flash(unsigned long addr);
-#line 134 "c:/users/git/pic32mzcnc/gcode.h"
+#line 50 "c:/users/git/pic32mzcnc/gcode.h"
+extern volatile int status_code;
+#line 147 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
+ char motion_mode;
  char inverse_feed_rate_mode;
  char inches_mode;
+ char absolute_override;
  char absolute_mode;
  char program_flow;
  char spindle_direction;
@@ -325,12 +326,12 @@ typedef struct {
  int L;
  float feed_rate;
 
- volatile float position[ 6 ];
- volatile float coord_system[ 6 ];
+ volatile float position[ 4 ];
+ volatile float coord_system[ 4 ];
 
- volatile float coord_offset[ 6 ];
+ volatile float coord_offset[ 4 ];
 
- volatile float next_position[ 6 ];
+ volatile float next_position[ 4 ];
  volatile float offset[3];
  float R;
  float I;
@@ -340,15 +341,6 @@ typedef struct {
  int S;
 } parser_state_t;
 extern parser_state_t gc;
-
-
-typedef struct{
- volatile float x_offset;
- volatile float y_offset;
- volatile float z_offset;
- volatile float a_offset;
-}coord_offsets;
-extern coord_offsets coord_offset;
 
 
 enum IJK{I,J,K};
@@ -509,7 +501,7 @@ typedef struct Steps{
 
  homing_t homing;
 }STP;
-extern STP STPS[ 6 ];
+extern STP STPS[ 4 ];
 
 
 
@@ -611,6 +603,8 @@ void EnableSteppers(int steppers);
 void DisableStepper();
 void disableOCx();
 
+
+unsigned int GET_RunState(int axis_No);
 
 
 void SingleStepAxis(int axis);
@@ -738,16 +732,16 @@ void PinMode();
 void UartConfig();
 void set_performance_mode();
 void Uart2InterruptSetup();
-void LcdI2CConfig();
+
 void OutPutPulseXYZ();
 
 
-int Temp_Move(int a);
+int Modal_Group_Actions0(int action);
 
-int Non_Modal_Actions(int action);
+int Modal_Group_Actions1(int action);
 #line 38 "C:/Users/Git/Pic32mzCNC/Main.c"
 system_t sys;
-STP STPS[ 6 ];
+STP STPS[ 4 ];
 settings_t settings;
 bit oneShotA; sfr;
 bit oneShotB; sfr;
@@ -793,14 +787,14 @@ static int cntr = 0,a = 0;
  switch(modal_group){
  case 0:break;
  case 2:
- modal_action = Non_Modal_Actions(Get_modalword());
+ modal_action = Modal_Group_Actions0(Get_modalword());
  modal_group = Rst_modalgroup();
  break;
  case 4:
  axis_to_run = Get_Axisword();
  if(axis_to_run){
  EnableSteppers(2);
- Temp_Move(axis_to_run);
+ Modal_Group_Actions1(axis_to_run);
  axis_to_run = Rst_Axisword();
  }
  break;
@@ -837,63 +831,17 @@ static int cntr = 0,a = 0;
 }
 
 
-int Temp_Move(int a){
- switch(a){
- case 1:
- SingleAxisStep(gc.next_position[X],gc.frequency,X);
- break;
- case 2:
- SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
- break;
- case 3:
 
 
- DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+int Modal_Group_Actions0(int action){
 
-
- break;
- case 4:
- SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
- break;
- case 5:
- DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
- break;
- case 6:
- DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
- break;
- case 8:
- SingleAxisStep(gc.next_position[A],gc.frequency,A);
- break;
- case 9:
- DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
- break;
- case 10:
- DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
- break;
- case 12:
- DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
- break;
- case 13:
- Home(X);
- break;
- case 14:
- Home(Y);
- break;
- case 15:
- r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
- break;
- default: a = 0;
- break;
- }
-
- return a;
-}
-
-int Non_Modal_Actions(int action){
-
-int dly_time,i,result,axis_words,indx,temp_axis,axis_cnt,temp;
-float coord_data[ 6 ];
+int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
+unsigned long _data;
+float coord_data[ 4 ];
 float a_val;
+
+
+
 unsigned long _flash,*addr;
  switch(action){
  case 2:
@@ -917,7 +865,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 234 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 188 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -974,15 +922,93 @@ unsigned long _flash,*addr;
 
  break;
  case 8:
+ case 32:
+
+
+ axis_words = Get_Axisword();
+
+ while(DMA_IsOn(1));
+ dma_printf("axis_words:= %d\n",axis_words);
+
+ if (axis_words) {
+
+ for (i=0; i< 4 ; i++){
+ if (  ((axis_words & (1 << i+1) ) != 0)  ) {
+ if (gc.absolute_mode) {
+ gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i];
+ } else {
+ gc.next_position[i] += gc.position[i];
+ }
+ } else {
+ gc.next_position[i] = gc.position[i];
+ }
+
+ SingleAxisStep(gc.next_position[i],settings.default_seek_rate,i);
+ while(GET_RunState(i));
+ }
+ }
+
+ temp =  9 ;
+
+ if (action ==  (1 << 5) ){temp =  9 +1 ;}
+ i = (temp)*4 ;
+
+
+ for(j = 0;j<4;j++){
+ _data = buff[i];
+ coord_system[temp].coord[j] = ulong2flt(_data);
+
+ while(DMA_IsOn(1));
+ dma_printf("coord[%d]:= %f\n",j,_data);
+
+ i++;
+
+
+ SingleAxisStep(coord_system[temp].coord[j],settings.default_seek_rate,j);
+ while(GET_RunState(j));
+ }
+ axis_words = 0;
  break;
  case 16:
  break;
- case 32:
+ case 53:
+ axis_words = Get_Axisword();
+
+
+
+ for (i=0; i<=2; i++) {
+ if (  ((axis_words & (1 << i) ) != 0)  ) {
+ if (!gc.absolute_override) {
+ if (!gc.absolute_mode) {
+ gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i];
+ } else {
+ gc.next_position[i] += gc.position[i];
+ }
+ } else {
+ gc.next_position[i] = gc.position[i];
+ }
+ }
+ }
  break;
  case 64:
+ temp =  9 ;
+ if (action ==  (1 << 6) ) { temp =  9 +1 ; }
+ Settings_Write_Coord_Data(temp,gc.position);
  break;
  case 128:
- break;
+ axis_words = Get_Axisword();
+ if (!axis_words) {
+  status_code = 6 ; ;
+ } else {
+
+
+ for (i=0; i<=2; i++) {
+ if ( ((axis_words & (1 << i) ) != 0)  ) {
+ gc.coord_offset[i] = gc.position[i]-gc.coord_system[i]-gc.next_position[i];
+ }
+ }
+ }
+ axis_words = 0;
  case 256:
  break;
  case 512:
@@ -990,5 +1016,60 @@ unsigned long _flash,*addr;
  default: action = -1;
  break;
  }
+ return action;
+}
+
+
+
+
+int Modal_Group_Actions1(int action){
+ switch(action){
+ case 1:
+ SingleAxisStep(gc.next_position[X],gc.frequency,X);
+ break;
+ case 2:
+ SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
+ break;
+ case 3:
+
+
+ DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+
+
+ break;
+ case 4:
+ SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
+ break;
+ case 5:
+ DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
+ break;
+ case 6:
+ DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
+ break;
+ case 8:
+ SingleAxisStep(gc.next_position[A],gc.frequency,A);
+ break;
+ case 9:
+ DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
+ break;
+ case 10:
+ DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
+ break;
+ case 12:
+ DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
+ break;
+ case 13:
+ Home(X);
+ break;
+ case 14:
+ Home(Y);
+ break;
+ case 15:
+ r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
+ break;
+ default: action = 0;
+ break;
+ }
+
  return action;
 }

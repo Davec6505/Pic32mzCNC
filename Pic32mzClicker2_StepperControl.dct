@@ -199,7 +199,6 @@ _uart_high_speed
 _uart_low_speed
 _uart_one_stopbit
 _uart_two_stopbits
-a_offset
 a10m
 a10m
 a10m
@@ -347,6 +346,7 @@ abf2seq3bits
 abort
 abs
 absolute_mode
+absolute_override
 accdec
 acceleration
 ackdt
@@ -18392,7 +18392,6 @@ conthrise_bit
 coolant_mode
 coord_data
 coord_offset
-coord_offset
 coord_select
 coord_system
 coord_system
@@ -32527,6 +32526,7 @@ get_line
 get_modalgroup
 get_modalword
 get_motionmode
+get_runstate
 get_tail_value
 getaxisdirection
 glswtrg
@@ -39173,6 +39173,8 @@ mm_per_arc_segment
 mm_possiblyfragmented
 mm_totalfreememsize
 mm2in
+modal_group_actions0
+modal_group_actions1
 mode
 mode
 mode
@@ -39365,6 +39367,7 @@ month102_bit
 month103
 month103_alrmdate_bit
 month103_bit
+motion_mode
 mpen
 mpen
 mpen
@@ -40315,7 +40318,6 @@ nobkoff
 nobkoff_bit
 nobkoff_emacxcfg2_bit
 non_modal_action
-non_modal_actions
 nopre
 nopre
 nopre
@@ -61017,6 +61019,7 @@ stattype1_bit
 status
 status
 status_bit
+status_code
 step_cycle
 step1
 step10
@@ -62806,7 +62809,6 @@ tdoen
 tdoen
 tdoen_bit
 temp_buffer
-temp_move
 tep
 tep
 tep
@@ -81445,13 +81447,11 @@ x_min_limit
 x_min_limit
 x_min_limit_dir
 x_min_limit_setup
-x_offset
 xtoi
 y_min_limit
 y_min_limit
 y_min_limit_dir
 y_min_limit_setup
-y_offset
 year01
 year01
 year01
@@ -81476,4 +81476,3 @@ year102
 year102_bit
 year103
 year103_bit
-z_offset
