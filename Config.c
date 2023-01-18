@@ -106,8 +106,8 @@ void PinMode(){
   SetInitialSizes(STPS);
   
 ///////////////////////////////////////////////
-//init the planner and the split string array
- // Str_Initialize();
+//init all default settings
+ Settings_Init(1);
 }
 
 void UartConfig(){

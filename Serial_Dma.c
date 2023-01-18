@@ -355,7 +355,7 @@ int dma_printf(const char* str,...){
  //Variable decleration of type va_list
  va_list va;
  int i = 0, j = 0;
- char buff[200]={0},tmp[20],tmp1[9];
+ char buff[1500]={0},tmp[20],tmp1[20];
  char *str_arg,*tmp_;
  
  //check that str is not null

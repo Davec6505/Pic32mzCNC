@@ -69,7 +69,11 @@ static int cntr = 0,a = 0;
   cntr = a = axis_to_run = dif = status_of_gcode = 0;
   EnableInterrupts();
   
- // LED2 = true;  //use this LED2 to debug various issues
+ // wait on start up for device to be stable and send initial
+ //message for ugs to think this is grbl
+ Delay_ms(1000);
+ report_init_message();
+ 
   while(1){
      //continously test the limits
      Debounce_Limits(X);
@@ -93,19 +97,21 @@ static int cntr = 0,a = 0;
                 axis_to_run = Rst_Axisword();
               }
                break;
-          case 8://MODAL_GROUP_2  [G17,G18,G19] Plane selection
+          case 8:
                break;
-          case 16://MODAL_GROUP_3 [G90,G91] Distance mode
+          case 16:
                break;
           case 32://MODAL_GROUP_4 [M0,M1,M2,M30] Stopping
+               Modal_Group_Actions4(1);//implimentation needed
                break;
-          case 64://MODAL_GROUP_5 [G93,G94] Feed rate mode
+          case 64:
                break;
-          case 128://MODAL_GROUP_6 [G20,G21] Units
+          case 128:
                break;
           case 256://MODAL_GROUP_7 [M3,M4,M5] Spindle turning
+               Modal_Group_Actions7(1);//implimentation needed
                break;
-          case 512://MODAL_GROUP_12 [G54,G55,G56,G57,G58,G59] Coordinate system selection
+          case 512:
                break;
        }
      }
@@ -139,7 +145,7 @@ static int cntr = 0,a = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                        GROUP_0  NON MODAL ACTIONS                          //
+//         GROUP_0  NON MODAL ACTIONS [G4,G10,G28,G30,G53,G92,G92.1]          //
 ////////////////////////////////////////////////////////////////////////////////
 int Modal_Group_Actions0(int action){
 //[b0=10ms | b1=100ms | b2 = 300ms | b4=500ms | b5 = 1sec]
@@ -339,7 +345,7 @@ unsigned long _flash,*addr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                            GROUP_1 MODAL ACTIONS                           //
+//               GROUP_1 MODAL ACTIONS [G0,G1,G2,G3,G80] MOTION               //
 ////////////////////////////////////////////////////////////////////////////////
 int Modal_Group_Actions1(int action){
     switch(action){
@@ -394,7 +400,38 @@ int Modal_Group_Actions1(int action){
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+//               GROUP_3 MODAL ACTIONS  [G90,G91] DISTANCE MODE               //
+////////////////////////////////////////////////////////////////////////////////
+int Modal_Group_Actions3(int action){
+    //char is unsigned short in MikroC can be > 1 in faulty value
+   // if(gc.inches_mode > 1)
+   //     FAIL(STATUS_SETTING_READ_FAIL);
+   
+   return action;
+}
 
+////////////////////////////////////////////////////////////////////////////////
+//                GROUP_4 MODAL ACTIONS [M0,M1,M2,M30] STOPPING               //
+////////////////////////////////////////////////////////////////////////////////
+int Modal_Group_Actions4(int action){
+    #if MainDebug == 1
+    while(DMA_IsOn(1));
+    dma_printf("GROUP_4 modal actions\n");
+    #endif
+    return action;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//                GROUP_7 MODAL ACTIONS [M3,M4,M5] SPINDLE TURNING            //
+////////////////////////////////////////////////////////////////////////////////
+int Modal_Group_Actions7(int action){
+    #if MainDebug == 1
+    while(DMA_IsOn(1));
+    dma_printf("GROUP_7 modal actions\n");
+    #endif
+    return action;
+}
 
 /* 
  *temp disabled code to get gcode send working

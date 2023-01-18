@@ -203,7 +203,7 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 142 "c:/users/git/pic32mzcnc/settings.h"
+#line 147 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -215,15 +215,16 @@ typedef struct {
  float mm_per_arc_segment;
  float acceleration;
  float junction_deviation;
- unsigned int homing_debounce_delay;
- char flags;
- char homing_dir_mask;
- char stepper_idle_lock_time;
- char decimal_places;
- char n_arc_correction;
- char microsteps;
- char pulse_microseconds;
- char invert_mask;
+ int n_arc_correction;
+ int flags;
+ int step_idle_delay;
+ int homing_debounce_delay;
+ int stepper_idle_lock_time;
+ int microsteps;
+ int pulse_microseconds;
+ int decimal_places;
+ int homing_dir_mask;
+ int invert_mask;
 
 } settings_t;
 extern settings_t settings;
@@ -264,6 +265,8 @@ typedef struct {
  char state;
  int homing;
  int homing_cnt;
+ long position[ 4 ];
+
  char auto_start;
  volatile char execute;
 } system_t;
@@ -280,13 +283,13 @@ extern coord_sys coord_system[ 9 ];
 
 
 
-void Settings_Init(char reset_all);
+void Settings_Init(short reset_all);
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
 
 int Save_Row_From_Flash(unsigned long addr);
 #line 50 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 147 "c:/users/git/pic32mzcnc/gcode.h"
+#line 154 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
@@ -365,7 +368,7 @@ void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
-static void Set_M_Modal_Commands(int M_Val);
+static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 34 "c:/users/git/pic32mzcnc/kinematics.h"
@@ -643,6 +646,23 @@ char FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/print.h"
+#line 32 "c:/users/git/pic32mzcnc/print.h"
+void report_status_message(int status_code);
+
+void report_alarm_message(int alarm_code);
+
+void report_feedback_message(int message_code);
+
+void report_init_message();
+
+void report_grbl_help();
+
+
+void report_grbl_settings();
+
+void report_gcode_parameters();
+
+void report_gcode_modes();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
@@ -677,7 +697,14 @@ void OutPutPulseXYZ();
 
 int Modal_Group_Actions0(int action);
 
+
 int Modal_Group_Actions1(int action);
+
+
+int Modal_Group_Actions4(int action);
+
+
+int Modal_Group_Actions7(int action);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];

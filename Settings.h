@@ -11,16 +11,21 @@
 //from this position until a new one is called upon
 #define NUMBER_OF_DATUMS 9
 
+// Define bit flag masks for the boolean settings in settings.flag.
+#define BITFLAG_REPORT_INCHES      bit(0)
+#define BITFLAG_AUTO_START         bit(1)
+#define BITFLAG_INVERT_ST_ENABLE   bit(2)
+#define BITFLAG_HARD_LIMIT_ENABLE  bit(3)
+#define BITFLAG_HOMING_ENABLE      bit(4)
 
-
-#define DEFAULT_X_STEPS_PER_MM 250.0
-#define DEFAULT_Y_STEPS_PER_MM 250.0
-#define DEFAULT_Z_STEPS_PER_MM 250.0
-#define DEFAULT_A_STEPS_PER_MM 250.0
+#define DEFAULT_X_STEPS_PER_MM 250
+#define DEFAULT_Y_STEPS_PER_MM 250
+#define DEFAULT_Z_STEPS_PER_MM 250
+#define DEFAULT_A_STEPS_PER_MM 250
 #define DEFAULT_MM_PER_ARC_SEGMENT 0.1
 #define DEFAULT_RAPID_FEEDRATE 500.0 // mm/min
 #define DEFAULT_FEEDRATE 250.0
-#define DEFAULT_ACCELERATION (10.0*60*60) // 10 mm/min^2
+#define DEFAULT_ACCELERATION (10.0*60.0*60.0) // 10 mm/min^2
 #define DEFAULT_JUNCTION_DEVIATION 0.05 // mm
 #define DEFAULT_REPORT_INCHES 0 // false
 #define DEFAULT_AUTO_START 1 // true
@@ -150,17 +155,18 @@ typedef struct {
   float mm_per_arc_segment;
   float acceleration;
   float junction_deviation;
-  unsigned int homing_debounce_delay;
-  char flags;  // Contains default boolean settings
-  char homing_dir_mask;
-  char stepper_idle_lock_time; // If max value 255, steppers do not disable.
-  char decimal_places;
-  char n_arc_correction;
-  char microsteps;
-  char pulse_microseconds;
-  char invert_mask;
+  int n_arc_correction;
+  int flags;  // Contains default boolean settings
+  int step_idle_delay;
+  int homing_debounce_delay;
+  int stepper_idle_lock_time; // If max value 255, steppers do not disable.
+  int microsteps;
+  int pulse_microseconds;
+  int decimal_places;
+  int homing_dir_mask;
+  int invert_mask;
 //  uint8_t status_report_mask; // Mask to indicate desired report data.
-} settings_t;
+}  settings_t;
 extern settings_t settings;
 
 

@@ -28,9 +28,24 @@ main
 			OutPutPulseXYZ
 			SetPinMode
 			SetInitialSizes
+			Settings_Init
 		plan_init
 		disableOCx
 		DisableStepper
+	report_init_message
+		DMA_IsOn
+		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 	Debounce_Limits
 		Test_Port_Pins
 		Reset_Min_Limit
@@ -58,17 +73,6 @@ main
 			memcpy
 		DMA_IsOn
 		dma_printf
-			DMA_CH_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
 		SingleAxisStep
 			Single_Axis_Enable
 			belt_steps
@@ -132,9 +136,16 @@ main
 				disableOCx
 				__CC2DW
 	Rst_Axisword
+	Modal_Group_Actions4
+		DMA_IsOn
+		dma_printf
+		__CC2DW
+	Modal_Group_Actions7
+		DMA_IsOn
+		dma_printf
+		__CC2DW
 	Sample_Ringbuffer
 		Get_Difference
-		G_Initialise
 		Str_clear
 			memset
 		Get_Line
@@ -144,6 +155,23 @@ main
 			Str_Initialize
 				memset
 			strlen
+		report_grbl_help
+			DMA_IsOn
+			dma_printf
+		report_grbl_settings
+			DMA_IsOn
+			dma_printf
+			__CC2DW
+		report_gcode_parameters
+			DMA_IsOn
+			dma_printf
+		report_gcode_modes
+			DMA_IsOn
+			dma_printf
+			__CC2DW
+		report_feedback_message
+			DMA_IsOn
+			dma_printf
 		cpy_val_from_str
 		atoi
 			isdigit

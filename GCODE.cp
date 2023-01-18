@@ -138,7 +138,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 142 "c:/users/git/pic32mzcnc/settings.h"
+#line 147 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -150,15 +150,16 @@ typedef struct {
  float mm_per_arc_segment;
  float acceleration;
  float junction_deviation;
- unsigned int homing_debounce_delay;
- char flags;
- char homing_dir_mask;
- char stepper_idle_lock_time;
- char decimal_places;
- char n_arc_correction;
- char microsteps;
- char pulse_microseconds;
- char invert_mask;
+ int n_arc_correction;
+ int flags;
+ int step_idle_delay;
+ int homing_debounce_delay;
+ int stepper_idle_lock_time;
+ int microsteps;
+ int pulse_microseconds;
+ int decimal_places;
+ int homing_dir_mask;
+ int invert_mask;
 
 } settings_t;
 extern settings_t settings;
@@ -323,6 +324,8 @@ typedef struct {
  char state;
  int homing;
  int homing_cnt;
+ long position[ 4 ];
+
  char auto_start;
  volatile char execute;
 } system_t;
@@ -339,7 +342,7 @@ extern coord_sys coord_system[ 9 ];
 
 
 
-void Settings_Init(char reset_all);
+void Settings_Init(short reset_all);
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
 
 int Save_Row_From_Flash(unsigned long addr);
@@ -618,6 +621,23 @@ char FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/print.h"
+#line 32 "c:/users/git/pic32mzcnc/print.h"
+void report_status_message(int status_code);
+
+void report_alarm_message(int alarm_code);
+
+void report_feedback_message(int message_code);
+
+void report_init_message();
+
+void report_grbl_help();
+
+
+void report_grbl_settings();
+
+void report_gcode_parameters();
+
+void report_gcode_modes();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
@@ -652,13 +672,20 @@ void OutPutPulseXYZ();
 
 int Modal_Group_Actions0(int action);
 
+
 int Modal_Group_Actions1(int action);
+
+
+int Modal_Group_Actions4(int action);
+
+
+int Modal_Group_Actions7(int action);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 50 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 147 "c:/users/git/pic32mzcnc/gcode.h"
+#line 154 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate: 1;
@@ -737,7 +764,7 @@ void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
-static void Set_M_Modal_Commands(int M_Val);
+static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
 #line 21 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 parser_state_t gc;
@@ -821,7 +848,7 @@ int G_Mode(int mode){
 
 void M_Instruction(int flow){
 
- Set_M_Modal_Commands(flow);
+ group_number = Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
 #line 108 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 }
@@ -850,7 +877,7 @@ int i = 0;
 
 
  while(DMA_IsOn(1));
- dma_printf("group_number:= %d\n",group_number);
+ dma_printf("modal_group_words:= %d\tgroup_number:= %d\n",modal_group_words,group_number);
 
 
  last_group_number = group_number;
@@ -1106,7 +1133,7 @@ int i;
  case 301: non_modal_action =  6 ; break;
  case 920: non_modal_action =  7 ; break;
  case 921: non_modal_action =  8 ; break;
- default:  status_code = 3 ; ;break;
+ default:  status_code = 3 ; ;return;break;
  }
   status_code = 0 ; ;
 
@@ -1125,6 +1152,10 @@ int i;
   status_code = 6 ; ;
  }
 
+ while(DMA_IsOn(1));
+ dma_printf("status_code:= %d\tmodal_group_words:= %d\n",status_code,modal_group_words);
+
+
  if (status_code) { return(status_code); }
 
  }
@@ -1135,16 +1166,19 @@ int i;
  return motion_mode;
 }
 
-static void Set_M_Modal_Commands(int flow){
+static int Set_M_Modal_Commands(int flow){
+int gp_num;
 
  switch(flow) {
- case 0: case 1: case 2: case 30: group_number =  5 ; break;
- case 3: case 4: case 5: group_number =  8 ; break;
+ case 0: case 1: case 2: case 30: gp_num =  5 ; break;
+ case 3: case 4: case 5: gp_num =  8 ; break;
  }
+ return gp_num;
 }
 
 
 static int Set_M_Commands(int flow){
+  status_code = 0 ; ;
 
  switch(flow) {
  case 0: gc.program_flow =  1 ; break;
@@ -1154,7 +1188,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 454 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 461 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  status_code = 3 ; ;break;

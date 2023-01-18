@@ -84,12 +84,14 @@ extern unsigned long volatile buff[128];
 ///////////////////////////////////////////////////////////////////////////////
 // Define global system variables
 typedef struct {
-  char abort;                      // System abort flag. Forces exit back to main loop for reset.
-  char state;                      // Tracks the current state of Grbl.
-  int  homing;                     //track the axis homing -1 = none, 0 = x, 1 = y, 2 = z etc
-  int homing_cnt;                 //count the homing bounce
-  char auto_start;                 // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
-  volatile char execute;           // Global system runtime executor bitflag variable. See EXEC bitmasks.
+  char abort;                 // System abort flag. Forces exit back to main loop for reset.
+  char state;                 // Tracks the current state of Grbl.
+  int  homing;                //track the axis homing -1 = none, 0 = x, 1 = y, 2 = z etc
+  int homing_cnt;             //count the homing bounce
+  long position[NoOfAxis];      // Real-time machine (aka home) position vector in steps.
+                              // NOTE: This may need to be a volatile variable, if problems arise.
+  char auto_start;            // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
+  volatile char execute;      // Global system runtime executor bitflag variable. See EXEC bitmasks.
 } system_t;
 extern system_t sys;
 
@@ -104,7 +106,7 @@ extern coord_sys coord_system[NUMBER_OF_DATUMS];
 ///////////////////////////////////////////////////////////////////////////////
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
-void Settings_Init(char reset_all);
+void Settings_Init(short reset_all);
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
 //void Save_Row_From_Flash(unsigned long addr);
 int Save_Row_From_Flash(unsigned long addr);

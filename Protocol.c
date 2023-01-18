@@ -1,5 +1,5 @@
 #include "protocol.h"
-
+#include "Print.h"
 ////////////////////////////////////////////////////
 //local variables
 char gcode[arr_size][str_size];
@@ -21,7 +21,7 @@ void Str_clear(char *str,int len){
 ///////////////////////////////////////////////////
 //sample the ring buffer to check for data
 int Sample_Ringbuffer(){
-static int motion_mode,str_len;
+static int motion_mode,str_len,query;
 int status;
 char str[50];
 char temp[9];
@@ -37,25 +37,68 @@ float XYZ_Val;
     dif = 0;
     dif = Get_Difference();
 
-    if(dif > 0){
-       G_Initialise();
-       F_1_Once = no_of_axis = 0 ; //for buffer and axis refreshing
+  if(dif > 0){
+
+       F_1_Once = no_of_axis = query = 0 ; //for buffer and axis refreshing
 
        Str_clear(str,str_len);    //reset the string to empty
        Get_Line(str,dif);         //get the line sent from PC
        str_len = strlen(str);
        //split up the line into string array using SPC seperator
        num_of_strings = strsplit(gcode,str,0x20);
-       #if ProtoDebug == 2
-       for(i=0;i<num_of_strings;i++){
-         while(DMA_Busy(1));
-         dma_printf("%s\n",gcode[i]);
-       }
-       #endif
+
        //condition each string by seperating the 1st char from the value
        //e.g. G01  => 'G' "01" and extract the numeral from value
        //GCODE standard is usuall capitals = making compensation for
        //Lowercase in the invent of a GCODE set sending lowercase
+     if((*(*gcode+0)+0)=='$'){
+     #if ProtoDebug == 2
+       for(i=0;i<num_of_strings;i++){
+         while(DMA_IsOn(1));
+         dma_printf("%s\n",*(gcode+0)+i);
+       }
+     #endif
+         switch(gcode[0][1]){
+            case '?': // Prints Grbl settings
+              /*if ( gcode[1] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }*/
+              report_grbl_help();
+              query = 1;
+              break;
+            case '$': // Prints Grbl settings
+              /*if ( gcode[1] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }*/
+              report_grbl_settings();
+              query = 1;
+              break;
+            case '#' : // Print gcode parameters
+             // if ( gcode[1] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }
+              report_gcode_parameters();
+              query = 1;
+              break;
+            case 'G' : // Prints gcode parser state
+              //if ( line[++char_counter] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }
+              //else { report_gcode_modes(); }
+                report_gcode_modes();
+                query = 1;
+                break;
+            case 'C' : // Set check g-code mode
+              break;
+            case 'X' : // Disable alarm lock
+              //if ( line[++char_counter] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }
+              if (sys.state == STATE_ALARM) {
+                report_feedback_message(MESSAGE_ALARM_UNLOCK);
+                sys.state = STATE_IDLE;
+                // Don't run startup script. Prevents stored moves in startup from causing accidents.
+              }
+              query = 1;
+              break;
+            case 'H' : // Perform homing cycle
+              break;
+            case 'N' : // Startup lines.
+              break;
+            default :  // Storing setting methods
+              break;
+       }
+     }else{
         switch(*(*gcode+0)+0){
          case 'G':case 'g':
               //1st char usually 'G'
@@ -355,12 +398,20 @@ float XYZ_Val;
               break;
 
        }
-       ret:
-       status = Check_group_multiple_violations();
+     }
+     
+     if(query){
+       status = 0;
+       goto end;
+     }
+     ret:
+     status = Check_group_multiple_violations();
+     end:asm{NOP};
+
       // if(!status)
       //  status =  Motion_mode();
-    }
-    return status;
+  }
+  return status;
 }
 
 

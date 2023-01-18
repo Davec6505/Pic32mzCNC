@@ -39175,6 +39175,9 @@ mm_totalfreememsize
 mm2in
 modal_group_actions0
 modal_group_actions1
+modal_group_actions3
+modal_group_actions4
+modal_group_actions7
 mode
 mode
 mode
@@ -45325,6 +45328,7 @@ poscrdy
 poscrdy
 poscrdy_bit
 position
+position
 pow
 pps_mapping
 pps_mapping_nolock
@@ -47116,6 +47120,16 @@ regsel1
 regsel1_bit
 regsel2
 regsel2_bit
+report_alarm_message
+report_feedback_message
+report_gcode_modes
+report_gcode_parameters
+report_grbl_help
+report_grbl_settings
+report_init_message
+report_realtime_status
+report_startup_line
+report_status_message
 reqop
 reqop
 reqop
@@ -61021,6 +61035,7 @@ status
 status_bit
 status_code
 step_cycle
+step_idle_delay
 step1
 step10
 step10_bit

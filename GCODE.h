@@ -75,16 +75,27 @@ extern volatile int status_code;   // Status of instructions
 #define MODAL_GROUP_7 8 // [M3,M4,M5] Spindle turning
 #define MODAL_GROUP_12 9 // [G54,G55,G56,G57,G58,G59] Coordinate system selection
 
-// Define command actions for within execution-type modal groups (motion, stopping, non-modal). Used
-// internally by the parser to know which command to execute.
-#define MOTION_MODE_SEEK 0 // G0
-#define MOTION_MODE_LINEAR 1 // G1
-#define MOTION_MODE_CW_ARC 2  // G2
+////////////////////////////////////////////////////////////////////////////////
+//       MODAL MODES WILL USE Motion_mode VALUE TO CONTION TO STATE           //
+////////////////////////////////////////////////////////////////////////////////
+// Define command actions for within execution-type modal groups 
+//(motion, stopping, non-modal). Used/internally by the parser to know which 
+//command to execute within main state m/c
+#define MOTION_MODE_SEEK    0  // G0
+#define MOTION_MODE_LINEAR  1  // G1
+#define MOTION_MODE_CW_ARC  2  // G2
 #define MOTION_MODE_CCW_ARC 3  // G3
-#define MOTION_MODE_CANCEL 4 // G80
+#define MOTION_MODE_CANCEL  4  // G80
+#define MOTION_MODE_MCODES  5  // M....
 
-////////////////////////////////////////////////////////
-//NON MODAL DEFINES AND THEIR RESPECTIVE BITS
+//PROGRAM FLOW VALUES
+#define PROGRAM_FLOW_RUNNING   0
+#define PROGRAM_FLOW_PAUSED    1 // M0,1
+#define PROGRAM_FLOW_COMPLETED 2 // M2,30
+
+///////////////////////////////////////////////////////////////////////////////
+//            NON MODAL DEFINES AND THEIR RESPECTIVE BITS                    //
+///////////////////////////////////////////////////////////////////////////////
 #define NON_MODAL_NONE 0
 #define NON_MODAL_DWELL 1                         // G4
 #define NON_MODAL_SET_COORDINATE_DATA 2           // G10
@@ -101,11 +112,7 @@ extern volatile int status_code;   // Status of instructions
 #define NON_MODAL_RESET_COORDINATE_OFFSET 8       //G92.1
 #define NON_MODAL_RESET_COORDINATE_OFFSET_BIT bit(8)
 
-////////////////////////////////////////////////////////
-//PROGRAM FLOW VALUES
-#define PROGRAM_FLOW_RUNNING 0
-#define PROGRAM_FLOW_PAUSED 1 // M0, M1
-#define PROGRAM_FLOW_COMPLETED 2 // M2, M30
+
 
 ////////////////////////////////////////////////////////
 // Define Grbl status codes.
@@ -222,7 +229,7 @@ void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
-static void Set_M_Modal_Commands(int M_Val);
+static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
 
 #endif

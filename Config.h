@@ -42,10 +42,17 @@ void Uart2InterruptSetup(); //uart2 interrupt on recieve turned off
 //void LcdI2CConfig();      //configure the i2c_lcd 4line 16ch display
 void OutPutPulseXYZ();      // setup output pulse OC3
 
-//non modal actions from gcode instruction
+//Group 1 G4,G10,G28,G30,G53,G92,G92.1] Non-modal
 int Modal_Group_Actions0(int action);
-//movement from gcode instruction, mostly modal
+
+//Group 2 [G0,G1,G2,G3,G80] Motion
 int Modal_Group_Actions1(int action);
+
+//[M0,M1,M2,M30] Stopping
+int Modal_Group_Actions4(int action);
+
+//[M3,M4,M5] Spindle turning
+int Modal_Group_Actions7(int action);
 
 
 

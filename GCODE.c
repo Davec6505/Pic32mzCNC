@@ -99,7 +99,7 @@ int G_Mode(int mode){
 //MCodes
 void M_Instruction(int flow){
 //gc.program_flow = flow;
- Set_M_Modal_Commands(flow);
+ group_number = Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
 #if GcodeDebug == 1
  while(DMA_IsOn(1));
@@ -131,7 +131,7 @@ int i = 0;
 
    #if GcodeDebug == 2
      while(DMA_IsOn(1));
-     dma_printf("group_number:= %d\n",group_number);
+     dma_printf("modal_group_words:= %d\tgroup_number:= %d\n",modal_group_words,group_number);
    #endif
    
    last_group_number = group_number;
@@ -400,7 +400,7 @@ int i;
     case 301: non_modal_action = NON_MODAL_SET_HOME_1; break;
     case 920: non_modal_action = NON_MODAL_SET_COORDINATE_OFFSET; break;
     case 921: non_modal_action = NON_MODAL_RESET_COORDINATE_OFFSET; break;
-    default: FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
+    default: FAIL(STATUS_UNSUPPORTED_STATEMENT);return;break;
   }
   FAIL(STATUS_OK);
   // [G54,G55,...,G59]: Coordinate system selection to be implimented
@@ -418,6 +418,10 @@ int i;
     if ( absolute_override && !(motion_mode == MOTION_MODE_SEEK || motion_mode == MOTION_MODE_LINEAR)) {
       FAIL(STATUS_INVALID_STATEMENT);
     }
+    #if GcodeDebug == 2
+    while(DMA_IsOn(1));
+    dma_printf("status_code:= %d\tmodal_group_words:= %d\n",status_code,modal_group_words);
+    #endif
     // Report any errors.
     if (status_code) { return(status_code); }
 
@@ -429,16 +433,19 @@ int i;
  return motion_mode;
 }
 
-static void Set_M_Modal_Commands(int flow){
+static int Set_M_Modal_Commands(int flow){
+int gp_num;
 // Set modal group values
    switch(flow) {
-     case 0: case 1: case 2: case 30: group_number = MODAL_GROUP_4; break;
-     case 3: case 4: case 5: group_number = MODAL_GROUP_7; break;
+     case 0: case 1: case 2: case 30: gp_num = MODAL_GROUP_4; break;
+     case 3: case 4: case 5: gp_num = MODAL_GROUP_7; break;
    }
+   return gp_num;
 }
 
 //M Commands
 static int Set_M_Commands(int flow){
+  FAIL(STATUS_OK);
 // Set 'M' commands
   switch(flow) {
     case 0: gc.program_flow = PROGRAM_FLOW_PAUSED; break; // Program pause

@@ -200,6 +200,10 @@ LUI	R25, hi_addr(_STPS+0)
 ORI	R25, R25, lo_addr(_STPS+0)
 JAL	_SetInitialSizes+0
 NOP	
+;Config.c,110 :: 		Settings_Init(1);
+ORI	R25, R0, 1
+JAL	_Settings_Init+0
+NOP	
 ;Config.c,111 :: 		}
 L_end_PinMode:
 LW	R27, 12(SP)
