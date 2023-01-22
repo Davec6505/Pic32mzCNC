@@ -1,7 +1,7 @@
 #line 1 "C:/Users/Git/Pic32mzCNC/Globals.c"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 147 "c:/users/git/pic32mzcnc/settings.h"
+#line 150 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -427,6 +427,7 @@ void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
+void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
@@ -614,6 +615,10 @@ void report_grbl_settings();
 void report_gcode_parameters();
 
 void report_gcode_modes();
+
+void protocol_execute_startup();
+
+void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
@@ -631,6 +636,8 @@ float ulong2flt(unsigned long ui_) ;
 
 
 void sys_sync_current_position();
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
@@ -692,10 +699,33 @@ extern Serial serial;
 
 
 void DMA_global();
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
+
+
+
 void DMA0();
-void DMA1();
+char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
+unsigned int DMA0_Abort();
+
+
+
+void DMA1();
+char DMA1_Flag();
+void DMA1_Enable();
+void DMA1_Disable();
+unsigned int DMA1_Abort();
+
+
+
+unsigned int DMA_IsOn(int channel);
+unsigned int DMA_CH_Busy(int channel);
+
+
+
 void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
@@ -703,16 +733,6 @@ int Get_Difference();
 void Get_Line(char *str,int dif);
 void Reset_Ring();
 int Loopback();
-
-
-
-void DMA1_Enable();
-void DMA1_Disable();
-unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 62 "c:/users/git/pic32mzcnc/flash_r_w.h"
@@ -774,7 +794,15 @@ unsigned long volatile buff[128]= {0} absolute 0xA0000000 ;
 
 
 void Settings_Init(short reset_all){
- if(reset_all){
+ if(!reset_all){
+
+ sys.abort = 0;
+ sys.state = 0;
+ sys.homing = 0;
+ sys.execute = 0;
+ sys.auto_start = 0;
+ }else if(reset_all == 1){
+
  settings.steps_per_mm[X] =  250.0 ;
  settings.steps_per_mm[Y] =  250.0 ;
  settings.steps_per_mm[Z] =  250.0 ;
@@ -794,7 +822,7 @@ void Settings_Init(short reset_all){
 
  }
 }
-#line 62 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 70 "C:/Users/Git/Pic32mzCNC/Globals.c"
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
 float ptr;
 unsigned int error = 0;
@@ -816,7 +844,7 @@ unsigned long add;
  error = (int)NVMErasePage(add);
 
  if(error){
-#line 87 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 95 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -844,7 +872,7 @@ unsigned long add;
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 121 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 129 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  i = (recipe-1)*4 ;
@@ -858,7 +886,7 @@ unsigned long add;
 
 
  res = NVMWriteRow(&add,buff);
-#line 140 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 148 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -874,7 +902,7 @@ unsigned long *ptr;
  for(j = 0;j < 128;j++){
  buff[j] = *(ptr+j);
  if(buff[j] != -1)data_count++;
-#line 159 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 167 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  return data_count;

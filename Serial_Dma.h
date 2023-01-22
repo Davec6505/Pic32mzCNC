@@ -28,12 +28,35 @@ extern Serial serial;
 
 ////////////////////////////////////////////
 //function prototypes
-//rcv
+//Global functions
 void DMA_global();
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
+
+////////////////////////////////////////////
+//DMA0 rcv functions
 void DMA0();
-void DMA1();
+char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
+unsigned int DMA0_Abort();
+
+///////////////////////////////////////////
+//DMA1 trmit functions
+void DMA1();
+char DMA1_Flag();
+void DMA1_Enable();
+void DMA1_Disable();
+unsigned int DMA1_Abort();
+
+//////////////////////////////////////////
+//DMA Generic functions
+unsigned int DMA_IsOn(int channel);
+unsigned int DMA_CH_Busy(int channel);
+
+///////////////////////////////////////////
+//Printout specific functions
 void Reset_rxBuff(int dif);
 int  Get_Head_Value();
 int  Get_Tail_Value();
@@ -41,16 +64,6 @@ int  Get_Difference();
 void Get_Line(char *str,int dif);
 void Reset_Ring();
 int  Loopback();
-
-///////////////////////////////////////////
-//trmit
-void DMA1_Enable();
-void DMA1_Disable();
-unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #endif

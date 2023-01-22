@@ -5,6 +5,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 //                             DEFINES                                       //
 ///////////////////////////////////////////////////////////////////////////////
+
+#define GRBL_VERSION "0.8c"
+
 //G54, G55, G56, G57, G58 and G59 are datum shift G-Codes.
 //This series of commands tell the CNC control which datum we are using.
 //Once the machine reads one of these codes it will continue to work

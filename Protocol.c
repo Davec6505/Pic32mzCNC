@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////
 //local variables
 char gcode[arr_size][str_size];
-
+static unsigned short startup = 0;
 
 ////////////////////////////////////////////////////
 //reset the string array to zero
@@ -32,36 +32,73 @@ int dif,i,j,num_of_strings;
 int G_Val,F_Val,M_Val,S_Val,O_Val,P_Val;
 float XYZ_Val;
 
-    //read head and tail pointer difference
-    //if there is a difference then process line
-    dif = 0;
-    dif = Get_Difference();
+  //read head and tail pointer difference
+  //if there is a difference then process line
+  dif = 0;
+  dif = Get_Difference();
+  
+  
+  //send runtime status when instructed
+  if(bit_istrue(sys.execute,EXEC_STATUS_REPORT)){
+      bit_false(sys.execute,EXEC_STATUS_REPORT);
+      report_realtime_status();
+  }
+  
+  if(dif == 0)
+    return STATUS_OK;
+  else if(dif > 0){
 
-  if(dif > 0){
+    F_1_Once = no_of_axis = query = 0 ; //for buffer and axis refreshing
 
-       F_1_Once = no_of_axis = query = 0 ; //for buffer and axis refreshing
+    Str_clear(str,str_len);    //reset the string to empty
+    Get_Line(str,dif);         //get the line sent from PC
+    str_len = strlen(str);
 
-       Str_clear(str,str_len);    //reset the string to empty
-       Get_Line(str,dif);         //get the line sent from PC
-       str_len = strlen(str);
-       //split up the line into string array using SPC seperator
-       num_of_strings = strsplit(gcode,str,0x20);
+    //split up the line into string array using SPC seperator
+    num_of_strings = strsplit(gcode,str,0x20);
 
-       //condition each string by seperating the 1st char from the value
-       //e.g. G01  => 'G' "01" and extract the numeral from value
-       //GCODE standard is usuall capitals = making compensation for
-       //Lowercase in the invent of a GCODE set sending lowercase
-     if((*(*gcode+0)+0)=='$'){
-     #if ProtoDebug == 2
+    //condition each string by seperating the 1st char from the value
+    //e.g. G01  => 'G' "01" and extract the numeral from value
+    //GCODE standard is usuall capitals = making compensation for
+    //Lowercase in the invent of a GCODE set sending lowercase
+    #if LoopBackDebug == 1
+       UART3_Write_Text(str);
+    #endif
+
+
+     if(DCH0DAT == '?'){
+       #if ProtoDebug == 3
+       while(DMA_IsOn(1));
+       dma_printf("%s\n","?");
+       #endif
+       DCH0DAT = '\n';
+       report_init_message();
+       status = 0;
+       goto end;
+     }
+     
+     if(gcode[0][0] =='$'){
+
+       #if ProtoDebug == 3
+       while(DMA_IsOn(1));
+       dma_printf("str_len:= %d\n",str_len);
        for(i=0;i<num_of_strings;i++){
          while(DMA_IsOn(1));
          dma_printf("%s\n",*(gcode+0)+i);
        }
-     #endif
-         switch(gcode[0][1]){
-            case '?': // Prints Grbl settings
+       #endif
+       if(str_len == 2){
+          report_grbl_help();
+          query = 1;
+          status = 0;
+          goto end;
+       }
+      // if ( gcode[0][1] < 0x20 ) { return(STATUS_UNSUPPORTED_STATEMENT); }
+       switch(gcode[0][1]){
+           case '?': // Prints Grbl settings
               /*if ( gcode[1] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }*/
-              report_grbl_help();
+              sys.execute |= EXEC_STATUS_REPORT;
+              report_realtime_status();
               query = 1;
               break;
             case '$': // Prints Grbl settings
@@ -79,11 +116,26 @@ float XYZ_Val;
               //else { report_gcode_modes(); }
                 report_gcode_modes();
                 query = 1;
+                //will report the current status of the machine after it is asked
+                //for gcode_report
+                if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
+                    bit_true(sys.execute,EXEC_STATUS_REPORT);
                 break;
             case 'C' : // Set check g-code mode
+                // Perform reset when toggling off. Check g-code mode should only work if Grbl
+                // is idle and ready, regardless of alarm locks. This is mainly to keep things
+                // simple and consistent.
+                if ( sys.state == STATE_CHECK_MODE ) {
+                  mc_reset();
+                  //report_feedback_message(MESSAGE_DISABLED);
+                } else {
+                  if (sys.state) { return(STATUS_IDLE_ERROR); }
+                  sys.state = STATE_CHECK_MODE;
+                  report_feedback_message(MESSAGE_ENABLED);
+                }
               break;
             case 'X' : // Disable alarm lock
-              //if ( line[++char_counter] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }
+
               if (sys.state == STATE_ALARM) {
                 report_feedback_message(MESSAGE_ALARM_UNLOCK);
                 sys.state = STATE_IDLE;
@@ -92,13 +144,26 @@ float XYZ_Val;
               query = 1;
               break;
             case 'H' : // Perform homing cycle
+               if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) {
+               // Only perform homing if Grbl is idle or lost.
+                  if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
+                    // mc_go_home();
+                     if (!sys.abort) {
+                       // protocol_execute_startup();
+                     } // Execute startup scripts after successful homing.
+                  } else {
+                     return(STATUS_IDLE_ERROR); 
+                  }
+               } else { 
+                  return(STATUS_SETTING_DISABLED);
+               }
               break;
             case 'N' : // Startup lines.
               break;
-            default :  // Storing setting methods
+            default :  // Storing setting methods  */
               break;
        }
-     }else{
+     }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){
         switch(*(*gcode+0)+0){
          case 'G':case 'g':
               //1st char usually 'G'
@@ -408,9 +473,13 @@ float XYZ_Val;
      status = Check_group_multiple_violations();
      end:asm{NOP};
 
+    if(!status)
+      report_status_message(status);
       // if(!status)
       //  status =  Motion_mode();
   }
+
+     
   return status;
 }
 

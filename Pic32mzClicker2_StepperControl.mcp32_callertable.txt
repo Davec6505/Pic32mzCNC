@@ -12,40 +12,24 @@ main
 			Lock_IOLOCK
 			MM_Init
 			InitTimer1
-			UartConfig
-				UART2_Init_Advanced
-					UART_Calc_BRG
-				UART_Set_Active
-			Uart2InterruptSetup
 			Limit_Initialize
 				X_Min_Limit_Setup
 				Y_Min_Limit_Setup
-			DMA_global
-				DMA0
-				DMA1
-			DMA0_Enable
-			DMA1_Enable
 			OutPutPulseXYZ
 			SetPinMode
 			SetInitialSizes
 			Settings_Init
+			DMA_global
+				DMA0
+				DMA1
+			DMA0_Enable
+			UartConfig
+				UART2_Init_Advanced
+					UART_Calc_BRG
+				UART_Set_Active
 		plan_init
 		disableOCx
 		DisableStepper
-	report_init_message
-		DMA_IsOn
-		dma_printf
-			DMA_CH_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
 	Debounce_Limits
 		Test_Port_Pins
 		Reset_Min_Limit
@@ -71,8 +55,6 @@ main
 		Get_Axisword
 		ulong2flt
 			memcpy
-		DMA_IsOn
-		dma_printf
 		SingleAxisStep
 			Single_Axis_Enable
 			belt_steps
@@ -84,7 +66,6 @@ main
 			Step_Cycle
 				toggleOCx
 		GET_RunState
-		__CC2DW
 	Rst_modalgroup
 	Get_Axisword
 	EnableSteppers
@@ -125,6 +106,17 @@ main
 				fabs
 				floor
 				dma_printf
+					DMA_CH_Busy
+					sprintf
+						_doprntf
+							isdigit
+							scale
+							fround
+					strcat
+					strlen
+					strncpy
+					DMA1_Enable
+					__CC2DW
 				cos
 					sin
 						floor
@@ -137,15 +129,17 @@ main
 				__CC2DW
 	Rst_Axisword
 	Modal_Group_Actions4
-		DMA_IsOn
-		dma_printf
-		__CC2DW
 	Modal_Group_Actions7
+	report_status_message
 		DMA_IsOn
 		dma_printf
-		__CC2DW
 	Sample_Ringbuffer
 		Get_Difference
+		report_realtime_status
+			DMA_IsOn
+			memcpy
+			dma_printf
+			__CC2DW
 		Str_clear
 			memset
 		Get_Line
@@ -155,6 +149,10 @@ main
 			Str_Initialize
 				memset
 			strlen
+		report_init_message
+			DMA_IsOn
+			dma_printf
+			__CC2DW
 		report_grbl_help
 			DMA_IsOn
 			dma_printf
@@ -169,6 +167,8 @@ main
 			DMA_IsOn
 			dma_printf
 			__CC2DW
+		mc_reset
+			disableOCx
 		report_feedback_message
 			DMA_IsOn
 			dma_printf
@@ -183,9 +183,6 @@ main
 			Set_Modal_Groups
 			Set_Motion_Mode
 				Select_Plane
-				DMA_IsOn
-				dma_printf
-				__CC2DW
 		Instruction_Values
 			To_Millimeters
 		M_Instruction
@@ -193,21 +190,19 @@ main
 			Set_M_Commands
 		Check_group_multiple_violations
 			Rst_modalgroup
-			DMA_IsOn
-			dma_printf
 			Rst_modalword
-			__CC2DW
+		report_status_message
 	ResetSteppers
 		DisableStepper
-StepA
+StepZ
 	SingleStepAxis
 		Step_Cycle
 		Pulse
 	Axis_Interpolate
-Timer8Interrupt
-StepZ
+StepA
 	SingleStepAxis
 	Axis_Interpolate
+Timer8Interrupt
 StepX
 	SingleStepAxis
 	Axis_Interpolate
@@ -217,6 +212,8 @@ StepY
 X_Min_Limit
 Y_Min_Limit
 DMA_CH1_ISR
+UART2
+	UART3_Write
 DMA_CH0_ISR
 	__CC2DW
 	strcpy

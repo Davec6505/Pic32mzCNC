@@ -23642,8 +23642,10 @@ dma_resume
 dma_suspend
 dma0
 dma0
+dma0_abort
 dma0_disable
 dma0_enable
+dma0_flag
 dma0ie
 dma0ie
 dma0ie
@@ -23677,8 +23679,10 @@ dma0is1
 dma0is1_bit
 dma1
 dma1
+dma1_abort
 dma1_disable
 dma1_enable
+dma1_flag
 dma1ie
 dma1ie
 dma1ie
@@ -38941,6 +38945,7 @@ manfc_bit
 max
 max_sizes
 mc_arc
+mc_reset
 mcen
 mcen
 mcen
@@ -72079,6 +72084,7 @@ uart1_read_text
 uart1_tx_idle
 uart1_write
 uart1_write_text
+uart2
 uart2_data_ready
 uart2_init
 uart2_init_advanced

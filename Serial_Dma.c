@@ -49,7 +49,7 @@ void  DMA0(){
     DCH0ECON      =  (146 << 8 ) | 0x30;
     
     //Pattern data
-    DCH0DAT       =  0x0A;//'\n';
+    DCH0DAT       = '?';//'\0' //0x0A0D;//'\r\n';
     
     //Source address as UART_RX
     DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
@@ -61,27 +61,39 @@ void  DMA0(){
    
     //Cell size as 1 byte
     DCH0CSIZ      = 1  ;  // bytes transferred in the background
-
-
-    // Clear existing events, disable all interrupts
-    DCH0INTCLR    = 0x00FF00FF ;
-    //Enable [CHBCIE && CHERIE] Interrupts
-    DCH0INTSET      =  0x90000;
     
     //Interrupt setup
     //clear DMA channel priority and sub-priority
     IPC33CLR     = 0x160000;
+    
+    // Clear existing events, disable all interrupts
+    DCH0INTCLR    = 0x00FF00FF ;
+    
     //Set priority 5 sub-priority 1
     IPC33SET      = 0x00140000;
+    
+    //Enable [CHBCIE && CHERIE] Interrupts
+    DCH0INTSET      =  0x90000;
+    
     //set DMA0IE bit
     IEC4SET       = 0x40;
     IFS4CLR       = 0x40;
+    
+    // Clear existing events, disable all interrupts
+    DCH0INTCLR    = 0x000000FF ;
+    
     //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0] 
     //Set up AutoEnable & Priority as 3       .
-    DCH0CONSET      = 0X0000013;//813 = 2 char e.g. \r\n
+    DCH0CONSET      = 0X0000013;//013 = 1 char || 813 = 2 char e.g. \r\n
     
     //set the recieve buffer counts to 0
     serial.head = serial.tail = serial.diff = 0;
+}
+
+////////////////////////////////////////
+//Test dma0_Flag for indication
+char DMA0_Flag(){
+    return dma0int_flag;
 }
 
 ////////////////////////////////////////
@@ -90,6 +102,7 @@ void DMA0_Enable(){
    //CHEN[7]
    //Turn on DMA0
    DCH0CONSET  = 1<<7;
+   IFS4CLR     = 0x40;
 }
 
 ////////////////////////////////////////
@@ -101,18 +114,28 @@ void DMA0_Disable(){
 }
 
 ////////////////////////////////////////
+//DMA0 Abort abort channel transfer
+unsigned int DMA0_Abort(){
+   DCH0CONSET= 1<<6;
+   while(DMA_IsOn(1));
+   DMA0_Enable();
+
+   return (DCH0CON & 0x0040 ) >> 6;
+}
+
+////////////////////////////////////////
 //DMA0 IRQ   UART2 RX
 void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
  int i = 0;
-
-    dma0int_flag = DCH0INT & 0x00FF;         //flags to sample in code if needed
-
+ 
+   //flags to sample in code if needed
+    dma0int_flag = DCH0INT & 0x00FF;
 
   // CHANNEN ADDRESS ERROR FLAF
     if( CHERIF_bit == 1){       // test error int flag
        //LOOPBACK RECIEVE ERROR COULD BE SPECIFIC MSG
        strcpy(rxBuf,DMAx_err(dma0,cherie));
-       //UART2_Write_Text(txBuf);
+       //Can uncomment if needed
        //DCH1SSIZ = 13;           //set block size of transfer
        //DCH1ECONbits.CFORCE = 1 ;// force DMA1 interrupt trigger
     }
@@ -135,6 +158,7 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
 
     DCH0INTCLR    = 0x000000ff;
     IFS4CLR       = 0x40;
+
 }
 
 //reset rxBuff
@@ -146,10 +170,12 @@ static void Reset_rxBuff(int dif){
 int Get_Head_Value(){
  return serial.head;
 }
+
 //Tail index
 int Get_Tail_Value(){
   return serial.tail;
 }
+
 //get the difference in indexes
 int Get_Difference(){
 
@@ -223,40 +249,55 @@ void DMA1(){
     
     //Pattern Length and char to match not needed here ????
     //Pattern length = 0 = 1 byte
-    DCH1DAT       = '\r';
+    DCH1DAT       = '\0';
     
     //Source address and size of transfer buffer
-    DCH1SSA = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
-    DCH1SSIZ = 200;  //' This is how many bytes you want to send out in a block transfer for UART transmitter
+    DCH1SSA   = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
+    DCH1SSIZ  = 1000;  //' This is how many bytes you want to send out in a block transfer for UART transmitter
     
     //Destination Address and size which is 1byte
     //U1TX2REG for reply  [0xBF822220 = U1TXREG]
-    DCH1DSA = KVA_TO_PA(0xBF822220) ;
-    DCH1DSIZ = 1;
+    U1TXREG   = 0x00;
+    DCH1DSA   = KVA_TO_PA(0xBF822220) ;
+    DCH1DSIZ  = 1;
     
     //Cell size to transfer each transfer
-    DCH1CSIZ = 1;    //' x bytes from txBuf in a cell waiting to send out 1 byte at a time to U1TXREG / DCH1DSIZ
+    DCH1CSIZ  = 1;    //' x bytes from txBuf in a cell waiting to send out 1 byte at a time to U1TXREG / DCH1DSIZ
 
-    // Clear existing events, disable all interrupts
-    DCH1INTCLR    = 0x00FF00FF ;
-    //[CHBCIE && CHERIE]
-    //DCH1INTSET    =  0x90000;
-    
     //Interrupt setup
     //clear DMA channel priority and sub-priority
-    IPC33CLR     = 0x16000000;
+    IPC33CLR  = 0x16000000;
+
+    //Disable all interrupts, Clear existing events
+    DCH1INTCLR = 0x00FF00FF ;
+    
     //Set priority 5 sub-priority 2
-    IPC33SET    = 0x16000000;
+    IPC33SET  = 0x16000000;
+    
+    //[CHERIE]
+    //DCH1INTSET    =  0x10000;
+    
     //set DMA1IE bit
-    IEC4SET     = 0x80;
+    IEC4SET   = 0x80;
     //Clear DMA1IF bit
-    IFS4CLR     = 0x80;
+    IFS4CLR   = 0x80;
+    // Clear existing events
+    DCH1INTCLR = 0x00FF ;
     
     //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0]
     //Set up no AutoEnable & Priority as 3        .
     DCH1CONSET    = 0x00000003;
 
 }
+
+////////////////////////////////////////
+//Test dma0_Flag for indication
+char DMA1_Flag(){
+    return dma1int_flag;
+}
+
+///////////////////////////////////////
+
 ////////////////////////////////////////
 //DMA1 on control
 void DMA1_Enable(){
@@ -268,6 +309,16 @@ void DMA1_Enable(){
 //need to come back to this eventually
 void DMA1_Disable(){
     DCH1CONCLR = 1<<7;
+}
+
+////////////////////////////////////////
+//DMA1 Abort abort channel transfer
+unsigned int DMA1_Abort(){
+   DCH1CONSET= 1<<6;
+   while(DMA_IsOn(1));
+   DMA1_Enable();
+   
+   return (DCH1CON & 0x0040 ) >> 6;
 }
 
 ///////////////////////////////////////
@@ -331,8 +382,6 @@ void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
     dma1int_flag = DCH1INT & 0x00FF;
     //Channel Block Transfer Complete Interrupt Flag bit
     if (DCH1INTbits.CHBCIF){
-       dma1int_flag = 1;
-       dma0int_flag = 0;
        //DMA1_Disable();
     }
      //Channel Address Error Interrupt Flag bit
@@ -445,6 +494,7 @@ int dma_printf(const char* str,...){
  strncpy(txBuf,buff,j+1);
  DCH1SSIZ    = j ;
  DMA1_Enable();
+ //DCH1ECONSET = 1<<7;
  return j;
 
 }

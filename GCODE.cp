@@ -138,7 +138,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 147 "c:/users/git/pic32mzcnc/settings.h"
+#line 150 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -228,10 +228,33 @@ extern Serial serial;
 
 
 void DMA_global();
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
+
+
+
 void DMA0();
-void DMA1();
+char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
+unsigned int DMA0_Abort();
+
+
+
+void DMA1();
+char DMA1_Flag();
+void DMA1_Enable();
+void DMA1_Disable();
+unsigned int DMA1_Abort();
+
+
+
+unsigned int DMA_IsOn(int channel);
+unsigned int DMA_CH_Busy(int channel);
+
+
+
 void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
@@ -239,16 +262,6 @@ int Get_Difference();
 void Get_Line(char *str,int dif);
 void Reset_Ring();
 int Loopback();
-
-
-
-void DMA1_Enable();
-void DMA1_Disable();
-unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -451,6 +464,7 @@ void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
+void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
@@ -638,9 +652,15 @@ void report_grbl_settings();
 void report_gcode_parameters();
 
 void report_gcode_modes();
+
+void protocol_execute_startup();
+
+void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
@@ -874,24 +894,14 @@ int i = 0;
  Rst_modalgroup();
 
   (modal_group_words |= (1 << group_number) ) ;
-
-
- while(DMA_IsOn(1));
- dma_printf("modal_group_words:= %d\tgroup_number:= %d\n",modal_group_words,group_number);
-
-
+#line 137 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_group_number = group_number;
  if (group_number ==  1 ){
 
 
  Rst_modalword();
   (non_modal_words |= (1 << non_modal_action) ) ;
-
-
- while(DMA_IsOn(1));
- dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
- non_modal_action,non_modal_words);
-
+#line 149 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -935,14 +945,7 @@ int i = 0;
  }
  break;
  case  1 :
-
-
-
-
-
- while(DMA_IsOn(1));
- dma_printf("axis_words:= %d\n",(int)axis_words & 0x00FF);
-
+#line 200 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  if (axis_words == 0) {
   status_code = 6 ; ;
  }else {
@@ -1151,18 +1154,11 @@ int i;
  if ( absolute_override && !(motion_mode ==  0  || motion_mode ==  1 )) {
   status_code = 6 ; ;
  }
-
- while(DMA_IsOn(1));
- dma_printf("status_code:= %d\tmodal_group_words:= %d\n",status_code,modal_group_words);
-
-
+#line 426 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  if (status_code) { return(status_code); }
 
  }
-
- while(DMA_IsOn(1));
- dma_printf("non_modal_action:= %d\n",non_modal_action);
-
+#line 433 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return motion_mode;
 }
 

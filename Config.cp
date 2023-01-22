@@ -136,7 +136,7 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 147 "c:/users/git/pic32mzcnc/settings.h"
+#line 150 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -407,10 +407,33 @@ extern Serial serial;
 
 
 void DMA_global();
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
+
+
+
 void DMA0();
-void DMA1();
+char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
+unsigned int DMA0_Abort();
+
+
+
+void DMA1();
+char DMA1_Flag();
+void DMA1_Enable();
+void DMA1_Disable();
+unsigned int DMA1_Abort();
+
+
+
+unsigned int DMA_IsOn(int channel);
+unsigned int DMA_CH_Busy(int channel);
+
+
+
 void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
@@ -418,16 +441,6 @@ int Get_Difference();
 void Get_Line(char *str,int dif);
 void Reset_Ring();
 int Loopback();
-
-
-
-void DMA1_Enable();
-void DMA1_Disable();
-unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -537,6 +550,7 @@ void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
+void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
@@ -724,9 +738,15 @@ void report_grbl_settings();
 void report_gcode_parameters();
 
 void report_gcode_modes();
+
+void protocol_execute_startup();
+
+void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
@@ -768,15 +788,22 @@ int Modal_Group_Actions4(int action);
 int Modal_Group_Actions7(int action);
 #line 5 "C:/Users/Git/Pic32mzCNC/Config.c"
 void PinMode(){
+
+
  DI();
+
+
 
  SYSKEY = 0xAA996655;
  SYSKEY = 0x556699AA;
  CFGCONbits.OCACLK = 1;
  SYSKEY = 0x33333333;
 
+
+
  JTAGEN_bit = 0;
  Delay_ms(100);
+
 
 
  ANSELA = 0X0000;
@@ -800,7 +827,6 @@ void PinMode(){
 
 
 
-
  SW1_Dir = 1;
  SW2_Dir = 1;
 
@@ -816,6 +842,9 @@ void PinMode(){
 
  PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);
  PPS_Mapping_NoLock(_RPE9, _INPUT, _U2RX);
+
+ PPS_Mapping_NoLock(_RPA14, _OUTPUT, _U3TX);
+ PPS_Mapping_NoLock(_RPF5, _INPUT, _U3RX);
 
  PPS_Mapping_NoLock(_RPB9, _OUTPUT, _NULL);
  PPS_Mapping_NoLock(_RPB10, _OUTPUT, _NULL);
@@ -844,21 +873,7 @@ void PinMode(){
 
 
 
- UartConfig();
-
-
-
- Uart2InterruptSetup();
-
-
-
  Limit_Initialize();
-
-
-
- DMA_global();
- DMA0_Enable();
- DMA1_Enable();
 
 
 
@@ -867,20 +882,38 @@ void PinMode(){
 
 
 
-
  SetInitialSizes(STPS);
 
 
 
+ Settings_Init(0);
  Settings_Init(1);
+
+
+
+
+ DMA_global();
+ DMA0_Enable();
+
+
+
+
+ UartConfig();
+
+
+
+
+
+
 }
 
 void UartConfig(){
 
 
- UART2_Init_Advanced(256000, 200000 , _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
+ UART2_Init_Advanced(115200, 200000 , _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
  UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle);
- Delay_ms(100);
+ Delay_ms(10);
+#line 144 "C:/Users/Git/Pic32mzCNC/Config.c"
 }
 
 
@@ -891,7 +924,7 @@ void UartConfig(){
 
 
 void Uart2InterruptSetup(){
-
+#line 160 "C:/Users/Git/Pic32mzCNC/Config.c"
  URXISEL0_bit = 0;
  URXISEL1_bit = 0;
 
@@ -899,8 +932,12 @@ void Uart2InterruptSetup(){
  UTXISEL0_bit = 0;
  UTXISEL1_bit = 0;
 
+ IPC36CLR = 0x160000;
 
- IEC4CLR = 0xc000;
+ IPC36SET = 0x00140000;
+
+ IEC4SET = 0x40000;
+ IFS4CLR = 0x40000;
 
 }
 
@@ -978,7 +1015,7 @@ unsigned long cp0;
 
 
 void OutPutPulseXYZ(){
-#line 221 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 255 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5CON = 0x0000;
  OC2CON = 0x0000;
  OC7CON = 0X0000;
@@ -1016,7 +1053,7 @@ void OutPutPulseXYZ(){
  OC3CON = 0x000C;
  OC6CON = 0x000C;
  OC8CON = 0x000C;
-#line 265 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 299 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5R = 0x5;
  OC5RS = 0x234;
  OC2R = 0x5;
@@ -1096,5 +1133,12 @@ void OutPutPulseXYZ(){
 
 
 
+
+}
+
+void UART2() iv IVT_UART2_RX ilevel 5 ics ICS_SOFT {
+ IFS4CLR = 0x40000;
+
+ UART3_Write(U2RXREG);
 
 }

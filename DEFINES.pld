@@ -1,6 +1,7 @@
-MainDebug=1
+MainDebug=-1
 DMADebug=-1
-ProtoDebug=-2
-GcodeDebug=2
+ProtoDebug=-3
+GcodeDebug=-3
 StepperDebug=-1
 FlashDebug=-1
+LoopBackDebug=-1

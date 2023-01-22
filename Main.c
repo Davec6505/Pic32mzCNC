@@ -64,15 +64,14 @@ void main() {
 int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
 static int cntr = 0,a = 0;
 
- 
   Conditin_Externs();
-  cntr = a = axis_to_run = dif = status_of_gcode = 0;
   EnableInterrupts();
   
+  cntr = a = axis_to_run = dif = status_of_gcode = 0;
  // wait on start up for device to be stable and send initial
  //message for ugs to think this is grbl
- Delay_ms(1000);
- report_init_message();
+ //Delay_ms(1000);
+ //report_init_message();
  
   while(1){
      //continously test the limits
@@ -114,7 +113,10 @@ static int cntr = 0,a = 0;
           case 512:
                break;
        }
+     }else{
+        report_status_message(status_of_gcode);
      }
+     
      status_of_gcode = Sample_Ringbuffer();
      
       //code execution confirmation led on clicker2 board

@@ -9,7 +9,15 @@ unsigned long volatile buff[128]= {0} absolute 0xA0000000 ;
 
 
 void Settings_Init(short reset_all){
- if(reset_all){
+ if(!reset_all){
+    //defaults for statuses
+     sys.abort           = 0;
+     sys.state           = 0;
+     sys.homing          = 0;
+     sys.execute         = 0;
+     sys.auto_start      = 0;
+ }else if(reset_all == 1){
+  //defaults for settings
   settings.steps_per_mm[X] = DEFAULT_X_STEPS_PER_MM;
   settings.steps_per_mm[Y] = DEFAULT_Y_STEPS_PER_MM;
   settings.steps_per_mm[Z] = DEFAULT_Z_STEPS_PER_MM;

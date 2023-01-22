@@ -1,6 +1,6 @@
 _report_status_message:
 ;Print.c,9 :: 		void report_status_message(int status_code){
-ADDIU	SP, SP, -64
+ADDIU	SP, SP, -60
 SW	RA, 0(SP)
 ;Print.c,10 :: 		if (status_code == 0) { // STATUS_OK
 SEH	R2, R25
@@ -24,15 +24,13 @@ L__report_status_message200:
 J	L_report_status_message1
 NOP	
 L_report_status_message2:
-;Print.c,12 :: 		dma_printf("%s\n","ok");
+;Print.c,12 :: 		dma_printf("%s","ok\r\n");
 ORI	R30, R0, 37
 SB	R30, 6(SP)
 ORI	R30, R0, 115
 SB	R30, 7(SP)
-ORI	R30, R0, 10
-SB	R30, 8(SP)
 MOVZ	R30, R0, R0
-SB	R30, 9(SP)
+SB	R30, 8(SP)
 ADDIU	R3, SP, 6
 LUI	R2, hi_addr(?lstr_2_Print+0)
 ORI	R2, R2, lo_addr(?lstr_2_Print+0)
@@ -65,12 +63,12 @@ NOP
 L_report_status_message5:
 ;Print.c,15 :: 		dma_printf("%s","error: ");
 ORI	R30, R0, 37
-SB	R30, 10(SP)
+SB	R30, 9(SP)
 ORI	R30, R0, 115
-SB	R30, 11(SP)
+SB	R30, 10(SP)
 MOVZ	R30, R0, R0
-SB	R30, 12(SP)
-ADDIU	R3, SP, 10
+SB	R30, 11(SP)
+ADDIU	R3, SP, 9
 LUI	R2, hi_addr(?lstr_4_Print+0)
 ORI	R2, R2, lo_addr(?lstr_4_Print+0)
 SH	R25, 4(SP)
@@ -103,14 +101,14 @@ NOP
 L_report_status_message10:
 ;Print.c,19 :: 		dma_printf("%s\n","Bad number format");
 ORI	R30, R0, 37
-SB	R30, 13(SP)
+SB	R30, 12(SP)
 ORI	R30, R0, 115
-SB	R30, 14(SP)
+SB	R30, 13(SP)
 ORI	R30, R0, 10
-SB	R30, 15(SP)
+SB	R30, 14(SP)
 MOVZ	R30, R0, R0
-SB	R30, 16(SP)
-ADDIU	R3, SP, 13
+SB	R30, 15(SP)
+ADDIU	R3, SP, 12
 LUI	R2, hi_addr(?lstr_6_Print+0)
 ORI	R2, R2, lo_addr(?lstr_6_Print+0)
 SH	R25, 4(SP)
@@ -143,14 +141,14 @@ NOP
 L_report_status_message13:
 ;Print.c,23 :: 		dma_printf("%s\n","Expected command letter");
 ORI	R30, R0, 37
-SB	R30, 17(SP)
+SB	R30, 16(SP)
 ORI	R30, R0, 115
-SB	R30, 18(SP)
+SB	R30, 17(SP)
 ORI	R30, R0, 10
-SB	R30, 19(SP)
+SB	R30, 18(SP)
 MOVZ	R30, R0, R0
-SB	R30, 20(SP)
-ADDIU	R3, SP, 17
+SB	R30, 19(SP)
+ADDIU	R3, SP, 16
 LUI	R2, hi_addr(?lstr_8_Print+0)
 ORI	R2, R2, lo_addr(?lstr_8_Print+0)
 SH	R25, 4(SP)
@@ -183,14 +181,14 @@ NOP
 L_report_status_message16:
 ;Print.c,27 :: 		dma_printf("%s\n","Unsupported statement");
 ORI	R30, R0, 37
-SB	R30, 21(SP)
+SB	R30, 20(SP)
 ORI	R30, R0, 115
-SB	R30, 22(SP)
+SB	R30, 21(SP)
 ORI	R30, R0, 10
-SB	R30, 23(SP)
+SB	R30, 22(SP)
 MOVZ	R30, R0, R0
-SB	R30, 24(SP)
-ADDIU	R3, SP, 21
+SB	R30, 23(SP)
+ADDIU	R3, SP, 20
 LUI	R2, hi_addr(?lstr_10_Print+0)
 ORI	R2, R2, lo_addr(?lstr_10_Print+0)
 SH	R25, 4(SP)
@@ -223,14 +221,14 @@ NOP
 L_report_status_message19:
 ;Print.c,31 :: 		dma_printf("%s\n","Invalid radius");
 ORI	R30, R0, 37
-SB	R30, 25(SP)
+SB	R30, 24(SP)
 ORI	R30, R0, 115
-SB	R30, 26(SP)
+SB	R30, 25(SP)
 ORI	R30, R0, 10
-SB	R30, 27(SP)
+SB	R30, 26(SP)
 MOVZ	R30, R0, R0
-SB	R30, 28(SP)
-ADDIU	R3, SP, 25
+SB	R30, 27(SP)
+ADDIU	R3, SP, 24
 LUI	R2, hi_addr(?lstr_12_Print+0)
 ORI	R2, R2, lo_addr(?lstr_12_Print+0)
 SH	R25, 4(SP)
@@ -263,14 +261,14 @@ NOP
 L_report_status_message22:
 ;Print.c,35 :: 		dma_printf("%s\n","Modal group violation");
 ORI	R30, R0, 37
-SB	R30, 29(SP)
+SB	R30, 28(SP)
 ORI	R30, R0, 115
-SB	R30, 30(SP)
+SB	R30, 29(SP)
 ORI	R30, R0, 10
-SB	R30, 31(SP)
+SB	R30, 30(SP)
 MOVZ	R30, R0, R0
-SB	R30, 32(SP)
-ADDIU	R3, SP, 29
+SB	R30, 31(SP)
+ADDIU	R3, SP, 28
 LUI	R2, hi_addr(?lstr_14_Print+0)
 ORI	R2, R2, lo_addr(?lstr_14_Print+0)
 SH	R25, 4(SP)
@@ -303,14 +301,14 @@ NOP
 L_report_status_message25:
 ;Print.c,39 :: 		dma_printf("%s\n","Invalid statement");
 ORI	R30, R0, 37
-SB	R30, 33(SP)
+SB	R30, 32(SP)
 ORI	R30, R0, 115
-SB	R30, 34(SP)
+SB	R30, 33(SP)
 ORI	R30, R0, 10
-SB	R30, 35(SP)
+SB	R30, 34(SP)
 MOVZ	R30, R0, R0
-SB	R30, 36(SP)
-ADDIU	R3, SP, 33
+SB	R30, 35(SP)
+ADDIU	R3, SP, 32
 LUI	R2, hi_addr(?lstr_16_Print+0)
 ORI	R2, R2, lo_addr(?lstr_16_Print+0)
 SH	R25, 4(SP)
@@ -328,14 +326,14 @@ NOP
 L_report_status_message26:
 ;Print.c,42 :: 		dma_printf("%s\n","Setting disabled");
 ORI	R30, R0, 37
-SB	R30, 37(SP)
+SB	R30, 36(SP)
 ORI	R30, R0, 115
-SB	R30, 38(SP)
+SB	R30, 37(SP)
 ORI	R30, R0, 10
-SB	R30, 39(SP)
+SB	R30, 38(SP)
 MOVZ	R30, R0, R0
-SB	R30, 40(SP)
-ADDIU	R3, SP, 37
+SB	R30, 39(SP)
+ADDIU	R3, SP, 36
 LUI	R2, hi_addr(?lstr_18_Print+0)
 ORI	R2, R2, lo_addr(?lstr_18_Print+0)
 SH	R25, 4(SP)
@@ -368,14 +366,14 @@ NOP
 L_report_status_message29:
 ;Print.c,46 :: 		dma_printf("%s\n","Value < 0.0");
 ORI	R30, R0, 37
-SB	R30, 41(SP)
+SB	R30, 40(SP)
 ORI	R30, R0, 115
-SB	R30, 42(SP)
+SB	R30, 41(SP)
 ORI	R30, R0, 10
-SB	R30, 43(SP)
+SB	R30, 42(SP)
 MOVZ	R30, R0, R0
-SB	R30, 44(SP)
-ADDIU	R3, SP, 41
+SB	R30, 43(SP)
+ADDIU	R3, SP, 40
 LUI	R2, hi_addr(?lstr_20_Print+0)
 ORI	R2, R2, lo_addr(?lstr_20_Print+0)
 SH	R25, 4(SP)
@@ -408,14 +406,14 @@ NOP
 L_report_status_message32:
 ;Print.c,50 :: 		dma_printf("%s\n","Value < 3 usec");
 ORI	R30, R0, 37
-SB	R30, 45(SP)
+SB	R30, 44(SP)
 ORI	R30, R0, 115
-SB	R30, 46(SP)
+SB	R30, 45(SP)
 ORI	R30, R0, 10
-SB	R30, 47(SP)
+SB	R30, 46(SP)
 MOVZ	R30, R0, R0
-SB	R30, 48(SP)
-ADDIU	R3, SP, 45
+SB	R30, 47(SP)
+ADDIU	R3, SP, 44
 LUI	R2, hi_addr(?lstr_22_Print+0)
 ORI	R2, R2, lo_addr(?lstr_22_Print+0)
 SH	R25, 4(SP)
@@ -448,14 +446,14 @@ NOP
 L_report_status_message35:
 ;Print.c,54 :: 		dma_printf("%s\n","EEPROM read fail. Using defaults");
 ORI	R30, R0, 37
-SB	R30, 49(SP)
+SB	R30, 48(SP)
 ORI	R30, R0, 115
-SB	R30, 50(SP)
+SB	R30, 49(SP)
 ORI	R30, R0, 10
-SB	R30, 51(SP)
+SB	R30, 50(SP)
 MOVZ	R30, R0, R0
-SB	R30, 52(SP)
-ADDIU	R3, SP, 49
+SB	R30, 51(SP)
+ADDIU	R3, SP, 48
 LUI	R2, hi_addr(?lstr_24_Print+0)
 ORI	R2, R2, lo_addr(?lstr_24_Print+0)
 SH	R25, 4(SP)
@@ -488,14 +486,14 @@ NOP
 L_report_status_message38:
 ;Print.c,58 :: 		dma_printf("%s\n","Busy or queued");
 ORI	R30, R0, 37
-SB	R30, 53(SP)
+SB	R30, 52(SP)
 ORI	R30, R0, 115
-SB	R30, 54(SP)
+SB	R30, 53(SP)
 ORI	R30, R0, 10
-SB	R30, 55(SP)
+SB	R30, 54(SP)
 MOVZ	R30, R0, R0
-SB	R30, 56(SP)
-ADDIU	R3, SP, 53
+SB	R30, 55(SP)
+ADDIU	R3, SP, 52
 LUI	R2, hi_addr(?lstr_26_Print+0)
 ORI	R2, R2, lo_addr(?lstr_26_Print+0)
 SH	R25, 4(SP)
@@ -528,14 +526,14 @@ NOP
 L_report_status_message41:
 ;Print.c,62 :: 		dma_printf("%s\n","Alarm lock");
 ORI	R30, R0, 37
-SB	R30, 57(SP)
+SB	R30, 56(SP)
 ORI	R30, R0, 115
-SB	R30, 58(SP)
+SB	R30, 57(SP)
 ORI	R30, R0, 10
-SB	R30, 59(SP)
+SB	R30, 58(SP)
 MOVZ	R30, R0, R0
-SB	R30, 60(SP)
-ADDIU	R3, SP, 57
+SB	R30, 59(SP)
+ADDIU	R3, SP, 56
 LUI	R2, hi_addr(?lstr_28_Print+0)
 ORI	R2, R2, lo_addr(?lstr_28_Print+0)
 SH	R25, 4(SP)
@@ -641,7 +639,7 @@ L_report_status_message3:
 ;Print.c,66 :: 		}
 L_end_report_status_message:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 64
+ADDIU	SP, SP, 60
 JR	RA
 NOP	
 ; end of _report_status_message
@@ -1084,7 +1082,7 @@ NOP
 ; end of _report_feedback_message
 _report_init_message:
 ;Print.c,115 :: 		void report_init_message(){
-ADDIU	SP, SP, -12
+ADDIU	SP, SP, -16
 SW	RA, 0(SP)
 ;Print.c,116 :: 		while(DMA_IsOn(1));
 SW	R25, 4(SP)
@@ -1100,29 +1098,33 @@ L__report_init_message285:
 J	L_report_init_message73
 NOP	
 L_report_init_message74:
-;Print.c,117 :: 		dma_printf("%s\n","Grbl \" GRBL_VERSION  ['$?' for help]");
-ORI	R30, R0, 37
-SB	R30, 8(SP)
-ORI	R30, R0, 115
-SB	R30, 9(SP)
-ORI	R30, R0, 10
-SB	R30, 10(SP)
-MOVZ	R30, R0, R0
-SB	R30, 11(SP)
+;Print.c,117 :: 		dma_printf("%s%s%s\n","Grbl ", GRBL_VERSION ,"['$' for help]");
+ADDIU	R23, SP, 8
+ADDIU	R22, R23, 8
+LUI	R24, hi_addr(?ICS?lstr47_Print+0)
+ORI	R24, R24, lo_addr(?ICS?lstr47_Print+0)
+JAL	___CC2DW+0
+NOP	
 ADDIU	R3, SP, 8
+LUI	R2, hi_addr(?lstr_50_Print+0)
+ORI	R2, R2, lo_addr(?lstr_50_Print+0)
+ADDIU	SP, SP, -16
+SW	R2, 12(SP)
+LUI	R2, hi_addr(?lstr_49_Print+0)
+ORI	R2, R2, lo_addr(?lstr_49_Print+0)
+SW	R2, 8(SP)
 LUI	R2, hi_addr(?lstr_48_Print+0)
 ORI	R2, R2, lo_addr(?lstr_48_Print+0)
-ADDIU	SP, SP, -8
 SW	R2, 4(SP)
 SW	R3, 0(SP)
 JAL	_dma_printf+0
 NOP	
-ADDIU	SP, SP, 8
+ADDIU	SP, SP, 16
 ;Print.c,118 :: 		}
 L_end_report_init_message:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 12
+ADDIU	SP, SP, 16
 JR	RA
 NOP	
 ; end of _report_init_message
@@ -1152,8 +1154,8 @@ SB	R30, 9(SP)
 MOVZ	R30, R0, R0
 SB	R30, 10(SP)
 ADDIU	R3, SP, 8
-LUI	R2, hi_addr(?lstr_50_Print+0)
-ORI	R2, R2, lo_addr(?lstr_50_Print+0)
+LUI	R2, hi_addr(?lstr_52_Print+0)
+ORI	R2, R2, lo_addr(?lstr_52_Print+0)
 ADDIU	SP, SP, -8
 SW	R2, 4(SP)
 SW	R3, 0(SP)
@@ -1220,8 +1222,8 @@ SLTU	R4, R0, R4
 ;Print.c,166 :: 		$22=   %d (step port invert mask, int:)\n"
 ADDIU	R23, SP, 12
 ADDIU	R22, R23, 1055
-LUI	R24, hi_addr(?ICS?lstr51_Print+0)
-ORI	R24, R24, lo_addr(?ICS?lstr51_Print+0)
+LUI	R24, hi_addr(?ICS?lstr53_Print+0)
+ORI	R24, R24, lo_addr(?ICS?lstr53_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R3, SP, 12
@@ -1330,8 +1332,8 @@ L_report_startup_line80:
 ;Print.c,197 :: 		dma_printf("$N= %d %s\n",n,line);
 ADDIU	R23, SP, 10
 ADDIU	R22, R23, 11
-LUI	R24, hi_addr(?ICS?lstr52_Print+0)
-ORI	R24, R24, lo_addr(?ICS?lstr52_Print+0)
+LUI	R24, hi_addr(?ICS?lstr54_Print+0)
+ORI	R24, R24, lo_addr(?ICS?lstr54_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R2, SP, 10
@@ -1393,8 +1395,8 @@ SB	R30, 41(SP)
 MOVZ	R30, R0, R0
 SB	R30, 42(SP)
 ADDIU	R3, SP, 40
-LUI	R2, hi_addr(?lstr_54_Print+0)
-ORI	R2, R2, lo_addr(?lstr_54_Print+0)
+LUI	R2, hi_addr(?lstr_56_Print+0)
+ORI	R2, R2, lo_addr(?lstr_56_Print+0)
 ADDIU	SP, SP, -8
 SW	R2, 4(SP)
 SW	R3, 0(SP)
@@ -1412,8 +1414,8 @@ SB	R30, 44(SP)
 MOVZ	R30, R0, R0
 SB	R30, 45(SP)
 ADDIU	R3, SP, 43
-LUI	R2, hi_addr(?lstr_56_Print+0)
-ORI	R2, R2, lo_addr(?lstr_56_Print+0)
+LUI	R2, hi_addr(?lstr_58_Print+0)
+ORI	R2, R2, lo_addr(?lstr_58_Print+0)
 ADDIU	SP, SP, -8
 SW	R2, 4(SP)
 SW	R3, 0(SP)
@@ -1431,8 +1433,8 @@ SB	R30, 47(SP)
 MOVZ	R30, R0, R0
 SB	R30, 48(SP)
 ADDIU	R3, SP, 46
-LUI	R2, hi_addr(?lstr_58_Print+0)
-ORI	R2, R2, lo_addr(?lstr_58_Print+0)
+LUI	R2, hi_addr(?lstr_60_Print+0)
+ORI	R2, R2, lo_addr(?lstr_60_Print+0)
 ADDIU	SP, SP, -8
 SW	R2, 4(SP)
 SW	R3, 0(SP)
@@ -1450,8 +1452,8 @@ SB	R30, 50(SP)
 MOVZ	R30, R0, R0
 SB	R30, 51(SP)
 ADDIU	R3, SP, 49
-LUI	R2, hi_addr(?lstr_60_Print+0)
-ORI	R2, R2, lo_addr(?lstr_60_Print+0)
+LUI	R2, hi_addr(?lstr_62_Print+0)
+ORI	R2, R2, lo_addr(?lstr_62_Print+0)
 ADDIU	SP, SP, -8
 SW	R2, 4(SP)
 SW	R3, 0(SP)
@@ -1469,8 +1471,8 @@ SB	R30, 53(SP)
 MOVZ	R30, R0, R0
 SB	R30, 54(SP)
 ADDIU	R3, SP, 52
-LUI	R2, hi_addr(?lstr_62_Print+0)
-ORI	R2, R2, lo_addr(?lstr_62_Print+0)
+LUI	R2, hi_addr(?lstr_64_Print+0)
+ORI	R2, R2, lo_addr(?lstr_64_Print+0)
 ADDIU	SP, SP, -8
 SW	R2, 4(SP)
 SW	R3, 0(SP)
@@ -1488,8 +1490,8 @@ SB	R30, 56(SP)
 MOVZ	R30, R0, R0
 SB	R30, 57(SP)
 ADDIU	R3, SP, 55
-LUI	R2, hi_addr(?lstr_64_Print+0)
-ORI	R2, R2, lo_addr(?lstr_64_Print+0)
+LUI	R2, hi_addr(?lstr_66_Print+0)
+ORI	R2, R2, lo_addr(?lstr_66_Print+0)
 ADDIU	SP, SP, -8
 SW	R2, 4(SP)
 SW	R3, 0(SP)
@@ -1507,8 +1509,8 @@ SB	R30, 59(SP)
 MOVZ	R30, R0, R0
 SB	R30, 60(SP)
 ADDIU	R3, SP, 58
-LUI	R2, hi_addr(?lstr_66_Print+0)
-ORI	R2, R2, lo_addr(?lstr_66_Print+0)
+LUI	R2, hi_addr(?lstr_68_Print+0)
+ORI	R2, R2, lo_addr(?lstr_68_Print+0)
 ADDIU	SP, SP, -8
 SW	R2, 4(SP)
 SW	R3, 0(SP)
@@ -1652,8 +1654,8 @@ LWC1	S0, 0(R3)
 ;Print.c,237 :: 		dma_printf(",MPos: %f,%f,%f,"
 ADDIU	R23, SP, 61
 ADDIU	R22, R23, 17
-LUI	R24, hi_addr(?ICS?lstr67_Print+0)
-ORI	R24, R24, lo_addr(?ICS?lstr67_Print+0)
+LUI	R24, hi_addr(?ICS?lstr69_Print+0)
+ORI	R24, R24, lo_addr(?ICS?lstr69_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R2, SP, 61
@@ -1769,8 +1771,8 @@ LWC1	S0, 0(R3)
 ;Print.c,252 :: 		dma_printf(",WPos: %f,%f,%f>\n"
 ADDIU	R23, SP, 78
 ADDIU	R22, R23, 18
-LUI	R24, hi_addr(?ICS?lstr68_Print+0)
-ORI	R24, R24, lo_addr(?ICS?lstr68_Print+0)
+LUI	R24, hi_addr(?ICS?lstr70_Print+0)
+ORI	R24, R24, lo_addr(?ICS?lstr70_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R2, SP, 78
@@ -2271,7 +2273,7 @@ NOP
 J	L_report_gcode_parameters140
 NOP	
 L__report_gcode_parameters361:
-;Print.c,302 :: 		dma_printf("%f",gc.coord_offset[i]*INCH_PER_MM);
+;Print.c,302 :: 		dma_printf("%f ",gc.coord_offset[i]*INCH_PER_MM);
 LH	R2, 26(SP)
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_gc+56)
@@ -2286,8 +2288,10 @@ ORI	R30, R0, 37
 SB	R30, 82(SP)
 ORI	R30, R0, 102
 SB	R30, 83(SP)
-MOVZ	R30, R0, R0
+ORI	R30, R0, 32
 SB	R30, 84(SP)
+MOVZ	R30, R0, R0
+SB	R30, 85(SP)
 ADDIU	R2, SP, 82
 ADDIU	SP, SP, -8
 SWC1	S0, 4(SP)
@@ -2299,7 +2303,7 @@ ADDIU	SP, SP, 8
 J	L_report_gcode_parameters141
 NOP	
 L_report_gcode_parameters140:
-;Print.c,304 :: 		dma_printf("%f",gc.coord_offset[i]);
+;Print.c,304 :: 		dma_printf("%f ",gc.coord_offset[i]);
 LH	R2, 26(SP)
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_gc+56)
@@ -2307,12 +2311,14 @@ ORI	R2, R2, lo_addr(_gc+56)
 ADDU	R2, R2, R3
 LWC1	S0, 0(R2)
 ORI	R30, R0, 37
-SB	R30, 85(SP)
-ORI	R30, R0, 102
 SB	R30, 86(SP)
-MOVZ	R30, R0, R0
+ORI	R30, R0, 102
 SB	R30, 87(SP)
-ADDIU	R2, SP, 85
+ORI	R30, R0, 32
+SB	R30, 88(SP)
+MOVZ	R30, R0, R0
+SB	R30, 89(SP)
+ADDIU	R2, SP, 86
 ADDIU	SP, SP, -8
 SWC1	S0, 4(SP)
 SW	R2, 0(SP)
@@ -2344,10 +2350,10 @@ NOP
 L__report_gcode_parameters364:
 ;Print.c,308 :: 		dma_printf(",");
 ORI	R30, R0, 44
-SB	R30, 88(SP)
+SB	R30, 90(SP)
 MOVZ	R30, R0, R0
-SB	R30, 89(SP)
-ADDIU	R2, SP, 88
+SB	R30, 91(SP)
+ADDIU	R2, SP, 90
 ADDIU	SP, SP, -4
 SW	R2, 0(SP)
 JAL	_dma_printf+0
@@ -2359,12 +2365,12 @@ NOP
 L_report_gcode_parameters144:
 ;Print.c,310 :: 		dma_printf("]\n"); }
 ORI	R30, R0, 93
-SB	R30, 90(SP)
-ORI	R30, R0, 10
-SB	R30, 91(SP)
-MOVZ	R30, R0, R0
 SB	R30, 92(SP)
-ADDIU	R2, SP, 90
+ORI	R30, R0, 10
+SB	R30, 93(SP)
+MOVZ	R30, R0, R0
+SB	R30, 94(SP)
+ADDIU	R2, SP, 92
 ADDIU	SP, SP, -4
 SW	R2, 0(SP)
 JAL	_dma_printf+0
@@ -3057,8 +3063,8 @@ MTC1	R2, S0
 MUL.S 	S0, S1, S0
 ADDIU	R23, SP, 103
 ADDIU	R22, R23, 10
-LUI	R24, hi_addr(?ICS?lstr108_Print+0)
-ORI	R24, R24, lo_addr(?ICS?lstr108_Print+0)
+LUI	R24, hi_addr(?ICS?lstr110_Print+0)
+ORI	R24, R24, lo_addr(?ICS?lstr110_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R3, SP, 103
@@ -3076,8 +3082,8 @@ L_report_gcode_modes195:
 ;Print.c,365 :: 		dma_printf(" T %dF %f]\n",gc.tool,gc.feed_rate);
 ADDIU	R23, SP, 113
 ADDIU	R22, R23, 12
-LUI	R24, hi_addr(?ICS?lstr109_Print+0)
-ORI	R24, R24, lo_addr(?ICS?lstr109_Print+0)
+LUI	R24, hi_addr(?ICS?lstr111_Print+0)
+ORI	R24, R24, lo_addr(?ICS?lstr111_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R3, SP, 113

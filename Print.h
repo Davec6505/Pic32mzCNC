@@ -45,6 +45,9 @@ void report_grbl_settings();
 void report_gcode_parameters();
 // Print current gcode parser mode state
 void report_gcode_modes();
-
+// Executes user startup script, if stored.
+void protocol_execute_startup();
+// Report realtime status
+void report_realtime_status();
 
 #endif

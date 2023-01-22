@@ -136,7 +136,7 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 147 "c:/users/git/pic32mzcnc/settings.h"
+#line 150 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -407,10 +407,33 @@ extern Serial serial;
 
 
 void DMA_global();
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
+
+
+
 void DMA0();
-void DMA1();
+char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
+unsigned int DMA0_Abort();
+
+
+
+void DMA1();
+char DMA1_Flag();
+void DMA1_Enable();
+void DMA1_Disable();
+unsigned int DMA1_Abort();
+
+
+
+unsigned int DMA_IsOn(int channel);
+unsigned int DMA_CH_Busy(int channel);
+
+
+
 void Reset_rxBuff(int dif);
 int Get_Head_Value();
 int Get_Tail_Value();
@@ -418,16 +441,6 @@ int Get_Difference();
 void Get_Line(char *str,int dif);
 void Reset_Ring();
 int Loopback();
-
-
-
-void DMA1_Enable();
-void DMA1_Disable();
-unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -537,6 +550,7 @@ void Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
+void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
@@ -724,9 +738,15 @@ void report_grbl_settings();
 void report_gcode_parameters();
 
 void report_gcode_modes();
+
+void protocol_execute_startup();
+
+void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 31 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
@@ -796,15 +816,14 @@ void main() {
 int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
 static int cntr = 0,a = 0;
 
-
  Conditin_Externs();
- cntr = a = axis_to_run = dif = status_of_gcode = 0;
  EnableInterrupts();
 
+ cntr = a = axis_to_run = dif = status_of_gcode = 0;
 
 
- Delay_ms(1000);
- report_init_message();
+
+
 
  while(1){
 
@@ -846,7 +865,10 @@ static int cntr = 0,a = 0;
  case 512:
  break;
  }
+ }else{
+ report_status_message(status_of_gcode);
  }
+
  status_of_gcode = Sample_Ringbuffer();
 
 
@@ -858,7 +880,7 @@ static int cntr = 0,a = 0;
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
-#line 143 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 145 "C:/Users/Git/Pic32mzCNC/Main.c"
  WDTCONSET = 0x01;
  }
 }
@@ -898,7 +920,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 194 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 196 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -931,18 +953,10 @@ unsigned long _flash,*addr;
  if(axis_cnt > 2)break;
  _flash = buff[indx];
  coord_data[i] = ulong2flt(_flash);;
-
- while(DMA_IsOn(1));
- dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
- temp_axis,i,coord_data[i],indx);
-
+#line 233 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
  coord_data[i] = gc.next_position[i];
-
- while(DMA_IsOn(1));
- dma_printf("gc.next_position[%d]:= %f\n"
- ,i,gc.next_position[i]);
-
+#line 240 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -959,10 +973,7 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-
- while(DMA_IsOn(1));
- dma_printf("axis_words:= %d\n",axis_words);
-
+#line 260 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -990,10 +1001,7 @@ unsigned long _flash,*addr;
  for(j = 0;j<4;j++){
  _data = buff[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-
- while(DMA_IsOn(1));
- dma_printf("coord[%d]:= %f\n",j,_data);
-
+#line 291 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1123,10 +1131,7 @@ int Modal_Group_Actions3(int action){
 
 
 int Modal_Group_Actions4(int action){
-
- while(DMA_IsOn(1));
- dma_printf("GROUP_4 modal actions\n");
-
+#line 424 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 
@@ -1134,9 +1139,6 @@ int Modal_Group_Actions4(int action){
 
 
 int Modal_Group_Actions7(int action){
-
- while(DMA_IsOn(1));
- dma_printf("GROUP_7 modal actions\n");
-
+#line 435 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }

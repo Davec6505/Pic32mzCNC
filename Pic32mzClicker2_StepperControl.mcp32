@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Serial_Dma.c
+Value=Protocol.c
 =======
 =======
 >>>>>>> patch1
@@ -132,15 +132,19 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 File1=Protocol.c
-File2=Globals.h
-File3=Globals.c
-File4=Print.c
-File5=Print.h
-File6=Settings.h
+File2=Print.c
+File3=Config.c
+File4=DEFINES.pld
+File5=Serial_Dma.c
+File6=Serial_Dma.h
 File7=Protocol.h
-File8=Config.c
-File9=Serial_Dma.c
-Count=10
+File8=Print.h
+File9=Globals.h
+File10=Globals.c
+File11=Settings.h
+File12=GCODE.c
+File13=GCODE.h
+Count=14
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

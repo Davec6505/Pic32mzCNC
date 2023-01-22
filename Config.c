@@ -3,15 +3,22 @@
 
 
 void PinMode(){
+////////////////////////////////////////////////
+//Start by disabling global interrupts
      DI();
-     
+
+////////////////////////////////////////////////
+//Unlock KSEG to write to SFR's
      SYSKEY = 0xAA996655;
      SYSKEY = 0x556699AA;
      CFGCONbits.OCACLK = 1;
      SYSKEY = 0x33333333;
-     
+
+////////////////////////////////////////////////////
+//Turn off the JTAG Debug big
      JTAGEN_bit = 0;
      Delay_ms(100);
+     
 ////////////////////////////////////////////////////
 //Turn off all analogs
      ANSELA = 0X0000;
@@ -33,7 +40,6 @@ void PinMode(){
     LED1_Dir = 0;
     LED2_Dir = 0;
 
-
 ////////////////////////////////////////////////////
 //INPUTS
     SW1_Dir = 1;
@@ -51,6 +57,9 @@ void PinMode(){
      //UART2 PIN MAPPING
      PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);    // Sets pin PORTE.B8 to be Output and maps UART2 Transmit
      PPS_Mapping_NoLock(_RPE9, _INPUT,  _U2RX);    // Sets pin PORTE.B9 to be Input and maps UART2 Receive
+  //UART3 PIN MAPPING  FOR LOOPBACK DEBUGGING
+     PPS_Mapping_NoLock(_RPA14, _OUTPUT, _U3TX);    // Sets pin PORTE.B8 to be Output and maps UART2 Transmit
+     PPS_Mapping_NoLock(_RPF5, _INPUT,  _U3RX);    // Sets pin PORTE.B9 to be Input and maps UART2 Receive
      //???
      PPS_Mapping_NoLock(_RPB9, _OUTPUT, _NULL);
      PPS_Mapping_NoLock(_RPB10, _OUTPUT, _NULL);
@@ -77,29 +86,14 @@ void PinMode(){
    InitTimer1();
   // InitTimer8();
   
-//////////////////////////////////////////////////
-//configure the uart2 module
-    UartConfig();
-
-//////////////////////////////////////////////////
-//configure UART the interrupts
-  Uart2InterruptSetup();
-
 ///////////////////////////////////////////////
 //Limits initialize
   Limit_Initialize();
-  
-////////////////////////////////////////////////
-//DMA CONFIG
-   DMA_global();
-   DMA0_Enable();
-   DMA1_Enable();
    
 ////////////////////////////////////////////////
 //set up output compare module for oc3 RF1 pin
   OutPutPulseXYZ();
   SetPinMode();
-
 
 ////////////////////////////////////////////////
 //Setup platform
@@ -107,15 +101,46 @@ void PinMode(){
   
 ///////////////////////////////////////////////
 //init all default settings
+ Settings_Init(0);
  Settings_Init(1);
+ 
+ ////////////////////////////////////////////////
+//DMA CONFIG
+
+   DMA_global();
+   DMA0_Enable();
+   //DMA1_Enable();
+   
+//////////////////////////////////////////////////
+//configure the uart2 module
+    UartConfig();
+    
+//////////////////////////////////////////////////
+//configure UART the interrupts
+ // Uart2InterruptSetup();
+
+
 }
 
 void UartConfig(){
 //////////////////////////////////////////////////
 //setup the serial comms on uart 2  using PBCLK2 at 50mhz
-  UART2_Init_Advanced(256000, 200000/*PBClk x 2*/, _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
+  UART2_Init_Advanced(115200, 200000/*PBClk x 2*/, _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
   UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle); // set UART2 active
+  Delay_ms(10);                  // Wait for UART module to stabilize
+
+#if LoopBackDebug == 1
+ //////////////////////////////////////////////////
+//setup the serial comms on uart 2  using PBCLK2 at 50mhz
+  UART3_Init_Advanced(256000, 200000/*PBClk / 8*/, _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
+  UART_Set_Active(&UART3_Read, &UART3_Write, &UART3_Data_Ready, &UART3_Tx_Idle); // set UART2 active
   Delay_ms(100);                  // Wait for UART module to stabilize
+
+ // Uart2InterruptSetup();
+  
+#endif
+
+
 }
 
 ////////////////////////////////////////////////
@@ -126,6 +151,11 @@ void UartConfig(){
 // 8 level deep interrupt buffer specific to the
 //UART module
 void Uart2InterruptSetup(){
+/*IFS4<18>
+IEC4<18>
+IPC36<20:18>
+IPC36<17:16>
+*/
     // IRQ after 1 byte is empty, buffer is 8 deep
     URXISEL0_bit = 0;
     URXISEL1_bit = 0;
@@ -133,9 +163,13 @@ void Uart2InterruptSetup(){
     // IRQ after 1 byte is empty buffer is 8 deep
     UTXISEL0_bit = 0;
     UTXISEL1_bit = 0;
-
-    // Disnable UART2 RX & TX interrupts
-    IEC4CLR      = 0xc000;
+    
+    IPC36CLR     = 0x160000;
+    //Set priority 5 sub-priority 1
+    IPC36SET      = 0x00140000;
+    //set DMA0IE bit
+    IEC4SET       = 0x40000;
+    IFS4CLR       = 0x40000;
 
 }
 
@@ -342,4 +376,11 @@ void OutPutPulseXYZ(){
  // OC3CONSET = 0x8000; // Enable OC3
  // OC5CONSET = 0x8000; // Enable OC6
  // OC8CONSET = 0x8000; // Enable OC8
+}
+
+void UART2() iv IVT_UART2_RX ilevel 5 ics ICS_SOFT {
+   IFS4CLR  = 0x40000;
+
+   UART3_Write(U2RXREG);
+
 }

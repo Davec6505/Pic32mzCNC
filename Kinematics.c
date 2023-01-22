@@ -426,3 +426,29 @@ void Inv_Home_Axis(double distance,long speed,int axis){
     //  speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
     //  SingleAxisStep(STPS[axis].mmToTravel,axis);
 }
+
+// Method to ready the system to reset by setting the runtime reset command and killing any
+// active processes in the system. This also checks if a system reset is issued while Grbl
+// is in a motion state. If so, kills the steppers and sets the system alarm to flag position
+// lost, since there was an abrupt uncontrolled deceleration. Called at an interrupt level by
+// runtime abort command and hard limits. So, keep to a minimum.
+void mc_reset(){
+  // Only this function can set the system reset. Helps prevent multiple kill calls.
+  if (bit_isfalse(sys.execute, EXEC_RESET)) {
+    sys.execute |= EXEC_RESET;
+
+    // Kill spindle and coolant.
+    //spindle_stop();
+   // coolant_stop();
+
+    // Kill steppers only if in any motion state, i.e. cycle, feed hold, homing, or jogging
+    // NOTE: If steppers are kept enabled via the step idle delay setting, this also keeps
+    // the steppers enabled by avoiding the go_idle call altogether, unless the motion state is
+    // violated, by which, all bets are off.
+    switch (sys.state) {
+      case STATE_CYCLE: case STATE_HOLD: case STATE_HOMING: // case STATE_JOG:
+        sys.execute |= EXEC_ALARM; // Execute alarm state.
+        disableOCx(); // Execute alarm force kills steppers. Position likely lost.
+    }
+  }
+}

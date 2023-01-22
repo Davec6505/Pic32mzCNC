@@ -9,7 +9,7 @@
  void report_status_message(int status_code){
   if (status_code == 0) { // STATUS_OK
     while(DMA_IsOn(1));
-           dma_printf("%s\n","ok");
+    dma_printf("%s","ok\r\n");
   } else {
     while(DMA_IsOn(1));
            dma_printf("%s","error: ");
@@ -114,7 +114,7 @@ void report_feedback_message(int message_code){
 // Welcome message
 void report_init_message(){
   while(DMA_IsOn(1));
-  dma_printf("%s\n","Grbl \" GRBL_VERSION  ['$?' for help]");
+  dma_printf("%s%s%s\n","Grbl ", GRBL_VERSION ,"['$' for help]");
 }
 
 // Grbl help message
@@ -366,3 +366,19 @@ void report_gcode_modes(){
 
 
 }
+/*
+// Executes user startup script, if stored.
+void protocol_execute_startup(){
+  uint8_t n;
+  for (n=0; n < N_STARTUP_LINE; n++) {
+    if (!(settings_read_startup_line(n, line))) {
+      report_status_message(STATUS_SETTING_READ_FAIL);
+    } else {
+      if (line[0] != 0) {
+        printString(line); // Echo startup line to indicate execution.
+        report_status_message(gc_execute_line(line));
+      }
+    }
+  }
+}
+*/

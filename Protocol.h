@@ -8,9 +8,9 @@
 #include "Settings.h"
 #include "Config.h"
 #include "Nuts_Bolts.h"
-//#include "stepper.h"
+#include "Globals.h"
 //#include "report.h"
-//#include "Kinematics.h"
+#include "Kinematics.h"
 
 
 /////////////////////////////////////////////
