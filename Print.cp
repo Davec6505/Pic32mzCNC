@@ -675,7 +675,7 @@ char FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+#line 33 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
 
@@ -715,7 +715,7 @@ int Modal_Group_Actions4(int action);
 
 int Modal_Group_Actions7(int action);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
-#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 14 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
@@ -747,6 +747,8 @@ char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
 unsigned int DMA0_Abort();
+unsigned int DMA0_ReadDstPtr();
+void DMA0_RstDstPtr();
 
 
 
@@ -796,55 +798,54 @@ unsigned long Get_Address_Pval(int recipe);
  while(DMA_IsOn(1));
  dma_printf("%s","ok\r\n");
  } else {
- while(DMA_IsOn(1));
- dma_printf("%s","error: ");
+
  switch(status_code) {
  case  1 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Bad number format");
+ dma_printf("%s\r\n","error: Bad number format");
  break;
  case  2 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Expected command letter");
+ dma_printf("%s\r\n","error: Expected command letter");
  break;
  case  3 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Unsupported statement");
+ dma_printf("%s\r\n","error: Unsupported statement");
  break;
  case  4 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Invalid radius");
+ dma_printf("%s\n","error: Invalid radius");
  break;
  case  5 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Modal group violation");
+ dma_printf("%s\n","error: Modal group violation");
  break;
  case  6 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Invalid statement");
+ dma_printf("%s\r\n","error: Invalid statement");
  break;
  case  7 :
- dma_printf("%s\n","Setting disabled");
+ dma_printf("%s\n","error: Setting disabled");
  break;
  case  8 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Value < 0.0");
+ dma_printf("%s\r\n","error: Value < 0.0");
  break;
  case  9 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Value < 3 usec");
+ dma_printf("%s\n","error: Value < 3 usec");
  break;
  case  10 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","EEPROM read fail. Using defaults");
+ dma_printf("%s\r\n","error: EEPROM read fail. Using defaults");
  break;
  case  11 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Busy or queued");
+ dma_printf("%s\n","error: Busy or queued");
  break;
  case  12 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Alarm lock");
+ dma_printf("%s\r\n","error: Alarm lock");
  break;
  }
  }
@@ -899,13 +900,13 @@ void report_feedback_message(int message_code){
 
 void report_init_message(){
  while(DMA_IsOn(1));
- dma_printf("%s%s%s\n","Grbl ",  "0.8c"  ,"['$' for help]");
+ dma_printf("%s%s%s\r\n","Grbl ",  "0.8c"  ,"['$' for help]");
 }
 
 
 void report_grbl_help() {
  while(DMA_IsOn(1));
-#line 135 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 134 "C:/Users/Git/Pic32mzCNC/Print.c"
  dma_printf("%s","$$ (view Grbl settings)\n                      $# (view # parameters)\n                      $G (view parser state)\n                      $N (view startup blocks)\n                      $x=value (save Grbl setting)\n                      $Nx=line (save startup block)\n                      $C (check gcode mode)\n                      $X (kill alarm lock)\n                      $H (run homing cycle)\n                      ~ (cycle start)\n                      ! (feed hold)\n                      ? (current status)\n                      ctrl-x (reset Grbl)\n");
 }
 
@@ -915,7 +916,7 @@ void report_grbl_settings() {
 float acc = settings.acceleration;
  acc /=(60*60);
  while(DMA_IsOn(1));
-#line 166 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 165 "C:/Users/Git/Pic32mzCNC/Print.c"
  dma_printf("$0=    %l (x, step/mm) \n              $1=    %l (y, step/mm) \n              $2=    %l (z, step/mm) \n              $3=    %d (n-arc correction, int) \n              $4=    %d (n-decimals, int) \n              $5=    %d (hard limits, bool) \n              $6=    %d (homing dir invert mask, int:)\n              $7=    %d (step idle delay, msec)\n              $8=    %d (homing debounce, msec)\n              $9=    %f (default feed, mm/min)\n              $10=   %f (default seek, mm/min)\n              $11=   %f (acceleration, mm/sec^2)\n              $12=   %f (junction deviation, mm)\n              $13=   %f (arc, mm/segment)\n              $14=   %f (homing feed, mm/min)\n              $15=   %f (homing seek, mm/min)\n              $16=   %f (homing pull-off, mm)\n              $17=   %d (report inches, bool)\n              $18=   %d (auto start, bool)\n              $19:=  %d (invert step enable, bool)\n              $20=   %d (homing cycle, bool)\n              $21=   %d (homing dir invert mask, int:)\n              $22=   %d (step port invert mask, int:)\n"
  ,settings.steps_per_mm[X]
  ,settings.steps_per_mm[Y]
@@ -1014,7 +1015,7 @@ float coord_data[ 4 ];
 int coord_select, i;
 
  for (coord_select = 0; coord_select <=  9 +1 ; coord_select++) {
-#line 268 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 267 "C:/Users/Git/Pic32mzCNC/Print.c"
  while(DMA_IsOn(1));
  dma_printf("[G");
  while(DMA_IsOn(1));
@@ -1102,7 +1103,7 @@ void report_gcode_modes(){
  }
  while(DMA_IsOn(1));
  switch (gc.coolant_mode) {
-#line 360 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 359 "C:/Users/Git/Pic32mzCNC/Print.c"
  }
  while(DMA_IsOn(1));
  if (gc.inches_mode)

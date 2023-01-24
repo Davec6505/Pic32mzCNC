@@ -15,6 +15,8 @@
 
 /////////////////////////////////////////////
 //defines
+#define RXBUFF  0xA0002000
+
 #define arr_size 10
 #define str_size 60
 

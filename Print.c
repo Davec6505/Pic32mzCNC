@@ -11,55 +11,54 @@
     while(DMA_IsOn(1));
     dma_printf("%s","ok\r\n");
   } else {
-    while(DMA_IsOn(1));
-           dma_printf("%s","error: ");
+
     switch(status_code) {
       case STATUS_BAD_NUMBER_FORMAT:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Bad number format");
+           dma_printf("%s\r\n","error: Bad number format");
            break;
       case STATUS_EXPECTED_COMMAND_LETTER:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Expected command letter");
+           dma_printf("%s\r\n","error: Expected command letter");
            break;
       case STATUS_UNSUPPORTED_STATEMENT:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Unsupported statement");
+           dma_printf("%s\r\n","error: Unsupported statement");
             break;
       case STATUS_ARC_RADIUS_ERROR:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Invalid radius");
+           dma_printf("%s\n","error: Invalid radius");
            break;
       case STATUS_MODAL_GROUP_VIOLATION:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Modal group violation");
+           dma_printf("%s\n","error: Modal group violation");
            break;
       case STATUS_INVALID_STATEMENT:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Invalid statement");
+           dma_printf("%s\r\n","error: Invalid statement");
             break;
       case STATUS_SETTING_DISABLED:
-           dma_printf("%s\n","Setting disabled");
+           dma_printf("%s\n","error: Setting disabled");
             break;
       case STATUS_SETTING_VALUE_NEG:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Value < 0.0");
+           dma_printf("%s\r\n","error: Value < 0.0");
             break;
       case STATUS_SETTING_STEP_PULSE_MIN:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Value < 3 usec");
+           dma_printf("%s\n","error: Value < 3 usec");
             break;
       case STATUS_SETTING_READ_FAIL:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","EEPROM read fail. Using defaults");
+           dma_printf("%s\r\n","error: EEPROM read fail. Using defaults");
             break;
       case STATUS_IDLE_ERROR:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Busy or queued");
+           dma_printf("%s\n","error: Busy or queued");
             break;
       case STATUS_ALARM_LOCK:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Alarm lock");
+           dma_printf("%s\r\n","error: Alarm lock");
             break;
     }
   }
@@ -114,7 +113,7 @@ void report_feedback_message(int message_code){
 // Welcome message
 void report_init_message(){
   while(DMA_IsOn(1));
-  dma_printf("%s%s%s\n","Grbl ", GRBL_VERSION ,"['$' for help]");
+  dma_printf("%s%s%s\r\n","Grbl ", GRBL_VERSION ,"['$' for help]");
 }
 
 // Grbl help message

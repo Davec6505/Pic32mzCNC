@@ -70,7 +70,7 @@ static int cntr = 0,a = 0;
   cntr = a = axis_to_run = dif = status_of_gcode = 0;
  // wait on start up for device to be stable and send initial
  //message for ugs to think this is grbl
- //Delay_ms(1000);
+ Delay_ms(1000);
  //report_init_message();
  
   while(1){
@@ -118,7 +118,8 @@ static int cntr = 0,a = 0;
      }
      
      status_of_gcode = Sample_Ringbuffer();
-     
+
+
       //code execution confirmation led on clicker2 board
       #ifdef LED_STATUS
        LED1 = TMR.clock >> 4;

@@ -673,7 +673,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+#line 33 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
 
@@ -713,7 +713,7 @@ int Modal_Group_Actions4(int action);
 
 int Modal_Group_Actions7(int action);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
-#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 14 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
@@ -745,6 +745,8 @@ char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
 unsigned int DMA0_Abort();
+unsigned int DMA0_ReadDstPtr();
+void DMA0_RstDstPtr();
 
 
 

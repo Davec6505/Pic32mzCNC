@@ -386,7 +386,7 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
-#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 14 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
@@ -418,6 +418,8 @@ char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
 unsigned int DMA0_Abort();
+unsigned int DMA0_ReadDstPtr();
+void DMA0_RstDstPtr();
 
 
 
@@ -747,7 +749,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+#line 33 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
 
@@ -822,7 +824,7 @@ static int cntr = 0,a = 0;
  cntr = a = axis_to_run = dif = status_of_gcode = 0;
 
 
-
+ Delay_ms(1000);
 
 
  while(1){
@@ -873,6 +875,7 @@ static int cntr = 0,a = 0;
 
 
 
+
  LED1 = TMR.clock >> 4;
 
 
@@ -880,7 +883,7 @@ static int cntr = 0,a = 0;
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
-#line 145 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 146 "C:/Users/Git/Pic32mzCNC/Main.c"
  WDTCONSET = 0x01;
  }
 }
@@ -920,7 +923,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 196 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 197 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -953,10 +956,10 @@ unsigned long _flash,*addr;
  if(axis_cnt > 2)break;
  _flash = buff[indx];
  coord_data[i] = ulong2flt(_flash);;
-#line 233 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 234 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
  coord_data[i] = gc.next_position[i];
-#line 240 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 241 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -973,7 +976,7 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-#line 260 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 261 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1001,7 +1004,7 @@ unsigned long _flash,*addr;
  for(j = 0;j<4;j++){
  _data = buff[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 291 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 292 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1131,7 +1134,7 @@ int Modal_Group_Actions3(int action){
 
 
 int Modal_Group_Actions4(int action){
-#line 424 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 425 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 
@@ -1139,6 +1142,6 @@ int Modal_Group_Actions4(int action){
 
 
 int Modal_Group_Actions7(int action){
-#line 435 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 436 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }

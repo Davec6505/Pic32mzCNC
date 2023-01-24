@@ -7,6 +7,7 @@
 #include "Config.h"
 #include "GCODE.h"
 
+
 #define NULL 0
 #define _DMACON_SUSPEND_MASK (1<<12)
 
@@ -41,6 +42,8 @@ char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
 unsigned int DMA0_Abort();
+unsigned int DMA0_ReadDstPtr();
+void DMA0_RstDstPtr();
 
 ///////////////////////////////////////////
 //DMA1 trmit functions

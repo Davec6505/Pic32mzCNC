@@ -23646,6 +23646,8 @@ dma0_abort
 dma0_disable
 dma0_enable
 dma0_flag
+dma0_readdstptr
+dma0_rstdstptr
 dma0ie
 dma0ie
 dma0ie

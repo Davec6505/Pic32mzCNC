@@ -140,6 +140,10 @@ main
 			memcpy
 			dma_printf
 			__CC2DW
+		DMA0_ReadDstPtr
+		DMA0_Abort
+			DMA_IsOn
+			DMA0_Enable
 		Str_clear
 			memset
 		Get_Line

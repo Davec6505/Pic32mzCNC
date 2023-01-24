@@ -73,7 +73,7 @@ void  DMA0(){
     IPC33SET      = 0x00140000;
     
     //Enable [CHBCIE && CHERIE] Interrupts
-    DCH0INTSET      =  0x90000;
+    DCH0INTSET      =  0xB0000;
     
     //set DMA0IE bit
     IEC4SET       = 0x40;
@@ -82,9 +82,9 @@ void  DMA0(){
     // Clear existing events, disable all interrupts
     DCH0INTCLR    = 0x000000FF ;
     
-    //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0] 
+    //PATLEN[11] && CHEN[7] && CHEDT[5] && CHAEN[4] && PRIOR[1:0]
     //Set up AutoEnable & Priority as 3       .
-    DCH0CONSET      = 0X0000013;//013 = 1 char || 813 = 2 char e.g. \r\n
+    DCH0CONSET      = 0X0000513;//013 = 1 char || 813 = 2 char e.g. \r\n
     
     //set the recieve buffer counts to 0
     serial.head = serial.tail = serial.diff = 0;
@@ -116,11 +116,23 @@ void DMA0_Disable(){
 ////////////////////////////////////////
 //DMA0 Abort abort channel transfer
 unsigned int DMA0_Abort(){
-   DCH0CONSET= 1<<6;
+   DCH0ECONSET= 1<<6;
    while(DMA_IsOn(1));
    DMA0_Enable();
 
    return (DCH0CON & 0x0040 ) >> 6;
+}
+
+////////////////////////////////////////
+//DMA0 not at initial regester
+unsigned int DMA0_ReadDstPtr(){
+    return DCH0DPTR;
+}
+
+///////////////////////////////////////
+//Reset Dst pointer
+void DMA0_RstDstPtr(){
+   DCH0DPTRCLR = 0xFFFF;
 }
 
 ////////////////////////////////////////
@@ -139,6 +151,9 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
        //DCH1SSIZ = 13;           //set block size of transfer
        //DCH1ECONbits.CFORCE = 1 ;// force DMA1 interrupt trigger
     }
+ //   if(CHTAIF_bit){
+ //       i = strlen(rxBuf);
+ //   }
  // THIS CHANNEL IS AUTOMATICALLY ENABLED AFTER A BLOCK
  // OR ERROR ABORT EVENT, THIS SHOULD TAKE PLACE IF A
  // '\n' HAS BEEN RECIEVED OR 200 BYTES EXCEEDED
@@ -153,7 +168,7 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
        
     strncpy(serial.temp_buffer+serial.head, rxBuf, i);
     serial.head += i;
-    memset(rxBuf,0,i);
+    memset(rxBuf,0,i+2);
     //*(rxBuf+0) = '\0';
 
     DCH0INTCLR    = 0x000000ff;

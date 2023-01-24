@@ -689,7 +689,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 31 "c:/users/git/pic32mzcnc/protocol.h"
+#line 33 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
 
@@ -729,7 +729,7 @@ int Modal_Group_Actions4(int action);
 
 int Modal_Group_Actions7(int action);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
-#line 13 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 14 "c:/users/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
@@ -761,6 +761,8 @@ char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
 unsigned int DMA0_Abort();
+unsigned int DMA0_ReadDstPtr();
+void DMA0_RstDstPtr();
 
 
 
@@ -845,7 +847,7 @@ void DMA0(){
  IPC33SET = 0x00140000;
 
 
- DCH0INTSET = 0x90000;
+ DCH0INTSET = 0xB0000;
 
 
  IEC4SET = 0x40;
@@ -856,7 +858,7 @@ void DMA0(){
 
 
 
- DCH0CONSET = 0X0000013;
+ DCH0CONSET = 0X0000513;
 
 
  serial.head = serial.tail = serial.diff = 0;
@@ -888,11 +890,23 @@ void DMA0_Disable(){
 
 
 unsigned int DMA0_Abort(){
- DCH0CONSET= 1<<6;
+ DCH0ECONSET= 1<<6;
  while(DMA_IsOn(1));
  DMA0_Enable();
 
  return (DCH0CON & 0x0040 ) >> 6;
+}
+
+
+
+unsigned int DMA0_ReadDstPtr(){
+ return DCH0DPTR;
+}
+
+
+
+void DMA0_RstDstPtr(){
+ DCH0DPTRCLR = 0xFFFF;
 }
 
 
@@ -914,6 +928,9 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
 
 
 
+
+
+
  if (DCH0INTbits.CHBCIF == 1){
  i = strlen(rxBuf);
  }
@@ -925,7 +942,7 @@ void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
 
  strncpy(serial.temp_buffer+serial.head, rxBuf, i);
  serial.head += i;
- memset(rxBuf,0,i);
+ memset(rxBuf,0,i+2);
 
 
  DCH0INTCLR = 0x000000ff;
@@ -993,7 +1010,7 @@ int dif;
 
  serial.tail += dif;
 }
-#line 238 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+#line 253 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 void DMA1(){
 
 

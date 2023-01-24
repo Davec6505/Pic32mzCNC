@@ -21,6 +21,7 @@ void Str_clear(char *str,int len){
 ///////////////////////////////////////////////////
 //sample the ring buffer to check for data
 int Sample_Ringbuffer(){
+unsigned char *ptr;
 static int motion_mode,str_len,query;
 int status;
 char str[50];
@@ -37,26 +38,47 @@ float XYZ_Val;
   dif = 0;
   dif = Get_Difference();
   
-  
   //send runtime status when instructed
-  if(bit_istrue(sys.execute,EXEC_STATUS_REPORT)){
+  if(bit_istrue(sys.execute,EXEC_STATUS_REPORT)&& !startup){
+      startup = 1;
       bit_false(sys.execute,EXEC_STATUS_REPORT);
       report_realtime_status();
+      return STATUS_OK;
   }
   
-  if(dif == 0)
-    return STATUS_OK;
-  else if(dif > 0){
+  if(dif == 0){
+     //EXECUTES THIS AFTER INITIAL STARTUP LINE
+     if(DMA0_ReadDstPtr()){
+       ptr = (char*)RXBUFF;
+       if(*ptr == '?'){
+         #if ProtoDebug == 4
+         while(DMA_IsOn(1));
+         dma_printf("%d\n",ptr);
+         #endif
+         DMA0_Abort();
+         if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
+               bit_true(sys.execute,EXEC_STATUS_REPORT);
+         startup = 0;
+       }
+     }
+     return STATUS_OK;
+  }else if(dif > 0){
 
     F_1_Once = no_of_axis = query = 0 ; //for buffer and axis refreshing
 
-    Str_clear(str,str_len);    //reset the string to empty
+    Str_clear(str,str_len+2);    //reset the string to empty
     Get_Line(str,dif);         //get the line sent from PC
     str_len = strlen(str);
 
     //split up the line into string array using SPC seperator
     num_of_strings = strsplit(gcode,str,0x20);
-
+    str_len = strlen(gcode[0]);
+    
+    #if ProtoDebug == 3
+    while(DMA_IsOn(1));
+    dma_printf("%s := %d\n",gcode[0],str_len);
+    #endif
+    
     //condition each string by seperating the 1st char from the value
     //e.g. G01  => 'G' "01" and extract the numeral from value
     //GCODE standard is usuall capitals = making compensation for
@@ -65,55 +87,47 @@ float XYZ_Val;
        UART3_Write_Text(str);
     #endif
 
-
      if(DCH0DAT == '?'){
        #if ProtoDebug == 3
        while(DMA_IsOn(1));
        dma_printf("%s\n","?");
        #endif
-       DCH0DAT = '\n';
        report_init_message();
-       status = 0;
-       goto end;
+       DCH0DAT = '\n';
+       status = STATUS_OK;
+       startup = 1;
+       return STATUS_OK;
+       //goto end;
      }
      
-     if(gcode[0][0] =='$'){
-
-       #if ProtoDebug == 3
+     #if ProtoDebug == 3
        while(DMA_IsOn(1));
-       dma_printf("str_len:= %d\n",str_len);
-       for(i=0;i<num_of_strings;i++){
-         while(DMA_IsOn(1));
-         dma_printf("%s\n",*(gcode+0)+i);
-       }
-       #endif
-       if(str_len == 2){
+         dma_printf("%s\t%d\n",gcode[0],str_len);
+     #endif
+     
+     if(gcode[0][0] =='?'){
+        startup = 0;
+        if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
+             bit_true(sys.execute,EXEC_STATUS_REPORT);
+     }else if(gcode[0][0] =='$'){
+       if(str_len < 2){
           report_grbl_help();
           query = 1;
-          status = 0;
+          status = STATUS_OK;
           goto end;
        }
-      // if ( gcode[0][1] < 0x20 ) { return(STATUS_UNSUPPORTED_STATEMENT); }
        switch(gcode[0][1]){
-           case '?': // Prints Grbl settings
-              /*if ( gcode[1] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }*/
-              sys.execute |= EXEC_STATUS_REPORT;
-              report_realtime_status();
-              query = 1;
-              break;
-            case '$': // Prints Grbl settings
-              /*if ( gcode[1] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }*/
+            case '$': // Prints Grbl setting
               report_grbl_settings();
               query = 1;
               break;
             case '#' : // Print gcode parameters
-             // if ( gcode[1] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }
               report_gcode_parameters();
               query = 1;
               break;
             case 'G' : // Prints gcode parser state
-              //if ( line[++char_counter] != 0 ) { return(STATUS_UNSUPPORTED_STATEMENT); }
-              //else { report_gcode_modes(); }
+
+                startup = 0;
                 report_gcode_modes();
                 query = 1;
                 //will report the current status of the machine after it is asked
@@ -122,6 +136,7 @@ float XYZ_Val;
                     bit_true(sys.execute,EXEC_STATUS_REPORT);
                 break;
             case 'C' : // Set check g-code mode
+                startup = 2;
                 // Perform reset when toggling off. Check g-code mode should only work if Grbl
                 // is idle and ready, regardless of alarm locks. This is mainly to keep things
                 // simple and consistent.
@@ -129,13 +144,15 @@ float XYZ_Val;
                   mc_reset();
                   //report_feedback_message(MESSAGE_DISABLED);
                 } else {
+                  //if not in idle then ignore request
                   if (sys.state) { return(STATUS_IDLE_ERROR); }
+                  //only in idle will this respond
                   sys.state = STATE_CHECK_MODE;
                   report_feedback_message(MESSAGE_ENABLED);
                 }
               break;
             case 'X' : // Disable alarm lock
-
+              startup = 2;
               if (sys.state == STATE_ALARM) {
                 report_feedback_message(MESSAGE_ALARM_UNLOCK);
                 sys.state = STATE_IDLE;
@@ -144,6 +161,7 @@ float XYZ_Val;
               query = 1;
               break;
             case 'H' : // Perform homing cycle
+               startup = 2;
                if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) {
                // Only perform homing if Grbl is idle or lost.
                   if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
@@ -159,6 +177,7 @@ float XYZ_Val;
                }
               break;
             case 'N' : // Startup lines.
+              startup = 2;
               break;
             default :  // Storing setting methods  */
               break;
@@ -465,13 +484,13 @@ float XYZ_Val;
        }
      }
      
-     if(query){
-       status = 0;
+     if(query == 1){
+       status = STATUS_OK;
        goto end;
      }
      ret:
      status = Check_group_multiple_violations();
-     end:asm{NOP};
+     end:
 
     if(!status)
       report_status_message(status);
