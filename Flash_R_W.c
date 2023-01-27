@@ -216,17 +216,6 @@ static unsigned int NVM_WREN_Wait(){
    return (NVMCON & 0x4000) >> 14;
 }
 
-/////////////////////////////////////////////////////////
-//Read a 32bit word from flash
-//const argument stops the src from being changed
-unsigned long NVMReadWord(void *addr){
-unsigned long val;
-
-    val = *((unsigned long*)addr);
-
-   return val;
-}
-
 ////////////////////////////////////////////////////////
 //Unlock page
 void NVM_PWPAGE_Lock(){
@@ -267,25 +256,42 @@ unsigned int dma_susp=0;   // storage for current DMA state
 
 }
 
-void NVMReadRow(unsigned long addr){
-unsigned long buff[128] = {0};
-unsigned long i,j;
+
+/////////////////////////////////////////////////////////////////////
+//Read an entire row, row boundries must be kept
+void NVMReadRow(unsigned long addr,unsigned long *buff){
+//unsigned long *buff;//[128] = {0};
+unsigned long j;
 unsigned long *ptr;
-float val;
 
-  ptr = (unsigned long*)addr;
-  i = 0;
-   //for(i = 0;i < 144;i++){
-       for(j = 0;j < 128;j++){
-          buff[j] = *(ptr+j);
-          if(buff[j] < 0xFFFFFFFF)
-            val = ulong2flt(buff[j]);
-          else val = 0.00;
-          
-          while(DMA_IsOn(1));
-          dma_printf("val:= %f\tbuff[%l]:= %l\n",val,j,buff[j]);
-       }
+ ptr = (unsigned long*)addr;
+ //extract therow from flash memory
+ for(j = 0;j < 128;j++){
+    buff[j] = *(ptr+j);
+ }
+}
 
+//////////////////////////////////////////////////////////
+//retrieve 4 32bit words from flash memory
+void NVMReadQuad(unsigned long addr,unsigned long *words){
+unsigned long j;
+unsigned long *ptr;
+
+ ptr = (unsigned long*)addr;
+ //extract therow from flash memory
+ for(j = 0;j < 4;j++){
+    words[j] = *(ptr+j);
+ }
+}
+
+/////////////////////////////////////////////////////////
+//Read a 32bit word from flash
+unsigned long NVMReadWord(void *addr){
+unsigned long val;
+
+    val = *(unsigned long*)addr;
+
+   return val;
 }
 
 /////////////////////////////////////////////////////////////////////

@@ -23,7 +23,7 @@ void Str_clear(char *str,int len){
 int Sample_Ringbuffer(){
 unsigned char *ptr;
 static int motion_mode,str_len,query;
-int status;
+int status,helper_var;
 char str[50];
 char temp[9];
 char xyz[6];
@@ -136,13 +136,13 @@ float XYZ_Val;
                     bit_true(sys.execute,EXEC_STATUS_REPORT);
                 break;
             case 'C' : // Set check g-code mode
-                startup = 2;
+                startup = 2; //for 1st scan to get ugs to connect
                 // Perform reset when toggling off. Check g-code mode should only work if Grbl
                 // is idle and ready, regardless of alarm locks. This is mainly to keep things
                 // simple and consistent.
                 if ( sys.state == STATE_CHECK_MODE ) {
                   mc_reset();
-                  //report_feedback_message(MESSAGE_DISABLED);
+                  report_feedback_message(MESSAGE_DISABLED);
                 } else {
                   //if not in idle then ignore request
                   if (sys.state) { return(STATUS_IDLE_ERROR); }
@@ -152,13 +152,13 @@ float XYZ_Val;
                 }
               break;
             case 'X' : // Disable alarm lock
-              startup = 2;
+              startup = 2; //for 1st scan to get ugs to connect
               if (sys.state == STATE_ALARM) {
                 report_feedback_message(MESSAGE_ALARM_UNLOCK);
                 sys.state = STATE_IDLE;
                 // Don't run startup script. Prevents stored moves in startup from causing accidents.
               }
-              query = 1;
+              query = 1; //status ok response
               break;
             case 'H' : // Perform homing cycle
                startup = 2;
@@ -177,11 +177,44 @@ float XYZ_Val;
                }
               break;
             case 'N' : // Startup lines.
-              startup = 2;
-              break;
-            default :  // Storing setting methods  */
-              break;
-       }
+               startup = 2;
+               if ( gcode[0][2] == 0 ) { // Print startup lines
+                  for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
+                    if (!(settings_read_startup_line(helper_var, gcode[0]))) {
+                      report_status_message(STATUS_SETTING_READ_FAIL);
+                    } else {
+                      report_startup_line(helper_var,gcode[0]);
+                    }
+                  }
+                  break;
+                } else { // Store startup line
+                  helper_var = true;  // Set helper_var to flag storing method.
+                  // No break. Continues into default: to read remaining command characters.
+                }
+              default :  // Storing setting methods
+              /*  if(!read_float(line, &char_counter, &parameter)) { return(STATUS_BAD_NUMBER_FORMAT); }
+                if(line[char_counter++] != '=') { return(STATUS_UNSUPPORTED_STATEMENT); }
+                if (helper_var) { // Store startup line
+                  // Prepare sending gcode block to gcode parser by shifting all characters
+                  helper_var = char_counter; // Set helper variable as counter to start of gcode block
+                  do {
+                    line[char_counter-helper_var] = line[char_counter];
+                  } while (line[char_counter++] != 0);
+                  // Execute gcode block to ensure block is valid.
+                  helper_var = gc_execute_line(line); // Set helper_var to returned status code.
+                  if (helper_var) { return(helper_var); }
+                  else {
+                    helper_var = trunc(parameter); // Set helper_var to int value of parameter
+                    settings_store_startup_line(helper_var,line);
+                  }
+                } else { // Store global setting.
+                  if(!read_float(line, &char_counter, &value)) { return(STATUS_BAD_NUMBER_FORMAT); }
+                  if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }
+                  return(settings_store_global_setting(parameter, value));
+                }*/
+                break;
+        }
+
      }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){
         switch(*(*gcode+0)+0){
          case 'G':case 'g':

@@ -61,6 +61,8 @@ void Conditin_Externs(){
 //main function
 
 void main() {
+int error = 0;
+int has_flash = 0;
 int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
 static int cntr = 0,a = 0;
 
@@ -68,11 +70,20 @@ static int cntr = 0,a = 0;
   EnableInterrupts();
   
   cntr = a = axis_to_run = dif = status_of_gcode = 0;
+  
  // wait on start up for device to be stable and send initial
  //message for ugs to think this is grbl
  Delay_ms(1000);
- //report_init_message();
  
+ //read flash memory to a buffer and place into settings
+ has_flash = Save_Row_From_Flash((unsigned long)FLASH_Settings_VAddr_P1);
+ 
+ //if there is memory in flash use this otherwise use default settings
+ if(has_flash){
+    settings_read_coord_data();
+ }
+
+
   while(1){
      //continously test the limits
      Debounce_Limits(X);
@@ -142,7 +153,9 @@ static int cntr = 0,a = 0;
                   SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
       }
      #endif
-         
+     
+     //run at end of every scan
+     protocol_execute_runtime();
      WDTCONSET = 0x01;
   }
 }
@@ -207,7 +220,7 @@ unsigned long _flash,*addr;
                  memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
               }
           } else {
-            //Retrieve the data from flash into buff
+            //Retrieve the data from flash into buff in case its been updated
             if(!Save_Row_From_Flash(FLASH_Settings_VAddr_P1))return;
 
             //use P to get to the start of the rescipe P1,2,3... in the buff
@@ -215,6 +228,7 @@ unsigned long _flash,*addr;
             temp = indx = (gc.P-1) & 0xFF;
             indx *= 4;
             axis_cnt = 0;
+            
            // Update axes defined only in block. Always in machine coordinates.
            //Can change non-active system.
              axis_words = Get_Axisword();
@@ -224,16 +238,21 @@ unsigned long _flash,*addr;
                 if(temp_axis == 0){
                    axis_cnt++;
                    if(axis_cnt > 2)break;
-                   _flash = buff[indx];
-                   coord_data[i] = ulong2flt(_flash);;
+                   //using buff to find index
+                   _flash = buffA[indx];
+                   //???still need to undestand this update instruction, does
+                   //it update current coordinate in which case use gc.coord_data[]
+                   //as this is the current machine units
+                   coord_data[i] = ulong2flt(_flash);
                 #if MainDebug == 1
                  while(DMA_IsOn(1));
                  dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
                              temp_axis,i,coord_data[i],indx);
                 #endif
                 }else{
+                 //???? should be gc.coord_data
                   coord_data[i] = gc.next_position[i];
-                                  #if MainDebug == 1
+                #if MainDebug == 1
                  while(DMA_IsOn(1));
                  dma_printf("gc.next_position[%d]:= %f\n"
                              ,i,gc.next_position[i]);
@@ -283,7 +302,7 @@ unsigned long _flash,*addr;
           //put the new data into the relevant slot e.g. P1,2,3,4...
           //and run to these coordinates
           for(j = 0;j<4;j++){
-               _data = buff[i];
+               _data = buffA[i];
                coord_system[temp].coord[j] = ulong2flt(_data);
                #if MainDebug == 1
                while(DMA_IsOn(1));
@@ -436,6 +455,97 @@ int Modal_Group_Actions7(int action){
     return action;
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+//      PROTOCOL EXECUTE RUNTIME FROM GRBL [STILL IMPLIMENTING ???]           //
+////////////////////////////////////////////////////////////////////////////////
+// Executes run-time commands, when required. This is called from various check points in the main
+// program, primarily where there may be a while loop waiting for a buffer to clear space or any
+// point where the execution time from the last check point may be more than a fraction of a second.
+// This is a way to execute runtime commands asynchronously (aka multitasking) with grbl's g-code
+// parsing and planning functions. This function also serves as an interface for the interrupts to
+// set the system runtime flags, where only the main program handles them, removing the need to
+// define more computationally-expensive volatile variables. This also provides a controlled way to
+// execute certain tasks without having two or more instances of the same task, such as the planner
+// recalculating the buffer upon a feedhold or override.
+// NOTE: The sys.execute variable flags are set by any process, step or serial interrupts, pinouts,
+// limit switches, or the main program.
+void protocol_execute_runtime(){
+  if (sys.execute) { // Enter only if any bit flag is true
+    uint8_t rt_exec = sys.execute; // Avoid calling volatile multiple times
+
+    // System alarm. Everything has shutdown by something that has gone severely wrong. Report
+    // the source of the error to the user. If critical, Grbl disables by entering an infinite
+    // loop until system reset/abort.
+    if (rt_exec & (EXEC_ALARM | EXEC_CRIT_EVENT)) {
+      sys.state = STATE_ALARM; // Set system alarm state
+
+      // Critical event. Only hard limit qualifies. Update this as new critical events surface.
+      if (rt_exec & EXEC_CRIT_EVENT) {
+        report_alarm_message(ALARM_HARD_LIMIT);
+        report_feedback_message(MESSAGE_CRITICAL_EVENT);
+        bit_false(sys.execute,EXEC_RESET); // Disable any existing reset
+        do {
+          // Nothing. Block EVERYTHING until user issues reset or power cycles. Hard limits
+          // typically occur while unattended or not paying attention. Gives the user time
+          // to do what is needed before resetting, like killing the incoming stream.
+        } while (bit_isfalse(sys.execute,EXEC_RESET));
+
+      // Standard alarm event. Only abort during motion qualifies.
+      } else {
+        // Runtime abort command issued during a cycle, feed hold, or homing cycle. Message the
+        // user that position may have been lost and set alarm state to enable the alarm lockout
+        // to indicate the possible severity of the problem.
+        report_alarm_message(ALARM_ABORT_CYCLE);
+      }
+      bit_false(sys.execute,(EXEC_ALARM | EXEC_CRIT_EVENT));
+    }
+
+    // Execute system abort.
+    if (rt_exec & EXEC_RESET) {
+      sys.abort = true;  // Only place this is set true.
+      return; // Nothing else to do but exit.
+    }
+
+    // Execute and serial print status
+    if (rt_exec & EXEC_STATUS_REPORT) {
+      report_realtime_status();
+      bit_false(sys.execute,EXEC_STATUS_REPORT);
+    }
+
+    // Initiate stepper feed hold
+    if (rt_exec & EXEC_FEED_HOLD) {
+      //st_feed_hold(); // Initiate feed hold.
+      bit_false(sys.execute,EXEC_FEED_HOLD);
+    }
+
+    // Reinitializes the stepper module running state and, if a feed hold, re-plans the buffer.
+    // NOTE: EXEC_CYCLE_STOP is set by the stepper subsystem when a cycle or feed hold completes.
+    if (rt_exec & EXEC_CYCLE_STOP) {
+      //st_cycle_reinitialize();
+      bit_false(sys.execute,EXEC_CYCLE_STOP);
+    }
+
+    if (rt_exec & EXEC_CYCLE_START) {
+      //st_cycle_start(); // Issue cycle start command to stepper subsystem
+      if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) {
+        sys.auto_start = true; // Re-enable auto start after feed hold.
+      }
+      bit_false(sys.execute,EXEC_CYCLE_START);
+    }
+  }
+
+  // Overrides flag byte (sys.override) and execution should be installed here, since they
+  // are runtime and require a direct and controlled interface to the main stepper program.
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                    OBSOLETE CODE FROM INITIAL TESTS                        //
+////////////////////////////////////////////////////////////////////////////////
+//KEEPING FOR REFERENCE
 /* 
  *temp disabled code to get gcode send working
      if(!SW2){

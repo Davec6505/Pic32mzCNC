@@ -107,13 +107,13 @@ void PinMode(){
  ////////////////////////////////////////////////
 //DMA CONFIG
 
-   DMA_global();
-   DMA0_Enable();
-   //DMA1_Enable();
+  DMA_global();
+  DMA0_Enable();
+  //DMA1_Enable();
    
 //////////////////////////////////////////////////
 //configure the uart2 module
-    UartConfig();
+ UartConfig();
     
 //////////////////////////////////////////////////
 //configure UART the interrupts
@@ -378,6 +378,8 @@ void OutPutPulseXYZ(){
  // OC8CONSET = 0x8000; // Enable OC8
 }
 
+/////////////////////////////////////////////////////
+//only if DMA is turned off
 void UART2() iv IVT_UART2_RX ilevel 5 ics ICS_SOFT {
    IFS4CLR  = 0x40000;
 

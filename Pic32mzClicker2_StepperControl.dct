@@ -6545,7 +6545,9 @@ bufcnt6
 bufcnt6_bit
 bufcnt7
 bufcnt7_bit
-buff
+buffa
+buffb
+buffc
 bursten
 bursten
 bursten_bit
@@ -40601,6 +40603,7 @@ nvmpwpinv
 nvmpwpinvbits
 nvmpwpset
 nvmpwpsetbits
+nvmreadquad
 nvmreadrow
 nvmreadword
 nvmsrcaddr
@@ -45806,6 +45809,7 @@ protocol
 protocol
 protocol
 protocol
+protocol_execute_runtime
 protocol0
 protocol0_bit
 protocol0_usbe1csr2_bit
@@ -56494,7 +56498,11 @@ setinitialsizes
 setpinmode
 settings
 settings_init
+settings_read_coord_data
+settings_read_startup_line
+settings_store_startup_line
 settings_write_coord_data
+settings_write_one_coord
 setup
 setup
 setup_bit

@@ -2,11 +2,12 @@
 
 //coordinates struct - easier to work when extracted from flash
 //holds coord[] and coord_offset[]
-coord_sys coord_system[NUMBER_OF_DATUMS];
+volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 
 //temp buffer to save flash settings to
-unsigned long volatile buff[128]= {0} absolute 0xA0000000 ;
-
+unsigned long volatile buffA[128]= {0} absolute 0xA0000000 ;
+unsigned long volatile buffB[128]= {0} absolute 0xA0000000 ;
+unsigned long volatile buffC[128]= {0} absolute 0xA0000100 ;
 
 void Settings_Init(short reset_all){
  if(!reset_all){
@@ -63,7 +64,25 @@ P      Value        Coordinate System        G code
  *from the X, Y, Z position to part of the datum.
 *******************************************************************/
 ///////////////////////////////////////////////////////////////////
-
+/////////////////////////////////////////////////////
+//Save current page to a temp buffAer, this is to
+//push original setting back after a page errase
+int Save_Row_From_Flash(unsigned long addr){
+unsigned long i,j,data_count;
+unsigned long *ptr;
+ ptr = addr;
+ data_count = 0;
+ for(j = 0;j < 128;j++){
+    buffA[j] = *(ptr+j);
+    if(buffA[j] != -1)data_count++;
+    #if FlashDebug == 1
+     while(DMA_IsOn(1));
+     dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
+    #endif
+ }
+ //return the number of indices that hold data
+ return data_count;
+}
 
 ///////////////////////////////////////////////////////////////////
 //here we want to write the new recipe to flash and set the coordinate
@@ -74,6 +93,7 @@ int res=0,recipe = 0;
 unsigned long wdata[4]={0};
 unsigned long j,i;
 unsigned long add;
+unsigned long temp[4] = {0};
 
  add = (unsigned long)FLASH_Settings_VAddr_P1;
 
@@ -131,40 +151,133 @@ unsigned long add;
  i = (recipe-1)*4 ; //place the new data into the correct position
   //put the new data into the relevant slot e.g. P1,2,3,4...
  for(j = 0;j<4;j++){
-   buff[i] =  wdata[j];
+   buffA[i] =  wdata[j];
    i++;
  }
   
   //Write 4 double words at once
   //res = NVMWriteQuad(&add,wdata);
  // add = (unsigned long)FLASH_Settings_VAddr_P1;
-  res = NVMWriteRow(&add,buff);
+  res = NVMWriteRow(&add,buffA);
 
-  #if FlashDebug == 1
+  #if FlashDebug == 5
     add = (unsigned long)FLASH_Settings_VAddr_P1;
-    NVMReadRow(add);
+    //used todebug by printing out row to serial am going
+    //to optomise this
+    NVMReadQuad(add,temp);
+    for(i = 0;i< 4;i++){
+      if(temp[i] < 0xFFFFFFFF)  //print conversion??
+        ptr = ulong2flt(temp[i]);
+      else ptr = 0.00;
+       while(DMA_IsOn(1));
+       dma_printf("val:= %f\tbuff[%l]:= %l\n",ptr,i,temp[i]);
+    }
   #endif
 
    return res;
 }
 
+//////////////////////////////////////////////////////
+//read back the coordinate data and place into coord
+//struct for processing, coordinate system is 36longs
+//indexed by number of axis
+void settings_read_coord_data(){
+float ptr;
+unsigned int error = 0;
+unsigned long j,i,res;
+unsigned long temp;
+  //readt from the buffAer and place into coordinate system
+  for(i = 0; i < 9; i++){
+    for(j = 0 ; j < NoOfAxis; j++){
+      temp = buffA[(i*NoOfAxis) + j];
+      ptr = ulong2flt(temp);
+      coord_system[i].coord[j] = ptr;
+      
+      #if FlashDebug == 2
+       while(DMA_IsOn(1));
+       dma_printf("cord[%l].[%l]:= %f\n",i,j,coord_system[i].coord[j]);//coord_system[(coord_select*NoOfAxis)].coord[i]);
+      #endif
+    }
+  }
+}
 
-/////////////////////////////////////////////////////
-//Save current page to a temp buffer, this is to
-//push original setting back after a page errase
-int Save_Row_From_Flash(unsigned long addr){
-unsigned long i,j,data_count;
-unsigned long *ptr;
- ptr = addr;
- data_count = 0;
- for(j = 0;j < 128;j++){
-    buff[j] = *(ptr+j);
-    if(buff[j] != -1)data_count++;
-    #if FlashDebug == 1
-     while(DMA_IsOn(1));
-     dma_printf("buff[%l]:= %l\n",j,buff[j]);
-    #endif
+/////////////////////////////////////////////////////////
+//write 1 coordinate to flash QUAD_WORD
+//1st update buffA incase of row write then write to flash
+unsigned int settings_write_one_coord(int coord_select,float *coord){
+float coord_data[NoOfAxis];
+int recipe;
+unsigned int error = 0;
+unsigned long j,i,add;
+unsigned long temp[NoOfAxis];
+
+ //calculate the index of the Pnnn section of the buffA[]
+ recipe = coord_select * NoOfAxis;
+ 
+ //individually update buffA[] which is ulong in preperation for flash
+  j=0;
+  for(i = recipe;i< recipe+NoOfAxis;i++){
+     //prepare this to pass to quad word write
+      coord_data[j] = *(coord+j);
+      temp[j] = flt2ulong(coord_data[j]);
+      buffA[i] = temp[j];
+      j++;
+      #if FlashDebug == 2
+       while(DMA_IsOn(1));
+       dma_printf("buffA[%l]:= %l\n",i,j,buffA[i]);//coord_system[(coord_select*NoOfAxis)].coord[i]);
+      #endif
+  }
+  
+ switch(coord_select){
+   //P1,2,3,4,5,6,7,8,9 [4 dbl wrd boundries]
+   case 1: add = (unsigned long)FLASH_Settings_VAddr_P1;break;
+   case 2: add = (unsigned long)FLASH_Settings_VAddr_P2;break;
+   case 3: add = (unsigned long)FLASH_Settings_VAddr_P3;break;
+   case 4: add = (unsigned long)FLASH_Settings_VAddr_P4;break;
+   case 5: add = (unsigned long)FLASH_Settings_VAddr_P5;break;
+   case 6: add = (unsigned long)FLASH_Settings_VAddr_P6;break;
+   case 7: add = (unsigned long)FLASH_Settings_VAddr_P7;break;
+   case 8: add = (unsigned long)FLASH_Settings_VAddr_P8;break;
+   case 9: add = (unsigned long)FLASH_Settings_VAddr_P9;break;
+   //G54,55,56,57,58,59
+   case 10: add = (unsigned long)FLASH_Settings_VAddr_G54;break;
+   case 11: add = (unsigned long)FLASH_Settings_VAddr_G55;break;
+   case 12: add = (unsigned long)FLASH_Settings_VAddr_G56;break;
+   case 13: add = (unsigned long)FLASH_Settings_VAddr_G57;break;
+   case 14: add = (unsigned long)FLASH_Settings_VAddr_G58;break;
+   case 15: add = (unsigned long)FLASH_Settings_VAddr_G59;break;
  }
- //return the number of indices that hold data
- return data_count;
+ //write the coord to flash as a quad word, if more axis are added
+ //may need to add 2 quad word writes or wait for row write???
+ error =  NVMWriteQuad (add, temp);
+
+ return error;
+}
+
+
+//////////////////////////////////////////////////////
+// Reads startup line from EEPROM. Updated pointed line string data.
+int settings_read_startup_line(int n, char *line){
+char txt[LINE_BUFFER_SIZE];
+unsigned long j,i,*ptr;
+unsigned long temp;
+  //Row bundry starting at 0xBD1BC400
+  ptr = (unsigned long*)FLASH_Settings_VAddr_Page3;
+  //0 = line 1 64chars wide string at 0xBD1BC400
+  //1 = line 2 64chars wide string at 0xBD1BC410
+  //
+  ptr += (n * (LINE_BUFFER_SIZE_WORDS));
+  if(*ptr < 32){//empty string
+     *(line+0) = 0;
+     return STATUS_SETTING_READ_FAIL;
+  }else{
+     memcpy(line,ptr,LINE_BUFFER_SIZE);
+     return STATUS_OK;
+  }
+}
+
+// Method to store startup lines into EEPROM
+void settings_store_startup_line(uint8_t n, char *line){
+ // uint16_t addr = n*(LINE_BUFFER_SIZE+1)+EEPROM_ADDR_STARTUP_BLOCK;
+  //memcpy_to_eeprom_with_checksum(addr,(char*)line, LINE_BUFFER_SIZE);
 }

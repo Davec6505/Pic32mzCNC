@@ -3,5 +3,5 @@ DMADebug=-1
 ProtoDebug=-3
 GcodeDebug=-3
 StepperDebug=-1
-FlashDebug=-1
+FlashDebug=5
 LoopBackDebug=-1

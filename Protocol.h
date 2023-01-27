@@ -20,7 +20,11 @@
 #define arr_size 10
 #define str_size 60
 
-
+// Number of blocks Grbl executes upon startup. These blocks are stored in EEPROM, where the size
+// and addresses are defined in settings.h. With the current settings, up to 5 startup blocks may
+// be stored and executed in order. These startup blocks would typically be used to set the g-code
+// parser state depending on user preferences.
+#define N_STARTUP_LINE 2 // Integer (1-5)
 
 
 

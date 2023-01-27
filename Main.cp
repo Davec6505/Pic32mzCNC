@@ -136,7 +136,7 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 150 "c:/users/git/pic32mzcnc/settings.h"
+#line 151 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -238,7 +238,7 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 62 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 68 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
@@ -251,7 +251,8 @@ static void NVM_WREN_Set();
 static void NVM_WREN_Rst();
 static unsigned int NVM_WREN_Wait();
 void NVM_PWPAGE_Lock();
-void NVMReadRow(unsigned long addr);
+void NVMReadRow(unsigned long addr,unsigned long *buff);
+void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
@@ -269,8 +270,8 @@ float ulong2flt(unsigned long ui_) ;
 
 
 void sys_sync_current_position();
-#line 80 "c:/users/git/pic32mzcnc/globals.h"
-extern unsigned long volatile buff[128];
+#line 91 "c:/users/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buffA[128];
 
 
 
@@ -291,18 +292,34 @@ extern system_t sys;
 
 
 typedef struct{
- volatile float coord[ 4 ];
- volatile float coord_offset[ 4 ];
+ float coord[ 4 ];
+ float coord_offset[ 4 ];
 }coord_sys;
-extern coord_sys coord_system[ 9 ];
+extern volatile coord_sys coord_system[ 9 ];
+
 
 
 
 
 void Settings_Init(short reset_all);
-unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+
 
 int Save_Row_From_Flash(unsigned long addr);
+
+
+unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+
+
+void settings_read_coord_data();
+
+
+unsigned int settings_write_one_coord(int coord_select,float *coord);
+
+
+int settings_read_startup_line(int n, char *line);
+
+
+void settings_store_startup_line(int n, char *line);
 #line 50 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
 #line 154 "c:/users/git/pic32mzcnc/gcode.h"
@@ -732,6 +749,8 @@ void report_feedback_message(int message_code);
 
 void report_init_message();
 
+void report_startup_line(int n, char *line);
+
 void report_grbl_help();
 
 
@@ -749,7 +768,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 33 "c:/users/git/pic32mzcnc/protocol.h"
+#line 37 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
 
@@ -788,6 +807,9 @@ int Modal_Group_Actions4(int action);
 
 
 int Modal_Group_Actions7(int action);
+
+
+void protocol_execute_runtime();
 #line 38 "C:/Users/Git/Pic32mzCNC/Main.c"
 system_t sys;
 STP STPS[ 4 ];
@@ -815,6 +837,8 @@ void Conditin_Externs(){
 
 
 void main() {
+int error = 0;
+int has_flash = 0;
 int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
 static int cntr = 0,a = 0;
 
@@ -824,7 +848,16 @@ static int cntr = 0,a = 0;
  cntr = a = axis_to_run = dif = status_of_gcode = 0;
 
 
+
  Delay_ms(1000);
+
+
+ has_flash = Save_Row_From_Flash((unsigned long) 0xBD1BC000 );
+
+
+ if(has_flash){
+ settings_read_coord_data();
+ }
 
 
  while(1){
@@ -883,7 +916,8 @@ static int cntr = 0,a = 0;
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
-#line 146 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 158 "C:/Users/Git/Pic32mzCNC/Main.c"
+ protocol_execute_runtime();
  WDTCONSET = 0x01;
  }
 }
@@ -923,7 +957,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 197 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 210 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -947,6 +981,7 @@ unsigned long _flash,*addr;
  axis_cnt = 0;
 
 
+
  axis_words = Get_Axisword();
  for(i = 0; i < 3;i++){
  temp_axis = (axis_words >> i) & 1;
@@ -954,12 +989,17 @@ unsigned long _flash,*addr;
  if(temp_axis == 0){
  axis_cnt++;
  if(axis_cnt > 2)break;
- _flash = buff[indx];
- coord_data[i] = ulong2flt(_flash);;
-#line 234 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+ _flash = buffA[indx];
+
+
+
+ coord_data[i] = ulong2flt(_flash);
+#line 252 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
+
  coord_data[i] = gc.next_position[i];
-#line 241 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 260 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -976,7 +1016,7 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-#line 261 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 280 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -995,16 +1035,16 @@ unsigned long _flash,*addr;
  }
  }
 
- temp =  9 ;
+ temp =  0 ;
 
- if (action ==  (1 << 5) ){temp =  9 +1 ;}
+ if (action ==  (1 << 5) ){temp =  1 ;}
  i = (temp)*4 ;
 
 
  for(j = 0;j<4;j++){
- _data = buff[i];
+ _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 292 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 311 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1035,8 +1075,8 @@ unsigned long _flash,*addr;
  }
  break;
  case 64:
- temp =  9 ;
- if (action ==  (1 << 6) ) { temp =  9 +1 ; }
+ temp =  0 ;
+ if (action ==  (1 << 6) ) { temp =  1 ; }
  Settings_Write_Coord_Data(temp,gc.position);
  break;
  case 128:
@@ -1134,7 +1174,7 @@ int Modal_Group_Actions3(int action){
 
 
 int Modal_Group_Actions4(int action){
-#line 425 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 444 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 
@@ -1142,6 +1182,75 @@ int Modal_Group_Actions4(int action){
 
 
 int Modal_Group_Actions7(int action){
-#line 436 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 455 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
+}
+#line 474 "C:/Users/Git/Pic32mzCNC/Main.c"
+void protocol_execute_runtime(){
+ if (sys.execute) {
+ uint8_t rt_exec = sys.execute;
+
+
+
+
+ if (rt_exec & ( (1 << 5)  |  (1 << 6) )) {
+ sys.state =  6 ;
+
+
+ if (rt_exec &  (1 << 6) ) {
+ report_alarm_message( -1 );
+ report_feedback_message( 1 );
+  (sys.execute &= ~ (1 << 4) ) ;
+ do {
+
+
+
+ } while ( ((sys.execute & (1 << 4) ) == 0) );
+
+
+ } else {
+
+
+
+ report_alarm_message( -2 );
+ }
+  (sys.execute &= ~( (1 << 5)  | (1 << 6) )) ;
+ }
+
+
+ if (rt_exec &  (1 << 4) ) {
+ sys.abort =  1 ;
+ return;
+ }
+
+
+ if (rt_exec &  (1 << 0) ) {
+ report_realtime_status();
+  (sys.execute &= ~ (1 << 0) ) ;
+ }
+
+
+ if (rt_exec &  (1 << 3) ) {
+
+  (sys.execute &= ~ (1 << 3) ) ;
+ }
+
+
+
+ if (rt_exec &  (1 << 2) ) {
+
+  (sys.execute &= ~ (1 << 2) ) ;
+ }
+
+ if (rt_exec &  (1 << 1) ) {
+
+ if ( ((settings.flags & (1 << 1) ) != 0) ) {
+ sys.auto_start =  1 ;
+ }
+  (sys.execute &= ~ (1 << 1) ) ;
+ }
+ }
+
+
+
 }

@@ -825,7 +825,7 @@ JR	RA
 NOP	
 ; end of _OutPutPulseXYZ
 _UART2:
-;Config.c,381 :: 		void UART2() iv IVT_UART2_RX ilevel 5 ics ICS_SOFT {
+;Config.c,383 :: 		void UART2() iv IVT_UART2_RX ilevel 5 ics ICS_SOFT {
 RDPGPR	SP, SP
 ADDIU	SP, SP, -16
 SW	R30, 12(SP)
@@ -840,14 +840,14 @@ ORI	R30, R0, 5120
 MTC0	R30, 12, 0
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
-;Config.c,382 :: 		IFS4CLR  = 0x40000;
+;Config.c,384 :: 		IFS4CLR  = 0x40000;
 LUI	R2, 4
 SW	R2, Offset(IFS4CLR+0)(GP)
-;Config.c,384 :: 		UART3_Write(U2RXREG);
+;Config.c,386 :: 		UART3_Write(U2RXREG);
 LW	R25, Offset(U2RXREG+0)(GP)
 JAL	_UART3_Write+0
 NOP	
-;Config.c,386 :: 		}
+;Config.c,388 :: 		}
 L_end_UART2:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 4

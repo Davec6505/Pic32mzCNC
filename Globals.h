@@ -73,11 +73,22 @@
 #define STATE_CHECK_MODE 7 // G-code check mode. Locks out planner and motion only.
 #define STATE_JOG        8 // Jogging mode is unique like homing.
 
+// Line buffer size from the serial input stream to be executed.
+// NOTE: Not a problem except for extreme cases, but the line buffer size can be too small
+// and g-code blocks can get truncated. Officially, the g-code standards support up to 256
+// characters. In future versions, this will be increased, when we know how much extra
+// memory space we can invest into here or we re-write the g-code parser not to have his
+// buffer.
+#ifndef LINE_BUFFER_SIZE
+  #define LINE_BUFFER_SIZE         64
+  #define LINE_BUFFER_SIZE_WORDS   LINE_BUFFER_SIZE/4
+#endif
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //                          EXTERNS                                          //
 ///////////////////////////////////////////////////////////////////////////////
-extern unsigned long volatile buff[128];
+extern unsigned long volatile buffA[128];
 
 ///////////////////////////////////////////////////////////////////////////////
 //                          STRUCTS UNIONS & ENUMS                           //
@@ -98,18 +109,33 @@ extern system_t sys;
 ////////////////////////////////////////////
 //9 different coordinates can be saved
 typedef struct{
- volatile float coord[NoOfAxis];
- volatile float coord_offset[NoOfAxis];
+ float coord[NoOfAxis];
+ float coord_offset[NoOfAxis];
 }coord_sys;
-extern coord_sys coord_system[NUMBER_OF_DATUMS];
+extern volatile coord_sys coord_system[NUMBER_OF_DATUMS];
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
 void Settings_Init(short reset_all);
-unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+
 //void Save_Row_From_Flash(unsigned long addr);
 int Save_Row_From_Flash(unsigned long addr);
 
+//writes the coord data into flash
+unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+
+//reads a coord from flashinto relevant axis data
+void settings_read_coord_data();
+
+//write 1 coordinate to flash QUAD_WORD
+unsigned int settings_write_one_coord(int coord_select,float *coord);
+
+// Reads startup line from EEPROM. Updated pointed line string data.
+int settings_read_startup_line(int n, char *line);
+
+// Method to store startup lines into EEPROM
+void settings_store_startup_line(int n, char *line);
 
 #endif

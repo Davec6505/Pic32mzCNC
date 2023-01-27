@@ -36,6 +36,8 @@ void report_alarm_message(int alarm_code);
 void report_feedback_message(int message_code);
 // Welcome message
 void report_init_message();
+//Report the start up lines
+void report_startup_line(int n, char *line);
 // Grbl help message
 void report_grbl_help();
 // Grbl global settings print out.

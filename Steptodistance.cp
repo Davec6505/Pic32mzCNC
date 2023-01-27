@@ -90,7 +90,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 150 "c:/users/git/pic32mzcnc/settings.h"
+#line 151 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -251,7 +251,7 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 62 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 68 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
@@ -264,7 +264,8 @@ static void NVM_WREN_Set();
 static void NVM_WREN_Rst();
 static unsigned int NVM_WREN_Wait();
 void NVM_PWPAGE_Lock();
-void NVMReadRow(unsigned long addr);
+void NVMReadRow(unsigned long addr,unsigned long *buff);
+void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
@@ -282,8 +283,8 @@ float ulong2flt(unsigned long ui_) ;
 
 
 void sys_sync_current_position();
-#line 80 "c:/users/git/pic32mzcnc/globals.h"
-extern unsigned long volatile buff[128];
+#line 91 "c:/users/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buffA[128];
 
 
 
@@ -304,18 +305,34 @@ extern system_t sys;
 
 
 typedef struct{
- volatile float coord[ 4 ];
- volatile float coord_offset[ 4 ];
+ float coord[ 4 ];
+ float coord_offset[ 4 ];
 }coord_sys;
-extern coord_sys coord_system[ 9 ];
+extern volatile coord_sys coord_system[ 9 ];
+
 
 
 
 
 void Settings_Init(short reset_all);
-unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+
 
 int Save_Row_From_Flash(unsigned long addr);
+
+
+unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+
+
+void settings_read_coord_data();
+
+
+unsigned int settings_write_one_coord(int coord_select,float *coord);
+
+
+int settings_read_startup_line(int n, char *line);
+
+
+void settings_store_startup_line(int n, char *line);
 #line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
@@ -625,6 +642,8 @@ void report_feedback_message(int message_code);
 
 void report_init_message();
 
+void report_startup_line(int n, char *line);
+
 void report_grbl_help();
 
 
@@ -642,7 +661,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 33 "c:/users/git/pic32mzcnc/protocol.h"
+#line 37 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 10 ][ 60 ]);
 void Str_clear(char *str,int len);
 
@@ -681,6 +700,9 @@ int Modal_Group_Actions4(int action);
 
 
 int Modal_Group_Actions7(int action);
+
+
+void protocol_execute_runtime();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 11 "c:/users/git/pic32mzcnc/timers.h"

@@ -21,39 +21,40 @@
 #define BITFLAG_HARD_LIMIT_ENABLE  bit(3)
 #define BITFLAG_HOMING_ENABLE      bit(4)
 
-#define DEFAULT_X_STEPS_PER_MM 250
-#define DEFAULT_Y_STEPS_PER_MM 250
-#define DEFAULT_Z_STEPS_PER_MM 250
-#define DEFAULT_A_STEPS_PER_MM 250
-#define DEFAULT_MM_PER_ARC_SEGMENT 0.1
-#define DEFAULT_RAPID_FEEDRATE 500.0 // mm/min
-#define DEFAULT_FEEDRATE 250.0
-#define DEFAULT_ACCELERATION (10.0*60.0*60.0) // 10 mm/min^2
-#define DEFAULT_JUNCTION_DEVIATION 0.05 // mm
-#define DEFAULT_REPORT_INCHES 0 // false
-#define DEFAULT_AUTO_START 1 // true
-#define DEFAULT_INVERT_ST_ENABLE 0 // false
-#define DEFAULT_HARD_LIMIT_ENABLE 0  // false
-#define DEFAULT_HOMING_ENABLE 0  // false
-#define DEFAULT_HOMING_DIR_MASK 0 // move positive dir
-#define DEFAULT_HOMING_RAPID_FEEDRATE 250.0 // mm/min
-#define DEFAULT_HOMING_FEEDRATE 25.0 // mm/min
-#define DEFAULT_HOMING_DEBOUNCE_DELAY 100 // msec (0-65k)
-#define DEFAULT_HOMING_PULLOFF 1.0 // mm
+
+#define DEFAULT_X_STEPS_PER_MM         250
+#define DEFAULT_Y_STEPS_PER_MM         250
+#define DEFAULT_Z_STEPS_PER_MM         250
+#define DEFAULT_A_STEPS_PER_MM         250
+#define DEFAULT_MM_PER_ARC_SEGMENT     0.1
+#define DEFAULT_RAPID_FEEDRATE         500.0 // mm/min
+#define DEFAULT_FEEDRATE               250.0
+#define DEFAULT_ACCELERATION           (10.0*60.0*60.0) // 10 mm/min^2
+#define DEFAULT_JUNCTION_DEVIATION     0.05 // mm
+#define DEFAULT_REPORT_INCHES          0 // false
+#define DEFAULT_AUTO_START             1 // true
+#define DEFAULT_INVERT_ST_ENABLE       0 // false
+#define DEFAULT_HARD_LIMIT_ENABLE      0  // false
+#define DEFAULT_HOMING_ENABLE          0  // false
+#define DEFAULT_HOMING_DIR_MASK        0 // move positive dir
+#define DEFAULT_HOMING_RAPID_FEEDRATE  250.0 // mm/min
+#define DEFAULT_HOMING_FEEDRATE        25.0 // mm/min
+#define DEFAULT_HOMING_DEBOUNCE_DELAY  100 // msec (0-65k)
+#define DEFAULT_HOMING_PULLOFF         1.0 // mm
 #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
-#define DEFAULT_DECIMAL_PLACES 3
-#define DEFAULT_N_ARC_CORRECTION 25
+#define DEFAULT_DECIMAL_PLACES         3
+#define DEFAULT_N_ARC_CORRECTION       25
 
 ////////////////////////////////////////////////////////////////
 //NEED TO LOOK INTO THIS
-#define N_COORDINATE_SYSTEM 9  //supported work coordinate systems (from index 10)
+#define N_COORDINATE_SYSTEM  9  //supported work coordinate systems (from index 10)
 #define SETTING_INDEX_NCOORD N_COORDINATE_SYSTEM+1 // Total number of system stored (from index 0)
 
 /////////////////////////////////////////////////////////////////
 // NOTE: Work coordinate indices are (0=G54, 1=G55, ... , 6=G59)
-#define SETTING_INDEX_G28  N_COORDINATE_SYSTEM    //Home position 1
-#define SETTING_INDEX_G30  N_COORDINATE_SYSTEM+1  // Home position 2
-// #define SETTING_INDEX_G92    N_COORDINATE_SYSTEM+2  // Coordinate offset (G92.2,G92.3 not supported)
+#define SETTING_INDEX_G28  0   //Home position 1
+#define SETTING_INDEX_G30  1  // Home position 2
+// #define SETTING_INDEX_G92    2  // Coordinate offset (G92.2,G92.3 not supported)
 
 /////////////////////////////////////////////////////////////////
 // Define bit flag masks for the boolean settings in settings.flag.
@@ -171,7 +172,6 @@ typedef struct {
 //  uint8_t status_report_mask; // Mask to indicate desired report data.
 }  settings_t;
 extern settings_t settings;
-
 
 
 #endif

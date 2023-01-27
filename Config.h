@@ -54,7 +54,8 @@ int Modal_Group_Actions4(int action);
 //[M3,M4,M5] Spindle turning
 int Modal_Group_Actions7(int action);
 
-
+//Runtime checking of status states
+void protocol_execute_runtime();
 
 
 #endif
