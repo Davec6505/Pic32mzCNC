@@ -694,12 +694,12 @@ char FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 37 "c:/users/git/pic32mzcnc/protocol.h"
-void Str_Initialize(char arg[ 10 ][ 60 ]);
+void Str_Initialize(char arg[ 10 ][ 64 ]);
 void Str_clear(char *str,int len);
 
 int Sample_Ringbuffer();
 
-static int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
+static int strsplit(char arg[ 10 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
@@ -969,8 +969,7 @@ float acc = settings.acceleration;
 
 void report_startup_line(int n, char *line){
  while(DMA_IsOn(1));
- dma_printf("$N= %d %s\n",n,line);
-
+ dma_printf("$N%d=%s\n",n,line);
 }
 
 
@@ -1036,7 +1035,7 @@ float coord_data[ 4 ];
 int coord_select, i;
 
  for (coord_select = 0; coord_select <=  9 +1 ; coord_select++) {
-#line 266 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 265 "C:/Users/Git/Pic32mzCNC/Print.c"
  while(DMA_IsOn(1));
  dma_printf("[G");
  while(DMA_IsOn(1));
@@ -1124,7 +1123,7 @@ void report_gcode_modes(){
  }
  while(DMA_IsOn(1));
  switch (gc.coolant_mode) {
-#line 358 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 357 "C:/Users/Git/Pic32mzCNC/Print.c"
  }
  while(DMA_IsOn(1));
  if (gc.inches_mode)

@@ -106,7 +106,7 @@ hint: 17	1354	 warning: The macro is redefined      #define DEFAULT_Z_STEPS_PER_
 hint: 21	1354	 warning: The macro is redefined      #define DEFAULT_ACCELERATION (10.0*60*60)     from c:/users/git/pic32mzcnc/kinematics.h: 5:    #include "Config_adv.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/serial_dma.h: 7:    #include "Config.h"     from c:/users/git/pic32mzcnc/flash_r_w.h: 7:    #include "Serial_Dma.h"     from C:/Users/Git/Pic32mzCNC/Print.c: 3:    #include "Flash_R_W.h"     previously macro "DEFAULT_ACCELERATION" defined as: #define DEFAULT_ACCELERATION  (10.0*60.0*60.0) 	c:\users\git\pic32mzcnc\config_adv.h
 hint: 37	1354	 warning: The macro is redefined      #define DEFAULT_MM_PER_ARC_SEGMENT 0.8     from c:/users/git/pic32mzcnc/kinematics.h: 5:    #include "Config_adv.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/serial_dma.h: 7:    #include "Config.h"     from c:/users/git/pic32mzcnc/flash_r_w.h: 7:    #include "Serial_Dma.h"     from C:/Users/Git/Pic32mzCNC/Print.c: 3:    #include "Flash_R_W.h"     previously macro "DEFAULT_MM_PER_ARC_SEGMENT" defined as: #define DEFAULT_MM_PER_ARC_SEGMENT  0.1 	c:\users\git\pic32mzcnc\config_adv.h
 diagnostics: 0	122	Compilation Started	print.h
-diagnostics: 366	123	Compiled Successfully	Print.c
+diagnostics: 365	123	Compiled Successfully	Print.c
 hint: 25	1354	 warning: The macro is redefined     #define DEFAULT_X_STEPS_PER_MM 250     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/gcode.h: 41:    #include "Config.h"     from C:/Users/Git/Pic32mzCNC/GCODE.c: 19:    #include "GCODE.h"     previously macro "DEFAULT_X_STEPS_PER_MM" defined as: #define DEFAULT_X_STEPS_PER_MM  250.0 	c:\users\git\pic32mzcnc\settings.h
 hint: 26	1354	 warning: The macro is redefined     #define DEFAULT_Y_STEPS_PER_MM 250     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/gcode.h: 41:    #include "Config.h"     from C:/Users/Git/Pic32mzCNC/GCODE.c: 19:    #include "GCODE.h"     previously macro "DEFAULT_Y_STEPS_PER_MM" defined as: #define DEFAULT_Y_STEPS_PER_MM  250.0 	c:\users\git\pic32mzcnc\settings.h
 hint: 27	1354	 warning: The macro is redefined     #define DEFAULT_Z_STEPS_PER_MM 250     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/gcode.h: 41:    #include "Config.h"     from C:/Users/Git/Pic32mzCNC/GCODE.c: 19:    #include "GCODE.h"     previously macro "DEFAULT_Z_STEPS_PER_MM" defined as: #define DEFAULT_Z_STEPS_PER_MM  250.0 	c:\users\git\pic32mzcnc\settings.h
@@ -128,15 +128,19 @@ diagnostics: 0	122	Compilation Started	settings.h
 warning: 73	1508	Implicit conversion of int to ptr	Globals.c
 hint: 71	1163	Variable 'i' has been declared, but not used	Globals.c
 hint: 187	1163	Variable 'res' has been declared, but not used	Globals.c
-warning: 252	1508	Implicit conversion of int to ptr	Globals.c
-hint: 261	1163	Variable 'txt' has been declared, but not used	Globals.c
-hint: 262	1163	Variable 'j' has been declared, but not used	Globals.c
-hint: 262	1163	Variable 'i' has been declared, but not used	Globals.c
-hint: 263	1163	Variable 'temp' has been declared, but not used	Globals.c
-diagnostics: 283	123	Compiled Successfully	Globals.c
+warning: 254	1508	Implicit conversion of int to ptr	Globals.c
+hint: 263	1163	Variable 'txt' has been declared, but not used	Globals.c
+hint: 264	1163	Variable 'j' has been declared, but not used	Globals.c
+hint: 264	1163	Variable 'i' has been declared, but not used	Globals.c
+hint: 265	1163	Variable 'temp' has been declared, but not used	Globals.c
+warning: 323	1508	Implicit conversion of int to ptr	Globals.c
+hint: 285	1163	Variable 'mod_' has been declared, but not used	Globals.c
+hint: 286	1163	Variable 'addc' has been declared, but not used	Globals.c
+diagnostics: 325	123	Compiled Successfully	Globals.c
 hint: 185	1164	Variable 'ptr' has been eliminated by optimizer	Globals.c
 hint: 186	1164	Variable 'error' has been eliminated by optimizer	Globals.c
-hint: 210	1164	Variable 'error' has been eliminated by optimizer	Globals.c
+hint: 212	1164	Variable 'error' has been eliminated by optimizer	Globals.c
+hint: 285	1164	Variable 'len0' has been eliminated by optimizer	Globals.c
 hint: 25	1354	 warning: The macro is redefined     #define DEFAULT_X_STEPS_PER_MM 250     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/config.h: 8:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/timers.h: 5:    #include "Config.h"     from c:/users/git/pic32mzcnc/limits.h: 5:    #include "Timers.h"     from C:/Users/Git/Pic32mzCNC/Limits.c: 3:    #include "Limits.h"     previously macro "DEFAULT_X_STEPS_PER_MM" defined as: #define DEFAULT_X_STEPS_PER_MM  250.0 	c:\users\git\pic32mzcnc\settings.h
 hint: 26	1354	 warning: The macro is redefined     #define DEFAULT_Y_STEPS_PER_MM 250     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/config.h: 8:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/timers.h: 5:    #include "Config.h"     from c:/users/git/pic32mzcnc/limits.h: 5:    #include "Timers.h"     from C:/Users/Git/Pic32mzCNC/Limits.c: 3:    #include "Limits.h"     previously macro "DEFAULT_Y_STEPS_PER_MM" defined as: #define DEFAULT_Y_STEPS_PER_MM  250.0 	c:\users\git\pic32mzcnc\settings.h
 hint: 27	1354	 warning: The macro is redefined     #define DEFAULT_Z_STEPS_PER_MM 250     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/config.h: 8:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/timers.h: 5:    #include "Config.h"     from c:/users/git/pic32mzcnc/limits.h: 5:    #include "Timers.h"     from C:/Users/Git/Pic32mzCNC/Limits.c: 3:    #include "Limits.h"     previously macro "DEFAULT_Z_STEPS_PER_MM" defined as: #define DEFAULT_Z_STEPS_PER_MM  250.0 	c:\users\git\pic32mzcnc\settings.h
@@ -152,19 +156,21 @@ hint: 27	1354	 warning: The macro is redefined     #define DEFAULT_Z_STEPS_PER_M
 hint: 29	1354	 warning: The macro is redefined     #define DEFAULT_MM_PER_ARC_SEGMENT 0.1     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/gcode.h: 41:    #include "Config.h"     from c:/users/git/pic32mzcnc/protocol.h: 5:    #include "GCODE.h"     from C:/Users/Git/Pic32mzCNC/Protocol.c: 1:    #include "protocol.h"     previously macro "DEFAULT_MM_PER_ARC_SEGMENT" defined as: #define DEFAULT_MM_PER_ARC_SEGMENT  0.8 	c:\users\git\pic32mzcnc\settings.h
 hint: 32	1354	 warning: The macro is redefined     #define DEFAULT_ACCELERATION (10.0*60.0*60.0)     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/gcode.h: 41:    #include "Config.h"     from c:/users/git/pic32mzcnc/protocol.h: 5:    #include "GCODE.h"     from C:/Users/Git/Pic32mzCNC/Protocol.c: 1:    #include "protocol.h"     previously macro "DEFAULT_ACCELERATION" defined as: #define DEFAULT_ACCELERATION  (10.0*60*60) 	c:\users\git\pic32mzcnc\settings.h
 diagnostics: 0	122	Compilation Started	stdint.h
-warning: 435	1503	Result is not defined in function: ''	Protocol.c
-hint: 31	1163	Variable 'axis_to_run' has been declared, but not used	Protocol.c
-hint: 32	1163	Variable 'j' has been declared, but not used	Protocol.c
-hint: 33	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
-hint: 33	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
-warning: 568	1505	Suspicious pointer conversion	Protocol.c
-diagnostics: 596	123	Compiled Successfully	Protocol.c
-hint: 25	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
-hint: 30	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
-hint: 30	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
-hint: 32	1164	Variable 'i' has been eliminated by optimizer	Protocol.c
-hint: 32	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
-hint: 33	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
+warning: 230	1505	Suspicious pointer conversion	Protocol.c
+warning: 469	1503	Result is not defined in function: ''	Protocol.c
+hint: 32	1163	Variable 'axis_to_run' has been declared, but not used	Protocol.c
+hint: 33	1163	Variable 'j' has been declared, but not used	Protocol.c
+hint: 34	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
+hint: 34	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
+warning: 602	1505	Suspicious pointer conversion	Protocol.c
+diagnostics: 630	123	Compiled Successfully	Protocol.c
+warning: 569	1512	variable 'status' might not have been initialized	Protocol.c
+hint: 26	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
+hint: 31	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
+hint: 31	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
+hint: 33	1164	Variable 'i' has been eliminated by optimizer	Protocol.c
+hint: 33	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
+hint: 34	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
 hint: 25	1354	 warning: The macro is redefined     #define DEFAULT_X_STEPS_PER_MM 250     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/nuts_bolts.h: 5:    #include "Config.h"     from C:/Users/Git/Pic32mzCNC/Nut_Bolts.c: 1:    #include "Nuts_Bolts.h"     previously macro "DEFAULT_X_STEPS_PER_MM" defined as: #define DEFAULT_X_STEPS_PER_MM  250.0 	c:\users\git\pic32mzcnc\settings.h
 hint: 26	1354	 warning: The macro is redefined     #define DEFAULT_Y_STEPS_PER_MM 250     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/nuts_bolts.h: 5:    #include "Config.h"     from C:/Users/Git/Pic32mzCNC/Nut_Bolts.c: 1:    #include "Nuts_Bolts.h"     previously macro "DEFAULT_Y_STEPS_PER_MM" defined as: #define DEFAULT_Y_STEPS_PER_MM  250.0 	c:\users\git\pic32mzcnc\settings.h
 hint: 27	1354	 warning: The macro is redefined     #define DEFAULT_Z_STEPS_PER_MM 250     from c:/users/git/pic32mzcnc/kinematics.h: 6:    #include "Settings.h"     from c:/users/git/pic32mzcnc/stepper.h: 7:     #include "Kinematics.h"     from c:/users/git/pic32mzcnc/timers.h: 7:    #include "Stepper.h"     from c:/users/git/pic32mzcnc/config.h: 5:    #include "Timers.h"     from c:/users/git/pic32mzcnc/nuts_bolts.h: 5:    #include "Config.h"     from C:/Users/Git/Pic32mzCNC/Nut_Bolts.c: 1:    #include "Nuts_Bolts.h"     previously macro "DEFAULT_Z_STEPS_PER_MM" defined as: #define DEFAULT_Z_STEPS_PER_MM  250.0 	c:\users\git\pic32mzcnc\settings.h
@@ -203,15 +209,14 @@ hint: 103	1164	Variable 'res' has been eliminated by optimizer	Flash_R_W.c
 hint: 121	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 171	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 290	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 3000 ms	 
+diagnostics: 0	127	All files Compiled in 3047 ms	 
 hint: 9	1004	Variable buffB has been declared, but not used	Globals.c
-hint: 10	1004	Variable buffC has been declared, but not used	Globals.c
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 3294   Dynamic RAM (bytes): 507381	Static RAM (bytes): 3294   Dynamic RAM (bytes): 507381
+hint: 0	1144	Static RAM (bytes): 3590   Dynamic RAM (bytes): 507381	Static RAM (bytes): 3590   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 71248 (3%)  Free ROM (bytes): 2025904 (97%)	Used ROM (bytes): 71248 (3%)  Free ROM (bytes): 2025904 (97%)
+hint: 0	1144	Used ROM (bytes): 73025 (3%)  Free ROM (bytes): 2024127 (97%)	Used ROM (bytes): 73025 (3%)  Free ROM (bytes): 2024127 (97%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
 diagnostics: 0	128	Linked in 906 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 5859 ms	 
-diagnostics: 0	103	Finished successfully: 27 Jan 2023, 07:13:40	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 5922 ms	 
+diagnostics: 0	103	Finished successfully: 29 Jan 2023, 09:37:56	Pic32mzClicker2_StepperControl.mcp32

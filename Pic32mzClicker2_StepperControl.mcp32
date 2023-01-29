@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Protocol.c
+Value=Globals.c
 =======
 =======
 >>>>>>> patch1
@@ -139,12 +139,10 @@ File5=Globals.c
 File6=Flash_R_W.c
 File7=Flash_R_W.h
 File8=Settings.h
-File9=GCODE.c
-File10=GCODE.h
-File11=Config.c
-File12=Print.c
-File13=Print.h
-Count=14
+File9=Config.c
+File10=Print.c
+File11=Serial_Dma.c
+Count=12
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

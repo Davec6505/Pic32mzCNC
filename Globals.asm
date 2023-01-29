@@ -1,11 +1,11 @@
 _Settings_Init:
 ;Globals.c,12 :: 		void Settings_Init(short reset_all){
 ;Globals.c,13 :: 		if(!reset_all){
-BEQ	R25, R0, L__Settings_Init69
+BEQ	R25, R0, L__Settings_Init81
 NOP	
 J	L_Settings_Init0
 NOP	
-L__Settings_Init69:
+L__Settings_Init81:
 ;Globals.c,15 :: 		sys.abort           = 0;
 SB	R0, Offset(_sys+0)(GP)
 ;Globals.c,16 :: 		sys.state           = 0;
@@ -22,11 +22,11 @@ NOP
 L_Settings_Init0:
 SEB	R3, R25
 ORI	R2, R0, 1
-BEQ	R3, R2, L__Settings_Init70
+BEQ	R3, R2, L__Settings_Init82
 NOP	
 J	L_Settings_Init2
 NOP	
-L__Settings_Init70:
+L__Settings_Init82:
 ;Globals.c,22 :: 		settings.steps_per_mm[X] = DEFAULT_X_STEPS_PER_MM;
 ORI	R2, R0, 250
 SW	R2, Offset(_settings+4)(GP)
@@ -110,11 +110,11 @@ L_Save_Row_From_Flash3:
 ; ptr start address is: 20 (R5)
 ; ptr end address is: 20 (R5)
 SLTIU	R2, R6, 128
-BNE	R2, R0, L__Save_Row_From_Flash72
+BNE	R2, R0, L__Save_Row_From_Flash84
 NOP	
 J	L_Save_Row_From_Flash4
 NOP	
-L__Save_Row_From_Flash72:
+L__Save_Row_From_Flash84:
 ; ptr end address is: 20 (R5)
 ;Globals.c,76 :: 		buffA[j] = *(ptr+j);
 ; ptr start address is: 20 (R5)
@@ -133,17 +133,17 @@ ADDU	R2, R2, R3
 LW	R3, 0(R2)
 LUI	R2, 65535
 ORI	R2, R2, 65535
-BNE	R3, R2, L__Save_Row_From_Flash74
+BNE	R3, R2, L__Save_Row_From_Flash86
 NOP	
-J	L__Save_Row_From_Flash67
+J	L__Save_Row_From_Flash79
 NOP	
-L__Save_Row_From_Flash74:
+L__Save_Row_From_Flash86:
 ADDIU	R2, R7, 1
 MOVZ	R7, R2, R0
 ; data_count end address is: 28 (R7)
 J	L_Save_Row_From_Flash6
 NOP	
-L__Save_Row_From_Flash67:
+L__Save_Row_From_Flash79:
 L_Save_Row_From_Flash6:
 ;Globals.c,75 :: 		for(j = 0;j < 128;j++){
 ; data_count start address is: 28 (R7)
@@ -201,11 +201,11 @@ LH	R4, 8(SP)
 ; error start address is: 12 (R3)
 SEH	R3, R2
 ;Globals.c,110 :: 		if(error){
-BNE	R2, R0, L__Settings_Write_Coord_Data77
+BNE	R2, R0, L__Settings_Write_Coord_Data89
 NOP	
 J	L_Settings_Write_Coord_Data7
 NOP	
-L__Settings_Write_Coord_Data77:
+L__Settings_Write_Coord_Data89:
 ; recipe end address is: 16 (R4)
 ;Globals.c,115 :: 		return error;
 ANDI	R2, R3, 65535
@@ -330,116 +330,116 @@ NOP
 ;Globals.c,137 :: 		}
 L_Settings_Write_Coord_Data8:
 SEH	R2, R4
-BNE	R2, R0, L__Settings_Write_Coord_Data79
+BNE	R2, R0, L__Settings_Write_Coord_Data91
 NOP	
 J	L_Settings_Write_Coord_Data10
 NOP	
-L__Settings_Write_Coord_Data79:
+L__Settings_Write_Coord_Data91:
 SEH	R3, R4
 ORI	R2, R0, 1
-BNE	R3, R2, L__Settings_Write_Coord_Data81
+BNE	R3, R2, L__Settings_Write_Coord_Data93
 NOP	
 J	L_Settings_Write_Coord_Data11
 NOP	
-L__Settings_Write_Coord_Data81:
+L__Settings_Write_Coord_Data93:
 SEH	R3, R4
 ORI	R2, R0, 2
-BNE	R3, R2, L__Settings_Write_Coord_Data83
+BNE	R3, R2, L__Settings_Write_Coord_Data95
 NOP	
 J	L_Settings_Write_Coord_Data12
 NOP	
-L__Settings_Write_Coord_Data83:
+L__Settings_Write_Coord_Data95:
 SEH	R3, R4
 ORI	R2, R0, 3
-BNE	R3, R2, L__Settings_Write_Coord_Data85
+BNE	R3, R2, L__Settings_Write_Coord_Data97
 NOP	
 J	L_Settings_Write_Coord_Data13
 NOP	
-L__Settings_Write_Coord_Data85:
+L__Settings_Write_Coord_Data97:
 SEH	R3, R4
 ORI	R2, R0, 4
-BNE	R3, R2, L__Settings_Write_Coord_Data87
+BNE	R3, R2, L__Settings_Write_Coord_Data99
 NOP	
 J	L_Settings_Write_Coord_Data14
 NOP	
-L__Settings_Write_Coord_Data87:
+L__Settings_Write_Coord_Data99:
 SEH	R3, R4
 ORI	R2, R0, 5
-BNE	R3, R2, L__Settings_Write_Coord_Data89
+BNE	R3, R2, L__Settings_Write_Coord_Data101
 NOP	
 J	L_Settings_Write_Coord_Data15
 NOP	
-L__Settings_Write_Coord_Data89:
+L__Settings_Write_Coord_Data101:
 SEH	R3, R4
 ORI	R2, R0, 6
-BNE	R3, R2, L__Settings_Write_Coord_Data91
+BNE	R3, R2, L__Settings_Write_Coord_Data103
 NOP	
 J	L_Settings_Write_Coord_Data16
 NOP	
-L__Settings_Write_Coord_Data91:
+L__Settings_Write_Coord_Data103:
 SEH	R3, R4
 ORI	R2, R0, 7
-BNE	R3, R2, L__Settings_Write_Coord_Data93
+BNE	R3, R2, L__Settings_Write_Coord_Data105
 NOP	
 J	L_Settings_Write_Coord_Data17
 NOP	
-L__Settings_Write_Coord_Data93:
+L__Settings_Write_Coord_Data105:
 SEH	R3, R4
 ORI	R2, R0, 8
-BNE	R3, R2, L__Settings_Write_Coord_Data95
+BNE	R3, R2, L__Settings_Write_Coord_Data107
 NOP	
 J	L_Settings_Write_Coord_Data18
 NOP	
-L__Settings_Write_Coord_Data95:
+L__Settings_Write_Coord_Data107:
 SEH	R3, R4
 ORI	R2, R0, 9
-BNE	R3, R2, L__Settings_Write_Coord_Data97
+BNE	R3, R2, L__Settings_Write_Coord_Data109
 NOP	
 J	L_Settings_Write_Coord_Data19
 NOP	
-L__Settings_Write_Coord_Data97:
+L__Settings_Write_Coord_Data109:
 SEH	R3, R4
 ORI	R2, R0, 10
-BNE	R3, R2, L__Settings_Write_Coord_Data99
+BNE	R3, R2, L__Settings_Write_Coord_Data111
 NOP	
 J	L_Settings_Write_Coord_Data20
 NOP	
-L__Settings_Write_Coord_Data99:
+L__Settings_Write_Coord_Data111:
 SEH	R3, R4
 ORI	R2, R0, 11
-BNE	R3, R2, L__Settings_Write_Coord_Data101
+BNE	R3, R2, L__Settings_Write_Coord_Data113
 NOP	
 J	L_Settings_Write_Coord_Data21
 NOP	
-L__Settings_Write_Coord_Data101:
+L__Settings_Write_Coord_Data113:
 SEH	R3, R4
 ORI	R2, R0, 12
-BNE	R3, R2, L__Settings_Write_Coord_Data103
+BNE	R3, R2, L__Settings_Write_Coord_Data115
 NOP	
 J	L_Settings_Write_Coord_Data22
 NOP	
-L__Settings_Write_Coord_Data103:
+L__Settings_Write_Coord_Data115:
 SEH	R3, R4
 ORI	R2, R0, 13
-BNE	R3, R2, L__Settings_Write_Coord_Data105
+BNE	R3, R2, L__Settings_Write_Coord_Data117
 NOP	
 J	L_Settings_Write_Coord_Data23
 NOP	
-L__Settings_Write_Coord_Data105:
+L__Settings_Write_Coord_Data117:
 SEH	R3, R4
 ORI	R2, R0, 14
-BNE	R3, R2, L__Settings_Write_Coord_Data107
+BNE	R3, R2, L__Settings_Write_Coord_Data119
 NOP	
 J	L_Settings_Write_Coord_Data24
 NOP	
-L__Settings_Write_Coord_Data107:
+L__Settings_Write_Coord_Data119:
 SEH	R3, R4
 ORI	R2, R0, 15
-BNE	R3, R2, L__Settings_Write_Coord_Data109
+BNE	R3, R2, L__Settings_Write_Coord_Data121
 NOP	
 J	L_Settings_Write_Coord_Data25
 NOP	
-L__Settings_Write_Coord_Data109:
+L__Settings_Write_Coord_Data121:
 L_Settings_Write_Coord_Data9:
 ;Globals.c,140 :: 		for (i=0;i<3;i++){
 ; i start address is: 20 (R5)
@@ -450,11 +450,11 @@ L_Settings_Write_Coord_Data26:
 ; i start address is: 20 (R5)
 ; recipe start address is: 16 (R4)
 SLTIU	R2, R5, 3
-BNE	R2, R0, L__Settings_Write_Coord_Data110
+BNE	R2, R0, L__Settings_Write_Coord_Data122
 NOP	
 J	L_Settings_Write_Coord_Data27
 NOP	
-L__Settings_Write_Coord_Data110:
+L__Settings_Write_Coord_Data122:
 ;Globals.c,141 :: 		wdata[i] = flt2ulong(coord[i]);
 ADDIU	R2, SP, 56
 SLL	R3, R5, 2
@@ -500,11 +500,11 @@ L_Settings_Write_Coord_Data29:
 ; j start address is: 20 (R5)
 ; i start address is: 24 (R6)
 SLTIU	R2, R5, 4
-BNE	R2, R0, L__Settings_Write_Coord_Data111
+BNE	R2, R0, L__Settings_Write_Coord_Data123
 NOP	
 J	L_Settings_Write_Coord_Data30
 NOP	
-L__Settings_Write_Coord_Data111:
+L__Settings_Write_Coord_Data123:
 ;Globals.c,154 :: 		buffA[i] =  wdata[j];
 SLL	R3, R6, 2
 LUI	R2, 40960
@@ -562,22 +562,22 @@ MOVZ	R4, R0, R0
 L_Settings_Write_Coord_Data32:
 ; i start address is: 16 (R4)
 SLTIU	R2, R4, 4
-BNE	R2, R0, L__Settings_Write_Coord_Data112
+BNE	R2, R0, L__Settings_Write_Coord_Data124
 NOP	
 J	L_Settings_Write_Coord_Data33
 NOP	
-L__Settings_Write_Coord_Data112:
+L__Settings_Write_Coord_Data124:
 ;Globals.c,169 :: 		if(temp[i] < 0xFFFFFFFF)  //print conversion??
 ADDIU	R3, SP, 72
 SLL	R2, R4, 2
 ADDU	R2, R3, R2
 LW	R2, 0(R2)
 SLTIU	R2, R2, 65535
-BNE	R2, R0, L__Settings_Write_Coord_Data113
+BNE	R2, R0, L__Settings_Write_Coord_Data125
 NOP	
 J	L_Settings_Write_Coord_Data35
 NOP	
-L__Settings_Write_Coord_Data113:
+L__Settings_Write_Coord_Data125:
 ;Globals.c,170 :: 		ptr = ulong2flt(temp[i]);
 ADDIU	R3, SP, 72
 SLL	R2, R4, 2
@@ -612,11 +612,11 @@ NOP
 LH	R25, 16(SP)
 LW	R26, 12(SP)
 LW	R4, 8(SP)
-BNE	R2, R0, L__Settings_Write_Coord_Data115
+BNE	R2, R0, L__Settings_Write_Coord_Data127
 NOP	
 J	L_Settings_Write_Coord_Data38
 NOP	
-L__Settings_Write_Coord_Data115:
+L__Settings_Write_Coord_Data127:
 J	L_Settings_Write_Coord_Data37
 NOP	
 L_Settings_Write_Coord_Data38:
@@ -680,11 +680,11 @@ MOVZ	R4, R0, R0
 L_settings_read_coord_data39:
 ; i start address is: 16 (R4)
 SLTIU	R2, R4, 9
-BNE	R2, R0, L__settings_read_coord_data117
+BNE	R2, R0, L__settings_read_coord_data129
 NOP	
 J	L_settings_read_coord_data40
 NOP	
-L__settings_read_coord_data117:
+L__settings_read_coord_data129:
 ;Globals.c,191 :: 		for(j = 0 ; j < NoOfAxis; j++){
 ; j start address is: 20 (R5)
 MOVZ	R5, R0, R0
@@ -694,11 +694,11 @@ L_settings_read_coord_data42:
 ; j start address is: 20 (R5)
 ; i start address is: 16 (R4)
 SLTIU	R2, R5, 4
-BNE	R2, R0, L__settings_read_coord_data118
+BNE	R2, R0, L__settings_read_coord_data130
 NOP	
 J	L_settings_read_coord_data43
 NOP	
-L__settings_read_coord_data118:
+L__settings_read_coord_data130:
 ;Globals.c,192 :: 		temp = buffA[(i*NoOfAxis) + j];
 SLL	R2, R4, 2
 ADDU	R2, R2, R5
@@ -728,7 +728,7 @@ SWC1	S0, 0(R2)
 ;Globals.c,191 :: 		for(j = 0 ; j < NoOfAxis; j++){
 ADDIU	R2, R5, 1
 MOVZ	R5, R2, R0
-;Globals.c,200 :: 		}
+;Globals.c,202 :: 		}
 ; j end address is: 20 (R5)
 J	L_settings_read_coord_data42
 NOP	
@@ -736,12 +736,12 @@ L_settings_read_coord_data43:
 ;Globals.c,190 :: 		for(i = 0; i < 9; i++){
 ADDIU	R2, R4, 1
 MOVZ	R4, R2, R0
-;Globals.c,201 :: 		}
+;Globals.c,203 :: 		}
 ; i end address is: 16 (R4)
 J	L_settings_read_coord_data39
 NOP	
 L_settings_read_coord_data40:
-;Globals.c,202 :: 		}
+;Globals.c,204 :: 		}
 L_end_settings_read_coord_data:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -750,19 +750,19 @@ JR	RA
 NOP	
 ; end of _settings_read_coord_data
 _settings_write_one_coord:
-;Globals.c,207 :: 		unsigned int settings_write_one_coord(int coord_select,float *coord){
+;Globals.c,209 :: 		unsigned int settings_write_one_coord(int coord_select,float *coord){
 ADDIU	SP, SP, -64
 SW	RA, 0(SP)
-;Globals.c,210 :: 		unsigned int error = 0;
-;Globals.c,215 :: 		recipe = coord_select * NoOfAxis;
+;Globals.c,212 :: 		unsigned int error = 0;
+;Globals.c,217 :: 		recipe = coord_select * NoOfAxis;
 SEH	R2, R25
 SLL	R2, R2, 2
 ; recipe start address is: 20 (R5)
 SEH	R5, R2
-;Globals.c,218 :: 		j=0;
+;Globals.c,220 :: 		j=0;
 ; j start address is: 28 (R7)
 MOVZ	R7, R0, R0
-;Globals.c,219 :: 		for(i = recipe;i< recipe+NoOfAxis;i++){
+;Globals.c,221 :: 		for(i = recipe;i< recipe+NoOfAxis;i++){
 ; i start address is: 24 (R6)
 SEH	R6, R2
 ; recipe end address is: 20 (R5)
@@ -775,19 +775,19 @@ L_settings_write_one_coord45:
 ADDIU	R2, R5, 4
 SEH	R2, R2
 SLTU	R2, R6, R2
-BNE	R2, R0, L__settings_write_one_coord120
+BNE	R2, R0, L__settings_write_one_coord132
 NOP	
 J	L_settings_write_one_coord46
 NOP	
-L__settings_write_one_coord120:
-;Globals.c,221 :: 		coord_data[j] = *(coord+j);
+L__settings_write_one_coord132:
+;Globals.c,223 :: 		coord_data[j] = *(coord+j);
 ADDIU	R4, SP, 24
 SLL	R2, R7, 2
 ADDU	R3, R4, R2
 ADDU	R2, R26, R2
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
-;Globals.c,222 :: 		temp[j] = flt2ulong(coord_data[j]);
+;Globals.c,224 :: 		temp[j] = flt2ulong(coord_data[j]);
 ADDIU	R2, SP, 44
 SLL	R3, R7, 2
 ADDU	R2, R2, R3
@@ -808,7 +808,7 @@ LW	R7, 8(SP)
 LH	R5, 4(SP)
 LW	R3, 60(SP)
 SW	R2, 0(R3)
-;Globals.c,223 :: 		buffA[i] = temp[j];
+;Globals.c,225 :: 		buffA[i] = temp[j];
 SLL	R3, R6, 2
 LUI	R2, 40960
 ORI	R2, R2, 0
@@ -818,236 +818,236 @@ SLL	R2, R7, 2
 ADDU	R2, R3, R2
 LW	R2, 0(R2)
 SW	R2, 0(R4)
-;Globals.c,224 :: 		j++;
+;Globals.c,226 :: 		j++;
 ADDIU	R2, R7, 1
 MOVZ	R7, R2, R0
-;Globals.c,219 :: 		for(i = recipe;i< recipe+NoOfAxis;i++){
+;Globals.c,221 :: 		for(i = recipe;i< recipe+NoOfAxis;i++){
 ADDIU	R2, R6, 1
 MOVZ	R6, R2, R0
-;Globals.c,229 :: 		}
+;Globals.c,231 :: 		}
 ; recipe end address is: 20 (R5)
 ; j end address is: 28 (R7)
 ; i end address is: 24 (R6)
 J	L_settings_write_one_coord45
 NOP	
 L_settings_write_one_coord46:
-;Globals.c,231 :: 		switch(coord_select){
+;Globals.c,233 :: 		switch(coord_select){
 J	L_settings_write_one_coord48
 NOP	
-;Globals.c,233 :: 		case 1: add = (unsigned long)FLASH_Settings_VAddr_P1;break;
+;Globals.c,235 :: 		case 1: add = (unsigned long)FLASH_Settings_VAddr_P1;break;
 L_settings_write_one_coord50:
 LUI	R2, 48411
 ORI	R2, R2, 49152
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,234 :: 		case 2: add = (unsigned long)FLASH_Settings_VAddr_P2;break;
+;Globals.c,236 :: 		case 2: add = (unsigned long)FLASH_Settings_VAddr_P2;break;
 L_settings_write_one_coord51:
 LUI	R2, 48411
 ORI	R2, R2, 49168
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,235 :: 		case 3: add = (unsigned long)FLASH_Settings_VAddr_P3;break;
+;Globals.c,237 :: 		case 3: add = (unsigned long)FLASH_Settings_VAddr_P3;break;
 L_settings_write_one_coord52:
 LUI	R2, 48411
 ORI	R2, R2, 49184
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,236 :: 		case 4: add = (unsigned long)FLASH_Settings_VAddr_P4;break;
+;Globals.c,238 :: 		case 4: add = (unsigned long)FLASH_Settings_VAddr_P4;break;
 L_settings_write_one_coord53:
 LUI	R2, 48411
 ORI	R2, R2, 49200
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,237 :: 		case 5: add = (unsigned long)FLASH_Settings_VAddr_P5;break;
+;Globals.c,239 :: 		case 5: add = (unsigned long)FLASH_Settings_VAddr_P5;break;
 L_settings_write_one_coord54:
 LUI	R2, 48411
 ORI	R2, R2, 49216
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,238 :: 		case 6: add = (unsigned long)FLASH_Settings_VAddr_P6;break;
+;Globals.c,240 :: 		case 6: add = (unsigned long)FLASH_Settings_VAddr_P6;break;
 L_settings_write_one_coord55:
 LUI	R2, 48411
 ORI	R2, R2, 49232
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,239 :: 		case 7: add = (unsigned long)FLASH_Settings_VAddr_P7;break;
+;Globals.c,241 :: 		case 7: add = (unsigned long)FLASH_Settings_VAddr_P7;break;
 L_settings_write_one_coord56:
 LUI	R2, 48411
 ORI	R2, R2, 49248
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,240 :: 		case 8: add = (unsigned long)FLASH_Settings_VAddr_P8;break;
+;Globals.c,242 :: 		case 8: add = (unsigned long)FLASH_Settings_VAddr_P8;break;
 L_settings_write_one_coord57:
 LUI	R2, 48411
 ORI	R2, R2, 49264
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,241 :: 		case 9: add = (unsigned long)FLASH_Settings_VAddr_P9;break;
+;Globals.c,243 :: 		case 9: add = (unsigned long)FLASH_Settings_VAddr_P9;break;
 L_settings_write_one_coord58:
 LUI	R2, 48411
 ORI	R2, R2, 49280
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,243 :: 		case 10: add = (unsigned long)FLASH_Settings_VAddr_G54;break;
+;Globals.c,245 :: 		case 10: add = (unsigned long)FLASH_Settings_VAddr_G54;break;
 L_settings_write_one_coord59:
 LUI	R2, 48411
 ORI	R2, R2, 49296
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,244 :: 		case 11: add = (unsigned long)FLASH_Settings_VAddr_G55;break;
+;Globals.c,246 :: 		case 11: add = (unsigned long)FLASH_Settings_VAddr_G55;break;
 L_settings_write_one_coord60:
 LUI	R2, 48411
 ORI	R2, R2, 49312
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,245 :: 		case 12: add = (unsigned long)FLASH_Settings_VAddr_G56;break;
+;Globals.c,247 :: 		case 12: add = (unsigned long)FLASH_Settings_VAddr_G56;break;
 L_settings_write_one_coord61:
 LUI	R2, 48411
 ORI	R2, R2, 49328
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,246 :: 		case 13: add = (unsigned long)FLASH_Settings_VAddr_G57;break;
+;Globals.c,248 :: 		case 13: add = (unsigned long)FLASH_Settings_VAddr_G57;break;
 L_settings_write_one_coord62:
 LUI	R2, 48411
 ORI	R2, R2, 49344
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,247 :: 		case 14: add = (unsigned long)FLASH_Settings_VAddr_G58;break;
+;Globals.c,249 :: 		case 14: add = (unsigned long)FLASH_Settings_VAddr_G58;break;
 L_settings_write_one_coord63:
 LUI	R2, 48411
 ORI	R2, R2, 49360
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,248 :: 		case 15: add = (unsigned long)FLASH_Settings_VAddr_G59;break;
+;Globals.c,250 :: 		case 15: add = (unsigned long)FLASH_Settings_VAddr_G59;break;
 L_settings_write_one_coord64:
 LUI	R2, 48411
 ORI	R2, R2, 49376
 SW	R2, 40(SP)
 J	L_settings_write_one_coord49
 NOP	
-;Globals.c,249 :: 		}
+;Globals.c,251 :: 		}
 L_settings_write_one_coord48:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L__settings_write_one_coord122
+BNE	R3, R2, L__settings_write_one_coord134
 NOP	
 J	L_settings_write_one_coord50
 NOP	
-L__settings_write_one_coord122:
+L__settings_write_one_coord134:
 SEH	R3, R25
 ORI	R2, R0, 2
-BNE	R3, R2, L__settings_write_one_coord124
+BNE	R3, R2, L__settings_write_one_coord136
 NOP	
 J	L_settings_write_one_coord51
 NOP	
-L__settings_write_one_coord124:
+L__settings_write_one_coord136:
 SEH	R3, R25
 ORI	R2, R0, 3
-BNE	R3, R2, L__settings_write_one_coord126
+BNE	R3, R2, L__settings_write_one_coord138
 NOP	
 J	L_settings_write_one_coord52
 NOP	
-L__settings_write_one_coord126:
+L__settings_write_one_coord138:
 SEH	R3, R25
 ORI	R2, R0, 4
-BNE	R3, R2, L__settings_write_one_coord128
+BNE	R3, R2, L__settings_write_one_coord140
 NOP	
 J	L_settings_write_one_coord53
 NOP	
-L__settings_write_one_coord128:
+L__settings_write_one_coord140:
 SEH	R3, R25
 ORI	R2, R0, 5
-BNE	R3, R2, L__settings_write_one_coord130
+BNE	R3, R2, L__settings_write_one_coord142
 NOP	
 J	L_settings_write_one_coord54
 NOP	
-L__settings_write_one_coord130:
+L__settings_write_one_coord142:
 SEH	R3, R25
 ORI	R2, R0, 6
-BNE	R3, R2, L__settings_write_one_coord132
+BNE	R3, R2, L__settings_write_one_coord144
 NOP	
 J	L_settings_write_one_coord55
 NOP	
-L__settings_write_one_coord132:
+L__settings_write_one_coord144:
 SEH	R3, R25
 ORI	R2, R0, 7
-BNE	R3, R2, L__settings_write_one_coord134
+BNE	R3, R2, L__settings_write_one_coord146
 NOP	
 J	L_settings_write_one_coord56
 NOP	
-L__settings_write_one_coord134:
+L__settings_write_one_coord146:
 SEH	R3, R25
 ORI	R2, R0, 8
-BNE	R3, R2, L__settings_write_one_coord136
+BNE	R3, R2, L__settings_write_one_coord148
 NOP	
 J	L_settings_write_one_coord57
 NOP	
-L__settings_write_one_coord136:
+L__settings_write_one_coord148:
 SEH	R3, R25
 ORI	R2, R0, 9
-BNE	R3, R2, L__settings_write_one_coord138
+BNE	R3, R2, L__settings_write_one_coord150
 NOP	
 J	L_settings_write_one_coord58
 NOP	
-L__settings_write_one_coord138:
+L__settings_write_one_coord150:
 SEH	R3, R25
 ORI	R2, R0, 10
-BNE	R3, R2, L__settings_write_one_coord140
+BNE	R3, R2, L__settings_write_one_coord152
 NOP	
 J	L_settings_write_one_coord59
 NOP	
-L__settings_write_one_coord140:
+L__settings_write_one_coord152:
 SEH	R3, R25
 ORI	R2, R0, 11
-BNE	R3, R2, L__settings_write_one_coord142
+BNE	R3, R2, L__settings_write_one_coord154
 NOP	
 J	L_settings_write_one_coord60
 NOP	
-L__settings_write_one_coord142:
+L__settings_write_one_coord154:
 SEH	R3, R25
 ORI	R2, R0, 12
-BNE	R3, R2, L__settings_write_one_coord144
+BNE	R3, R2, L__settings_write_one_coord156
 NOP	
 J	L_settings_write_one_coord61
 NOP	
-L__settings_write_one_coord144:
+L__settings_write_one_coord156:
 SEH	R3, R25
 ORI	R2, R0, 13
-BNE	R3, R2, L__settings_write_one_coord146
+BNE	R3, R2, L__settings_write_one_coord158
 NOP	
 J	L_settings_write_one_coord62
 NOP	
-L__settings_write_one_coord146:
+L__settings_write_one_coord158:
 SEH	R3, R25
 ORI	R2, R0, 14
-BNE	R3, R2, L__settings_write_one_coord148
+BNE	R3, R2, L__settings_write_one_coord160
 NOP	
 J	L_settings_write_one_coord63
 NOP	
-L__settings_write_one_coord148:
+L__settings_write_one_coord160:
 SEH	R3, R25
 ORI	R2, R0, 15
-BNE	R3, R2, L__settings_write_one_coord150
+BNE	R3, R2, L__settings_write_one_coord162
 NOP	
 J	L_settings_write_one_coord64
 NOP	
-L__settings_write_one_coord150:
+L__settings_write_one_coord162:
 L_settings_write_one_coord49:
-;Globals.c,252 :: 		error =  NVMWriteQuad (add, temp);
+;Globals.c,254 :: 		error =  NVMWriteQuad (add, temp);
 ADDIU	R2, SP, 44
 SW	R26, 4(SP)
 SH	R25, 8(SP)
@@ -1057,8 +1057,8 @@ JAL	_NVMWriteQuad+0
 NOP	
 LH	R25, 8(SP)
 LW	R26, 4(SP)
-;Globals.c,254 :: 		return error;
-;Globals.c,255 :: 		}
+;Globals.c,256 :: 		return error;
+;Globals.c,257 :: 		}
 L_end_settings_write_one_coord:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 64
@@ -1066,66 +1066,306 @@ JR	RA
 NOP	
 ; end of _settings_write_one_coord
 _settings_read_startup_line:
-;Globals.c,260 :: 		int settings_read_startup_line(int n, char *line){
-ADDIU	SP, SP, -16
+;Globals.c,262 :: 		int settings_read_startup_line(int n, char *line){
+ADDIU	SP, SP, -20
 SW	RA, 0(SP)
-;Globals.c,265 :: 		ptr = (unsigned long*)FLASH_Settings_VAddr_Page3;
+;Globals.c,267 :: 		ptr = (unsigned long*)FLASH_Settings_VAddr_Page3;
 SW	R25, 4(SP)
 SW	R26, 8(SP)
 SW	R27, 12(SP)
 ; ptr start address is: 12 (R3)
 LUI	R3, 48411
 ORI	R3, R3, 50176
-;Globals.c,269 :: 		ptr += (n * (LINE_BUFFER_SIZE_WORDS));
+;Globals.c,271 :: 		ptr += (n * (LINE_BUFFER_SIZE_WORDS));
 SEH	R2, R25
 SLL	R2, R2, 4
 SEH	R2, R2
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
 MOVZ	R3, R2, R0
-;Globals.c,270 :: 		if(*ptr < 32){//empty string
+;Globals.c,272 :: 		if(*ptr < 32){//empty string
 LW	R2, 0(R2)
 SLTIU	R2, R2, 32
-BNE	R2, R0, L__settings_read_startup_line152
+BNE	R2, R0, L__settings_read_startup_line164
 NOP	
 J	L_settings_read_startup_line65
 NOP	
-L__settings_read_startup_line152:
+L__settings_read_startup_line164:
 ; ptr end address is: 12 (R3)
-;Globals.c,271 :: 		*(line+0) = 0;
-SB	R0, 0(R26)
-;Globals.c,272 :: 		return STATUS_SETTING_READ_FAIL;
-ORI	R2, R0, 10
+;Globals.c,273 :: 		memcpy(line,0,LINE_BUFFER_SIZE);
+ORI	R27, R0, 64
+MOVZ	R25, R26, R0
+MOVZ	R26, R0, R0
+JAL	_memcpy+0
+NOP	
+;Globals.c,274 :: 		return STATUS_OK;//SETTING_READ_FAIL;
+MOVZ	R2, R0, R0
 J	L_end_settings_read_startup_line
 NOP	
-;Globals.c,273 :: 		}else{
+;Globals.c,275 :: 		}else{
 L_settings_read_startup_line65:
-;Globals.c,274 :: 		memcpy(line,ptr,LINE_BUFFER_SIZE);
+;Globals.c,276 :: 		memcpy(line,ptr,LINE_BUFFER_SIZE_WORDS);
 ; ptr start address is: 12 (R3)
-ORI	R27, R0, 64
+SW	R26, 16(SP)
+ORI	R27, R0, 16
 MOVZ	R25, R26, R0
 ; ptr end address is: 12 (R3)
 MOVZ	R26, R3, R0
 JAL	_memcpy+0
 NOP	
-;Globals.c,275 :: 		return STATUS_OK;
+LW	R26, 16(SP)
+;Globals.c,277 :: 		*(line+ LINE_BUFFER_SIZE) = 0;
+ADDIU	R2, R26, 64
+SB	R0, 0(R2)
+;Globals.c,278 :: 		return STATUS_OK;
 MOVZ	R2, R0, R0
-;Globals.c,277 :: 		}
-;Globals.c,275 :: 		return STATUS_OK;
-;Globals.c,277 :: 		}
+;Globals.c,280 :: 		}
+;Globals.c,278 :: 		return STATUS_OK;
+;Globals.c,280 :: 		}
 L_end_settings_read_startup_line:
 LW	R27, 12(SP)
 LW	R26, 8(SP)
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 16
+ADDIU	SP, SP, 20
 JR	RA
 NOP	
 ; end of _settings_read_startup_line
 _settings_store_startup_line:
-;Globals.c,280 :: 		void settings_store_startup_line(uint8_t n, char *line){
-;Globals.c,283 :: 		}
+;Globals.c,283 :: 		void settings_store_startup_line(int n, char *line){
+ADDIU	SP, SP, -112
+SW	RA, 0(SP)
+;Globals.c,288 :: 		add    = (unsigned long)FLASH_Settings_VAddr_Page3;
+SW	R25, 4(SP)
+SW	R27, 8(SP)
+LUI	R2, 48411
+ORI	R2, R2, 50176
+SW	R2, 92(SP)
+;Globals.c,289 :: 		offset = (unsigned long)n;
+SEH	R2, R25
+SW	R2, 88(SP)
+;Globals.c,293 :: 		NVMReadRow(add,buffC);
+SW	R26, 12(SP)
+LUI	R26, 40960
+ORI	R26, R26, 256
+LUI	R25, 48411
+ORI	R25, R25, 50176
+JAL	_NVMReadRow+0
+NOP	
+LW	R26, 12(SP)
+;Globals.c,297 :: 		len1 = 16;
+ORI	R2, R0, 16
+SH	R2, 96(SP)
+;Globals.c,300 :: 		for(i = 0;i < len1;i++){
+SH	R0, 98(SP)
+L_settings_store_startup_line67:
+LH	R3, 96(SP)
+LH	R2, 98(SP)
+SLT	R2, R2, R3
+BNE	R2, R0, L__settings_store_startup_line166
+NOP	
+J	L_settings_store_startup_line68
+NOP	
+L__settings_store_startup_line166:
+;Globals.c,302 :: 		for(j = 0;j < 4;j++){
+; j start address is: 40 (R10)
+MOVZ	R10, R0, R0
+; j end address is: 40 (R10)
+SEH	R8, R10
+L_settings_store_startup_line70:
+; j start address is: 32 (R8)
+SEH	R2, R8
+SLTI	R2, R2, 4
+BNE	R2, R0, L__settings_store_startup_line167
+NOP	
+J	L_settings_store_startup_line71
+NOP	
+L__settings_store_startup_line167:
+;Globals.c,303 :: 		temp_char = (line[(i*4)+j]);
+LH	R2, 98(SP)
+SLL	R4, R2, 2
+ADDU	R2, R4, R8
+SEH	R2, R2
+ADDU	R2, R26, R2
+LBU	R5, 0(R2)
+SB	R5, 100(SP)
+;Globals.c,304 :: 		line1[i] |= temp_char;
+ADDIU	R3, SP, 24
+SEH	R2, R4
+ADDU	R4, R3, R2
+LW	R3, 0(R4)
+ANDI	R2, R5, 255
+OR	R2, R3, R2
+SW	R2, 0(R4)
+;Globals.c,305 :: 		if(j < 3)
+SEH	R2, R8
+SLTI	R2, R2, 3
+BNE	R2, R0, L__settings_store_startup_line168
+NOP	
+J	L_settings_store_startup_line73
+NOP	
+L__settings_store_startup_line168:
+;Globals.c,306 :: 		line1[i] = line1[i] << 8;
+ADDIU	R3, SP, 24
+LH	R2, 98(SP)
+SLL	R2, R2, 2
+ADDU	R3, R3, R2
+LW	R2, 0(R3)
+SLL	R2, R2, 8
+SW	R2, 0(R3)
+L_settings_store_startup_line73:
+;Globals.c,308 :: 		while(DMA_IsOn(1));
+SEH	R4, R8
+L_settings_store_startup_line74:
+; j end address is: 32 (R8)
+; j start address is: 16 (R4)
+SH	R4, 12(SP)
+SW	R26, 16(SP)
+SH	R25, 20(SP)
+ORI	R25, R0, 1
+JAL	_DMA_IsOn+0
+NOP	
+LH	R25, 20(SP)
+LW	R26, 16(SP)
+LH	R4, 12(SP)
+BNE	R2, R0, L__settings_store_startup_line170
+NOP	
+J	L_settings_store_startup_line75
+NOP	
+L__settings_store_startup_line170:
+J	L_settings_store_startup_line74
+NOP	
+L_settings_store_startup_line75:
+;Globals.c,309 :: 		dma_printf("%c\n",temp_char);
+ORI	R30, R0, 37
+SB	R30, 101(SP)
+ORI	R30, R0, 99
+SB	R30, 102(SP)
+ORI	R30, R0, 10
+SB	R30, 103(SP)
+MOVZ	R30, R0, R0
+SB	R30, 104(SP)
+ADDIU	R3, SP, 101
+LBU	R2, 100(SP)
+SH	R4, 12(SP)
+SW	R26, 16(SP)
+SH	R25, 20(SP)
+ADDIU	SP, SP, -8
+SB	R2, 4(SP)
+SW	R3, 0(SP)
+JAL	_dma_printf+0
+NOP	
+ADDIU	SP, SP, 8
+LH	R25, 20(SP)
+LW	R26, 16(SP)
+LH	R4, 12(SP)
+;Globals.c,311 :: 		if(line[(i*4)+j]==0)break;
+LH	R2, 98(SP)
+SLL	R2, R2, 2
+ADDU	R2, R2, R4
+SEH	R2, R2
+ADDU	R2, R26, R2
+LBU	R2, 0(R2)
+ANDI	R2, R2, 255
+BEQ	R2, R0, L__settings_store_startup_line171
+NOP	
+J	L_settings_store_startup_line76
+NOP	
+L__settings_store_startup_line171:
+; j end address is: 16 (R4)
+J	L_settings_store_startup_line71
+NOP	
+L_settings_store_startup_line76:
+;Globals.c,302 :: 		for(j = 0;j < 4;j++){
+; j start address is: 16 (R4)
+ADDIU	R2, R4, 1
+; j end address is: 16 (R4)
+; j start address is: 40 (R10)
+SEH	R10, R2
+;Globals.c,312 :: 		}
+SEH	R8, R10
+; j end address is: 40 (R10)
+J	L_settings_store_startup_line70
+NOP	
+L_settings_store_startup_line71:
+;Globals.c,314 :: 		while(DMA_IsOn(1));
+L_settings_store_startup_line77:
+SW	R26, 12(SP)
+SH	R25, 16(SP)
+ORI	R25, R0, 1
+JAL	_DMA_IsOn+0
+NOP	
+LH	R25, 16(SP)
+LW	R26, 12(SP)
+BNE	R2, R0, L__settings_store_startup_line173
+NOP	
+J	L_settings_store_startup_line78
+NOP	
+L__settings_store_startup_line173:
+J	L_settings_store_startup_line77
+NOP	
+L_settings_store_startup_line78:
+;Globals.c,315 :: 		dma_printf("%l\n",line1[i]);
+ADDIU	R3, SP, 24
+LH	R2, 98(SP)
+SLL	R2, R2, 2
+ADDU	R2, R3, R2
+LW	R3, 0(R2)
+ORI	R30, R0, 37
+SB	R30, 105(SP)
+ORI	R30, R0, 108
+SB	R30, 106(SP)
+ORI	R30, R0, 10
+SB	R30, 107(SP)
+MOVZ	R30, R0, R0
+SB	R30, 108(SP)
+ADDIU	R2, SP, 105
+SW	R26, 12(SP)
+SH	R25, 16(SP)
+ADDIU	SP, SP, -8
+SW	R3, 4(SP)
+SW	R2, 0(SP)
+JAL	_dma_printf+0
+NOP	
+ADDIU	SP, SP, 8
+LH	R25, 16(SP)
+LW	R26, 12(SP)
+;Globals.c,300 :: 		for(i = 0;i < len1;i++){
+LH	R2, 98(SP)
+ADDIU	R2, R2, 1
+SH	R2, 98(SP)
+;Globals.c,317 :: 		}
+J	L_settings_store_startup_line67
+NOP	
+L_settings_store_startup_line68:
+;Globals.c,320 :: 		memcpy(buffC+offset,line1,len1);
+ADDIU	R4, SP, 24
+LW	R2, 88(SP)
+SLL	R3, R2, 2
+LUI	R2, 40960
+ORI	R2, R2, 256
+ADDU	R2, R2, R3
+SW	R26, 12(SP)
+SH	R25, 16(SP)
+LH	R27, 96(SP)
+MOVZ	R26, R4, R0
+MOVZ	R25, R2, R0
+JAL	_memcpy+0
+NOP	
+;Globals.c,323 :: 		NVMWriteRow(add,buffC);
+LUI	R26, 40960
+ORI	R26, R26, 256
+LW	R25, 92(SP)
+JAL	_NVMWriteRow+0
+NOP	
+LH	R25, 16(SP)
+LW	R26, 12(SP)
+;Globals.c,325 :: 		}
 L_end_settings_store_startup_line:
+LW	R27, 8(SP)
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 112
 JR	RA
 NOP	
 ; end of _settings_store_startup_line

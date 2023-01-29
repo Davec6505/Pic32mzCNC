@@ -2,6 +2,7 @@
 #include "Print.h"
 ////////////////////////////////////////////////////
 //local variables
+const code char SL[] = "$N";
 char gcode[arr_size][str_size];
 static unsigned short startup = 0;
 
@@ -24,7 +25,7 @@ int Sample_Ringbuffer(){
 unsigned char *ptr;
 static int motion_mode,str_len,query;
 int status,helper_var;
-char str[50];
+char str[64];
 char temp[9];
 char xyz[6];
 char F_1_Once,no_of_axis;
@@ -51,7 +52,7 @@ float XYZ_Val;
      if(DMA0_ReadDstPtr()){
        ptr = (char*)RXBUFF;
        if(*ptr == '?'){
-         #if ProtoDebug == 4
+         #if ProtoDebug == 1
          while(DMA_IsOn(1));
          dma_printf("%d\n",ptr);
          #endif
@@ -70,13 +71,15 @@ float XYZ_Val;
     Get_Line(str,dif);         //get the line sent from PC
     str_len = strlen(str);
 
+START_LINE://label to rerun startup line if it has one
+
     //split up the line into string array using SPC seperator
     num_of_strings = strsplit(gcode,str,0x20);
     str_len = strlen(gcode[0]);
     
-    #if ProtoDebug == 3
+    #if ProtoDebug == 2
     while(DMA_IsOn(1));
-    dma_printf("%s := %d\n",gcode[0],str_len);
+    dma_printf("%s:=\t%d\n",gcode[0],str_len);
     #endif
     
     //condition each string by seperating the 1st char from the value
@@ -100,7 +103,7 @@ float XYZ_Val;
        //goto end;
      }
      
-     #if ProtoDebug == 3
+     #if ProtoDebug == 4
        while(DMA_IsOn(1));
          dma_printf("%s\t%d\n",gcode[0],str_len);
      #endif
@@ -175,44 +178,75 @@ float XYZ_Val;
                } else { 
                   return(STATUS_SETTING_DISABLED);
                }
-              break;
+              break; //'H'
             case 'N' : // Startup lines.
                startup = 2;
-               if ( gcode[0][2] == 0 ) { // Print startup lines
+               if ( gcode[0][2] < 0x20 ) { // Print startup lines
                   for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
-                    if (!(settings_read_startup_line(helper_var, gcode[0]))) {
+                    if ((settings_read_startup_line(helper_var, gcode[0]))) {
                       report_status_message(STATUS_SETTING_READ_FAIL);
                     } else {
                       report_startup_line(helper_var,gcode[0]);
                     }
+                   #if ProtoDebug == 6
+                   while(DMA_IsOn(1));
+                   dma_printf("%s\n",gcode[0]);
+                   #endif
                   }
+                  //no need to report error on exit, a response has already been
+                  //sent to gcode sender
+                  query = 1; //report status is ok continue
                   break;
                 } else { // Store startup line
+                  int N_Val = 0;
                   helper_var = true;  // Set helper_var to flag storing method.
                   // No break. Continues into default: to read remaining command characters.
+                  //look for char [0 - 9]
+                   if ( gcode[0][2] >= '0'  &&  gcode[0][2] <= '9' ) {
+                          N_Val = atoi(gcode[2]);
+                          #if ProtoDebug == 5
+                          while(DMA_IsOn(1));
+                          dma_printf("%c\t%d\n",gcode[0][2],N_Val);
+                          #endif
+                          
+                   }else {
+                      query = 0; //report bad status
+                      status = STATUS_BAD_NUMBER_FORMAT;
+                      break;
+                   }
+                   //$Nn\r\n leads to gocde execute startup line, providng it
+                   //has already been saved
+                   if (helper_var) { // Store startup line
+                       if(gcode[0][3] != '='){
+                         // Prepare sending gcode block back to gcode parser
+                         helper_var = strlen((gcode[0]+4)); // Set helper variable as counter to start of gcode block
+                         strncpy(str,(gcode[0]+4),helper_var);
+                         //use length to determine if startup line exists
+                         //becareful not to put loop here as $Nn will repeat
+                         //forever!!!!!!
+                         str_len = strlen(str);
+                         //after extracting the start line execute it by
+                         //returning to the beginning of this function
+                         if(!strncmp(SL,str,2))
+                             goto START_LINE;
+                       }else{
+                        // Prepare saving gcode block to line number 0 | 1
+                        // Set helper variable as counter to start of gcode block
+                         helper_var = strlen((gcode[0]+4));
+                         strncpy(str,(gcode[0]+4),helper_var);
+                         str[helper_var] = 0;
+                         settings_store_startup_line(N_Val,str);
+                         query = 1; //noneed to send erro report
+                       }
+
+                    }else{ // Store global setting.
+                       // if(!read_float(line, &char_counter, &value)) { return(STATUS_BAD_NUMBER_FORMAT); }
+                       // if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }
+                       // return(settings_store_global_setting(parameter, value));*/
+                    }
                 }
-              default :  // Storing setting methods
-              /*  if(!read_float(line, &char_counter, &parameter)) { return(STATUS_BAD_NUMBER_FORMAT); }
-                if(line[char_counter++] != '=') { return(STATUS_UNSUPPORTED_STATEMENT); }
-                if (helper_var) { // Store startup line
-                  // Prepare sending gcode block to gcode parser by shifting all characters
-                  helper_var = char_counter; // Set helper variable as counter to start of gcode block
-                  do {
-                    line[char_counter-helper_var] = line[char_counter];
-                  } while (line[char_counter++] != 0);
-                  // Execute gcode block to ensure block is valid.
-                  helper_var = gc_execute_line(line); // Set helper_var to returned status code.
-                  if (helper_var) { return(helper_var); }
-                  else {
-                    helper_var = trunc(parameter); // Set helper_var to int value of parameter
-                    settings_store_startup_line(helper_var,line);
-                  }
-                } else { // Store global setting.
-                  if(!read_float(line, &char_counter, &value)) { return(STATUS_BAD_NUMBER_FORMAT); }
-                  if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }
-                  return(settings_store_global_setting(parameter, value));
-                }*/
-                break;
+                break; //'N'
+                
         }
 
      }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){

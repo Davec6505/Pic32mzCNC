@@ -190,9 +190,19 @@ main
 			DMA_IsOn
 			dma_printf
 			__CC2DW
-		cpy_val_from_str
+		DMA_IsOn
+		dma_printf
 		atoi
 			isdigit
+		strncpy
+		strncmp
+		settings_store_startup_line
+			NVMReadRow
+			DMA_IsOn
+			dma_printf
+			memcpy
+			NVMWriteRow
+		cpy_val_from_str
 		atof
 			strtod
 				isspace

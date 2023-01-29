@@ -641,12 +641,12 @@ void sys_sync_current_position();
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 37 "c:/users/git/pic32mzcnc/protocol.h"
-void Str_Initialize(char arg[ 10 ][ 60 ]);
+void Str_Initialize(char arg[ 10 ][ 64 ]);
 void Str_clear(char *str,int len);
 
 int Sample_Ringbuffer();
 
-static int strsplit(char arg[ 10 ][ 60 ],char *str, char c);
+static int strsplit(char arg[ 10 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
@@ -961,7 +961,7 @@ unsigned long temp;
  temp = buffA[(i* 4 ) + j];
  ptr = ulong2flt(temp);
  coord_system[i].coord[j] = ptr;
-#line 200 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 202 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  }
 }
@@ -987,7 +987,7 @@ unsigned long temp[ 4 ];
  temp[j] = flt2ulong(coord_data[j]);
  buffA[i] = temp[j];
  j++;
-#line 229 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 231 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  switch(coord_select){
@@ -1030,16 +1030,56 @@ unsigned long temp;
 
  ptr += (n * ( 64 /4 ));
  if(*ptr < 32){
- *(line+0) = 0;
- return  10 ;
+ memcpy(line,0, 64 );
+ return  0 ;
  }else{
- memcpy(line,ptr, 64 );
+ memcpy(line,ptr, 64 /4 );
+ *(line+  64 ) = 0;
  return  0 ;
  }
 }
 
 
-void settings_store_startup_line(uint8_t n, char *line){
+void settings_store_startup_line(int n, char *line){
+unsigned long line1[16],offset,add;
+int len0,len1,i,j,mod_;
+char temp_char,addc;
 
+ add = (unsigned long) 0xBD1BC400 ;
+ offset = (unsigned long)n;
+
+
+
+ NVMReadRow(add,buffC);
+
+
+ len0 = 64;
+ len1 = 16;
+
+
+ for(i = 0;i < len1;i++){
+
+ for(j = 0;j < 4;j++){
+ temp_char = (line[(i*4)+j]);
+ line1[i] |= temp_char;
+ if(j < 3)
+ line1[i] = line1[i] << 8;
+
+ while(DMA_IsOn(1));
+ dma_printf("%c\n",temp_char);
+
+ if(line[(i*4)+j]==0)break;
+ }
+
+ while(DMA_IsOn(1));
+ dma_printf("%l\n",line1[i]);
+
+ }
+
+
+ memcpy(buffC+offset,line1,len1);
+
+
+ NVMWriteRow(add,buffC);
 
 }

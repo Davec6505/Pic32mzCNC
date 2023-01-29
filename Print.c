@@ -192,8 +192,7 @@ float acc = settings.acceleration;
 // Prints specified startup line
 void report_startup_line(int n, char *line){
   while(DMA_IsOn(1));
-  dma_printf("$N= %d %s\n",n,line);
-  
+  dma_printf("$N%d=%s\n",n,line);
 }
 
  // Prints real-time data. This function grabs a real-time snapshot of the stepper subprogram
