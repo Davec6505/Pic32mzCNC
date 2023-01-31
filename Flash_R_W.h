@@ -36,10 +36,13 @@
 #define  FLASH_Settings_VAddr_G58 0xBD1BC0D0//0xBD079000
 #define  FLASH_Settings_VAddr_G59 0xBD1BC0E0//0xBD079000
 
+//startup line offsets
+#define FLASH_Startup_Line_Offset 0x180
+
 //2nd half of settings
-#define  FLASH_Settings_VAddr_Page2  0xBD1BC200//Row 2
+#define  FLASH_Settings_VAddr_Row2  0xBD1BC180//Row 2
 //startup lines
-#define  FLASH_Settings_VAddr_Page3  0xBD1BC400//Row 3
+#define  FLASH_Settings_VAddr_Row3  0xBD1BC1C0//Row 3
 
 //Flash specific masks
 #define NVM_ERROR_RST_MASK  0x0000C000

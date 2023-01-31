@@ -5,9 +5,8 @@
 volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 
 //temp buffer to save flash settings to
-unsigned long volatile buffA[128]= {0} absolute 0xA0000000 ;
-unsigned long volatile buffB[128]= {0} absolute 0xA0000000 ;
-unsigned long volatile buffC[128]= {0} absolute 0xA0000100 ;
+unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
+
 
 void Settings_Init(short reset_all){
  if(!reset_all){
@@ -72,7 +71,7 @@ unsigned long i,j,data_count;
 unsigned long *ptr;
  ptr = addr;
  data_count = 0;
- for(j = 0;j < 128;j++){
+ for(j = 0;j < 512;j++){
     buffA[j] = *(ptr+j);
     if(buffA[j] != -1)data_count++;
     #if FlashDebug == 1
@@ -260,47 +259,90 @@ unsigned long temp[NoOfAxis];
 //////////////////////////////////////////////////////
 // Reads startup line from EEPROM. Updated pointed line string data.
 int settings_read_startup_line(int n, char *line){
-char txt[LINE_BUFFER_SIZE];
-unsigned long j,i,*ptr;
-unsigned long temp;
+unsigned long line1[16],offset,add,add_offset;
+char *char_add;
+char str[] = "Hello";
+unsigned long len0,len1,i,j,mod_;
+char temp_char,addc;
   //Row bundry starting at 0xBD1BC400
-  ptr = (unsigned long*)FLASH_Settings_VAddr_Page3;
-  
-  //0 = line 1 64chars wide string at 0xBD1BC400
-  //1 = line 2 64chars wide string at 0xBD1BC410
-  ptr += (n * (LINE_BUFFER_SIZE_WORDS));
-  if(*ptr < 32){//empty string
-     memcpy(line,0,LINE_BUFFER_SIZE);     
-     return STATUS_OK;//SETTING_READ_FAIL;
-  }else{
-     memcpy(line,ptr,LINE_BUFFER_SIZE_WORDS);
-     *(line+ LINE_BUFFER_SIZE) = 0;
+ // ptr = (unsigned long)FLASH_Settings_VAddr_Page3;
+ 
+ switch(n){
+  case 0: char_add = (char*)FLASH_Settings_VAddr_Row2;break;
+  case 1: char_add = (char*)FLASH_Settings_VAddr_Row3;break;
+ }
+
+  memcpy(line,char_add,64);
+
+ //read the 3rd Row which holds the startup lines, using this row
+ //potentially means we canstore up to 8 startup lines
+ 
+ //  Save_Row_From_Flash(add);
+   // char c = 0;
+ /*  for(i = 0; i < offset*2; i++){
+    line1[i] =  buffA[i+add_offset];
+    for(j = 3; j >= 0; j--){
+
+    } */
+     #if GlobalsDebug == 10
+     while(DMA_IsOn(1));
+     dma_printf("%s\n",line);
+     #endif
+  // }
      return STATUS_OK;
-  }
 }
 
 // Method to store startup lines into EEPROM
-void settings_store_startup_line(int n, char *line){
-unsigned long line1[16],offset,add;
-int len0,len1,i,j,mod_;
-char temp_char,addc;
-
-  add    = (unsigned long)FLASH_Settings_VAddr_Page3;
-  offset = (unsigned long)n;
-  
+int settings_store_startup_line(int n, char *line){
+unsigned long line1[16] = {0};
+unsigned long start_offset,offset,addA;
+unsigned long len0,len1,i,j;
+int error,str_len;
+char temp_char;
+  str_len = strlen(line);
+ #if FlashDebug == 1
+   while(DMA_IsOn(1));
+   dma_printf("*line:= %s\n",line);
+ #endif
+ addA    = (unsigned long)FLASH_Settings_VAddr_P1;
+ start_offset = (unsigned long)FLASH_Startup_Line_Offset;
+ offset  = (unsigned long)n;
+ offset  *= LINE_BUFFER_SIZE_WORDS;
+ 
  //read the 3rd Row which holds the startup lines, using this row
  //potentially means we canstore up to 8 startup lines
- NVMReadRow(add,buffC);
+ //Read the saved Row from flash first
+ Save_Row_From_Flash(addA);
 
- //string length for eff conversion
- len0 = 64;
- len1 = 16;
+//Erase the page in order to over write the values
+// add = (unsigned long)FLASH_Settings_VAddr_P1;
+ error = (int)NVMErasePage(addA);
+
+ if(error){
+   #if FlashDebug == 1
+     while(DMA_IsOn(1));
+     dma_printf("error:= %d\n",error);
+   #endif
+   return error;
+ }
  
+ //string length for eff conversion
+ len0 = LINE_BUFFER_SIZE ;
+ len1 = LINE_BUFFER_SIZE_WORDS;
+ 
+ #if GlobalsDebug == 10
+ while(DMA_IsOn(1));
+ dma_printf("offset:= %l\n",offset);
+ #endif
 
  for(i = 0;i < len1;i++){
  //extract 4 bytes from str and insert into line1
-  for(j = 0;j < 4;j++){
-     temp_char = (line[(i*4)+j]);
+  for(j = 0;j < 16;j++){
+     if((i*4)+j < str_len)
+         temp_char = (line[(i*4)+j]);
+     else
+        temp_char = 0;
+        
      line1[i] |= temp_char;
      if(j < 3)
          line1[i] = line1[i] << 8;
@@ -310,16 +352,22 @@ char temp_char,addc;
      #endif
      if(line[(i*4)+j]==0)break;
    }
-   #if GlobalsDebug == 1
-   while(DMA_IsOn(1));
-   dma_printf("%l\n",line1[i]);
-   #endif
+   buffA[i+start_offset+offset] = line1[i];
  }
  
  //put line1 back into buffC
- memcpy(buffC+offset,line1,len1);
+// memcpy(buffA+0x180,line1,len1);
 
+ for(i = 0; i < offset + len1;i++){
+  #if GlobalsDebug == 10
+  while(DMA_IsOn(1));
+  dma_printf("buffA[%l]:= %l\n",i+start_offset,buffA[i+start_offset]);
+  #endif
+ }
  //write buffC back to Row3
- NVMWriteRow(add,buffC);
- 
+ error = (int)NVMWriteRow(&addA,buffA);
+ #if GlobalsDebug == 10
+ while(DMA_IsOn(1));
+ dma_printf("error:= %d\n",error);
+ #endif
 }

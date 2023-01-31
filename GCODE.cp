@@ -296,7 +296,7 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 68 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 71 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
@@ -377,7 +377,7 @@ unsigned int settings_write_one_coord(int coord_select,float *coord);
 int settings_read_startup_line(int n, char *line);
 
 
-void settings_store_startup_line(int n, char *line);
+int settings_store_startup_line(int n, char *line);
 #line 34 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;

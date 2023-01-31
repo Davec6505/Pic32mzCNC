@@ -71,10 +71,9 @@ unsigned long padd;
 
 /////////////////////////////////////////////////////
 //Row of 128 words to be written to flash
+//ignore bits <9-0>  [1024 || 0x400] boundries
 unsigned int NVMWriteRow (void  *address, void *_data){
 unsigned int res;
-unsigned long padd,src_padd;
-//NVMOP = 3
 
   //translate address to phy address
   // Set NVMADDR to Start Address of row to program
@@ -82,7 +81,7 @@ unsigned long padd,src_padd;
   NVMADDR = *(unsigned long*)address & FLASH_PADDRESS_TRANSLATE;
 
   //translate address to phy address
-  // Set NVMSRCADDR to the SRAM data buffer Address
+  //Set NVMSRCADDR to the SRAM data buffer Address
   //no need to dereference use the start address
   NVMSRCADDR = (unsigned long)_data & FLASH_PADDRESS_TRANSLATE;
   #if FlahDebug == 2

@@ -190,7 +190,7 @@ START_LINE://label to rerun startup line if it has one
                     }
                    #if ProtoDebug == 6
                    while(DMA_IsOn(1));
-                   dma_printf("%s\n",gcode[0]);
+                   dma_printf("gcode[0]:= %s\n",gcode[0]);
                    #endif
                   }
                   //no need to report error on exit, a response has already been
@@ -199,14 +199,17 @@ START_LINE://label to rerun startup line if it has one
                   break;
                 } else { // Store startup line
                   int N_Val = 0;
-                  helper_var = true;  // Set helper_var to flag storing method.
+                  helper_var = 1;  // Set helper_var to flag storing method.
                   // No break. Continues into default: to read remaining command characters.
                   //look for char [0 - 9]
                    if ( gcode[0][2] >= '0'  &&  gcode[0][2] <= '9' ) {
-                          N_Val = atoi(gcode[2]);
+                    char num[] = "0";
+                          //extract num char into string
+                          num[0] = gcode[0][2];
+                          N_Val = atoi(num);
                           #if ProtoDebug == 5
                           while(DMA_IsOn(1));
-                          dma_printf("%c\t%d\n",gcode[0][2],N_Val);
+                          dma_printf("%s\t%d\n",num,N_Val);
                           #endif
                           
                    }else {
@@ -230,11 +233,12 @@ START_LINE://label to rerun startup line if it has one
                          if(!strncmp(SL,str,2))
                              goto START_LINE;
                        }else{
+                        int str_length = 0;
                         // Prepare saving gcode block to line number 0 | 1
                         // Set helper variable as counter to start of gcode block
-                         helper_var = strlen((gcode[0]+4));
-                         strncpy(str,(gcode[0]+4),helper_var);
-                         str[helper_var] = 0;
+                         str_length = strlen((gcode[0]+4));
+                         strncpy(str,(gcode[0]+4),str_length);
+                         str[str_length] = 0;
                          settings_store_startup_line(N_Val,str);
                          query = 1; //noneed to send erro report
                        }

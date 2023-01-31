@@ -136,6 +136,6 @@ unsigned int settings_write_one_coord(int coord_select,float *coord);
 int settings_read_startup_line(int n, char *line);
 
 // Method to store startup lines into EEPROM
-void settings_store_startup_line(int n, char *line);
+int settings_store_startup_line(int n, char *line);
 
 #endif

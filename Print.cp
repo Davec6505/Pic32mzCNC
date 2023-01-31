@@ -327,7 +327,7 @@ unsigned int settings_write_one_coord(int coord_select,float *coord);
 int settings_read_startup_line(int n, char *line);
 
 
-void settings_store_startup_line(int n, char *line);
+int settings_store_startup_line(int n, char *line);
 #line 50 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
 #line 154 "c:/users/git/pic32mzcnc/gcode.h"
@@ -795,7 +795,7 @@ void Reset_Ring();
 int Loopback();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 68 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 71 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);

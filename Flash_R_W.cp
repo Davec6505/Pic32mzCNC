@@ -302,7 +302,7 @@ unsigned int settings_write_one_coord(int coord_select,float *coord);
 int settings_read_startup_line(int n, char *line);
 
 
-void settings_store_startup_line(int n, char *line);
+int settings_store_startup_line(int n, char *line);
 #line 50 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
 #line 154 "c:/users/git/pic32mzcnc/gcode.h"
@@ -793,7 +793,7 @@ void Reset_Ring();
 int Loopback();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 68 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 71 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
@@ -860,10 +860,9 @@ unsigned long padd;
 
 
 
+
 unsigned int NVMWriteRow (void *address, void *_data){
 unsigned int res;
-unsigned long padd,src_padd;
-
 
 
 
@@ -874,7 +873,7 @@ unsigned long padd,src_padd;
 
 
  NVMSRCADDR = (unsigned long)_data &  0x1FFFFFFF ;
-#line 94 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
+#line 93 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
  res = NVMUnlock(0x4003);
 
 
@@ -917,7 +916,7 @@ unsigned int dma_ = 0;
  LED2 =  0 ;
  while(DMA_Busy());
  }
-#line 144 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
+#line 143 "C:/Users/Git/Pic32mzCNC/Flash_R_W.c"
  NVMKEY = 0x0U;
  NVMKEY = 0xAA996655;
  NVMKEY = 0x556699AA;

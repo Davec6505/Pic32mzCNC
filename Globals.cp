@@ -742,7 +742,7 @@ void Reset_Ring();
 int Loopback();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 68 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 71 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
@@ -809,14 +809,13 @@ unsigned int settings_write_one_coord(int coord_select,float *coord);
 int settings_read_startup_line(int n, char *line);
 
 
-void settings_store_startup_line(int n, char *line);
+int settings_store_startup_line(int n, char *line);
 #line 5 "C:/Users/Git/Pic32mzCNC/Globals.c"
 volatile coord_sys coord_system[ 9 ];
 
 
-unsigned long volatile buffA[128]= {0} absolute 0xA0000000 ;
-unsigned long volatile buffB[128]= {0} absolute 0xA0000000 ;
-unsigned long volatile buffC[128]= {0} absolute 0xA0000100 ;
+unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
+
 
 void Settings_Init(short reset_all){
  if(!reset_all){
@@ -847,16 +846,19 @@ void Settings_Init(short reset_all){
 
  }
 }
-#line 70 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 69 "C:/Users/Git/Pic32mzCNC/Globals.c"
 int Save_Row_From_Flash(unsigned long addr){
 unsigned long i,j,data_count;
 unsigned long *ptr;
  ptr = addr;
  data_count = 0;
- for(j = 0;j < 128;j++){
+ for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 82 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
+
  }
 
  return data_count;
@@ -886,7 +888,10 @@ unsigned long temp[4] = {0};
  error = (int)NVMErasePage(add);
 
  if(error){
-#line 115 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("error:= %d\n",error);
+
  return error;
  }
 
@@ -914,7 +919,13 @@ unsigned long temp[4] = {0};
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 149 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("%f\t%l\n",coord[i],wdata[i]);
+
+
+
+
  }
 
  i = (recipe-1)*4 ;
@@ -928,21 +939,7 @@ unsigned long temp[4] = {0};
 
 
  res = NVMWriteRow(&add,buffA);
-
-
- add = (unsigned long) 0xBD1BC000 ;
-
-
- NVMReadQuad(add,temp);
- for(i = 0;i< 4;i++){
- if(temp[i] < 0xFFFFFFFF)
- ptr = ulong2flt(temp[i]);
- else ptr = 0.00;
- while(DMA_IsOn(1));
- dma_printf("val:= %f\tbuff[%l]:= %l\n",ptr,i,temp[i]);
- }
-
-
+#line 176 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -961,7 +958,7 @@ unsigned long temp;
  temp = buffA[(i* 4 ) + j];
  ptr = ulong2flt(temp);
  coord_system[i].coord[j] = ptr;
-#line 202 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 201 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  }
 }
@@ -987,7 +984,7 @@ unsigned long temp[ 4 ];
  temp[j] = flt2ulong(coord_data[j]);
  buffA[i] = temp[j];
  j++;
-#line 231 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 230 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  switch(coord_select){
@@ -1020,47 +1017,70 @@ unsigned long temp[ 4 ];
 
 
 int settings_read_startup_line(int n, char *line){
-char txt[ 64 ];
-unsigned long j,i,*ptr;
-unsigned long temp;
+unsigned long line1[16],offset,add,add_offset;
+char *char_add;
+char str[] = "Hello";
+unsigned long len0,len1,i,j,mod_;
+char temp_char,addc;
 
- ptr = (unsigned long*) 0xBD1BC400 ;
 
 
-
- ptr += (n * ( 64 /4 ));
- if(*ptr < 32){
- memcpy(line,0, 64 );
- return  0 ;
- }else{
- memcpy(line,ptr, 64 /4 );
- *(line+  64 ) = 0;
- return  0 ;
+ switch(n){
+ case 0: char_add = (char*) 0xBD1BC180 ;break;
+ case 1: char_add = (char*) 0xBD1BC1C0 ;break;
  }
+
+ memcpy(line,char_add,64);
+#line 292 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ return  0 ;
 }
 
 
-void settings_store_startup_line(int n, char *line){
-unsigned long line1[16],offset,add;
-int len0,len1,i,j,mod_;
-char temp_char,addc;
+int settings_store_startup_line(int n, char *line){
+unsigned long line1[16] = {0};
+unsigned long start_offset,offset,addA;
+unsigned long len0,len1,i,j;
+int error,str_len;
+char temp_char;
+ str_len = strlen(line);
 
- add = (unsigned long) 0xBD1BC400 ;
+ while(DMA_IsOn(1));
+ dma_printf("*line:= %s\n",line);
+
+ addA = (unsigned long) 0xBD1BC000 ;
+ start_offset = (unsigned long) 0x180 ;
  offset = (unsigned long)n;
+ offset *=  64 /4 ;
 
 
 
- NVMReadRow(add,buffC);
+
+ Save_Row_From_Flash(addA);
 
 
- len0 = 64;
- len1 = 16;
+
+ error = (int)NVMErasePage(addA);
+
+ if(error){
+
+ while(DMA_IsOn(1));
+ dma_printf("error:= %d\n",error);
+
+ return error;
+ }
 
 
+ len0 =  64  ;
+ len1 =  64 /4 ;
+#line 338 "C:/Users/Git/Pic32mzCNC/Globals.c"
  for(i = 0;i < len1;i++){
 
- for(j = 0;j < 4;j++){
+ for(j = 0;j < 16;j++){
+ if((i*4)+j < str_len)
  temp_char = (line[(i*4)+j]);
+ else
+ temp_char = 0;
+
  line1[i] |= temp_char;
  if(j < 3)
  line1[i] = line1[i] << 8;
@@ -1070,16 +1090,16 @@ char temp_char,addc;
 
  if(line[(i*4)+j]==0)break;
  }
-
- while(DMA_IsOn(1));
- dma_printf("%l\n",line1[i]);
-
+ buffA[i+start_offset+offset] = line1[i];
  }
 
 
- memcpy(buffC+offset,line1,len1);
 
 
- NVMWriteRow(add,buffC);
+ for(i = 0; i < offset + len1;i++){
+#line 366 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ }
 
+ error = (int)NVMWriteRow(&addA,buffA);
+#line 373 "C:/Users/Git/Pic32mzCNC/Globals.c"
 }
