@@ -46884,6 +46884,7 @@ read_
 read_bit
 read_emacxmcmd_bit
 read_float
+read_ram_loaded_indicator
 readopcode
 readopcode0
 readopcode0_bit
@@ -47853,6 +47854,7 @@ rotrim8_bit
 rotrim8_refo2trim_bit
 rotrim8_refo3trim_bit
 rotrim8_refo4trim_bit
+round
 rowbuff
 rpa14r
 rpa14r
@@ -55522,7 +55524,6 @@ samp
 samp
 samp_bit
 sample_ringbuffer
-save_row_from_flash
 sbcde
 sbcde
 sbcde
@@ -56498,6 +56499,7 @@ settings
 settings_init
 settings_read_coord_data
 settings_read_startup_line
+settings_store_global_setting
 settings_store_startup_line
 settings_write_coord_data
 settings_write_one_coord

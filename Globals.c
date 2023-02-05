@@ -6,7 +6,7 @@ volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 
 //temp buffer to save flash settings to
 unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
-
+static int volatile ram_loaded;
 
 void Settings_Init(short reset_all){
  if(!reset_all){
@@ -39,6 +39,60 @@ void Settings_Init(short reset_all){
 }
 
 ////////////////////////////////////////////////////////////////////
+//                     FLASH CONTROL FUNCTIONS                    //
+////////////////////////////////////////////////////////////////////
+
+//Save current page to a temp buffer [ram @ #A0000000], this is to
+//push original setting back after a page errase and save time
+//reading flash to often, as well as save flash
+
+static int Save_Row_From_Flash(unsigned long addr){
+unsigned long i,j;
+unsigned long *ptr;
+int data_count;
+
+ ptr = addr;
+ data_count = 0;
+ for(j = 0;j < 512;j++){
+    buffA[j] = *(ptr+j);
+    if(buffA[j] != -1)data_count++;
+    #if FlashDebug == 1
+     while(DMA_IsOn(1));
+     dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
+    #endif
+ }
+ 
+ //call this function and pass as an argument the
+ //amount of data held in flash
+ set_ram_loaded_indicator(data_count);
+ 
+ //return the number of indices that hold data
+ return data_count;
+}
+
+//sets the indicator of available data in flash "--EEPROM--"
+//call this function at every write to flash,if flash fails to
+//write an error indicator will will be sent 0f 1-3
+//1=low volt error | 2=write failed | 3=both erros | 0=success
+//if success on write a reset of this value indicating a new read of 
+//the flash is needed to reload buffA / ram @ #A000000
+static int set_ram_loaded_indicator(int val){
+ ram_loaded = val;
+ return ram_loaded;
+}
+
+//force a zeroing of ram_loaded indicator
+static void zero_ram_loaded_indicator(){
+ ram_loaded = 0;
+}
+
+//read the indicator to test for data
+int read_ram_loaded_indicator(){
+ return ram_loaded;
+}
+
+
+////////////////////////////////////////////////////////////////////
 //    G54, G55, G56, G57, G58 and G59 are datum shift G-Codes     //
 ////////////////////////////////////////////////////////////////////
 /*** Table 1. Coordinate System  *********
@@ -62,26 +116,6 @@ P      Value        Coordinate System        G code
  *These work offsets are registered into the machine to hold the distance 
  *from the X, Y, Z position to part of the datum.
 *******************************************************************/
-///////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-//Save current page to a temp buffAer, this is to
-//push original setting back after a page errase
-int Save_Row_From_Flash(unsigned long addr){
-unsigned long i,j,data_count;
-unsigned long *ptr;
- ptr = addr;
- data_count = 0;
- for(j = 0;j < 512;j++){
-    buffA[j] = *(ptr+j);
-    if(buffA[j] != -1)data_count++;
-    #if FlashDebug == 1
-     while(DMA_IsOn(1));
-     dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
-    #endif
- }
- //return the number of indices that hold data
- return data_count;
-}
 
 ///////////////////////////////////////////////////////////////////
 //here we want to write the new recipe to flash and set the coordinate
@@ -154,10 +188,10 @@ unsigned long temp[4] = {0};
    i++;
  }
   
-  //Write 4 double words at once
-  //res = NVMWriteQuad(&add,wdata);
- // add = (unsigned long)FLASH_Settings_VAddr_P1;
+ //add = (unsigned long)FLASH_Settings_VAddr_P1;
+ //if result == 0 then write was sucessfull a reread of flash is needed
   res = NVMWriteRow(&add,buffA);
+  set_ram_loaded_indicator(res);
 
   #if FlashDebug == 5
     add = (unsigned long)FLASH_Settings_VAddr_P1;
@@ -185,19 +219,25 @@ float ptr;
 unsigned int error = 0;
 unsigned long j,i,res;
 unsigned long temp;
+
   //read from the buffer and place into coordinate system
-  for(i = 0; i < 9; i++){
-    for(j = 0 ; j < NoOfAxis; j++){
-      temp = buffA[(i*NoOfAxis) + j];
-      ptr = ulong2flt(temp);
-      coord_system[i].coord[j] = ptr;
-      
-      #if FlashDebug == 2
-       while(DMA_IsOn(1));
-       dma_printf("cord[%l].[%l]:= %f\n"
-       ,i,j,coord_system[i].coord[j]);
-       //coord_system[(coord_select*NoOfAxis)].coord[i]);
-      #endif
+  if(!read_ram_loaded_indicator()){
+     unsigned long add = (unsigned long)FLASH_Settings_VAddr_P1;
+     Save_Row_From_Flash(add);
+  }else{
+    for(i = 0; i < 9; i++){
+      for(j = 0 ; j < NoOfAxis; j++){
+        temp = buffA[(i*NoOfAxis) + j];
+        ptr = ulong2flt(temp);
+        coord_system[i].coord[j] = ptr;
+
+        #if FlashDebug == 2
+         while(DMA_IsOn(1));
+         dma_printf("cord[%l].[%l]:= %f\n"
+         ,i,j,coord_system[i].coord[j]);
+         //coord_system[(coord_select*NoOfAxis)].coord[i]);
+        #endif
+      }
     }
   }
 }
@@ -251,7 +291,8 @@ unsigned long temp[NoOfAxis];
  //write the coord to flash as a quad word, if more axis are added
  //may need to add 2 quad word writes or wait for row write???
  error =  NVMWriteQuad (add, temp);
-
+ set_ram_loaded_indicator(error);
+ 
  return error;
 }
 
@@ -259,115 +300,210 @@ unsigned long temp[NoOfAxis];
 //////////////////////////////////////////////////////
 // Reads startup line from EEPROM. Updated pointed line string data.
 int settings_read_startup_line(int n, char *line){
-unsigned long line1[16],offset,add,add_offset;
+unsigned long *add;
 char *char_add;
-char str[] = "Hello";
-unsigned long len0,len1,i,j,mod_;
-char temp_char,addc;
-  //Row bundry starting at 0xBD1BC400
- // ptr = (unsigned long)FLASH_Settings_VAddr_Page3;
- 
- switch(n){
-  case 0: char_add = (char*)FLASH_Settings_VAddr_Row2;break;
-  case 1: char_add = (char*)FLASH_Settings_VAddr_Row3;break;
- }
 
+ switch(n){
+  case 0: char_add = (char*)FLASH_Settings_VAddr_SLine1;break;
+  case 1: char_add = (char*)FLASH_Settings_VAddr_SLine2;break;
+ }
+  //Save_Row_From_Flash(add);
   memcpy(line,char_add,64);
 
- //read the 3rd Row which holds the startup lines, using this row
- //potentially means we canstore up to 8 startup lines
- 
- //  Save_Row_From_Flash(add);
-   // char c = 0;
- /*  for(i = 0; i < offset*2; i++){
-    line1[i] =  buffA[i+add_offset];
-    for(j = 3; j >= 0; j--){
-
-    } */
-     #if GlobalsDebug == 10
-     while(DMA_IsOn(1));
-     dma_printf("%s\n",line);
-     #endif
-  // }
-     return STATUS_OK;
+  //test return string for correctness
+ #if GlobalsDebug == 10
+ while(DMA_IsOn(1));
+ dma_printf("%s\n",line);
+ #endif
+   
+ return STATUS_OK;
 }
 
+//////////////////////////////////////////////////////////////////
 // Method to store startup lines into EEPROM
 int settings_store_startup_line(int n, char *line){
-unsigned long line1[16] = {0};
-unsigned long start_offset,offset,addA;
-unsigned long len0,len1,i,j;
+unsigned long start_offset,addA;
+unsigned long i,j;
 int error,str_len;
 char temp_char;
+
   str_len = strlen(line);
- #if FlashDebug == 1
+  
+ //test string argument for correctness
+ #if GlobalsDebug == 10
    while(DMA_IsOn(1));
    dma_printf("*line:= %s\n",line);
- #endif
- addA    = (unsigned long)FLASH_Settings_VAddr_P1;
- start_offset = (unsigned long)FLASH_Startup_Line_Offset;
- offset  = (unsigned long)n;
- offset  *= LINE_BUFFER_SIZE_WORDS;
+  #endif
  
- //read the 3rd Row which holds the startup lines, using this row
- //potentially means we canstore up to 8 startup lines
- //Read the saved Row from flash first
+ //Virtual memory address of Row
+ addA  = (unsigned long)FLASH_Settings_VAddr_P1; //C0000
+
+ //Ram memory address of startup lines
+ switch(n){
+    case 0: start_offset = (unsigned long)Line0_Offset;break; //180
+    case 1: start_offset = (unsigned long)Line1_Offset;break;
+ }
+
+ //Read the saved Row from flash first place it into ram
  Save_Row_From_Flash(addA);
 
 //Erase the page in order to over write the values
 // add = (unsigned long)FLASH_Settings_VAddr_P1;
  error = (int)NVMErasePage(addA);
+ 
+ //clear the words in buffA at line(n) offset
+ for(i=start_offset;i<start_offset+16;i++)
+    buffA[i] = 0;
 
- if(error){
-   #if FlashDebug == 1
-     while(DMA_IsOn(1));
-     dma_printf("error:= %d\n",error);
-   #endif
-   return error;
- }
- 
- //string length for eff conversion
- len0 = LINE_BUFFER_SIZE ;
- len1 = LINE_BUFFER_SIZE_WORDS;
- 
+ //replace the current string with new string at
+ //memory offset for startup lines
+ memcpy(buffA+start_offset,line,str_len);
+
+//test buffA for correct offset
  #if GlobalsDebug == 10
- while(DMA_IsOn(1));
- dma_printf("offset:= %l\n",offset);
+ for(i=0; i < 16 ;i++){
+   while(DMA_IsOn(1));
+   dma_printf("buffA[%X]:= %l\n",i+start_offset,buffA[i+start_offset]);
+ }
  #endif
 
- for(i = 0;i < len1;i++){
- //extract 4 bytes from str and insert into line1
-  for(j = 0;j < 16;j++){
-     if((i*4)+j < str_len)
-         temp_char = (line[(i*4)+j]);
-     else
-        temp_char = 0;
-        
-     line1[i] |= temp_char;
-     if(j < 3)
-         line1[i] = line1[i] << 8;
-     #if GlobalsDebug == 1
-     while(DMA_IsOn(1));
-     dma_printf("%c\n",temp_char);
-     #endif
-     if(line[(i*4)+j]==0)break;
-   }
-   buffA[i+start_offset+offset] = line1[i];
- }
- 
- //put line1 back into buffC
-// memcpy(buffA+0x180,line1,len1);
-
- for(i = 0; i < offset + len1;i++){
-  #if GlobalsDebug == 10
-  while(DMA_IsOn(1));
-  dma_printf("buffA[%l]:= %l\n",i+start_offset,buffA[i+start_offset]);
-  #endif
- }
- //write buffC back to Row3
+ //write buffA back to Row3
  error = (int)NVMWriteRow(&addA,buffA);
- #if GlobalsDebug == 10
- while(DMA_IsOn(1));
- dma_printf("error:= %d\n",error);
- #endif
+ set_ram_loaded_indicator(error);
+ 
+ return error;
+}
+
+////////////////////////////////////////////////////////////////////
+// A helper method to set settings from command line
+// ac:grbl_settings  $999 is added to save all updated to flash
+int settings_store_global_setting(int parameter, float value) {
+int error = 0;
+  //check if flash has been changed since last read a 0 indicates
+  //that flash was changed, for any other value Flash has to first
+  //be read into Ram buffA inorder not to over write existing values
+  //when saving back to flash memory using $=99 command
+  if(!read_ram_loaded_indicator()){
+     unsigned long add = (unsigned long)FLASH_Settings_VAddr_P1;
+     Save_Row_From_Flash(add);
+  }
+  
+  switch(parameter) {
+    case 0: case 1: case 2: //| X | Y | Z | ? | ? | ? |
+      if (value <= 0.0) { return(STATUS_SETTING_VALUE_NEG); }
+      //set current values
+      settings.steps_per_mm[parameter] = value;
+      //prepare flash values in case $=99 is sent
+      buffA[SPMMX_OFFSET + parameter] = value;
+      break;
+    case 3:
+       if (value < 3) { return(STATUS_SETTING_STEP_PULSE_MIN); }
+       settings.pulse_microseconds = round(value);
+       //prepare flash values in case $=99 is sent
+       buffA[P_MSEC_OFFSET] = value;
+       break;
+    case 4: settings.default_feed_rate = value; 
+       buffA[D_FEED_RATE_OFFSET] = value;
+       break;
+    case 5: settings.default_seek_rate = value; 
+       buffA[D_SEEK_RATE_OFFSET] = value;
+       break;
+    case 6: settings.invert_mask = floor(value); 
+       buffA[INVERT_MASK_OFFSET] = floor(value);
+       break;
+    case 7: settings.stepper_idle_lock_time = round(value);
+       buffA[IDLE_LOCK_TMR_OFFSET] = round(value);
+       break;
+    case 8: // Convert to mm/min^2 for grbl internal use.
+       settings.acceleration = value*60*60;
+       buffA[ACCELERATION_OFFSET] = value;
+       break;
+    case 9: settings.junction_deviation = fabs(value); 
+       buffA[JUNCTION_DEV_OFFSET] = value;
+       break;
+    case 10: settings.mm_per_arc_segment = value; 
+       buffA[MM_ARC_SEG_OFFSET] = value;
+       break;
+    case 11: settings.n_arc_correction = round(value);
+       buffA[N_ARC_CORREC_OFFSET] = value;
+       break;
+    case 12: settings.decimal_places = round(value);
+       buffA[DEC_PLACES_OFFSET] = value;
+       break;
+    case 13:
+      if (value){ 
+        settings.flags |= BITFLAG_REPORT_INCHES;
+        buffA[FLAGS_OFFSET] |= BITFLAG_REPORT_INCHES;
+      }else{
+        settings.flags &= ~BITFLAG_REPORT_INCHES;
+        buffA[FLAGS_OFFSET] &= ~BITFLAG_REPORT_INCHES;
+      }
+      break;
+    case 14: // Reset to ensure change. Immediate re-init may cause problems.
+      if (value){ 
+        settings.flags |= BITFLAG_AUTO_START; 
+        buffA[FLAGS_OFFSET] |= BITFLAG_AUTO_START;
+      }else{ 
+        settings.flags &= ~BITFLAG_AUTO_START;
+        buffA[FLAGS_OFFSET] &= ~BITFLAG_AUTO_START;
+      }
+      break;
+    case 15: // Reset to ensure change. Immediate re-init may cause problems.
+      if (value){ 
+         settings.flags |= BITFLAG_INVERT_ST_ENABLE;
+         buffA[FLAGS_OFFSET] |= BITFLAG_INVERT_ST_ENABLE;
+      }else{
+         settings.flags &= ~BITFLAG_INVERT_ST_ENABLE; 
+         buffA[FLAGS_OFFSET] &= ~BITFLAG_INVERT_ST_ENABLE;
+      }
+      break;
+    case 16:
+      if (value){
+         settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; 
+         buffA[FLAGS_OFFSET] |= BITFLAG_INVERT_ST_ENABLE;
+      }else{ 
+         settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
+         buffA[FLAGS_OFFSET] &= ~BITFLAG_INVERT_ST_ENABLE;
+      }
+     // limits_init(); // Re-init to immediately change. NOTE: Nice to have but could be problematic later.
+      break;
+    case 17:
+      if (value){ 
+        settings.flags |= BITFLAG_HOMING_ENABLE; 
+        buffA[FLAGS_OFFSET] |= BITFLAG_HOMING_ENABLE;
+      }else{
+        settings.flags &= ~BITFLAG_HOMING_ENABLE;
+        buffA[FLAGS_OFFSET] &= ~BITFLAG_HOMING_ENABLE;
+      }
+      break;
+    case 18: settings.homing_dir_mask = floor(value); 
+             buffA[HOME_DIR_MASK_OFFSET] = floor(value);
+      break;
+    case 19: settings.homing_feed_rate = value; 
+             buffA[H_FEED_RATE_OFFSET] = value;
+      break;
+    case 20: settings.homing_seek_rate = value; 
+             buffA[D_SEEK_RATE_OFFSET] = value;
+      break;
+    case 21: settings.homing_debounce_delay = round(value); 
+             buffA[H_DEBNC_DLY_OFFSET] = round(value);
+      break;
+    case 22: settings.homing_pulloff = value; 
+             buffA[H_PULL_OFF_OFFSET] = value;
+      break;
+    case 99://write buffC back to Row3
+       error = 1;
+       if(error){
+            unsigned long add = (unsigned long)FLASH_Settings_VAddr_P1;
+            error = set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
+            if(!error){ 
+               //reread the flash once it has been changed
+                Save_Row_From_Flash(add);
+             }
+       }
+       break;
+    default:
+      return(STATUS_INVALID_STATEMENT);
+  }
+  return(STATUS_OK);
 }

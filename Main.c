@@ -76,7 +76,7 @@ static int cntr = 0,a = 0;
  Delay_ms(1000);
  
  //read flash memory to a buffer and place into settings
- has_flash = Save_Row_From_Flash((unsigned long)FLASH_Settings_VAddr_P1);
+// has_flash = Save_Row_From_Flash((unsigned long)FLASH_Settings_VAddr_P1);
  
  //if there is memory in flash use this otherwise use default settings
  if(has_flash){
@@ -221,7 +221,7 @@ unsigned long _flash,*addr;
               }
           } else {
             //Retrieve the data from flash into buff in case its been updated
-            if(!Save_Row_From_Flash(FLASH_Settings_VAddr_P1))return;
+            //if(!Save_Row_From_Flash(FLASH_Settings_VAddr_P1))return;
 
             //use P to get to the start of the rescipe P1,2,3... in the buff
             //array in Globals.c which is indexed by 4 for now a axis x,y,z,a

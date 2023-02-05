@@ -526,3 +526,21 @@ L_end_sys_sync_current_position:
 JR	RA
 NOP	
 ; end of _sys_sync_current_position
+_round:
+;Nut_Bolts.c,117 :: 		int round(double val){
+ADDIU	SP, SP, -4
+SW	RA, 0(SP)
+;Nut_Bolts.c,118 :: 		double temp = 0;
+;Nut_Bolts.c,119 :: 		temp = floor(val);
+JAL	_floor+0
+NOP	
+;Nut_Bolts.c,120 :: 		return (int)temp;
+CVT36.S 	S0, S0
+MFC1	R2, S0
+;Nut_Bolts.c,121 :: 		}
+L_end_round:
+LW	RA, 0(SP)
+ADDIU	SP, SP, 4
+JR	RA
+NOP	
+; end of _round

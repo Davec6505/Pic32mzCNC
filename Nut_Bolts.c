@@ -113,3 +113,9 @@ void sys_sync_current_position()
  /* plan_set_current_position(sys.position[X_AXIS],sys.position[Y_AXIS],sys.position[Z_AXIS]);
   gc_set_current_position(sys.position[X_AXIS],sys.position[Y_AXIS],sys.position[Z_AXIS]); */
 }
+
+int round(double val){
+double temp = 0;
+  temp = floor(val);
+  return (int)temp;
+}

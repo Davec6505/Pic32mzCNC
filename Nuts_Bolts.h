@@ -36,4 +36,6 @@ float ulong2flt(unsigned long ui_) ;
 // Syncs Grbl's gcode and planner position variables with the system position.
 void sys_sync_current_position();
 
+//returns the nearest integer value (rounded value) of the given float
+int round(double val);
 #endif

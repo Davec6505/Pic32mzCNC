@@ -17,7 +17,7 @@
 //defines
 #define RXBUFF  0xA0002000
 
-#define arr_size 10
+#define arr_size 20
 #define str_size 64
 
 // Number of blocks Grbl executes upon startup. These blocks are stored in EEPROM, where the size

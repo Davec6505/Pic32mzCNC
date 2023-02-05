@@ -249,7 +249,7 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 71 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 140 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (void *address, unsigned long _data);
 unsigned int NVMWriteQuad (void *address, unsigned long *_data);
 unsigned int NVMWriteRow (void* address, void* _data);
@@ -281,6 +281,9 @@ float ulong2flt(unsigned long ui_) ;
 
 
 void sys_sync_current_position();
+
+
+int round(double val);
 #line 91 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
@@ -315,7 +318,16 @@ extern volatile coord_sys coord_system[ 9 ];
 void Settings_Init(short reset_all);
 
 
-int Save_Row_From_Flash(unsigned long addr);
+static int Save_Row_From_Flash(unsigned long addr);
+
+
+static int set_ram_loaded_indicator(int val);
+
+
+static void zero_ram_loaded_indicator();
+
+
+int read_ram_loaded_indicator();
 
 
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
@@ -331,6 +343,12 @@ int settings_read_startup_line(int n, char *line);
 
 
 int settings_store_startup_line(int n, char *line);
+
+
+void write_global_settings();
+
+
+int settings_store_global_setting(int parameter, float value);
 #line 50 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
 #line 154 "c:/users/git/pic32mzcnc/gcode.h"
@@ -552,12 +570,12 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 37 "c:/users/git/pic32mzcnc/protocol.h"
-void Str_Initialize(char arg[ 10 ][ 64 ]);
+void Str_Initialize(char arg[ 20 ][ 64 ]);
 void Str_clear(char *str,int len);
 
 int Sample_Ringbuffer();
 
-static int strsplit(char arg[ 10 ][ 64 ],char *str, char c);
+static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"

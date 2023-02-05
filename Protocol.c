@@ -24,7 +24,7 @@ void Str_clear(char *str,int len){
 int Sample_Ringbuffer(){
 unsigned char *ptr;
 static int motion_mode,str_len,query;
-int status,helper_var;
+int status;
 char str[64];
 char temp[9];
 char xyz[6];
@@ -113,6 +113,7 @@ START_LINE://label to rerun startup line if it has one
         if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
              bit_true(sys.execute,EXEC_STATUS_REPORT);
      }else if(gcode[0][0] =='$'){
+       int helper_var;
        if(str_len < 2){
           report_grbl_help();
           query = 1;
@@ -188,29 +189,29 @@ START_LINE://label to rerun startup line if it has one
                     } else {
                       report_startup_line(helper_var,gcode[0]);
                     }
-                   #if ProtoDebug == 6
+                   #if ProtoDebug == -1
                    while(DMA_IsOn(1));
-                   dma_printf("gcode[0]:= %s\n",gcode[0]);
+                   dma_printf("gcode[%d]:= %s\n",helper_var,gcode[0]);
                    #endif
                   }
                   //no need to report error on exit, a response has already been
                   //sent to gcode sender
                   query = 1; //report status is ok continue
                   break;
-                } else { // Store startup line
+               }else { // Store startup line
                   int N_Val = 0;
                   helper_var = 1;  // Set helper_var to flag storing method.
-                  // No break. Continues into default: to read remaining command characters.
-                  //look for char [0 - 9]
+                  //look for char [0 - 9] and no = sign indicating run line x
                    if ( gcode[0][2] >= '0'  &&  gcode[0][2] <= '9' ) {
                     char num[] = "0";
-                          //extract num char into string
-                          num[0] = gcode[0][2];
-                          N_Val = atoi(num);
-                          #if ProtoDebug == 5
-                          while(DMA_IsOn(1));
-                          dma_printf("%s\t%d\n",num,N_Val);
-                          #endif
+                      //extract num char into string
+                      num[0] = gcode[0][2];
+                      N_Val = atoi(num);
+                      
+                      #if ProtoDebug == 6
+                      while(DMA_IsOn(1));
+                      dma_printf("%s\t%d\n",num,N_Val);
+                      #endif
                           
                    }else {
                       query = 0; //report bad status
@@ -222,33 +223,40 @@ START_LINE://label to rerun startup line if it has one
                    if (helper_var) { // Store startup line
                        if(gcode[0][3] != '='){
                          // Prepare sending gcode block back to gcode parser
-                         helper_var = strlen((gcode[0]+4)); // Set helper variable as counter to start of gcode block
-                         strncpy(str,(gcode[0]+4),helper_var);
+                         helper_var = strlen((gcode[0])); // Set helper variable as counter to start of gcode block
+                         strncpy(str,(gcode[0]),helper_var);
+                         #if ProtoDebug == 6
+                          while(DMA_IsOn(1));
+                          dma_printf("%s\n",str);
+                         #endif
                          //use length to determine if startup line exists
                          //becareful not to put loop here as $Nn will repeat
                          //forever!!!!!!
                          str_len = strlen(str);
                          //after extracting the start line execute it by
                          //returning to the beginning of this function
-                         if(!strncmp(SL,str,2))
-                             goto START_LINE;
+                         /*if(!strncmp(SL,str,2))
+                             goto START_LINE;  */
                        }else{
                         int str_length = 0;
-                        // Prepare saving gcode block to line number 0 | 1
-                        // Set helper variable as counter to start of gcode block
-                         str_length = strlen((gcode[0]+4));
-                         strncpy(str,(gcode[0]+4),str_length);
-                         str[str_length] = 0;
-                         settings_store_startup_line(N_Val,str);
+                        // debug to check string argument of startup line
+                         #if ProtoDebug == -1
+                          while(DMA_IsOn(1));
+                          dma_printf("%s\n",str);
+                         #endif
+                         
+                         // Prepare saving gcode block to line number 0 | 1
+                         settings_store_startup_line(N_Val,str+4);
                          query = 1; //noneed to send erro report
                        }
 
                     }else{ // Store global setting.
+                       settings_store_global_setting(N_Val,0.00);
                        // if(!read_float(line, &char_counter, &value)) { return(STATUS_BAD_NUMBER_FORMAT); }
                        // if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }
                        // return(settings_store_global_setting(parameter, value));*/
                     }
-                }
+               }
                 break; //'N'
                 
         }

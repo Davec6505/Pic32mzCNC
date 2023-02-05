@@ -121,7 +121,16 @@ extern volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 void Settings_Init(short reset_all);
 
 //void Save_Row_From_Flash(unsigned long addr);
-int Save_Row_From_Flash(unsigned long addr);
+static int Save_Row_From_Flash(unsigned long addr);
+
+//set the ram_loaded indicator
+static int set_ram_loaded_indicator(int val);
+
+//force a zeroing of ram_loaded indicator
+static void zero_ram_loaded_indicator();
+
+//read the ram loaded indicator
+int read_ram_loaded_indicator();
 
 //writes the coord data into flash
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
@@ -138,4 +147,9 @@ int settings_read_startup_line(int n, char *line);
 // Method to store startup lines into EEPROM
 int settings_store_startup_line(int n, char *line);
 
+// Method to store Grbl global settings struct and version number into EEPROM
+void write_global_settings();
+
+// A helper method to set settings from command line
+int settings_store_global_setting(int parameter, float value);
 #endif

@@ -30,22 +30,10 @@ main
 		plan_init
 		disableOCx
 		DisableStepper
-	Save_Row_From_Flash
-		DMA_IsOn
-		dma_printf
-			DMA_CH_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
-		__CC2DW
 	settings_read_coord_data
+		read_ram_loaded_indicator
+		Save_Row_From_Flash
+			set_ram_loaded_indicator
 		ulong2flt
 			memcpy
 	Debounce_Limits
@@ -56,6 +44,7 @@ main
 	Get_modalword
 	Modal_Group_Actions0
 		Settings_Write_Coord_Data
+			__CC2DW
 			Save_Row_From_Flash
 			NVMErasePage
 				NVMUnlock
@@ -63,15 +52,12 @@ main
 					DMA_Busy
 					DMA_Resume
 					NVM_WR_Wait
-			DMA_IsOn
-			dma_printf
 			flt2ulong
 				memcpy
 			NVMWriteRow
 				NVMUnlock
-			__CC2DW
+			set_ram_loaded_indicator
 		memcpy
-		Save_Row_From_Flash
 		Get_Axisword
 		ulong2flt
 		SingleAxisStep
@@ -125,6 +111,17 @@ main
 				fabs
 				floor
 				dma_printf
+					DMA_CH_Busy
+					sprintf
+						_doprntf
+							isdigit
+							scale
+							fround
+					strcat
+					strlen
+					strncpy
+					DMA1_Enable
+					__CC2DW
 				cos
 					sin
 						floor
@@ -191,20 +188,27 @@ main
 			DMA_IsOn
 			dma_printf
 			__CC2DW
-		DMA_IsOn
-		dma_printf
 		atoi
 			isdigit
+		DMA_IsOn
+		dma_printf
 		strncpy
-		strncmp
 		settings_store_startup_line
 			strlen
-			DMA_IsOn
-			dma_printf
 			Save_Row_From_Flash
 			NVMErasePage
+			memcpy
 			NVMWriteRow
-			__CC2DW
+			set_ram_loaded_indicator
+		settings_store_global_setting
+			read_ram_loaded_indicator
+			Save_Row_From_Flash
+			round
+				floor
+			floor
+			fabs
+			NVMWriteRow
+			set_ram_loaded_indicator
 		cpy_val_from_str
 		atof
 			strtod
@@ -222,7 +226,6 @@ main
 		Check_group_multiple_violations
 			Rst_modalgroup
 			Rst_modalword
-		__CC2DW
 	protocol_execute_runtime
 		report_alarm_message
 			DMA_IsOn
