@@ -307,7 +307,7 @@ extern volatile coord_sys coord_system[ 9 ];
 void Settings_Init(short reset_all);
 
 
-static int Save_Row_From_Flash(unsigned long addr);
+int Save_Row_From_Flash(unsigned long addr);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -870,7 +870,7 @@ static int cntr = 0,a = 0;
  Delay_ms(1000);
 
 
-
+ has_flash = Save_Row_From_Flash((unsigned long) 0xBD1BC000 );
 
 
  if(has_flash){

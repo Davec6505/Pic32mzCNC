@@ -34,8 +34,6 @@ _main:
 ADDIU	SP, SP, -8
 ;Main.c,64 :: 		int error = 0;
 ;Main.c,65 :: 		int has_flash = 0;
-MOVZ	R30, R0, R0
-SH	R30, 6(SP)
 ;Main.c,66 :: 		int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
 ;Main.c,69 :: 		Conditin_Externs();
 JAL	_Conditin_Externs+0
@@ -51,8 +49,12 @@ L_main0:
 ADDIU	R24, R24, -1
 BNE	R24, R0, L_main0
 NOP	
+;Main.c,79 :: 		has_flash = Save_Row_From_Flash((unsigned long)FLASH_Settings_VAddr_P1);
+LUI	R25, 48411
+ORI	R25, R25, 49152
+JAL	_Save_Row_From_Flash+0
+NOP	
 ;Main.c,82 :: 		if(has_flash){
-LH	R2, 6(SP)
 BNE	R2, R0, L__main128
 NOP	
 J	L_main2

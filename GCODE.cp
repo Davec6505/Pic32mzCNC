@@ -365,7 +365,7 @@ extern volatile coord_sys coord_system[ 9 ];
 void Settings_Init(short reset_all);
 
 
-static int Save_Row_From_Flash(unsigned long addr);
+int Save_Row_From_Flash(unsigned long addr);
 
 
 static int set_ram_loaded_indicator(int val);

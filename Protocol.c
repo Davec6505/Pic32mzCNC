@@ -202,6 +202,9 @@ START_LINE://label to rerun startup line if it has one
                   int N_Val = 0;
                   helper_var = 1;  // Set helper_var to flag storing method.
                   //look for char [0 - 9] and no = sign indicating run line x
+                   //extract the value from the string if = is at [2]
+                   //[        $  n  =  *value-str ]
+                   //[$n=val [0][1][2] *[3]      ]
                    if ( gcode[0][2] >= '0'  &&  gcode[0][2] <= '9' ) {
                     char num[] = "0";
                       //extract num char into string
@@ -250,16 +253,48 @@ START_LINE://label to rerun startup line if it has one
                          query = 1; //noneed to send erro report
                        }
 
-                    }else{ // Store global setting.
-                       settings_store_global_setting(N_Val,0.00);
-                       // if(!read_float(line, &char_counter, &value)) { return(STATUS_BAD_NUMBER_FORMAT); }
-                       // if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }
-                       // return(settings_store_global_setting(parameter, value));*/
                     }
                }
-                break; //'N'
+                break;
+            case '0': case '1': case '2': case'3':  case '4': case '5':
+            case '6': case '7': case '8': case '9':
+               //extract the value from the string if = is at [2]
+               //[        $  n  =  *value-str ]
+               //[$n=val [0][1][2] *[3]      ]
+               if((gcode[0][2] == '=')||(gcode[0][3] == '=')){
+                 char str_val[9]={0};
+                 int N_Val = 0;
+                 float value = 0.00;
+                 if(gcode[0][2] == '='){
+                    //$n < 10
+                    strncpy(str_val,gcode[0]+1,1);
+                    if(isdigit(str_val[0])){N_Val = atoi(str_val);}
+                    strncpy(str_val,gcode[0]+3,strlen(gcode[0]+3));
+                 }else if(gcode[0][3] == '='){
+                    //$n >= 10
+                    strncpy(str_val,gcode[0]+1,2);
+                    if(isdigit(str_val[0])){N_Val = atoi(str_val);}
+                    strncpy(str_val,gcode[0]+4,strlen(gcode[0]+4));
+                 }
+                 //check if 1st char is a digit if not value extraction
+                 //failed and result will be 0.0 !!! report status bad number
+                 if(isdigit(str_val[0])){value = atof(str_val);}
+                 else if(value <= 0){query = 2;break;}
+                 else{query = 3;break;}
+                 #if ProtoDebug == 6
+                 while(DMA_IsOn(1));
+                 dma_printf("%s\n",str_val);
+                 #endif
+                 settings_store_global_setting(N_Val,value);
+                 // if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }
+                 // return(settings_store_global_setting(parameter, value));*/
+                 query = 1; //noneed to send erro report
+                 break;
+               }
+               query = 3;
+               break;
                 
-        }
+       }
 
      }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){
         switch(*(*gcode+0)+0){
@@ -565,6 +600,12 @@ START_LINE://label to rerun startup line if it has one
      
      if(query == 1){
        status = STATUS_OK;
+       goto end;
+     }else if(query == 2){
+       status = STATUS_BAD_NUMBER_FORMAT;
+       goto end;
+     }else if(query == 3){
+       status = STATUS_UNSUPPORTED_STATEMENT;
        goto end;
      }
      ret:

@@ -121,7 +121,7 @@ extern volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 void Settings_Init(short reset_all);
 
 //void Save_Row_From_Flash(unsigned long addr);
-static int Save_Row_From_Flash(unsigned long addr);
+int Save_Row_From_Flash(unsigned long addr);
 
 //set the ram_loaded indicator
 static int set_ram_loaded_indicator(int val);

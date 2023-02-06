@@ -76,7 +76,7 @@ static int cntr = 0,a = 0;
  Delay_ms(1000);
  
  //read flash memory to a buffer and place into settings
-// has_flash = Save_Row_From_Flash((unsigned long)FLASH_Settings_VAddr_P1);
+ has_flash = Save_Row_From_Flash((unsigned long)FLASH_Settings_VAddr_P1);
  
  //if there is memory in flash use this otherwise use default settings
  if(has_flash){

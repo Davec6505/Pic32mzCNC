@@ -19,6 +19,11 @@ main
 			SetPinMode
 			SetInitialSizes
 			Settings_Init
+				read_ram_loaded_indicator
+				Save_Row_From_Flash
+					set_ram_loaded_indicator
+				ulong2flt
+					memcpy
 			DMA_global
 				DMA0
 				DMA1
@@ -30,12 +35,11 @@ main
 		plan_init
 		disableOCx
 		DisableStepper
+	Save_Row_From_Flash
 	settings_read_coord_data
 		read_ram_loaded_indicator
 		Save_Row_From_Flash
-			set_ram_loaded_indicator
 		ulong2flt
-			memcpy
 	Debounce_Limits
 		Test_Port_Pins
 		Reset_Min_Limit
@@ -200,20 +204,23 @@ main
 			memcpy
 			NVMWriteRow
 			set_ram_loaded_indicator
+		isdigit
+		atof
+			strtod
+				isspace
+				isdigit
 		settings_store_global_setting
 			read_ram_loaded_indicator
 			Save_Row_From_Flash
+			flt2ulong
 			round
+				ceil
 				floor
 			floor
 			fabs
 			NVMWriteRow
 			set_ram_loaded_indicator
 		cpy_val_from_str
-		atof
-			strtod
-				isspace
-				isdigit
 		G_Mode
 			Set_Modal_Groups
 			Set_Motion_Mode
@@ -226,6 +233,7 @@ main
 		Check_group_multiple_violations
 			Rst_modalgroup
 			Rst_modalword
+		__CC2DW
 	protocol_execute_runtime
 		report_alarm_message
 			DMA_IsOn

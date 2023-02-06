@@ -797,7 +797,7 @@ extern volatile coord_sys coord_system[ 9 ];
 void Settings_Init(short reset_all);
 
 
-static int Save_Row_From_Flash(unsigned long addr);
+int Save_Row_From_Flash(unsigned long addr);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -861,6 +861,27 @@ void Settings_Init(short reset_all){
  settings.stepper_idle_lock_time =  25 ;
  settings.decimal_places =  3 ;
  settings.n_arc_correction =  25 ;
+ }else if(reset_all > 1){
+
+ if(!read_ram_loaded_indicator())
+ Save_Row_From_Flash((unsigned long) 0xBD1BC000 );
+
+ settings.steps_per_mm[X] = ulong2flt(buffA[ 0x40 ]);
+ settings.steps_per_mm[Y] = ulong2flt(buffA[ 0x40  + 1]);
+ settings.steps_per_mm[Z] = ulong2flt(buffA[ 0x40  + 2]);
+
+ settings.mm_per_arc_segment = ulong2flt(buffA[ 0x4C ]);
+ settings.default_feed_rate = ulong2flt(buffA[ 0x47 ]);
+ settings.default_seek_rate = ulong2flt(buffA[ 0x48 ]);
+ settings.acceleration = ulong2flt(buffA[ 0x4D ]);
+ settings.junction_deviation = ulong2flt(buffA[ 0x4E ]);
+ settings.homing_feed_rate = ulong2flt(buffA[ 0x49 ]);
+ settings.homing_seek_rate = ulong2flt(buffA[ 0x4A ]);
+ settings.homing_debounce_delay = ulong2flt(buffA[ 0x52 ]);
+ settings.homing_pulloff = ulong2flt(buffA[ 0x4B ]);
+ settings.stepper_idle_lock_time = ulong2flt(buffA[ 0x51 ]);
+ settings.decimal_places = ulong2flt(buffA[ 0x56 ]);
+ settings.n_arc_correction = ulong2flt(buffA[ 0x4F ]);
 
  }
 }
@@ -873,7 +894,7 @@ void Settings_Init(short reset_all){
 
 
 
-static int Save_Row_From_Flash(unsigned long addr){
+int Save_Row_From_Flash(unsigned long addr){
 unsigned long i,j;
 unsigned long *ptr;
 int data_count;
@@ -883,7 +904,7 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 63 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 84 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
 
@@ -914,7 +935,7 @@ static void zero_ram_loaded_indicator(){
 int read_ram_loaded_indicator(){
  return ram_loaded;
 }
-#line 122 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 143 "C:/Users/Git/Pic32mzCNC/Globals.c"
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
 float ptr;
 unsigned int error = 0;
@@ -937,7 +958,7 @@ unsigned long temp[4] = {0};
  error = (int)NVMErasePage(add);
 
  if(error){
-#line 148 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 169 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -965,7 +986,7 @@ unsigned long temp[4] = {0};
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 182 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 203 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  i = (recipe-1)*4 ;
@@ -979,7 +1000,7 @@ unsigned long temp[4] = {0};
 
  res = NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(res);
-#line 210 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 231 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -1003,7 +1024,7 @@ unsigned long temp;
  temp = buffA[(i* 4 ) + j];
  ptr = ulong2flt(temp);
  coord_system[i].coord[j] = ptr;
-#line 240 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 261 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  }
  }
@@ -1030,7 +1051,7 @@ unsigned long temp[ 4 ];
  temp[j] = flt2ulong(coord_data[j]);
  buffA[i] = temp[j];
  j++;
-#line 270 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 291 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  switch(coord_select){
@@ -1073,7 +1094,7 @@ char *char_add;
  }
 
  memcpy(line,char_add,64);
-#line 319 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 340 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return  0 ;
 }
 
@@ -1086,7 +1107,7 @@ int error,str_len;
 char temp_char;
 
  str_len = strlen(line);
-#line 339 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 360 "C:/Users/Git/Pic32mzCNC/Globals.c"
  addA = (unsigned long) 0xBD1BC000 ;
 
 
@@ -1109,7 +1130,7 @@ char temp_char;
 
 
  memcpy(buffA+start_offset,line,str_len);
-#line 371 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 392 "C:/Users/Git/Pic32mzCNC/Globals.c"
  error = (int)NVMWriteRow(&addA,buffA);
  set_ram_loaded_indicator(error);
 
@@ -1120,14 +1141,15 @@ char temp_char;
 
 
 int settings_store_global_setting(int parameter, float value) {
-int error = 0;
+int error = 0,val_temp = 0;
 
 
 
 
  if(!read_ram_loaded_indicator()){
  unsigned long add = (unsigned long) 0xBD1BC000 ;
- Save_Row_From_Flash(add);
+
+ error = Save_Row_From_Flash(add);
  }
 
  switch(parameter) {
@@ -1136,106 +1158,113 @@ int error = 0;
 
  settings.steps_per_mm[parameter] = value;
 
- buffA[ 0x40  + parameter] = value;
+ buffA[ 0x40  + parameter] = flt2ulong(value);
  break;
  case 3:
  if (value < 3) { return( 9 ); }
- settings.pulse_microseconds = round(value);
+ val_temp = round(value);
+ settings.pulse_microseconds = val_temp;
 
- buffA[ 0x46 ] = value;
+ buffA[ 0x46 ] = (unsigned long)val_temp;
  break;
  case 4: settings.default_feed_rate = value;
- buffA[ 0x47 ] = value;
+ buffA[ 0x47 ] = flt2ulong(value);
  break;
  case 5: settings.default_seek_rate = value;
- buffA[ 0x48 ] = value;
+ buffA[ 0x48 ] = flt2ulong(value);
  break;
- case 6: settings.invert_mask = floor(value);
- buffA[ 0x58 ] = floor(value);
+ case 6:
+ settings.invert_mask = floor(value);
+ buffA[ 0x58 ] = flt2ulong(floor(value));
  break;
- case 7: settings.stepper_idle_lock_time = round(value);
- buffA[ 0x53 ] = round(value);
+ case 7:
+ val_temp = round(value);
+ settings.stepper_idle_lock_time = val_temp;
+ buffA[ 0x53 ] = (unsigned long)val_temp;
  break;
  case 8:
- settings.acceleration = value*60*60;
- buffA[ 0x4D ] = value;
+ settings.acceleration = value*60.0*60.0;
+ buffA[ 0x4D ] = flt2ulong(value);
  break;
  case 9: settings.junction_deviation = fabs(value);
- buffA[ 0x4E ] = value;
+ buffA[ 0x4E ] = flt2ulong(fabs(value));
  break;
- case 10: settings.mm_per_arc_segment = value;
- buffA[ 0x4C ] = value;
+ case 10:
+ val_temp = round(value);
+ settings.mm_per_arc_segment = val_temp;
+ buffA[ 0x4C ] = (unsigned long)val_temp;
  break;
- case 11: settings.n_arc_correction = round(value);
- buffA[ 0x4F ] = value;
+ case 11:
+ val_temp = round(value);
+ settings.n_arc_correction = val_temp;
+ buffA[ 0x4F ] = (unsigned long)val_temp;
  break;
- case 12: settings.decimal_places = round(value);
- buffA[ 0x56 ] = value;
+ case 12:
+ val_temp = round(value);
+ settings.decimal_places = val_temp;
+ buffA[ 0x56 ] = (unsigned long)val_temp;
  break;
  case 13:
  if (value){
  settings.flags |=  (1 << 0) ;
- buffA[ 0x50 ] |=  (1 << 0) ;
  }else{
  settings.flags &= ~ (1 << 0) ;
- buffA[ 0x50 ] &= ~ (1 << 0) ;
  }
  break;
  case 14:
  if (value){
  settings.flags |=  (1 << 1) ;
- buffA[ 0x50 ] |=  (1 << 1) ;
  }else{
  settings.flags &= ~ (1 << 1) ;
- buffA[ 0x50 ] &= ~ (1 << 1) ;
  }
  break;
  case 15:
  if (value){
  settings.flags |=  (1 << 2) ;
- buffA[ 0x50 ] |=  (1 << 2) ;
  }else{
  settings.flags &= ~ (1 << 2) ;
- buffA[ 0x50 ] &= ~ (1 << 2) ;
  }
  break;
  case 16:
  if (value){
  settings.flags |=  (1 << 3) ;
- buffA[ 0x50 ] |=  (1 << 2) ;
  }else{
  settings.flags &= ~ (1 << 3) ;
- buffA[ 0x50 ] &= ~ (1 << 2) ;
  }
 
  break;
  case 17:
  if (value){
  settings.flags |=  (1 << 4) ;
- buffA[ 0x50 ] |=  (1 << 4) ;
  }else{
  settings.flags &= ~ (1 << 4) ;
- buffA[ 0x50 ] &= ~ (1 << 4) ;
  }
  break;
- case 18: settings.homing_dir_mask = floor(value);
- buffA[ 0x57 ] = floor(value);
+ case 18:
+ val_temp = round(value);
+ settings.homing_dir_mask = val_temp;
+ buffA[ 0x57 ] = (unsigned long)val_temp;
  break;
  case 19: settings.homing_feed_rate = value;
- buffA[ 0x49 ] = value;
+ buffA[ 0x49 ] = flt2ulong(value);
  break;
  case 20: settings.homing_seek_rate = value;
- buffA[ 0x48 ] = value;
+ buffA[ 0x48 ] = flt2ulong(value);
  break;
- case 21: settings.homing_debounce_delay = round(value);
- buffA[ 0x52 ] = round(value);
+ case 21:
+ val_temp = round(value);
+ settings.homing_debounce_delay = val_temp;
+ buffA[ 0x52 ] = (unsigned long)val_temp;
  break;
- case 22: settings.homing_pulloff = value;
- buffA[ 0x4B ] = value;
+ case 22:
+ val_temp = round(value);
+ settings.homing_pulloff = val_temp;
+ buffA[ 0x4B ] = (unsigned long)val_temp;
  break;
  case 99:
  error = 1;
  if(error){
+
  unsigned long add = (unsigned long) 0xBD1BC000 ;
  error = set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
  if(!error){

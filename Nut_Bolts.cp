@@ -292,7 +292,7 @@ extern volatile coord_sys coord_system[ 9 ];
 void Settings_Init(short reset_all);
 
 
-static int Save_Row_From_Flash(unsigned long addr);
+int Save_Row_From_Flash(unsigned long addr);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -925,14 +925,17 @@ return f_;
 }
 
 
+int round(double val){
+double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
+ tempC = ceil(val);
+ tempF = floor(val);
+ dec = val - tempF;
+ temp = (dec > 0.5)? tempC : tempF;
+ return (int)temp;
+}
+
 
 void sys_sync_current_position()
 {
-#line 115 "C:/Users/Git/Pic32mzCNC/Nut_Bolts.c"
-}
-
-int round(double val){
-double temp = 0;
- temp = floor(val);
- return (int)temp;
+#line 124 "C:/Users/Git/Pic32mzCNC/Nut_Bolts.c"
 }

@@ -106,6 +106,15 @@ float f_ = 0.0;
 return f_;
 }
 
+//return the int val rounfed off to the nearest int
+int round(double val){
+double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
+  tempC = ceil(val);
+  tempF = floor(val);
+  dec = val - tempF;
+  temp = (dec > 0.5)? tempC : tempF;
+  return (int)temp;
+}
 
 // Syncs all internal position vectors to the current system position.
 void sys_sync_current_position()
@@ -114,8 +123,5 @@ void sys_sync_current_position()
   gc_set_current_position(sys.position[X_AXIS],sys.position[Y_AXIS],sys.position[Z_AXIS]); */
 }
 
-int round(double val){
-double temp = 0;
-  temp = floor(val);
-  return (int)temp;
-}
+
+

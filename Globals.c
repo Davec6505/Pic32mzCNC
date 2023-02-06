@@ -34,7 +34,28 @@ void Settings_Init(short reset_all){
   settings.stepper_idle_lock_time = DEFAULT_STEPPER_IDLE_LOCK_TIME; // If max value 255, steppers do not disable.
   settings.decimal_places = DEFAULT_DECIMAL_PLACES;
   settings.n_arc_correction = DEFAULT_N_ARC_CORRECTION;
-
+ }else if(reset_all > 1){
+ 
+   if(!read_ram_loaded_indicator())
+      Save_Row_From_Flash((unsigned long)FLASH_Settings_VAddr_P1);
+      
+  settings.steps_per_mm[X] = ulong2flt(buffA[SPMMX_OFFSET]);
+  settings.steps_per_mm[Y] = ulong2flt(buffA[SPMMX_OFFSET + 1]);
+  settings.steps_per_mm[Z] = ulong2flt(buffA[SPMMX_OFFSET + 2]);
+ // settings.steps_per_mm[A] = DEFAULT_A_STEPS_PER_MM; //temp disabled for now
+  settings.mm_per_arc_segment = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
+  settings.default_feed_rate  = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
+  settings.default_seek_rate  = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
+  settings.acceleration       = ulong2flt(buffA[ACCELERATION_OFFSET]);
+  settings.junction_deviation = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
+  settings.homing_feed_rate   = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
+  settings.homing_seek_rate   = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
+  settings.homing_debounce_delay  = ulong2flt(buffA[H_DEBNC_DLY_OFFSET]);
+  settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
+  settings.stepper_idle_lock_time = ulong2flt(buffA[STEP_IDLE_DLY_OFFSET]);// If max value 255, steppers do not disable.
+  settings.decimal_places         = ulong2flt(buffA[DEC_PLACES_OFFSET]);
+  settings.n_arc_correction       = ulong2flt(buffA[N_ARC_CORREC_OFFSET]);
+ 
  }
 }
 
@@ -46,7 +67,7 @@ void Settings_Init(short reset_all){
 //push original setting back after a page errase and save time
 //reading flash to often, as well as save flash
 
-static int Save_Row_From_Flash(unsigned long addr){
+int Save_Row_From_Flash(unsigned long addr){
 unsigned long i,j;
 unsigned long *ptr;
 int data_count;
@@ -378,14 +399,15 @@ char temp_char;
 // A helper method to set settings from command line
 // ac:grbl_settings  $999 is added to save all updated to flash
 int settings_store_global_setting(int parameter, float value) {
-int error = 0;
+int error = 0,val_temp = 0;
   //check if flash has been changed since last read a 0 indicates
   //that flash was changed, for any other value Flash has to first
   //be read into Ram buffA inorder not to over write existing values
   //when saving back to flash memory using $=99 command
   if(!read_ram_loaded_indicator()){
      unsigned long add = (unsigned long)FLASH_Settings_VAddr_P1;
-     Save_Row_From_Flash(add);
+     // returns a value indicating how many longs have data
+     error = Save_Row_From_Flash(add);
   }
   
   switch(parameter) {
@@ -394,106 +416,113 @@ int error = 0;
       //set current values
       settings.steps_per_mm[parameter] = value;
       //prepare flash values in case $=99 is sent
-      buffA[SPMMX_OFFSET + parameter] = value;
+      buffA[SPMMX_OFFSET + parameter] = flt2ulong(value);
       break;
     case 3:
        if (value < 3) { return(STATUS_SETTING_STEP_PULSE_MIN); }
-       settings.pulse_microseconds = round(value);
+       val_temp = round(value);
+       settings.pulse_microseconds = val_temp;
        //prepare flash values in case $=99 is sent
-       buffA[P_MSEC_OFFSET] = value;
+       buffA[P_MSEC_OFFSET] = (unsigned long)val_temp;
        break;
     case 4: settings.default_feed_rate = value; 
-       buffA[D_FEED_RATE_OFFSET] = value;
+       buffA[D_FEED_RATE_OFFSET] = flt2ulong(value);
        break;
     case 5: settings.default_seek_rate = value; 
-       buffA[D_SEEK_RATE_OFFSET] = value;
+       buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
        break;
-    case 6: settings.invert_mask = floor(value); 
-       buffA[INVERT_MASK_OFFSET] = floor(value);
+    case 6:
+       settings.invert_mask = floor(value);
+       buffA[INVERT_MASK_OFFSET] = flt2ulong(floor(value));
        break;
-    case 7: settings.stepper_idle_lock_time = round(value);
-       buffA[IDLE_LOCK_TMR_OFFSET] = round(value);
+    case 7: 
+       val_temp = round(value);
+       settings.stepper_idle_lock_time = val_temp;
+       buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)val_temp;
        break;
     case 8: // Convert to mm/min^2 for grbl internal use.
-       settings.acceleration = value*60*60;
-       buffA[ACCELERATION_OFFSET] = value;
+       settings.acceleration = value*60.0*60.0;
+       buffA[ACCELERATION_OFFSET] = flt2ulong(value);
        break;
     case 9: settings.junction_deviation = fabs(value); 
-       buffA[JUNCTION_DEV_OFFSET] = value;
+       buffA[JUNCTION_DEV_OFFSET] = flt2ulong(fabs(value));
        break;
-    case 10: settings.mm_per_arc_segment = value; 
-       buffA[MM_ARC_SEG_OFFSET] = value;
+    case 10:
+       val_temp = round(value);
+       settings.mm_per_arc_segment = val_temp;
+       buffA[MM_ARC_SEG_OFFSET] = (unsigned long)val_temp;
        break;
-    case 11: settings.n_arc_correction = round(value);
-       buffA[N_ARC_CORREC_OFFSET] = value;
+    case 11: 
+       val_temp = round(value);
+       settings.n_arc_correction = val_temp;
+       buffA[N_ARC_CORREC_OFFSET] = (unsigned long)val_temp;
        break;
-    case 12: settings.decimal_places = round(value);
-       buffA[DEC_PLACES_OFFSET] = value;
+    case 12: 
+       val_temp = round(value);
+       settings.decimal_places = val_temp;
+       buffA[DEC_PLACES_OFFSET] = (unsigned long)val_temp;
        break;
     case 13:
       if (value){ 
         settings.flags |= BITFLAG_REPORT_INCHES;
-        buffA[FLAGS_OFFSET] |= BITFLAG_REPORT_INCHES;
       }else{
         settings.flags &= ~BITFLAG_REPORT_INCHES;
-        buffA[FLAGS_OFFSET] &= ~BITFLAG_REPORT_INCHES;
       }
       break;
     case 14: // Reset to ensure change. Immediate re-init may cause problems.
       if (value){ 
         settings.flags |= BITFLAG_AUTO_START; 
-        buffA[FLAGS_OFFSET] |= BITFLAG_AUTO_START;
       }else{ 
         settings.flags &= ~BITFLAG_AUTO_START;
-        buffA[FLAGS_OFFSET] &= ~BITFLAG_AUTO_START;
       }
       break;
     case 15: // Reset to ensure change. Immediate re-init may cause problems.
       if (value){ 
          settings.flags |= BITFLAG_INVERT_ST_ENABLE;
-         buffA[FLAGS_OFFSET] |= BITFLAG_INVERT_ST_ENABLE;
       }else{
          settings.flags &= ~BITFLAG_INVERT_ST_ENABLE; 
-         buffA[FLAGS_OFFSET] &= ~BITFLAG_INVERT_ST_ENABLE;
       }
       break;
     case 16:
       if (value){
          settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; 
-         buffA[FLAGS_OFFSET] |= BITFLAG_INVERT_ST_ENABLE;
       }else{ 
          settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
-         buffA[FLAGS_OFFSET] &= ~BITFLAG_INVERT_ST_ENABLE;
       }
      // limits_init(); // Re-init to immediately change. NOTE: Nice to have but could be problematic later.
       break;
     case 17:
       if (value){ 
         settings.flags |= BITFLAG_HOMING_ENABLE; 
-        buffA[FLAGS_OFFSET] |= BITFLAG_HOMING_ENABLE;
       }else{
         settings.flags &= ~BITFLAG_HOMING_ENABLE;
-        buffA[FLAGS_OFFSET] &= ~BITFLAG_HOMING_ENABLE;
       }
       break;
-    case 18: settings.homing_dir_mask = floor(value); 
-             buffA[HOME_DIR_MASK_OFFSET] = floor(value);
+    case 18:
+         val_temp = round(value);
+         settings.homing_dir_mask = val_temp;
+          buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)val_temp;
       break;
     case 19: settings.homing_feed_rate = value; 
-             buffA[H_FEED_RATE_OFFSET] = value;
+             buffA[H_FEED_RATE_OFFSET] = flt2ulong(value);
       break;
     case 20: settings.homing_seek_rate = value; 
-             buffA[D_SEEK_RATE_OFFSET] = value;
+             buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
       break;
-    case 21: settings.homing_debounce_delay = round(value); 
-             buffA[H_DEBNC_DLY_OFFSET] = round(value);
+    case 21:
+         val_temp = round(value);
+         settings.homing_debounce_delay = val_temp;
+         buffA[H_DEBNC_DLY_OFFSET] = (unsigned long)val_temp;
       break;
-    case 22: settings.homing_pulloff = value; 
-             buffA[H_PULL_OFF_OFFSET] = value;
+    case 22:
+          val_temp = round(value);
+          settings.homing_pulloff = val_temp;
+          buffA[H_PULL_OFF_OFFSET] = (unsigned long)val_temp;
       break;
     case 99://write buffC back to Row3
        error = 1;
        if(error){
+
             unsigned long add = (unsigned long)FLASH_Settings_VAddr_P1;
             error = set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
             if(!error){ 
