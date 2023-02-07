@@ -99,11 +99,6 @@ void PinMode(){
 //Setup platform
   SetInitialSizes(STPS);
   
-///////////////////////////////////////////////
-//init all default settings
- Settings_Init(0);
- Settings_Init(1);
- 
  ////////////////////////////////////////////////
 //DMA CONFIG
 
@@ -119,7 +114,14 @@ void PinMode(){
 //configure UART the interrupts
  // Uart2InterruptSetup();
 
-
+//////////////////////////////////////////////////
+//Enable the interrupts here so uart can report back
+ EnableInterrupts();
+///////////////////////////////////////////////////
+//init all default settings
+ Settings_Init(0);
+ Settings_Init(1);
+ 
 }
 
 void UartConfig(){

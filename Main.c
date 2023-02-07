@@ -66,20 +66,13 @@ int has_flash = 0;
 int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
 static int cntr = 0,a = 0;
 
-  Conditin_Externs();
-  EnableInterrupts();
+ Conditin_Externs();
   
-  cntr = a = axis_to_run = dif = status_of_gcode = 0;
-  
- // wait on start up for device to be stable and send initial
- //message for ugs to think this is grbl
- Delay_ms(1000);
+ cntr = a = axis_to_run = dif = status_of_gcode = 0;
  
- //read flash memory to a buffer and place into settings
- has_flash = Save_Row_From_Flash((unsigned long)FLASH_Settings_VAddr_P1);
- 
+
  //if there is memory in flash use this otherwise use default settings
- if(has_flash){
+ if(read_ram_loaded_indicator()){
     settings_read_coord_data();
  }
 

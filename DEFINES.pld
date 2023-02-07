@@ -5,4 +5,4 @@ GcodeDebug=-3
 StepperDebug=-1
 FlashDebug=-1
 LoopBackDebug=-1
-GlobalsDebug=1
+GlobalsDebug=2

@@ -6,9 +6,13 @@ volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 
 //temp buffer to save flash settings to
 unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
+unsigned long volatile add = 0;
+
 static int volatile ram_loaded;
 
 void Settings_Init(short reset_all){
+int has_data = 0;
+
  if(!reset_all){
     //defaults for statuses
      sys.abort           = 0;
@@ -16,46 +20,53 @@ void Settings_Init(short reset_all){
      sys.homing          = 0;
      sys.execute         = 0;
      sys.auto_start      = 0;
- }else if(reset_all == 1){
-  //defaults for settings
-  settings.steps_per_mm[X] = DEFAULT_X_STEPS_PER_MM;
-  settings.steps_per_mm[Y] = DEFAULT_Y_STEPS_PER_MM;
-  settings.steps_per_mm[Z] = DEFAULT_Z_STEPS_PER_MM;
-  settings.steps_per_mm[A]    = DEFAULT_A_STEPS_PER_MM;
-  settings.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
-  settings.default_feed_rate  = DEFAULT_FEEDRATE;
-  settings.default_seek_rate  = DEFAULT_RAPID_FEEDRATE;
-  settings.acceleration       = DEFAULT_ACCELERATION;
-  settings.junction_deviation = DEFAULT_JUNCTION_DEVIATION;
-  settings.homing_feed_rate   = DEFAULT_HOMING_FEEDRATE;
-  settings.homing_seek_rate   = DEFAULT_HOMING_RAPID_FEEDRATE ;
-  settings.homing_debounce_delay = DEFAULT_HOMING_DEBOUNCE_DELAY;
-  settings.homing_pulloff     = DEFAULT_HOMING_PULLOFF;
-  settings.stepper_idle_lock_time = DEFAULT_STEPPER_IDLE_LOCK_TIME; // If max value 255, steppers do not disable.
-  settings.decimal_places = DEFAULT_DECIMAL_PLACES;
-  settings.n_arc_correction = DEFAULT_N_ARC_CORRECTION;
- }else if(reset_all > 1){
- 
-   if(!read_ram_loaded_indicator())
-      Save_Row_From_Flash((unsigned long)FLASH_Settings_VAddr_P1);
-      
-  settings.steps_per_mm[X] = ulong2flt(buffA[SPMMX_OFFSET]);
-  settings.steps_per_mm[Y] = ulong2flt(buffA[SPMMX_OFFSET + 1]);
-  settings.steps_per_mm[Z] = ulong2flt(buffA[SPMMX_OFFSET + 2]);
- // settings.steps_per_mm[A] = DEFAULT_A_STEPS_PER_MM; //temp disabled for now
-  settings.mm_per_arc_segment = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
-  settings.default_feed_rate  = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
-  settings.default_seek_rate  = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
-  settings.acceleration       = ulong2flt(buffA[ACCELERATION_OFFSET]);
-  settings.junction_deviation = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
-  settings.homing_feed_rate   = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
-  settings.homing_seek_rate   = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
-  settings.homing_debounce_delay  = ulong2flt(buffA[H_DEBNC_DLY_OFFSET]);
-  settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
-  settings.stepper_idle_lock_time = ulong2flt(buffA[STEP_IDLE_DLY_OFFSET]);// If max value 255, steppers do not disable.
-  settings.decimal_places         = ulong2flt(buffA[DEC_PLACES_OFFSET]);
-  settings.n_arc_correction       = ulong2flt(buffA[N_ARC_CORREC_OFFSET]);
- 
+ }else{
+   add = (unsigned long)FLASH_Settings_VAddr_P1;
+   has_data = Save_Row_From_Flash(add);
+             //test string argument for correctness
+   #if GlobalsDebug == 2
+   while(DMA_IsOn(1));
+   dma_printf("has_data:= %d\n",has_data);
+   #endif
+   if(!has_data){
+      //defaults for settings
+      settings.steps_per_mm[X] = DEFAULT_X_STEPS_PER_MM;
+      settings.steps_per_mm[Y] = DEFAULT_Y_STEPS_PER_MM;
+      settings.steps_per_mm[Z] = DEFAULT_Z_STEPS_PER_MM;
+      settings.steps_per_mm[A]    = DEFAULT_A_STEPS_PER_MM;
+      settings.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
+      settings.default_feed_rate  = DEFAULT_FEEDRATE;
+      settings.default_seek_rate  = DEFAULT_RAPID_FEEDRATE;
+      settings.acceleration       = DEFAULT_ACCELERATION;
+      settings.junction_deviation = DEFAULT_JUNCTION_DEVIATION;
+      settings.homing_feed_rate   = DEFAULT_HOMING_FEEDRATE;
+      settings.homing_seek_rate   = DEFAULT_HOMING_RAPID_FEEDRATE ;
+      settings.homing_debounce_delay = DEFAULT_HOMING_DEBOUNCE_DELAY;
+      settings.homing_pulloff     = DEFAULT_HOMING_PULLOFF;
+      settings.stepper_idle_lock_time = DEFAULT_STEPPER_IDLE_LOCK_TIME; // If max value 255, steppers do not disable.
+      settings.decimal_places = DEFAULT_DECIMAL_PLACES;
+      settings.n_arc_correction = DEFAULT_N_ARC_CORRECTION;
+
+   }else{
+
+      settings.steps_per_mm[X] = ulong2flt(buffA[SPMMX_OFFSET]);
+      settings.steps_per_mm[Y] = ulong2flt(buffA[SPMMX_OFFSET + 1]);
+      settings.steps_per_mm[Z] = ulong2flt(buffA[SPMMX_OFFSET + 2]);
+     // settings.steps_per_mm[A] = DEFAULT_A_STEPS_PER_MM; //temp disabled for now
+      settings.mm_per_arc_segment = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
+      settings.default_feed_rate  = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
+      settings.default_seek_rate  = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
+      settings.acceleration       = ulong2flt(buffA[ACCELERATION_OFFSET]);
+      settings.junction_deviation = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
+      settings.homing_feed_rate   = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
+      settings.homing_seek_rate   = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
+      settings.homing_debounce_delay  = ulong2flt(buffA[H_DEBNC_DLY_OFFSET]);
+      settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
+      settings.stepper_idle_lock_time = ulong2flt(buffA[STEP_IDLE_DLY_OFFSET]);// If max value 255, steppers do not disable.
+      settings.decimal_places         = ulong2flt(buffA[DEC_PLACES_OFFSET]);
+      settings.n_arc_correction       = ulong2flt(buffA[N_ARC_CORREC_OFFSET]);
+
+   }
  }
 }
 
@@ -77,9 +88,9 @@ int data_count;
  for(j = 0;j < 512;j++){
     buffA[j] = *(ptr+j);
     if(buffA[j] != -1)data_count++;
-    #if FlashDebug == 1
-     while(DMA_IsOn(1));
-     dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
+    #if GlobalsDebug == 2
+    while(DMA_IsOn(1));
+    dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
     #endif
  }
  
@@ -146,7 +157,6 @@ unsigned int error = 0;
 int res=0,recipe = 0;
 unsigned long wdata[4]={0};
 unsigned long j,i;
-unsigned long add;
 unsigned long temp[4] = {0};
 
  add = (unsigned long)FLASH_Settings_VAddr_P1;
@@ -243,7 +253,7 @@ unsigned long temp;
 
   //read from the buffer and place into coordinate system
   if(!read_ram_loaded_indicator()){
-     unsigned long add = (unsigned long)FLASH_Settings_VAddr_P1;
+     add = (unsigned long)FLASH_Settings_VAddr_P1;
      Save_Row_From_Flash(add);
   }else{
     for(i = 0; i < 9; i++){
@@ -270,7 +280,7 @@ unsigned int settings_write_one_coord(int coord_select,float *coord){
 float coord_data[NoOfAxis];
 int recipe;
 unsigned int error = 0;
-unsigned long j,i,add;
+unsigned long j,i;
 unsigned long temp[NoOfAxis];
 
  //calculate the index of the Pnnn section of the buffA[]
@@ -321,7 +331,6 @@ unsigned long temp[NoOfAxis];
 //////////////////////////////////////////////////////
 // Reads startup line from EEPROM. Updated pointed line string data.
 int settings_read_startup_line(int n, char *line){
-unsigned long *add;
 char *char_add;
 
  switch(n){
@@ -343,7 +352,7 @@ char *char_add;
 //////////////////////////////////////////////////////////////////
 // Method to store startup lines into EEPROM
 int settings_store_startup_line(int n, char *line){
-unsigned long start_offset,addA;
+unsigned long start_offset;
 unsigned long i,j;
 int error,str_len;
 char temp_char;
@@ -357,7 +366,7 @@ char temp_char;
   #endif
  
  //Virtual memory address of Row
- addA  = (unsigned long)FLASH_Settings_VAddr_P1; //C0000
+ add  = (unsigned long)FLASH_Settings_VAddr_P1; //C0000
 
  //Ram memory address of startup lines
  switch(n){
@@ -366,11 +375,11 @@ char temp_char;
  }
 
  //Read the saved Row from flash first place it into ram
- Save_Row_From_Flash(addA);
+ Save_Row_From_Flash(add);
 
 //Erase the page in order to over write the values
 // add = (unsigned long)FLASH_Settings_VAddr_P1;
- error = (int)NVMErasePage(addA);
+ error = (int)NVMErasePage(add);
  
  //clear the words in buffA at line(n) offset
  for(i=start_offset;i<start_offset+16;i++)
@@ -389,7 +398,7 @@ char temp_char;
  #endif
 
  //write buffA back to Row3
- error = (int)NVMWriteRow(&addA,buffA);
+ error = (int)NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(error);
  
  return error;
@@ -405,7 +414,7 @@ int error = 0,val_temp = 0;
   //be read into Ram buffA inorder not to over write existing values
   //when saving back to flash memory using $=99 command
   if(!read_ram_loaded_indicator()){
-     unsigned long add = (unsigned long)FLASH_Settings_VAddr_P1;
+      add = (unsigned long)FLASH_Settings_VAddr_P1;
      // returns a value indicating how many longs have data
      error = Save_Row_From_Flash(add);
   }
@@ -520,15 +529,18 @@ int error = 0,val_temp = 0;
           buffA[H_PULL_OFF_OFFSET] = (unsigned long)val_temp;
       break;
     case 99://write buffC back to Row3
-       error = 1;
-       if(error){
-
-            unsigned long add = (unsigned long)FLASH_Settings_VAddr_P1;
-            error = set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
-            if(!error){ 
-               //reread the flash once it has been changed
-                Save_Row_From_Flash(add);
-             }
+       if(value){
+         add = (unsigned long)FLASH_Settings_VAddr_P1;
+         error = (int)NVMWriteRow(&add,buffA);
+         //test string argument for correctness
+          #if GlobalsDebug == 2
+          while(DMA_IsOn(1));
+          dma_printf("error:= %d\n",error);
+          #endif
+         if(!error){
+          //reread the flash once it has been changed
+          Save_Row_From_Flash(add);
+         }
        }
        break;
     default:

@@ -861,19 +861,12 @@ int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
 static int cntr = 0,a = 0;
 
  Conditin_Externs();
- EnableInterrupts();
 
  cntr = a = axis_to_run = dif = status_of_gcode = 0;
 
 
 
- Delay_ms(1000);
-
-
- has_flash = Save_Row_From_Flash((unsigned long) 0xBD1BC000 );
-
-
- if(has_flash){
+ if(read_ram_loaded_indicator()){
  settings_read_coord_data();
  }
 
@@ -934,7 +927,7 @@ static int cntr = 0,a = 0;
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
-#line 158 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 151 "C:/Users/Git/Pic32mzCNC/Main.c"
  protocol_execute_runtime();
  WDTCONSET = 0x01;
  }
@@ -975,7 +968,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 210 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 203 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1013,11 +1006,11 @@ unsigned long _flash,*addr;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 252 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 245 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
 
  coord_data[i] = gc.next_position[i];
-#line 260 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 253 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1034,7 +1027,7 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-#line 280 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 273 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1062,7 +1055,7 @@ unsigned long _flash,*addr;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 311 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 304 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1192,7 +1185,7 @@ int Modal_Group_Actions3(int action){
 
 
 int Modal_Group_Actions4(int action){
-#line 444 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 437 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 
@@ -1200,10 +1193,10 @@ int Modal_Group_Actions4(int action){
 
 
 int Modal_Group_Actions7(int action){
-#line 455 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 448 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
-#line 474 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 467 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  uint8_t rt_exec = sys.execute;

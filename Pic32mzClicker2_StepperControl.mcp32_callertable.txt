@@ -18,12 +18,6 @@ main
 			OutPutPulseXYZ
 			SetPinMode
 			SetInitialSizes
-			Settings_Init
-				read_ram_loaded_indicator
-				Save_Row_From_Flash
-					set_ram_loaded_indicator
-				ulong2flt
-					memcpy
 			DMA_global
 				DMA0
 				DMA1
@@ -32,10 +26,32 @@ main
 				UART2_Init_Advanced
 					UART_Calc_BRG
 				UART_Set_Active
+			Settings_Init
+				Save_Row_From_Flash
+					DMA_IsOn
+					dma_printf
+						DMA_CH_Busy
+						sprintf
+							_doprntf
+								isdigit
+								scale
+								fround
+						strcat
+						strlen
+						strncpy
+						DMA1_Enable
+						__CC2DW
+					set_ram_loaded_indicator
+					__CC2DW
+				DMA_IsOn
+				dma_printf
+				ulong2flt
+					memcpy
+				__CC2DW
 		plan_init
 		disableOCx
 		DisableStepper
-	Save_Row_From_Flash
+	read_ram_loaded_indicator
 	settings_read_coord_data
 		read_ram_loaded_indicator
 		Save_Row_From_Flash
@@ -115,17 +131,6 @@ main
 				fabs
 				floor
 				dma_printf
-					DMA_CH_Busy
-					sprintf
-						_doprntf
-							isdigit
-							scale
-							fround
-					strcat
-					strlen
-					strncpy
-					DMA1_Enable
-					__CC2DW
 				cos
 					sin
 						floor
@@ -219,7 +224,9 @@ main
 			floor
 			fabs
 			NVMWriteRow
-			set_ram_loaded_indicator
+			DMA_IsOn
+			dma_printf
+			__CC2DW
 		cpy_val_from_str
 		G_Mode
 			Set_Modal_Groups

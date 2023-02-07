@@ -833,9 +833,13 @@ volatile coord_sys coord_system[ 9 ];
 
 
 unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
+unsigned long volatile add = 0;
+
 static int volatile ram_loaded;
 
 void Settings_Init(short reset_all){
+int has_data = 0;
+
  if(!reset_all){
 
  sys.abort = 0;
@@ -843,7 +847,15 @@ void Settings_Init(short reset_all){
  sys.homing = 0;
  sys.execute = 0;
  sys.auto_start = 0;
- }else if(reset_all == 1){
+ }else{
+ add = (unsigned long) 0xBD1BC000 ;
+ has_data = Save_Row_From_Flash(add);
+
+
+ while(DMA_IsOn(1));
+ dma_printf("has_data:= %d\n",has_data);
+
+ if(!has_data){
 
  settings.steps_per_mm[X] =  250.0 ;
  settings.steps_per_mm[Y] =  250.0 ;
@@ -861,10 +873,8 @@ void Settings_Init(short reset_all){
  settings.stepper_idle_lock_time =  25 ;
  settings.decimal_places =  3 ;
  settings.n_arc_correction =  25 ;
- }else if(reset_all > 1){
 
- if(!read_ram_loaded_indicator())
- Save_Row_From_Flash((unsigned long) 0xBD1BC000 );
+ }else{
 
  settings.steps_per_mm[X] = ulong2flt(buffA[ 0x40 ]);
  settings.steps_per_mm[Y] = ulong2flt(buffA[ 0x40  + 1]);
@@ -883,6 +893,7 @@ void Settings_Init(short reset_all){
  settings.decimal_places = ulong2flt(buffA[ 0x56 ]);
  settings.n_arc_correction = ulong2flt(buffA[ 0x4F ]);
 
+ }
  }
 }
 
@@ -904,7 +915,10 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 84 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
+
  }
 
 
@@ -935,14 +949,13 @@ static void zero_ram_loaded_indicator(){
 int read_ram_loaded_indicator(){
  return ram_loaded;
 }
-#line 143 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 154 "C:/Users/Git/Pic32mzCNC/Globals.c"
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
 float ptr;
 unsigned int error = 0;
 int res=0,recipe = 0;
 unsigned long wdata[4]={0};
 unsigned long j,i;
-unsigned long add;
 unsigned long temp[4] = {0};
 
  add = (unsigned long) 0xBD1BC000 ;
@@ -958,7 +971,7 @@ unsigned long temp[4] = {0};
  error = (int)NVMErasePage(add);
 
  if(error){
-#line 169 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 179 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -986,7 +999,7 @@ unsigned long temp[4] = {0};
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 203 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 213 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  i = (recipe-1)*4 ;
@@ -1000,7 +1013,7 @@ unsigned long temp[4] = {0};
 
  res = NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(res);
-#line 231 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 241 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -1016,7 +1029,7 @@ unsigned long temp;
 
 
  if(!read_ram_loaded_indicator()){
- unsigned long add = (unsigned long) 0xBD1BC000 ;
+ add = (unsigned long) 0xBD1BC000 ;
  Save_Row_From_Flash(add);
  }else{
  for(i = 0; i < 9; i++){
@@ -1024,7 +1037,7 @@ unsigned long temp;
  temp = buffA[(i* 4 ) + j];
  ptr = ulong2flt(temp);
  coord_system[i].coord[j] = ptr;
-#line 261 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 271 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  }
  }
@@ -1037,7 +1050,7 @@ unsigned int settings_write_one_coord(int coord_select,float *coord){
 float coord_data[ 4 ];
 int recipe;
 unsigned int error = 0;
-unsigned long j,i,add;
+unsigned long j,i;
 unsigned long temp[ 4 ];
 
 
@@ -1051,7 +1064,7 @@ unsigned long temp[ 4 ];
  temp[j] = flt2ulong(coord_data[j]);
  buffA[i] = temp[j];
  j++;
-#line 291 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 301 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  switch(coord_select){
@@ -1085,7 +1098,6 @@ unsigned long temp[ 4 ];
 
 
 int settings_read_startup_line(int n, char *line){
-unsigned long *add;
 char *char_add;
 
  switch(n){
@@ -1094,21 +1106,21 @@ char *char_add;
  }
 
  memcpy(line,char_add,64);
-#line 340 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 349 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return  0 ;
 }
 
 
 
 int settings_store_startup_line(int n, char *line){
-unsigned long start_offset,addA;
+unsigned long start_offset;
 unsigned long i,j;
 int error,str_len;
 char temp_char;
 
  str_len = strlen(line);
-#line 360 "C:/Users/Git/Pic32mzCNC/Globals.c"
- addA = (unsigned long) 0xBD1BC000 ;
+#line 369 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ add = (unsigned long) 0xBD1BC000 ;
 
 
  switch(n){
@@ -1117,11 +1129,11 @@ char temp_char;
  }
 
 
- Save_Row_From_Flash(addA);
+ Save_Row_From_Flash(add);
 
 
 
- error = (int)NVMErasePage(addA);
+ error = (int)NVMErasePage(add);
 
 
  for(i=start_offset;i<start_offset+16;i++)
@@ -1130,8 +1142,8 @@ char temp_char;
 
 
  memcpy(buffA+start_offset,line,str_len);
-#line 392 "C:/Users/Git/Pic32mzCNC/Globals.c"
- error = (int)NVMWriteRow(&addA,buffA);
+#line 401 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ error = (int)NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(error);
 
  return error;
@@ -1147,7 +1159,7 @@ int error = 0,val_temp = 0;
 
 
  if(!read_ram_loaded_indicator()){
- unsigned long add = (unsigned long) 0xBD1BC000 ;
+ add = (unsigned long) 0xBD1BC000 ;
 
  error = Save_Row_From_Flash(add);
  }
@@ -1262,11 +1274,14 @@ int error = 0,val_temp = 0;
  buffA[ 0x4B ] = (unsigned long)val_temp;
  break;
  case 99:
- error = 1;
- if(error){
+ if(value){
+ add = (unsigned long) 0xBD1BC000 ;
+ error = (int)NVMWriteRow(&add,buffA);
 
- unsigned long add = (unsigned long) 0xBD1BC000 ;
- error = set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
+
+ while(DMA_IsOn(1));
+ dma_printf("error:= %d\n",error);
+
  if(!error){
 
  Save_Row_From_Flash(add);

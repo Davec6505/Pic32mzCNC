@@ -928,11 +928,6 @@ void PinMode(){
 
 
 
- Settings_Init(0);
- Settings_Init(1);
-
-
-
 
  DMA_global();
  DMA0_Enable();
@@ -947,6 +942,13 @@ void PinMode(){
 
 
 
+
+ EnableInterrupts();
+
+
+ Settings_Init(0);
+ Settings_Init(1);
+
 }
 
 void UartConfig(){
@@ -955,7 +957,7 @@ void UartConfig(){
  UART2_Init_Advanced(115200, 200000 , _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
  UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle);
  Delay_ms(10);
-#line 144 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 146 "C:/Users/Git/Pic32mzCNC/Config.c"
 }
 
 
@@ -966,7 +968,7 @@ void UartConfig(){
 
 
 void Uart2InterruptSetup(){
-#line 160 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 162 "C:/Users/Git/Pic32mzCNC/Config.c"
  URXISEL0_bit = 0;
  URXISEL1_bit = 0;
 
@@ -1057,7 +1059,7 @@ unsigned long cp0;
 
 
 void OutPutPulseXYZ(){
-#line 255 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 257 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5CON = 0x0000;
  OC2CON = 0x0000;
  OC7CON = 0X0000;
@@ -1095,7 +1097,7 @@ void OutPutPulseXYZ(){
  OC3CON = 0x000C;
  OC6CON = 0x000C;
  OC8CON = 0x000C;
-#line 299 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 301 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5R = 0x5;
  OC5RS = 0x234;
  OC2R = 0x5;
