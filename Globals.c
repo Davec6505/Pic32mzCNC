@@ -23,32 +23,70 @@ int has_data = 0;
  }else{
    add = (unsigned long)FLASH_Settings_VAddr_P1;
    has_data = Save_Row_From_Flash(add);
-             //test string argument for correctness
-   #if GlobalsDebug == 2
+   //test string argument for correctness
+   #if GlobalsDebug == 1
    while(DMA_IsOn(1));
    dma_printf("has_data:= %d\n",has_data);
    #endif
    if(!has_data){
       //defaults for settings
-      settings.steps_per_mm[X] = DEFAULT_X_STEPS_PER_MM;
-      settings.steps_per_mm[Y] = DEFAULT_Y_STEPS_PER_MM;
-      settings.steps_per_mm[Z] = DEFAULT_Z_STEPS_PER_MM;
-      settings.steps_per_mm[A]    = DEFAULT_A_STEPS_PER_MM;
+      settings.steps_per_mm[X]   = DEFAULT_X_STEPS_PER_MM;
+      buffA[SPMMX_OFFSET]        = flt2ulong(settings.steps_per_mm[X]);
+      settings.steps_per_mm[Y]   = DEFAULT_Y_STEPS_PER_MM;
+      buffA[SPMMY_OFFSET]        = flt2ulong(settings.steps_per_mm[Y]);
+      settings.steps_per_mm[Z]   = DEFAULT_Z_STEPS_PER_MM;
+      buffA[SPMMZ_OFFSET]        = flt2ulong(settings.steps_per_mm[Z]);
+      settings.steps_per_mm[A]   = DEFAULT_A_STEPS_PER_MM;
+
       settings.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
-      settings.default_feed_rate  = DEFAULT_FEEDRATE;
-      settings.default_seek_rate  = DEFAULT_RAPID_FEEDRATE;
-      settings.acceleration       = DEFAULT_ACCELERATION;
+      buffA[MM_ARC_SEG_OFFSET]    =  flt2ulong(settings.mm_per_arc_segment);
+      
+      settings.default_feed_rate = DEFAULT_FEEDRATE;
+      buffA[D_FEED_RATE_OFFSET]  = flt2ulong(settings.default_feed_rate);
+      
+      settings.default_seek_rate = DEFAULT_RAPID_FEEDRATE;
+      buffA[D_SEEK_RATE_OFFSET]  = flt2ulong(settings.default_seek_rate);
+      
+      settings.acceleration      = DEFAULT_ACCELERATION;
+      buffA[ACCELERATION_OFFSET] = flt2ulong(settings.acceleration);
+      
       settings.junction_deviation = DEFAULT_JUNCTION_DEVIATION;
+      buffA[JUNCTION_DEV_OFFSET]  = flt2ulong(settings.junction_deviation);
+      
       settings.homing_feed_rate   = DEFAULT_HOMING_FEEDRATE;
+      buffA[H_FEED_RATE_OFFSET]   = flt2ulong(settings.homing_feed_rate);
+      
       settings.homing_seek_rate   = DEFAULT_HOMING_RAPID_FEEDRATE ;
+      buffA[H_SEEK_RATE_OFFSET]   = flt2ulong(settings.homing_seek_rate);
+      
       settings.homing_debounce_delay = DEFAULT_HOMING_DEBOUNCE_DELAY;
+      buffA[H_DEBNC_DLY_OFFSET]   = flt2ulong(settings.homing_debounce_delay);
+      
       settings.homing_pulloff     = DEFAULT_HOMING_PULLOFF;
+      buffA[H_PULL_OFF_OFFSET]    = flt2ulong(settings.homing_pulloff);
+      
       settings.stepper_idle_lock_time = DEFAULT_STEPPER_IDLE_LOCK_TIME; // If max value 255, steppers do not disable.
-      settings.decimal_places = DEFAULT_DECIMAL_PLACES;
-      settings.n_arc_correction = DEFAULT_N_ARC_CORRECTION;
-
+      buffA[IDLE_LOCK_TMR_OFFSET] = flt2ulong(settings.stepper_idle_lock_time);
+      
+      settings.decimal_places     = DEFAULT_DECIMAL_PLACES;
+      buffA[DEC_PLACES_OFFSET]    = flt2ulong(settings.decimal_places);
+      
+      settings.n_arc_correction   = DEFAULT_N_ARC_CORRECTION;
+      buffA[N_ARC_CORREC_OFFSET]  = flt2ulong(N_ARC_CORREC_OFFSET);
+      
+      
+      //write buffA back to Row3
+     //has_data = (int)NVMWriteRow(&add,buffA);
+     //set_ram_loaded_indicator(has_data);
+     
    }else{
-
+        settings.flags = 0;
+      if (DEFAULT_REPORT_INCHES) { settings.flags |= BITFLAG_REPORT_INCHES; }
+      if (DEFAULT_AUTO_START) { settings.flags |= BITFLAG_AUTO_START; }
+      if (DEFAULT_INVERT_ST_ENABLE) { settings.flags |= BITFLAG_INVERT_ST_ENABLE; }
+      if (DEFAULT_HARD_LIMIT_ENABLE) { settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; }
+      if (DEFAULT_HOMING_ENABLE) { settings.flags |= BITFLAG_HOMING_ENABLE; }
+      
       settings.steps_per_mm[X] = ulong2flt(buffA[SPMMX_OFFSET]);
       settings.steps_per_mm[Y] = ulong2flt(buffA[SPMMX_OFFSET + 1]);
       settings.steps_per_mm[Z] = ulong2flt(buffA[SPMMX_OFFSET + 2]);
@@ -88,7 +126,7 @@ int data_count;
  for(j = 0;j < 512;j++){
     buffA[j] = *(ptr+j);
     if(buffA[j] != -1)data_count++;
-    #if GlobalsDebug == 2
+    #if FlashDebug == 2
     while(DMA_IsOn(1));
     dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
     #endif
@@ -409,16 +447,15 @@ char temp_char;
 // ac:grbl_settings  $999 is added to save all updated to flash
 int settings_store_global_setting(int parameter, float value) {
 int error = 0,val_temp = 0;
-  //check if flash has been changed since last read a 0 indicates
-  //that flash was changed, for any other value Flash has to first
-  //be read into Ram buffA inorder not to over write existing values
-  //when saving back to flash memory using $=99 command
-  if(!read_ram_loaded_indicator()){
-      add = (unsigned long)FLASH_Settings_VAddr_P1;
-     // returns a value indicating how many longs have data
-     error = Save_Row_From_Flash(add);
-  }
+
+  add = (unsigned long)FLASH_Settings_VAddr_P1;
   
+  //test string argument for correctness
+  #if GlobalsDebug == 2
+  while(DMA_IsOn(1));
+  dma_printf("param:= %d & value:= %f\n",parameter,value);
+  #endif
+
   switch(parameter) {
     case 0: case 1: case 2: //| X | Y | Z | ? | ? | ? |
       if (value <= 0.0) { return(STATUS_SETTING_VALUE_NEG); }
@@ -464,7 +501,7 @@ int error = 0,val_temp = 0;
     case 11: 
        val_temp = round(value);
        settings.n_arc_correction = val_temp;
-       buffA[N_ARC_CORREC_OFFSET] = (unsigned long)val_temp;
+       buffA[N_ARC_CORREC_OFFSET] = (int)val_temp;
        break;
     case 12: 
        val_temp = round(value);
@@ -477,6 +514,7 @@ int error = 0,val_temp = 0;
       }else{
         settings.flags &= ~BITFLAG_REPORT_INCHES;
       }
+      buffA[FLAGS_OFFSET] |= settings.flags;
       break;
     case 14: // Reset to ensure change. Immediate re-init may cause problems.
       if (value){ 
@@ -484,6 +522,7 @@ int error = 0,val_temp = 0;
       }else{ 
         settings.flags &= ~BITFLAG_AUTO_START;
       }
+      buffA[FLAGS_OFFSET] |= settings.flags;
       break;
     case 15: // Reset to ensure change. Immediate re-init may cause problems.
       if (value){ 
@@ -491,6 +530,7 @@ int error = 0,val_temp = 0;
       }else{
          settings.flags &= ~BITFLAG_INVERT_ST_ENABLE; 
       }
+      buffA[FLAGS_OFFSET] |= settings.flags;
       break;
     case 16:
       if (value){
@@ -498,6 +538,7 @@ int error = 0,val_temp = 0;
       }else{ 
          settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
       }
+      buffA[FLAGS_OFFSET] |= settings.flags;
      // limits_init(); // Re-init to immediately change. NOTE: Nice to have but could be problematic later.
       break;
     case 17:
@@ -506,6 +547,7 @@ int error = 0,val_temp = 0;
       }else{
         settings.flags &= ~BITFLAG_HOMING_ENABLE;
       }
+      buffA[FLAGS_OFFSET] |= settings.flags;
       break;
     case 18:
          val_temp = round(value);
@@ -516,7 +558,7 @@ int error = 0,val_temp = 0;
              buffA[H_FEED_RATE_OFFSET] = flt2ulong(value);
       break;
     case 20: settings.homing_seek_rate = value; 
-             buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
+             buffA[H_SEEK_RATE_OFFSET] = flt2ulong(value);
       break;
     case 21:
          val_temp = round(value);
@@ -529,19 +571,23 @@ int error = 0,val_temp = 0;
           buffA[H_PULL_OFF_OFFSET] = (unsigned long)val_temp;
       break;
     case 99://write buffC back to Row3
-       if(value){
-         add = (unsigned long)FLASH_Settings_VAddr_P1;
-         error = (int)NVMWriteRow(&add,buffA);
-         //test string argument for correctness
-          #if GlobalsDebug == 2
-          while(DMA_IsOn(1));
-          dma_printf("error:= %d\n",error);
-          #endif
-         if(!error){
-          //reread the flash once it has been changed
-          Save_Row_From_Flash(add);
+         val_temp = round(value);
+         if(val_temp == 1){
+           error = (int)NVMWriteRow(&add,buffA);
+           //test string argument for correctness
+            #if GlobalsDebug == 2
+            while(DMA_IsOn(1));
+            dma_printf("error:= %d\n",error);
+            #endif
+           if(!error){
+            //reread the flash once it has been changed
+             error = Save_Row_From_Flash(add);
+             #if GlobalsDebug == 2
+             while(DMA_IsOn(1));
+             dma_printf("error:= %d\n",error);
+             #endif
+           }
          }
-       }
        break;
     default:
       return(STATUS_INVALID_STATEMENT);

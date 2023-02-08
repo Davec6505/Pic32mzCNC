@@ -850,31 +850,65 @@ int has_data = 0;
  }else{
  add = (unsigned long) 0xBD1BC000 ;
  has_data = Save_Row_From_Flash(add);
-
-
- while(DMA_IsOn(1));
- dma_printf("has_data:= %d\n",has_data);
-
+#line 31 "C:/Users/Git/Pic32mzCNC/Globals.c"
  if(!has_data){
 
  settings.steps_per_mm[X] =  250.0 ;
+ buffA[ 0x40 ] = flt2ulong(settings.steps_per_mm[X]);
  settings.steps_per_mm[Y] =  250.0 ;
+ buffA[ 0x41 ] = flt2ulong(settings.steps_per_mm[Y]);
  settings.steps_per_mm[Z] =  250.0 ;
+ buffA[ 0x42 ] = flt2ulong(settings.steps_per_mm[Z]);
  settings.steps_per_mm[A] =  250 ;
+
  settings.mm_per_arc_segment =  0.8 ;
+ buffA[ 0x4C ] = flt2ulong(settings.mm_per_arc_segment);
+
  settings.default_feed_rate =  250.0 ;
+ buffA[ 0x47 ] = flt2ulong(settings.default_feed_rate);
+
  settings.default_seek_rate =  500.0 ;
+ buffA[ 0x48 ] = flt2ulong(settings.default_seek_rate);
+
  settings.acceleration =  (10.0*60*60) ;
+ buffA[ 0x4D ] = flt2ulong(settings.acceleration);
+
  settings.junction_deviation =  0.05 ;
+ buffA[ 0x4E ] = flt2ulong(settings.junction_deviation);
+
  settings.homing_feed_rate =  25.0 ;
+ buffA[ 0x49 ] = flt2ulong(settings.homing_feed_rate);
+
  settings.homing_seek_rate =  250.0  ;
+ buffA[ 0x4A ] = flt2ulong(settings.homing_seek_rate);
+
  settings.homing_debounce_delay =  100 ;
+ buffA[ 0x52 ] = flt2ulong(settings.homing_debounce_delay);
+
  settings.homing_pulloff =  1.0 ;
+ buffA[ 0x4B ] = flt2ulong(settings.homing_pulloff);
+
  settings.stepper_idle_lock_time =  25 ;
+ buffA[ 0x53 ] = flt2ulong(settings.stepper_idle_lock_time);
+
  settings.decimal_places =  3 ;
+ buffA[ 0x56 ] = flt2ulong(settings.decimal_places);
+
  settings.n_arc_correction =  25 ;
+ buffA[ 0x4F ] = flt2ulong( 0x4F );
+
+
+
+
+
 
  }else{
+ settings.flags = 0;
+ if ( 0 ) { settings.flags |=  (1 << 0) ; }
+ if ( 1 ) { settings.flags |=  (1 << 1) ; }
+ if ( 0 ) { settings.flags |=  (1 << 2) ; }
+ if ( 0 ) { settings.flags |=  (1 << 3) ; }
+ if ( 0 ) { settings.flags |=  (1 << 4) ; }
 
  settings.steps_per_mm[X] = ulong2flt(buffA[ 0x40 ]);
  settings.steps_per_mm[Y] = ulong2flt(buffA[ 0x40  + 1]);
@@ -915,10 +949,7 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-
- while(DMA_IsOn(1));
- dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
-
+#line 133 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
 
@@ -949,7 +980,7 @@ static void zero_ram_loaded_indicator(){
 int read_ram_loaded_indicator(){
  return ram_loaded;
 }
-#line 154 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 192 "C:/Users/Git/Pic32mzCNC/Globals.c"
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
 float ptr;
 unsigned int error = 0;
@@ -971,7 +1002,7 @@ unsigned long temp[4] = {0};
  error = (int)NVMErasePage(add);
 
  if(error){
-#line 179 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 217 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -999,7 +1030,7 @@ unsigned long temp[4] = {0};
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 213 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 251 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  i = (recipe-1)*4 ;
@@ -1013,7 +1044,7 @@ unsigned long temp[4] = {0};
 
  res = NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(res);
-#line 241 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 279 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -1037,7 +1068,7 @@ unsigned long temp;
  temp = buffA[(i* 4 ) + j];
  ptr = ulong2flt(temp);
  coord_system[i].coord[j] = ptr;
-#line 271 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 309 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  }
  }
@@ -1064,7 +1095,7 @@ unsigned long temp[ 4 ];
  temp[j] = flt2ulong(coord_data[j]);
  buffA[i] = temp[j];
  j++;
-#line 301 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 339 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  switch(coord_select){
@@ -1106,7 +1137,7 @@ char *char_add;
  }
 
  memcpy(line,char_add,64);
-#line 349 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 387 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return  0 ;
 }
 
@@ -1119,7 +1150,7 @@ int error,str_len;
 char temp_char;
 
  str_len = strlen(line);
-#line 369 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 407 "C:/Users/Git/Pic32mzCNC/Globals.c"
  add = (unsigned long) 0xBD1BC000 ;
 
 
@@ -1142,7 +1173,7 @@ char temp_char;
 
 
  memcpy(buffA+start_offset,line,str_len);
-#line 401 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 439 "C:/Users/Git/Pic32mzCNC/Globals.c"
  error = (int)NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(error);
 
@@ -1155,14 +1186,13 @@ char temp_char;
 int settings_store_global_setting(int parameter, float value) {
 int error = 0,val_temp = 0;
 
-
-
-
- if(!read_ram_loaded_indicator()){
  add = (unsigned long) 0xBD1BC000 ;
 
- error = Save_Row_From_Flash(add);
- }
+
+
+ while(DMA_IsOn(1));
+ dma_printf("param:= %d & value:= %f\n",parameter,value);
+
 
  switch(parameter) {
  case 0: case 1: case 2:
@@ -1209,7 +1239,7 @@ int error = 0,val_temp = 0;
  case 11:
  val_temp = round(value);
  settings.n_arc_correction = val_temp;
- buffA[ 0x4F ] = (unsigned long)val_temp;
+ buffA[ 0x4F ] = (int)val_temp;
  break;
  case 12:
  val_temp = round(value);
@@ -1222,6 +1252,7 @@ int error = 0,val_temp = 0;
  }else{
  settings.flags &= ~ (1 << 0) ;
  }
+ buffA[ 0x50 ] |= settings.flags;
  break;
  case 14:
  if (value){
@@ -1229,6 +1260,7 @@ int error = 0,val_temp = 0;
  }else{
  settings.flags &= ~ (1 << 1) ;
  }
+ buffA[ 0x50 ] |= settings.flags;
  break;
  case 15:
  if (value){
@@ -1236,6 +1268,7 @@ int error = 0,val_temp = 0;
  }else{
  settings.flags &= ~ (1 << 2) ;
  }
+ buffA[ 0x50 ] |= settings.flags;
  break;
  case 16:
  if (value){
@@ -1243,6 +1276,7 @@ int error = 0,val_temp = 0;
  }else{
  settings.flags &= ~ (1 << 3) ;
  }
+ buffA[ 0x50 ] |= settings.flags;
 
  break;
  case 17:
@@ -1251,6 +1285,7 @@ int error = 0,val_temp = 0;
  }else{
  settings.flags &= ~ (1 << 4) ;
  }
+ buffA[ 0x50 ] |= settings.flags;
  break;
  case 18:
  val_temp = round(value);
@@ -1261,7 +1296,7 @@ int error = 0,val_temp = 0;
  buffA[ 0x49 ] = flt2ulong(value);
  break;
  case 20: settings.homing_seek_rate = value;
- buffA[ 0x48 ] = flt2ulong(value);
+ buffA[ 0x4A ] = flt2ulong(value);
  break;
  case 21:
  val_temp = round(value);
@@ -1274,8 +1309,8 @@ int error = 0,val_temp = 0;
  buffA[ 0x4B ] = (unsigned long)val_temp;
  break;
  case 99:
- if(value){
- add = (unsigned long) 0xBD1BC000 ;
+ val_temp = round(value);
+ if(val_temp == 1){
  error = (int)NVMWriteRow(&add,buffA);
 
 
@@ -1284,7 +1319,11 @@ int error = 0,val_temp = 0;
 
  if(!error){
 
- Save_Row_From_Flash(add);
+ error = Save_Row_From_Flash(add);
+
+ while(DMA_IsOn(1));
+ dma_printf("error:= %d\n",error);
+
  }
  }
  break;

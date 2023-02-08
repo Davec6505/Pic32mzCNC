@@ -140,52 +140,53 @@ void report_grbl_settings() {
 float acc = settings.acceleration;
   acc /=(60*60);
   while(DMA_IsOn(1));
-  dma_printf("$0=    %l (x, step/mm) \n\
+  dma_printf("\n\
+              $0=    %l (x, step/mm) \n\
               $1=    %l (y, step/mm) \n\
               $2=    %l (z, step/mm) \n\
-              $3=    %d (n-arc correction, int) \n\
-              $4=    %d (n-decimals, int) \n\
-              $5=    %d (hard limits, bool) \n\
-              $6=    %d (homing dir invert mask, int:)\n\
+              $3=    %f (step pulse, usec) \n\
+              $4=    %f (default feed, mm/min)\n\
+              $5=    %f (default seek, mm/min)\n\
+              $6=    %d (step port invert mask, int) \n\
               $7=    %d (step idle delay, msec)\n\
-              $8=    %d (homing debounce, msec)\n\
-              $9=    %f (default feed, mm/min)\n\
-              $10=   %f (default seek, mm/min)\n\
-              $11=   %f (acceleration, mm/sec^2)\n\
-              $12=   %f (junction deviation, mm)\n\
-              $13=   %f (arc, mm/segment)\n\
-              $14=   %f (homing feed, mm/min)\n\
-              $15=   %f (homing seek, mm/min)\n\
-              $16=   %f (homing pull-off, mm)\n\
-              $17=   %d (report inches, bool)\n\
-              $18=   %d (auto start, bool)\n\
-              $19:=  %d (invert step enable, bool)\n\
-              $20=   %d (homing cycle, bool)\n\
-              $21=   %d (homing dir invert mask, int:)\n\
-              $22=   %d (step port invert mask, int:)\n"
-              ,settings.steps_per_mm[X]
-              ,settings.steps_per_mm[Y]
-              ,settings.steps_per_mm[Z]
-              ,settings.n_arc_correction
-              ,settings.decimal_places
-              ,settings.flags
-              ,settings.homing_dir_mask
-              ,settings.step_idle_delay
-              ,settings.homing_debounce_delay
-              ,settings.default_feed_rate
-              ,settings.default_seek_rate
-              ,acc
-              ,settings.junction_deviation
-              ,settings.mm_per_arc_segment
-              ,settings.homing_feed_rate
-              ,settings.homing_seek_rate
-              ,settings.homing_pulloff
-              ,bit_istrue(settings.flags,BITFLAG_AUTO_START)
-              ,bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)
-              ,bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)
-              ,settings.homing_dir_mask
-              ,settings.homing_dir_mask
-              ,settings.invert_mask);
+              $8=    %f (acceleration, mm/sec^2)\n\
+              $9=    %f (junction deviation, mm)\n\
+              $10=   %f (arc, mm/segment)\n\
+              $11=   %d (n-arc correction, int) \n\
+              $12=   %d (n-decimals, int) \n\
+              $13=   %d (report inches, bool)\n\
+              $14=   %d (auto start, bool)\n\
+              $15:=  %d (invert step enable, bool)\n\
+              $16=   %d (hard limits, bool) \n\
+              $17=   %d (homing cycle, bool)\n\
+              $18=   %d (homing dir invert mask, int:)\n\
+              $19=   %f (homing feed, mm/min)\n\
+              $20=   %f (homing seek, mm/min)\n\
+              $21=   %d (homing debounce, msec)\n\
+              $22=   %f (homing pull-off, mm)\n"
+              ,settings.steps_per_mm[X]           //0
+              ,settings.steps_per_mm[Y]           //1
+              ,settings.steps_per_mm[Z]           //2
+              ,settings.p_msec                    //3
+              ,settings.default_feed_rate         //4
+              ,settings.default_seek_rate         //5
+              ,settings.invert_mask               //6
+              ,settings.step_idle_delay           //7
+              ,settings.acceleration              //8
+              ,settings.junction_deviation        //9
+              ,settings.mm_per_arc_segment        //10
+              ,settings.n_arc_correction          //11
+              ,settings.decimal_places            //12
+              ,bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)     //13
+              ,bit_istrue(settings.flags,BITFLAG_AUTO_START)        //14
+              ,bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)  //15
+              ,bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE) //16
+              ,bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)     //17
+              ,settings.homing_dir_mask                             //18
+              ,settings.homing_feed_rate                            //19
+              ,settings.homing_seek_rate                            //20
+              ,settings.homing_debounce_delay                       //21
+              ,settings.homing_pulloff);                            //22
 }
 
 

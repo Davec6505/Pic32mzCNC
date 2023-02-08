@@ -956,31 +956,31 @@ void report_grbl_settings() {
 float acc = settings.acceleration;
  acc /=(60*60);
  while(DMA_IsOn(1));
-#line 165 "C:/Users/Git/Pic32mzCNC/Print.c"
- dma_printf("$0=    %l (x, step/mm) \n              $1=    %l (y, step/mm) \n              $2=    %l (z, step/mm) \n              $3=    %d (n-arc correction, int) \n              $4=    %d (n-decimals, int) \n              $5=    %d (hard limits, bool) \n              $6=    %d (homing dir invert mask, int:)\n              $7=    %d (step idle delay, msec)\n              $8=    %d (homing debounce, msec)\n              $9=    %f (default feed, mm/min)\n              $10=   %f (default seek, mm/min)\n              $11=   %f (acceleration, mm/sec^2)\n              $12=   %f (junction deviation, mm)\n              $13=   %f (arc, mm/segment)\n              $14=   %f (homing feed, mm/min)\n              $15=   %f (homing seek, mm/min)\n              $16=   %f (homing pull-off, mm)\n              $17=   %d (report inches, bool)\n              $18=   %d (auto start, bool)\n              $19:=  %d (invert step enable, bool)\n              $20=   %d (homing cycle, bool)\n              $21=   %d (homing dir invert mask, int:)\n              $22=   %d (step port invert mask, int:)\n"
+#line 166 "C:/Users/Git/Pic32mzCNC/Print.c"
+ dma_printf("\n              $0=    %l (x, step/mm) \n              $1=    %l (y, step/mm) \n              $2=    %l (z, step/mm) \n              $3=    %f (step pulse, usec) \n              $4=    %f (default feed, mm/min)\n              $5=    %f (default seek, mm/min)\n              $6=    %d (step port invert mask, int) \n              $7=    %d (step idle delay, msec)\n              $8=    %f (acceleration, mm/sec^2)\n              $9=    %f (junction deviation, mm)\n              $10=   %f (arc, mm/segment)\n              $11=   %d (n-arc correction, int) \n              $12=   %d (n-decimals, int) \n              $13=   %d (report inches, bool)\n              $14=   %d (auto start, bool)\n              $15:=  %d (invert step enable, bool)\n              $16=   %d (hard limits, bool) \n              $17=   %d (homing cycle, bool)\n              $18=   %d (homing dir invert mask, int:)\n              $19=   %f (homing feed, mm/min)\n              $20=   %f (homing seek, mm/min)\n              $21=   %d (homing debounce, msec)\n              $22=   %f (homing pull-off, mm)\n"
  ,settings.steps_per_mm[X]
  ,settings.steps_per_mm[Y]
  ,settings.steps_per_mm[Z]
- ,settings.n_arc_correction
- ,settings.decimal_places
- ,settings.flags
- ,settings.homing_dir_mask
- ,settings.step_idle_delay
- ,settings.homing_debounce_delay
+ ,settings.p_msec
  ,settings.default_feed_rate
  ,settings.default_seek_rate
- ,acc
+ ,settings.invert_mask
+ ,settings.step_idle_delay
+ ,settings.acceleration
  ,settings.junction_deviation
  ,settings.mm_per_arc_segment
- ,settings.homing_feed_rate
- ,settings.homing_seek_rate
- ,settings.homing_pulloff
+ ,settings.n_arc_correction
+ ,settings.decimal_places
+ , ((settings.flags & (1 << 0) ) != 0) 
  , ((settings.flags & (1 << 1) ) != 0) 
  , ((settings.flags & (1 << 2) ) != 0) 
+ , ((settings.flags & (1 << 3) ) != 0) 
  , ((settings.flags & (1 << 4) ) != 0) 
  ,settings.homing_dir_mask
- ,settings.homing_dir_mask
- ,settings.invert_mask);
+ ,settings.homing_feed_rate
+ ,settings.homing_seek_rate
+ ,settings.homing_debounce_delay
+ ,settings.homing_pulloff);
 }
 
 
@@ -1053,7 +1053,7 @@ float coord_data[ 4 ];
 int coord_select, i;
 
  for (coord_select = 0; coord_select <=  9 +1 ; coord_select++) {
-#line 265 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 266 "C:/Users/Git/Pic32mzCNC/Print.c"
  while(DMA_IsOn(1));
  dma_printf("[G");
  while(DMA_IsOn(1));
@@ -1141,7 +1141,7 @@ void report_gcode_modes(){
  }
  while(DMA_IsOn(1));
  switch (gc.coolant_mode) {
-#line 357 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 358 "C:/Users/Git/Pic32mzCNC/Print.c"
  }
  while(DMA_IsOn(1));
  if (gc.inches_mode)

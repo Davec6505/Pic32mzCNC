@@ -28,26 +28,11 @@ main
 				UART_Set_Active
 			Settings_Init
 				Save_Row_From_Flash
-					DMA_IsOn
-					dma_printf
-						DMA_CH_Busy
-						sprintf
-							_doprntf
-								isdigit
-								scale
-								fround
-						strcat
-						strlen
-						strncpy
-						DMA1_Enable
-						__CC2DW
 					set_ram_loaded_indicator
-					__CC2DW
-				DMA_IsOn
-				dma_printf
+				flt2ulong
+					memcpy
 				ulong2flt
 					memcpy
-				__CC2DW
 		plan_init
 		disableOCx
 		DisableStepper
@@ -73,7 +58,6 @@ main
 					DMA_Resume
 					NVM_WR_Wait
 			flt2ulong
-				memcpy
 			NVMWriteRow
 				NVMUnlock
 			set_ram_loaded_indicator
@@ -131,6 +115,17 @@ main
 				fabs
 				floor
 				dma_printf
+					DMA_CH_Busy
+					sprintf
+						_doprntf
+							isdigit
+							scale
+							fround
+					strcat
+					strlen
+					strncpy
+					DMA1_Enable
+					__CC2DW
 				cos
 					sin
 						floor
@@ -215,8 +210,8 @@ main
 				isspace
 				isdigit
 		settings_store_global_setting
-			read_ram_loaded_indicator
-			Save_Row_From_Flash
+			DMA_IsOn
+			dma_printf
 			flt2ulong
 			round
 				ceil
@@ -224,8 +219,7 @@ main
 			floor
 			fabs
 			NVMWriteRow
-			DMA_IsOn
-			dma_printf
+			Save_Row_From_Flash
 			__CC2DW
 		cpy_val_from_str
 		G_Mode
