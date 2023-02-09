@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Print.c
+Value=Settings.h
 =======
 =======
 >>>>>>> patch1
@@ -135,17 +135,12 @@ File1=Main.c
 File2=Globals.h
 File3=Protocol.c
 File4=Protocol.h
-File5=DEFINES.pld
-File6=Settings.h
-File7=Nut_Bolts.c
-File8=Nuts_Bolts.h
-File9=GCODE.h
-File10=Flash_R_W.h
-File11=Config.c
-File12=Flash_R_W.c
-File13=Print.c
-File14=Print.h
-Count=15
+File5=Print.c
+File6=Print.h
+File7=DEFINES.pld
+File8=Serial_Dma.c
+File9=Settings.h
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

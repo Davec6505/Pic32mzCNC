@@ -46883,6 +46883,7 @@ read
 read
 read_
 read_bit
+read_coord_data_indicator
 read_emacxmcmd_bit
 read_float
 read_ram_loaded_indicator

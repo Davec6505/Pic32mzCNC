@@ -136,7 +136,7 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 151 "c:/users/git/pic32mzcnc/settings.h"
+#line 153 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -273,7 +273,7 @@ void sys_sync_current_position();
 
 
 int round(double val);
-#line 91 "c:/users/git/pic32mzcnc/globals.h"
+#line 95 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -298,16 +298,13 @@ typedef struct{
  float coord[ 4 ];
  float coord_offset[ 4 ];
 }coord_sys;
-extern volatile coord_sys coord_system[ 9 ];
+extern coord_sys coord_system[ 9 ];
 
 
 
 
 
 void Settings_Init(short reset_all);
-
-
-int Save_Row_From_Flash(unsigned long addr);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -317,6 +314,18 @@ static void zero_ram_loaded_indicator();
 
 
 int read_ram_loaded_indicator();
+
+
+static void rst_single_coord_read_indicators(int flag);
+
+
+static void rst_coord_read_indicator();
+
+
+int read_coord_data_indicator();
+
+
+int Save_Row_From_Flash(unsigned long addr);
 
 
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
@@ -830,8 +839,10 @@ int Modal_Group_Actions7(int action);
 void protocol_execute_runtime();
 #line 38 "C:/Users/Git/Pic32mzCNC/Main.c"
 system_t sys;
+coord_sys coord_system[ 9 ];
 STP STPS[ 4 ];
 settings_t settings;
+
 bit oneShotA; sfr;
 bit oneShotB; sfr;
 
@@ -927,7 +938,7 @@ static int cntr = 0,a = 0;
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
-#line 151 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 153 "C:/Users/Git/Pic32mzCNC/Main.c"
  protocol_execute_runtime();
  WDTCONSET = 0x01;
  }
@@ -968,7 +979,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 203 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 205 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1006,11 +1017,11 @@ unsigned long _flash,*addr;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 245 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 247 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
 
  coord_data[i] = gc.next_position[i];
-#line 253 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 255 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1027,7 +1038,7 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-#line 273 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 275 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1055,7 +1066,7 @@ unsigned long _flash,*addr;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 304 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 306 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1185,7 +1196,7 @@ int Modal_Group_Actions3(int action){
 
 
 int Modal_Group_Actions4(int action){
-#line 437 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 439 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 
@@ -1193,10 +1204,10 @@ int Modal_Group_Actions4(int action){
 
 
 int Modal_Group_Actions7(int action){
-#line 448 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 450 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
-#line 467 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 469 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  uint8_t rt_exec = sys.execute;

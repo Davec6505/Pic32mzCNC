@@ -40,7 +40,23 @@ main
 	settings_read_coord_data
 		read_ram_loaded_indicator
 		Save_Row_From_Flash
+		read_coord_data_indicator
 		ulong2flt
+		DMA_IsOn
+		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
+		set_coord_data_read_indicator
+		__CC2DW
 	Debounce_Limits
 		Test_Port_Pins
 		Reset_Min_Limit
@@ -115,17 +131,6 @@ main
 				fabs
 				floor
 				dma_printf
-					DMA_CH_Busy
-					sprintf
-						_doprntf
-							isdigit
-							scale
-							fround
-					strcat
-					strlen
-					strncpy
-					DMA1_Enable
-					__CC2DW
 				cos
 					sin
 						floor
@@ -174,6 +179,10 @@ main
 			dma_printf
 			__CC2DW
 		report_gcode_parameters
+			read_coord_data_indicator
+			settings_read_coord_data
+			read_ram_loaded_indicator
+			report_status_message
 			DMA_IsOn
 			dma_printf
 		report_gcode_modes
@@ -205,6 +214,7 @@ main
 			NVMWriteRow
 			set_ram_loaded_indicator
 		isdigit
+		memset
 		atof
 			strtod
 				isspace

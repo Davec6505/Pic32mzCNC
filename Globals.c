@@ -2,14 +2,19 @@
 
 //coordinates struct - easier to work when extracted from flash
 //holds coord[] and coord_offset[]
-volatile coord_sys coord_system[NUMBER_OF_DATUMS];
+// coord_sys coord_system[NUMBER_OF_DATUMS];
 
 //temp buffer to save flash settings to
 unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
 unsigned long volatile add = 0;
 
+//conditional variables to indicate status of buffA and structs
 static int volatile ram_loaded;
+static int volatile coord_read;
 
+
+////////////////////////////////////////////////////////////////////////////////
+//Initializes all settings and restores defaults if needed
 void Settings_Init(short reset_all){
 int has_data = 0;
 
@@ -108,14 +113,62 @@ int has_data = 0;
  }
 }
 
-////////////////////////////////////////////////////////////////////
-//                     FLASH CONTROL FUNCTIONS                    //
-////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//                    FLASH STATUS INDICATOR FUNCTIONS                        //
+////////////////////////////////////////////////////////////////////////////////
+
+//sets the indicator of available data in flash "--EEPROM--"
+//call this function at every write to flash,if flash fails to
+//write an error indicator will will be sent 0f 1-3
+//1=low volt error | 2=write failed | 3=both erros | 0=success
+//if success on write a reset of this value indicating a new read of
+//the flash is needed to reload buffA / ram @ #A000000
+static int set_ram_loaded_indicator(int val){
+ ram_loaded = val;
+ return ram_loaded;
+}
+
+//force a zeroing of ram_loaded indicator
+static void zero_ram_loaded_indicator(){
+ ram_loaded = 0;
+}
+
+//read the indicator to test for data
+int read_ram_loaded_indicator(){
+ return ram_loaded;
+}
+
+//sets / resets the coordinate data read bit, the code should
+//test this bit so as not to waste time requering the flash every
+//time it needs to feed back to ugs, reset this flag once flash
+//has been updated
+static void set_coord_data_read_indicator(int flag){
+   bit_true(coord_read,flag);
+}
+
+//reset individual flags back to false
+static void rst_single_coord_read_indicators(int flag){
+  bit_false(coord_read,flag);
+}
+
+//reset all coord status flags back to false
+static void rst_coord_read_indicator(){
+  coord_read = 0;
+}
+
+//get the status of the indicator flag
+int read_coord_data_indicator(){
+ return coord_read;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                          FLASH CONTROL FUNCTIONS                           //
+////////////////////////////////////////////////////////////////////////////////
 
 //Save current page to a temp buffer [ram @ #A0000000], this is to
 //push original setting back after a page errase and save time
 //reading flash to often, as well as save flash
-
 int Save_Row_From_Flash(unsigned long addr){
 unsigned long i,j;
 unsigned long *ptr;
@@ -139,28 +192,6 @@ int data_count;
  //return the number of indices that hold data
  return data_count;
 }
-
-//sets the indicator of available data in flash "--EEPROM--"
-//call this function at every write to flash,if flash fails to
-//write an error indicator will will be sent 0f 1-3
-//1=low volt error | 2=write failed | 3=both erros | 0=success
-//if success on write a reset of this value indicating a new read of 
-//the flash is needed to reload buffA / ram @ #A000000
-static int set_ram_loaded_indicator(int val){
- ram_loaded = val;
- return ram_loaded;
-}
-
-//force a zeroing of ram_loaded indicator
-static void zero_ram_loaded_indicator(){
- ram_loaded = 0;
-}
-
-//read the indicator to test for data
-int read_ram_loaded_indicator(){
- return ram_loaded;
-}
-
 
 ////////////////////////////////////////////////////////////////////
 //    G54, G55, G56, G57, G58 and G59 are datum shift G-Codes     //
@@ -187,7 +218,7 @@ P      Value        Coordinate System        G code
  *from the X, Y, Z position to part of the datum.
 *******************************************************************/
 
-///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //here we want to write the new recipe to flash and set the coordinate
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
 float ptr;
@@ -245,19 +276,17 @@ unsigned long temp[4] = {0};
     while(DMA_IsOn(1));
     dma_printf("%f\t%l\n",coord[i],wdata[i]);
    #endif
-    //in order to write single word change the addresses from0x10 incraments
-    //to 0x4 incraments
-    //res = NVMWriteWord(add+i*4,wdata[i]);
  }
  
- i = (recipe-1)*4 ; //place the new data into the correct position
-  //put the new data into the relevant slot e.g. P1,2,3,4...
+ //place the new data into the correct position
+ i = (recipe-1)*4 ;
+ 
+ //put the new data into the relevant slot e.g. P1,2,3,4...
  for(j = 0;j<4;j++){
    buffA[i] =  wdata[j];
    i++;
  }
   
- //add = (unsigned long)FLASH_Settings_VAddr_P1;
  //if result == 0 then write was sucessfull a reread of flash is needed
   res = NVMWriteRow(&add,buffA);
   set_ram_loaded_indicator(res);
@@ -279,28 +308,33 @@ unsigned long temp[4] = {0};
    return res;
 }
 
-//////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
 //read back the coordinate data and place into coord
 //struct for processing, coordinate system is 36longs
 //indexed by number of axis
 void settings_read_coord_data(){
-float ptr;
-unsigned int error = 0;
-unsigned long j,i,res;
-unsigned long temp;
 
   //read from the buffer and place into coordinate system
   if(!read_ram_loaded_indicator()){
      add = (unsigned long)FLASH_Settings_VAddr_P1;
      Save_Row_From_Flash(add);
-  }else{
+  }
+  
+  if(!read_coord_data_indicator()){
+  unsigned long j,i;
+  unsigned long temp = 0UL;
+  float value = 0.00;
     for(i = 0; i < 9; i++){
       for(j = 0 ; j < NoOfAxis; j++){
         temp = buffA[(i*NoOfAxis) + j];
-        ptr = ulong2flt(temp);
-        coord_system[i].coord[j] = ptr;
+        //if flash has no value force it to 0
+        if(temp == -1)
+           temp = 0UL;
+        value = ulong2flt(temp);
+        coord_system[i].coord[j] = value;
 
-        #if FlashDebug == 2
+        #if FlashDebug == 3
          while(DMA_IsOn(1));
          dma_printf("cord[%l].[%l]:= %f\n"
          ,i,j,coord_system[i].coord[j]);
@@ -308,10 +342,12 @@ unsigned long temp;
         #endif
       }
     }
+    //set if the coord_system has been read
+    set_coord_data_read_indicator(COORD_READ_FLAG);
   }
 }
 
-/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //write 1 coordinate to flash QUAD_WORD
 //1st update buffA incase of row write then write to flash
 unsigned int settings_write_one_coord(int coord_select,float *coord){
@@ -387,7 +423,7 @@ char *char_add;
  return STATUS_OK;
 }
 
-//////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // Method to store startup lines into EEPROM
 int settings_store_startup_line(int n, char *line){
 unsigned long start_offset;
@@ -442,7 +478,7 @@ char temp_char;
  return error;
 }
 
-////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // A helper method to set settings from command line
 // ac:grbl_settings  $999 is added to save all updated to flash
 int settings_store_global_setting(int parameter, float value) {
@@ -509,7 +545,7 @@ int error = 0,val_temp = 0;
        buffA[DEC_PLACES_OFFSET] = (unsigned long)val_temp;
        break;
     case 13:
-      if (value){ 
+      if (round(value)){
         settings.flags |= BITFLAG_REPORT_INCHES;
       }else{
         settings.flags &= ~BITFLAG_REPORT_INCHES;
@@ -517,7 +553,7 @@ int error = 0,val_temp = 0;
       buffA[FLAGS_OFFSET] |= settings.flags;
       break;
     case 14: // Reset to ensure change. Immediate re-init may cause problems.
-      if (value){ 
+      if (round(value)){
         settings.flags |= BITFLAG_AUTO_START; 
       }else{ 
         settings.flags &= ~BITFLAG_AUTO_START;
@@ -525,7 +561,7 @@ int error = 0,val_temp = 0;
       buffA[FLAGS_OFFSET] |= settings.flags;
       break;
     case 15: // Reset to ensure change. Immediate re-init may cause problems.
-      if (value){ 
+      if (round(value)){
          settings.flags |= BITFLAG_INVERT_ST_ENABLE;
       }else{
          settings.flags &= ~BITFLAG_INVERT_ST_ENABLE; 
@@ -533,7 +569,7 @@ int error = 0,val_temp = 0;
       buffA[FLAGS_OFFSET] |= settings.flags;
       break;
     case 16:
-      if (value){
+      if (round(value)){
          settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; 
       }else{ 
          settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
@@ -542,7 +578,7 @@ int error = 0,val_temp = 0;
      // limits_init(); // Re-init to immediately change. NOTE: Nice to have but could be problematic later.
       break;
     case 17:
-      if (value){ 
+      if (round(value)){
         settings.flags |= BITFLAG_HOMING_ENABLE; 
       }else{
         settings.flags &= ~BITFLAG_HOMING_ENABLE;

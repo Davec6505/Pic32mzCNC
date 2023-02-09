@@ -24,7 +24,7 @@ void protocol_execute_startup();
 
 void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 151 "c:/users/git/pic32mzcnc/settings.h"
+#line 153 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -281,7 +281,7 @@ void sys_sync_current_position();
 
 
 int round(double val);
-#line 91 "c:/users/git/pic32mzcnc/globals.h"
+#line 95 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -306,16 +306,13 @@ typedef struct{
  float coord[ 4 ];
  float coord_offset[ 4 ];
 }coord_sys;
-extern volatile coord_sys coord_system[ 9 ];
+extern coord_sys coord_system[ 9 ];
 
 
 
 
 
 void Settings_Init(short reset_all);
-
-
-int Save_Row_From_Flash(unsigned long addr);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -325,6 +322,18 @@ static void zero_ram_loaded_indicator();
 
 
 int read_ram_loaded_indicator();
+
+
+static void rst_single_coord_read_indicators(int flag);
+
+
+static void rst_coord_read_indicator();
+
+
+int read_coord_data_indicator();
+
+
+int Save_Row_From_Flash(unsigned long addr);
 
 
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
@@ -940,7 +949,7 @@ void report_feedback_message(int message_code){
 
 void report_init_message(){
  while(DMA_IsOn(1));
- dma_printf("%s%s%s\r\n","Grbl ",  "0.8c"  ,"['$' for help]");
+ dma_printf("%s%s%s\r\n", "Grbl " , "0.8c " , "['$' for help]" );
 }
 
 
@@ -957,7 +966,7 @@ float acc = settings.acceleration;
  acc /=(60*60);
  while(DMA_IsOn(1));
 #line 166 "C:/Users/Git/Pic32mzCNC/Print.c"
- dma_printf("\n              $0=    %l (x, step/mm) \n              $1=    %l (y, step/mm) \n              $2=    %l (z, step/mm) \n              $3=    %f (step pulse, usec) \n              $4=    %f (default feed, mm/min)\n              $5=    %f (default seek, mm/min)\n              $6=    %d (step port invert mask, int) \n              $7=    %d (step idle delay, msec)\n              $8=    %f (acceleration, mm/sec^2)\n              $9=    %f (junction deviation, mm)\n              $10=   %f (arc, mm/segment)\n              $11=   %d (n-arc correction, int) \n              $12=   %d (n-decimals, int) \n              $13=   %d (report inches, bool)\n              $14=   %d (auto start, bool)\n              $15:=  %d (invert step enable, bool)\n              $16=   %d (hard limits, bool) \n              $17=   %d (homing cycle, bool)\n              $18=   %d (homing dir invert mask, int:)\n              $19=   %f (homing feed, mm/min)\n              $20=   %f (homing seek, mm/min)\n              $21=   %d (homing debounce, msec)\n              $22=   %f (homing pull-off, mm)\n"
+ dma_printf("\n              $0=%l (x, step/mm)\r\n              $1=%l (y, step/mm)\r\n              $2=%l (z, step/mm)\r\n              $3=%f (step pulse, usec)\r\n              $4=%f (default feed, mm/min)\r\n              $5=%f (default seek, mm/min)\r\n              $6=%d (step port invert mask, int) \r\n              $7=%d (step idle delay, msec)\r\n              $8=%f (acceleration, mm/sec^2)\r\n              $9=%f (junction deviation, mm)\r\n              $10=%f (arc, mm/segment)\r\n              $11=%d (n-arc correction, int)\r\n              $12=%d (n-decimals, int)\r\n              $13=%d (report inches, bool)\r\n              $14=%d (auto start, bool)\r\n              $15=%d (invert step enable, bool)\r\n              $16=%d (hard limits, bool)\r\n              $17=%d (homing cycle, bool)\r\n              $18=%d (homing dir invert mask, int:)\r\n              $19=%f (homing feed, mm/min)\r\n              $20=%f (homing seek, mm/min)\r\n              $21=%d (homing debounce, msec)\r\n              $22=%f (homing pull-off, mm)\r\n"
  ,settings.steps_per_mm[X]
  ,settings.steps_per_mm[Y]
  ,settings.steps_per_mm[Z]
@@ -1048,12 +1057,21 @@ void report_realtime_status(){
 }
 
 
+
+
 void report_gcode_parameters(){
 float coord_data[ 4 ];
 int coord_select, i;
 
- for (coord_select = 0; coord_select <=  9 +1 ; coord_select++) {
-#line 266 "C:/Users/Git/Pic32mzCNC/Print.c"
+ if (!read_coord_data_indicator()){
+ settings_read_coord_data();
+ if(!read_ram_loaded_indicator()){
+ report_status_message( 10 );
+ return;
+ }
+ }
+
+ for (coord_select = 0; coord_select <=  6 +1 ; coord_select++){
  while(DMA_IsOn(1));
  dma_printf("[G");
  while(DMA_IsOn(1));
@@ -1071,9 +1089,9 @@ int coord_select, i;
  for (i=0; i< 4 ; i++) {
  while(DMA_IsOn(1));
  if ( ((settings.flags & (1 << 0) ) != 0) ) {
- dma_printf("%f ",coord_data[i]* (0.0393701) );
+ dma_printf("%f ",coord_system[coord_select].coord[i]* (0.0393701) );
  }else {
- dma_printf("%f ",coord_data[i]);
+ dma_printf("%f ",coord_system[coord_select].coord[i]);
  }
  while(DMA_IsOn(1));
  if (i < ( 4 -1)) {
@@ -1141,7 +1159,7 @@ void report_gcode_modes(){
  }
  while(DMA_IsOn(1));
  switch (gc.coolant_mode) {
-#line 358 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 364 "C:/Users/Git/Pic32mzCNC/Print.c"
  }
  while(DMA_IsOn(1));
  if (gc.inches_mode)

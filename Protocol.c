@@ -274,6 +274,7 @@ START_LINE://label to rerun startup line if it has one
                     //$n >= 10
                     strncpy(str_val,gcode[0]+1,2);
                     if(isdigit(str_val[0])){N_Val = atoi(str_val);}
+                    memset(str_val,0,9);
                     strncpy(str_val,gcode[0]+4,strlen(gcode[0]+4));
                  }
                  //check if 1st char is a digit if not value extraction
@@ -283,7 +284,7 @@ START_LINE://label to rerun startup line if it has one
                  else{query = 3;break;}
                  #if ProtoDebug == 6
                  while(DMA_IsOn(1));
-                 dma_printf("%s\n",str_val);
+                 dma_printf("%s\t%f\n",str_val,value);
                  #endif
                  settings_store_global_setting(N_Val,value);
                  // if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }

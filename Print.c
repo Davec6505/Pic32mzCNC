@@ -113,7 +113,7 @@ void report_feedback_message(int message_code){
 // Welcome message
 void report_init_message(){
   while(DMA_IsOn(1));
-  dma_printf("%s%s%s\r\n","Grbl ", GRBL_VERSION ,"['$' for help]");
+  dma_printf("%s%s%s\r\n",FIRMWARE,GRBL_VERSION,GRBL_HELP);
 }
 
 // Grbl help message
@@ -141,29 +141,29 @@ float acc = settings.acceleration;
   acc /=(60*60);
   while(DMA_IsOn(1));
   dma_printf("\n\
-              $0=    %l (x, step/mm) \n\
-              $1=    %l (y, step/mm) \n\
-              $2=    %l (z, step/mm) \n\
-              $3=    %f (step pulse, usec) \n\
-              $4=    %f (default feed, mm/min)\n\
-              $5=    %f (default seek, mm/min)\n\
-              $6=    %d (step port invert mask, int) \n\
-              $7=    %d (step idle delay, msec)\n\
-              $8=    %f (acceleration, mm/sec^2)\n\
-              $9=    %f (junction deviation, mm)\n\
-              $10=   %f (arc, mm/segment)\n\
-              $11=   %d (n-arc correction, int) \n\
-              $12=   %d (n-decimals, int) \n\
-              $13=   %d (report inches, bool)\n\
-              $14=   %d (auto start, bool)\n\
-              $15:=  %d (invert step enable, bool)\n\
-              $16=   %d (hard limits, bool) \n\
-              $17=   %d (homing cycle, bool)\n\
-              $18=   %d (homing dir invert mask, int:)\n\
-              $19=   %f (homing feed, mm/min)\n\
-              $20=   %f (homing seek, mm/min)\n\
-              $21=   %d (homing debounce, msec)\n\
-              $22=   %f (homing pull-off, mm)\n"
+              $0=%l (x, step/mm)\r\n\
+              $1=%l (y, step/mm)\r\n\
+              $2=%l (z, step/mm)\r\n\
+              $3=%f (step pulse, usec)\r\n\
+              $4=%f (default feed, mm/min)\r\n\
+              $5=%f (default seek, mm/min)\r\n\
+              $6=%d (step port invert mask, int) \r\n\
+              $7=%d (step idle delay, msec)\r\n\
+              $8=%f (acceleration, mm/sec^2)\r\n\
+              $9=%f (junction deviation, mm)\r\n\
+              $10=%f (arc, mm/segment)\r\n\
+              $11=%d (n-arc correction, int)\r\n\
+              $12=%d (n-decimals, int)\r\n\
+              $13=%d (report inches, bool)\r\n\
+              $14=%d (auto start, bool)\r\n\
+              $15=%d (invert step enable, bool)\r\n\
+              $16=%d (hard limits, bool)\r\n\
+              $17=%d (homing cycle, bool)\r\n\
+              $18=%d (homing dir invert mask, int:)\r\n\
+              $19=%f (homing feed, mm/min)\r\n\
+              $20=%f (homing seek, mm/min)\r\n\
+              $21=%d (homing debounce, msec)\r\n\
+              $22=%f (homing pull-off, mm)\r\n"
               ,settings.steps_per_mm[X]           //0
               ,settings.steps_per_mm[Y]           //1
               ,settings.steps_per_mm[Z]           //2
@@ -253,16 +253,22 @@ void report_realtime_status(){
               ,print_position[2]);
 }
 
-// Prints gcode coordinate offset parameters
+
+////////////////////////////////////////////////////////////////////////////////
+// Prints gcode coordinate offset parameters from flash
 void report_gcode_parameters(){
 float coord_data[NoOfAxis];
 int coord_select, i;
 
-  for (coord_select = 0; coord_select <= SETTING_INDEX_NCOORD; coord_select++) {
-   /* if (!(settings_read_coord_data(coord_select,coord_data))) {
+  if (!read_coord_data_indicator()){
+    settings_read_coord_data();
+    if(!read_ram_loaded_indicator()){
       report_status_message(STATUS_SETTING_READ_FAIL);
       return;
-    } */
+    }
+  }
+
+  for (coord_select = 0; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
      while(DMA_IsOn(1));
     dma_printf("[G");
      while(DMA_IsOn(1));
@@ -280,9 +286,9 @@ int coord_select, i;
     for (i=0; i<NoOfAxis; i++) {
       while(DMA_IsOn(1));
       if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) { 
-          dma_printf("%f ",coord_data[i]*INCH_PER_MM);
+          dma_printf("%f ",coord_system[coord_select].coord[i]*INCH_PER_MM);
       }else { 
-          dma_printf("%f ",coord_data[i]);
+          dma_printf("%f ",coord_system[coord_select].coord[i]);
       }
       while(DMA_IsOn(1));
       if (i < (NoOfAxis-1)) {

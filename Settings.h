@@ -5,8 +5,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 //                             DEFINES                                       //
 ///////////////////////////////////////////////////////////////////////////////
+#define FIRMWARE "Grbl "
+#define GRBL_VERSION "0.8c "
+#define GRBL_HELP "['$' for help]"
 
-#define GRBL_VERSION "0.8c"
 
 //G54, G55, G56, G57, G58 and G59 are datum shift G-Codes.
 //This series of commands tell the CNC control which datum we are using.
@@ -47,7 +49,7 @@
 
 ////////////////////////////////////////////////////////////////
 //NEED TO LOOK INTO THIS
-#define N_COORDINATE_SYSTEM  9  //supported work coordinate systems (from index 10)
+#define N_COORDINATE_SYSTEM  6  //supported work coordinate systems (from index 10)
 #define SETTING_INDEX_NCOORD N_COORDINATE_SYSTEM+1 // Total number of system stored (from index 0)
 
 /////////////////////////////////////////////////////////////////

@@ -84,6 +84,10 @@
   #define LINE_BUFFER_SIZE_WORDS   LINE_BUFFER_SIZE/4
 #endif
 
+//coord_data read from flash indicators
+#define COORD_READ_FLAG  0 //bit 0 indicates coord_data has been read from flash
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //                          EXTERNS                                          //
@@ -112,16 +116,13 @@ typedef struct{
  float coord[NoOfAxis];
  float coord_offset[NoOfAxis];
 }coord_sys;
-extern volatile coord_sys coord_system[NUMBER_OF_DATUMS];
+extern coord_sys coord_system[NUMBER_OF_DATUMS];
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
 void Settings_Init(short reset_all);
-
-//void Save_Row_From_Flash(unsigned long addr);
-int Save_Row_From_Flash(unsigned long addr);
 
 //set the ram_loaded indicator
 static int set_ram_loaded_indicator(int val);
@@ -131,6 +132,18 @@ static void zero_ram_loaded_indicator();
 
 //read the ram loaded indicator
 int read_ram_loaded_indicator();
+
+//reset individual flags back to false
+static void rst_single_coord_read_indicators(int flag);
+
+//reset all coord status flags back to false
+static void rst_coord_read_indicator();
+
+//get the status of the indicator flag
+int read_coord_data_indicator();
+
+//void Save_Row_From_Flash(unsigned long addr);
+int Save_Row_From_Flash(unsigned long addr);
 
 //writes the coord data into flash
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);

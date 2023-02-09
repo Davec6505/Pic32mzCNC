@@ -36,8 +36,10 @@
 //settings_t settings;
 //parser_state_t gc;
 system_t sys;
+coord_sys coord_system[NUMBER_OF_DATUMS];
 STP STPS[NoOfAxis];
 settings_t settings;
+
 bit oneShotA; sfr;
 bit oneShotB; sfr;
 

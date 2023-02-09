@@ -478,7 +478,7 @@ int dma_printf(const char* str,...){
              j += strlen(tmp);
              break;
         case 'f':
-             sprintf(tmp,"%f",va_arg(va,float));
+             sprintf(tmp,"%08.3f",va_arg(va,float));
              strcat(buff+j, tmp);
              j += strlen(tmp);
              break;

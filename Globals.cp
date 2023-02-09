@@ -1,7 +1,7 @@
 #line 1 "C:/Users/Git/Pic32mzCNC/Globals.c"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 151 "c:/users/git/pic32mzcnc/settings.h"
+#line 153 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
@@ -763,7 +763,7 @@ void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-#line 91 "c:/users/git/pic32mzcnc/globals.h"
+#line 95 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -788,16 +788,13 @@ typedef struct{
  float coord[ 4 ];
  float coord_offset[ 4 ];
 }coord_sys;
-extern volatile coord_sys coord_system[ 9 ];
+extern coord_sys coord_system[ 9 ];
 
 
 
 
 
 void Settings_Init(short reset_all);
-
-
-int Save_Row_From_Flash(unsigned long addr);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -807,6 +804,18 @@ static void zero_ram_loaded_indicator();
 
 
 int read_ram_loaded_indicator();
+
+
+static void rst_single_coord_read_indicators(int flag);
+
+
+static void rst_coord_read_indicator();
+
+
+int read_coord_data_indicator();
+
+
+int Save_Row_From_Flash(unsigned long addr);
 
 
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
@@ -828,14 +837,16 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 5 "C:/Users/Git/Pic32mzCNC/Globals.c"
-volatile coord_sys coord_system[ 9 ];
-
-
+#line 8 "C:/Users/Git/Pic32mzCNC/Globals.c"
 unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
 unsigned long volatile add = 0;
 
+
 static int volatile ram_loaded;
+static int volatile coord_read;
+
+
+
 
 void Settings_Init(short reset_all){
 int has_data = 0;
@@ -850,7 +861,7 @@ int has_data = 0;
  }else{
  add = (unsigned long) 0xBD1BC000 ;
  has_data = Save_Row_From_Flash(add);
-#line 31 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 36 "C:/Users/Git/Pic32mzCNC/Globals.c"
  if(!has_data){
 
  settings.steps_per_mm[X] =  250.0 ;
@@ -930,6 +941,44 @@ int has_data = 0;
  }
  }
 }
+#line 126 "C:/Users/Git/Pic32mzCNC/Globals.c"
+static int set_ram_loaded_indicator(int val){
+ ram_loaded = val;
+ return ram_loaded;
+}
+
+
+static void zero_ram_loaded_indicator(){
+ ram_loaded = 0;
+}
+
+
+int read_ram_loaded_indicator(){
+ return ram_loaded;
+}
+
+
+
+
+
+static void set_coord_data_read_indicator(int flag){
+  (coord_read |= flag) ;
+}
+
+
+static void rst_single_coord_read_indicators(int flag){
+  (coord_read &= ~flag) ;
+}
+
+
+static void rst_coord_read_indicator(){
+ coord_read = 0;
+}
+
+
+int read_coord_data_indicator(){
+ return coord_read;
+}
 
 
 
@@ -949,7 +998,7 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 133 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 186 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
 
@@ -959,28 +1008,7 @@ int data_count;
 
  return data_count;
 }
-
-
-
-
-
-
-
-static int set_ram_loaded_indicator(int val){
- ram_loaded = val;
- return ram_loaded;
-}
-
-
-static void zero_ram_loaded_indicator(){
- ram_loaded = 0;
-}
-
-
-int read_ram_loaded_indicator(){
- return ram_loaded;
-}
-#line 192 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 223 "C:/Users/Git/Pic32mzCNC/Globals.c"
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
 float ptr;
 unsigned int error = 0;
@@ -1002,7 +1030,7 @@ unsigned long temp[4] = {0};
  error = (int)NVMErasePage(add);
 
  if(error){
-#line 217 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 248 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -1030,10 +1058,12 @@ unsigned long temp[4] = {0};
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 251 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 279 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
+
  i = (recipe-1)*4 ;
+
 
  for(j = 0;j<4;j++){
  buffA[i] = wdata[j];
@@ -1041,10 +1071,9 @@ unsigned long temp[4] = {0};
  }
 
 
-
  res = NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(res);
-#line 279 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 308 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -1052,25 +1081,38 @@ unsigned long temp[4] = {0};
 
 
 
+
 void settings_read_coord_data(){
-float ptr;
-unsigned int error = 0;
-unsigned long j,i,res;
-unsigned long temp;
 
 
  if(!read_ram_loaded_indicator()){
  add = (unsigned long) 0xBD1BC000 ;
  Save_Row_From_Flash(add);
- }else{
+ }
+
+ if(!read_coord_data_indicator()){
+ unsigned long j,i;
+ unsigned long temp = 0UL;
+ float value = 0.00;
  for(i = 0; i < 9; i++){
  for(j = 0 ; j <  4 ; j++){
  temp = buffA[(i* 4 ) + j];
- ptr = ulong2flt(temp);
- coord_system[i].coord[j] = ptr;
-#line 309 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+ if(temp == -1)
+ temp = 0UL;
+ value = ulong2flt(temp);
+ coord_system[i].coord[j] = value;
+
+
+ while(DMA_IsOn(1));
+ dma_printf("cord[%l].[%l]:= %f\n"
+ ,i,j,coord_system[i].coord[j]);
+
+
  }
  }
+
+ set_coord_data_read_indicator( 0 );
  }
 }
 
@@ -1095,7 +1137,7 @@ unsigned long temp[ 4 ];
  temp[j] = flt2ulong(coord_data[j]);
  buffA[i] = temp[j];
  j++;
-#line 339 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 375 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  switch(coord_select){
@@ -1137,7 +1179,7 @@ char *char_add;
  }
 
  memcpy(line,char_add,64);
-#line 387 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 423 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return  0 ;
 }
 
@@ -1150,7 +1192,7 @@ int error,str_len;
 char temp_char;
 
  str_len = strlen(line);
-#line 407 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 443 "C:/Users/Git/Pic32mzCNC/Globals.c"
  add = (unsigned long) 0xBD1BC000 ;
 
 
@@ -1173,7 +1215,7 @@ char temp_char;
 
 
  memcpy(buffA+start_offset,line,str_len);
-#line 439 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 475 "C:/Users/Git/Pic32mzCNC/Globals.c"
  error = (int)NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(error);
 
@@ -1247,7 +1289,7 @@ int error = 0,val_temp = 0;
  buffA[ 0x56 ] = (unsigned long)val_temp;
  break;
  case 13:
- if (value){
+ if (round(value)){
  settings.flags |=  (1 << 0) ;
  }else{
  settings.flags &= ~ (1 << 0) ;
@@ -1255,7 +1297,7 @@ int error = 0,val_temp = 0;
  buffA[ 0x50 ] |= settings.flags;
  break;
  case 14:
- if (value){
+ if (round(value)){
  settings.flags |=  (1 << 1) ;
  }else{
  settings.flags &= ~ (1 << 1) ;
@@ -1263,7 +1305,7 @@ int error = 0,val_temp = 0;
  buffA[ 0x50 ] |= settings.flags;
  break;
  case 15:
- if (value){
+ if (round(value)){
  settings.flags |=  (1 << 2) ;
  }else{
  settings.flags &= ~ (1 << 2) ;
@@ -1271,7 +1313,7 @@ int error = 0,val_temp = 0;
  buffA[ 0x50 ] |= settings.flags;
  break;
  case 16:
- if (value){
+ if (round(value)){
  settings.flags |=  (1 << 3) ;
  }else{
  settings.flags &= ~ (1 << 3) ;
@@ -1280,7 +1322,7 @@ int error = 0,val_temp = 0;
 
  break;
  case 17:
- if (value){
+ if (round(value)){
  settings.flags |=  (1 << 4) ;
  }else{
  settings.flags &= ~ (1 << 4) ;

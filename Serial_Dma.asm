@@ -1110,7 +1110,7 @@ J	L_dma_printf25
 NOP	
 ;Serial_Dma.c,480 :: 		case 'f':
 L_dma_printf32:
-;Serial_Dma.c,481 :: 		sprintf(tmp,"%f",va_arg(va,float));
+;Serial_Dma.c,481 :: 		sprintf(tmp,"%08.3f",va_arg(va,float));
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
