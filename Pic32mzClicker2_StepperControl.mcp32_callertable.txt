@@ -26,37 +26,29 @@ main
 				UART2_Init_Advanced
 					UART_Calc_BRG
 				UART_Set_Active
-			Settings_Init
-				Save_Row_From_Flash
+			settings_init
+				read_row_from_flash
 					set_ram_loaded_indicator
 				flt2ulong
 					memcpy
+				NVMWriteRow
+					NVMUnlock
+						DMA_Suspend
+						DMA_Busy
+						DMA_Resume
+						NVM_WR_Wait
+				set_ram_loaded_indicator
 				ulong2flt
 					memcpy
+			settings_read_coord_data
+				read_ram_loaded_indicator
+				read_row_from_flash
+				read_coord_data_indicator
+				ulong2flt
+				set_coord_data_read_indicator
 		plan_init
 		disableOCx
 		DisableStepper
-	read_ram_loaded_indicator
-	settings_read_coord_data
-		read_ram_loaded_indicator
-		Save_Row_From_Flash
-		read_coord_data_indicator
-		ulong2flt
-		DMA_IsOn
-		dma_printf
-			DMA_CH_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
-		set_coord_data_read_indicator
-		__CC2DW
 	Debounce_Limits
 		Test_Port_Pins
 		Reset_Min_Limit
@@ -66,16 +58,11 @@ main
 	Modal_Group_Actions0
 		Settings_Write_Coord_Data
 			__CC2DW
-			Save_Row_From_Flash
+			read_row_from_flash
 			NVMErasePage
 				NVMUnlock
-					DMA_Suspend
-					DMA_Busy
-					DMA_Resume
-					NVM_WR_Wait
 			flt2ulong
 			NVMWriteRow
-				NVMUnlock
 			set_ram_loaded_indicator
 		memcpy
 		Get_Axisword
@@ -131,6 +118,17 @@ main
 				fabs
 				floor
 				dma_printf
+					DMA_CH_Busy
+					sprintf
+						_doprntf
+							isdigit
+							scale
+							fround
+					strcat
+					strlen
+					strncpy
+					DMA1_Enable
+					__CC2DW
 				cos
 					sin
 						floor
@@ -208,7 +206,7 @@ main
 		strncpy
 		settings_store_startup_line
 			strlen
-			Save_Row_From_Flash
+			read_row_from_flash
 			NVMErasePage
 			memcpy
 			NVMWriteRow
@@ -220,8 +218,6 @@ main
 				isspace
 				isdigit
 		settings_store_global_setting
-			DMA_IsOn
-			dma_printf
 			flt2ulong
 			round
 				ceil
@@ -229,8 +225,7 @@ main
 			floor
 			fabs
 			NVMWriteRow
-			Save_Row_From_Flash
-			__CC2DW
+			read_row_from_flash
 		cpy_val_from_str
 		G_Mode
 			Set_Modal_Groups

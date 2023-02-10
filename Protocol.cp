@@ -139,9 +139,8 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 153 "c:/users/git/pic32mzcnc/settings.h"
+#line 154 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
@@ -157,7 +156,7 @@ typedef struct {
  int homing_debounce_delay;
  int stepper_idle_lock_time;
  int microsteps;
- int pulse_microseconds;
+ int p_usec;
  int decimal_places;
  int homing_dir_mask;
  int invert_mask;
@@ -349,7 +348,7 @@ typedef struct {
  char auto_start;
  volatile char execute;
 } system_t;
-extern system_t sys;
+extern volatile system_t sys;
 
 
 
@@ -357,13 +356,13 @@ typedef struct{
  float coord[ 4 ];
  float coord_offset[ 4 ];
 }coord_sys;
-extern coord_sys coord_system[ 9 ];
+extern volatile coord_sys coord_system[ 9 ];
 
 
 
 
 
-void Settings_Init(short reset_all);
+void settings_init(short reset_all);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -384,7 +383,7 @@ static void rst_coord_read_indicator();
 int read_coord_data_indicator();
 
 
-int Save_Row_From_Flash(unsigned long addr);
+int read_row_from_flash(unsigned long addr);
 
 
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);

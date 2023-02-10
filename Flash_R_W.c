@@ -19,11 +19,10 @@
 
 #include "Flash_R_W.h"
 
-
+volatile unsigned int res;
 ///////////////////////////////////////////////////////
 //Write a single 32bit word to flash address and data
 unsigned int NVMWriteWord (void *address, unsigned long _data){
-unsigned int res;
 unsigned long padd;// = address;
 
   //translate the Vadd to Phy add
@@ -47,7 +46,6 @@ unsigned long padd;// = address;
 //////////////////////////////////////////////////////
 //4 words to be written to flash at once
 unsigned int NVMWriteQuad (void *address, unsigned long *_data){
-unsigned int res;
 unsigned long padd;
 
   //translate the Vadd to Phy add
@@ -73,7 +71,6 @@ unsigned long padd;
 //Row of 128 words to be written to flash
 //ignore bits <9-0>  [1024 || 0x400] boundries
 unsigned int NVMWriteRow (void  *address, void *_data){
-unsigned int res;
 
   //translate address to phy address
   // Set NVMADDR to Start Address of row to program
@@ -99,7 +96,6 @@ unsigned int res;
 /////////////////////////////////////////////////////
 //Erase a whole page of flash 16kbytes
 unsigned int NVMErasePage(unsigned long address){
-unsigned int res;
 unsigned long padd;
 
   //translate the Vadd to Phy add

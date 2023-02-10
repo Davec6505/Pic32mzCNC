@@ -58,7 +58,7 @@
 #define  SPMMC_OFFSET  0x45
 
 //Flash offsets Virtual memory of float varialbes
-#define  FLASH_Settings_VAddr_P_MSEC        0xBD1BC118
+#define  FLASH_Settings_VAddr_P_USEC        0xBD1BC118
 #define  FLASH_Settings_VAddr_D_FEED_RATE   0xBD1BC11C
 #define  FLASH_Settings_VAddr_D_SEEK_RATE   0xBD1BC120
 #define  FLASH_Settings_VAddr_H_FEED_RATE   0xBD1BC124
@@ -68,7 +68,7 @@
 #define  FLASH_Settings_VAddr_ACCELERATION  0xBD1BC134
 #define  FLASH_Settings_VAddr_JUNCTION_DEV  0xBD1BC138
 //Ram offsets  of float variables
-#define  P_MSEC_OFFSET        0x46
+#define  P_USEC_OFFSET        0x46
 #define  D_FEED_RATE_OFFSET   0x47
 #define  D_SEEK_RATE_OFFSET   0x48
 #define  H_FEED_RATE_OFFSET   0x49

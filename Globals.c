@@ -9,13 +9,16 @@ unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
 unsigned long volatile add = 0;
 
 //conditional variables to indicate status of buffA and structs
-static int volatile ram_loaded;
-static int volatile coord_read;
+static volatile int ram_loaded;
+static volatile int  coord_read;
 
-
+//loop / error variables to save on continous decaration (SSA ????)
+volatile unsigned long j = 0;
+volatile unsigned long i = 0;
+volatile unsigned int error = 0;
 ////////////////////////////////////////////////////////////////////////////////
 //Initializes all settings and restores defaults if needed
-void Settings_Init(short reset_all){
+void settings_init(short reset_all){
 int has_data = 0;
 
  if(!reset_all){
@@ -27,7 +30,7 @@ int has_data = 0;
      sys.auto_start      = 0;
  }else{
    add = (unsigned long)FLASH_Settings_VAddr_P1;
-   has_data = Save_Row_From_Flash(add);
+   has_data = read_row_from_flash(add);
    //test string argument for correctness
    #if GlobalsDebug == 1
    while(DMA_IsOn(1));
@@ -43,6 +46,9 @@ int has_data = 0;
       buffA[SPMMZ_OFFSET]        = flt2ulong(settings.steps_per_mm[Z]);
       settings.steps_per_mm[A]   = DEFAULT_A_STEPS_PER_MM;
 
+      settings.p_usec            = DEFAUT_P_USEC;
+      buffA[P_USEC_OFFSET]       = settings.p_usec;
+      
       settings.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
       buffA[MM_ARC_SEG_OFFSET]    =  flt2ulong(settings.mm_per_arc_segment);
       
@@ -81,28 +87,29 @@ int has_data = 0;
       
       
       //write buffA back to Row3
-     //has_data = (int)NVMWriteRow(&add,buffA);
-     //set_ram_loaded_indicator(has_data);
+      has_data = (int)NVMWriteRow(&add,buffA);
+      set_ram_loaded_indicator(has_data);
      
    }else{
-        settings.flags = 0;
+      settings.flags = 0;  //not to sure about this
       if (DEFAULT_REPORT_INCHES) { settings.flags |= BITFLAG_REPORT_INCHES; }
       if (DEFAULT_AUTO_START) { settings.flags |= BITFLAG_AUTO_START; }
       if (DEFAULT_INVERT_ST_ENABLE) { settings.flags |= BITFLAG_INVERT_ST_ENABLE; }
       if (DEFAULT_HARD_LIMIT_ENABLE) { settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; }
       if (DEFAULT_HOMING_ENABLE) { settings.flags |= BITFLAG_HOMING_ENABLE; }
       
-      settings.steps_per_mm[X] = ulong2flt(buffA[SPMMX_OFFSET]);
-      settings.steps_per_mm[Y] = ulong2flt(buffA[SPMMX_OFFSET + 1]);
-      settings.steps_per_mm[Z] = ulong2flt(buffA[SPMMX_OFFSET + 2]);
-     // settings.steps_per_mm[A] = DEFAULT_A_STEPS_PER_MM; //temp disabled for now
-      settings.mm_per_arc_segment = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
-      settings.default_feed_rate  = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
-      settings.default_seek_rate  = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
-      settings.acceleration       = ulong2flt(buffA[ACCELERATION_OFFSET]);
-      settings.junction_deviation = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
-      settings.homing_feed_rate   = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
-      settings.homing_seek_rate   = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
+      settings.steps_per_mm[X]        = ulong2flt(buffA[SPMMX_OFFSET]);
+      settings.steps_per_mm[Y]        = ulong2flt(buffA[SPMMY_OFFSET]);
+      settings.steps_per_mm[Z]        = ulong2flt(buffA[SPMMZ_OFFSET]);
+      //settings.steps_per_mm[A]        = ulong2flt(buffA[SPMMA_OFFSET]); //temp disabled for now
+      settings.p_usec                 = ulong2flt(buffA[P_USEC_OFFSET]);
+      settings.mm_per_arc_segment     = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
+      settings.default_feed_rate      = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
+      settings.default_seek_rate      = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
+      settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET]);
+      settings.junction_deviation     = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
+      settings.homing_feed_rate       = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
+      settings.homing_seek_rate       = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
       settings.homing_debounce_delay  = ulong2flt(buffA[H_DEBNC_DLY_OFFSET]);
       settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
       settings.stepper_idle_lock_time = ulong2flt(buffA[STEP_IDLE_DLY_OFFSET]);// If max value 255, steppers do not disable.
@@ -169,8 +176,7 @@ int read_coord_data_indicator(){
 //Save current page to a temp buffer [ram @ #A0000000], this is to
 //push original setting back after a page errase and save time
 //reading flash to often, as well as save flash
-int Save_Row_From_Flash(unsigned long addr){
-unsigned long i,j;
+int read_row_from_flash(unsigned long addr){
 unsigned long *ptr;
 int data_count;
 
@@ -222,10 +228,8 @@ P      Value        Coordinate System        G code
 //here we want to write the new recipe to flash and set the coordinate
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
 float ptr;
-unsigned int error = 0;
 int res=0,recipe = 0;
 unsigned long wdata[4]={0};
-unsigned long j,i;
 unsigned long temp[4] = {0};
 
  add = (unsigned long)FLASH_Settings_VAddr_P1;
@@ -234,7 +238,7 @@ unsigned long temp[4] = {0};
  recipe = coord_select;
 
 //Read the saved Row from flash first
- Save_Row_From_Flash(add);
+ read_row_from_flash(add);
 
 //Erase the page in order to over write the values
 // add = (unsigned long)FLASH_Settings_VAddr_P1;
@@ -318,11 +322,10 @@ void settings_read_coord_data(){
   //read from the buffer and place into coordinate system
   if(!read_ram_loaded_indicator()){
      add = (unsigned long)FLASH_Settings_VAddr_P1;
-     Save_Row_From_Flash(add);
+     read_row_from_flash(add);
   }
   
   if(!read_coord_data_indicator()){
-  unsigned long j,i;
   unsigned long temp = 0UL;
   float value = 0.00;
     for(i = 0; i < 9; i++){
@@ -353,8 +356,6 @@ void settings_read_coord_data(){
 unsigned int settings_write_one_coord(int coord_select,float *coord){
 float coord_data[NoOfAxis];
 int recipe;
-unsigned int error = 0;
-unsigned long j,i;
 unsigned long temp[NoOfAxis];
 
  //calculate the index of the Pnnn section of the buffA[]
@@ -411,7 +412,7 @@ char *char_add;
   case 0: char_add = (char*)FLASH_Settings_VAddr_SLine1;break;
   case 1: char_add = (char*)FLASH_Settings_VAddr_SLine2;break;
  }
-  //Save_Row_From_Flash(add);
+  //read_row_from_flash(add);
   memcpy(line,char_add,64);
 
   //test return string for correctness
@@ -427,8 +428,7 @@ char *char_add;
 // Method to store startup lines into EEPROM
 int settings_store_startup_line(int n, char *line){
 unsigned long start_offset;
-unsigned long i,j;
-int error,str_len;
+int  str_len;
 char temp_char;
 
   str_len = strlen(line);
@@ -449,7 +449,7 @@ char temp_char;
  }
 
  //Read the saved Row from flash first place it into ram
- Save_Row_From_Flash(add);
+ read_row_from_flash(add);
 
 //Erase the page in order to over write the values
 // add = (unsigned long)FLASH_Settings_VAddr_P1;
@@ -482,7 +482,7 @@ char temp_char;
 // A helper method to set settings from command line
 // ac:grbl_settings  $999 is added to save all updated to flash
 int settings_store_global_setting(int parameter, float value) {
-int error = 0,val_temp = 0;
+int val_temp = 0;
 
   add = (unsigned long)FLASH_Settings_VAddr_P1;
   
@@ -503,9 +503,9 @@ int error = 0,val_temp = 0;
     case 3:
        if (value < 3) { return(STATUS_SETTING_STEP_PULSE_MIN); }
        val_temp = round(value);
-       settings.pulse_microseconds = val_temp;
+       settings.p_usec = val_temp;
        //prepare flash values in case $=99 is sent
-       buffA[P_MSEC_OFFSET] = (unsigned long)val_temp;
+       buffA[P_USEC_OFFSET] = (unsigned long)val_temp;
        break;
     case 4: settings.default_feed_rate = value; 
        buffA[D_FEED_RATE_OFFSET] = flt2ulong(value);
@@ -617,7 +617,7 @@ int error = 0,val_temp = 0;
             #endif
            if(!error){
             //reread the flash once it has been changed
-             error = Save_Row_From_Flash(add);
+             error = read_row_from_flash(add);
              #if GlobalsDebug == 2
              while(DMA_IsOn(1));
              dma_printf("error:= %d\n",error);

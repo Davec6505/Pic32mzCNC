@@ -925,8 +925,8 @@ SEH	R2, R5
 SLL	R3, R2, 2
 ADDU	R2, R4, R3
 SW	R2, 32(SP)
-LUI	R2, hi_addr(_settings+4)
-ORI	R2, R2, lo_addr(_settings+4)
+LUI	R2, hi_addr(_settings+0)
+ORI	R2, R2, lo_addr(_settings+0)
 ADDU	R2, R2, R3
 SH	R5, 4(SP)
 SW	R27, 8(SP)

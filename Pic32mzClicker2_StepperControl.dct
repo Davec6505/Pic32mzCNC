@@ -27990,6 +27990,7 @@ error
 error
 error
 error
+error
 error_
 error_bit
 error_usbe0csr0_bit
@@ -33396,6 +33397,7 @@ hugefrm_bit
 hugefrm_emacxcfg2_bit
 hypot
 i
+i
 i2c1add
 i2c1addbits
 i2c1addclr
@@ -37976,6 +37978,7 @@ iwcol_i2c2stat_bit
 iwcol_i2c3stat_bit
 iwcol_i2c4stat_bit
 iwcol_i2c5stat_bit
+j
 j
 jtagen
 jtagen
@@ -43798,7 +43801,7 @@ p_i2c2stat_bit
 p_i2c3stat_bit
 p_i2c4stat_bit
 p_i2c5stat_bit
-p_msec
+p_usec
 p1
 p2
 packet
@@ -46097,7 +46100,6 @@ ptwren
 ptwren
 ptwren_bit
 pulse
-pulse_microseconds
 purepre
 purepre
 purepre
@@ -46887,6 +46889,7 @@ read_coord_data_indicator
 read_emacxmcmd_bit
 read_float
 read_ram_loaded_indicator
+read_row_from_flash
 readopcode
 readopcode0
 readopcode0_bit
@@ -47210,6 +47213,7 @@ rerrcnt6_c2trec_bit
 rerrcnt7
 rerrcnt7_bit
 rerrcnt7_c2trec_bit
+res
 reset
 reset
 reset
@@ -55526,7 +55530,6 @@ samp
 samp
 samp_bit
 sample_ringbuffer
-save_row_from_flash
 sbcde
 sbcde
 sbcde

@@ -429,7 +429,7 @@ L_Sample_Ringbuffer30:
 ORI	R2, R0, 2
 SB	R2, Offset(Protocol_startup+0)(GP)
 ;Protocol.c,169 :: 		if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) {
-LH	R2, Offset(_settings+54)(GP)
+LH	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 16
 SEH	R2, R2
 BNE	R2, R0, L__Sample_Ringbuffer276

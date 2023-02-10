@@ -24,9 +24,8 @@ void protocol_execute_startup();
 
 void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 153 "c:/users/git/pic32mzcnc/settings.h"
+#line 154 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- unsigned long p_msec;
  unsigned long steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
@@ -42,7 +41,7 @@ typedef struct {
  int homing_debounce_delay;
  int stepper_idle_lock_time;
  int microsteps;
- int pulse_microseconds;
+ int p_usec;
  int decimal_places;
  int homing_dir_mask;
  int invert_mask;
@@ -298,7 +297,7 @@ typedef struct {
  char auto_start;
  volatile char execute;
 } system_t;
-extern system_t sys;
+extern volatile system_t sys;
 
 
 
@@ -306,13 +305,13 @@ typedef struct{
  float coord[ 4 ];
  float coord_offset[ 4 ];
 }coord_sys;
-extern coord_sys coord_system[ 9 ];
+extern volatile coord_sys coord_system[ 9 ];
 
 
 
 
 
-void Settings_Init(short reset_all);
+void settings_init(short reset_all);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -333,7 +332,7 @@ static void rst_coord_read_indicator();
 int read_coord_data_indicator();
 
 
-int Save_Row_From_Flash(unsigned long addr);
+int read_row_from_flash(unsigned long addr);
 
 
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
@@ -863,7 +862,7 @@ unsigned long Get_Address_Pval(int recipe);
  break;
  case  4 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","error: Invalid radius");
+ dma_printf("%s\r\n","error: Invalid radius");
  break;
  case  5 :
  while(DMA_IsOn(1));
@@ -874,7 +873,7 @@ unsigned long Get_Address_Pval(int recipe);
  dma_printf("%s\r\n","error: Invalid statement");
  break;
  case  7 :
- dma_printf("%s\n","error: Setting disabled");
+ dma_printf("%s\r\n","error: Setting disabled");
  break;
  case  8 :
  while(DMA_IsOn(1));
@@ -882,7 +881,7 @@ unsigned long Get_Address_Pval(int recipe);
  break;
  case  9 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","error: Value < 3 usec");
+ dma_printf("%s\r\n","error: Value < 3 usec");
  break;
  case  10 :
  while(DMA_IsOn(1));
@@ -890,7 +889,7 @@ unsigned long Get_Address_Pval(int recipe);
  break;
  case  11 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","error: Busy or queued");
+ dma_printf("%s\r\n","error: Busy or queued");
  break;
  case  12 :
  while(DMA_IsOn(1));
@@ -907,15 +906,15 @@ void report_alarm_message(int alarm_code){
  switch (alarm_code) {
  case  -1 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Hard limit");
+ dma_printf("%s\r\n","Hard limit");
  break;
  case  -2 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","Abort during cycle");
+ dma_printf("%s\r\n","Abort during cycle");
  break;
  }
  while(DMA_IsOn(1));
- dma_printf("%s\n",". MPos?");
+ dma_printf("%s\r\n",". MPos?");
  Delay_ms(500);
 }
 
@@ -930,19 +929,19 @@ void report_feedback_message(int message_code){
  switch(message_code) {
  case  1 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","[Reset to continue]"); break;
+ dma_printf("%s\r\n","[Reset to continue]"); break;
  case  2 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","['$H'|'$X' to unlock]"); break;
+ dma_printf("%s\r\n","['$H'|'$X' to unlock]"); break;
  case  3 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","[Caution: Unlocked]"); break;
+ dma_printf("%s\r\n","[Caution: Unlocked]"); break;
  case  4 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","[Enabled]"); break;
+ dma_printf("%s\r\n","[Enabled]"); break;
  case  5 :
  while(DMA_IsOn(1));
- dma_printf("%s\n","[Disabled]"); break;
+ dma_printf("%s\r\n","[Disabled]"); break;
  }
 }
 
@@ -956,7 +955,7 @@ void report_init_message(){
 void report_grbl_help() {
  while(DMA_IsOn(1));
 #line 134 "C:/Users/Git/Pic32mzCNC/Print.c"
- dma_printf("%s","$$ (view Grbl settings)\n                      $# (view # parameters)\n                      $G (view parser state)\n                      $N (view startup blocks)\n                      $x=value (save Grbl setting)\n                      $Nx=line (save startup block)\n                      $C (check gcode mode)\n                      $X (kill alarm lock)\n                      $H (run homing cycle)\n                      ~ (cycle start)\n                      ! (feed hold)\n                      ? (current status)\n                      ctrl-x (reset Grbl)\n");
+ dma_printf("%s","$$ (view Grbl settings)\r\n                   $# (view # parameters)\r\n                   $G (view parser state)\r\n                   $N (view startup blocks)\r\n                   $x=value (save Grbl setting)\r\n                   $Nx=line (save startup block)\r\n                   $C (check gcode mode)\r\n                   $X (kill alarm lock)\r\n                   $H (run homing cycle)\r\n                   ~ (cycle start)\r\n                   ! (feed hold)\r\n                   ? (current status)\r\n                   ctrl-x (reset Grbl)\r\n");
 }
 
 
@@ -966,11 +965,11 @@ float acc = settings.acceleration;
  acc /=(60*60);
  while(DMA_IsOn(1));
 #line 166 "C:/Users/Git/Pic32mzCNC/Print.c"
- dma_printf("\n              $0=%l (x, step/mm)\r\n              $1=%l (y, step/mm)\r\n              $2=%l (z, step/mm)\r\n              $3=%f (step pulse, usec)\r\n              $4=%f (default feed, mm/min)\r\n              $5=%f (default seek, mm/min)\r\n              $6=%d (step port invert mask, int) \r\n              $7=%d (step idle delay, msec)\r\n              $8=%f (acceleration, mm/sec^2)\r\n              $9=%f (junction deviation, mm)\r\n              $10=%f (arc, mm/segment)\r\n              $11=%d (n-arc correction, int)\r\n              $12=%d (n-decimals, int)\r\n              $13=%d (report inches, bool)\r\n              $14=%d (auto start, bool)\r\n              $15=%d (invert step enable, bool)\r\n              $16=%d (hard limits, bool)\r\n              $17=%d (homing cycle, bool)\r\n              $18=%d (homing dir invert mask, int:)\r\n              $19=%f (homing feed, mm/min)\r\n              $20=%f (homing seek, mm/min)\r\n              $21=%d (homing debounce, msec)\r\n              $22=%f (homing pull-off, mm)\r\n"
+ dma_printf("\n              $0=%l (x, step/mm)\r\n              $1=%l (y, step/mm)\r\n              $2=%l (z, step/mm)\r\n              $3=%d (step pulse, usec)\r\n              $4=%f (default feed, mm/min)\r\n              $5=%f (default seek, mm/min)\r\n              $6=%d (step port invert mask, int) \r\n              $7=%d (step idle delay, msec)\r\n              $8=%f (acceleration, mm/sec^2)\r\n              $9=%f (junction deviation, mm)\r\n              $10=%f (arc, mm/segment)\r\n              $11=%d (n-arc correction, int)\r\n              $12=%d (n-decimals, int)\r\n              $13=%d (report inches, bool)\r\n              $14=%d (auto start, bool)\r\n              $15=%d (invert step enable, bool)\r\n              $16=%d (hard limits, bool)\r\n              $17=%d (homing cycle, bool)\r\n              $18=%d (homing dir invert mask, int:)\r\n              $19=%f (homing feed, mm/min)\r\n              $20=%f (homing seek, mm/min)\r\n              $21=%d (homing debounce, msec)\r\n              $22=%f (homing pull-off, mm)\r\n"
  ,settings.steps_per_mm[X]
  ,settings.steps_per_mm[Y]
  ,settings.steps_per_mm[Z]
- ,settings.p_msec
+ ,settings.p_usec
  ,settings.default_feed_rate
  ,settings.default_seek_rate
  ,settings.invert_mask
@@ -996,7 +995,7 @@ float acc = settings.acceleration;
 
 void report_startup_line(int n, char *line){
  while(DMA_IsOn(1));
- dma_printf("$N%d=%s\n",n,line);
+ dma_printf("$N%d=%s\r\n",n,line);
 }
 
 
@@ -1050,7 +1049,7 @@ void report_realtime_status(){
  }
 
  while(DMA_IsOn(1));
- dma_printf(",WPos: %f,%f,%f>\n"
+ dma_printf(",WPos: %f,%f,%f>\r\n"
  ,print_position[0]
  ,print_position[1]
  ,print_position[2]);
@@ -1097,7 +1096,7 @@ int coord_select, i;
  if (i < ( 4 -1)) {
  dma_printf(",");
  }else {
- dma_printf("]\n");
+ dma_printf("]\r\n");
  }
  }
  }
@@ -1114,7 +1113,7 @@ int coord_select, i;
  if (i < ( 4 -1)) {
  dma_printf(",");
  }else {
- dma_printf("]\n"); }
+ dma_printf("]\r\n"); }
  }
 }
 
@@ -1165,7 +1164,7 @@ void report_gcode_modes(){
  if (gc.inches_mode)
  dma_printf(" T %dF %f",gc.tool,gc.feed_rate* (0.0393701) );
  else
- dma_printf(" T %dF %f]\n",gc.tool,gc.feed_rate);
+ dma_printf(" T %dF %f]\r\n",gc.tool,gc.feed_rate);
 
 
 }

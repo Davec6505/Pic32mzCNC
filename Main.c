@@ -35,8 +35,8 @@
 //external scope variables
 //settings_t settings;
 //parser_state_t gc;
-system_t sys;
-coord_sys coord_system[NUMBER_OF_DATUMS];
+volatile system_t sys;
+volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 STP STPS[NoOfAxis];
 settings_t settings;
 
@@ -74,9 +74,9 @@ static int cntr = 0,a = 0;
  
 
  //if there is memory in flash use this otherwise use default settings
- if(read_ram_loaded_indicator()){
-    settings_read_coord_data();
- }
+// if(read_ram_loaded_indicator()){
+//    settings_read_coord_data();
+// }
 
 
   while(1){

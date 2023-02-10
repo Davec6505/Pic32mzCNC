@@ -119,9 +119,9 @@ void PinMode(){
  EnableInterrupts();
 ///////////////////////////////////////////////////
 //init all default settings
- Settings_Init(0);
- Settings_Init(1);
- 
+ settings_init(0);
+ settings_init(1);
+ settings_read_coord_data();
 }
 
 void UartConfig(){

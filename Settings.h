@@ -28,6 +28,7 @@
 #define DEFAULT_Y_STEPS_PER_MM         250
 #define DEFAULT_Z_STEPS_PER_MM         250
 #define DEFAULT_A_STEPS_PER_MM         250
+#define DEFAUT_P_USEC                  100
 #define DEFAULT_MM_PER_ARC_SEGMENT     0.1
 #define DEFAULT_RAPID_FEEDRATE         500.0 // mm/min
 #define DEFAULT_FEEDRATE               250.0
@@ -151,7 +152,6 @@
 ///////////////////////////////////////////////////////////////////////////////
  // Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
 typedef struct {
-  unsigned long p_msec;
   unsigned long steps_per_mm[NoOfAxis];
   float default_feed_rate;
   float default_seek_rate;
@@ -167,7 +167,7 @@ typedef struct {
   int homing_debounce_delay;
   int stepper_idle_lock_time; // If max value 255, steppers do not disable.
   int microsteps;
-  int pulse_microseconds;
+  int p_usec;
   int decimal_places;
   int homing_dir_mask;
   int invert_mask;

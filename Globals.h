@@ -108,7 +108,7 @@ typedef struct {
   char auto_start;            // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
   volatile char execute;      // Global system runtime executor bitflag variable. See EXEC bitmasks.
 } system_t;
-extern system_t sys;
+extern volatile system_t sys;
 
 ////////////////////////////////////////////
 //9 different coordinates can be saved
@@ -116,13 +116,13 @@ typedef struct{
  float coord[NoOfAxis];
  float coord_offset[NoOfAxis];
 }coord_sys;
-extern coord_sys coord_system[NUMBER_OF_DATUMS];
+extern volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
-void Settings_Init(short reset_all);
+void settings_init(short reset_all);
 
 //set the ram_loaded indicator
 static int set_ram_loaded_indicator(int val);
@@ -142,8 +142,8 @@ static void rst_coord_read_indicator();
 //get the status of the indicator flag
 int read_coord_data_indicator();
 
-//void Save_Row_From_Flash(unsigned long addr);
-int Save_Row_From_Flash(unsigned long addr);
+//void read_row_from_flash(unsigned long addr);
+int read_row_from_flash(unsigned long addr);
 
 //writes the coord data into flash
 unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);

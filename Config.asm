@@ -208,13 +208,16 @@ JAL	_UartConfig+0
 NOP	
 ;Config.c,119 :: 		EnableInterrupts();
 EI	R30
-;Config.c,122 :: 		Settings_Init(0);
+;Config.c,122 :: 		settings_init(0);
 MOVZ	R25, R0, R0
-JAL	_Settings_Init+0
+JAL	_settings_init+0
 NOP	
-;Config.c,123 :: 		Settings_Init(1);
+;Config.c,123 :: 		settings_init(1);
 ORI	R25, R0, 1
-JAL	_Settings_Init+0
+JAL	_settings_init+0
+NOP	
+;Config.c,124 :: 		settings_read_coord_data();
+JAL	_settings_read_coord_data+0
 NOP	
 ;Config.c,125 :: 		}
 L_end_PinMode:

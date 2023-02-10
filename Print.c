@@ -27,7 +27,7 @@
             break;
       case STATUS_ARC_RADIUS_ERROR:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","error: Invalid radius");
+           dma_printf("%s\r\n","error: Invalid radius");
            break;
       case STATUS_MODAL_GROUP_VIOLATION:
            while(DMA_IsOn(1));
@@ -38,7 +38,7 @@
            dma_printf("%s\r\n","error: Invalid statement");
             break;
       case STATUS_SETTING_DISABLED:
-           dma_printf("%s\n","error: Setting disabled");
+           dma_printf("%s\r\n","error: Setting disabled");
             break;
       case STATUS_SETTING_VALUE_NEG:
            while(DMA_IsOn(1));
@@ -46,7 +46,7 @@
             break;
       case STATUS_SETTING_STEP_PULSE_MIN:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","error: Value < 3 usec");
+           dma_printf("%s\r\n","error: Value < 3 usec");
             break;
       case STATUS_SETTING_READ_FAIL:
            while(DMA_IsOn(1));
@@ -54,7 +54,7 @@
             break;
       case STATUS_IDLE_ERROR:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","error: Busy or queued");
+           dma_printf("%s\r\n","error: Busy or queued");
             break;
       case STATUS_ALARM_LOCK:
            while(DMA_IsOn(1));
@@ -71,15 +71,15 @@ void report_alarm_message(int alarm_code){
   switch (alarm_code) {
     case ALARM_HARD_LIMIT:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Hard limit");
+           dma_printf("%s\r\n","Hard limit");
            break;
     case ALARM_ABORT_CYCLE:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","Abort during cycle");
+           dma_printf("%s\r\n","Abort during cycle");
            break;
   }
   while(DMA_IsOn(1));
-  dma_printf("%s\n",". MPos?");
+  dma_printf("%s\r\n",". MPos?");
   Delay_ms(500); //??? Force delay to ensure message clears serial write buffer.
 }
 
@@ -94,19 +94,19 @@ void report_feedback_message(int message_code){
   switch(message_code) {
     case MESSAGE_CRITICAL_EVENT:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","[Reset to continue]"); break;
+           dma_printf("%s\r\n","[Reset to continue]"); break;
     case MESSAGE_ALARM_LOCK:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","['$H'|'$X' to unlock]"); break;
+           dma_printf("%s\r\n","['$H'|'$X' to unlock]"); break;
     case MESSAGE_ALARM_UNLOCK:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","[Caution: Unlocked]"); break;
+           dma_printf("%s\r\n","[Caution: Unlocked]"); break;
     case MESSAGE_ENABLED:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","[Enabled]"); break;
+           dma_printf("%s\r\n","[Enabled]"); break;
     case MESSAGE_DISABLED:
            while(DMA_IsOn(1));
-           dma_printf("%s\n","[Disabled]"); break;
+           dma_printf("%s\r\n","[Disabled]"); break;
   }
 }
 
@@ -119,19 +119,19 @@ void report_init_message(){
 // Grbl help message
 void report_grbl_help() {
   while(DMA_IsOn(1));
-  dma_printf("%s","$$ (view Grbl settings)\n\
-                      $# (view # parameters)\n\
-                      $G (view parser state)\n\
-                      $N (view startup blocks)\n\
-                      $x=value (save Grbl setting)\n\
-                      $Nx=line (save startup block)\n\
-                      $C (check gcode mode)\n\
-                      $X (kill alarm lock)\n\
-                      $H (run homing cycle)\n\
-                      ~ (cycle start)\n\
-                      ! (feed hold)\n\
-                      ? (current status)\n\
-                      ctrl-x (reset Grbl)\n");
+  dma_printf("%s","$$ (view Grbl settings)\r\n\
+                   $# (view # parameters)\r\n\
+                   $G (view parser state)\r\n\
+                   $N (view startup blocks)\r\n\
+                   $x=value (save Grbl setting)\r\n\
+                   $Nx=line (save startup block)\r\n\
+                   $C (check gcode mode)\r\n\
+                   $X (kill alarm lock)\r\n\
+                   $H (run homing cycle)\r\n\
+                   ~ (cycle start)\r\n\
+                   ! (feed hold)\r\n\
+                   ? (current status)\r\n\
+                   ctrl-x (reset Grbl)\r\n");
 }
 
 // Grbl global settings print out.
@@ -144,7 +144,7 @@ float acc = settings.acceleration;
               $0=%l (x, step/mm)\r\n\
               $1=%l (y, step/mm)\r\n\
               $2=%l (z, step/mm)\r\n\
-              $3=%f (step pulse, usec)\r\n\
+              $3=%d (step pulse, usec)\r\n\
               $4=%f (default feed, mm/min)\r\n\
               $5=%f (default seek, mm/min)\r\n\
               $6=%d (step port invert mask, int) \r\n\
@@ -167,7 +167,7 @@ float acc = settings.acceleration;
               ,settings.steps_per_mm[X]           //0
               ,settings.steps_per_mm[Y]           //1
               ,settings.steps_per_mm[Z]           //2
-              ,settings.p_msec                    //3
+              ,settings.p_usec                    //3
               ,settings.default_feed_rate         //4
               ,settings.default_seek_rate         //5
               ,settings.invert_mask               //6
@@ -193,7 +193,7 @@ float acc = settings.acceleration;
 // Prints specified startup line
 void report_startup_line(int n, char *line){
   while(DMA_IsOn(1));
-  dma_printf("$N%d=%s\n",n,line);
+  dma_printf("$N%d=%s\r\n",n,line);
 }
 
  // Prints real-time data. This function grabs a real-time snapshot of the stepper subprogram
@@ -247,7 +247,7 @@ void report_realtime_status(){
   }
   
   while(DMA_IsOn(1));
-  dma_printf(",WPos: %f,%f,%f>\n"
+  dma_printf(",WPos: %f,%f,%f>\r\n"
               ,print_position[0]
               ,print_position[1]
               ,print_position[2]);
@@ -294,7 +294,7 @@ int coord_select, i;
       if (i < (NoOfAxis-1)) {
          dma_printf(",");
       }else {
-         dma_printf("]\n");
+         dma_printf("]\r\n");
       }
     }
   }
@@ -311,7 +311,7 @@ int coord_select, i;
     if (i < (NoOfAxis-1)) {
        dma_printf(",");
     }else {
-      dma_printf("]\n"); }
+      dma_printf("]\r\n"); }
   }
 }
 
@@ -366,7 +366,7 @@ void report_gcode_modes(){
    if (gc.inches_mode)
       dma_printf(" T %dF %f",gc.tool,gc.feed_rate*INCH_PER_MM);
    else
-      dma_printf(" T %dF %f]\n",gc.tool,gc.feed_rate);
+      dma_printf(" T %dF %f]\r\n",gc.tool,gc.feed_rate);
 
 
 }
