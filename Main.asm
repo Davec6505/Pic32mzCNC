@@ -31,7 +31,7 @@ NOP
 ; end of _Conditin_Externs
 _main:
 ;Main.c,65 :: 		void main() {
-ADDIU	SP, SP, -8
+ADDIU	SP, SP, -4
 ;Main.c,66 :: 		int error = 0;
 ;Main.c,67 :: 		int has_flash = 0;
 ;Main.c,68 :: 		int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
@@ -60,10 +60,12 @@ L__main124:
 ;Main.c,90 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
-SH	R2, 4(SP)
+; modal_group start address is: 16 (R4)
+SEH	R4, R2
 ;Main.c,91 :: 		switch(modal_group){
 J	L_main3
 NOP	
+; modal_group end address is: 16 (R4)
 ;Main.c,92 :: 		case 0:break;
 L_main5:
 J	L_main4
@@ -79,7 +81,6 @@ NOP
 ;Main.c,95 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
-SH	R2, 4(SP)
 ;Main.c,96 :: 		break;
 J	L_main4
 NOP	
@@ -156,69 +157,71 @@ J	L_main4
 NOP	
 ;Main.c,121 :: 		}
 L_main3:
-LH	R2, 4(SP)
+; modal_group start address is: 16 (R4)
+SEH	R2, R4
 BNE	R2, R0, L__main128
 NOP	
 J	L_main5
 NOP	
 L__main128:
-LH	R3, 4(SP)
+SEH	R3, R4
 ORI	R2, R0, 2
 BNE	R3, R2, L__main130
 NOP	
 J	L_main6
 NOP	
 L__main130:
-LH	R3, 4(SP)
+SEH	R3, R4
 ORI	R2, R0, 4
 BNE	R3, R2, L__main132
 NOP	
 J	L_main7
 NOP	
 L__main132:
-LH	R3, 4(SP)
+SEH	R3, R4
 ORI	R2, R0, 8
 BNE	R3, R2, L__main134
 NOP	
 J	L_main9
 NOP	
 L__main134:
-LH	R3, 4(SP)
+SEH	R3, R4
 ORI	R2, R0, 16
 BNE	R3, R2, L__main136
 NOP	
 J	L_main10
 NOP	
 L__main136:
-LH	R3, 4(SP)
+SEH	R3, R4
 ORI	R2, R0, 32
 BNE	R3, R2, L__main138
 NOP	
 J	L_main11
 NOP	
 L__main138:
-LH	R3, 4(SP)
+SEH	R3, R4
 ORI	R2, R0, 64
 BNE	R3, R2, L__main140
 NOP	
 J	L_main12
 NOP	
 L__main140:
-LH	R3, 4(SP)
+SEH	R3, R4
 ORI	R2, R0, 128
 BNE	R3, R2, L__main142
 NOP	
 J	L_main13
 NOP	
 L__main142:
-LH	R3, 4(SP)
+SEH	R3, R4
 ORI	R2, R0, 256
 BNE	R3, R2, L__main144
 NOP	
 J	L_main14
 NOP	
 L__main144:
-LH	R3, 4(SP)
+SEH	R3, R4
+; modal_group end address is: 16 (R4)
 ORI	R2, R0, 512
 BNE	R3, R2, L__main146
 NOP	
@@ -279,7 +282,7 @@ NOP
 ; end of _main
 _Modal_Group_Actions0:
 ;Main.c,161 :: 		int Modal_Group_Actions0(int action){
-ADDIU	SP, SP, -48
+ADDIU	SP, SP, -44
 SW	RA, 0(SP)
 ;Main.c,171 :: 		switch(action){
 SW	R26, 4(SP)
@@ -436,12 +439,13 @@ NOP
 J	L_Modal_Group_Actions036
 NOP	
 L__Modal_Group_Actions0158:
-;Main.c,209 :: 		result = Settings_Write_Coord_Data((int)gc.P,gc.next_position );
+;Main.c,209 :: 		result = settings_write_coord_data((int)gc.P,gc.next_position );
+LH	R2, Offset(_gc+116)(GP)
 SH	R25, 12(SP)
 LUI	R26, hi_addr(_gc+72)
 ORI	R26, R26, lo_addr(_gc+72)
-LH	R25, Offset(_gc+116)(GP)
-JAL	_Settings_Write_Coord_Data+0
+SEH	R25, R2
+JAL	_settings_write_coord_data+0
 NOP	
 LH	R25, 12(SP)
 ;Main.c,210 :: 		if(result){ //response if write to flash failed
@@ -569,19 +573,21 @@ LUI	R2, hi_addr(_buffA+0)
 ORI	R2, R2, lo_addr(_buffA+0)
 ADDU	R2, R2, R3
 LW	R2, 0(R2)
-SW	R2, 40(SP)
+; _flash start address is: 32 (R8)
+MOVZ	R8, R2, R0
 ;Main.c,241 :: 		coord_data[i] = ulong2flt(_flash);
 ADDIU	R3, SP, 24
 SEH	R2, R6
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
-SW	R2, 44(SP)
+SW	R2, 40(SP)
 SH	R4, 12(SP)
+; _flash end address is: 32 (R8)
 SH	R7, 14(SP)
 SH	R5, 16(SP)
 SH	R6, 18(SP)
 SH	R25, 20(SP)
-LW	R25, 40(SP)
+MOVZ	R25, R8, R0
 JAL	_ulong2flt+0
 NOP	
 LH	R25, 20(SP)
@@ -589,7 +595,7 @@ LH	R6, 18(SP)
 LH	R5, 16(SP)
 LH	R7, 14(SP)
 LH	R4, 12(SP)
-LW	R2, 44(SP)
+LW	R2, 40(SP)
 SWC1	S0, 0(R2)
 ;Main.c,247 :: 		}else{
 SEH	R8, R4
@@ -626,12 +632,13 @@ SEH	R6, R2
 J	L_Modal_Group_Actions040
 NOP	
 L_Modal_Group_Actions041:
-;Main.c,259 :: 		result = Settings_Write_Coord_Data((int)gc.P,coord_data);
-ADDIU	R2, SP, 24
+;Main.c,259 :: 		result = settings_write_coord_data((int)gc.P,coord_data);
+ADDIU	R3, SP, 24
+LH	R2, Offset(_gc+116)(GP)
 SH	R25, 12(SP)
-MOVZ	R26, R2, R0
-LH	R25, Offset(_gc+116)(GP)
-JAL	_Settings_Write_Coord_Data+0
+MOVZ	R26, R3, R0
+SEH	R25, R2
+JAL	_settings_write_coord_data+0
 NOP	
 ;Main.c,262 :: 		memcpy(gc.coord_system,coord_data,sizeof(coord_data));
 ADDIU	R2, SP, 24
@@ -870,7 +877,7 @@ ADDU	R3, R2, R3
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
-SW	R2, 44(SP)
+SW	R2, 40(SP)
 SH	R6, 12(SP)
 ; _data end address is: 28 (R7)
 SH	R4, 14(SP)
@@ -883,7 +890,7 @@ LH	R25, 18(SP)
 LH	R5, 16(SP)
 LH	R4, 14(SP)
 LH	R6, 12(SP)
-LW	R2, 44(SP)
+LW	R2, 40(SP)
 SWC1	S0, 0(R2)
 ;Main.c,306 :: 		i++;
 ADDIU	R2, R4, 1
@@ -1106,14 +1113,14 @@ NOP
 L__Modal_Group_Actions0119:
 SEH	R2, R4
 L_Modal_Group_Actions075:
-;Main.c,338 :: 		Settings_Write_Coord_Data(temp,gc.position);
+;Main.c,338 :: 		settings_write_coord_data(temp,gc.position);
 ; temp start address is: 8 (R2)
 SH	R25, 12(SP)
 LUI	R26, hi_addr(_gc+24)
 ORI	R26, R26, lo_addr(_gc+24)
 SEH	R25, R2
 ; temp end address is: 8 (R2)
-JAL	_Settings_Write_Coord_Data+0
+JAL	_settings_write_coord_data+0
 NOP	
 LH	R25, 12(SP)
 ;Main.c,339 :: 		break;
@@ -1305,7 +1312,7 @@ L_end_Modal_Group_Actions0:
 LW	R27, 8(SP)
 LW	R26, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 48
+ADDIU	SP, SP, 44
 JR	RA
 NOP	
 ; end of _Modal_Group_Actions0
@@ -1833,9 +1840,9 @@ J	L_protocol_execute_runtime113
 NOP	
 L__protocol_execute_runtime256:
 ;Main.c,527 :: 		if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) {
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 2
-SEH	R2, R2
+ANDI	R2, R2, 65535
 BNE	R2, R0, L__protocol_execute_runtime258
 NOP	
 J	L_protocol_execute_runtime114

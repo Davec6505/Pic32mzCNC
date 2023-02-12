@@ -141,9 +141,9 @@ float acc = settings.acceleration;
   acc /=(60*60);
   while(DMA_IsOn(1));
   dma_printf("\n\
-              $0=%l (x, step/mm)\r\n\
-              $1=%l (y, step/mm)\r\n\
-              $2=%l (z, step/mm)\r\n\
+              $0=%f (x, step/mm)\r\n\
+              $1=%f (y, step/mm)\r\n\
+              $2=%f (z, step/mm)\r\n\
               $3=%d (step pulse, usec)\r\n\
               $4=%f (default feed, mm/min)\r\n\
               $5=%f (default seek, mm/min)\r\n\
@@ -247,7 +247,7 @@ void report_realtime_status(){
   }
   
   while(DMA_IsOn(1));
-  dma_printf(",WPos: %f,%f,%f>\r\n"
+  dma_printf("WPos: %f,%f,%f>\r\n"
               ,print_position[0]
               ,print_position[1]
               ,print_position[2]);
@@ -268,20 +268,20 @@ int coord_select, i;
     }
   }
 
-  for (coord_select = 0; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
+  for (coord_select = 1; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
      while(DMA_IsOn(1));
     dma_printf("[G");
      while(DMA_IsOn(1));
     switch (coord_select) {
-      case 0: dma_printf("54:"); break;
-      case 1: dma_printf("55:"); break;
-      case 2: dma_printf("56:"); break;
-      case 3: dma_printf("57:"); break;
-      case 4: dma_printf("58:"); break;
-      case 5: dma_printf("59:"); break;
-      case 6: dma_printf("28:"); break;
-      case 7: dma_printf("30:"); break;
-      // case 8: printPgmString(PSTR("92:")); break; // G92.2, G92.3 not supported. Hence not stored.
+      case 1: dma_printf("54:"); break;
+      case 2: dma_printf("55:"); break;
+      case 3: dma_printf("56:"); break;
+      case 4: dma_printf("57:"); break;
+      case 5: dma_printf("58:"); break;
+      case 6: dma_printf("59:"); break;
+      case 7: dma_printf("28:"); break;
+      case 8: dma_printf("30:"); break;
+      // case 9: printPgmString(PSTR("92:")); break; // G92.2, G92.3 not supported. Hence not stored.
     }
     for (i=0; i<NoOfAxis; i++) {
       while(DMA_IsOn(1));

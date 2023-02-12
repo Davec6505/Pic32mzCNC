@@ -1192,33 +1192,33 @@ J	L_report_grbl_settings75
 NOP	
 L_report_grbl_settings76:
 ;Print.c,184 :: 		,bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)     //17
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 16
-SEH	R2, R2
+ANDI	R2, R2, 65535
 XORI	R8, R2, 0
 SLTU	R8, R0, R8
 ;Print.c,183 :: 		,bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE) //16
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 8
-SEH	R2, R2
+ANDI	R2, R2, 65535
 XORI	R7, R2, 0
 SLTU	R7, R0, R7
 ;Print.c,182 :: 		,bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)  //15
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 4
-SEH	R2, R2
+ANDI	R2, R2, 65535
 XORI	R6, R2, 0
 SLTU	R6, R0, R6
 ;Print.c,181 :: 		,bit_istrue(settings.flags,BITFLAG_AUTO_START)        //14
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 2
-SEH	R2, R2
+ANDI	R2, R2, 65535
 XORI	R5, R2, 0
 SLTU	R5, R0, R5
 ;Print.c,180 :: 		,bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)     //13
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
-SEH	R2, R2
+ANDI	R2, R2, 65535
 XORI	R4, R2, 0
 SLTU	R4, R0, R4
 ;Print.c,166 :: 		$22=%f (homing pull-off, mm)\r\n"
@@ -1234,7 +1234,7 @@ LW	R2, Offset(_settings+32)(GP)
 ADDIU	SP, SP, -96
 SW	R2, 92(SP)
 ;Print.c,188 :: 		,settings.homing_debounce_delay                       //21
-LH	R2, Offset(_settings+54)(GP)
+LHU	R2, Offset(_settings+54)(GP)
 SH	R2, 88(SP)
 ;Print.c,187 :: 		,settings.homing_seek_rate                            //20
 LW	R2, Offset(_settings+28)(GP)
@@ -1243,7 +1243,7 @@ SW	R2, 84(SP)
 LW	R2, Offset(_settings+24)(GP)
 SW	R2, 80(SP)
 ;Print.c,185 :: 		,settings.homing_dir_mask                             //18
-LH	R2, Offset(_settings+64)(GP)
+LHU	R2, Offset(_settings+64)(GP)
 SH	R2, 76(SP)
 ;Print.c,184 :: 		,bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)     //17
 SW	R8, 72(SP)
@@ -1256,10 +1256,10 @@ SW	R5, 60(SP)
 ;Print.c,180 :: 		,bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)     //13
 SW	R4, 56(SP)
 ;Print.c,179 :: 		,settings.decimal_places            //12
-LH	R2, Offset(_settings+62)(GP)
+LHU	R2, Offset(_settings+62)(GP)
 SH	R2, 52(SP)
 ;Print.c,178 :: 		,settings.n_arc_correction          //11
-LH	R2, Offset(_settings+48)(GP)
+LHU	R2, Offset(_settings+48)(GP)
 SH	R2, 48(SP)
 ;Print.c,177 :: 		,settings.mm_per_arc_segment        //10
 LW	R2, Offset(_settings+36)(GP)
@@ -1271,10 +1271,10 @@ SW	R2, 40(SP)
 LW	R2, Offset(_settings+40)(GP)
 SW	R2, 36(SP)
 ;Print.c,174 :: 		,settings.step_idle_delay           //7
-LH	R2, Offset(_settings+52)(GP)
+LHU	R2, Offset(_settings+52)(GP)
 SH	R2, 32(SP)
 ;Print.c,173 :: 		,settings.invert_mask               //6
-LH	R2, Offset(_settings+66)(GP)
+LHU	R2, Offset(_settings+66)(GP)
 SH	R2, 28(SP)
 ;Print.c,172 :: 		,settings.default_seek_rate         //5
 LW	R2, Offset(_settings+20)(GP)
@@ -1283,7 +1283,7 @@ SW	R2, 24(SP)
 LW	R2, Offset(_settings+16)(GP)
 SW	R2, 20(SP)
 ;Print.c,170 :: 		,settings.p_usec                    //3
-LH	R2, Offset(_settings+60)(GP)
+LHU	R2, Offset(_settings+60)(GP)
 SH	R2, 16(SP)
 ;Print.c,169 :: 		,settings.steps_per_mm[Z]           //2
 LW	R2, Offset(_settings+8)(GP)
@@ -1357,7 +1357,7 @@ NOP
 ; end of _report_startup_line
 _report_realtime_status:
 ;Print.c,204 :: 		void report_realtime_status(){
-ADDIU	SP, SP, -100
+ADDIU	SP, SP, -96
 SW	RA, 0(SP)
 ;Print.c,212 :: 		while(DMA_IsOn(1));
 SW	R25, 4(SP)
@@ -1586,25 +1586,23 @@ L__report_realtime_status315:
 ;Print.c,230 :: 		print_position[i] = current_position[i]/settings.steps_per_mm[i];
 ADDIU	R3, SP, 28
 SEH	R2, R6
-SLL	R5, R2, 2
-ADDU	R4, R3, R5
+SLL	R4, R2, 2
+ADDU	R5, R3, R4
 ADDIU	R2, SP, 16
-ADDU	R2, R2, R5
+ADDU	R2, R2, R4
 LW	R3, 0(R2)
 LUI	R2, hi_addr(_settings+0)
 ORI	R2, R2, lo_addr(_settings+0)
-ADDU	R2, R2, R5
-LW	R2, 0(R2)
-DIVU	R3, R2
-MFLO	R2
-MTC1	R2, S0
-MTHC1	R0, S0
-CVT32.L 	S0, S0
-SWC1	S0, 0(R4)
+ADDU	R2, R2, R4
+MTC1	R3, S0
+CVT32.W 	S1, S0
+LWC1	S0, 0(R2)
+DIV.S 	S0, S1, S0
+SWC1	S0, 0(R5)
 ;Print.c,231 :: 		if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
-SEH	R2, R2
+ANDI	R2, R2, 65535
 BNE	R2, R0, L__report_realtime_status317
 NOP	
 J	L_report_realtime_status93
@@ -1686,9 +1684,9 @@ J	L_report_realtime_status97
 NOP	
 L__report_realtime_status320:
 ;Print.c,242 :: 		if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) {
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
-SEH	R2, R2
+ANDI	R2, R2, 65535
 BNE	R2, R0, L__report_realtime_status322
 NOP	
 J	L_report_realtime_status99
@@ -1768,9 +1766,9 @@ ADDIU	R2, R3, 4
 LWC1	S1, 0(R2)
 ;Print.c,251 :: 		,print_position[0]
 LWC1	S0, 0(R3)
-;Print.c,250 :: 		dma_printf(",WPos: %f,%f,%f>\r\n"
+;Print.c,250 :: 		dma_printf("WPos: %f,%f,%f>\r\n"
 ADDIU	R23, SP, 78
-ADDIU	R22, R23, 19
+ADDIU	R22, R23, 18
 LUI	R24, hi_addr(?ICS?lstr68_Print+0)
 ORI	R24, R24, lo_addr(?ICS?lstr68_Print+0)
 JAL	___CC2DW+0
@@ -1783,7 +1781,7 @@ SWC1	S2, 12(SP)
 SWC1	S1, 8(SP)
 ;Print.c,251 :: 		,print_position[0]
 SWC1	S0, 4(SP)
-;Print.c,250 :: 		dma_printf(",WPos: %f,%f,%f>\r\n"
+;Print.c,250 :: 		dma_printf("WPos: %f,%f,%f>\r\n"
 SW	R2, 0(SP)
 ;Print.c,253 :: 		,print_position[2]);
 JAL	_dma_printf+0
@@ -1795,7 +1793,7 @@ LW	R27, 12(SP)
 LW	R26, 8(SP)
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 100
+ADDIU	SP, SP, 96
 JR	RA
 NOP	
 ; end of _report_realtime_status
@@ -1834,8 +1832,9 @@ NOP
 L_report_gcode_parameters104:
 ;Print.c,269 :: 		}
 L_report_gcode_parameters103:
-;Print.c,271 :: 		for (coord_select = 0; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
-SH	R0, 8(SP)
+;Print.c,271 :: 		for (coord_select = 1; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
+ORI	R2, R0, 1
+SH	R2, 8(SP)
 L_report_gcode_parameters105:
 LH	R2, 8(SP)
 SLTI	R2, R2, 8
@@ -1886,7 +1885,7 @@ L_report_gcode_parameters111:
 ;Print.c,275 :: 		switch (coord_select) {
 J	L_report_gcode_parameters112
 NOP	
-;Print.c,276 :: 		case 0: dma_printf("54:"); break;
+;Print.c,276 :: 		case 1: dma_printf("54:"); break;
 L_report_gcode_parameters114:
 ORI	R30, R0, 53
 SB	R30, 15(SP)
@@ -1904,7 +1903,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,277 :: 		case 1: dma_printf("55:"); break;
+;Print.c,277 :: 		case 2: dma_printf("55:"); break;
 L_report_gcode_parameters115:
 ORI	R30, R0, 53
 SB	R30, 19(SP)
@@ -1922,7 +1921,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,278 :: 		case 2: dma_printf("56:"); break;
+;Print.c,278 :: 		case 3: dma_printf("56:"); break;
 L_report_gcode_parameters116:
 ORI	R30, R0, 53
 SB	R30, 23(SP)
@@ -1940,7 +1939,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,279 :: 		case 3: dma_printf("57:"); break;
+;Print.c,279 :: 		case 4: dma_printf("57:"); break;
 L_report_gcode_parameters117:
 ORI	R30, R0, 53
 SB	R30, 27(SP)
@@ -1958,7 +1957,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,280 :: 		case 4: dma_printf("58:"); break;
+;Print.c,280 :: 		case 5: dma_printf("58:"); break;
 L_report_gcode_parameters118:
 ORI	R30, R0, 53
 SB	R30, 31(SP)
@@ -1976,7 +1975,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,281 :: 		case 5: dma_printf("59:"); break;
+;Print.c,281 :: 		case 6: dma_printf("59:"); break;
 L_report_gcode_parameters119:
 ORI	R30, R0, 53
 SB	R30, 35(SP)
@@ -1994,7 +1993,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,282 :: 		case 6: dma_printf("28:"); break;
+;Print.c,282 :: 		case 7: dma_printf("28:"); break;
 L_report_gcode_parameters120:
 ORI	R30, R0, 50
 SB	R30, 39(SP)
@@ -2012,7 +2011,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,283 :: 		case 7: dma_printf("30:"); break;
+;Print.c,283 :: 		case 8: dma_printf("30:"); break;
 L_report_gcode_parameters121:
 ORI	R30, R0, 51
 SB	R30, 43(SP)
@@ -2032,56 +2031,57 @@ J	L_report_gcode_parameters113
 NOP	
 ;Print.c,285 :: 		}
 L_report_gcode_parameters112:
-LH	R2, 8(SP)
-BNE	R2, R0, L__report_gcode_parameters334
+LH	R3, 8(SP)
+ORI	R2, R0, 1
+BNE	R3, R2, L__report_gcode_parameters334
 NOP	
 J	L_report_gcode_parameters114
 NOP	
 L__report_gcode_parameters334:
 LH	R3, 8(SP)
-ORI	R2, R0, 1
+ORI	R2, R0, 2
 BNE	R3, R2, L__report_gcode_parameters336
 NOP	
 J	L_report_gcode_parameters115
 NOP	
 L__report_gcode_parameters336:
 LH	R3, 8(SP)
-ORI	R2, R0, 2
+ORI	R2, R0, 3
 BNE	R3, R2, L__report_gcode_parameters338
 NOP	
 J	L_report_gcode_parameters116
 NOP	
 L__report_gcode_parameters338:
 LH	R3, 8(SP)
-ORI	R2, R0, 3
+ORI	R2, R0, 4
 BNE	R3, R2, L__report_gcode_parameters340
 NOP	
 J	L_report_gcode_parameters117
 NOP	
 L__report_gcode_parameters340:
 LH	R3, 8(SP)
-ORI	R2, R0, 4
+ORI	R2, R0, 5
 BNE	R3, R2, L__report_gcode_parameters342
 NOP	
 J	L_report_gcode_parameters118
 NOP	
 L__report_gcode_parameters342:
 LH	R3, 8(SP)
-ORI	R2, R0, 5
+ORI	R2, R0, 6
 BNE	R3, R2, L__report_gcode_parameters344
 NOP	
 J	L_report_gcode_parameters119
 NOP	
 L__report_gcode_parameters344:
 LH	R3, 8(SP)
-ORI	R2, R0, 6
+ORI	R2, R0, 7
 BNE	R3, R2, L__report_gcode_parameters346
 NOP	
 J	L_report_gcode_parameters120
 NOP	
 L__report_gcode_parameters346:
 LH	R3, 8(SP)
-ORI	R2, R0, 7
+ORI	R2, R0, 8
 BNE	R3, R2, L__report_gcode_parameters348
 NOP	
 J	L_report_gcode_parameters121
@@ -2112,9 +2112,9 @@ J	L_report_gcode_parameters125
 NOP	
 L_report_gcode_parameters126:
 ;Print.c,288 :: 		if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) {
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
-SEH	R2, R2
+ANDI	R2, R2, 65535
 BNE	R2, R0, L__report_gcode_parameters353
 NOP	
 J	L_report_gcode_parameters127
@@ -2241,7 +2241,7 @@ SH	R2, 10(SP)
 J	L_report_gcode_parameters122
 NOP	
 L_report_gcode_parameters123:
-;Print.c,271 :: 		for (coord_select = 0; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
+;Print.c,271 :: 		for (coord_select = 1; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
 LH	R2, 8(SP)
 ADDIU	R2, R2, 1
 SH	R2, 8(SP)
@@ -2305,9 +2305,9 @@ J	L_report_gcode_parameters138
 NOP	
 L_report_gcode_parameters139:
 ;Print.c,305 :: 		if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)){
-LH	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
-SEH	R2, R2
+ANDI	R2, R2, 65535
 BNE	R2, R0, L__report_gcode_parameters363
 NOP	
 J	L_report_gcode_parameters140

@@ -18,6 +18,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 //                             DEFINES                                       //
 ///////////////////////////////////////////////////////////////////////////////
+
+//set this to initialize default settings in flash prior to writing $99=1
+#define PREPARE_DEFAULT_FLASH
+
+//do not make this vale to large it will reduce the life of flash row
+#define FLASH_RETRY_COUNT 2
+
+//global usage defines
 #define true 1
 #define TRUE 1
 #define false 0
@@ -146,7 +154,7 @@ int read_coord_data_indicator();
 int read_row_from_flash(unsigned long addr);
 
 //writes the coord data into flash
-unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+unsigned int settings_write_coord_data(int coord_select,float *coord);
 
 //reads a coord from flashinto relevant axis data
 void settings_read_coord_data();

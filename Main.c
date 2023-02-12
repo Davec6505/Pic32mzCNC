@@ -38,7 +38,7 @@
 volatile system_t sys;
 volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 STP STPS[NoOfAxis];
-settings_t settings;
+volatile settings_t settings;
 
 bit oneShotA; sfr;
 bit oneShotB; sfr;
@@ -206,7 +206,7 @@ unsigned long _flash,*addr;
              return -1;
           if (gc.L == 20) {
               //write the Pnn coordinates to flash recipe for active system
-              result = Settings_Write_Coord_Data((int)gc.P,gc.next_position );
+              result = settings_write_coord_data((int)gc.P,gc.next_position );
               if(result){ //response if write to flash failed
                 return NVM_COORDINATE_WRITE_ERROR;
               }
@@ -256,7 +256,7 @@ unsigned long _flash,*addr;
                 indx++;
              }
 
-            result = Settings_Write_Coord_Data((int)gc.P,coord_data);
+            result = settings_write_coord_data((int)gc.P,coord_data);
 
           // Update current coordinate system if currently active.
             memcpy(gc.coord_system,coord_data,sizeof(coord_data));
@@ -335,7 +335,7 @@ unsigned long _flash,*addr;
      case 64:   //NON_MODAL_SET_HOME_1
           temp = SETTING_INDEX_G28;
           if (action == NON_MODAL_SET_HOME_1_BIT) { temp = SETTING_INDEX_G30; }
-          Settings_Write_Coord_Data(temp,gc.position);
+          settings_write_coord_data(temp,gc.position);
           break;
      case 128:  //NON_MODAL_SET_COORDINATE_OFFSET
           axis_words = Get_Axisword();

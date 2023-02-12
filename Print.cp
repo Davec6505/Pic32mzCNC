@@ -24,9 +24,17 @@ void protocol_execute_startup();
 
 void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 154 "c:/users/git/pic32mzcnc/settings.h"
+
+
+
+
+
+
+
+typedef __attribute__((aligned (32))) float afloat;
+#line 156 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- unsigned long steps_per_mm[ 4 ];
+ afloat steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -35,19 +43,19 @@ typedef struct {
  float mm_per_arc_segment;
  float acceleration;
  float junction_deviation;
- int n_arc_correction;
- int flags;
- int step_idle_delay;
- int homing_debounce_delay;
- int stepper_idle_lock_time;
- int microsteps;
- int p_usec;
- int decimal_places;
- int homing_dir_mask;
- int invert_mask;
+ unsigned int n_arc_correction;
+ unsigned int flags;
+ unsigned int step_idle_delay;
+ unsigned int homing_debounce_delay;
+ unsigned int stepper_idle_lock_time;
+ unsigned int microsteps;
+ unsigned int p_usec;
+ unsigned int decimal_places;
+ unsigned int homing_dir_mask;
+ unsigned int invert_mask;
 
 } settings_t;
-extern settings_t settings;
+extern volatile settings_t settings;
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/string.h"
 
@@ -280,7 +288,7 @@ void sys_sync_current_position();
 
 
 int round(double val);
-#line 95 "c:/users/git/pic32mzcnc/globals.h"
+#line 103 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -335,7 +343,7 @@ int read_coord_data_indicator();
 int read_row_from_flash(unsigned long addr);
 
 
-unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+unsigned int settings_write_coord_data(int coord_select,float *coord);
 
 
 void settings_read_coord_data();
@@ -394,7 +402,7 @@ typedef struct {
  int P;
  int S;
 } parser_state_t;
-extern parser_state_t gc;
+extern volatile parser_state_t gc;
 
 
 enum IJK{I,J,K};
@@ -821,11 +829,11 @@ void Reset_Ring();
 int Loopback();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 140 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void *address, unsigned long _data);
-unsigned int NVMWriteQuad (void *address, unsigned long *_data);
-unsigned int NVMWriteRow (void* address, void* _data);
-unsigned int NVMErasePage(unsigned long address);
+#line 149 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (const void *address, unsigned long _data);
+unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
+unsigned int NVMWriteRow (const void* address, void* _data);
+unsigned int NVMErasePage(const void* address);
 static unsigned int NVMUnlock(unsigned long nvmop);
 unsigned int NVM_ERROR_Rst();
 static void NVM_WR_Set();
@@ -965,7 +973,7 @@ float acc = settings.acceleration;
  acc /=(60*60);
  while(DMA_IsOn(1));
 #line 166 "C:/Users/Git/Pic32mzCNC/Print.c"
- dma_printf("\n              $0=%l (x, step/mm)\r\n              $1=%l (y, step/mm)\r\n              $2=%l (z, step/mm)\r\n              $3=%d (step pulse, usec)\r\n              $4=%f (default feed, mm/min)\r\n              $5=%f (default seek, mm/min)\r\n              $6=%d (step port invert mask, int) \r\n              $7=%d (step idle delay, msec)\r\n              $8=%f (acceleration, mm/sec^2)\r\n              $9=%f (junction deviation, mm)\r\n              $10=%f (arc, mm/segment)\r\n              $11=%d (n-arc correction, int)\r\n              $12=%d (n-decimals, int)\r\n              $13=%d (report inches, bool)\r\n              $14=%d (auto start, bool)\r\n              $15=%d (invert step enable, bool)\r\n              $16=%d (hard limits, bool)\r\n              $17=%d (homing cycle, bool)\r\n              $18=%d (homing dir invert mask, int:)\r\n              $19=%f (homing feed, mm/min)\r\n              $20=%f (homing seek, mm/min)\r\n              $21=%d (homing debounce, msec)\r\n              $22=%f (homing pull-off, mm)\r\n"
+ dma_printf("\n              $0=%f (x, step/mm)\r\n              $1=%f (y, step/mm)\r\n              $2=%f (z, step/mm)\r\n              $3=%d (step pulse, usec)\r\n              $4=%f (default feed, mm/min)\r\n              $5=%f (default seek, mm/min)\r\n              $6=%d (step port invert mask, int) \r\n              $7=%d (step idle delay, msec)\r\n              $8=%f (acceleration, mm/sec^2)\r\n              $9=%f (junction deviation, mm)\r\n              $10=%f (arc, mm/segment)\r\n              $11=%d (n-arc correction, int)\r\n              $12=%d (n-decimals, int)\r\n              $13=%d (report inches, bool)\r\n              $14=%d (auto start, bool)\r\n              $15=%d (invert step enable, bool)\r\n              $16=%d (hard limits, bool)\r\n              $17=%d (homing cycle, bool)\r\n              $18=%d (homing dir invert mask, int:)\r\n              $19=%f (homing feed, mm/min)\r\n              $20=%f (homing seek, mm/min)\r\n              $21=%d (homing debounce, msec)\r\n              $22=%f (homing pull-off, mm)\r\n"
  ,settings.steps_per_mm[X]
  ,settings.steps_per_mm[Y]
  ,settings.steps_per_mm[Z]
@@ -1049,7 +1057,7 @@ void report_realtime_status(){
  }
 
  while(DMA_IsOn(1));
- dma_printf(",WPos: %f,%f,%f>\r\n"
+ dma_printf("WPos: %f,%f,%f>\r\n"
  ,print_position[0]
  ,print_position[1]
  ,print_position[2]);
@@ -1070,19 +1078,19 @@ int coord_select, i;
  }
  }
 
- for (coord_select = 0; coord_select <=  6 +1 ; coord_select++){
+ for (coord_select = 1; coord_select <=  6 +1 ; coord_select++){
  while(DMA_IsOn(1));
  dma_printf("[G");
  while(DMA_IsOn(1));
  switch (coord_select) {
- case 0: dma_printf("54:"); break;
- case 1: dma_printf("55:"); break;
- case 2: dma_printf("56:"); break;
- case 3: dma_printf("57:"); break;
- case 4: dma_printf("58:"); break;
- case 5: dma_printf("59:"); break;
- case 6: dma_printf("28:"); break;
- case 7: dma_printf("30:"); break;
+ case 1: dma_printf("54:"); break;
+ case 2: dma_printf("55:"); break;
+ case 3: dma_printf("56:"); break;
+ case 4: dma_printf("57:"); break;
+ case 5: dma_printf("58:"); break;
+ case 6: dma_printf("59:"); break;
+ case 7: dma_printf("28:"); break;
+ case 8: dma_printf("30:"); break;
 
  }
  for (i=0; i< 4 ; i++) {

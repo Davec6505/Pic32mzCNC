@@ -121,7 +121,7 @@ void PinMode(){
 //init all default settings
  settings_init(0);
  settings_init(1);
- settings_read_coord_data();
+ //settings_read_coord_data();
 }
 
 void UartConfig(){
