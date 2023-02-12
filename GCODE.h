@@ -188,7 +188,7 @@ typedef struct {
   int P;               //Pause as in msec
   int S;               //Pause as in sec
 } parser_state_t;
-extern parser_state_t gc;
+extern volatile parser_state_t gc;
 
 
 enum IJK{I,J,K};

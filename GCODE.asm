@@ -928,11 +928,14 @@ SW	R2, 32(SP)
 LUI	R2, hi_addr(_settings+0)
 ORI	R2, R2, lo_addr(_settings+0)
 ADDU	R2, R2, R3
+LWC1	S0, 0(R2)
+CVT36.S 	S0, S0
+MFC1	R2, S0
 SH	R5, 4(SP)
 SW	R27, 8(SP)
 SW	R26, 12(SP)
 SW	R25, 16(SP)
-LW	R25, 0(R2)
+MOVZ	R25, R2, R0
 JAL	_ulong2flt+0
 NOP	
 LW	R25, 16(SP)
@@ -993,17 +996,17 @@ LUI	R2, 16843
 ORI	R2, R2, 13107
 MTC1	R2, S0
 MUL.S 	S0, S12, S0
-; ?FLOC__GCODE_To_Millimeters?T177 start address is: 0 (R0)
-; ?FLOC__GCODE_To_Millimeters?T177 end address is: 0 (R0)
+; ?FLOC__GCODE_To_Millimeters?T178 start address is: 0 (R0)
+; ?FLOC__GCODE_To_Millimeters?T178 end address is: 0 (R0)
 J	L_GCODE_To_Millimeters58
 NOP	
 L_GCODE_To_Millimeters57:
-; ?FLOC__GCODE_To_Millimeters?T177 start address is: 0 (R0)
+; ?FLOC__GCODE_To_Millimeters?T178 start address is: 0 (R0)
 MOV.S 	S0, S12
-; ?FLOC__GCODE_To_Millimeters?T177 end address is: 0 (R0)
+; ?FLOC__GCODE_To_Millimeters?T178 end address is: 0 (R0)
 L_GCODE_To_Millimeters58:
-; ?FLOC__GCODE_To_Millimeters?T177 start address is: 0 (R0)
-; ?FLOC__GCODE_To_Millimeters?T177 end address is: 0 (R0)
+; ?FLOC__GCODE_To_Millimeters?T178 start address is: 0 (R0)
+; ?FLOC__GCODE_To_Millimeters?T178 end address is: 0 (R0)
 ;GCODE.c,350 :: 		}
 L_end_To_Millimeters:
 JR	RA

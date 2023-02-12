@@ -22,7 +22,7 @@
 volatile unsigned int res;
 ///////////////////////////////////////////////////////
 //Write a single 32bit word to flash address and data
-unsigned int NVMWriteWord (void *address, unsigned long _data){
+unsigned int NVMWriteWord (const void *address, unsigned long _data){
 unsigned long padd;// = address;
 
   //translate the Vadd to Phy add
@@ -45,7 +45,7 @@ unsigned long padd;// = address;
 
 //////////////////////////////////////////////////////
 //4 words to be written to flash at once
-unsigned int NVMWriteQuad (void *address, unsigned long *_data){
+unsigned int NVMWriteQuad (const void *address, unsigned long *_data){
 unsigned long padd;
 
   //translate the Vadd to Phy add
@@ -70,7 +70,7 @@ unsigned long padd;
 /////////////////////////////////////////////////////
 //Row of 128 words to be written to flash
 //ignore bits <9-0>  [1024 || 0x400] boundries
-unsigned int NVMWriteRow (void  *address, void *_data){
+unsigned int NVMWriteRow (const void *address, void *_data){
 
   //translate address to phy address
   // Set NVMADDR to Start Address of row to program
@@ -95,12 +95,14 @@ unsigned int NVMWriteRow (void  *address, void *_data){
 
 /////////////////////////////////////////////////////
 //Erase a whole page of flash 16kbytes
-unsigned int NVMErasePage(unsigned long address){
-unsigned long padd;
+unsigned int NVMErasePage(const void *address){
+//unsigned long padd;
 
+   //translate the Vadd to Phy add
+  NVMADDR = *(unsigned long*)address & FLASH_PADDRESS_TRANSLATE;
   //translate the Vadd to Phy add
   // Load address to program into NVMADDR register
-  NVMADDR = address & FLASH_PADDRESS_TRANSLATE;
+ // NVMADDR = address & FLASH_PADDRESS_TRANSLATE;
   
   // Unlock and Erase Page
   res = NVMUnlock(0x4004);

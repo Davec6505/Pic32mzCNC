@@ -216,9 +216,6 @@ NOP
 ORI	R25, R0, 1
 JAL	_settings_init+0
 NOP	
-;Config.c,124 :: 		settings_read_coord_data();
-JAL	_settings_read_coord_data+0
-NOP	
 ;Config.c,125 :: 		}
 L_end_PinMode:
 LW	R27, 12(SP)
