@@ -177,9 +177,17 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 154 "c:/users/git/pic32mzcnc/settings.h"
+
+
+
+
+
+
+
+typedef __attribute__((aligned (32))) float afloat;
+#line 156 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- unsigned long steps_per_mm[ 4 ];
+ afloat steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -188,19 +196,19 @@ typedef struct {
  float mm_per_arc_segment;
  float acceleration;
  float junction_deviation;
- int n_arc_correction;
- int flags;
- int step_idle_delay;
- int homing_debounce_delay;
- int stepper_idle_lock_time;
- int microsteps;
- int p_usec;
- int decimal_places;
- int homing_dir_mask;
- int invert_mask;
+ unsigned int n_arc_correction;
+ unsigned int flags;
+ unsigned int step_idle_delay;
+ unsigned int homing_debounce_delay;
+ unsigned int stepper_idle_lock_time;
+ unsigned int microsteps;
+ unsigned int p_usec;
+ unsigned int decimal_places;
+ unsigned int homing_dir_mask;
+ unsigned int invert_mask;
 
 } settings_t;
-extern settings_t settings;
+extern volatile settings_t settings;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -237,11 +245,11 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 140 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void *address, unsigned long _data);
-unsigned int NVMWriteQuad (void *address, unsigned long *_data);
-unsigned int NVMWriteRow (void* address, void* _data);
-unsigned int NVMErasePage(unsigned long address);
+#line 149 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (const void *address, unsigned long _data);
+unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
+unsigned int NVMWriteRow (const void* address, void* _data);
+unsigned int NVMErasePage(const void* address);
 static unsigned int NVMUnlock(unsigned long nvmop);
 unsigned int NVM_ERROR_Rst();
 static void NVM_WR_Set();
@@ -272,7 +280,7 @@ void sys_sync_current_position();
 
 
 int round(double val);
-#line 95 "c:/users/git/pic32mzcnc/globals.h"
+#line 103 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -327,7 +335,7 @@ int read_coord_data_indicator();
 int read_row_from_flash(unsigned long addr);
 
 
-unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+unsigned int settings_write_coord_data(int coord_select,float *coord);
 
 
 void settings_read_coord_data();
@@ -386,7 +394,7 @@ typedef struct {
  int P;
  int S;
 } parser_state_t;
-extern parser_state_t gc;
+extern volatile parser_state_t gc;
 
 
 enum IJK{I,J,K};

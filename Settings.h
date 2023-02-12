@@ -5,6 +5,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 //                             DEFINES                                       //
 ///////////////////////////////////////////////////////////////////////////////
+typedef __attribute__((aligned (32))) float afloat;
+
 #define FIRMWARE "Grbl "
 #define GRBL_VERSION "0.8c "
 #define GRBL_HELP "['$' for help]"
@@ -24,10 +26,10 @@
 #define BITFLAG_HOMING_ENABLE      bit(4)
 
 
-#define DEFAULT_X_STEPS_PER_MM         250
-#define DEFAULT_Y_STEPS_PER_MM         250
-#define DEFAULT_Z_STEPS_PER_MM         250
-#define DEFAULT_A_STEPS_PER_MM         250
+#define DEFAULT_X_STEPS_PER_MM         250.00
+#define DEFAULT_Y_STEPS_PER_MM         250.00
+#define DEFAULT_Z_STEPS_PER_MM         250.00
+#define DEFAULT_A_STEPS_PER_MM         250.00
 #define DEFAUT_P_USEC                  100
 #define DEFAULT_MM_PER_ARC_SEGMENT     0.1
 #define DEFAULT_RAPID_FEEDRATE         500.0 // mm/min
@@ -152,7 +154,7 @@
 ///////////////////////////////////////////////////////////////////////////////
  // Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
 typedef struct {
-  unsigned long steps_per_mm[NoOfAxis];
+  afloat steps_per_mm[NoOfAxis];
   float default_feed_rate;
   float default_seek_rate;
   float homing_feed_rate;
@@ -161,19 +163,19 @@ typedef struct {
   float mm_per_arc_segment;
   float acceleration;
   float junction_deviation;
-  int n_arc_correction;
-  int flags;  // Contains default boolean settings
-  int step_idle_delay;
-  int homing_debounce_delay;
-  int stepper_idle_lock_time; // If max value 255, steppers do not disable.
-  int microsteps;
-  int p_usec;
-  int decimal_places;
-  int homing_dir_mask;
-  int invert_mask;
+  unsigned int n_arc_correction;
+  unsigned int flags;  // Contains default boolean settings
+  unsigned int step_idle_delay;
+  unsigned int homing_debounce_delay;
+  unsigned int stepper_idle_lock_time; // If max value 255, steppers do not disable.
+  unsigned int microsteps;
+  unsigned int p_usec;
+  unsigned int decimal_places;
+  unsigned int homing_dir_mask;
+  unsigned int invert_mask;
 //  uint8_t status_report_mask; // Mask to indicate desired report data.
 }  settings_t;
-extern settings_t settings;
+extern volatile settings_t settings;
 
 
 #endif

@@ -18,22 +18,22 @@
 *******************************************************************************/
 #include "GCODE.h"
 
-parser_state_t gc;
+volatile parser_state_t gc;
 
 volatile int status_code;  // Status of instructions
-float coord_data[NoOfAxis];
+volatile float coord_data[NoOfAxis];
 
 static volatile char axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
 static char absolute_override;
 static volatile int modal_group_words;  // Bitflag variable to track and check modal group words in block
 static volatile int non_modal_words;    // Bitflags to track non-modal actions
 static volatile int motion_mode;
-int group_number;
-int non_modal_action;
+volatile int group_number;
+volatile int non_modal_action;
 
-int int_value;
-float inverse_feed_rate;       // negative inverse_feed_rate means no inverse_feed_rate specified
-float value;
+volatile int int_value;
+volatile float inverse_feed_rate;       // negative inverse_feed_rate means no inverse_feed_rate specified
+volatile float value;
 
 /////////////////////////////////////////////////////////
 //                GLOBAL SCOPE FUNCTIONS               //
@@ -138,8 +138,8 @@ int i = 0;
    if (group_number == MODAL_GROUP_0){
      //if the non modal action has changed reset its state
      ///if(non_modal_action != last_non_modal_action){
-        Rst_modalword();
-        bit_true( non_modal_words,bit( non_modal_action));
+     Rst_modalword();
+     bit_true( non_modal_words,bit( non_modal_action));
      //}
      #if GcodeDebug == 2
        while(DMA_IsOn(1));
@@ -155,19 +155,19 @@ int i = 0;
   // absolute mode coordinate offsets or incremental mode offsets.
   // NOTE: Tool offsets may be appended to these conversions when/if this feature is added.
   for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used to save flash space.
-      if ( bit_istrue(axis_words,bit(i))) {
-        if (!absolute_override) { // Do not update target in absolute override mode
-          if (gc.absolute_mode) {
-            //gc.next_position[i] += gc.position[i] + gc.coord_system[i] + gc.coord_offset[i]; // Absolute mode
-          } else {
-            //assuming gc.next position doesnt go to 0.00 when finnishing a move!!!
-            //however it is being reset????
-            gc.next_position[i] + gc.coord_offset[i]; // Incremental mode
-          }
+    if ( bit_istrue(axis_words,bit(i))) {
+      if (!absolute_override) { // Do not update target in absolute override mode
+        if (gc.absolute_mode) {
+          //gc.next_position[i] += gc.position[i] + gc.coord_system[i] + gc.coord_offset[i]; // Absolute mode
+        } else {
+          //assuming gc.next position doesnt go to 0.00 when finnishing a move!!!
+          //however it is being reset????
+          gc.next_position[i] + gc.coord_offset[i]; // Incremental mode
         }
-      } else {
-        gc.next_position[i] += gc.coord_offset[i]; // No axis word in block. Keep same axis position.
       }
+    } else {
+      gc.next_position[i] += gc.coord_offset[i]; // No axis word in block. Keep same axis position.
+    }
   }
 
 //Motion mode for movement set in 1st and 2nd switch statememnts within

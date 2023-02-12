@@ -1,9 +1,17 @@
 #line 1 "C:/Users/Git/Pic32mzCNC/Globals.c"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 154 "c:/users/git/pic32mzcnc/settings.h"
+
+
+
+
+
+
+
+typedef __attribute__((aligned (32))) float afloat;
+#line 156 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- unsigned long steps_per_mm[ 4 ];
+ afloat steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -12,19 +20,19 @@ typedef struct {
  float mm_per_arc_segment;
  float acceleration;
  float junction_deviation;
- int n_arc_correction;
- int flags;
- int step_idle_delay;
- int homing_debounce_delay;
- int stepper_idle_lock_time;
- int microsteps;
- int p_usec;
- int decimal_places;
- int homing_dir_mask;
- int invert_mask;
+ unsigned int n_arc_correction;
+ unsigned int flags;
+ unsigned int step_idle_delay;
+ unsigned int homing_debounce_delay;
+ unsigned int stepper_idle_lock_time;
+ unsigned int microsteps;
+ unsigned int p_usec;
+ unsigned int decimal_places;
+ unsigned int homing_dir_mask;
+ unsigned int invert_mask;
 
 } settings_t;
-extern settings_t settings;
+extern volatile settings_t settings;
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/string.h"
 
@@ -277,7 +285,7 @@ typedef struct {
  int P;
  int S;
 } parser_state_t;
-extern parser_state_t gc;
+extern volatile parser_state_t gc;
 
 
 enum IJK{I,J,K};
@@ -744,11 +752,11 @@ void Reset_Ring();
 int Loopback();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 140 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (void *address, unsigned long _data);
-unsigned int NVMWriteQuad (void *address, unsigned long *_data);
-unsigned int NVMWriteRow (void* address, void* _data);
-unsigned int NVMErasePage(unsigned long address);
+#line 149 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (const void *address, unsigned long _data);
+unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
+unsigned int NVMWriteRow (const void* address, void* _data);
+unsigned int NVMErasePage(const void* address);
 static unsigned int NVMUnlock(unsigned long nvmop);
 unsigned int NVM_ERROR_Rst();
 static void NVM_WR_Set();
@@ -762,7 +770,7 @@ void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-#line 95 "c:/users/git/pic32mzcnc/globals.h"
+#line 103 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -817,7 +825,7 @@ int read_coord_data_indicator();
 int read_row_from_flash(unsigned long addr);
 
 
-unsigned int Settings_Write_Coord_Data(int coord_select,float *coord);
+unsigned int settings_write_coord_data(int coord_select,float *coord);
 
 
 void settings_read_coord_data();
@@ -838,7 +846,7 @@ void write_global_settings();
 int settings_store_global_setting(int parameter, float value);
 #line 8 "C:/Users/Git/Pic32mzCNC/Globals.c"
 unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
-unsigned long volatile add = 0;
+static unsigned long volatile add = 0;
 
 
 static volatile int ram_loaded;
@@ -850,8 +858,20 @@ volatile unsigned long i = 0;
 volatile unsigned int error = 0;
 
 
+
+
 void settings_init(short reset_all){
-int has_data = 0;
+unsigned long *ptr;
+volatile unsigned long has_data = 0;
+
+
+int retry_flash_write = 0;
+
+
+
+ add = (unsigned long) 0xBD1BC000 ;
+
+ ptr = (unsigned long) 0xBD1BC5F0  ;
 
  if(!reset_all){
 
@@ -861,10 +881,22 @@ int has_data = 0;
  sys.execute = 0;
  sys.auto_start = 0;
  }else{
- add = (unsigned long) 0xBD1BC000 ;
- has_data = read_row_from_flash(add);
-#line 39 "C:/Users/Git/Pic32mzCNC/Globals.c"
- if(!has_data){
+ has_data = NVMReadWord(ptr);
+#line 52 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ if(has_data == -1){
+
+
+
+
+
+ error = (int)NVMErasePage(&add);
+
+
+
+
+
+
+
 
  settings.steps_per_mm[X] =  250.0 ;
  buffA[ 0x40 ] = flt2ulong(settings.steps_per_mm[X]);
@@ -872,13 +904,8 @@ int has_data = 0;
  buffA[ 0x41 ] = flt2ulong(settings.steps_per_mm[Y]);
  settings.steps_per_mm[Z] =  250.0 ;
  buffA[ 0x42 ] = flt2ulong(settings.steps_per_mm[Z]);
- settings.steps_per_mm[A] =  250 ;
-
- settings.p_usec =  100 ;
- buffA[ 0x46 ] = settings.p_usec;
-
- settings.mm_per_arc_segment =  0.8 ;
- buffA[ 0x4C ] = flt2ulong(settings.mm_per_arc_segment);
+ settings.steps_per_mm[A] =  250.00 ;
+ buffA[ 0x43 ] = flt2ulong(settings.steps_per_mm[A]);
 
  settings.default_feed_rate =  250.0 ;
  buffA[ 0x47 ] = flt2ulong(settings.default_feed_rate);
@@ -886,68 +913,95 @@ int has_data = 0;
  settings.default_seek_rate =  500.0 ;
  buffA[ 0x48 ] = flt2ulong(settings.default_seek_rate);
 
- settings.acceleration =  (10.0*60*60) ;
- buffA[ 0x4D ] = flt2ulong(settings.acceleration);
-
- settings.junction_deviation =  0.05 ;
- buffA[ 0x4E ] = flt2ulong(settings.junction_deviation);
-
  settings.homing_feed_rate =  25.0 ;
  buffA[ 0x49 ] = flt2ulong(settings.homing_feed_rate);
 
  settings.homing_seek_rate =  250.0  ;
  buffA[ 0x4A ] = flt2ulong(settings.homing_seek_rate);
 
- settings.homing_debounce_delay =  100 ;
- buffA[ 0x52 ] = flt2ulong(settings.homing_debounce_delay);
-
  settings.homing_pulloff =  1.0 ;
  buffA[ 0x4B ] = flt2ulong(settings.homing_pulloff);
 
- settings.stepper_idle_lock_time =  25 ;
- buffA[ 0x53 ] = flt2ulong(settings.stepper_idle_lock_time);
+ settings.mm_per_arc_segment =  0.8 ;
+ buffA[ 0x4C ] = flt2ulong(settings.mm_per_arc_segment);
 
- settings.decimal_places =  3 ;
- buffA[ 0x56 ] = flt2ulong(settings.decimal_places);
+ settings.acceleration =  (10.0*60*60) ;
+ buffA[ 0x4D ] = flt2ulong(settings.acceleration);
+
+ settings.junction_deviation =  0.05 ;
+ buffA[ 0x4E ] = flt2ulong(settings.junction_deviation);
+
 
  settings.n_arc_correction =  25 ;
- buffA[ 0x4F ] = flt2ulong( 0x4F );
+ buffA[ 0x4F ] = (unsigned long) 0x4F ;
 
+ settings.stepper_idle_lock_time =  25 ;
+ buffA[ 0x53 ] = (unsigned long)settings.stepper_idle_lock_time;
 
+ settings.homing_debounce_delay =  100 ;
+ buffA[ 0x52 ] = (unsigned long)settings.homing_debounce_delay;
 
- has_data = (int)NVMWriteRow(&add,buffA);
- set_ram_loaded_indicator(has_data);
+ settings.p_usec =  100 ;
+ buffA[ 0x46 ] = (unsigned long)settings.p_usec;
 
- }else{
- settings.flags = 0;
+ settings.decimal_places =  3 ;
+ buffA[ 0x56 ] = (unsigned int)settings.decimal_places;
+
  if ( 0 ) { settings.flags |=  (1 << 0) ; }
  if ( 1 ) { settings.flags |=  (1 << 1) ; }
  if ( 0 ) { settings.flags |=  (1 << 2) ; }
  if ( 0 ) { settings.flags |=  (1 << 3) ; }
  if ( 0 ) { settings.flags |=  (1 << 4) ; }
+ buffA[ 0x50 ] = (unsigned long)settings.flags;
+
+
+
+
+ buffA[ 0x17C ] = 0x7FFFFFFF;
+
+
+
+ has_data = 1;
+
+ while(has_data){
+
+ has_data = (unsigned long)NVMWriteRow(&add,buffA);
+ retry_flash_write++;
+#line 142 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ if(retry_flash_write >  2 )break;
+ }
+
+
+ }
+ if(has_data){
+ set_ram_loaded_indicator(read_row_from_flash(add));
+ }
 
  settings.steps_per_mm[X] = ulong2flt(buffA[ 0x40 ]);
  settings.steps_per_mm[Y] = ulong2flt(buffA[ 0x41 ]);
  settings.steps_per_mm[Z] = ulong2flt(buffA[ 0x42 ]);
 
- settings.p_usec = ulong2flt(buffA[ 0x46 ]);
- settings.mm_per_arc_segment = ulong2flt(buffA[ 0x4C ]);
  settings.default_feed_rate = ulong2flt(buffA[ 0x47 ]);
  settings.default_seek_rate = ulong2flt(buffA[ 0x48 ]);
- settings.acceleration = ulong2flt(buffA[ 0x4D ]);
- settings.junction_deviation = ulong2flt(buffA[ 0x4E ]);
  settings.homing_feed_rate = ulong2flt(buffA[ 0x49 ]);
  settings.homing_seek_rate = ulong2flt(buffA[ 0x4A ]);
- settings.homing_debounce_delay = ulong2flt(buffA[ 0x52 ]);
  settings.homing_pulloff = ulong2flt(buffA[ 0x4B ]);
- settings.stepper_idle_lock_time = ulong2flt(buffA[ 0x51 ]);
- settings.decimal_places = ulong2flt(buffA[ 0x56 ]);
- settings.n_arc_correction = ulong2flt(buffA[ 0x4F ]);
+ settings.mm_per_arc_segment = ulong2flt(buffA[ 0x4C ]);
+ settings.acceleration = ulong2flt(buffA[ 0x4D ]);
+ settings.junction_deviation = ulong2flt(buffA[ 0x4E ]);
+ settings.n_arc_correction = (unsigned int)buffA[ 0x4F ];
+ settings.flags = (unsigned int)buffA[ 0x50 ];
+ settings.stepper_idle_lock_time = (unsigned int)buffA[ 0x51 ];
+ settings.microsteps = (unsigned int)buffA[ 0x54 ];
+ settings.p_usec = (unsigned int)buffA[ 0x46 ];
+ settings.decimal_places = (unsigned int)buffA[ 0x56 ];
+ settings.homing_debounce_delay = (unsigned int)buffA[ 0x52 ];
+ settings.invert_mask = (unsigned int)buffA[ 0x58 ];
+
 
  }
- }
 }
-#line 133 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 186 "C:/Users/Git/Pic32mzCNC/Globals.c"
 static int set_ram_loaded_indicator(int val){
  ram_loaded = val;
  return ram_loaded;
@@ -1003,7 +1057,7 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 192 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 245 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
 
@@ -1013,8 +1067,8 @@ int data_count;
 
  return data_count;
 }
-#line 229 "C:/Users/Git/Pic32mzCNC/Globals.c"
-unsigned int Settings_Write_Coord_Data(int coord_select,float *coord){
+#line 282 "C:/Users/Git/Pic32mzCNC/Globals.c"
+unsigned int settings_write_coord_data(int coord_select,float *coord){
 float ptr;
 int res=0,recipe = 0;
 unsigned long wdata[4]={0};
@@ -1025,15 +1079,19 @@ unsigned long temp[4] = {0};
 
  recipe = coord_select;
 
+ if(!read_ram_loaded_indicator()){
 
- read_row_from_flash(add);
+ set_ram_loaded_indicator(read_row_from_flash(add));
 
 
 
- error = (int)NVMErasePage(add);
+ error = (int)NVMErasePage(&add);
+ }
+
+
 
  if(error){
-#line 252 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 309 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -1061,7 +1119,7 @@ unsigned long temp[4] = {0};
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 283 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 340 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
 
@@ -1076,7 +1134,7 @@ unsigned long temp[4] = {0};
 
  res = NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(res);
-#line 312 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 369 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -1104,7 +1162,7 @@ void settings_read_coord_data(){
  temp = 0UL;
  value = ulong2flt(temp);
  coord_system[i].coord[j] = value;
-#line 346 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 403 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  }
 
@@ -1131,7 +1189,7 @@ unsigned long temp[ 4 ];
  temp[j] = flt2ulong(coord_data[j]);
  buffA[i] = temp[j];
  j++;
-#line 376 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 433 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  switch(coord_select){
@@ -1154,9 +1212,26 @@ unsigned long temp[ 4 ];
  case 15: add = (unsigned long) 0xBD1BC0E0 ;break;
  }
 
+ if(!read_ram_loaded_indicator()){
 
- error = NVMWriteQuad (add, temp);
- set_ram_loaded_indicator(error);
+ set_ram_loaded_indicator(read_row_from_flash(add));
+
+
+
+ error = (int)NVMErasePage(&add);
+ }
+
+
+
+ if(error){
+#line 471 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ return error;
+ }
+
+
+
+ if(!error)
+ set_ram_loaded_indicator(NVMWriteQuad (&add, temp));
 
  return error;
 }
@@ -1173,7 +1248,7 @@ char *char_add;
  }
 
  memcpy(line,char_add,64);
-#line 424 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 501 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return  0 ;
 }
 
@@ -1185,7 +1260,7 @@ int str_len;
 char temp_char;
 
  str_len = strlen(line);
-#line 443 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 520 "C:/Users/Git/Pic32mzCNC/Globals.c"
  add = (unsigned long) 0xBD1BC000 ;
 
 
@@ -1194,12 +1269,21 @@ char temp_char;
  case 1: start_offset = (unsigned long) 0x190 ;break;
  }
 
+ if(!read_ram_loaded_indicator()){
 
- read_row_from_flash(add);
+ set_ram_loaded_indicator(read_row_from_flash(add));
 
 
 
- error = (int)NVMErasePage(add);
+ error = (int)NVMErasePage(&add);
+ }
+
+
+
+ if(error){
+#line 544 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ return error;
+ }
 
 
  for(i=start_offset;i<start_offset+16;i++)
@@ -1208,9 +1292,8 @@ char temp_char;
 
 
  memcpy(buffA+start_offset,line,str_len);
-#line 475 "C:/Users/Git/Pic32mzCNC/Globals.c"
- error = (int)NVMWriteRow(&add,buffA);
- set_ram_loaded_indicator(error);
+#line 565 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
 
  return error;
 }
@@ -1222,14 +1305,31 @@ int settings_store_global_setting(int parameter, float value) {
 int val_temp = 0;
 
  add = (unsigned long) 0xBD1BC000 ;
-#line 495 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+ if(!read_ram_loaded_indicator()){
+
+ set_ram_loaded_indicator(read_row_from_flash(add));
+
+
+
+ error = (int)NVMErasePage(&add);
+ }
+
+
+
+ if(error){
+#line 594 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ return error;
+ }
+#line 605 "C:/Users/Git/Pic32mzCNC/Globals.c"
  switch(parameter) {
  case 0: case 1: case 2:
  if (value <= 0.0) { return( 8 ); }
 
  settings.steps_per_mm[parameter] = value;
 
- buffA[ 0x40  + parameter] = flt2ulong(value);
+ buffA[ 0x40 +parameter] = flt2ulong(value);
+#line 622 "C:/Users/Git/Pic32mzCNC/Globals.c"
  break;
  case 3:
  if (value < 3) { return( 9 ); }
@@ -1340,13 +1440,37 @@ int val_temp = 0;
  case 99:
  val_temp = round(value);
  if(val_temp == 1){
- error = (int)NVMWriteRow(&add,buffA);
-#line 618 "C:/Users/Git/Pic32mzCNC/Globals.c"
- if(!error){
 
- error = read_row_from_flash(add);
-#line 625 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+
+
+
+
+
+ if(!read_ram_loaded_indicator()){
+
+
+ set_ram_loaded_indicator(read_row_from_flash(add));
+
+
+
+ error = (int)NVMErasePage(&add);
  }
+
+
+
+ if(error){
+#line 756 "C:/Users/Git/Pic32mzCNC/Globals.c"
+ return error;
+ }
+
+
+
+
+
+
+ set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
+#line 770 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  break;
  default:

@@ -17,6 +17,15 @@
 //use KSEG1 for non cached Vmemory mapped to Pmemory
 #define  FLASH_PADDRESS_TRANSLATE 0x1FFFFFFF
 
+
+//////////////////////////////////////////////////////
+//set a value into 5F4 to indicate that flash has been
+//flash memory has been loaded with settings, this is
+//is to save time on startup, the other option is to
+//iterrate over the entire row ??
+#define  FLASH_Settings_VAddr_FLASH_LOADED  0xBD1BC5F0
+#define  FLASH_LOADED_OFFSET 0x17C
+
 //////////////////////////////////////////////////////
 //1/4th of row for coords [1st 1/3rd] starts at C000
 //rows for mz2048 are 512 32bit words in size.
@@ -48,7 +57,7 @@
 #define  FLASH_Settings_VAddr_SPMMZ  0xBD1BC108
 #define  FLASH_Settings_VAddr_SPMMA  0xBD1BC10C
 #define  FLASH_Settings_VAddr_SPMMB  0xBD1BC110
-#define  FLASH_Settings_VAddr_SPMMC]  0xBD1BC114
+#define  FLASH_Settings_VAddr_SPMMC  0xBD1BC114
 //Ram memory of Steps/mm setting
 #define  SPMMX_OFFSET  0x40
 #define  SPMMY_OFFSET  0x41
@@ -137,10 +146,10 @@
 //extern unsigned long  FLASH_Settings_PAddr;// = 0x1D079ff6;
 //////////////////////////////////////////////////
 //FUNCTION PROTOTYPE
-unsigned int NVMWriteWord (void *address, unsigned long _data);
-unsigned int NVMWriteQuad (void *address, unsigned long *_data);
-unsigned int NVMWriteRow (void* address, void* _data);
-unsigned int NVMErasePage(unsigned long address);
+unsigned int NVMWriteWord (const void *address, unsigned long _data);
+unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
+unsigned int NVMWriteRow (const void* address, void* _data);
+unsigned int NVMErasePage(const void* address);
 static unsigned int NVMUnlock(unsigned long nvmop);
 unsigned int NVM_ERROR_Rst();
 static void NVM_WR_Set();

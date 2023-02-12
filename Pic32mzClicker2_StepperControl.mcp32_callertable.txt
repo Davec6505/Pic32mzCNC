@@ -27,25 +27,22 @@ main
 					UART_Calc_BRG
 				UART_Set_Active
 			settings_init
-				read_row_from_flash
-					set_ram_loaded_indicator
-				flt2ulong
-					memcpy
-				NVMWriteRow
+				NVMReadWord
+				NVMErasePage
 					NVMUnlock
 						DMA_Suspend
 						DMA_Busy
 						DMA_Resume
 						NVM_WR_Wait
+				flt2ulong
+					memcpy
+				NVMWriteRow
+					NVMUnlock
+				read_row_from_flash
+					set_ram_loaded_indicator
 				set_ram_loaded_indicator
 				ulong2flt
 					memcpy
-			settings_read_coord_data
-				read_ram_loaded_indicator
-				read_row_from_flash
-				read_coord_data_indicator
-				ulong2flt
-				set_coord_data_read_indicator
 		plan_init
 		disableOCx
 		DisableStepper
@@ -56,14 +53,14 @@ main
 	Get_modalgroup
 	Get_modalword
 	Modal_Group_Actions0
-		Settings_Write_Coord_Data
+		settings_write_coord_data
 			__CC2DW
+			read_ram_loaded_indicator
 			read_row_from_flash
+			set_ram_loaded_indicator
 			NVMErasePage
-				NVMUnlock
 			flt2ulong
 			NVMWriteRow
-			set_ram_loaded_indicator
 		memcpy
 		Get_Axisword
 		ulong2flt
@@ -146,6 +143,7 @@ main
 		DMA_IsOn
 		dma_printf
 	Sample_Ringbuffer
+		__CC2DW
 		Get_Difference
 		report_realtime_status
 			DMA_IsOn
@@ -179,6 +177,11 @@ main
 		report_gcode_parameters
 			read_coord_data_indicator
 			settings_read_coord_data
+				read_ram_loaded_indicator
+				read_row_from_flash
+				read_coord_data_indicator
+				ulong2flt
+				set_coord_data_read_indicator
 			read_ram_loaded_indicator
 			report_status_message
 			DMA_IsOn
@@ -201,16 +204,15 @@ main
 			__CC2DW
 		atoi
 			isdigit
-		DMA_IsOn
-		dma_printf
 		strncpy
 		settings_store_startup_line
 			strlen
+			read_ram_loaded_indicator
 			read_row_from_flash
+			set_ram_loaded_indicator
 			NVMErasePage
 			memcpy
 			NVMWriteRow
-			set_ram_loaded_indicator
 		isdigit
 		memset
 		atof
@@ -218,6 +220,10 @@ main
 				isspace
 				isdigit
 		settings_store_global_setting
+			read_ram_loaded_indicator
+			read_row_from_flash
+			set_ram_loaded_indicator
+			NVMErasePage
 			flt2ulong
 			round
 				ceil
@@ -225,7 +231,6 @@ main
 			floor
 			fabs
 			NVMWriteRow
-			read_row_from_flash
 		cpy_val_from_str
 		G_Mode
 			Set_Modal_Groups
@@ -239,7 +244,6 @@ main
 		Check_group_multiple_violations
 			Rst_modalgroup
 			Rst_modalword
-		__CC2DW
 	protocol_execute_runtime
 		report_alarm_message
 			DMA_IsOn

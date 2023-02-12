@@ -202,9 +202,9 @@ START_LINE://label to rerun startup line if it has one
                   int N_Val = 0;
                   helper_var = 1;  // Set helper_var to flag storing method.
                   //look for char [0 - 9] and no = sign indicating run line x
-                   //extract the value from the string if = is at [2]
-                   //[        $  n  =  *value-str ]
-                   //[$n=val [0][1][2] *[3]      ]
+                  //extract the value from the string if = is at [2]
+                  //[        $  n  =  *value-str ]
+                  //[$n=val [0][1][2] *[3]      ]
                    if ( gcode[0][2] >= '0'  &&  gcode[0][2] <= '9' ) {
                     char num[] = "0";
                       //extract num char into string
@@ -226,7 +226,8 @@ START_LINE://label to rerun startup line if it has one
                    if (helper_var) { // Store startup line
                        if(gcode[0][3] != '='){
                          // Prepare sending gcode block back to gcode parser
-                         helper_var = strlen((gcode[0])); // Set helper variable as counter to start of gcode block
+                         // Set helper variable as counter to start of gcode block
+                         helper_var = strlen((gcode[0]));
                          strncpy(str,(gcode[0]),helper_var);
                          #if ProtoDebug == 6
                           while(DMA_IsOn(1));
@@ -279,9 +280,10 @@ START_LINE://label to rerun startup line if it has one
                  }
                  //check if 1st char is a digit if not value extraction
                  //failed and result will be 0.0 !!! report status bad number
-                 if(isdigit(str_val[0])){value = atof(str_val);}
-                 else if(value <= 0){query = 2;break;}
-                 else{query = 3;break;}
+                 if((value < 0.0) || (!isdigit(str_val[0]))){
+                     return(STATUS_UNSUPPORTED_STATEMENT);
+                 }
+                 value = atof(str_val);
                  #if ProtoDebug == 6
                  while(DMA_IsOn(1));
                  dma_printf("%s\t%f\n",str_val,value);
