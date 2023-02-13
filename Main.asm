@@ -31,7 +31,7 @@ NOP
 ; end of _Conditin_Externs
 _main:
 ;Main.c,65 :: 		void main() {
-ADDIU	SP, SP, -4
+ADDIU	SP, SP, -8
 ;Main.c,66 :: 		int error = 0;
 ;Main.c,67 :: 		int has_flash = 0;
 ;Main.c,68 :: 		int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
@@ -60,12 +60,10 @@ L__main120:
 ;Main.c,90 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
-; modal_group start address is: 16 (R4)
-SEH	R4, R2
+SH	R2, 4(SP)
 ;Main.c,91 :: 		switch(modal_group){
 J	L_main3
 NOP	
-; modal_group end address is: 16 (R4)
 ;Main.c,92 :: 		case 0:break;
 L_main5:
 J	L_main4
@@ -81,6 +79,7 @@ NOP
 ;Main.c,95 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
+SH	R2, 4(SP)
 ;Main.c,96 :: 		break;
 J	L_main4
 NOP	
@@ -132,52 +131,50 @@ J	L_main4
 NOP	
 ;Main.c,115 :: 		case 512:// [G54,G55,G56,G57,G58,G59] Coordinate system selection
 L_main11:
-;Main.c,116 :: 		Modal_Group_Actions7(gc.coord_select);//implimentation needed
+;Main.c,116 :: 		Modal_Group_Actions12(gc.coord_select);//implimentation needed
 LH	R25, Offset(_gc+14)(GP)
-JAL	Main_Modal_Group_Actions7+0
+JAL	Main_Modal_Group_Actions12+0
 NOP	
 ;Main.c,117 :: 		break;
 J	L_main4
 NOP	
 ;Main.c,118 :: 		}
 L_main3:
-; modal_group start address is: 16 (R4)
-SEH	R2, R4
+LH	R2, 4(SP)
 BNE	R2, R0, L__main124
 NOP	
 J	L_main5
 NOP	
 L__main124:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 2
 BNE	R3, R2, L__main126
 NOP	
 J	L_main6
 NOP	
 L__main126:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 4
 BNE	R3, R2, L__main128
 NOP	
 J	L_main7
 NOP	
 L__main128:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 32
 BNE	R3, R2, L__main130
 NOP	
 J	L_main9
 NOP	
 L__main130:
-SEH	R3, R4
+LH	R3, 4(SP)
 ORI	R2, R0, 256
 BNE	R3, R2, L__main132
 NOP	
 J	L_main10
 NOP	
 L__main132:
-SEH	R3, R4
-; modal_group end address is: 16 (R4)
+LH	R3, 4(SP)
 ORI	R2, R0, 512
 BNE	R3, R2, L__main134
 NOP	

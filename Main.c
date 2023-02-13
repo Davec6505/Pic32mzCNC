@@ -113,7 +113,7 @@ static int cntr = 0,a = 0;
                Modal_Group_Actions7(1);//implimentation needed
                break;
           case 512:// [G54,G55,G56,G57,G58,G59] Coordinate system selection
-               Modal_Group_Actions7(gc.coord_select);//implimentation needed
+               Modal_Group_Actions12(gc.coord_select);//implimentation needed
                break;
        }
      }else{
