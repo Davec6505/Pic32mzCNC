@@ -161,7 +161,7 @@ int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
 unsigned long _data;
 float coord_data[NoOfAxis];
 float a_val;
-
+unsigned int home_select = 0;
 //actions below are focused on the bit positions hence the
 //numbering system grows 2^n
 unsigned long _flash,*addr;
@@ -309,6 +309,9 @@ unsigned long _flash,*addr;
           axis_words = 0; // Axis words used. Lock out from motion modes by clearing flags.
           break;
      case 16:
+           home_select = SETTING_INDEX_G28;
+          if (action == NON_MODAL_SET_HOME_1) { home_select = SETTING_INDEX_G30; }
+          settings_write_coord_data(home_select,gc.position);
           break;
      case 53:
            axis_words = Get_Axisword();
@@ -349,8 +352,8 @@ unsigned long _flash,*addr;
           }
           axis_words = 0; // Axis words used. Lock out from motion modes by clearing flags.
      case 256: //NON_MODAL_RESET_COORDINATE_OFFSET
-          break;
-     case 512:
+          // Disable G92 offsets by zeroing offset vector.
+          clear_vector(gc.coord_offset);
           break;
      default: action = -1; //error in action msg ???
           break;

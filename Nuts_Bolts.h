@@ -5,7 +5,9 @@
 #include "Config.h"
 #include "Settings.h"
 
-
+// Useful macros
+#define clear_vector(a) memset(a, 0, sizeof(a))
+#define clear_vector_float(a) memset(a, 0.0, sizeof(float)*N_AXIS)
 
 // Define system state bit map. The state variable primarily tracks the individual functions
 // of Grbl to manage each without overlapping. It is also used as a messaging flag for

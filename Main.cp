@@ -266,7 +266,7 @@ unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 28 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 30 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 int read_float(char *line, char *char_counter, float *float_ptr);
 
 
@@ -960,7 +960,7 @@ int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
 unsigned long _data;
 float coord_data[ 4 ];
 float a_val;
-
+unsigned int home_select = 0;
 
 
 unsigned long _flash,*addr;
@@ -1064,9 +1064,9 @@ unsigned long _flash,*addr;
  }
  }
 
- temp =  0 ;
+ temp =  6 ;
 
- if (action ==  (1 << 5) ){temp =  1 ;}
+ if (action ==  (1 << 5) ){temp =  6  + 1 ;}
  i = (temp)*4 ;
 
 
@@ -1083,6 +1083,9 @@ unsigned long _flash,*addr;
  axis_words = 0;
  break;
  case 16:
+ home_select =  6 ;
+ if (action ==  6 ) { home_select =  6  + 1 ; }
+ settings_write_coord_data(home_select,gc.position);
  break;
  case 53:
  axis_words = Get_Axisword();
@@ -1104,8 +1107,8 @@ unsigned long _flash,*addr;
  }
  break;
  case 64:
- temp =  0 ;
- if (action ==  (1 << 6) ) { temp =  1 ; }
+ temp =  6 ;
+ if (action ==  (1 << 6) ) { temp =  6  + 1 ; }
  settings_write_coord_data(temp,gc.position);
  break;
  case 128:
@@ -1123,8 +1126,8 @@ unsigned long _flash,*addr;
  }
  axis_words = 0;
  case 256:
- break;
- case 512:
+
+  memset(gc.coord_offset, 0, sizeof(gc.coord_offset)) ;
  break;
  default: action = -1;
  break;
@@ -1203,7 +1206,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 436 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 439 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 
@@ -1211,7 +1214,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 447 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 450 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 
@@ -1219,10 +1222,10 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 458 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 461 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
-#line 477 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 480 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  uint8_t rt_exec = sys.execute;
