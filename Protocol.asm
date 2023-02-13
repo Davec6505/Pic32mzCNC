@@ -1025,7 +1025,7 @@ J	L_Sample_Ringbuffer62
 NOP	
 L__Sample_Ringbuffer334:
 L_Sample_Ringbuffer19:
-;Protocol.c,302 :: 		}else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){
+;Protocol.c,302 :: 		}else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){//[A ... Z]
 J	L_Sample_Ringbuffer74
 NOP	
 L_Sample_Ringbuffer16:
@@ -2569,7 +2569,7 @@ J	L_Sample_Ringbuffer196
 NOP	
 L__Sample_Ringbuffer532:
 L_Sample_Ringbuffer79:
-;Protocol.c,302 :: 		}else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){
+;Protocol.c,302 :: 		}else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){//[A ... Z]
 L__Sample_Ringbuffer244:
 L__Sample_Ringbuffer243:
 ;Protocol.c,602 :: 		}

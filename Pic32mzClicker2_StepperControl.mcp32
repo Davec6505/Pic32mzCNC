@@ -131,7 +131,16 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-Count=1
+File1=GCODE.c
+File2=GCODE.h
+File3=Protocol.c
+File4=Protocol.h
+File5=DEFINES.pld
+File6=Settings.h
+File7=Print.h
+File8=Print.c
+File9=Config.h
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

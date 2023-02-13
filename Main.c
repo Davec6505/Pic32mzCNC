@@ -102,21 +102,18 @@ static int cntr = 0,a = 0;
                 axis_to_run = Rst_Axisword();
               }
                break;
-          case 8:
-               break;
-          case 16:
-               break;
+          //case 8:break;// [G17,G18,G19] Plane selection
+          //case 16:break;// [G90,G91] Distance mode
           case 32://MODAL_GROUP_4 [M0,M1,M2,M30] Stopping
                Modal_Group_Actions4(1);//implimentation needed
                break;
-          case 64:
-               break;
-          case 128:
-               break;
+          //case 64:break;// [G93,G94] Feed rate mode
+          //case 128:break;// [G20,G21] Units
           case 256://MODAL_GROUP_7 [M3,M4,M5] Spindle turning
                Modal_Group_Actions7(1);//implimentation needed
                break;
-          case 512:
+          case 512:// [G54,G55,G56,G57,G58,G59] Coordinate system selection
+               Modal_Group_Actions7(gc.coord_select);//implimentation needed
                break;
        }
      }else{
@@ -158,7 +155,7 @@ static int cntr = 0,a = 0;
 ////////////////////////////////////////////////////////////////////////////////
 //         GROUP_0  NON MODAL ACTIONS [G4,G10,G28,G30,G53,G92,G92.1]          //
 ////////////////////////////////////////////////////////////////////////////////
-int Modal_Group_Actions0(int action){
+static int Modal_Group_Actions0(int action){
 //[b0=10ms | b1=100ms | b2 = 300ms | b4=500ms | b5 = 1sec]
 int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
 unsigned long _data;
@@ -364,7 +361,7 @@ unsigned long _flash,*addr;
 ////////////////////////////////////////////////////////////////////////////////
 //               GROUP_1 MODAL ACTIONS [G0,G1,G2,G3,G80] MOTION               //
 ////////////////////////////////////////////////////////////////////////////////
-int Modal_Group_Actions1(int action){
+static int Modal_Group_Actions1(int action){
     switch(action){
       case 1: //b0000 0001
              SingleAxisStep(gc.next_position[X],gc.frequency,X);
@@ -420,7 +417,7 @@ int Modal_Group_Actions1(int action){
 ////////////////////////////////////////////////////////////////////////////////
 //               GROUP_3 MODAL ACTIONS  [G90,G91] DISTANCE MODE               //
 ////////////////////////////////////////////////////////////////////////////////
-int Modal_Group_Actions3(int action){
+static int Modal_Group_Actions3(int action){
     //char is unsigned short in MikroC can be > 1 in faulty value
    // if(gc.inches_mode > 1)
    //     FAIL(STATUS_SETTING_READ_FAIL);
@@ -431,7 +428,7 @@ int Modal_Group_Actions3(int action){
 ////////////////////////////////////////////////////////////////////////////////
 //                GROUP_4 MODAL ACTIONS [M0,M1,M2,M30] STOPPING               //
 ////////////////////////////////////////////////////////////////////////////////
-int Modal_Group_Actions4(int action){
+static int Modal_Group_Actions4(int action){
     #if MainDebug == 1
     while(DMA_IsOn(1));
     dma_printf("GROUP_4 modal actions\n");
@@ -442,7 +439,7 @@ int Modal_Group_Actions4(int action){
 ////////////////////////////////////////////////////////////////////////////////
 //                GROUP_7 MODAL ACTIONS [M3,M4,M5] SPINDLE TURNING            //
 ////////////////////////////////////////////////////////////////////////////////
-int Modal_Group_Actions7(int action){
+static int Modal_Group_Actions7(int action){
     #if MainDebug == 1
     while(DMA_IsOn(1));
     dma_printf("GROUP_7 modal actions\n");
@@ -450,11 +447,22 @@ int Modal_Group_Actions7(int action){
     return action;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//       GROUP_12 MODAL ACTIONS [G54,G55,G56,G57...] COORDINATE SYSTEM        //
+////////////////////////////////////////////////////////////////////////////////
+static int Modal_Group_Actions12(int action){
+    #if MainDebug == 1
+    while(DMA_IsOn(1));
+    dma_printf("GROUP_12 modal actions\taction:= %d\n",action);
+    #endif
+    return action;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //      PROTOCOL EXECUTE RUNTIME FROM GRBL [STILL IMPLIMENTING ???]           //
 ////////////////////////////////////////////////////////////////////////////////
+
 // Executes run-time commands, when required. This is called from various check points in the main
 // program, primarily where there may be a while loop waiting for a buffer to clear space or any
 // point where the execution time from the last check point may be more than a fraction of a second.

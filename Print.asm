@@ -2550,34 +2550,34 @@ J	L_report_gcode_modes149
 NOP	
 ;Print.c,327 :: 		}
 L_report_gcode_modes148:
-LBU	R2, Offset(_gc+1)(GP)
+LBU	R2, Offset(_gc+8)(GP)
 BNE	R2, R0, L__report_gcode_modes371
 NOP	
 J	L_report_gcode_modes150
 NOP	
 L__report_gcode_modes371:
-LBU	R3, Offset(_gc+1)(GP)
+LBU	R3, Offset(_gc+8)(GP)
 ORI	R2, R0, 1
 BNE	R3, R2, L__report_gcode_modes373
 NOP	
 J	L_report_gcode_modes151
 NOP	
 L__report_gcode_modes373:
-LBU	R3, Offset(_gc+1)(GP)
+LBU	R3, Offset(_gc+8)(GP)
 ORI	R2, R0, 2
 BNE	R3, R2, L__report_gcode_modes375
 NOP	
 J	L_report_gcode_modes152
 NOP	
 L__report_gcode_modes375:
-LBU	R3, Offset(_gc+1)(GP)
+LBU	R3, Offset(_gc+8)(GP)
 ORI	R2, R0, 3
 BNE	R3, R2, L__report_gcode_modes377
 NOP	
 J	L_report_gcode_modes153
 NOP	
 L__report_gcode_modes377:
-LBU	R3, Offset(_gc+1)(GP)
+LBU	R3, Offset(_gc+8)(GP)
 ORI	R2, R0, 4
 BNE	R3, R2, L__report_gcode_modes379
 NOP	
@@ -2599,7 +2599,7 @@ J	L_report_gcode_modes155
 NOP	
 L_report_gcode_modes156:
 ;Print.c,329 :: 		dma_printf(" G%d",gc.coord_select+54);
-LBU	R2, Offset(_gc+13)(GP)
+LH	R2, Offset(_gc+14)(GP)
 ADDIU	R3, R2, 54
 ORI	R30, R0, 32
 SB	R30, 29(SP)
@@ -2632,14 +2632,14 @@ J	L_report_gcode_modes157
 NOP	
 L_report_gcode_modes158:
 ;Print.c,331 :: 		if (gc.plane_axis_0 == X) {
-LBU	R2, Offset(_gc+10)(GP)
+LBU	R2, Offset(_gc+11)(GP)
 BEQ	R2, R0, L__report_gcode_modes384
 NOP	
 J	L_report_gcode_modes159
 NOP	
 L__report_gcode_modes384:
 ;Print.c,332 :: 		if (gc.plane_axis_1 == Y) { dma_printf(" G17"); }
-LBU	R3, Offset(_gc+11)(GP)
+LBU	R3, Offset(_gc+12)(GP)
 ORI	R2, R0, 1
 BEQ	R3, R2, L__report_gcode_modes385
 NOP	
@@ -2947,20 +2947,20 @@ J	L_report_gcode_modes178
 NOP	
 ;Print.c,350 :: 		}
 L_report_gcode_modes177:
-LBU	R2, Offset(_gc+6)(GP)
+LBU	R2, Offset(_gc+9)(GP)
 BNE	R2, R0, L__report_gcode_modes401
 NOP	
 J	L_report_gcode_modes179
 NOP	
 L__report_gcode_modes401:
-LBU	R3, Offset(_gc+6)(GP)
+LBU	R3, Offset(_gc+9)(GP)
 ORI	R2, R0, 1
 BNE	R3, R2, L__report_gcode_modes403
 NOP	
 J	L_report_gcode_modes180
 NOP	
 L__report_gcode_modes403:
-LBU	R3, Offset(_gc+6)(GP)
+LBU	R3, Offset(_gc+9)(GP)
 ORI	R2, R0, 2
 BNE	R3, R2, L__report_gcode_modes405
 NOP	
@@ -3040,14 +3040,14 @@ J	L_report_gcode_modes185
 NOP	
 ;Print.c,356 :: 		}
 L_report_gcode_modes184:
-LBU	R3, Offset(_gc+7)(GP)
+LBU	R3, Offset(_gc+6)(GP)
 ORI	R2, R0, 1
 BNE	R3, R2, L__report_gcode_modes409
 NOP	
 J	L_report_gcode_modes186
 NOP	
 L__report_gcode_modes409:
-LBU	R3, Offset(_gc+7)(GP)
+LBU	R3, Offset(_gc+6)(GP)
 LUI	R2, 65535
 ORI	R2, R2, 65535
 BNE	R3, R2, L__report_gcode_modes411
@@ -3055,7 +3055,7 @@ NOP
 J	L_report_gcode_modes187
 NOP	
 L__report_gcode_modes411:
-LBU	R2, Offset(_gc+7)(GP)
+LBU	R2, Offset(_gc+6)(GP)
 BNE	R2, R0, L__report_gcode_modes413
 NOP	
 J	L_report_gcode_modes188
@@ -3112,7 +3112,7 @@ NOP
 ADDIU	R3, SP, 103
 ADDIU	SP, SP, -12
 SWC1	S0, 8(SP)
-LBU	R2, Offset(_gc+9)(GP)
+LBU	R2, Offset(_gc+10)(GP)
 SB	R2, 4(SP)
 SW	R3, 0(SP)
 JAL	_dma_printf+0
@@ -3132,7 +3132,7 @@ ADDIU	R3, SP, 113
 LW	R2, Offset(_gc+20)(GP)
 ADDIU	SP, SP, -12
 SW	R2, 8(SP)
-LBU	R2, Offset(_gc+9)(GP)
+LBU	R2, Offset(_gc+10)(GP)
 SB	R2, 4(SP)
 SW	R3, 0(SP)
 JAL	_dma_printf+0
