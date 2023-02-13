@@ -75,6 +75,7 @@ main
 			Step_Cycle
 				toggleOCx
 		GET_RunState
+		memset
 	Rst_modalgroup
 	Get_Axisword
 	EnableSteppers
