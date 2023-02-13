@@ -147,7 +147,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 156 "c:/users/git/pic32mzcnc/settings.h"
+#line 160 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  afloat steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -362,21 +362,21 @@ extern volatile int status_code;
 #line 154 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
- char no_axis_interpolate: 1;
- char motion_mode;
+ char no_axis_interpolate;
  char inverse_feed_rate_mode;
  char inches_mode;
  char absolute_override;
  char absolute_mode;
- char program_flow;
  char spindle_direction;
  char coolant_mode;
+ char motion_mode;
+ char program_flow;
  char tool;
 
  char plane_axis_0,
  plane_axis_1,
  plane_axis_2;
- char coord_select;
+ int coord_select;
 
 
  int frequency;
@@ -774,16 +774,19 @@ void Uart2InterruptSetup();
 void OutPutPulseXYZ();
 
 
-int Modal_Group_Actions0(int action);
+static int Modal_Group_Actions0(int action);
 
 
-int Modal_Group_Actions1(int action);
+static int Modal_Group_Actions1(int action);
 
 
-int Modal_Group_Actions4(int action);
+static int Modal_Group_Actions4(int action);
 
 
-int Modal_Group_Actions7(int action);
+static int Modal_Group_Actions7(int action);
+
+
+static int Modal_Group_Actions12(int action);
 
 
 void protocol_execute_runtime();
