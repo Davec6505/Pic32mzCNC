@@ -299,7 +299,7 @@ START_LINE://label to rerun startup line if it has one
                 
        }
 
-     }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){
+     }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){//[A ... Z]
         switch(*(*gcode+0)+0){
          case 'G':case 'g':
               //1st char usually 'G'

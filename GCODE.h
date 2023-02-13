@@ -152,22 +152,22 @@ extern volatile int status_code;   // Status of instructions
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef struct {
-  char r: 1;
-  char no_axis_interpolate: 1;   //Single or dual axis for interpolation
-  char motion_mode;              // {G0, G1, G2, G3, G80}
+  char r:                      1;
+  char no_axis_interpolate;      //Single or dual axis for interpolation
   char inverse_feed_rate_mode;   // {G93, G94}
   char inches_mode;              // 0 = millimeter mode, 1 = inches mode {G20, G21}
   char absolute_override;
   char absolute_mode;            // 0 = relative motion, 1 = absolute motion {G90, G91}
-  char program_flow;             // {M0, M1, M2, M30}
   char spindle_direction;        // 1 = CW, -1 = CCW, 0 = Stop {M3, M4, M5}
   char coolant_mode;             // 0 = Disable, 1 = Flood Enable {M8, M9}
+  char motion_mode;              // {G0, G1, G2, G3, G80}
+  char program_flow;             // {M0, M1, M2, M30}
   char tool;
   //  uint16_t spindle_speed;    // RPM/100
   char plane_axis_0,
        plane_axis_1,
        plane_axis_2;             // The axes of the selected plane
-  char  coord_select;            // Active work coordinate system number. Default: 0=G54.
+  int  coord_select;            // Active work coordinate system number. Default: 0=G54.
  // int status_code;              // Parser status for current block
  // int motion_mode;               // {G0, G1, G2, G3, G80}
   int frequency;                 // Speed expressed as Frequency of pulses

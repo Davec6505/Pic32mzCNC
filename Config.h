@@ -43,16 +43,19 @@ void Uart2InterruptSetup(); //uart2 interrupt on recieve turned off
 void OutPutPulseXYZ();      // setup output pulse OC3
 
 //Group 1 G4,G10,G28,G30,G53,G92,G92.1] Non-modal
-int Modal_Group_Actions0(int action);
+static int Modal_Group_Actions0(int action);
 
 //Group 2 [G0,G1,G2,G3,G80] Motion
-int Modal_Group_Actions1(int action);
+static int Modal_Group_Actions1(int action);
 
 //[M0,M1,M2,M30] Stopping
-int Modal_Group_Actions4(int action);
+static int Modal_Group_Actions4(int action);
 
 //[M3,M4,M5] Spindle turning
-int Modal_Group_Actions7(int action);
+static int Modal_Group_Actions7(int action);
+
+//[G54...] Coordinate system selection
+static int Modal_Group_Actions12(int action);
 
 //Runtime checking of status states
 void protocol_execute_runtime();

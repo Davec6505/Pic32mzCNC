@@ -24,7 +24,6 @@ volatile int status_code;  // Status of instructions
 volatile float coord_data[NoOfAxis];
 
 static volatile char axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
-static char absolute_override;
 static volatile int modal_group_words;  // Bitflag variable to track and check modal group words in block
 static volatile int non_modal_words;    // Bitflags to track non-modal actions
 static volatile int motion_mode;
@@ -40,12 +39,13 @@ volatile float value;
 /////////////////////////////////////////////////////////
 //init vals to defaults
 void G_Initialise(){
-  group_number      = 0;
-  axis_words        = 0;
-  int_value         = 0;
-  value             = 0;
-  inverse_feed_rate = false;
-  absolute_override = 0;
+  group_number         = 0;
+  axis_words           = 0;
+  int_value            = 0;
+  value                = 0;
+  inverse_feed_rate    = false;
+  gc.absolute_override = false;
+  gc.absolute_mode     = true;
 }
 
 //Modal group as per RS274NGC Spec
@@ -110,6 +110,7 @@ void M_Instruction(int flow){
 ///////////////////////////////////////////////////////
 //           MOVEMENT INSTRUCTIONS                   //
 ///////////////////////////////////////////////////////
+
 // Check for modal group multiple command violations in the current block
 int Check_group_multiple_violations(){
 static int last_group_number,last_non_modal_action;
@@ -120,7 +121,6 @@ int i = 0;
     //these codes will need the full instruction in one line
  if(group_number > 0) {
  
-   FAIL(STATUS_OK);
    if(group_number == MODAL_GROUP_NONE)
       FAIL(STATUS_MODAL_GROUP_VIOLATION);
    
@@ -135,17 +135,94 @@ int i = 0;
    #endif
    
    last_group_number = group_number;
+   
    if (group_number == MODAL_GROUP_0){
      //if the non modal action has changed reset its state
      ///if(non_modal_action != last_non_modal_action){
      Rst_modalword();
-     bit_true( non_modal_words,bit( non_modal_action));
-     //}
+     
+     if(!gc.absolute_override)
+         bit_true( non_modal_words,bit( non_modal_action));
+
      #if GcodeDebug == 2
        while(DMA_IsOn(1));
        dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
        non_modal_action,non_modal_words);
+     #elif GcodeDebug == 3
+       while(DMA_IsOn(1));
+       dma_printf("gc.absolute_override:= %d\n",gc.absolute_override);
      #endif
+     
+     
+     last_non_modal_action = non_modal_action;
+     return status_code;
+   }
+   
+   //check that Plane select is not out of scope
+   if (group_number == MODAL_GROUP_2){
+
+     if(axis_xyz > NO_OF_PLANES)
+       status_code = STATUS_INVALID_STATEMENT;
+     else status_code = STATUS_OK;
+     
+     #if GcodeDebug == 3
+     while(DMA_IsOn(1));
+     dma_printf("axis_xyz:= %d\n",axis_xyz);
+     #endif
+
+     last_non_modal_action = non_modal_action;
+     return status_code;
+   }
+   
+   //incrmental / absolute
+   if (group_number == MODAL_GROUP_3){
+
+     #if GcodeDebug == 3
+     while(DMA_IsOn(1));
+     dma_printf("gc.absolute_mode:= %d\n",gc.absolute_mode);
+     #endif
+     
+     last_non_modal_action = non_modal_action;
+     return status_code;
+   }
+   
+      //feedratemode - not yet implimented!! understanding needed
+   if (group_number == MODAL_GROUP_5){
+
+     #if GcodeDebug == 3
+     while(DMA_IsOn(1));
+     dma_printf("gc.inverse_feed_rate_mode:= %d\n",gc.inverse_feed_rate_mode);
+     #endif
+     
+     last_non_modal_action = non_modal_action;
+     return status_code;
+   }
+   
+   //UNITS mm / inches gc.inches_mode
+   if (group_number == MODAL_GROUP_6){
+
+     #if GcodeDebug == 3
+     while(DMA_IsOn(1));
+     dma_printf("gc.inches_mode:= %d\n",gc.inches_mode);
+     #endif
+
+     last_non_modal_action = non_modal_action;
+     return status_code;
+   }
+   
+   //G54.... Coordinate system selection
+   if (group_number == MODAL_GROUP_12){
+
+     if(gc.coord_select < 0|| gc.coord_select > 7)
+        status_code = STATUS_BAD_NUMBER_FORMAT;
+     else
+        status_code = STATUS_OK;
+        
+     #if GcodeDebug == 3
+     while(DMA_IsOn(1));
+     dma_printf("gc.coord_select:= %d\n",gc.coord_select);
+     #endif
+
      last_non_modal_action = non_modal_action;
      return status_code;
    }
@@ -156,7 +233,7 @@ int i = 0;
   // NOTE: Tool offsets may be appended to these conversions when/if this feature is added.
   for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used to save flash space.
     if ( bit_istrue(axis_words,bit(i))) {
-      if (!absolute_override) { // Do not update target in absolute override mode
+      if (!gc.absolute_override) { // Do not update target in absolute override mode
         if (gc.absolute_mode) {
           //gc.next_position[i] += gc.position[i] + gc.coord_system[i] + gc.coord_offset[i]; // Absolute mode
         } else {
@@ -222,7 +299,10 @@ int i = 0;
  for(i=0;i<NoOfAxis;i++){
     gc.position[i] =  gc.next_position[i];
  }
-
+  #if GcodeDebug == 4
+  while(DMA_IsOn(1));
+  dma_printf("status_code:= %d\n",status_code);
+  #endif
   return status_code;
 }
 
@@ -373,6 +453,7 @@ int gp_num;
 //set the G commands as per grbl
 static int Set_Motion_Mode(int mode){
 int i;
+ FAIL(STATUS_OK);
   switch(mode){
     case 0: motion_mode    = MOTION_MODE_SEEK;    break;
     case 1: motion_mode    = MOTION_MODE_LINEAR;  break;
@@ -380,20 +461,20 @@ int i;
     case 3: motion_mode    = MOTION_MODE_CCW_ARC; break;
     case 4: non_modal_action  = NON_MODAL_DWELL;     break;
     case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
-    case 17: Select_Plane(xy); break;
-    case 18: Select_Plane(xz); break;
-    case 19: Select_Plane(yz); break;
-    case 20: gc.inches_mode = 1; break;
-    case 21: gc.inches_mode = 0; break;
-    case 53: absolute_override = true; break;
+    case 17: Select_Plane(xy);return STATUS_OK; break;
+    case 18: Select_Plane(xz);return STATUS_OK; break;
+    case 19: Select_Plane(yz);return STATUS_OK; break;
+    case 20: gc.inches_mode = 1;return STATUS_OK; break;
+    case 21: gc.inches_mode = 0;return STATUS_OK; break;
+    case 53: gc.absolute_override = true;return STATUS_OK; break;
     case 54: case 55: case 56: case 57: case 58: case 59:
              gc.coord_select = (mode - 53);//G54-53 == 1...;
-             break;
+             return STATUS_OK;break;
     case 80: gc.motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
-    case 90: gc.absolute_mode = true; break;
-    case 91: gc.absolute_mode = false; break;
-    case 93: gc.inverse_feed_rate_mode = true; break;
-    case 94: gc.inverse_feed_rate_mode = false; break;
+    case 90: gc.absolute_mode = true; return STATUS_OK; break;
+    case 91: gc.absolute_mode = false; return STATUS_OK; break;
+    case 93: gc.inverse_feed_rate_mode = true;return STATUS_OK; break;
+    case 94: gc.inverse_feed_rate_mode = false;return STATUS_OK; break;
     case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
     case 281: non_modal_action = NON_MODAL_SET_HOME_0; break;
     case 300: non_modal_action = NON_MODAL_GO_HOME_1; break;
@@ -402,7 +483,7 @@ int i;
     case 921: non_modal_action = NON_MODAL_RESET_COORDINATE_OFFSET; break;
     default: FAIL(STATUS_UNSUPPORTED_STATEMENT);return;break;
   }
-  FAIL(STATUS_OK);
+
   // [G54,G55,...,G59]: Coordinate system selection to be implimented
   // [G0,G1,G2,G3,G80]: Perform motion modes.
   // NOTE: Commands G10,G28,G30,G92 lock out and prevent axis words from use in motion modes.
@@ -415,7 +496,7 @@ int i;
       }
     }
     // Absolute override G53 only valid with G0 and G1 active.
-    if ( absolute_override && !(motion_mode == MOTION_MODE_SEEK || motion_mode == MOTION_MODE_LINEAR)) {
+    if ( gc.absolute_override && !(motion_mode == MOTION_MODE_SEEK || motion_mode == MOTION_MODE_LINEAR)) {
       FAIL(STATUS_INVALID_STATEMENT);
     }
     #if GcodeDebug == 2

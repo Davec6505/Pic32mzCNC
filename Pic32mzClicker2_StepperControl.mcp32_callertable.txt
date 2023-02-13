@@ -75,6 +75,7 @@ main
 			Step_Cycle
 				toggleOCx
 		GET_RunState
+		memset
 	Rst_modalgroup
 	Get_Axisword
 	EnableSteppers
@@ -139,6 +140,7 @@ main
 	Rst_Axisword
 	Modal_Group_Actions4
 	Modal_Group_Actions7
+	Modal_Group_Actions12
 	report_status_message
 		DMA_IsOn
 		dma_printf
@@ -244,6 +246,9 @@ main
 		Check_group_multiple_violations
 			Rst_modalgroup
 			Rst_modalword
+			DMA_IsOn
+			dma_printf
+			__CC2DW
 	protocol_execute_runtime
 		report_alarm_message
 			DMA_IsOn
