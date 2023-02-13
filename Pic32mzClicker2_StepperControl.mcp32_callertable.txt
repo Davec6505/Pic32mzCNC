@@ -139,6 +139,7 @@ main
 	Rst_Axisword
 	Modal_Group_Actions4
 	Modal_Group_Actions7
+	Modal_Group_Actions12
 	report_status_message
 		DMA_IsOn
 		dma_printf

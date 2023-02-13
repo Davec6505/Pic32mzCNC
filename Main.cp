@@ -926,7 +926,7 @@ static int cntr = 0,a = 0;
  Modal_Group_Actions7(1);
  break;
  case 512:
- Modal_Group_Actions7(gc.coord_select);
+ Modal_Group_Actions12(gc.coord_select);
  break;
  }
  }else{
