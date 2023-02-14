@@ -920,7 +920,7 @@ int Rst_motionmode(){
 
 
 int G_Mode(int mode){
- gc.inches_mode = 0;
+
  group_number = Set_Modal_Groups(mode);
  motion_mode = Set_Motion_Mode(mode);
  return motion_mode;
@@ -955,7 +955,12 @@ int i = 0;
  Rst_modalgroup();
 
   (modal_group_words |= (1 << group_number) ) ;
-#line 137 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("modal_group_words:= %d\tgroup_number:= %d\n",modal_group_words,group_number);
+
+
  last_group_number = group_number;
 
  if (group_number ==  1 ){
@@ -967,15 +972,10 @@ int i = 0;
   (non_modal_words |= (1 << non_modal_action) ) ;
 
 
-
-
-
-
  while(DMA_IsOn(1));
- dma_printf("gc.absolute_override:= %d\n",gc.absolute_override);
-
-
-
+ dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
+ non_modal_action,non_modal_words);
+#line 157 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -986,48 +986,28 @@ int i = 0;
  if(axis_xyz >  4 )
  status_code =  6 ;
  else status_code =  0 ;
-
-
- while(DMA_IsOn(1));
- dma_printf("axis_xyz:= %d\n",axis_xyz);
-
-
+#line 173 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
 
 
  if (group_number ==  4 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.absolute_mode:= %d\n",gc.absolute_mode);
-
-
+#line 185 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
 
 
  if (group_number ==  6 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.inverse_feed_rate_mode:= %d\n",gc.inverse_feed_rate_mode);
-
-
+#line 197 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
 
 
  if (group_number ==  7 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.inches_mode:= %d\n",gc.inches_mode);
-
-
+#line 209 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -1039,12 +1019,7 @@ int i = 0;
  status_code =  1 ;
  else
  status_code =  0 ;
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.coord_select:= %d\n",gc.coord_select);
-
-
+#line 226 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -1088,7 +1063,14 @@ int i = 0;
  }
  break;
  case  1 :
-#line 277 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+
+
+
+ while(DMA_IsOn(1));
+ dma_printf("axis_words:= %d\n",(int)axis_words & 0x00FF);
+
  if (axis_words == 0) {
   status_code = 6 ; ;
  }else {
@@ -1234,10 +1216,13 @@ static void Select_Plane(int axis_combo){
 }
 
 
+
+
+
 static int Set_Modal_Groups(int mode){
 int gp_num;
  switch(mode) {
- case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 92:
+ case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 920:
  gp_num =  1 ; break;
  case 0: case 1: case 2: case 3: case 80: gp_num =  2 ; break;
  case 17: case 18: case 19: gp_num =  3 ; break;
@@ -1298,13 +1283,22 @@ int i;
  if ( gc.absolute_override && !(motion_mode ==  0  || motion_mode ==  1 )) {
   status_code = 6 ; ;
  }
-#line 507 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("status_code:= %d\tmodal_group_words:= %d\n",status_code,modal_group_words);
+
+
  if (status_code) { return(status_code); }
 
  }
-#line 514 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("motion_mode:= %d\tnon_modal_action:= %d\n",motion_mode,non_modal_action);
+
  return motion_mode;
 }
+
+
 
 static int Set_M_Modal_Commands(int flow){
 int gp_num;
@@ -1328,7 +1322,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 542 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 547 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  status_code = 3 ; ;break;
