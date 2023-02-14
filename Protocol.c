@@ -601,24 +601,17 @@ START_LINE://label to rerun startup line if it has one
        }
      }
      
-     if(query == 1){
-       status = STATUS_OK;
-       goto end;
-     }else if(query == 2){
-       status = STATUS_BAD_NUMBER_FORMAT;
-       goto end;
-     }else if(query == 3){
-       status = STATUS_UNSUPPORTED_STATEMENT;
-       goto end;
-     }
+     if(query == 1){     status = STATUS_OK;goto end;}
+     else if(query == 2){status = STATUS_BAD_NUMBER_FORMAT;goto end;}
+     else if(query == 3){status = STATUS_UNSUPPORTED_STATEMENT;goto end;}
+     
      ret:
      status = Check_group_multiple_violations();
      end:
 
+
     if(!status)
       report_status_message(status);
-      // if(!status)
-      //  status =  Motion_mode();
   }
 
      

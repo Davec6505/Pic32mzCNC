@@ -2575,7 +2575,7 @@ L__Sample_Ringbuffer243:
 ;Protocol.c,602 :: 		}
 L_Sample_Ringbuffer74:
 L_Sample_Ringbuffer15:
-;Protocol.c,604 :: 		if(query == 1){
+;Protocol.c,604 :: 		if(query == 1){     status = STATUS_OK;goto end;}
 LH	R3, Offset(Sample_Ringbuffer_query_L0+0)(GP)
 ORI	R2, R0, 1
 BEQ	R3, R2, L__Sample_Ringbuffer533
@@ -2583,13 +2583,11 @@ NOP
 J	L_Sample_Ringbuffer198
 NOP	
 L__Sample_Ringbuffer533:
-;Protocol.c,605 :: 		status = STATUS_OK;
 SH	R0, 22(SP)
-;Protocol.c,606 :: 		goto end;
 J	___Sample_Ringbuffer_end
 NOP	
-;Protocol.c,607 :: 		}else if(query == 2){
 L_Sample_Ringbuffer198:
+;Protocol.c,605 :: 		else if(query == 2){status = STATUS_BAD_NUMBER_FORMAT;goto end;}
 LH	R3, Offset(Sample_Ringbuffer_query_L0+0)(GP)
 ORI	R2, R0, 2
 BEQ	R3, R2, L__Sample_Ringbuffer534
@@ -2597,14 +2595,12 @@ NOP
 J	L_Sample_Ringbuffer200
 NOP	
 L__Sample_Ringbuffer534:
-;Protocol.c,608 :: 		status = STATUS_BAD_NUMBER_FORMAT;
 ORI	R2, R0, 1
 SH	R2, 22(SP)
-;Protocol.c,609 :: 		goto end;
 J	___Sample_Ringbuffer_end
 NOP	
-;Protocol.c,610 :: 		}else if(query == 3){
 L_Sample_Ringbuffer200:
+;Protocol.c,606 :: 		else if(query == 3){status = STATUS_UNSUPPORTED_STATEMENT;goto end;}
 LH	R3, Offset(Sample_Ringbuffer_query_L0+0)(GP)
 ORI	R2, R0, 3
 BEQ	R3, R2, L__Sample_Ringbuffer535
@@ -2612,39 +2608,36 @@ NOP
 J	L_Sample_Ringbuffer202
 NOP	
 L__Sample_Ringbuffer535:
-;Protocol.c,611 :: 		status = STATUS_UNSUPPORTED_STATEMENT;
 ORI	R2, R0, 3
 SH	R2, 22(SP)
-;Protocol.c,612 :: 		goto end;
 J	___Sample_Ringbuffer_end
 NOP	
-;Protocol.c,613 :: 		}
 L_Sample_Ringbuffer202:
-;Protocol.c,615 :: 		status = Check_group_multiple_violations();
+;Protocol.c,609 :: 		status = Check_group_multiple_violations();
 JAL	_Check_group_multiple_violations+0
 NOP	
 SH	R2, 22(SP)
-;Protocol.c,616 :: 		end:
+;Protocol.c,610 :: 		end:
 ___Sample_Ringbuffer_end:
-;Protocol.c,618 :: 		if(!status)
+;Protocol.c,613 :: 		if(!status)
 LH	R2, 22(SP)
 BEQ	R2, R0, L__Sample_Ringbuffer536
 NOP	
 J	L_Sample_Ringbuffer203
 NOP	
 L__Sample_Ringbuffer536:
-;Protocol.c,619 :: 		report_status_message(status);
+;Protocol.c,614 :: 		report_status_message(status);
 LH	R25, 22(SP)
 JAL	_report_status_message+0
 NOP	
 L_Sample_Ringbuffer203:
-;Protocol.c,622 :: 		}
+;Protocol.c,615 :: 		}
 L_Sample_Ringbuffer11:
-;Protocol.c,625 :: 		return status;
+;Protocol.c,618 :: 		return status;
 LH	R2, 22(SP)
-;Protocol.c,626 :: 		}
-;Protocol.c,625 :: 		return status;
-;Protocol.c,626 :: 		}
+;Protocol.c,619 :: 		}
+;Protocol.c,618 :: 		return status;
+;Protocol.c,619 :: 		}
 L_end_Sample_Ringbuffer:
 LW	R28, 16(SP)
 LW	R27, 12(SP)
@@ -2656,15 +2649,15 @@ JR	RA
 NOP	
 ; end of _Sample_Ringbuffer
 Protocol_strsplit:
-;Protocol.c,631 :: 		static int strsplit(char arg[arr_size][str_size],char *str, char c){
+;Protocol.c,624 :: 		static int strsplit(char arg[arr_size][str_size],char *str, char c){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Protocol.c,633 :: 		Str_Initialize(arg);
+;Protocol.c,626 :: 		Str_Initialize(arg);
 SB	R27, 4(SP)
 JAL	_Str_Initialize+0
 NOP	
 LBU	R27, 4(SP)
-;Protocol.c,634 :: 		len = strlen(str);
+;Protocol.c,627 :: 		len = strlen(str);
 SW	R25, 4(SP)
 MOVZ	R25, R26, R0
 JAL	_strlen+0
@@ -2672,14 +2665,14 @@ NOP
 LW	R25, 4(SP)
 ; len start address is: 16 (R4)
 SEH	R4, R2
-;Protocol.c,635 :: 		ii=kk=err=lasti=0;
+;Protocol.c,628 :: 		ii=kk=err=lasti=0;
 ; lasti start address is: 28 (R7)
 MOVZ	R7, R0, R0
 ; kk start address is: 24 (R6)
 MOVZ	R6, R0, R0
 ; ii start address is: 32 (R8)
 MOVZ	R8, R0, R0
-;Protocol.c,636 :: 		for (i = 0; i < len;i++){
+;Protocol.c,629 :: 		for (i = 0; i < len;i++){
 ; i start address is: 20 (R5)
 MOVZ	R5, R0, R0
 ; len end address is: 16 (R4)
@@ -2701,11 +2694,11 @@ NOP
 J	L_Protocol_strsplit205
 NOP	
 L_Protocol_strsplit538:
-;Protocol.c,637 :: 		err = i - lasti; //test if string in string is < 49
+;Protocol.c,630 :: 		err = i - lasti; //test if string in string is < 49
 SUBU	R2, R5, R7
 ; err start address is: 36 (R9)
 SEH	R9, R2
-;Protocol.c,638 :: 		if(*(str+i) == c || *(str+i) == '\n'  || err > 49){
+;Protocol.c,631 :: 		if(*(str+i) == c || *(str+i) == '\n'  || err > 49){
 SEH	R2, R5
 ADDU	R2, R26, R2
 LBU	R2, 0(R2)
@@ -2740,7 +2733,7 @@ NOP
 L_Protocol_strsplit222:
 L_Protocol_strsplit221:
 L_Protocol_strsplit220:
-;Protocol.c,639 :: 		arg[kk++][ii] = 0;
+;Protocol.c,632 :: 		arg[kk++][ii] = 0;
 SEH	R2, R6
 SLL	R2, R2, 6
 ADDU	R3, R25, R2
@@ -2750,18 +2743,18 @@ ADDU	R2, R3, R2
 SB	R0, 0(R2)
 ADDIU	R2, R6, 1
 SEH	R6, R2
-;Protocol.c,640 :: 		ii=err=0;
+;Protocol.c,633 :: 		ii=err=0;
 ; ii start address is: 32 (R8)
 MOVZ	R8, R0, R0
-;Protocol.c,641 :: 		lasti = i;
+;Protocol.c,634 :: 		lasti = i;
 ; lasti start address is: 28 (R7)
 SEH	R7, R5
-;Protocol.c,642 :: 		continue;
+;Protocol.c,635 :: 		continue;
 J	L_Protocol_strsplit206
 NOP	
-;Protocol.c,643 :: 		}else{
+;Protocol.c,636 :: 		}else{
 L_Protocol_strsplit209:
-;Protocol.c,644 :: 		arg[kk][ii++] = *(str+i);
+;Protocol.c,637 :: 		arg[kk][ii++] = *(str+i);
 SEH	R2, R6
 SLL	R2, R2, 6
 ADDU	R3, R25, R2
@@ -2773,7 +2766,7 @@ LBU	R2, 0(R2)
 SB	R2, 0(R3)
 ADDIU	R2, R8, 1
 SEH	R8, R2
-;Protocol.c,646 :: 		if(*(str+i)==0)
+;Protocol.c,639 :: 		if(*(str+i)==0)
 SEH	R2, R5
 ADDU	R2, R26, R2
 LBU	R2, 0(R2)
@@ -2787,11 +2780,11 @@ L_Protocol_strsplit544:
 ; lasti end address is: 28 (R7)
 ; ii end address is: 32 (R8)
 ; i end address is: 20 (R5)
-;Protocol.c,647 :: 		break;
+;Protocol.c,640 :: 		break;
 J	L_Protocol_strsplit205
 NOP	
 L_Protocol_strsplit211:
-;Protocol.c,648 :: 		}
+;Protocol.c,641 :: 		}
 ; i start address is: 20 (R5)
 ; ii start address is: 32 (R8)
 ; lasti start address is: 28 (R7)
@@ -2800,13 +2793,13 @@ L_Protocol_strsplit211:
 ; kk end address is: 24 (R6)
 ; len start address is: 16 (R4)
 L_Protocol_strsplit206:
-;Protocol.c,636 :: 		for (i = 0; i < len;i++){
+;Protocol.c,629 :: 		for (i = 0; i < len;i++){
 ; lasti start address is: 28 (R7)
 ; ii start address is: 32 (R8)
 ; kk start address is: 24 (R6)
 ADDIU	R2, R5, 1
 SEH	R5, R2
-;Protocol.c,648 :: 		}
+;Protocol.c,641 :: 		}
 ; len end address is: 16 (R4)
 ; lasti end address is: 28 (R7)
 ; ii end address is: 32 (R8)
@@ -2814,15 +2807,15 @@ SEH	R5, R2
 J	L_Protocol_strsplit204
 NOP	
 L_Protocol_strsplit205:
-;Protocol.c,649 :: 		arg[kk][0] = 0;
+;Protocol.c,642 :: 		arg[kk][0] = 0;
 SEH	R2, R6
 SLL	R2, R2, 6
 ADDU	R2, R25, R2
 SB	R0, 0(R2)
-;Protocol.c,650 :: 		return kk;
+;Protocol.c,643 :: 		return kk;
 SEH	R2, R6
 ; kk end address is: 24 (R6)
-;Protocol.c,651 :: 		}
+;Protocol.c,644 :: 		}
 L_end_strsplit:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -2830,22 +2823,22 @@ JR	RA
 NOP	
 ; end of Protocol_strsplit
 Protocol_cpy_val_from_str:
-;Protocol.c,655 :: 		static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char){
-;Protocol.c,658 :: 		tmp = strB+indx;
+;Protocol.c,648 :: 		static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char){
+;Protocol.c,651 :: 		tmp = strB+indx;
 SEH	R2, R27
 ADDU	R2, R26, R2
 ; tmp start address is: 16 (R4)
 MOVZ	R4, R2, R0
-;Protocol.c,659 :: 		*(tmp+num_of_char)=0;
+;Protocol.c,652 :: 		*(tmp+num_of_char)=0;
 SEH	R2, R28
 ADDU	R2, R4, R2
 SB	R0, 0(R2)
-;Protocol.c,661 :: 		i = 0;
+;Protocol.c,654 :: 		i = 0;
 ; i start address is: 12 (R3)
 MOVZ	R3, R0, R0
 ; tmp end address is: 16 (R4)
 ; i end address is: 12 (R3)
-;Protocol.c,662 :: 		while(*tmp != 0){
+;Protocol.c,655 :: 		while(*tmp != 0){
 L_Protocol_cpy_val_from_str212:
 ; i start address is: 12 (R3)
 ; tmp start address is: 16 (R4)
@@ -2856,43 +2849,43 @@ NOP
 J	L_Protocol_cpy_val_from_str213
 NOP	
 L_Protocol_cpy_val_from_str547:
-;Protocol.c,663 :: 		*strA++ = *tmp++;
+;Protocol.c,656 :: 		*strA++ = *tmp++;
 LBU	R2, 0(R4)
 SB	R2, 0(R25)
 ADDIU	R2, R25, 1
 MOVZ	R25, R2, R0
 ADDIU	R2, R4, 1
 MOVZ	R4, R2, R0
-;Protocol.c,664 :: 		i++;
+;Protocol.c,657 :: 		i++;
 ADDIU	R2, R3, 1
 SEH	R3, R2
-;Protocol.c,665 :: 		}
+;Protocol.c,658 :: 		}
 ; tmp end address is: 16 (R4)
 J	L_Protocol_cpy_val_from_str212
 NOP	
 L_Protocol_cpy_val_from_str213:
-;Protocol.c,666 :: 		*strA = '\0';
+;Protocol.c,659 :: 		*strA = '\0';
 SB	R0, 0(R25)
-;Protocol.c,668 :: 		return i;
+;Protocol.c,661 :: 		return i;
 SEH	R2, R3
 ; i end address is: 12 (R3)
-;Protocol.c,669 :: 		}
+;Protocol.c,662 :: 		}
 L_end_cpy_val_from_str:
 JR	RA
 NOP	
 ; end of Protocol_cpy_val_from_str
 Protocol_str2int:
-;Protocol.c,674 :: 		static int str2int(char *str,int base){
+;Protocol.c,667 :: 		static int str2int(char *str,int base){
 ADDIU	SP, SP, -16
 SW	RA, 0(SP)
-;Protocol.c,676 :: 		int result = 0;
+;Protocol.c,669 :: 		int result = 0;
 MOVZ	R30, R0, R0
 SH	R30, 14(SP)
-;Protocol.c,678 :: 		len = strlen(str);
+;Protocol.c,671 :: 		len = strlen(str);
 JAL	_strlen+0
 NOP	
 SH	R2, 12(SP)
-;Protocol.c,680 :: 		for(i=0; i<len; i++){
+;Protocol.c,673 :: 		for(i=0; i<len; i++){
 ; i start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; i end address is: 16 (R4)
@@ -2906,7 +2899,7 @@ NOP
 J	L_Protocol_str2int215
 NOP	
 L_Protocol_str2int549:
-;Protocol.c,681 :: 		result = result * base + ( *(str+i) - 0x30 );
+;Protocol.c,674 :: 		result = result * base + ( *(str+i) - 0x30 );
 LH	R2, 14(SP)
 MUL	R3, R2, R26
 SEH	R2, R4
@@ -2918,7 +2911,7 @@ ADDU	R2, R3, R2
 SH	R2, 14(SP)
 ; i end address is: 16 (R4)
 SEH	R3, R4
-;Protocol.c,682 :: 		while(DMA_IsOn(1));
+;Protocol.c,675 :: 		while(DMA_IsOn(1));
 L_Protocol_str2int217:
 ; i start address is: 12 (R3)
 SH	R3, 4(SP)
@@ -2938,19 +2931,19 @@ L_Protocol_str2int551:
 J	L_Protocol_str2int217
 NOP	
 L_Protocol_str2int218:
-;Protocol.c,680 :: 		for(i=0; i<len; i++){
+;Protocol.c,673 :: 		for(i=0; i<len; i++){
 ADDIU	R2, R3, 1
 ; i end address is: 12 (R3)
 ; i start address is: 16 (R4)
 SEH	R4, R2
-;Protocol.c,683 :: 		}
+;Protocol.c,676 :: 		}
 ; i end address is: 16 (R4)
 J	L_Protocol_str2int214
 NOP	
 L_Protocol_str2int215:
-;Protocol.c,685 :: 		return result;
+;Protocol.c,678 :: 		return result;
 LH	R2, 14(SP)
-;Protocol.c,686 :: 		}
+;Protocol.c,679 :: 		}
 L_end_str2int:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 16

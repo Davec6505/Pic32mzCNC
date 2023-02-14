@@ -1339,24 +1339,17 @@ START_LINE:
  }
  }
 
- if(query == 1){
- status =  0 ;
- goto end;
- }else if(query == 2){
- status =  1 ;
- goto end;
- }else if(query == 3){
- status =  3 ;
- goto end;
- }
+ if(query == 1){ status =  0 ;goto end;}
+ else if(query == 2){status =  1 ;goto end;}
+ else if(query == 3){status =  3 ;goto end;}
+
  ret:
  status = Check_group_multiple_violations();
  end:
 
+
  if(!status)
  report_status_message(status);
-
-
  }
 
 
