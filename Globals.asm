@@ -17,11 +17,11 @@ SW	R2, Offset(Globals_add+0)(GP)
 LUI	R2, 48411
 ORI	R2, R2, 50672
 ;Globals.c,36 :: 		if(!reset_all){
-BEQ	R25, R0, L__settings_init136
+BEQ	R25, R0, L__settings_init128
 NOP	
 J	L_settings_init0
 NOP	
-L__settings_init136:
+L__settings_init128:
 ; ptr end address is: 8 (R2)
 ;Globals.c,38 :: 		sys.abort           = 0;
 SB	R0, Offset(_sys+0)(GP)
@@ -48,11 +48,11 @@ MOVZ	R3, R2, R0
 ;Globals.c,52 :: 		if(has_data == -1){
 LUI	R2, 65535
 ORI	R2, R2, 65535
-BEQ	R3, R2, L__settings_init137
+BEQ	R3, R2, L__settings_init129
 NOP	
-J	L__settings_init133
+J	L__settings_init125
 NOP	
-L__settings_init137:
+L__settings_init129:
 ; has_data end address is: 12 (R3)
 ;Globals.c,58 :: 		error = (int)NVMErasePage(&add);
 LUI	R25, hi_addr(Globals_add+0)
@@ -245,11 +245,11 @@ ORI	R2, R0, 1
 ;Globals.c,132 :: 		while(has_data){
 L_settings_init8:
 ; has_data start address is: 8 (R2)
-BNE	R2, R0, L__settings_init139
+BNE	R2, R0, L__settings_init131
 NOP	
-J	L__settings_init132
+J	L__settings_init124
 NOP	
-L__settings_init139:
+L__settings_init131:
 ; has_data end address is: 8 (R2)
 ;Globals.c,134 :: 		has_data = (unsigned long)NVMWriteRow(&add,buffA);
 SB	R25, 12(SP)
@@ -270,11 +270,11 @@ SH	R2, 14(SP)
 ;Globals.c,142 :: 		if(retry_flash_write > FLASH_RETRY_COUNT)break;
 SEH	R2, R2
 SLTI	R2, R2, 3
-BEQ	R2, R0, L__settings_init140
+BEQ	R2, R0, L__settings_init132
 NOP	
 J	L_settings_init10
 NOP	
-L__settings_init140:
+L__settings_init132:
 MOVZ	R2, R3, R0
 J	L_settings_init9
 NOP	
@@ -284,7 +284,7 @@ MOVZ	R2, R3, R0
 ; has_data end address is: 12 (R3)
 J	L_settings_init8
 NOP	
-L__settings_init132:
+L__settings_init124:
 ;Globals.c,132 :: 		while(has_data){
 ;Globals.c,143 :: 		}
 L_settings_init9:
@@ -293,18 +293,18 @@ L_settings_init9:
 ; has_data end address is: 8 (R2)
 J	L_settings_init2
 NOP	
-L__settings_init133:
+L__settings_init125:
 ;Globals.c,52 :: 		if(has_data == -1){
 MOVZ	R2, R3, R0
 ;Globals.c,146 :: 		}//else{
 L_settings_init2:
 ;Globals.c,147 :: 		if(has_data){
 ; has_data start address is: 8 (R2)
-BNE	R2, R0, L__settings_init142
+BNE	R2, R0, L__settings_init134
 NOP	
 J	L_settings_init11
 NOP	
-L__settings_init142:
+L__settings_init134:
 ; has_data end address is: 8 (R2)
 ;Globals.c,148 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
 LW	R25, Offset(Globals_add+0)(GP)
@@ -494,11 +494,11 @@ L_read_row_from_flash12:
 ; ptr end address is: 16 (R4)
 LW	R2, Offset(_j+0)(GP)
 SLTIU	R2, R2, 512
-BNE	R2, R0, L__read_row_from_flash151
+BNE	R2, R0, L__read_row_from_flash143
 NOP	
 J	L_read_row_from_flash13
 NOP	
-L__read_row_from_flash151:
+L__read_row_from_flash143:
 ; ptr end address is: 16 (R4)
 ;Globals.c,239 :: 		buffA[j] = *(ptr+j);
 ; ptr start address is: 16 (R4)
@@ -521,17 +521,17 @@ ADDU	R2, R2, R3
 LW	R3, 0(R2)
 LUI	R2, 65535
 ORI	R2, R2, 65535
-BNE	R3, R2, L__read_row_from_flash153
+BNE	R3, R2, L__read_row_from_flash145
 NOP	
-J	L__read_row_from_flash131
+J	L__read_row_from_flash123
 NOP	
-L__read_row_from_flash153:
+L__read_row_from_flash145:
 ADDIU	R2, R5, 1
 SEH	R5, R2
 ; data_count end address is: 20 (R5)
 J	L_read_row_from_flash15
 NOP	
-L__read_row_from_flash131:
+L__read_row_from_flash123:
 L_read_row_from_flash15:
 ;Globals.c,238 :: 		for(j = 0;j < 512;j++){
 ; data_count start address is: 20 (R5)
@@ -583,11 +583,11 @@ SEH	R4, R25
 ;Globals.c,293 :: 		if(!read_ram_loaded_indicator()){
 JAL	_read_ram_loaded_indicator+0
 NOP	
-BEQ	R2, R0, L__settings_write_coord_data155
+BEQ	R2, R0, L__settings_write_coord_data147
 NOP	
 J	L_settings_write_coord_data16
 NOP	
-L__settings_write_coord_data155:
+L__settings_write_coord_data147:
 ;Globals.c,295 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
 SH	R4, 8(SP)
 LW	R25, Offset(Globals_add+0)(GP)
@@ -611,11 +611,11 @@ SH	R2, Offset(_error+0)(GP)
 L_settings_write_coord_data16:
 ;Globals.c,304 :: 		if(error){
 LHU	R2, Offset(_error+0)(GP)
-BNE	R2, R0, L__settings_write_coord_data157
+BNE	R2, R0, L__settings_write_coord_data149
 NOP	
 J	L_settings_write_coord_data17
 NOP	
-L__settings_write_coord_data157:
+L__settings_write_coord_data149:
 ; recipe end address is: 16 (R4)
 ;Globals.c,309 :: 		return error;
 LHU	R2, Offset(_error+0)(GP)
@@ -694,179 +694,123 @@ ORI	R2, R2, 49280
 SW	R2, Offset(Globals_add+0)(GP)
 J	L_settings_write_coord_data19
 NOP	
-;Globals.c,325 :: 		case 10: add = (unsigned long)FLASH_Settings_VAddr_G54;break;
+;Globals.c,325 :: 		case 10: add = (unsigned long)FLASH_Settings_VAddr_G281;break;
 L_settings_write_coord_data30:
 LUI	R2, 48411
 ORI	R2, R2, 49296
 SW	R2, Offset(Globals_add+0)(GP)
 J	L_settings_write_coord_data19
 NOP	
-;Globals.c,326 :: 		case 11: add = (unsigned long)FLASH_Settings_VAddr_G55;break;
+;Globals.c,326 :: 		case 11: add = (unsigned long)FLASH_Settings_VAddr_G301;break;
 L_settings_write_coord_data31:
 LUI	R2, 48411
 ORI	R2, R2, 49312
 SW	R2, Offset(Globals_add+0)(GP)
 J	L_settings_write_coord_data19
 NOP	
-;Globals.c,327 :: 		case 12: add = (unsigned long)FLASH_Settings_VAddr_G56;break;
-L_settings_write_coord_data32:
-LUI	R2, 48411
-ORI	R2, R2, 49328
-SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_coord_data19
-NOP	
-;Globals.c,328 :: 		case 13: add = (unsigned long)FLASH_Settings_VAddr_G57;break;
-L_settings_write_coord_data33:
-LUI	R2, 48411
-ORI	R2, R2, 49344
-SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_coord_data19
-NOP	
-;Globals.c,329 :: 		case 14: add = (unsigned long)FLASH_Settings_VAddr_G58;break;
-L_settings_write_coord_data34:
-LUI	R2, 48411
-ORI	R2, R2, 49360
-SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_coord_data19
-NOP	
-;Globals.c,330 :: 		case 15: add = (unsigned long)FLASH_Settings_VAddr_G59;break;
-L_settings_write_coord_data35:
-LUI	R2, 48411
-ORI	R2, R2, 49376
-SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_coord_data19
-NOP	
-;Globals.c,331 :: 		}
+;Globals.c,327 :: 		}
 L_settings_write_coord_data18:
 SEH	R2, R4
-BNE	R2, R0, L__settings_write_coord_data159
+BNE	R2, R0, L__settings_write_coord_data151
 NOP	
 J	L_settings_write_coord_data20
 NOP	
-L__settings_write_coord_data159:
+L__settings_write_coord_data151:
 SEH	R3, R4
 ORI	R2, R0, 1
-BNE	R3, R2, L__settings_write_coord_data161
+BNE	R3, R2, L__settings_write_coord_data153
 NOP	
 J	L_settings_write_coord_data21
 NOP	
-L__settings_write_coord_data161:
+L__settings_write_coord_data153:
 SEH	R3, R4
 ORI	R2, R0, 2
-BNE	R3, R2, L__settings_write_coord_data163
+BNE	R3, R2, L__settings_write_coord_data155
 NOP	
 J	L_settings_write_coord_data22
 NOP	
-L__settings_write_coord_data163:
+L__settings_write_coord_data155:
 SEH	R3, R4
 ORI	R2, R0, 3
-BNE	R3, R2, L__settings_write_coord_data165
+BNE	R3, R2, L__settings_write_coord_data157
 NOP	
 J	L_settings_write_coord_data23
 NOP	
-L__settings_write_coord_data165:
+L__settings_write_coord_data157:
 SEH	R3, R4
 ORI	R2, R0, 4
-BNE	R3, R2, L__settings_write_coord_data167
+BNE	R3, R2, L__settings_write_coord_data159
 NOP	
 J	L_settings_write_coord_data24
 NOP	
-L__settings_write_coord_data167:
+L__settings_write_coord_data159:
 SEH	R3, R4
 ORI	R2, R0, 5
-BNE	R3, R2, L__settings_write_coord_data169
+BNE	R3, R2, L__settings_write_coord_data161
 NOP	
 J	L_settings_write_coord_data25
 NOP	
-L__settings_write_coord_data169:
+L__settings_write_coord_data161:
 SEH	R3, R4
 ORI	R2, R0, 6
-BNE	R3, R2, L__settings_write_coord_data171
+BNE	R3, R2, L__settings_write_coord_data163
 NOP	
 J	L_settings_write_coord_data26
 NOP	
-L__settings_write_coord_data171:
+L__settings_write_coord_data163:
 SEH	R3, R4
 ORI	R2, R0, 7
-BNE	R3, R2, L__settings_write_coord_data173
+BNE	R3, R2, L__settings_write_coord_data165
 NOP	
 J	L_settings_write_coord_data27
 NOP	
-L__settings_write_coord_data173:
+L__settings_write_coord_data165:
 SEH	R3, R4
 ORI	R2, R0, 8
-BNE	R3, R2, L__settings_write_coord_data175
+BNE	R3, R2, L__settings_write_coord_data167
 NOP	
 J	L_settings_write_coord_data28
 NOP	
-L__settings_write_coord_data175:
+L__settings_write_coord_data167:
 SEH	R3, R4
 ORI	R2, R0, 9
-BNE	R3, R2, L__settings_write_coord_data177
+BNE	R3, R2, L__settings_write_coord_data169
 NOP	
 J	L_settings_write_coord_data29
 NOP	
-L__settings_write_coord_data177:
+L__settings_write_coord_data169:
 SEH	R3, R4
 ORI	R2, R0, 10
-BNE	R3, R2, L__settings_write_coord_data179
+BNE	R3, R2, L__settings_write_coord_data171
 NOP	
 J	L_settings_write_coord_data30
 NOP	
-L__settings_write_coord_data179:
+L__settings_write_coord_data171:
 SEH	R3, R4
 ORI	R2, R0, 11
-BNE	R3, R2, L__settings_write_coord_data181
+BNE	R3, R2, L__settings_write_coord_data173
 NOP	
 J	L_settings_write_coord_data31
 NOP	
-L__settings_write_coord_data181:
-SEH	R3, R4
-ORI	R2, R0, 12
-BNE	R3, R2, L__settings_write_coord_data183
-NOP	
-J	L_settings_write_coord_data32
-NOP	
-L__settings_write_coord_data183:
-SEH	R3, R4
-ORI	R2, R0, 13
-BNE	R3, R2, L__settings_write_coord_data185
-NOP	
-J	L_settings_write_coord_data33
-NOP	
-L__settings_write_coord_data185:
-SEH	R3, R4
-ORI	R2, R0, 14
-BNE	R3, R2, L__settings_write_coord_data187
-NOP	
-J	L_settings_write_coord_data34
-NOP	
-L__settings_write_coord_data187:
-SEH	R3, R4
-ORI	R2, R0, 15
-BNE	R3, R2, L__settings_write_coord_data189
-NOP	
-J	L_settings_write_coord_data35
-NOP	
-L__settings_write_coord_data189:
+L__settings_write_coord_data173:
 L_settings_write_coord_data19:
-;Globals.c,333 :: 		j = i = 0;
+;Globals.c,329 :: 		j = i = 0;
 SW	R0, Offset(_i+0)(GP)
 LW	R2, Offset(_i+0)(GP)
 SW	R2, Offset(_j+0)(GP)
-;Globals.c,334 :: 		for (i=0;i<3;i++){
+;Globals.c,330 :: 		for (i=0;i<3;i++){
 SW	R0, Offset(_i+0)(GP)
 ; recipe end address is: 16 (R4)
-L_settings_write_coord_data36:
+L_settings_write_coord_data32:
 ; recipe start address is: 16 (R4)
 LW	R2, Offset(_i+0)(GP)
 SLTIU	R2, R2, 3
-BNE	R2, R0, L__settings_write_coord_data190
+BNE	R2, R0, L__settings_write_coord_data174
 NOP	
-J	L_settings_write_coord_data37
+J	L_settings_write_coord_data33
 NOP	
-L__settings_write_coord_data190:
-;Globals.c,335 :: 		wdata[i] = flt2ulong(coord[i]);
+L__settings_write_coord_data174:
+;Globals.c,331 :: 		wdata[i] = flt2ulong(coord[i]);
 ADDIU	R3, SP, 20
 LW	R2, Offset(_i+0)(GP)
 SLL	R2, R2, 2
@@ -886,32 +830,32 @@ LW	R26, 12(SP)
 LH	R4, 8(SP)
 LW	R3, 36(SP)
 SW	R2, 0(R3)
-;Globals.c,334 :: 		for (i=0;i<3;i++){
+;Globals.c,330 :: 		for (i=0;i<3;i++){
 LW	R2, Offset(_i+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_i+0)(GP)
-;Globals.c,340 :: 		}
-J	L_settings_write_coord_data36
+;Globals.c,336 :: 		}
+J	L_settings_write_coord_data32
 NOP	
-L_settings_write_coord_data37:
-;Globals.c,343 :: 		i = (recipe-1)*4 ;
+L_settings_write_coord_data33:
+;Globals.c,339 :: 		i = (recipe-1)*4 ;
 ADDIU	R2, R4, -1
 ; recipe end address is: 16 (R4)
 SEH	R2, R2
 SLL	R2, R2, 2
 SEH	R2, R2
 SW	R2, Offset(_i+0)(GP)
-;Globals.c,346 :: 		for(j = 0;j<4;j++){
+;Globals.c,342 :: 		for(j = 0;j<4;j++){
 SW	R0, Offset(_j+0)(GP)
-L_settings_write_coord_data39:
+L_settings_write_coord_data35:
 LW	R2, Offset(_j+0)(GP)
 SLTIU	R2, R2, 4
-BNE	R2, R0, L__settings_write_coord_data191
+BNE	R2, R0, L__settings_write_coord_data175
 NOP	
-J	L_settings_write_coord_data40
+J	L_settings_write_coord_data36
 NOP	
-L__settings_write_coord_data191:
-;Globals.c,347 :: 		buffA[i] =  wdata[j];
+L__settings_write_coord_data175:
+;Globals.c,343 :: 		buffA[i] =  wdata[j];
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 2
 LUI	R2, 40960
@@ -923,19 +867,19 @@ SLL	R2, R2, 2
 ADDU	R2, R3, R2
 LW	R2, 0(R2)
 SW	R2, 0(R4)
-;Globals.c,348 :: 		i++;
+;Globals.c,344 :: 		i++;
 LW	R2, Offset(_i+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_i+0)(GP)
-;Globals.c,346 :: 		for(j = 0;j<4;j++){
+;Globals.c,342 :: 		for(j = 0;j<4;j++){
 LW	R2, Offset(_j+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_j+0)(GP)
-;Globals.c,349 :: 		}
-J	L_settings_write_coord_data39
+;Globals.c,345 :: 		}
+J	L_settings_write_coord_data35
 NOP	
-L_settings_write_coord_data40:
-;Globals.c,352 :: 		res = NVMWriteRow(&add,buffA);
+L_settings_write_coord_data36:
+;Globals.c,348 :: 		res = NVMWriteRow(&add,buffA);
 SW	R26, 8(SP)
 SH	R25, 12(SP)
 LUI	R26, 40960
@@ -948,18 +892,18 @@ LH	R25, 12(SP)
 LW	R26, 8(SP)
 ; res start address is: 12 (R3)
 ANDI	R3, R2, 65535
-;Globals.c,353 :: 		set_ram_loaded_indicator(res);
+;Globals.c,349 :: 		set_ram_loaded_indicator(res);
 SH	R25, 8(SP)
 SEH	R25, R2
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
 LH	R25, 8(SP)
-;Globals.c,369 :: 		return res;
+;Globals.c,365 :: 		return res;
 SEH	R2, R3
 ; res end address is: 12 (R3)
-;Globals.c,370 :: 		}
-;Globals.c,369 :: 		return res;
-;Globals.c,370 :: 		}
+;Globals.c,366 :: 		}
+;Globals.c,365 :: 		return res;
+;Globals.c,366 :: 		}
 L_end_settings_write_coord_data:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -968,59 +912,59 @@ JR	RA
 NOP	
 ; end of _settings_write_coord_data
 _settings_read_coord_data:
-;Globals.c,377 :: 		void settings_read_coord_data(){
+;Globals.c,373 :: 		void settings_read_coord_data(){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Globals.c,380 :: 		if(!read_ram_loaded_indicator()){
+;Globals.c,376 :: 		if(!read_ram_loaded_indicator()){
 SW	R25, 4(SP)
 JAL	_read_ram_loaded_indicator+0
 NOP	
-BEQ	R2, R0, L__settings_read_coord_data193
+BEQ	R2, R0, L__settings_read_coord_data177
 NOP	
-J	L_settings_read_coord_data42
+J	L_settings_read_coord_data38
 NOP	
-L__settings_read_coord_data193:
-;Globals.c,381 :: 		add = (unsigned long)FLASH_Settings_VAddr_P1;
+L__settings_read_coord_data177:
+;Globals.c,377 :: 		add = (unsigned long)FLASH_Settings_VAddr_P1;
 LUI	R2, 48411
 ORI	R2, R2, 49152
 SW	R2, Offset(Globals_add+0)(GP)
-;Globals.c,382 :: 		read_row_from_flash(add);
+;Globals.c,378 :: 		read_row_from_flash(add);
 LW	R25, Offset(Globals_add+0)(GP)
 JAL	_read_row_from_flash+0
 NOP	
-;Globals.c,383 :: 		}
-L_settings_read_coord_data42:
-;Globals.c,385 :: 		if(!read_coord_data_indicator()){
+;Globals.c,379 :: 		}
+L_settings_read_coord_data38:
+;Globals.c,381 :: 		if(!read_coord_data_indicator()){
 JAL	_read_coord_data_indicator+0
 NOP	
-BEQ	R2, R0, L__settings_read_coord_data194
+BEQ	R2, R0, L__settings_read_coord_data178
 NOP	
-J	L_settings_read_coord_data43
+J	L_settings_read_coord_data39
 NOP	
-L__settings_read_coord_data194:
-;Globals.c,386 :: 		unsigned long temp = 0UL;
-;Globals.c,387 :: 		float value = 0.00;
-;Globals.c,388 :: 		for(i = 0; i < 9; i++){
+L__settings_read_coord_data178:
+;Globals.c,382 :: 		unsigned long temp = 0UL;
+;Globals.c,383 :: 		float value = 0.00;
+;Globals.c,384 :: 		for(i = 0; i < 9; i++){
 SW	R0, Offset(_i+0)(GP)
-L_settings_read_coord_data44:
+L_settings_read_coord_data40:
 LW	R2, Offset(_i+0)(GP)
 SLTIU	R2, R2, 9
-BNE	R2, R0, L__settings_read_coord_data195
+BNE	R2, R0, L__settings_read_coord_data179
 NOP	
-J	L_settings_read_coord_data45
+J	L_settings_read_coord_data41
 NOP	
-L__settings_read_coord_data195:
-;Globals.c,389 :: 		for(j = 0 ; j < NoOfAxis; j++){
+L__settings_read_coord_data179:
+;Globals.c,385 :: 		for(j = 0 ; j < NoOfAxis; j++){
 SW	R0, Offset(_j+0)(GP)
-L_settings_read_coord_data47:
+L_settings_read_coord_data43:
 LW	R2, Offset(_j+0)(GP)
 SLTIU	R2, R2, 4
-BNE	R2, R0, L__settings_read_coord_data196
+BNE	R2, R0, L__settings_read_coord_data180
 NOP	
-J	L_settings_read_coord_data48
+J	L_settings_read_coord_data44
 NOP	
-L__settings_read_coord_data196:
-;Globals.c,390 :: 		temp = buffA[(i*NoOfAxis) + j];
+L__settings_read_coord_data180:
+;Globals.c,386 :: 		temp = buffA[(i*NoOfAxis) + j];
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 2
 LW	R2, Offset(_j+0)(GP)
@@ -1032,33 +976,33 @@ ADDU	R2, R2, R3
 LW	R2, 0(R2)
 ; temp start address is: 12 (R3)
 MOVZ	R3, R2, R0
-;Globals.c,392 :: 		if(temp == -1)
+;Globals.c,388 :: 		if(temp == -1)
 LUI	R2, 65535
 ORI	R2, R2, 65535
-BEQ	R3, R2, L__settings_read_coord_data197
+BEQ	R3, R2, L__settings_read_coord_data181
 NOP	
-J	L__settings_read_coord_data134
+J	L__settings_read_coord_data126
 NOP	
-L__settings_read_coord_data197:
+L__settings_read_coord_data181:
 ; temp end address is: 12 (R3)
-;Globals.c,393 :: 		temp = 0UL;
+;Globals.c,389 :: 		temp = 0UL;
 ; temp start address is: 8 (R2)
 MOVZ	R2, R0, R0
 ; temp end address is: 8 (R2)
-J	L_settings_read_coord_data50
+J	L_settings_read_coord_data46
 NOP	
-L__settings_read_coord_data134:
-;Globals.c,392 :: 		if(temp == -1)
+L__settings_read_coord_data126:
+;Globals.c,388 :: 		if(temp == -1)
 MOVZ	R2, R3, R0
-;Globals.c,393 :: 		temp = 0UL;
-L_settings_read_coord_data50:
-;Globals.c,394 :: 		value = ulong2flt(temp);
+;Globals.c,389 :: 		temp = 0UL;
+L_settings_read_coord_data46:
+;Globals.c,390 :: 		value = ulong2flt(temp);
 ; temp start address is: 8 (R2)
 MOVZ	R25, R2, R0
 ; temp end address is: 8 (R2)
 JAL	_ulong2flt+0
 NOP	
-;Globals.c,395 :: 		coord_system[i].coord[j] = value;
+;Globals.c,391 :: 		coord_system[i].coord[j] = value;
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 5
 LUI	R2, hi_addr(_coord_system+0)
@@ -1068,29 +1012,29 @@ LW	R2, Offset(_j+0)(GP)
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
 SWC1	S0, 0(R2)
-;Globals.c,389 :: 		for(j = 0 ; j < NoOfAxis; j++){
+;Globals.c,385 :: 		for(j = 0 ; j < NoOfAxis; j++){
 LW	R2, Offset(_j+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_j+0)(GP)
-;Globals.c,403 :: 		}
-J	L_settings_read_coord_data47
+;Globals.c,399 :: 		}
+J	L_settings_read_coord_data43
 NOP	
-L_settings_read_coord_data48:
-;Globals.c,388 :: 		for(i = 0; i < 9; i++){
+L_settings_read_coord_data44:
+;Globals.c,384 :: 		for(i = 0; i < 9; i++){
 LW	R2, Offset(_i+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_i+0)(GP)
-;Globals.c,404 :: 		}
-J	L_settings_read_coord_data44
+;Globals.c,400 :: 		}
+J	L_settings_read_coord_data40
 NOP	
-L_settings_read_coord_data45:
-;Globals.c,406 :: 		set_coord_data_read_indicator(COORD_READ_FLAG);
+L_settings_read_coord_data41:
+;Globals.c,402 :: 		set_coord_data_read_indicator(COORD_READ_FLAG);
 MOVZ	R25, R0, R0
 JAL	Globals_set_coord_data_read_indicator+0
 NOP	
-;Globals.c,407 :: 		}
-L_settings_read_coord_data43:
-;Globals.c,408 :: 		}
+;Globals.c,403 :: 		}
+L_settings_read_coord_data39:
+;Globals.c,404 :: 		}
 L_end_settings_read_coord_data:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -1099,32 +1043,32 @@ JR	RA
 NOP	
 ; end of _settings_read_coord_data
 _settings_write_one_coord:
-;Globals.c,413 :: 		unsigned int settings_write_one_coord(int coord_select,float *coord){
+;Globals.c,411 :: 		unsigned int settings_write_one_coord(int coord_select,float *coord){
 ADDIU	SP, SP, -52
 SW	RA, 0(SP)
-;Globals.c,419 :: 		recipe = coord_select * NoOfAxis;
+;Globals.c,417 :: 		recipe = coord_select * NoOfAxis;
 SEH	R2, R25
 SLL	R2, R2, 2
 ; recipe start address is: 20 (R5)
 SEH	R5, R2
-;Globals.c,422 :: 		j=0;
+;Globals.c,420 :: 		j=0;
 SW	R0, Offset(_j+0)(GP)
-;Globals.c,423 :: 		for(i = recipe;i< recipe+NoOfAxis;i++){
+;Globals.c,421 :: 		for(i = recipe;i< recipe+NoOfAxis;i++){
 SEH	R2, R2
 SW	R2, Offset(_i+0)(GP)
 ; recipe end address is: 20 (R5)
-L_settings_write_one_coord51:
+L_settings_write_one_coord47:
 ; recipe start address is: 20 (R5)
 ADDIU	R2, R5, 4
 SEH	R3, R2
 LW	R2, Offset(_i+0)(GP)
 SLTU	R2, R2, R3
-BNE	R2, R0, L__settings_write_one_coord199
+BNE	R2, R0, L__settings_write_one_coord183
 NOP	
-J	L_settings_write_one_coord52
+J	L_settings_write_one_coord48
 NOP	
-L__settings_write_one_coord199:
-;Globals.c,425 :: 		coord_data[j] = *(coord+j);
+L__settings_write_one_coord183:
+;Globals.c,423 :: 		coord_data[j] = *(coord+j);
 ADDIU	R4, SP, 16
 LW	R2, Offset(_j+0)(GP)
 SLL	R2, R2, 2
@@ -1134,7 +1078,7 @@ SLL	R2, R2, 2
 ADDU	R2, R26, R2
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
-;Globals.c,426 :: 		temp[j] = flt2ulong(coord_data[j]);
+;Globals.c,424 :: 		temp[j] = flt2ulong(coord_data[j]);
 ADDIU	R3, SP, 32
 LW	R2, Offset(_j+0)(GP)
 SLL	R2, R2, 2
@@ -1154,7 +1098,7 @@ LW	R26, 8(SP)
 LH	R5, 4(SP)
 LW	R3, 48(SP)
 SW	R2, 0(R3)
-;Globals.c,427 :: 		buffA[i] = temp[j];
+;Globals.c,425 :: 		buffA[i] = temp[j];
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 2
 LUI	R2, 40960
@@ -1166,244 +1110,188 @@ SLL	R2, R2, 2
 ADDU	R2, R3, R2
 LW	R2, 0(R2)
 SW	R2, 0(R4)
-;Globals.c,428 :: 		j++;
+;Globals.c,426 :: 		j++;
 LW	R2, Offset(_j+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_j+0)(GP)
-;Globals.c,423 :: 		for(i = recipe;i< recipe+NoOfAxis;i++){
+;Globals.c,421 :: 		for(i = recipe;i< recipe+NoOfAxis;i++){
 LW	R2, Offset(_i+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_i+0)(GP)
-;Globals.c,433 :: 		}
+;Globals.c,431 :: 		}
 ; recipe end address is: 20 (R5)
-J	L_settings_write_one_coord51
+J	L_settings_write_one_coord47
 NOP	
+L_settings_write_one_coord48:
+;Globals.c,433 :: 		switch(coord_select){
+J	L_settings_write_one_coord50
+NOP	
+;Globals.c,435 :: 		case 1: add = (unsigned long)FLASH_Settings_VAddr_P1;break;
 L_settings_write_one_coord52:
-;Globals.c,435 :: 		switch(coord_select){
-J	L_settings_write_one_coord54
-NOP	
-;Globals.c,437 :: 		case 1: add = (unsigned long)FLASH_Settings_VAddr_P1;break;
-L_settings_write_one_coord56:
 LUI	R2, 48411
 ORI	R2, R2, 49152
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,438 :: 		case 2: add = (unsigned long)FLASH_Settings_VAddr_P2;break;
-L_settings_write_one_coord57:
+;Globals.c,436 :: 		case 2: add = (unsigned long)FLASH_Settings_VAddr_P2;break;
+L_settings_write_one_coord53:
 LUI	R2, 48411
 ORI	R2, R2, 49168
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,439 :: 		case 3: add = (unsigned long)FLASH_Settings_VAddr_P3;break;
-L_settings_write_one_coord58:
+;Globals.c,437 :: 		case 3: add = (unsigned long)FLASH_Settings_VAddr_P3;break;
+L_settings_write_one_coord54:
 LUI	R2, 48411
 ORI	R2, R2, 49184
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,440 :: 		case 4: add = (unsigned long)FLASH_Settings_VAddr_P4;break;
-L_settings_write_one_coord59:
+;Globals.c,438 :: 		case 4: add = (unsigned long)FLASH_Settings_VAddr_P4;break;
+L_settings_write_one_coord55:
 LUI	R2, 48411
 ORI	R2, R2, 49200
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,441 :: 		case 5: add = (unsigned long)FLASH_Settings_VAddr_P5;break;
-L_settings_write_one_coord60:
+;Globals.c,439 :: 		case 5: add = (unsigned long)FLASH_Settings_VAddr_P5;break;
+L_settings_write_one_coord56:
 LUI	R2, 48411
 ORI	R2, R2, 49216
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,442 :: 		case 6: add = (unsigned long)FLASH_Settings_VAddr_P6;break;
-L_settings_write_one_coord61:
+;Globals.c,440 :: 		case 6: add = (unsigned long)FLASH_Settings_VAddr_P6;break;
+L_settings_write_one_coord57:
 LUI	R2, 48411
 ORI	R2, R2, 49232
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,443 :: 		case 7: add = (unsigned long)FLASH_Settings_VAddr_P7;break;
-L_settings_write_one_coord62:
+;Globals.c,441 :: 		case 7: add = (unsigned long)FLASH_Settings_VAddr_P7;break;
+L_settings_write_one_coord58:
 LUI	R2, 48411
 ORI	R2, R2, 49248
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,444 :: 		case 8: add = (unsigned long)FLASH_Settings_VAddr_P8;break;
-L_settings_write_one_coord63:
+;Globals.c,442 :: 		case 8: add = (unsigned long)FLASH_Settings_VAddr_P8;break;
+L_settings_write_one_coord59:
 LUI	R2, 48411
 ORI	R2, R2, 49264
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,445 :: 		case 9: add = (unsigned long)FLASH_Settings_VAddr_P9;break;
-L_settings_write_one_coord64:
+;Globals.c,443 :: 		case 9: add = (unsigned long)FLASH_Settings_VAddr_P9;break;
+L_settings_write_one_coord60:
 LUI	R2, 48411
 ORI	R2, R2, 49280
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,447 :: 		case 10: add = (unsigned long)FLASH_Settings_VAddr_G54;break;
-L_settings_write_one_coord65:
+;Globals.c,445 :: 		case 10: add = (unsigned long)FLASH_Settings_VAddr_G281;break;
+L_settings_write_one_coord61:
 LUI	R2, 48411
 ORI	R2, R2, 49296
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,448 :: 		case 11: add = (unsigned long)FLASH_Settings_VAddr_G55;break;
-L_settings_write_one_coord66:
+;Globals.c,446 :: 		case 11: add = (unsigned long)FLASH_Settings_VAddr_G301;break;
+L_settings_write_one_coord62:
 LUI	R2, 48411
 ORI	R2, R2, 49312
 SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
+J	L_settings_write_one_coord51
 NOP	
-;Globals.c,449 :: 		case 12: add = (unsigned long)FLASH_Settings_VAddr_G56;break;
-L_settings_write_one_coord67:
-LUI	R2, 48411
-ORI	R2, R2, 49328
-SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
-NOP	
-;Globals.c,450 :: 		case 13: add = (unsigned long)FLASH_Settings_VAddr_G57;break;
-L_settings_write_one_coord68:
-LUI	R2, 48411
-ORI	R2, R2, 49344
-SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
-NOP	
-;Globals.c,451 :: 		case 14: add = (unsigned long)FLASH_Settings_VAddr_G58;break;
-L_settings_write_one_coord69:
-LUI	R2, 48411
-ORI	R2, R2, 49360
-SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
-NOP	
-;Globals.c,452 :: 		case 15: add = (unsigned long)FLASH_Settings_VAddr_G59;break;
-L_settings_write_one_coord70:
-LUI	R2, 48411
-ORI	R2, R2, 49376
-SW	R2, Offset(Globals_add+0)(GP)
-J	L_settings_write_one_coord55
-NOP	
-;Globals.c,453 :: 		}
-L_settings_write_one_coord54:
+;Globals.c,447 :: 		}
+L_settings_write_one_coord50:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L__settings_write_one_coord201
+BNE	R3, R2, L__settings_write_one_coord185
+NOP	
+J	L_settings_write_one_coord52
+NOP	
+L__settings_write_one_coord185:
+SEH	R3, R25
+ORI	R2, R0, 2
+BNE	R3, R2, L__settings_write_one_coord187
+NOP	
+J	L_settings_write_one_coord53
+NOP	
+L__settings_write_one_coord187:
+SEH	R3, R25
+ORI	R2, R0, 3
+BNE	R3, R2, L__settings_write_one_coord189
+NOP	
+J	L_settings_write_one_coord54
+NOP	
+L__settings_write_one_coord189:
+SEH	R3, R25
+ORI	R2, R0, 4
+BNE	R3, R2, L__settings_write_one_coord191
+NOP	
+J	L_settings_write_one_coord55
+NOP	
+L__settings_write_one_coord191:
+SEH	R3, R25
+ORI	R2, R0, 5
+BNE	R3, R2, L__settings_write_one_coord193
 NOP	
 J	L_settings_write_one_coord56
 NOP	
-L__settings_write_one_coord201:
+L__settings_write_one_coord193:
 SEH	R3, R25
-ORI	R2, R0, 2
-BNE	R3, R2, L__settings_write_one_coord203
+ORI	R2, R0, 6
+BNE	R3, R2, L__settings_write_one_coord195
 NOP	
 J	L_settings_write_one_coord57
 NOP	
-L__settings_write_one_coord203:
+L__settings_write_one_coord195:
 SEH	R3, R25
-ORI	R2, R0, 3
-BNE	R3, R2, L__settings_write_one_coord205
+ORI	R2, R0, 7
+BNE	R3, R2, L__settings_write_one_coord197
 NOP	
 J	L_settings_write_one_coord58
 NOP	
-L__settings_write_one_coord205:
+L__settings_write_one_coord197:
 SEH	R3, R25
-ORI	R2, R0, 4
-BNE	R3, R2, L__settings_write_one_coord207
+ORI	R2, R0, 8
+BNE	R3, R2, L__settings_write_one_coord199
 NOP	
 J	L_settings_write_one_coord59
 NOP	
-L__settings_write_one_coord207:
+L__settings_write_one_coord199:
 SEH	R3, R25
-ORI	R2, R0, 5
-BNE	R3, R2, L__settings_write_one_coord209
+ORI	R2, R0, 9
+BNE	R3, R2, L__settings_write_one_coord201
 NOP	
 J	L_settings_write_one_coord60
 NOP	
-L__settings_write_one_coord209:
+L__settings_write_one_coord201:
 SEH	R3, R25
-ORI	R2, R0, 6
-BNE	R3, R2, L__settings_write_one_coord211
+ORI	R2, R0, 10
+BNE	R3, R2, L__settings_write_one_coord203
 NOP	
 J	L_settings_write_one_coord61
 NOP	
-L__settings_write_one_coord211:
+L__settings_write_one_coord203:
 SEH	R3, R25
-ORI	R2, R0, 7
-BNE	R3, R2, L__settings_write_one_coord213
+ORI	R2, R0, 11
+BNE	R3, R2, L__settings_write_one_coord205
 NOP	
 J	L_settings_write_one_coord62
 NOP	
-L__settings_write_one_coord213:
-SEH	R3, R25
-ORI	R2, R0, 8
-BNE	R3, R2, L__settings_write_one_coord215
+L__settings_write_one_coord205:
+L_settings_write_one_coord51:
+;Globals.c,449 :: 		if(!read_ram_loaded_indicator()){
+JAL	_read_ram_loaded_indicator+0
+NOP	
+BEQ	R2, R0, L__settings_write_one_coord206
 NOP	
 J	L_settings_write_one_coord63
 NOP	
-L__settings_write_one_coord215:
-SEH	R3, R25
-ORI	R2, R0, 9
-BNE	R3, R2, L__settings_write_one_coord217
-NOP	
-J	L_settings_write_one_coord64
-NOP	
-L__settings_write_one_coord217:
-SEH	R3, R25
-ORI	R2, R0, 10
-BNE	R3, R2, L__settings_write_one_coord219
-NOP	
-J	L_settings_write_one_coord65
-NOP	
-L__settings_write_one_coord219:
-SEH	R3, R25
-ORI	R2, R0, 11
-BNE	R3, R2, L__settings_write_one_coord221
-NOP	
-J	L_settings_write_one_coord66
-NOP	
-L__settings_write_one_coord221:
-SEH	R3, R25
-ORI	R2, R0, 12
-BNE	R3, R2, L__settings_write_one_coord223
-NOP	
-J	L_settings_write_one_coord67
-NOP	
-L__settings_write_one_coord223:
-SEH	R3, R25
-ORI	R2, R0, 13
-BNE	R3, R2, L__settings_write_one_coord225
-NOP	
-J	L_settings_write_one_coord68
-NOP	
-L__settings_write_one_coord225:
-SEH	R3, R25
-ORI	R2, R0, 14
-BNE	R3, R2, L__settings_write_one_coord227
-NOP	
-J	L_settings_write_one_coord69
-NOP	
-L__settings_write_one_coord227:
-SEH	R3, R25
-ORI	R2, R0, 15
-BNE	R3, R2, L__settings_write_one_coord229
-NOP	
-J	L_settings_write_one_coord70
-NOP	
-L__settings_write_one_coord229:
-L_settings_write_one_coord55:
-;Globals.c,455 :: 		if(!read_ram_loaded_indicator()){
-JAL	_read_ram_loaded_indicator+0
-NOP	
-BEQ	R2, R0, L__settings_write_one_coord230
-NOP	
-J	L_settings_write_one_coord71
-NOP	
-L__settings_write_one_coord230:
-;Globals.c,457 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
+L__settings_write_one_coord206:
+;Globals.c,451 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
 SH	R25, 4(SP)
 LW	R25, Offset(Globals_add+0)(GP)
 JAL	_read_row_from_flash+0
@@ -1412,7 +1300,7 @@ SEH	R25, R2
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
 LH	R25, 4(SP)
-;Globals.c,461 :: 		error = (int)NVMErasePage(&add);
+;Globals.c,455 :: 		error = (int)NVMErasePage(&add);
 SW	R26, 4(SP)
 SH	R25, 8(SP)
 LUI	R25, hi_addr(Globals_add+0)
@@ -1422,29 +1310,29 @@ NOP
 LH	R25, 8(SP)
 LW	R26, 4(SP)
 SH	R2, Offset(_error+0)(GP)
-;Globals.c,462 :: 		}
-L_settings_write_one_coord71:
-;Globals.c,466 :: 		if(error){
+;Globals.c,456 :: 		}
+L_settings_write_one_coord63:
+;Globals.c,460 :: 		if(error){
 LHU	R2, Offset(_error+0)(GP)
-BNE	R2, R0, L__settings_write_one_coord232
+BNE	R2, R0, L__settings_write_one_coord208
 NOP	
-J	L_settings_write_one_coord72
+J	L_settings_write_one_coord64
 NOP	
-L__settings_write_one_coord232:
-;Globals.c,471 :: 		return error;
+L__settings_write_one_coord208:
+;Globals.c,465 :: 		return error;
 LHU	R2, Offset(_error+0)(GP)
 J	L_end_settings_write_one_coord
 NOP	
-;Globals.c,472 :: 		}
-L_settings_write_one_coord72:
-;Globals.c,476 :: 		if(!error)
+;Globals.c,466 :: 		}
+L_settings_write_one_coord64:
+;Globals.c,470 :: 		if(!error)
 LHU	R2, Offset(_error+0)(GP)
-BEQ	R2, R0, L__settings_write_one_coord233
+BEQ	R2, R0, L__settings_write_one_coord209
 NOP	
-J	L_settings_write_one_coord73
+J	L_settings_write_one_coord65
 NOP	
-L__settings_write_one_coord233:
-;Globals.c,477 :: 		set_ram_loaded_indicator(NVMWriteQuad (&add, temp));
+L__settings_write_one_coord209:
+;Globals.c,471 :: 		set_ram_loaded_indicator(NVMWriteQuad (&add, temp));
 ADDIU	R2, SP, 32
 SW	R26, 4(SP)
 SH	R25, 8(SP)
@@ -1460,10 +1348,10 @@ ANDI	R25, R2, 65535
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
 LH	R25, 4(SP)
-L_settings_write_one_coord73:
-;Globals.c,479 :: 		return error;
+L_settings_write_one_coord65:
+;Globals.c,473 :: 		return error;
 LHU	R2, Offset(_error+0)(GP)
-;Globals.c,480 :: 		}
+;Globals.c,474 :: 		}
 L_end_settings_write_one_coord:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 52
@@ -1471,56 +1359,56 @@ JR	RA
 NOP	
 ; end of _settings_write_one_coord
 _settings_read_startup_line:
-;Globals.c,485 :: 		int settings_read_startup_line(int n, char *line){
+;Globals.c,479 :: 		int settings_read_startup_line(int n, char *line){
 ADDIU	SP, SP, -20
 SW	RA, 0(SP)
-;Globals.c,488 :: 		switch(n){
+;Globals.c,482 :: 		switch(n){
 SW	R25, 4(SP)
 SW	R26, 8(SP)
 SW	R27, 12(SP)
-J	L_settings_read_startup_line74
+J	L_settings_read_startup_line66
 NOP	
-;Globals.c,489 :: 		case 0: char_add = (char*)FLASH_Settings_VAddr_SLine1;break;
-L_settings_read_startup_line76:
+;Globals.c,483 :: 		case 0: char_add = (char*)FLASH_Settings_VAddr_SLine1;break;
+L_settings_read_startup_line68:
 LUI	R2, 48411
 ORI	R2, R2, 50688
 SW	R2, 16(SP)
-J	L_settings_read_startup_line75
+J	L_settings_read_startup_line67
 NOP	
-;Globals.c,490 :: 		case 1: char_add = (char*)FLASH_Settings_VAddr_SLine2;break;
-L_settings_read_startup_line77:
+;Globals.c,484 :: 		case 1: char_add = (char*)FLASH_Settings_VAddr_SLine2;break;
+L_settings_read_startup_line69:
 LUI	R2, 48411
 ORI	R2, R2, 50752
 SW	R2, 16(SP)
-J	L_settings_read_startup_line75
+J	L_settings_read_startup_line67
 NOP	
-;Globals.c,491 :: 		}
-L_settings_read_startup_line74:
+;Globals.c,485 :: 		}
+L_settings_read_startup_line66:
 SEH	R2, R25
-BNE	R2, R0, L__settings_read_startup_line236
+BNE	R2, R0, L__settings_read_startup_line212
 NOP	
-J	L_settings_read_startup_line76
+J	L_settings_read_startup_line68
 NOP	
-L__settings_read_startup_line236:
+L__settings_read_startup_line212:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L__settings_read_startup_line238
+BNE	R3, R2, L__settings_read_startup_line214
 NOP	
-J	L_settings_read_startup_line77
+J	L_settings_read_startup_line69
 NOP	
-L__settings_read_startup_line238:
-L_settings_read_startup_line75:
-;Globals.c,493 :: 		memcpy(line,char_add,64);
+L__settings_read_startup_line214:
+L_settings_read_startup_line67:
+;Globals.c,487 :: 		memcpy(line,char_add,64);
 ORI	R27, R0, 64
 MOVZ	R25, R26, R0
 LW	R26, 16(SP)
 JAL	_memcpy+0
 NOP	
-;Globals.c,501 :: 		return STATUS_OK;
+;Globals.c,495 :: 		return STATUS_OK;
 MOVZ	R2, R0, R0
-;Globals.c,502 :: 		}
-;Globals.c,501 :: 		return STATUS_OK;
-;Globals.c,502 :: 		}
+;Globals.c,496 :: 		}
+;Globals.c,495 :: 		return STATUS_OK;
+;Globals.c,496 :: 		}
 L_end_settings_read_startup_line:
 LW	R27, 12(SP)
 LW	R26, 8(SP)
@@ -1531,10 +1419,10 @@ JR	RA
 NOP	
 ; end of _settings_read_startup_line
 _settings_store_startup_line:
-;Globals.c,506 :: 		int settings_store_startup_line(int n, char *line){
+;Globals.c,500 :: 		int settings_store_startup_line(int n, char *line){
 ADDIU	SP, SP, -24
 SW	RA, 0(SP)
-;Globals.c,511 :: 		str_len = strlen(line);
+;Globals.c,505 :: 		str_len = strlen(line);
 SW	R25, 4(SP)
 SW	R27, 8(SP)
 SH	R25, 12(SP)
@@ -1544,50 +1432,50 @@ NOP
 LH	R25, 12(SP)
 ; str_len start address is: 16 (R4)
 SEH	R4, R2
-;Globals.c,520 :: 		add  = (unsigned long)FLASH_Settings_VAddr_P1; //C0000
+;Globals.c,514 :: 		add  = (unsigned long)FLASH_Settings_VAddr_P1; //C0000
 LUI	R2, 48411
 ORI	R2, R2, 49152
 SW	R2, Offset(Globals_add+0)(GP)
-;Globals.c,523 :: 		switch(n){
-J	L_settings_store_startup_line78
+;Globals.c,517 :: 		switch(n){
+J	L_settings_store_startup_line70
 NOP	
-;Globals.c,524 :: 		case 0: start_offset = (unsigned long)Line0_Offset;break; //180
-L_settings_store_startup_line80:
+;Globals.c,518 :: 		case 0: start_offset = (unsigned long)Line0_Offset;break; //180
+L_settings_store_startup_line72:
 ORI	R2, R0, 384
 SW	R2, 20(SP)
-J	L_settings_store_startup_line79
+J	L_settings_store_startup_line71
 NOP	
-;Globals.c,525 :: 		case 1: start_offset = (unsigned long)Line1_Offset;break;
-L_settings_store_startup_line81:
+;Globals.c,519 :: 		case 1: start_offset = (unsigned long)Line1_Offset;break;
+L_settings_store_startup_line73:
 ORI	R2, R0, 400
 SW	R2, 20(SP)
-J	L_settings_store_startup_line79
+J	L_settings_store_startup_line71
 NOP	
-;Globals.c,526 :: 		}
-L_settings_store_startup_line78:
+;Globals.c,520 :: 		}
+L_settings_store_startup_line70:
 SEH	R2, R25
-BNE	R2, R0, L__settings_store_startup_line241
+BNE	R2, R0, L__settings_store_startup_line217
 NOP	
-J	L_settings_store_startup_line80
+J	L_settings_store_startup_line72
 NOP	
-L__settings_store_startup_line241:
+L__settings_store_startup_line217:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L__settings_store_startup_line243
+BNE	R3, R2, L__settings_store_startup_line219
 NOP	
-J	L_settings_store_startup_line81
+J	L_settings_store_startup_line73
 NOP	
-L__settings_store_startup_line243:
-L_settings_store_startup_line79:
-;Globals.c,528 :: 		if(!read_ram_loaded_indicator()){
+L__settings_store_startup_line219:
+L_settings_store_startup_line71:
+;Globals.c,522 :: 		if(!read_ram_loaded_indicator()){
 JAL	_read_ram_loaded_indicator+0
 NOP	
-BEQ	R2, R0, L__settings_store_startup_line244
+BEQ	R2, R0, L__settings_store_startup_line220
 NOP	
-J	L_settings_store_startup_line82
+J	L_settings_store_startup_line74
 NOP	
-L__settings_store_startup_line244:
-;Globals.c,530 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
+L__settings_store_startup_line220:
+;Globals.c,524 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
 SH	R4, 12(SP)
 LW	R25, Offset(Globals_add+0)(GP)
 JAL	_read_row_from_flash+0
@@ -1596,7 +1484,7 @@ LH	R4, 12(SP)
 SEH	R25, R2
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
-;Globals.c,534 :: 		error = (int)NVMErasePage(&add);
+;Globals.c,528 :: 		error = (int)NVMErasePage(&add);
 SH	R4, 12(SP)
 SW	R26, 16(SP)
 LUI	R25, hi_addr(Globals_add+0)
@@ -1606,54 +1494,54 @@ NOP
 LW	R26, 16(SP)
 LH	R4, 12(SP)
 SH	R2, Offset(_error+0)(GP)
-;Globals.c,535 :: 		}
-L_settings_store_startup_line82:
-;Globals.c,539 :: 		if(error){
+;Globals.c,529 :: 		}
+L_settings_store_startup_line74:
+;Globals.c,533 :: 		if(error){
 LHU	R2, Offset(_error+0)(GP)
-BNE	R2, R0, L__settings_store_startup_line246
+BNE	R2, R0, L__settings_store_startup_line222
 NOP	
-J	L_settings_store_startup_line83
+J	L_settings_store_startup_line75
 NOP	
-L__settings_store_startup_line246:
+L__settings_store_startup_line222:
 ; str_len end address is: 16 (R4)
-;Globals.c,544 :: 		return error;
+;Globals.c,538 :: 		return error;
 LHU	R2, Offset(_error+0)(GP)
 J	L_end_settings_store_startup_line
 NOP	
-;Globals.c,545 :: 		}
-L_settings_store_startup_line83:
-;Globals.c,548 :: 		for(i=start_offset;i<start_offset+16;i++)
+;Globals.c,539 :: 		}
+L_settings_store_startup_line75:
+;Globals.c,542 :: 		for(i=start_offset;i<start_offset+16;i++)
 ; str_len start address is: 16 (R4)
 LW	R2, 20(SP)
 SW	R2, Offset(_i+0)(GP)
 ; str_len end address is: 16 (R4)
-L_settings_store_startup_line84:
+L_settings_store_startup_line76:
 ; str_len start address is: 16 (R4)
 LW	R2, 20(SP)
 ADDIU	R3, R2, 16
 LW	R2, Offset(_i+0)(GP)
 SLTU	R2, R2, R3
-BNE	R2, R0, L__settings_store_startup_line247
+BNE	R2, R0, L__settings_store_startup_line223
 NOP	
-J	L_settings_store_startup_line85
+J	L_settings_store_startup_line77
 NOP	
-L__settings_store_startup_line247:
-;Globals.c,549 :: 		buffA[i] = 0;
+L__settings_store_startup_line223:
+;Globals.c,543 :: 		buffA[i] = 0;
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 2
 LUI	R2, 40960
 ORI	R2, R2, 0
 ADDU	R2, R2, R3
 SW	R0, 0(R2)
-;Globals.c,548 :: 		for(i=start_offset;i<start_offset+16;i++)
+;Globals.c,542 :: 		for(i=start_offset;i<start_offset+16;i++)
 LW	R2, Offset(_i+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_i+0)(GP)
-;Globals.c,549 :: 		buffA[i] = 0;
-J	L_settings_store_startup_line84
+;Globals.c,543 :: 		buffA[i] = 0;
+J	L_settings_store_startup_line76
 NOP	
-L_settings_store_startup_line85:
-;Globals.c,553 :: 		memcpy(buffA+start_offset,line,str_len);
+L_settings_store_startup_line77:
+;Globals.c,547 :: 		memcpy(buffA+start_offset,line,str_len);
 LW	R2, 20(SP)
 SLL	R3, R2, 2
 LUI	R2, 40960
@@ -1666,7 +1554,7 @@ MOVZ	R25, R2, R0
 JAL	_memcpy+0
 NOP	
 LH	R25, 12(SP)
-;Globals.c,565 :: 		set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
+;Globals.c,559 :: 		set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
 SW	R26, 12(SP)
 SH	R25, 16(SP)
 LUI	R26, 40960
@@ -1682,11 +1570,11 @@ SEH	R25, R2
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
 LH	R25, 12(SP)
-;Globals.c,567 :: 		return error;
+;Globals.c,561 :: 		return error;
 LHU	R2, Offset(_error+0)(GP)
-;Globals.c,568 :: 		}
-;Globals.c,567 :: 		return error;
-;Globals.c,568 :: 		}
+;Globals.c,562 :: 		}
+;Globals.c,561 :: 		return error;
+;Globals.c,562 :: 		}
 L_end_settings_store_startup_line:
 LW	R27, 8(SP)
 LW	R25, 4(SP)
@@ -1696,25 +1584,25 @@ JR	RA
 NOP	
 ; end of _settings_store_startup_line
 _settings_store_global_setting:
-;Globals.c,573 :: 		int settings_store_global_setting(int parameter, float value) {
+;Globals.c,567 :: 		int settings_store_global_setting(int parameter, float value) {
 ADDIU	SP, SP, -24
 SW	RA, 0(SP)
-;Globals.c,574 :: 		int val_temp = 0;
+;Globals.c,568 :: 		int val_temp = 0;
 SW	R25, 4(SP)
 SW	R26, 8(SP)
-;Globals.c,576 :: 		add = (unsigned long)FLASH_Settings_VAddr_P1;
+;Globals.c,570 :: 		add = (unsigned long)FLASH_Settings_VAddr_P1;
 LUI	R2, 48411
 ORI	R2, R2, 49152
 SW	R2, Offset(Globals_add+0)(GP)
-;Globals.c,578 :: 		if(!read_ram_loaded_indicator()){
+;Globals.c,572 :: 		if(!read_ram_loaded_indicator()){
 JAL	_read_ram_loaded_indicator+0
 NOP	
-BEQ	R2, R0, L__settings_store_global_setting249
+BEQ	R2, R0, L__settings_store_global_setting225
 NOP	
-J	L_settings_store_global_setting87
+J	L_settings_store_global_setting79
 NOP	
-L__settings_store_global_setting249:
-;Globals.c,580 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
+L__settings_store_global_setting225:
+;Globals.c,574 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
 SH	R25, 12(SP)
 LW	R25, Offset(Globals_add+0)(GP)
 JAL	_read_row_from_flash+0
@@ -1722,7 +1610,7 @@ NOP
 SEH	R25, R2
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
-;Globals.c,584 :: 		error = (int)NVMErasePage(&add);
+;Globals.c,578 :: 		error = (int)NVMErasePage(&add);
 SWC1	S12, 16(SP)
 LUI	R25, hi_addr(Globals_add+0)
 ORI	R25, R25, lo_addr(Globals_add+0)
@@ -1731,49 +1619,49 @@ NOP
 LWC1	S12, 16(SP)
 LH	R25, 12(SP)
 SH	R2, Offset(_error+0)(GP)
-;Globals.c,585 :: 		}
-L_settings_store_global_setting87:
-;Globals.c,589 :: 		if(error){
+;Globals.c,579 :: 		}
+L_settings_store_global_setting79:
+;Globals.c,583 :: 		if(error){
 LHU	R2, Offset(_error+0)(GP)
-BNE	R2, R0, L__settings_store_global_setting251
+BNE	R2, R0, L__settings_store_global_setting227
 NOP	
-J	L_settings_store_global_setting88
+J	L_settings_store_global_setting80
 NOP	
-L__settings_store_global_setting251:
-;Globals.c,594 :: 		return error;
+L__settings_store_global_setting227:
+;Globals.c,588 :: 		return error;
 LHU	R2, Offset(_error+0)(GP)
 J	L_end_settings_store_global_setting
 NOP	
-;Globals.c,595 :: 		}
-L_settings_store_global_setting88:
-;Globals.c,605 :: 		switch(parameter) {
-J	L_settings_store_global_setting89
+;Globals.c,589 :: 		}
+L_settings_store_global_setting80:
+;Globals.c,599 :: 		switch(parameter) {
+J	L_settings_store_global_setting81
 NOP	
-;Globals.c,606 :: 		case 0: case 1: case 2: //| X | Y | Z | ? | ? | ? |
-L_settings_store_global_setting91:
-L_settings_store_global_setting92:
-L_settings_store_global_setting93:
-;Globals.c,607 :: 		if (value <= 0.0) { return(STATUS_SETTING_VALUE_NEG); }
+;Globals.c,600 :: 		case 0: case 1: case 2: //| X | Y | Z | ? | ? | ? |
+L_settings_store_global_setting83:
+L_settings_store_global_setting84:
+L_settings_store_global_setting85:
+;Globals.c,601 :: 		if (value <= 0.0) { return(STATUS_SETTING_VALUE_NEG); }
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 C.LT.S 	0, S0, S12
-BC1F	0, L__settings_store_global_setting252
+BC1F	0, L__settings_store_global_setting228
 NOP	
-J	L_settings_store_global_setting94
+J	L_settings_store_global_setting86
 NOP	
-L__settings_store_global_setting252:
+L__settings_store_global_setting228:
 ORI	R2, R0, 8
 J	L_end_settings_store_global_setting
 NOP	
-L_settings_store_global_setting94:
-;Globals.c,609 :: 		settings.steps_per_mm[parameter] = value;
+L_settings_store_global_setting86:
+;Globals.c,603 :: 		settings.steps_per_mm[parameter] = value;
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_settings+0)
 ORI	R2, R2, lo_addr(_settings+0)
 ADDU	R2, R2, R3
 SWC1	S12, 0(R2)
-;Globals.c,611 :: 		buffA[SPMMX_OFFSET+parameter] = flt2ulong(value);
+;Globals.c,605 :: 		buffA[SPMMX_OFFSET+parameter] = flt2ulong(value);
 ADDIU	R2, R25, 64
 SEH	R2, R2
 SLL	R3, R2, 2
@@ -1785,90 +1673,90 @@ JAL	_flt2ulong+0
 NOP	
 LW	R3, 20(SP)
 SW	R2, 0(R3)
-;Globals.c,622 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,616 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,623 :: 		case 3:
-L_settings_store_global_setting95:
-;Globals.c,624 :: 		if (value < 3) { return(STATUS_SETTING_STEP_PULSE_MIN); }
+;Globals.c,617 :: 		case 3:
+L_settings_store_global_setting87:
+;Globals.c,618 :: 		if (value < 3) { return(STATUS_SETTING_STEP_PULSE_MIN); }
 LUI	R2, 16448
 ORI	R2, R2, 0
 MTC1	R2, S0
 C.LE.S 	0, S0, S12
-BC1F	0, L__settings_store_global_setting253
+BC1F	0, L__settings_store_global_setting229
 NOP	
-J	L_settings_store_global_setting96
+J	L_settings_store_global_setting88
 NOP	
-L__settings_store_global_setting253:
+L__settings_store_global_setting229:
 ORI	R2, R0, 9
 J	L_end_settings_store_global_setting
 NOP	
-L_settings_store_global_setting96:
-;Globals.c,625 :: 		val_temp = round(value);
+L_settings_store_global_setting88:
+;Globals.c,619 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,626 :: 		settings.p_usec = val_temp;
+;Globals.c,620 :: 		settings.p_usec = val_temp;
 SH	R2, Offset(_settings+60)(GP)
-;Globals.c,628 :: 		buffA[P_USEC_OFFSET] = (unsigned long)val_temp;
+;Globals.c,622 :: 		buffA[P_USEC_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612456)(GP)
-;Globals.c,629 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,623 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,630 :: 		case 4: settings.default_feed_rate = value;
-L_settings_store_global_setting97:
+;Globals.c,624 :: 		case 4: settings.default_feed_rate = value;
+L_settings_store_global_setting89:
 SWC1	S12, Offset(_settings+16)(GP)
-;Globals.c,631 :: 		buffA[D_FEED_RATE_OFFSET] = flt2ulong(value);
+;Globals.c,625 :: 		buffA[D_FEED_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612452)(GP)
-;Globals.c,632 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,626 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,633 :: 		case 5: settings.default_seek_rate = value;
-L_settings_store_global_setting98:
+;Globals.c,627 :: 		case 5: settings.default_seek_rate = value;
+L_settings_store_global_setting90:
 SWC1	S12, Offset(_settings+20)(GP)
-;Globals.c,634 :: 		buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
+;Globals.c,628 :: 		buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612448)(GP)
-;Globals.c,635 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,629 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,636 :: 		case 6:
-L_settings_store_global_setting99:
-;Globals.c,637 :: 		settings.invert_mask = floor(value);
+;Globals.c,630 :: 		case 6:
+L_settings_store_global_setting91:
+;Globals.c,631 :: 		settings.invert_mask = floor(value);
 JAL	_floor+0
 NOP	
 CVT36.S 	S0, S0
 MFC1	R2, S0
 SH	R2, Offset(_settings+66)(GP)
-;Globals.c,638 :: 		buffA[INVERT_MASK_OFFSET] = flt2ulong(floor(value));
+;Globals.c,632 :: 		buffA[INVERT_MASK_OFFSET] = flt2ulong(floor(value));
 JAL	_floor+0
 NOP	
 MOV.S 	S12, S0
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612384)(GP)
-;Globals.c,639 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,633 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,640 :: 		case 7:
-L_settings_store_global_setting100:
-;Globals.c,641 :: 		val_temp = round(value);
+;Globals.c,634 :: 		case 7:
+L_settings_store_global_setting92:
+;Globals.c,635 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,642 :: 		settings.stepper_idle_lock_time = val_temp;
+;Globals.c,636 :: 		settings.stepper_idle_lock_time = val_temp;
 SH	R2, Offset(_settings+56)(GP)
-;Globals.c,643 :: 		buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)val_temp;
+;Globals.c,637 :: 		buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612404)(GP)
-;Globals.c,644 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,638 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,645 :: 		case 8: // Convert to mm/min^2 for grbl internal use.
-L_settings_store_global_setting101:
-;Globals.c,646 :: 		settings.acceleration = value*60.0*60.0;
+;Globals.c,639 :: 		case 8: // Convert to mm/min^2 for grbl internal use.
+L_settings_store_global_setting93:
+;Globals.c,640 :: 		settings.acceleration = value*60.0*60.0;
 LUI	R2, 17008
 ORI	R2, R2, 0
 MTC1	R2, S0
@@ -1878,347 +1766,347 @@ ORI	R2, R2, 0
 MTC1	R2, S0
 MUL.S 	S0, S1, S0
 SWC1	S0, Offset(_settings+40)(GP)
-;Globals.c,647 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(value);
+;Globals.c,641 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612428)(GP)
-;Globals.c,648 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,642 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,649 :: 		case 9: settings.junction_deviation = fabs(value);
-L_settings_store_global_setting102:
+;Globals.c,643 :: 		case 9: settings.junction_deviation = fabs(value);
+L_settings_store_global_setting94:
 JAL	_fabs+0
 NOP	
 SWC1	S0, Offset(_settings+44)(GP)
-;Globals.c,650 :: 		buffA[JUNCTION_DEV_OFFSET] = flt2ulong(fabs(value));
+;Globals.c,644 :: 		buffA[JUNCTION_DEV_OFFSET] = flt2ulong(fabs(value));
 JAL	_fabs+0
 NOP	
 MOV.S 	S12, S0
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612424)(GP)
-;Globals.c,651 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,645 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,652 :: 		case 10:
-L_settings_store_global_setting103:
-;Globals.c,653 :: 		val_temp = round(value);
+;Globals.c,646 :: 		case 10:
+L_settings_store_global_setting95:
+;Globals.c,647 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,654 :: 		settings.mm_per_arc_segment = val_temp;
+;Globals.c,648 :: 		settings.mm_per_arc_segment = val_temp;
 SEH	R3, R2
 MTC1	R3, S0
 CVT32.W 	S0, S0
 SWC1	S0, Offset(_settings+36)(GP)
-;Globals.c,655 :: 		buffA[MM_ARC_SEG_OFFSET] = (unsigned long)val_temp;
+;Globals.c,649 :: 		buffA[MM_ARC_SEG_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612432)(GP)
-;Globals.c,656 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,650 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,657 :: 		case 11:
-L_settings_store_global_setting104:
-;Globals.c,658 :: 		val_temp = round(value);
+;Globals.c,651 :: 		case 11:
+L_settings_store_global_setting96:
+;Globals.c,652 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,659 :: 		settings.n_arc_correction = val_temp;
+;Globals.c,653 :: 		settings.n_arc_correction = val_temp;
 SH	R2, Offset(_settings+48)(GP)
-;Globals.c,660 :: 		buffA[N_ARC_CORREC_OFFSET] = (int)val_temp;
+;Globals.c,654 :: 		buffA[N_ARC_CORREC_OFFSET] = (int)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612420)(GP)
-;Globals.c,661 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,655 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,662 :: 		case 12:
-L_settings_store_global_setting105:
-;Globals.c,663 :: 		val_temp = round(value);
+;Globals.c,656 :: 		case 12:
+L_settings_store_global_setting97:
+;Globals.c,657 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,664 :: 		settings.decimal_places = val_temp;
+;Globals.c,658 :: 		settings.decimal_places = val_temp;
 SH	R2, Offset(_settings+62)(GP)
-;Globals.c,665 :: 		buffA[DEC_PLACES_OFFSET] = (unsigned long)val_temp;
+;Globals.c,659 :: 		buffA[DEC_PLACES_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612392)(GP)
-;Globals.c,666 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,660 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,667 :: 		case 13:
-L_settings_store_global_setting106:
-;Globals.c,668 :: 		if (round(value)){
+;Globals.c,661 :: 		case 13:
+L_settings_store_global_setting98:
+;Globals.c,662 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting255
+BNE	R2, R0, L__settings_store_global_setting231
 NOP	
-J	L_settings_store_global_setting107
+J	L_settings_store_global_setting99
 NOP	
-L__settings_store_global_setting255:
-;Globals.c,669 :: 		settings.flags |= BITFLAG_REPORT_INCHES;
+L__settings_store_global_setting231:
+;Globals.c,663 :: 		settings.flags |= BITFLAG_REPORT_INCHES;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 1
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,670 :: 		}else{
-J	L_settings_store_global_setting108
+;Globals.c,664 :: 		}else{
+J	L_settings_store_global_setting100
 NOP	
-L_settings_store_global_setting107:
-;Globals.c,671 :: 		settings.flags &= ~BITFLAG_REPORT_INCHES;
+L_settings_store_global_setting99:
+;Globals.c,665 :: 		settings.flags &= ~BITFLAG_REPORT_INCHES;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65534
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,672 :: 		}
-L_settings_store_global_setting108:
-;Globals.c,673 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
+;Globals.c,666 :: 		}
+L_settings_store_global_setting100:
+;Globals.c,667 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
 LHU	R3, Offset(_settings+50)(GP)
 LW	R2, Offset(-1610612416)(GP)
 OR	R2, R2, R3
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,674 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,668 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,675 :: 		case 14: // Reset to ensure change. Immediate re-init may cause problems.
-L_settings_store_global_setting109:
-;Globals.c,676 :: 		if (round(value)){
+;Globals.c,669 :: 		case 14: // Reset to ensure change. Immediate re-init may cause problems.
+L_settings_store_global_setting101:
+;Globals.c,670 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting257
+BNE	R2, R0, L__settings_store_global_setting233
 NOP	
-J	L_settings_store_global_setting110
+J	L_settings_store_global_setting102
 NOP	
-L__settings_store_global_setting257:
-;Globals.c,677 :: 		settings.flags |= BITFLAG_AUTO_START;
+L__settings_store_global_setting233:
+;Globals.c,671 :: 		settings.flags |= BITFLAG_AUTO_START;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,678 :: 		}else{
-J	L_settings_store_global_setting111
+;Globals.c,672 :: 		}else{
+J	L_settings_store_global_setting103
 NOP	
-L_settings_store_global_setting110:
-;Globals.c,679 :: 		settings.flags &= ~BITFLAG_AUTO_START;
+L_settings_store_global_setting102:
+;Globals.c,673 :: 		settings.flags &= ~BITFLAG_AUTO_START;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65533
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,680 :: 		}
-L_settings_store_global_setting111:
-;Globals.c,681 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
+;Globals.c,674 :: 		}
+L_settings_store_global_setting103:
+;Globals.c,675 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
 LHU	R3, Offset(_settings+50)(GP)
 LW	R2, Offset(-1610612416)(GP)
 OR	R2, R2, R3
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,682 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,676 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,683 :: 		case 15: // Reset to ensure change. Immediate re-init may cause problems.
-L_settings_store_global_setting112:
-;Globals.c,684 :: 		if (round(value)){
+;Globals.c,677 :: 		case 15: // Reset to ensure change. Immediate re-init may cause problems.
+L_settings_store_global_setting104:
+;Globals.c,678 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting259
+BNE	R2, R0, L__settings_store_global_setting235
 NOP	
-J	L_settings_store_global_setting113
+J	L_settings_store_global_setting105
 NOP	
-L__settings_store_global_setting259:
-;Globals.c,685 :: 		settings.flags |= BITFLAG_INVERT_ST_ENABLE;
+L__settings_store_global_setting235:
+;Globals.c,679 :: 		settings.flags |= BITFLAG_INVERT_ST_ENABLE;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 4
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,686 :: 		}else{
-J	L_settings_store_global_setting114
+;Globals.c,680 :: 		}else{
+J	L_settings_store_global_setting106
 NOP	
-L_settings_store_global_setting113:
-;Globals.c,687 :: 		settings.flags &= ~BITFLAG_INVERT_ST_ENABLE;
+L_settings_store_global_setting105:
+;Globals.c,681 :: 		settings.flags &= ~BITFLAG_INVERT_ST_ENABLE;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65531
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,688 :: 		}
-L_settings_store_global_setting114:
-;Globals.c,689 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
+;Globals.c,682 :: 		}
+L_settings_store_global_setting106:
+;Globals.c,683 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
 LHU	R3, Offset(_settings+50)(GP)
 LW	R2, Offset(-1610612416)(GP)
 OR	R2, R2, R3
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,690 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,684 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,691 :: 		case 16:
-L_settings_store_global_setting115:
-;Globals.c,692 :: 		if (round(value)){
+;Globals.c,685 :: 		case 16:
+L_settings_store_global_setting107:
+;Globals.c,686 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting261
+BNE	R2, R0, L__settings_store_global_setting237
 NOP	
-J	L_settings_store_global_setting116
+J	L_settings_store_global_setting108
 NOP	
-L__settings_store_global_setting261:
-;Globals.c,693 :: 		settings.flags |= BITFLAG_HARD_LIMIT_ENABLE;
+L__settings_store_global_setting237:
+;Globals.c,687 :: 		settings.flags |= BITFLAG_HARD_LIMIT_ENABLE;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 8
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,694 :: 		}else{
-J	L_settings_store_global_setting117
+;Globals.c,688 :: 		}else{
+J	L_settings_store_global_setting109
 NOP	
-L_settings_store_global_setting116:
-;Globals.c,695 :: 		settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
+L_settings_store_global_setting108:
+;Globals.c,689 :: 		settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65527
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,696 :: 		}
-L_settings_store_global_setting117:
-;Globals.c,697 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
+;Globals.c,690 :: 		}
+L_settings_store_global_setting109:
+;Globals.c,691 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
 LHU	R3, Offset(_settings+50)(GP)
 LW	R2, Offset(-1610612416)(GP)
 OR	R2, R2, R3
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,699 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,693 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,700 :: 		case 17:
-L_settings_store_global_setting118:
-;Globals.c,701 :: 		if (round(value)){
+;Globals.c,694 :: 		case 17:
+L_settings_store_global_setting110:
+;Globals.c,695 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting263
+BNE	R2, R0, L__settings_store_global_setting239
 NOP	
-J	L_settings_store_global_setting119
+J	L_settings_store_global_setting111
 NOP	
-L__settings_store_global_setting263:
-;Globals.c,702 :: 		settings.flags |= BITFLAG_HOMING_ENABLE;
+L__settings_store_global_setting239:
+;Globals.c,696 :: 		settings.flags |= BITFLAG_HOMING_ENABLE;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 16
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,703 :: 		}else{
-J	L_settings_store_global_setting120
+;Globals.c,697 :: 		}else{
+J	L_settings_store_global_setting112
 NOP	
-L_settings_store_global_setting119:
-;Globals.c,704 :: 		settings.flags &= ~BITFLAG_HOMING_ENABLE;
+L_settings_store_global_setting111:
+;Globals.c,698 :: 		settings.flags &= ~BITFLAG_HOMING_ENABLE;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65519
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,705 :: 		}
-L_settings_store_global_setting120:
-;Globals.c,706 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
+;Globals.c,699 :: 		}
+L_settings_store_global_setting112:
+;Globals.c,700 :: 		buffA[FLAGS_OFFSET] |= settings.flags;
 LHU	R3, Offset(_settings+50)(GP)
 LW	R2, Offset(-1610612416)(GP)
 OR	R2, R2, R3
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,707 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,701 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,708 :: 		case 18:
-L_settings_store_global_setting121:
-;Globals.c,709 :: 		val_temp = round(value);
+;Globals.c,702 :: 		case 18:
+L_settings_store_global_setting113:
+;Globals.c,703 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,710 :: 		settings.homing_dir_mask = val_temp;
+;Globals.c,704 :: 		settings.homing_dir_mask = val_temp;
 SH	R2, Offset(_settings+64)(GP)
-;Globals.c,711 :: 		buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)val_temp;
+;Globals.c,705 :: 		buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612388)(GP)
-;Globals.c,712 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,706 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,713 :: 		case 19: settings.homing_feed_rate = value;
-L_settings_store_global_setting122:
+;Globals.c,707 :: 		case 19: settings.homing_feed_rate = value;
+L_settings_store_global_setting114:
 SWC1	S12, Offset(_settings+24)(GP)
-;Globals.c,714 :: 		buffA[H_FEED_RATE_OFFSET] = flt2ulong(value);
+;Globals.c,708 :: 		buffA[H_FEED_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612444)(GP)
-;Globals.c,715 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,709 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,716 :: 		case 20: settings.homing_seek_rate = value;
-L_settings_store_global_setting123:
+;Globals.c,710 :: 		case 20: settings.homing_seek_rate = value;
+L_settings_store_global_setting115:
 SWC1	S12, Offset(_settings+28)(GP)
-;Globals.c,717 :: 		buffA[H_SEEK_RATE_OFFSET] = flt2ulong(value);
+;Globals.c,711 :: 		buffA[H_SEEK_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612440)(GP)
-;Globals.c,718 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,712 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,719 :: 		case 21:
-L_settings_store_global_setting124:
-;Globals.c,720 :: 		val_temp = round(value);
+;Globals.c,713 :: 		case 21:
+L_settings_store_global_setting116:
+;Globals.c,714 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,721 :: 		settings.homing_debounce_delay = val_temp;
+;Globals.c,715 :: 		settings.homing_debounce_delay = val_temp;
 SH	R2, Offset(_settings+54)(GP)
-;Globals.c,722 :: 		buffA[H_DEBNC_DLY_OFFSET] = (unsigned long)val_temp;
+;Globals.c,716 :: 		buffA[H_DEBNC_DLY_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612408)(GP)
-;Globals.c,723 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,717 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,724 :: 		case 22:
-L_settings_store_global_setting125:
-;Globals.c,725 :: 		val_temp = round(value);
+;Globals.c,718 :: 		case 22:
+L_settings_store_global_setting117:
+;Globals.c,719 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,726 :: 		settings.homing_pulloff = val_temp;
+;Globals.c,720 :: 		settings.homing_pulloff = val_temp;
 SEH	R3, R2
 MTC1	R3, S0
 CVT32.W 	S0, S0
 SWC1	S0, Offset(_settings+32)(GP)
-;Globals.c,727 :: 		buffA[H_PULL_OFF_OFFSET] = (unsigned long)val_temp;
+;Globals.c,721 :: 		buffA[H_PULL_OFF_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612436)(GP)
-;Globals.c,728 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,722 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,729 :: 		case 99://write buffC back to Row3
-L_settings_store_global_setting126:
-;Globals.c,730 :: 		val_temp = round(value);
+;Globals.c,723 :: 		case 99://write buffC back to Row3
+L_settings_store_global_setting118:
+;Globals.c,724 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,731 :: 		if(val_temp == 1){
+;Globals.c,725 :: 		if(val_temp == 1){
 SEH	R3, R2
 ORI	R2, R0, 1
-BEQ	R3, R2, L__settings_store_global_setting264
+BEQ	R3, R2, L__settings_store_global_setting240
 NOP	
-J	L_settings_store_global_setting127
+J	L_settings_store_global_setting119
 NOP	
-L__settings_store_global_setting264:
-;Globals.c,739 :: 		if(!read_ram_loaded_indicator()){
+L__settings_store_global_setting240:
+;Globals.c,733 :: 		if(!read_ram_loaded_indicator()){
 JAL	_read_ram_loaded_indicator+0
 NOP	
-BEQ	R2, R0, L__settings_store_global_setting265
+BEQ	R2, R0, L__settings_store_global_setting241
 NOP	
-J	L_settings_store_global_setting128
+J	L_settings_store_global_setting120
 NOP	
-L__settings_store_global_setting265:
-;Globals.c,742 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
+L__settings_store_global_setting241:
+;Globals.c,736 :: 		set_ram_loaded_indicator(read_row_from_flash(add));
 LW	R25, Offset(Globals_add+0)(GP)
 JAL	_read_row_from_flash+0
 NOP	
 SEH	R25, R2
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
-;Globals.c,746 :: 		error = (int)NVMErasePage(&add);
+;Globals.c,740 :: 		error = (int)NVMErasePage(&add);
 LUI	R25, hi_addr(Globals_add+0)
 ORI	R25, R25, lo_addr(Globals_add+0)
 JAL	_NVMErasePage+0
 NOP	
 SH	R2, Offset(_error+0)(GP)
-;Globals.c,747 :: 		}
-L_settings_store_global_setting128:
-;Globals.c,751 :: 		if(error){
+;Globals.c,741 :: 		}
+L_settings_store_global_setting120:
+;Globals.c,745 :: 		if(error){
 LHU	R2, Offset(_error+0)(GP)
-BNE	R2, R0, L__settings_store_global_setting267
+BNE	R2, R0, L__settings_store_global_setting243
 NOP	
-J	L_settings_store_global_setting129
+J	L_settings_store_global_setting121
 NOP	
-L__settings_store_global_setting267:
-;Globals.c,756 :: 		return error;
+L__settings_store_global_setting243:
+;Globals.c,750 :: 		return error;
 LHU	R2, Offset(_error+0)(GP)
 J	L_end_settings_store_global_setting
 NOP	
-;Globals.c,757 :: 		}
-L_settings_store_global_setting129:
-;Globals.c,764 :: 		set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
+;Globals.c,751 :: 		}
+L_settings_store_global_setting121:
+;Globals.c,758 :: 		set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
 LUI	R26, 40960
 ORI	R26, R26, 0
 LUI	R25, hi_addr(Globals_add+0)
@@ -2228,194 +2116,194 @@ NOP
 SEH	R25, R2
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
-;Globals.c,770 :: 		}
-L_settings_store_global_setting127:
-;Globals.c,771 :: 		break;
-J	L_settings_store_global_setting90
+;Globals.c,764 :: 		}
+L_settings_store_global_setting119:
+;Globals.c,765 :: 		break;
+J	L_settings_store_global_setting82
 NOP	
-;Globals.c,772 :: 		default:
-L_settings_store_global_setting130:
-;Globals.c,773 :: 		return(STATUS_INVALID_STATEMENT);
+;Globals.c,766 :: 		default:
+L_settings_store_global_setting122:
+;Globals.c,767 :: 		return(STATUS_INVALID_STATEMENT);
 ORI	R2, R0, 6
 J	L_end_settings_store_global_setting
 NOP	
-;Globals.c,774 :: 		}
-L_settings_store_global_setting89:
+;Globals.c,768 :: 		}
+L_settings_store_global_setting81:
 SEH	R2, R25
-BNE	R2, R0, L__settings_store_global_setting269
+BNE	R2, R0, L__settings_store_global_setting245
+NOP	
+J	L_settings_store_global_setting83
+NOP	
+L__settings_store_global_setting245:
+SEH	R3, R25
+ORI	R2, R0, 1
+BNE	R3, R2, L__settings_store_global_setting247
+NOP	
+J	L_settings_store_global_setting84
+NOP	
+L__settings_store_global_setting247:
+SEH	R3, R25
+ORI	R2, R0, 2
+BNE	R3, R2, L__settings_store_global_setting249
+NOP	
+J	L_settings_store_global_setting85
+NOP	
+L__settings_store_global_setting249:
+SEH	R3, R25
+ORI	R2, R0, 3
+BNE	R3, R2, L__settings_store_global_setting251
+NOP	
+J	L_settings_store_global_setting87
+NOP	
+L__settings_store_global_setting251:
+SEH	R3, R25
+ORI	R2, R0, 4
+BNE	R3, R2, L__settings_store_global_setting253
+NOP	
+J	L_settings_store_global_setting89
+NOP	
+L__settings_store_global_setting253:
+SEH	R3, R25
+ORI	R2, R0, 5
+BNE	R3, R2, L__settings_store_global_setting255
+NOP	
+J	L_settings_store_global_setting90
+NOP	
+L__settings_store_global_setting255:
+SEH	R3, R25
+ORI	R2, R0, 6
+BNE	R3, R2, L__settings_store_global_setting257
 NOP	
 J	L_settings_store_global_setting91
 NOP	
-L__settings_store_global_setting269:
+L__settings_store_global_setting257:
 SEH	R3, R25
-ORI	R2, R0, 1
-BNE	R3, R2, L__settings_store_global_setting271
+ORI	R2, R0, 7
+BNE	R3, R2, L__settings_store_global_setting259
 NOP	
 J	L_settings_store_global_setting92
 NOP	
-L__settings_store_global_setting271:
+L__settings_store_global_setting259:
 SEH	R3, R25
-ORI	R2, R0, 2
-BNE	R3, R2, L__settings_store_global_setting273
+ORI	R2, R0, 8
+BNE	R3, R2, L__settings_store_global_setting261
 NOP	
 J	L_settings_store_global_setting93
 NOP	
-L__settings_store_global_setting273:
+L__settings_store_global_setting261:
 SEH	R3, R25
-ORI	R2, R0, 3
-BNE	R3, R2, L__settings_store_global_setting275
+ORI	R2, R0, 9
+BNE	R3, R2, L__settings_store_global_setting263
+NOP	
+J	L_settings_store_global_setting94
+NOP	
+L__settings_store_global_setting263:
+SEH	R3, R25
+ORI	R2, R0, 10
+BNE	R3, R2, L__settings_store_global_setting265
 NOP	
 J	L_settings_store_global_setting95
 NOP	
-L__settings_store_global_setting275:
+L__settings_store_global_setting265:
 SEH	R3, R25
-ORI	R2, R0, 4
-BNE	R3, R2, L__settings_store_global_setting277
+ORI	R2, R0, 11
+BNE	R3, R2, L__settings_store_global_setting267
+NOP	
+J	L_settings_store_global_setting96
+NOP	
+L__settings_store_global_setting267:
+SEH	R3, R25
+ORI	R2, R0, 12
+BNE	R3, R2, L__settings_store_global_setting269
 NOP	
 J	L_settings_store_global_setting97
 NOP	
-L__settings_store_global_setting277:
+L__settings_store_global_setting269:
 SEH	R3, R25
-ORI	R2, R0, 5
-BNE	R3, R2, L__settings_store_global_setting279
+ORI	R2, R0, 13
+BNE	R3, R2, L__settings_store_global_setting271
 NOP	
 J	L_settings_store_global_setting98
 NOP	
-L__settings_store_global_setting279:
+L__settings_store_global_setting271:
 SEH	R3, R25
-ORI	R2, R0, 6
-BNE	R3, R2, L__settings_store_global_setting281
-NOP	
-J	L_settings_store_global_setting99
-NOP	
-L__settings_store_global_setting281:
-SEH	R3, R25
-ORI	R2, R0, 7
-BNE	R3, R2, L__settings_store_global_setting283
-NOP	
-J	L_settings_store_global_setting100
-NOP	
-L__settings_store_global_setting283:
-SEH	R3, R25
-ORI	R2, R0, 8
-BNE	R3, R2, L__settings_store_global_setting285
+ORI	R2, R0, 14
+BNE	R3, R2, L__settings_store_global_setting273
 NOP	
 J	L_settings_store_global_setting101
 NOP	
-L__settings_store_global_setting285:
+L__settings_store_global_setting273:
 SEH	R3, R25
-ORI	R2, R0, 9
-BNE	R3, R2, L__settings_store_global_setting287
-NOP	
-J	L_settings_store_global_setting102
-NOP	
-L__settings_store_global_setting287:
-SEH	R3, R25
-ORI	R2, R0, 10
-BNE	R3, R2, L__settings_store_global_setting289
-NOP	
-J	L_settings_store_global_setting103
-NOP	
-L__settings_store_global_setting289:
-SEH	R3, R25
-ORI	R2, R0, 11
-BNE	R3, R2, L__settings_store_global_setting291
+ORI	R2, R0, 15
+BNE	R3, R2, L__settings_store_global_setting275
 NOP	
 J	L_settings_store_global_setting104
 NOP	
-L__settings_store_global_setting291:
-SEH	R3, R25
-ORI	R2, R0, 12
-BNE	R3, R2, L__settings_store_global_setting293
-NOP	
-J	L_settings_store_global_setting105
-NOP	
-L__settings_store_global_setting293:
-SEH	R3, R25
-ORI	R2, R0, 13
-BNE	R3, R2, L__settings_store_global_setting295
-NOP	
-J	L_settings_store_global_setting106
-NOP	
-L__settings_store_global_setting295:
-SEH	R3, R25
-ORI	R2, R0, 14
-BNE	R3, R2, L__settings_store_global_setting297
-NOP	
-J	L_settings_store_global_setting109
-NOP	
-L__settings_store_global_setting297:
-SEH	R3, R25
-ORI	R2, R0, 15
-BNE	R3, R2, L__settings_store_global_setting299
-NOP	
-J	L_settings_store_global_setting112
-NOP	
-L__settings_store_global_setting299:
+L__settings_store_global_setting275:
 SEH	R3, R25
 ORI	R2, R0, 16
-BNE	R3, R2, L__settings_store_global_setting301
+BNE	R3, R2, L__settings_store_global_setting277
+NOP	
+J	L_settings_store_global_setting107
+NOP	
+L__settings_store_global_setting277:
+SEH	R3, R25
+ORI	R2, R0, 17
+BNE	R3, R2, L__settings_store_global_setting279
+NOP	
+J	L_settings_store_global_setting110
+NOP	
+L__settings_store_global_setting279:
+SEH	R3, R25
+ORI	R2, R0, 18
+BNE	R3, R2, L__settings_store_global_setting281
+NOP	
+J	L_settings_store_global_setting113
+NOP	
+L__settings_store_global_setting281:
+SEH	R3, R25
+ORI	R2, R0, 19
+BNE	R3, R2, L__settings_store_global_setting283
+NOP	
+J	L_settings_store_global_setting114
+NOP	
+L__settings_store_global_setting283:
+SEH	R3, R25
+ORI	R2, R0, 20
+BNE	R3, R2, L__settings_store_global_setting285
 NOP	
 J	L_settings_store_global_setting115
 NOP	
-L__settings_store_global_setting301:
+L__settings_store_global_setting285:
 SEH	R3, R25
-ORI	R2, R0, 17
-BNE	R3, R2, L__settings_store_global_setting303
+ORI	R2, R0, 21
+BNE	R3, R2, L__settings_store_global_setting287
+NOP	
+J	L_settings_store_global_setting116
+NOP	
+L__settings_store_global_setting287:
+SEH	R3, R25
+ORI	R2, R0, 22
+BNE	R3, R2, L__settings_store_global_setting289
+NOP	
+J	L_settings_store_global_setting117
+NOP	
+L__settings_store_global_setting289:
+SEH	R3, R25
+ORI	R2, R0, 99
+BNE	R3, R2, L__settings_store_global_setting291
 NOP	
 J	L_settings_store_global_setting118
 NOP	
-L__settings_store_global_setting303:
-SEH	R3, R25
-ORI	R2, R0, 18
-BNE	R3, R2, L__settings_store_global_setting305
-NOP	
-J	L_settings_store_global_setting121
-NOP	
-L__settings_store_global_setting305:
-SEH	R3, R25
-ORI	R2, R0, 19
-BNE	R3, R2, L__settings_store_global_setting307
-NOP	
+L__settings_store_global_setting291:
 J	L_settings_store_global_setting122
 NOP	
-L__settings_store_global_setting307:
-SEH	R3, R25
-ORI	R2, R0, 20
-BNE	R3, R2, L__settings_store_global_setting309
-NOP	
-J	L_settings_store_global_setting123
-NOP	
-L__settings_store_global_setting309:
-SEH	R3, R25
-ORI	R2, R0, 21
-BNE	R3, R2, L__settings_store_global_setting311
-NOP	
-J	L_settings_store_global_setting124
-NOP	
-L__settings_store_global_setting311:
-SEH	R3, R25
-ORI	R2, R0, 22
-BNE	R3, R2, L__settings_store_global_setting313
-NOP	
-J	L_settings_store_global_setting125
-NOP	
-L__settings_store_global_setting313:
-SEH	R3, R25
-ORI	R2, R0, 99
-BNE	R3, R2, L__settings_store_global_setting315
-NOP	
-J	L_settings_store_global_setting126
-NOP	
-L__settings_store_global_setting315:
-J	L_settings_store_global_setting130
-NOP	
-L_settings_store_global_setting90:
-;Globals.c,775 :: 		return(STATUS_OK);
+L_settings_store_global_setting82:
+;Globals.c,769 :: 		return(STATUS_OK);
 MOVZ	R2, R0, R0
-;Globals.c,776 :: 		}
-;Globals.c,775 :: 		return(STATUS_OK);
-;Globals.c,776 :: 		}
+;Globals.c,770 :: 		}
+;Globals.c,769 :: 		return(STATUS_OK);
+;Globals.c,770 :: 		}
 L_end_settings_store_global_setting:
 LW	R26, 8(SP)
 LW	R25, 4(SP)

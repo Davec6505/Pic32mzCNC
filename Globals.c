@@ -321,13 +321,9 @@ unsigned long temp[4] = {0};
    case 7: add = (unsigned long)FLASH_Settings_VAddr_P7;break;
    case 8: add = (unsigned long)FLASH_Settings_VAddr_P8;break;
    case 9: add = (unsigned long)FLASH_Settings_VAddr_P9;break;
-   //G54,55,56,57,58,59
-   case 10: add = (unsigned long)FLASH_Settings_VAddr_G54;break;
-   case 11: add = (unsigned long)FLASH_Settings_VAddr_G55;break;
-   case 12: add = (unsigned long)FLASH_Settings_VAddr_G56;break;
-   case 13: add = (unsigned long)FLASH_Settings_VAddr_G57;break;
-   case 14: add = (unsigned long)FLASH_Settings_VAddr_G58;break;
-   case 15: add = (unsigned long)FLASH_Settings_VAddr_G59;break;
+   //G28.1, 30.1
+   case 10: add = (unsigned long)FLASH_Settings_VAddr_G281;break;
+   case 11: add = (unsigned long)FLASH_Settings_VAddr_G301;break;
  }
 
  j = i = 0;
@@ -410,6 +406,8 @@ void settings_read_coord_data(){
 ////////////////////////////////////////////////////////////////////////////////
 //write 1 coordinate to flash QUAD_WORD
 //1st update buffA incase of row write then write to flash
+//only use this if flash has been erased first otherwise an error
+//or corrupt flash will result -- may need to get rid of this!!!
 unsigned int settings_write_one_coord(int coord_select,float *coord){
 float coord_data[NoOfAxis];
 int recipe;
@@ -443,13 +441,9 @@ unsigned long temp[NoOfAxis];
    case 7: add = (unsigned long)FLASH_Settings_VAddr_P7;break;
    case 8: add = (unsigned long)FLASH_Settings_VAddr_P8;break;
    case 9: add = (unsigned long)FLASH_Settings_VAddr_P9;break;
-   //G54,55,56,57,58,59
-   case 10: add = (unsigned long)FLASH_Settings_VAddr_G54;break;
-   case 11: add = (unsigned long)FLASH_Settings_VAddr_G55;break;
-   case 12: add = (unsigned long)FLASH_Settings_VAddr_G56;break;
-   case 13: add = (unsigned long)FLASH_Settings_VAddr_G57;break;
-   case 14: add = (unsigned long)FLASH_Settings_VAddr_G58;break;
-   case 15: add = (unsigned long)FLASH_Settings_VAddr_G59;break;
+   //G28.1, 30.1
+   case 10: add = (unsigned long)FLASH_Settings_VAddr_G281;break;
+   case 11: add = (unsigned long)FLASH_Settings_VAddr_G301;break;
  }
  
  if(!read_ram_loaded_indicator()){

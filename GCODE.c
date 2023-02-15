@@ -34,6 +34,18 @@ volatile int int_value;
 volatile float inverse_feed_rate;       // negative inverse_feed_rate means no inverse_feed_rate specified
 volatile float value;
 
+/////////////////////////////////////////////////////////////
+//                file scope functions                     //
+/////////////////////////////////////////////////////////////
+static float To_Millimeters(float value){
+  return(gc.inches_mode) ? (value * MM_PER_INCH) : value;
+}
+
+//select the working plane
+static void Select_Plane(int axis_combo){
+   axis_xyz = axis_combo;
+}
+
 /////////////////////////////////////////////////////////
 //                GLOBAL SCOPE FUNCTIONS               //
 /////////////////////////////////////////////////////////
@@ -90,7 +102,7 @@ int Rst_motionmode(){
 
 //Gcodes {G 0,1,2,3,80}
 int G_Mode(int mode){
- gc.inches_mode = 0;//temp for debugging
+ //gc.inches_mode = 0;//temp for debugging
  group_number = Set_Modal_Groups(mode);
  motion_mode = Set_Motion_Mode(mode);
  return motion_mode;
@@ -111,7 +123,125 @@ void M_Instruction(int flow){
 //           MOVEMENT INSTRUCTIONS                   //
 ///////////////////////////////////////////////////////
 
-// Check for modal group multiple command violations in the current block
+/////////////////////////////////////////////////////////////
+//G CODES
+//Set the modal group values taken directly from grbl
+static int Set_Modal_Groups(int mode){
+int gp_num;
+  switch(mode) {
+    case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 920:
+          gp_num = MODAL_GROUP_0; break;
+    case 0: case 1: case 2: case 3: case 80: gp_num = MODAL_GROUP_1; break;
+    case 17: case 18: case 19: gp_num = MODAL_GROUP_2; break;
+    case 90: case 91: gp_num = MODAL_GROUP_3; break;
+    case 93: case 94: gp_num = MODAL_GROUP_5; break;
+    case 20: case 21: gp_num = MODAL_GROUP_6; break;
+    case 54: case 55: case 56: case 57: case 58: case 59: gp_num = MODAL_GROUP_12; break;
+  }
+  return gp_num;
+}
+
+//set the G commands as per grbl
+static int Set_Motion_Mode(int mode){
+int i;
+ FAIL(STATUS_OK);
+  switch(mode){
+    case 0: motion_mode    = MOTION_MODE_SEEK;    break;
+    case 1: motion_mode    = MOTION_MODE_LINEAR;  break;
+    case 2: motion_mode    = MOTION_MODE_CW_ARC;  break;
+    case 3: motion_mode    = MOTION_MODE_CCW_ARC; break;
+    case 4: non_modal_action  = NON_MODAL_DWELL;     break;
+    case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
+    case 17: Select_Plane(xy);return STATUS_OK; break;
+    case 18: Select_Plane(xz);return STATUS_OK; break;
+    case 19: Select_Plane(yz);return STATUS_OK; break;
+    case 20: gc.inches_mode = 1;return STATUS_OK; break;
+    case 21: gc.inches_mode = 0;return STATUS_OK; break;
+    case 53: gc.absolute_override = true;return STATUS_OK; break;
+    case 54: case 55: case 56: case 57: case 58: case 59:
+             gc.coord_select = (mode - 53);//G54-53 == 1...;
+             return STATUS_OK;break;
+    case 80: gc.motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
+    case 90: gc.absolute_mode = true; return STATUS_OK; break;
+    case 91: gc.absolute_mode = false; return STATUS_OK; break;
+    case 93: gc.inverse_feed_rate_mode = true;return STATUS_OK; break;
+    case 94: gc.inverse_feed_rate_mode = false;return STATUS_OK; break;
+    case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
+    case 281: non_modal_action = NON_MODAL_SET_HOME_0; break;
+    case 300: non_modal_action = NON_MODAL_GO_HOME_1; break;
+    case 301: non_modal_action = NON_MODAL_SET_HOME_1; break;
+    case 920: non_modal_action = NON_MODAL_SET_COORDINATE_OFFSET; break;
+    case 921: non_modal_action = NON_MODAL_RESET_COORDINATE_OFFSET; break;
+    default: FAIL(STATUS_UNSUPPORTED_STATEMENT);return;break;
+  }
+
+  // [G54,G55,...,G59]: Coordinate system selection to be implimented
+  // [G0,G1,G2,G3,G80]: Perform motion modes.
+  // NOTE: Commands G10,G28,G30,G92 lock out and prevent axis words from use in motion modes.
+  // Enter motion modes only if there are axis words or a motion mode command word in the block.
+  if ( bit_istrue(modal_group_words,bit(MODAL_GROUP_1)) || axis_words ) {
+    // G1,G2,G3 require F word in inverse time mode.
+    if ( gc.inverse_feed_rate_mode ) {
+      if (inverse_feed_rate < 0 && motion_mode != MOTION_MODE_CANCEL) {
+        FAIL(STATUS_INVALID_STATEMENT);
+      }
+    }
+    // Absolute override G53 only valid with G0 and G1 active.
+    if ( gc.absolute_override && !(motion_mode == MOTION_MODE_SEEK || motion_mode == MOTION_MODE_LINEAR)) {
+      FAIL(STATUS_INVALID_STATEMENT);
+    }
+    #if GcodeDebug == 2
+    while(DMA_IsOn(1));
+    dma_printf("status_code:= %d\tmodal_group_words:= %d\n",status_code,modal_group_words);
+    #endif
+    // Report any errors.
+    if (status_code) { return(status_code); }
+
+ }
+#if GcodeDebug == 2
+   while(DMA_IsOn(1));
+   dma_printf("motion_mode:= %d\tnon_modal_action:= %d\n",motion_mode,non_modal_action);
+#endif
+ return motion_mode;
+}
+
+////////////////////////////////////////////////////////
+// M COMMANDS
+static int Set_M_Modal_Commands(int flow){
+int gp_num;
+// Set modal group values
+   switch(flow) {
+     case 0: case 1: case 2: case 30: gp_num = MODAL_GROUP_4; break;
+     case 3: case 4: case 5: gp_num = MODAL_GROUP_7; break;
+   }
+   return gp_num;
+}
+
+//M Commands
+static int Set_M_Commands(int flow){
+  FAIL(STATUS_OK);
+// Set 'M' commands
+  switch(flow) {
+    case 0: gc.program_flow = PROGRAM_FLOW_PAUSED; break; // Program pause
+    case 1: break; // Optional stop not supported. Ignore.
+    case 2:
+    case 30: gc.program_flow = PROGRAM_FLOW_COMPLETED; break; // Program end and reset
+    case 3: gc.spindle_direction = 1; break;
+    case 4: gc.spindle_direction = -1; break;
+    case 5: gc.spindle_direction = 0; break;
+    #ifdef ENABLE_M7
+      case 7: gc.coolant_mode = COOLANT_MIST_ENABLE; break;
+    #endif
+    case 8: gc.coolant_mode = COOLANT_FLOOD_ENABLE; break;
+    case 9: gc.coolant_mode = COOLANT_DISABLE; break;
+    default: FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
+  }
+  return status_code;
+}
+
+///////////////////////////////////////////////////////////////
+// Check for modal group multiple command violations in 
+// the current block
 int Check_group_multiple_violations(){
 static int last_group_number,last_non_modal_action;
 int i = 0;
@@ -306,6 +436,7 @@ int i = 0;
   return status_code;
 }
 
+////////////////////////////////////////////////////////////////
 //{X,Y,Z,A} Movement values
 int Instruction_Values(char *c,void *any){
 float XYZ_Val;
@@ -422,126 +553,3 @@ float temp[3];
   gc.position[Z] = z/temp[Z];
 }
 
-/////////////////////////////////////////////////////////////
-//                file scope functions                     //
-/////////////////////////////////////////////////////////////
-static float To_Millimeters(float value){
-  return(gc.inches_mode) ? (value * MM_PER_INCH) : value;
-}
-
-//select the working plane
-static void Select_Plane(int axis_combo){
-   axis_xyz = axis_combo;
-}
-
-//Set the modal group values taken directly from grbl
-static int Set_Modal_Groups(int mode){
-int gp_num;
-  switch(mode) {
-    case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 92:
-          gp_num = MODAL_GROUP_0; break;
-    case 0: case 1: case 2: case 3: case 80: gp_num = MODAL_GROUP_1; break;
-    case 17: case 18: case 19: gp_num = MODAL_GROUP_2; break;
-    case 90: case 91: gp_num = MODAL_GROUP_3; break;
-    case 93: case 94: gp_num = MODAL_GROUP_5; break;
-    case 20: case 21: gp_num = MODAL_GROUP_6; break;
-    case 54: case 55: case 56: case 57: case 58: case 59: gp_num = MODAL_GROUP_12; break;
-  }
-  return gp_num;
-}
-
-//set the G commands as per grbl
-static int Set_Motion_Mode(int mode){
-int i;
- FAIL(STATUS_OK);
-  switch(mode){
-    case 0: motion_mode    = MOTION_MODE_SEEK;    break;
-    case 1: motion_mode    = MOTION_MODE_LINEAR;  break;
-    case 2: motion_mode    = MOTION_MODE_CW_ARC;  break;
-    case 3: motion_mode    = MOTION_MODE_CCW_ARC; break;
-    case 4: non_modal_action  = NON_MODAL_DWELL;     break;
-    case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
-    case 17: Select_Plane(xy);return STATUS_OK; break;
-    case 18: Select_Plane(xz);return STATUS_OK; break;
-    case 19: Select_Plane(yz);return STATUS_OK; break;
-    case 20: gc.inches_mode = 1;return STATUS_OK; break;
-    case 21: gc.inches_mode = 0;return STATUS_OK; break;
-    case 53: gc.absolute_override = true;return STATUS_OK; break;
-    case 54: case 55: case 56: case 57: case 58: case 59:
-             gc.coord_select = (mode - 53);//G54-53 == 1...;
-             return STATUS_OK;break;
-    case 80: gc.motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
-    case 90: gc.absolute_mode = true; return STATUS_OK; break;
-    case 91: gc.absolute_mode = false; return STATUS_OK; break;
-    case 93: gc.inverse_feed_rate_mode = true;return STATUS_OK; break;
-    case 94: gc.inverse_feed_rate_mode = false;return STATUS_OK; break;
-    case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
-    case 281: non_modal_action = NON_MODAL_SET_HOME_0; break;
-    case 300: non_modal_action = NON_MODAL_GO_HOME_1; break;
-    case 301: non_modal_action = NON_MODAL_SET_HOME_1; break;
-    case 920: non_modal_action = NON_MODAL_SET_COORDINATE_OFFSET; break;
-    case 921: non_modal_action = NON_MODAL_RESET_COORDINATE_OFFSET; break;
-    default: FAIL(STATUS_UNSUPPORTED_STATEMENT);return;break;
-  }
-
-  // [G54,G55,...,G59]: Coordinate system selection to be implimented
-  // [G0,G1,G2,G3,G80]: Perform motion modes.
-  // NOTE: Commands G10,G28,G30,G92 lock out and prevent axis words from use in motion modes.
-  // Enter motion modes only if there are axis words or a motion mode command word in the block.
-  if ( bit_istrue(modal_group_words,bit(MODAL_GROUP_1)) || axis_words ) {
-    // G1,G2,G3 require F word in inverse time mode.
-    if ( gc.inverse_feed_rate_mode ) {
-      if (inverse_feed_rate < 0 && motion_mode != MOTION_MODE_CANCEL) {
-        FAIL(STATUS_INVALID_STATEMENT);
-      }
-    }
-    // Absolute override G53 only valid with G0 and G1 active.
-    if ( gc.absolute_override && !(motion_mode == MOTION_MODE_SEEK || motion_mode == MOTION_MODE_LINEAR)) {
-      FAIL(STATUS_INVALID_STATEMENT);
-    }
-    #if GcodeDebug == 2
-    while(DMA_IsOn(1));
-    dma_printf("status_code:= %d\tmodal_group_words:= %d\n",status_code,modal_group_words);
-    #endif
-    // Report any errors.
-    if (status_code) { return(status_code); }
-
- }
-#if GcodeDebug == 2
-   while(DMA_IsOn(1));
-   dma_printf("non_modal_action:= %d\n",non_modal_action);
-#endif
- return motion_mode;
-}
-
-static int Set_M_Modal_Commands(int flow){
-int gp_num;
-// Set modal group values
-   switch(flow) {
-     case 0: case 1: case 2: case 30: gp_num = MODAL_GROUP_4; break;
-     case 3: case 4: case 5: gp_num = MODAL_GROUP_7; break;
-   }
-   return gp_num;
-}
-
-//M Commands
-static int Set_M_Commands(int flow){
-  FAIL(STATUS_OK);
-// Set 'M' commands
-  switch(flow) {
-    case 0: gc.program_flow = PROGRAM_FLOW_PAUSED; break; // Program pause
-    case 1: break; // Optional stop not supported. Ignore.
-    case 2: 
-    case 30: gc.program_flow = PROGRAM_FLOW_COMPLETED; break; // Program end and reset
-    case 3: gc.spindle_direction = 1; break;
-    case 4: gc.spindle_direction = -1; break;
-    case 5: gc.spindle_direction = 0; break;
-    #ifdef ENABLE_M7
-      case 7: gc.coolant_mode = COOLANT_MIST_ENABLE; break;
-    #endif
-    case 8: gc.coolant_mode = COOLANT_FLOOD_ENABLE; break;
-    case 9: gc.coolant_mode = COOLANT_DISABLE; break;
-    default: FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
-  }
-  return status_code;
-}

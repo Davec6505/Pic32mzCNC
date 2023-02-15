@@ -303,7 +303,7 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 149 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 151 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -867,6 +867,18 @@ volatile float value;
 
 
 
+static float To_Millimeters(float value){
+ return(gc.inches_mode) ? (value *  (25.40) ) : value;
+}
+
+
+static void Select_Plane(int axis_combo){
+ axis_xyz = axis_combo;
+}
+
+
+
+
 
 void G_Initialise(){
  group_number = 0;
@@ -920,7 +932,7 @@ int Rst_motionmode(){
 
 
 int G_Mode(int mode){
- gc.inches_mode = 0;
+
  group_number = Set_Modal_Groups(mode);
  motion_mode = Set_Motion_Mode(mode);
  return motion_mode;
@@ -931,7 +943,7 @@ void M_Instruction(int flow){
 
  group_number = Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
-#line 108 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 120 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 }
 
 
@@ -939,305 +951,12 @@ void M_Instruction(int flow){
 
 
 
-int Check_group_multiple_violations(){
-static int last_group_number,last_non_modal_action;
-int i = 0;
-
-
-
-
- if(group_number > 0) {
-
- if(group_number ==  0 )
-  status_code = 5 ; ;
-
- if(group_number != last_group_number)
- Rst_modalgroup();
-
-  (modal_group_words |= (1 << group_number) ) ;
-#line 137 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- last_group_number = group_number;
-
- if (group_number ==  1 ){
-
-
- Rst_modalword();
-
- if(!gc.absolute_override)
-  (non_modal_words |= (1 << non_modal_action) ) ;
-
-
-
-
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.absolute_override:= %d\n",gc.absolute_override);
-
-
-
- last_non_modal_action = non_modal_action;
- return status_code;
- }
-
-
- if (group_number ==  3 ){
-
- if(axis_xyz >  4 )
- status_code =  6 ;
- else status_code =  0 ;
-
-
- while(DMA_IsOn(1));
- dma_printf("axis_xyz:= %d\n",axis_xyz);
-
-
- last_non_modal_action = non_modal_action;
- return status_code;
- }
-
-
- if (group_number ==  4 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.absolute_mode:= %d\n",gc.absolute_mode);
-
-
- last_non_modal_action = non_modal_action;
- return status_code;
- }
-
-
- if (group_number ==  6 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.inverse_feed_rate_mode:= %d\n",gc.inverse_feed_rate_mode);
-
-
- last_non_modal_action = non_modal_action;
- return status_code;
- }
-
-
- if (group_number ==  7 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.inches_mode:= %d\n",gc.inches_mode);
-
-
- last_non_modal_action = non_modal_action;
- return status_code;
- }
-
-
- if (group_number ==  9 ){
-
- if(gc.coord_select < 0|| gc.coord_select > 7)
- status_code =  1 ;
- else
- status_code =  0 ;
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.coord_select:= %d\n",gc.coord_select);
-
-
- last_non_modal_action = non_modal_action;
- return status_code;
- }
- }
-
-
-
-
- for (i=0; i<=2; i++) {
- if (  ((axis_words & (1 << i) ) != 0) ) {
- if (!gc.absolute_override) {
- if (gc.absolute_mode) {
-
- } else {
-
-
- gc.next_position[i] + gc.coord_offset[i];
- }
- }
- } else {
- gc.next_position[i] += gc.coord_offset[i];
- }
- }
-
-
-
-
- switch (motion_mode) {
-
- case  4 :
- if (axis_words) {  status_code = 6 ; ; }
- break;
- case  0 :
- if (axis_words == 0) {
-  status_code = 6 ; ;
- }else {
-
-
- gc.frequency = 5000;
-  status_code = 0 ; ;
- }
- break;
- case  1 :
-#line 277 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- if (axis_words == 0) {
-  status_code = 6 ; ;
- }else {
-
-  status_code = 0 ; ;
- }
- break;
- case  2 : case  3 :
-
-
- if ( !(  (axis_words &= ~ (1 << gc.plane_axis_2) )  ) ||
- ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
-  status_code = 6 ; ;
- } else {
- if (gc.R != 0) {
-
- asm{nop;}
- }
- }
- break;
- }
-
- for(i=0;i< 4 ;i++){
- gc.position[i] = gc.next_position[i];
- }
-#line 306 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- return status_code;
-}
-
-
-int Instruction_Values(char *c,void *any){
-float XYZ_Val;
-int F_Val,O_Val;
-
- switch(c[0]){
- case 'X':
- XYZ_Val = *(float*)any;
- gc.next_position[X] = To_Millimeters(XYZ_Val);
-  (axis_words |= (1 << X) ) ;
- break;
- case 'Y':
- XYZ_Val = *(float*)any;
- gc.next_position[Y] = To_Millimeters(XYZ_Val);
-  (axis_words |= (1 << Y) ) ;
- break;
- case 'Z':
- XYZ_Val = *(float*)any;
- gc.next_position[Z] = To_Millimeters(XYZ_Val);
-  (axis_words |= (1 << Z) ) ;
- break;
- case 'A':
- XYZ_Val = *(float*)any;
- gc.next_position[A] = To_Millimeters(XYZ_Val);
-  (axis_words |= (1 << A) ) ;
- break;
- case 'E':
- XYZ_Val = *(float*)any;
- gc.next_position[B] = To_Millimeters(XYZ_Val);
-  (axis_words |= (1 << B) ) ;
- break;
- case 'R':
- XYZ_Val = *(float*)any;
- gc.R = To_Millimeters(XYZ_Val);
- break;
- case 'I':
- gc.r = 0;
- gc.R = 0;
- XYZ_Val = *(float*)any;
- gc.I = XYZ_Val;
- gc.offset[I] = To_Millimeters(XYZ_Val);
- break;
- case 'J':
- XYZ_Val = *(float*)any;
- gc.J = XYZ_Val;
- gc.offset[J] = To_Millimeters(XYZ_Val);
- break;
- case 'K':
- XYZ_Val = *(float*)any;
- gc.K = XYZ_Val;
- gc.offset[K] = To_Millimeters(XYZ_Val);
- break;
- case 'F':
- F_Val = *(int*)any;
- if(F_Val < 0){
-  status_code = 13 ; ;
- }
-#line 372 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- gc.frequency = F_Val;
- break;
- case 'P':
- O_Val = *(int*)any;
- if(O_Val < 0){
-  status_code = 13 ; ;
- }
- gc.P = O_Val;
- gc.S = -1;
- break;
- case 'S':
- O_Val = *(int*)any;
- if(O_Val < 0){
-  status_code = 13 ; ;
- }
- gc.S = O_Val;
- gc.P = -1;
- break;
- case 'L':
- O_Val = *(int*)any;
- if(O_Val < 0){
-  status_code = 13 ; ;
- }
- gc.L = O_Val;
- break;
- default: status_code = 3 ; ;break;
- }
-#line 408 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- return status_code;
-}
-
-
-
-
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z){
-int i;
-float temp[3];
- for(i=0;i<3;i++){
- temp[i] = ulong2flt(settings.steps_per_mm[i]);
- }
- gc.position[X] = x/temp[X];
- gc.position[Y] = y/temp[Y];
- gc.position[Z] = z/temp[Z];
-}
-
-
-
-
-static float To_Millimeters(float value){
- return(gc.inches_mode) ? (value *  (25.40) ) : value;
-}
-
-
-static void Select_Plane(int axis_combo){
- axis_xyz = axis_combo;
-}
 
 
 static int Set_Modal_Groups(int mode){
 int gp_num;
  switch(mode) {
- case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 92:
+ case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 920:
  gp_num =  1 ; break;
  case 0: case 1: case 2: case 3: case 80: gp_num =  2 ; break;
  case 17: case 18: case 19: gp_num =  3 ; break;
@@ -1298,13 +1017,22 @@ int i;
  if ( gc.absolute_override && !(motion_mode ==  0  || motion_mode ==  1 )) {
   status_code = 6 ; ;
  }
-#line 507 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("status_code:= %d\tmodal_group_words:= %d\n",status_code,modal_group_words);
+
+
  if (status_code) { return(status_code); }
 
  }
-#line 514 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("motion_mode:= %d\tnon_modal_action:= %d\n",motion_mode,non_modal_action);
+
  return motion_mode;
 }
+
+
 
 static int Set_M_Modal_Commands(int flow){
 int gp_num;
@@ -1328,10 +1056,278 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 542 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 235 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  status_code = 3 ; ;break;
  }
  return status_code;
+}
+
+
+
+
+int Check_group_multiple_violations(){
+static int last_group_number,last_non_modal_action;
+int i = 0;
+
+
+
+
+ if(group_number > 0) {
+
+ if(group_number ==  0 )
+  status_code = 5 ; ;
+
+ if(group_number != last_group_number)
+ Rst_modalgroup();
+
+  (modal_group_words |= (1 << group_number) ) ;
+
+
+ while(DMA_IsOn(1));
+ dma_printf("modal_group_words:= %d\tgroup_number:= %d\n",modal_group_words,group_number);
+
+
+ last_group_number = group_number;
+
+ if (group_number ==  1 ){
+
+
+ Rst_modalword();
+
+ if(!gc.absolute_override)
+  (non_modal_words |= (1 << non_modal_action) ) ;
+
+
+ while(DMA_IsOn(1));
+ dma_printf("non_modal_action:= %d\tnon_modal_words:=%d\n",
+ non_modal_action,non_modal_words);
+#line 287 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ last_non_modal_action = non_modal_action;
+ return status_code;
+ }
+
+
+ if (group_number ==  3 ){
+
+ if(axis_xyz >  4 )
+ status_code =  6 ;
+ else status_code =  0 ;
+#line 303 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ last_non_modal_action = non_modal_action;
+ return status_code;
+ }
+
+
+ if (group_number ==  4 ){
+#line 315 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ last_non_modal_action = non_modal_action;
+ return status_code;
+ }
+
+
+ if (group_number ==  6 ){
+#line 327 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ last_non_modal_action = non_modal_action;
+ return status_code;
+ }
+
+
+ if (group_number ==  7 ){
+#line 339 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ last_non_modal_action = non_modal_action;
+ return status_code;
+ }
+
+
+ if (group_number ==  9 ){
+
+ if(gc.coord_select < 0|| gc.coord_select > 7)
+ status_code =  1 ;
+ else
+ status_code =  0 ;
+#line 356 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ last_non_modal_action = non_modal_action;
+ return status_code;
+ }
+ }
+
+
+
+
+ for (i=0; i<=2; i++) {
+ if (  ((axis_words & (1 << i) ) != 0) ) {
+ if (!gc.absolute_override) {
+ if (gc.absolute_mode) {
+
+ } else {
+
+
+ gc.next_position[i] + gc.coord_offset[i];
+ }
+ }
+ } else {
+ gc.next_position[i] += gc.coord_offset[i];
+ }
+ }
+
+
+
+
+ switch (motion_mode) {
+
+ case  4 :
+ if (axis_words) {  status_code = 6 ; ; }
+ break;
+ case  0 :
+ if (axis_words == 0) {
+  status_code = 6 ; ;
+ }else {
+
+
+ gc.frequency = 5000;
+  status_code = 0 ; ;
+ }
+ break;
+ case  1 :
+
+
+
+
+
+ while(DMA_IsOn(1));
+ dma_printf("axis_words:= %d\n",(int)axis_words & 0x00FF);
+
+ if (axis_words == 0) {
+  status_code = 6 ; ;
+ }else {
+
+  status_code = 0 ; ;
+ }
+ break;
+ case  2 : case  3 :
+
+
+ if ( !(  (axis_words &= ~ (1 << gc.plane_axis_2) )  ) ||
+ ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
+  status_code = 6 ; ;
+ } else {
+ if (gc.R != 0) {
+
+ asm{nop;}
+ }
+ }
+ break;
+ }
+
+ for(i=0;i< 4 ;i++){
+ gc.position[i] = gc.next_position[i];
+ }
+#line 436 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ return status_code;
+}
+
+
+
+int Instruction_Values(char *c,void *any){
+float XYZ_Val;
+int F_Val,O_Val;
+
+ switch(c[0]){
+ case 'X':
+ XYZ_Val = *(float*)any;
+ gc.next_position[X] = To_Millimeters(XYZ_Val);
+  (axis_words |= (1 << X) ) ;
+ break;
+ case 'Y':
+ XYZ_Val = *(float*)any;
+ gc.next_position[Y] = To_Millimeters(XYZ_Val);
+  (axis_words |= (1 << Y) ) ;
+ break;
+ case 'Z':
+ XYZ_Val = *(float*)any;
+ gc.next_position[Z] = To_Millimeters(XYZ_Val);
+  (axis_words |= (1 << Z) ) ;
+ break;
+ case 'A':
+ XYZ_Val = *(float*)any;
+ gc.next_position[A] = To_Millimeters(XYZ_Val);
+  (axis_words |= (1 << A) ) ;
+ break;
+ case 'E':
+ XYZ_Val = *(float*)any;
+ gc.next_position[B] = To_Millimeters(XYZ_Val);
+  (axis_words |= (1 << B) ) ;
+ break;
+ case 'R':
+ XYZ_Val = *(float*)any;
+ gc.R = To_Millimeters(XYZ_Val);
+ break;
+ case 'I':
+ gc.r = 0;
+ gc.R = 0;
+ XYZ_Val = *(float*)any;
+ gc.I = XYZ_Val;
+ gc.offset[I] = To_Millimeters(XYZ_Val);
+ break;
+ case 'J':
+ XYZ_Val = *(float*)any;
+ gc.J = XYZ_Val;
+ gc.offset[J] = To_Millimeters(XYZ_Val);
+ break;
+ case 'K':
+ XYZ_Val = *(float*)any;
+ gc.K = XYZ_Val;
+ gc.offset[K] = To_Millimeters(XYZ_Val);
+ break;
+ case 'F':
+ F_Val = *(int*)any;
+ if(F_Val < 0){
+  status_code = 13 ; ;
+ }
+#line 503 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ gc.frequency = F_Val;
+ break;
+ case 'P':
+ O_Val = *(int*)any;
+ if(O_Val < 0){
+  status_code = 13 ; ;
+ }
+ gc.P = O_Val;
+ gc.S = -1;
+ break;
+ case 'S':
+ O_Val = *(int*)any;
+ if(O_Val < 0){
+  status_code = 13 ; ;
+ }
+ gc.S = O_Val;
+ gc.P = -1;
+ break;
+ case 'L':
+ O_Val = *(int*)any;
+ if(O_Val < 0){
+  status_code = 13 ; ;
+ }
+ gc.L = O_Val;
+ break;
+ default: status_code = 3 ; ;break;
+ }
+#line 539 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ return status_code;
+}
+
+
+
+
+void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z){
+int i;
+float temp[3];
+ for(i=0;i<3;i++){
+ temp[i] = ulong2flt(settings.steps_per_mm[i]);
+ }
+ gc.position[X] = x/temp[X];
+ gc.position[Y] = y/temp[Y];
+ gc.position[Z] = z/temp[Z];
 }

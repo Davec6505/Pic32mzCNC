@@ -1837,7 +1837,7 @@ ORI	R2, R0, 1
 SH	R2, 8(SP)
 L_report_gcode_parameters105:
 LH	R2, 8(SP)
-SLTI	R2, R2, 8
+SLTI	R2, R2, 11
 BNE	R2, R0, L__report_gcode_parameters328
 NOP	
 J	L_report_gcode_parameters106
