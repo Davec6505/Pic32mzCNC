@@ -246,7 +246,7 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 149 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 151 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);

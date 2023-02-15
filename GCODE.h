@@ -166,26 +166,26 @@ typedef struct {
   //  uint16_t spindle_speed;    // RPM/100
   char plane_axis_0,
        plane_axis_1,
-       plane_axis_2;             // The axes of the selected plane
-  int  coord_select;            // Active work coordinate system number. Default: 0=G54.
- // int status_code;              // Parser status for current block
- // int motion_mode;               // {G0, G1, G2, G3, G80}
-  int frequency;                 // Speed expressed as Frequency of pulses
-  int L;                         //L2 tells the G10 we’re setting standard work offsets
-  float feed_rate;               // Millimeters/min
-//  float seek_rate;             // Millimeters/min. Will be used in v0.9 when axis independence is installed
+       plane_axis_2;                      // The axes of the selected plane
+  int  coord_select;                      // Active work coordinate system number. Default: 0=G54.
+ // int status_code;                      // Parser status for current block
+ // int motion_mode;                      // {G0, G1, G2, G3, G80}
+  int frequency;                          // Speed expressed as Frequency of pulses
+  int L;                                  //L2 tells the G10 we’re setting standard work offsets
+  float feed_rate;                        // Millimeters/min
+//  float seek_rate;                      // Millimeters/min. Will be used in v0.9 when axis independence is installed
   volatile float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
   volatile float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine
-                                 // position in mm. Loaded from EEPROM when called.
+                                          // position in mm. Loaded from EEPROM when called.
   volatile float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
-                                 // machine zero in mm. Non-persistent. Cleared upon reset and boot.
+                                          // machine zero in mm. Non-persistent. Cleared upon reset and boot.
   volatile float next_position[NoOfAxis]; // Target position instruction from gcode sender
-  volatile float offset[3];               // I,J,K for arc
-  float R;
+  volatile float offset[3];
+  float R;                                // I,J,K for arc
   float I;
   float J;
   float K;
-  int P;               //Pause as in msec
+  int P;               //Pause as in msec if sent with G04 else Coord-position
   int S;               //Pause as in sec
 } parser_state_t;
 extern volatile parser_state_t gc;
