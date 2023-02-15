@@ -204,13 +204,16 @@ unsigned long _flash,*addr;
           if (gc.L == 20) {
               //write the Pnn coordinates to flash recipe for active system
               result = settings_write_coord_data((int)gc.P,gc.next_position );
-              if(result){ //response if write to flash failed
+              
+              if(result){ //response if write to flash failed new result
                 return NVM_COORDINATE_WRITE_ERROR;
               }
+              
              // Update system coordinate system if currently active with G54 - G59
               if (gc.coord_select > 0) {
                  memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
               }
+              
           } else {
             //Retrieve the data from flash into buff in case its been updated
             //if(!Save_Row_From_Flash(FLASH_Settings_VAddr_P1))return;
@@ -236,19 +239,24 @@ unsigned long _flash,*addr;
                    //it update current coordinate in which case use gc.coord_data[]
                    //as this is the current machine units
                    coord_data[i] = ulong2flt(_flash);
+                   
                 #if MainDebug == 1
                  while(DMA_IsOn(1));
                  dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
                              temp_axis,i,coord_data[i],indx);
                 #endif
+                
                 }else{
+                
                  //???? should be gc.coord_data
                   coord_data[i] = gc.next_position[i];
-                #if MainDebug == 1
-                 while(DMA_IsOn(1));
-                 dma_printf("gc.next_position[%d]:= %f\n"
-                             ,i,gc.next_position[i]);
-                #endif
+                  
+                  #if MainDebug == 1
+                   while(DMA_IsOn(1));
+                   dma_printf("gc.next_position[%d]:= %f\n"
+                               ,i,gc.next_position[i]);
+                  #endif
+                
                 }
                 indx++;
              }
@@ -265,14 +273,19 @@ unsigned long _flash,*addr;
           // Move to intermediate position before going home. 
           //Obeys current coordinate system and offsets and absolute and incremental modes.
           axis_words = Get_Axisword();
+          
           #if MainDebug == 1
            while(DMA_IsOn(1));
            dma_printf("axis_words:= %d\n",axis_words);
           #endif
+          
+          //We need to ensure that coordinates have been read prior to this
+          //being implimented
           if (axis_words) {
             // Apply absolute mode coordinate offsets or incremental mode offsets.
-            for (i=0; i<NoOfAxis; i++){ // Axes indices are consistent, so loop may be used.
-              if ( bit_istrue(axis_words,bit(i+1)) ) {
+            for (i=0; i<NoOfAxis; i++){ 
+              // Axes indices are consistent, so loop may be used.
+              if ( bit_istrue(axis_words,bit(i)) ) {
                 if (gc.absolute_mode) {
                   gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i];
                 } else {
@@ -281,7 +294,10 @@ unsigned long _flash,*addr;
               } else {
                 gc.next_position[i] = gc.position[i];
               }
+              
               //move each axis to the intermediate position prior to homing
+              //this is in the loop to ensure that Z then X then Y to avoid
+              //tool smashing into work piece
               SingleAxisStep(gc.next_position[i],settings.default_seek_rate,i);
               while(GET_RunState(i));
             }
@@ -309,6 +325,7 @@ unsigned long _flash,*addr;
           axis_words = 0; // Axis words used. Lock out from motion modes by clearing flags.
           break;
      case 16:
+           //Store G28 and G30 1st move prior to going Home positions
            home_select = SETTING_INDEX_G28;
           if (action == NON_MODAL_SET_HOME_1) { home_select = SETTING_INDEX_G30; }
           settings_write_coord_data(home_select,gc.position);
@@ -337,13 +354,15 @@ unsigned long _flash,*addr;
           if (action == NON_MODAL_SET_HOME_1_BIT) { temp = SETTING_INDEX_G30; }
           settings_write_coord_data(temp,gc.position);
           break;
-     case 128:  //NON_MODAL_SET_COORDINATE_OFFSET
+     case 128:  //NON_MODAL_SET_COORDINATE_OFFSET NOT WRITTEN TO FLASH LOST ON RESET
           axis_words = Get_Axisword();
+          
           if (!axis_words) { // No axis words
              FAIL(STATUS_INVALID_STATEMENT);
           } else {
-          // Update axes defined only in block. Offsets current system to defined value. Does not update when
-          // active coordinate system is selected, but is still active unless G92.1 disables it.
+          // Update axes defined only in block. Offsets current system to defined value. 
+          //Does not update when active coordinate system is selected, but is still 
+          //active unless G92.1 disables it.
            for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used.
             if (bit_istrue(axis_words,bit(i)) ) {
               gc.coord_offset[i] = gc.position[i]-gc.coord_system[i]-gc.next_position[i];

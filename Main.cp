@@ -245,7 +245,7 @@ char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 149 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 151 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -992,13 +992,16 @@ unsigned long _flash,*addr;
  if (gc.L == 20) {
 
  result = settings_write_coord_data((int)gc.P,gc.next_position );
+
  if(result){
  return  1 ;
  }
 
+
  if (gc.coord_select > 0) {
  memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
  }
+
  } else {
 
 
@@ -1024,11 +1027,12 @@ unsigned long _flash,*addr;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 244 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 249 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
 
+
  coord_data[i] = gc.next_position[i];
-#line 252 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 260 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1045,11 +1049,12 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-#line 272 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 284 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
- if (  ((axis_words & (1 << i+1) ) != 0)  ) {
+
+ if (  ((axis_words & (1 << i) ) != 0)  ) {
  if (gc.absolute_mode) {
  gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i];
  } else {
@@ -1059,21 +1064,24 @@ unsigned long _flash,*addr;
  gc.next_position[i] = gc.position[i];
  }
 
+
+
+
  SingleAxisStep(gc.next_position[i],settings.default_seek_rate,i);
  while(GET_RunState(i));
  }
  }
 
- temp =  6 ;
+ temp =  9 +1 ;
 
- if (action ==  (1 << 5) ){temp =  6  + 1 ;}
+ if (action ==  (1 << 5) ){temp =  9 +1  + 1 ;}
  i = (temp)*4 ;
 
 
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 303 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 319 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1083,8 +1091,9 @@ unsigned long _flash,*addr;
  axis_words = 0;
  break;
  case 16:
- home_select =  6 ;
- if (action ==  6 ) { home_select =  6  + 1 ; }
+
+ home_select =  9 +1 ;
+ if (action ==  6 ) { home_select =  9 +1  + 1 ; }
  settings_write_coord_data(home_select,gc.position);
  break;
  case 53:
@@ -1107,15 +1116,17 @@ unsigned long _flash,*addr;
  }
  break;
  case 64:
- temp =  6 ;
- if (action ==  (1 << 6) ) { temp =  6  + 1 ; }
+ temp =  9 +1 ;
+ if (action ==  (1 << 6) ) { temp =  9 +1  + 1 ; }
  settings_write_coord_data(temp,gc.position);
  break;
  case 128:
  axis_words = Get_Axisword();
+
  if (!axis_words) {
   status_code = 6 ; ;
  } else {
+
 
 
  for (i=0; i<=2; i++) {
@@ -1206,7 +1217,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 439 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 458 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 
@@ -1214,7 +1225,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 450 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 469 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 
@@ -1222,10 +1233,10 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 461 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 480 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
-#line 480 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 499 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  uint8_t rt_exec = sys.execute;

@@ -755,7 +755,7 @@ void Reset_Ring();
 int Loopback();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 149 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 151 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -1113,16 +1113,12 @@ unsigned long temp[4] = {0};
 
  case 10: add = (unsigned long) 0xBD1BC090 ;break;
  case 11: add = (unsigned long) 0xBD1BC0A0 ;break;
- case 12: add = (unsigned long) 0xBD1BC0B0 ;break;
- case 13: add = (unsigned long) 0xBD1BC0C0 ;break;
- case 14: add = (unsigned long) 0xBD1BC0D0 ;break;
- case 15: add = (unsigned long) 0xBD1BC0E0 ;break;
  }
 
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 340 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 336 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
 
@@ -1137,7 +1133,7 @@ unsigned long temp[4] = {0};
 
  res = NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(res);
-#line 369 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 365 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -1165,13 +1161,15 @@ void settings_read_coord_data(){
  temp = 0UL;
  value = ulong2flt(temp);
  coord_system[i].coord[j] = value;
-#line 403 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 399 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  }
 
  set_coord_data_read_indicator( 0 );
  }
 }
+
+
 
 
 
@@ -1192,7 +1190,7 @@ unsigned long temp[ 4 ];
  temp[j] = flt2ulong(coord_data[j]);
  buffA[i] = temp[j];
  j++;
-#line 433 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 431 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
 
  switch(coord_select){
@@ -1209,10 +1207,6 @@ unsigned long temp[ 4 ];
 
  case 10: add = (unsigned long) 0xBD1BC090 ;break;
  case 11: add = (unsigned long) 0xBD1BC0A0 ;break;
- case 12: add = (unsigned long) 0xBD1BC0B0 ;break;
- case 13: add = (unsigned long) 0xBD1BC0C0 ;break;
- case 14: add = (unsigned long) 0xBD1BC0D0 ;break;
- case 15: add = (unsigned long) 0xBD1BC0E0 ;break;
  }
 
  if(!read_ram_loaded_indicator()){
@@ -1227,7 +1221,7 @@ unsigned long temp[ 4 ];
 
 
  if(error){
-#line 471 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 465 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -1251,7 +1245,7 @@ char *char_add;
  }
 
  memcpy(line,char_add,64);
-#line 501 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 495 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return  0 ;
 }
 
@@ -1263,7 +1257,7 @@ int str_len;
 char temp_char;
 
  str_len = strlen(line);
-#line 520 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 514 "C:/Users/Git/Pic32mzCNC/Globals.c"
  add = (unsigned long) 0xBD1BC000 ;
 
 
@@ -1284,7 +1278,7 @@ char temp_char;
 
 
  if(error){
-#line 544 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 538 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -1295,7 +1289,7 @@ char temp_char;
 
 
  memcpy(buffA+start_offset,line,str_len);
-#line 565 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 559 "C:/Users/Git/Pic32mzCNC/Globals.c"
  set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
 
  return error;
@@ -1321,10 +1315,10 @@ int val_temp = 0;
 
 
  if(error){
-#line 594 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 588 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
-#line 605 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 599 "C:/Users/Git/Pic32mzCNC/Globals.c"
  switch(parameter) {
  case 0: case 1: case 2:
  if (value <= 0.0) { return( 8 ); }
@@ -1332,7 +1326,7 @@ int val_temp = 0;
  settings.steps_per_mm[parameter] = value;
 
  buffA[ 0x40 +parameter] = flt2ulong(value);
-#line 622 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 616 "C:/Users/Git/Pic32mzCNC/Globals.c"
  break;
  case 3:
  if (value < 3) { return( 9 ); }
@@ -1463,7 +1457,7 @@ int val_temp = 0;
 
 
  if(error){
-#line 756 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 750 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -1473,7 +1467,7 @@ int val_temp = 0;
 
 
  set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
-#line 770 "C:/Users/Git/Pic32mzCNC/Globals.c"
+#line 764 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  break;
  default:

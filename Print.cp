@@ -832,7 +832,7 @@ void Reset_Ring();
 int Loopback();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 149 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 151 "c:/users/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -1081,7 +1081,7 @@ int coord_select, i;
  }
  }
 
- for (coord_select = 1; coord_select <=  6 +1 ; coord_select++){
+ for (coord_select = 1; coord_select <=  9 +1 ; coord_select++){
  while(DMA_IsOn(1));
  dma_printf("[G");
  while(DMA_IsOn(1));

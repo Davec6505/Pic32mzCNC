@@ -34,6 +34,18 @@ volatile int int_value;
 volatile float inverse_feed_rate;       // negative inverse_feed_rate means no inverse_feed_rate specified
 volatile float value;
 
+/////////////////////////////////////////////////////////////
+//                file scope functions                     //
+/////////////////////////////////////////////////////////////
+static float To_Millimeters(float value){
+  return(gc.inches_mode) ? (value * MM_PER_INCH) : value;
+}
+
+//select the working plane
+static void Select_Plane(int axis_combo){
+   axis_xyz = axis_combo;
+}
+
 /////////////////////////////////////////////////////////
 //                GLOBAL SCOPE FUNCTIONS               //
 /////////////////////////////////////////////////////////
@@ -540,17 +552,4 @@ float temp[3];
   gc.position[Y] = y/temp[Y];
   gc.position[Z] = z/temp[Z];
 }
-
-/////////////////////////////////////////////////////////////
-//                file scope functions                     //
-/////////////////////////////////////////////////////////////
-static float To_Millimeters(float value){
-  return(gc.inches_mode) ? (value * MM_PER_INCH) : value;
-}
-
-//select the working plane
-static void Select_Plane(int axis_combo){
-   axis_xyz = axis_combo;
-}
-
 
