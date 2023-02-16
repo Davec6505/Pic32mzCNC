@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Main.c
+Value=GCODE.c
 =======
 =======
 >>>>>>> patch1
@@ -131,16 +131,11 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=GCODE.c
-File2=GCODE.h
-File3=Protocol.c
-File4=Protocol.h
-File5=Settings.h
-File6=DEFINES.pld
-File7=Flash_R_W.h
-File8=Globals.c
-File9=Globals.h
-Count=10
+File1=Protocol.c
+File2=Protocol.h
+File3=GCODE.c
+File4=GCODE.h
+Count=5
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
