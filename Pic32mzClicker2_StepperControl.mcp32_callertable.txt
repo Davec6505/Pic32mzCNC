@@ -248,9 +248,9 @@ main
 			Set_M_Commands
 		Check_group_multiple_violations
 			Rst_modalgroup
+			Rst_modalword
 			DMA_IsOn
 			dma_printf
-			Rst_modalword
 			__CC2DW
 	protocol_execute_runtime
 		report_alarm_message

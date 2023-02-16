@@ -335,7 +335,8 @@ unsigned long _flash,*addr;
           // Convert all target position data to machine coordinates for executing motion. Apply
           // absolute mode coordinate offsets or incremental mode offsets.
           // NOTE: Tool offsets may be appended to these conversions when/if this feature is added.
-          for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used to save flash space.
+          // Axes indices are consistent, so loop may be used to save flash space.
+          for (i=0; i<=2; i++) {
             if ( bit_istrue(axis_words,bit(i)) ) {
              if (!gc.absolute_override) {
               if (!gc.absolute_mode) { // Do not update target in absolute override mode
