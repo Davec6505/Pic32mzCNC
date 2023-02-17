@@ -1451,7 +1451,7 @@ JR	RA
 NOP	
 ; end of _ResetHoming
 _Home:
-;Kinematics.c,366 :: 		void Home(int axis){
+;Kinematics.c,366 :: 		int Home(int axis){
 ADDIU	SP, SP, -16
 SW	RA, 0(SP)
 ;Kinematics.c,367 :: 		long speed = 0;
