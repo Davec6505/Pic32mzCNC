@@ -585,7 +585,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 37 "c:/users/git/pic32mzcnc/protocol.h"
+#line 47 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 20 ][ 64 ]);
 void Str_clear(char *str,int len);
 
@@ -842,7 +842,7 @@ int GetAxisDirection(long mm2move);
 
 
 void ResetHoming();
-void Home(int axis);
+int Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
@@ -1157,7 +1157,7 @@ int i = 0;
 }
 
 
-void Home(int axis){
+int Home(int axis){
 long speed = 0;
 
  if(!STPS[axis].homing.set){

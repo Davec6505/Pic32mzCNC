@@ -363,7 +363,7 @@ int i = 0;
 }
 //////////////////////////////////////////////////////////////////
 //Homeing sequence is a 2 bounce
-void Home(int axis){
+int Home(int axis){
 long speed = 0;
 
      if(!STPS[axis].homing.set){

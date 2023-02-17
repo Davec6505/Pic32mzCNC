@@ -197,6 +197,7 @@ main
 		report_feedback_message
 			DMA_IsOn
 			dma_printf
+		Home
 		settings_read_startup_line
 			memcpy
 		report_status_message

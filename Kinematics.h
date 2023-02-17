@@ -131,7 +131,7 @@ int GetAxisDirection(long mm2move);
 
 //homing cycle
 void ResetHoming();
-void Home(int axis);
+int Home(int axis);
 void Home_Axis(double distance,long speed,int axis);
 void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);

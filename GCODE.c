@@ -175,7 +175,6 @@ int i;
     default: FAIL(STATUS_UNSUPPORTED_STATEMENT);return;break;
   }
 
-  // [G54,G55,...,G59]: Coordinate system selection to be implimented
   // [G0,G1,G2,G3,G80]: Perform motion modes.
   // NOTE: Commands G10,G28,G30,G92 lock out and prevent axis words from use in motion modes.
   // Enter motion modes only if there are axis words or a motion mode command word in the block.
@@ -195,8 +194,8 @@ int i;
  
   #if GcodeDebug == 2
      while(DMA_IsOn(1));
-     dma_printf("report!\n[status_code:= %d]\n[motion_mode:= %d]\r\n\
-                 [modal_group_words:= %d]\n[non_modal_action:= %d]\r\n"
+     dma_printf("report!\n[status_code:= %d]\n[motion_mode:= %d]\n\
+                 [modal_group_words:= %d]\n[non_modal_action:= %d]\n"
                  ,status_code,modal_group_words
                  ,motion_mode,non_modal_action);
   #endif
@@ -251,10 +250,12 @@ int i = 0;
     // with one mode from each modal group being in effect.
     //non modal codes have effect only on the lines on which they occur
     //these codes will need the full instruction in one line
+ if(group_number == MODAL_GROUP_NONE){
+   FAIL(STATUS_MODAL_GROUP_VIOLATION);
+   return STATUS_MODAL_GROUP_VIOLATION;
+ }
+      
  if(group_number > 0) {
- 
-   if(group_number == MODAL_GROUP_NONE)
-      FAIL(STATUS_MODAL_GROUP_VIOLATION);
    
    if(group_number != last_group_number)
       Rst_modalgroup();
@@ -296,7 +297,8 @@ int i = 0;
       //motion_mode holds movement set in G_Mode()!!
        switch (motion_mode) {
           case MOTION_MODE_CANCEL:
-            if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); } // No axis words allowed while active.
+            // No axis words allowed while active.
+            if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); }
             break;
           case MOTION_MODE_SEEK:
             if (axis_words == 0) {
@@ -304,7 +306,7 @@ int i = 0;
             }else {
                //single axis interpolate at max speed, can be multiple axis at the
                //same time
-                gc.frequency = 5000;//settings.default_seek_rate;
+                gc.frequency = settings.default_seek_rate;
                 FAIL(STATUS_OK);
             }
             break;
@@ -347,16 +349,20 @@ int i = 0;
    //check that Plane select is not out of scope
    if (group_number == MODAL_GROUP_2){
 
-     if(axis_xyz > NO_OF_PLANES)
+     if(axis_xyz > NO_OF_PLANES){
        status_code = STATUS_INVALID_STATEMENT;
-     else status_code = STATUS_OK;
+       FAIL(STATUS_INVALID_STATEMENT);
+     }else{
+       status_code = STATUS_OK;
+       FAIL(STATUS_OK);
+     }
      
      #if GcodeDebug == 3
      while(DMA_IsOn(1));
      dma_printf("axis_xyz:= %d\n",axis_xyz);
      #endif
 
-    // last_non_modal_action = non_modal_action;
+    FAIL(STATUS_OK);
      return status_code;
    }
    
@@ -368,7 +374,7 @@ int i = 0;
      dma_printf("gc.absolute_mode:= %d\n",gc.absolute_mode);
      #endif
      
-    // last_non_modal_action = non_modal_action;
+     FAIL(STATUS_OK);
      return status_code;
    }
    
@@ -380,7 +386,7 @@ int i = 0;
      dma_printf("gc.inverse_feed_rate_mode:= %d\n",gc.inverse_feed_rate_mode);
      #endif
      
-    // last_non_modal_action = non_modal_action;
+     FAIL(STATUS_OK);
      return status_code;
    }
    
@@ -392,7 +398,7 @@ int i = 0;
      dma_printf("gc.inches_mode:= %d\n",gc.inches_mode);
      #endif
 
-     //last_non_modal_action = non_modal_action;
+     FAIL(STATUS_OK);
      return status_code;
    }
    
@@ -409,7 +415,7 @@ int i = 0;
      dma_printf("gc.coord_select:= %d\n",gc.coord_select);
      #endif
 
-    // last_non_modal_action = non_modal_action;
+     FAIL(STATUS_OK);
      return status_code;
    }
  }
@@ -420,6 +426,8 @@ int i = 0;
   while(DMA_IsOn(1));
   dma_printf("status_code:= %d\n",status_code);
   #endif
+  
+  FAIL(STATUS_OK);
   return status_code;
 }
 
