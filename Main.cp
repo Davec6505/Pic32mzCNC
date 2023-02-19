@@ -144,7 +144,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 160 "c:/users/git/pic32mzcnc/settings.h"
+#line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  afloat steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -570,7 +570,7 @@ typedef struct Steps{
 
  homing_t homing;
 }STP;
-extern STP STPS[ 4 ];
+extern volatile STP STPS[ 4 ];
 
 
 
@@ -600,8 +600,8 @@ int GetAxisDirection(long mm2move);
 
 void ResetHoming();
 int Home(int axis);
-void Home_Axis(double distance,long speed,int axis);
-void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,long speed,int axis);
+static void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -801,6 +801,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 47 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 20 ][ 64 ]);
@@ -850,7 +851,7 @@ void protocol_execute_runtime();
 #line 38 "C:/Users/Git/Pic32mzCNC/Main.c"
 volatile system_t sys;
 volatile coord_sys coord_system[ 9 ];
-STP STPS[ 4 ];
+volatile STP STPS[ 4 ];
 volatile settings_t settings;
 
 bit oneShotA; sfr;
@@ -1186,14 +1187,14 @@ static int Modal_Group_Actions1(int action){
  case 12:
  DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
  break;
- case 13:
- Home(X);
- break;
- case 14:
- Home(Y);
- break;
  case 15:
  r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
+ break;
+ case 31:
+ if(action){
+ int axis_to_home = 0;
+ axis_to_home = Home(sys.homing_cnt);
+ }
  break;
  default: action = 0;
  break;
@@ -1208,8 +1209,8 @@ static int Modal_Group_Actions1(int action){
 
 static int Modal_Group_Actions3(int action){
 
-
-
+ if(gc.inches_mode > 1)
+  status_code = 10 ; ;
 
  return action;
 }
@@ -1219,6 +1220,10 @@ static int Modal_Group_Actions3(int action){
 
 static int Modal_Group_Actions4(int action){
 #line 459 "C:/Users/Git/Pic32mzCNC/Main.c"
+ if(gc.program_flow <  0  ||
+ gc.program_flow >  2 )
+  status_code = 6 ; ;
+
  return action;
 }
 
@@ -1226,7 +1231,10 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 470 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 474 "C:/Users/Git/Pic32mzCNC/Main.c"
+ if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
+  status_code = 6 ; ;
+
  return action;
 }
 
@@ -1234,10 +1242,10 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 481 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 488 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
-#line 500 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 507 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  uint8_t rt_exec = sys.execute;
@@ -1296,7 +1304,7 @@ void protocol_execute_runtime(){
 
  if (rt_exec &  (1 << 1) ) {
 
- if ( ((settings.flags & (1 << 1) ) != 0) ) {
+ if ( ((settings.flags & 2 ) != 0) ) {
  sys.auto_start =  1 ;
  }
   (sys.execute &= ~ (1 << 1) ) ;

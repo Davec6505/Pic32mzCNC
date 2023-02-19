@@ -37,7 +37,7 @@
 //parser_state_t gc;
 volatile system_t sys;
 volatile coord_sys coord_system[NUMBER_OF_DATUMS];
-STP STPS[NoOfAxis];
+volatile STP STPS[NoOfAxis];
 volatile settings_t settings;
 
 bit oneShotA; sfr;
@@ -420,14 +420,14 @@ static int Modal_Group_Actions1(int action){
        case 12://b0000 1100
             DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
             break;
-       case 13://Homing X axis
-            Home(X);
-            break;
-       case 14://Homing Y axis
-            Home(Y);
-            break;
        case 15://Homing Y axis
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
+            break;
+       case 31://Homing X axis
+            if(action){
+             int axis_to_home = 0;
+               axis_to_home = Home(sys.homing_cnt);
+            }
             break;
         default: action = 0;
               break;
@@ -442,8 +442,8 @@ static int Modal_Group_Actions1(int action){
 ////////////////////////////////////////////////////////////////////////////////
 static int Modal_Group_Actions3(int action){
     //char is unsigned short in MikroC can be > 1 in faulty value
-   // if(gc.inches_mode > 1)
-   //     FAIL(STATUS_SETTING_READ_FAIL);
+    if(gc.inches_mode > 1)
+        FAIL(STATUS_SETTING_READ_FAIL);
    
    return action;
 }
@@ -454,8 +454,12 @@ static int Modal_Group_Actions3(int action){
 static int Modal_Group_Actions4(int action){
     #if MainDebug == 1
     while(DMA_IsOn(1));
-    dma_printf("GROUP_4 modal actions\n");
+    dma_printf("gc.program_flow:= %d\n",gc.program_flow);
     #endif
+      if(gc.program_flow < PROGRAM_FLOW_RUNNING  || 
+         gc.program_flow > PROGRAM_FLOW_COMPLETED)
+           FAIL(STATUS_INVALID_STATEMENT);
+           
     return action;
 }
 
@@ -465,8 +469,11 @@ static int Modal_Group_Actions4(int action){
 static int Modal_Group_Actions7(int action){
     #if MainDebug == 1
     while(DMA_IsOn(1));
-    dma_printf("GROUP_7 modal actions\n");
+    dma_printf("gc.spindle_direction:= %d\n",gc.spindle_direction);
     #endif
+      if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
+           FAIL(STATUS_INVALID_STATEMENT);
+           
     return action;
 }
 
@@ -555,7 +562,7 @@ void protocol_execute_runtime(){
 
     if (rt_exec & EXEC_CYCLE_START) {
       //st_cycle_start(); // Issue cycle start command to stepper subsystem
-      if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) {
+      if (bit_istrue(settings.flags,FLAG_AUTO_START)) {
         sys.auto_start = true; // Re-enable auto start after feed hold.
       }
       bit_false(sys.execute,EXEC_CYCLE_START);

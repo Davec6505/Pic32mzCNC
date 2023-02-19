@@ -272,18 +272,19 @@ MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R6, R2, R3
-ADDIU	R5, R6, 60
-ADDIU	R2, R6, 36
-LW	R4, 0(R2)
-MUL	R3, R7, R4
+ADDU	R3, R2, R3
+ADDIU	R6, R3, 60
+ADDIU	R5, R3, 36
+LW	R2, 0(R5)
+MUL	R4, R7, R2
 ; abs_mmSteps end address is: 28 (R7)
-ADDIU	R2, R6, 32
-LW	R2, 0(R2)
-ADDU	R2, R2, R4
-DIV	R3, R2
+ADDIU	R2, R3, 32
+LW	R3, 0(R2)
+LW	R2, 0(R5)
+ADDU	R2, R3, R2
+DIV	R4, R2
 MFLO	R2
-SW	R2, 0(R5)
+SW	R2, 0(R6)
 ;Planner.c,80 :: 		if(STPS[axis_No].accel_lim == 0){
 SEH	R3, R27
 ORI	R2, R0, 104
@@ -495,6 +496,7 @@ ADDU	R3, R2, R3
 ADDIU	R2, R3, 8
 SW	R2, 12(SP)
 ADDIU	R2, R3, 72
+LW	R2, 0(R2)
 LW	R25, 0(R2)
 JAL	_labs+0
 NOP	

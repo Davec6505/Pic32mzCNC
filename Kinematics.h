@@ -102,7 +102,7 @@ typedef struct Steps{
  //!Homing specific data
  homing_t homing;
 }STP;
-extern STP STPS[NoOfAxis];
+extern volatile STP STPS[NoOfAxis];
 
 
 ///////////////////////////////////////////
@@ -132,8 +132,8 @@ int GetAxisDirection(long mm2move);
 //homing cycle
 void ResetHoming();
 int Home(int axis);
-void Home_Axis(double distance,long speed,int axis);
-void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,long speed,int axis);
+static void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #endif

@@ -33167,7 +33167,6 @@ hold
 hold
 hold_bit
 home
-home_axis
 homing
 homing_cnt
 homing_debounce_delay
@@ -37045,7 +37044,6 @@ intstatsetbits
 inttohex
 inttostr
 inttostrwithzeros
-inv_home_axis
 inverse_feed_rate
 inverse_feed_rate_mode
 invert_mask

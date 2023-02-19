@@ -1191,31 +1191,31 @@ L__report_grbl_settings289:
 J	L_report_grbl_settings75
 NOP	
 L_report_grbl_settings76:
-;Print.c,184 :: 		,bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)     //17
+;Print.c,184 :: 		,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 16
 ANDI	R2, R2, 65535
 XORI	R8, R2, 0
 SLTU	R8, R0, R8
-;Print.c,183 :: 		,bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE) //16
+;Print.c,183 :: 		,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 8
 ANDI	R2, R2, 65535
 XORI	R7, R2, 0
 SLTU	R7, R0, R7
-;Print.c,182 :: 		,bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)  //15
+;Print.c,182 :: 		,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 4
 ANDI	R2, R2, 65535
 XORI	R6, R2, 0
 SLTU	R6, R0, R6
-;Print.c,181 :: 		,bit_istrue(settings.flags,BITFLAG_AUTO_START)        //14
+;Print.c,181 :: 		,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 2
 ANDI	R2, R2, 65535
 XORI	R5, R2, 0
 SLTU	R5, R0, R5
-;Print.c,180 :: 		,bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)     //13
+;Print.c,180 :: 		,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
@@ -1239,21 +1239,21 @@ SH	R2, 88(SP)
 ;Print.c,187 :: 		,settings.homing_seek_rate                            //20
 LW	R2, Offset(_settings+28)(GP)
 SW	R2, 84(SP)
-;Print.c,186 :: 		,settings.homing_feed_rate                            //19
+;Print.c,186 :: 		,settings.homing_feed_rate                         //19
 LW	R2, Offset(_settings+24)(GP)
 SW	R2, 80(SP)
-;Print.c,185 :: 		,settings.homing_dir_mask                             //18
+;Print.c,185 :: 		,settings.homing_dir_mask                          //18
 LHU	R2, Offset(_settings+64)(GP)
 SH	R2, 76(SP)
-;Print.c,184 :: 		,bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)     //17
+;Print.c,184 :: 		,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
 SW	R8, 72(SP)
-;Print.c,183 :: 		,bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE) //16
+;Print.c,183 :: 		,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
 SW	R7, 68(SP)
-;Print.c,182 :: 		,bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)  //15
+;Print.c,182 :: 		,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
 SW	R6, 64(SP)
-;Print.c,181 :: 		,bit_istrue(settings.flags,BITFLAG_AUTO_START)        //14
+;Print.c,181 :: 		,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
 SW	R5, 60(SP)
-;Print.c,180 :: 		,bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)     //13
+;Print.c,180 :: 		,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
 SW	R4, 56(SP)
 ;Print.c,179 :: 		,settings.decimal_places            //12
 LHU	R2, Offset(_settings+62)(GP)
@@ -1599,7 +1599,7 @@ CVT32.W 	S1, S0
 LWC1	S0, 0(R2)
 DIV.S 	S0, S1, S0
 SWC1	S0, 0(R5)
-;Print.c,231 :: 		if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
+;Print.c,231 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
@@ -1683,7 +1683,7 @@ NOP
 J	L_report_realtime_status97
 NOP	
 L__report_realtime_status320:
-;Print.c,242 :: 		if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) {
+;Print.c,242 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
@@ -2111,7 +2111,7 @@ L__report_gcode_parameters351:
 J	L_report_gcode_parameters125
 NOP	
 L_report_gcode_parameters126:
-;Print.c,288 :: 		if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) {
+;Print.c,288 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
@@ -2304,7 +2304,7 @@ L__report_gcode_parameters361:
 J	L_report_gcode_parameters138
 NOP	
 L_report_gcode_parameters139:
-;Print.c,305 :: 		if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)){
+;Print.c,305 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)){
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
