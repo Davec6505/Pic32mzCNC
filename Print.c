@@ -177,13 +177,13 @@ float acc = settings.acceleration;
               ,settings.mm_per_arc_segment        //10
               ,settings.n_arc_correction          //11
               ,settings.decimal_places            //12
-              ,bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)     //13
-              ,bit_istrue(settings.flags,BITFLAG_AUTO_START)        //14
-              ,bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)  //15
-              ,bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE) //16
-              ,bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)     //17
-              ,settings.homing_dir_mask                             //18
-              ,settings.homing_feed_rate                            //19
+              ,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
+              ,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
+              ,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
+              ,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
+              ,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
+              ,settings.homing_dir_mask                          //18
+              ,settings.homing_feed_rate                         //19
               ,settings.homing_seek_rate                            //20
               ,settings.homing_debounce_delay                       //21
               ,settings.homing_pulloff);                            //22
@@ -228,7 +228,7 @@ void report_realtime_status(){
   // Report machine position
   for (i=0; i<= 2; i++) {
     print_position[i] = current_position[i]/settings.steps_per_mm[i];
-    if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
+    if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
   }
   
   while(DMA_IsOn(1));
@@ -239,7 +239,7 @@ void report_realtime_status(){
               
   // Report work position
   for (i=0; i<= 2; i++) {
-    if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) {
+    if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
       print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])*INCH_PER_MM;
     } else {
       print_position[i] -= gc.coord_system[i]+gc.coord_offset[i];
@@ -285,7 +285,7 @@ int coord_select, i;
     }
     for (i=0; i<NoOfAxis; i++) {
       while(DMA_IsOn(1));
-      if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) { 
+      if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
           dma_printf("%f ",coord_system[coord_select].coord[i]*INCH_PER_MM);
       }else { 
           dma_printf("%f ",coord_system[coord_select].coord[i]);
@@ -302,7 +302,7 @@ int coord_select, i;
   dma_printf("[G92:"); // Print G92,G92.1 which are not persistent in memory
   for (i=0; i<NoOfAxis; i++) {
     while(DMA_IsOn(1));
-    if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)){
+    if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)){
       dma_printf("%f ",gc.coord_offset[i]*INCH_PER_MM);
     }else {
       dma_printf("%f ",gc.coord_offset[i]);

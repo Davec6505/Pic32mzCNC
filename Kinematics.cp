@@ -58,7 +58,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 160 "c:/users/git/pic32mzcnc/settings.h"
+#line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  afloat steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -584,6 +584,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 47 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 20 ][ 64 ]);
@@ -813,7 +814,7 @@ typedef struct Steps{
 
  homing_t homing;
 }STP;
-extern STP STPS[ 4 ];
+extern volatile STP STPS[ 4 ];
 
 
 
@@ -843,8 +844,8 @@ int GetAxisDirection(long mm2move);
 
 void ResetHoming();
 int Home(int axis);
-void Home_Axis(double distance,long speed,int axis);
-void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,long speed,int axis);
+static void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #line 3 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
@@ -1199,13 +1200,15 @@ long speed = 0;
  STPS[axis].homing.complete =  1 ;
  STPS[axis].step_count = 0;
  STPS[axis].steps_abs_position = 0;
- }
- }
 
+ return STPS[axis].homing.complete;
+ }
+ }
+ return 0;
 }
 
 
-void Home_Axis(double distance,long speed,int axis){
+static void Home_Axis(double distance,long speed,int axis){
  distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
  distance = (distance < 0.0)? distance : -distance;
 
@@ -1213,7 +1216,7 @@ void Home_Axis(double distance,long speed,int axis){
 
 }
 
-void Inv_Home_Axis(double distance,long speed,int axis){
+static void Inv_Home_Axis(double distance,long speed,int axis){
  distance = (distance > 10.0)? 10.0 : distance;
  distance *= (distance < 0.0)? -1.0 : 1.0;
 
@@ -1243,6 +1246,7 @@ void mc_reset(){
  case  3 : case  4 : case  5 :
  sys.execute |=  (1 << 5) ;
  disableOCx();
+ ResetHoming();
  }
  }
 }

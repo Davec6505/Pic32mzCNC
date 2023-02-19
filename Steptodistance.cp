@@ -98,7 +98,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 160 "c:/users/git/pic32mzcnc/settings.h"
+#line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  afloat steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -439,7 +439,7 @@ typedef struct Steps{
 
  homing_t homing;
 }STP;
-extern STP STPS[ 4 ];
+extern volatile STP STPS[ 4 ];
 
 
 
@@ -469,8 +469,8 @@ int GetAxisDirection(long mm2move);
 
 void ResetHoming();
 int Home(int axis);
-void Home_Axis(double distance,long speed,int axis);
-void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,long speed,int axis);
+static void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -694,6 +694,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 47 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 20 ][ 64 ]);

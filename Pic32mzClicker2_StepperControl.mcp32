@@ -133,10 +133,10 @@ ActiveImageIndex=-1
 File0=Main.c
 File1=Protocol.c
 File2=Protocol.h
-File3=GCODE.c
-File4=GCODE.h
-File5=Kinematics.c
-File6=Kinematics.h
+File3=Globals.c
+File4=Kinematics.c
+File5=Kinematics.h
+File6=Globals.h
 Count=7
 [EEPROM]
 Count=0

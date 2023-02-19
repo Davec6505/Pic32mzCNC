@@ -184,14 +184,31 @@ START_LINE://label to rerun startup line if it has one
               break;
             case 'H' : // Perform homing cycle
                startup = 2;
-               if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) {
+               if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
                 int axis_to_home = 0;
                   // Only perform homing if Grbl is idle or lost.
                   if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
-                    while(!Home(axis_to_home)){
-                     //will need to test for abort!!!
-                     if (sys.abort) {
-                       break;
+                    while(axis_to_home != NoOfAxis){
+                     axis_to_home = Home(axis_to_home);
+                     LED2 = TMR.clock >> 3;
+                     if(Get_Difference() > 0){
+                       Get_Line(str,dif);
+                       strsplit(gcode,str,0x20);
+                       #if HomeDebug == 1
+                          while(DMA_IsOn(1));
+                          dma_printf("GCODE:= %s\n",gcode[0]);
+
+                       #endif
+                        if(gcode[0][1] == '!'){
+                           LED2 = false;
+                           mc_reset();
+                           break;
+                        }
+                       //will need to test for abort!!!
+                       if (sys.abort) {
+                         return(ALARM_ABORT_CYCLE);
+                         break;
+                       }
                      }
                     }
                     // Execute startup scripts after successful homing.
@@ -201,6 +218,7 @@ START_LINE://label to rerun startup line if it has one
                } else { 
                   return(STATUS_SETTING_DISABLED);
                }
+               return(STATUS_OK);
                break; //'H'
             case 'N' : // Startup lines.
                startup = 2;
@@ -318,7 +336,7 @@ START_LINE://label to rerun startup line if it has one
                  value = atof(str_val);
                  #if ProtoDebug == 6
                  while(DMA_IsOn(1));
-                 dma_printf("%s\t%f\n",str_val,value);
+                 dma_printf("%d\t%s\t%f\n",N_Val,str_val,value);
                  #endif
                  settings_store_global_setting(N_Val,value);
                  // if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }

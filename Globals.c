@@ -113,13 +113,46 @@ int retry_flash_write = 0;
       settings.decimal_places     = DEFAULT_DECIMAL_PLACES;
       buffA[DEC_PLACES_OFFSET]    = (unsigned int)settings.decimal_places;
       
-      if (DEFAULT_REPORT_INCHES) { settings.flags |= BITFLAG_REPORT_INCHES; }
-      if (DEFAULT_AUTO_START) { settings.flags |= BITFLAG_AUTO_START; }
-      if (DEFAULT_INVERT_ST_ENABLE) { settings.flags |= BITFLAG_INVERT_ST_ENABLE; }
-      if (DEFAULT_HARD_LIMIT_ENABLE) { settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; }
-      if (DEFAULT_HOMING_ENABLE) { settings.flags |= BITFLAG_HOMING_ENABLE; }
-      buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
+      settings.homing_dir_mask    = DEFAULT_HOME_DIR_MASK;
+      buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)settings.homing_dir_mask;
+
+      settings.invert_mask        = DEFAULT_INVERT_MASK;
+      buffA[INVERT_MASK_OFFSET]   = (unsigned long)settings.invert_mask;
       
+      settings.flags  = 0;
+      if (DEFAULT_REPORT_INCHES)    {settings.flags |= BITFLAG_REPORT_INCHES;}
+      #if GlobalsDebug == 7
+        while(DMA_IsOn(1));
+        dma_printf("settings.flags:= %d\n",settings.flags);
+      #endif
+      if (DEFAULT_AUTO_START)       { settings.flags |= (BITFLAG_AUTO_START);}
+      #if GlobalsDebug == 7
+        while(DMA_IsOn(1));
+        dma_printf("settings.flags:= %d\n",settings.flags);
+      #endif
+      if (DEFAULT_INVERT_ST_ENABLE) { settings.flags |= (BITFLAG_INVERT_ST_ENABLE);}
+      #if GlobalsDebug == 7
+        while(DMA_IsOn(1));
+        dma_printf("settings.flags:= %d\n",settings.flags);
+      #endif
+      if (DEFAULT_HARD_LIMIT_ENABLE){ settings.flags |= (BITFLAG_HARD_LIMIT_ENABLE);}
+      #if GlobalsDebug == 7
+        while(DMA_IsOn(1));
+        dma_printf("settings.flags:= %d\n",settings.flags);
+      #endif
+      if (DEFAULT_HOMING_ENABLE)    { settings.flags |= (BITFLAG_HOMING_ENABLE);}
+      #if GlobalsDebug == 7
+        while(DMA_IsOn(1));
+        dma_printf("settings.flags:= %d\n",settings.flags);
+      #endif
+      buffA[0x50] = ((unsigned long)settings.flags) & 0x1F;
+      #if GlobalsDebug == 7
+        while(DMA_IsOn(1));
+        dma_printf("buffA[%X]:= %l & settings.flags:= %d\n",
+                               FLAGS_OFFSET&0x50,
+                               buffA[FLAGS_OFFSET],
+                               settings.flags);
+      #endif
   #ifdef PREPARE_DEFAULT_FLASH
   
       //set the ram loaded indicator for startup
@@ -143,34 +176,34 @@ int retry_flash_write = 0;
       }
   #endif
   
-   }//else{
-     if(has_data){
-        set_ram_loaded_indicator(read_row_from_flash(add));
-      }
+   }
+   if(has_data){
+      set_ram_loaded_indicator(read_row_from_flash(add));
+    }
 
-      settings.steps_per_mm[X]        = ulong2flt(buffA[SPMMX_OFFSET]);
-      settings.steps_per_mm[Y]        = ulong2flt(buffA[SPMMY_OFFSET]);
-      settings.steps_per_mm[Z]        = ulong2flt(buffA[SPMMZ_OFFSET]);
-      //settings.steps_per_mm[A]        = ulong2flt(buffA[SPMMA_OFFSET]); //temp disabled for now
-      settings.default_feed_rate      = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
-      settings.default_seek_rate      = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
-      settings.homing_feed_rate       = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
-      settings.homing_seek_rate       = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
-      settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
-      settings.mm_per_arc_segment     = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
-      settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET]);
-      settings.junction_deviation     = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
-      settings.n_arc_correction       = (unsigned int)buffA[N_ARC_CORREC_OFFSET];
-      settings.flags                  = (unsigned int)buffA[FLAGS_OFFSET];
-      settings.stepper_idle_lock_time = (unsigned int)buffA[STEP_IDLE_DLY_OFFSET];// If max value 255, steppers do not disable.
-      settings.microsteps             = (unsigned int)buffA[MICROSTEPS_OFFSET];
-      settings.p_usec                 = (unsigned int)buffA[P_USEC_OFFSET];
-      settings.decimal_places         = (unsigned int)buffA[DEC_PLACES_OFFSET];
-      settings.homing_debounce_delay  = (unsigned int)buffA[H_DEBNC_DLY_OFFSET];
-      settings.invert_mask            = (unsigned int)buffA[INVERT_MASK_OFFSET];
-
-   //}
+    settings.steps_per_mm[X]        = ulong2flt(buffA[SPMMX_OFFSET]);
+    settings.steps_per_mm[Y]        = ulong2flt(buffA[SPMMY_OFFSET]);
+    settings.steps_per_mm[Z]        = ulong2flt(buffA[SPMMZ_OFFSET]);
+    //settings.steps_per_mm[A]        = ulong2flt(buffA[SPMMA_OFFSET]); //temp disabled for now
+    settings.default_feed_rate      = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
+    settings.default_seek_rate      = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
+    settings.homing_feed_rate       = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
+    settings.homing_seek_rate       = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
+    settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
+    settings.mm_per_arc_segment     = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
+    settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET]);
+    settings.junction_deviation     = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
+    settings.n_arc_correction       = (unsigned int)buffA[N_ARC_CORREC_OFFSET];
+    settings.flags                  = ((unsigned int)buffA[0x50]);//FLAGS_OFFSET]);
+    settings.stepper_idle_lock_time = (unsigned int)buffA[STEP_IDLE_DLY_OFFSET];// If max value 255, steppers do not disable.
+    settings.microsteps             = (unsigned int)buffA[MICROSTEPS_OFFSET];
+    settings.p_usec                 = (unsigned int)buffA[P_USEC_OFFSET];
+    settings.decimal_places         = (unsigned int)buffA[DEC_PLACES_OFFSET];
+    settings.homing_debounce_delay  = (unsigned int)buffA[H_DEBNC_DLY_OFFSET];
+    settings.homing_dir_mask        = (unsigned int)buffA[HOME_DIR_MASK_OFFSET];
+    settings.invert_mask            = (unsigned int)buffA[INVERT_MASK_OFFSET];
  }
+ //set_ram_loaded_indicator(1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +271,7 @@ int data_count;
  for(j = 0;j < 512;j++){
     buffA[j] = *(ptr+j);
     if(buffA[j] != -1)data_count++;
-    #if FlashDebug == 2
+    #if FlashDebug == 22
     while(DMA_IsOn(1));
     dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
     #endif
@@ -565,18 +598,21 @@ char temp_char;
 // A helper method to set settings from command line [ ac:grbl_settings ]
 // $99=1 is added to save all updated to flash
 int settings_store_global_setting(int parameter, float value) {
+unsigned long *ptr;
+volatile unsigned long has_data = 0;
 int val_temp = 0;
 
-  add = (unsigned long)FLASH_Settings_VAddr_P1;
- 
+ add = (unsigned long)FLASH_Settings_VAddr_P1;
+ ptr = (unsigned long)FLASH_Settings_VAddr_FLASH_LOADED ;
+
  if(!read_ram_loaded_indicator()){
    //Read the saved Row from flash first place it into ram
    set_ram_loaded_indicator(read_row_from_flash(add));
-
-   //Erase the page in order to over write the values
-   // add = (unsigned long)FLASH_Settings_VAddr_P1;
-   error = (int)NVMErasePage(&add);
  }
+ 
+ //Erase the page in order to over write the values
+ // add = (unsigned long)FLASH_Settings_VAddr_P1;
+ error = (int)NVMErasePage(&add);
  
  //if page erase didnt suceed return the error
  //leave indicator in its current state
@@ -585,10 +621,10 @@ int val_temp = 0;
      while(DMA_IsOn(1));
      dma_printf("error:= %d\n",error);
    #endif
-   return error;
+   return(STATUS_INVALID_STATEMENT);
  }
  
-  #if GlobalsDebug == 2
+  #if GlobalsDebug == 22
   while(DMA_IsOn(1));
   dma_printf("param:= %d & value:= %f\n",
                           parameter,
@@ -664,40 +700,40 @@ int val_temp = 0;
       }else{
         settings.flags &= ~BITFLAG_REPORT_INCHES;
       }
-      buffA[FLAGS_OFFSET] |= settings.flags;
+      buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
       break;
     case 14: // Reset to ensure change. Immediate re-init may cause problems.
       if (round(value)){
-        settings.flags |= BITFLAG_AUTO_START; 
+        settings.flags |= BITFLAG_AUTO_START;
       }else{ 
         settings.flags &= ~BITFLAG_AUTO_START;
       }
-      buffA[FLAGS_OFFSET] |= settings.flags;
+      buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
       break;
     case 15: // Reset to ensure change. Immediate re-init may cause problems.
       if (round(value)){
          settings.flags |= BITFLAG_INVERT_ST_ENABLE;
       }else{
-         settings.flags &= ~BITFLAG_INVERT_ST_ENABLE; 
+         settings.flags &= ~BITFLAG_INVERT_ST_ENABLE;
       }
-      buffA[FLAGS_OFFSET] |= settings.flags;
+      buffA[FLAGS_OFFSET] |= (unsigned long)settings.flags;
       break;
     case 16:
       if (round(value)){
-         settings.flags |= BITFLAG_HARD_LIMIT_ENABLE; 
+         settings.flags |= BITFLAG_HARD_LIMIT_ENABLE;
       }else{ 
          settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
       }
-      buffA[FLAGS_OFFSET] |= settings.flags;
+      buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
      // limits_init(); // Re-init to immediately change. NOTE: Nice to have but could be problematic later.
       break;
     case 17:
       if (round(value)){
-        settings.flags |= BITFLAG_HOMING_ENABLE; 
+        settings.flags |= BITFLAG_HOMING_ENABLE;
       }else{
         settings.flags &= ~BITFLAG_HOMING_ENABLE;
       }
-      buffA[FLAGS_OFFSET] |= settings.flags;
+      buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
       break;
     case 18:
          val_temp = round(value);
@@ -723,32 +759,8 @@ int val_temp = 0;
     case 99://write buffC back to Row3
          val_temp = round(value);
          if(val_temp == 1){
-         
-           //This sequence of function calls has to be performed
-           //erery time a new write to flash needs to be performed!!!
-           //first test is ram has been loaded from flash recently
-           //if not then reload it so as not to loose and default
-           //settings from flash, then erase the page so that flash
-           //can be unlocked inorder to rewrite to it.
-           if(!read_ram_loaded_indicator()){
-           
-             //Read the saved Row from flash first place it into ram
-             set_ram_loaded_indicator(read_row_from_flash(add));
-
-             //Erase the page in order to over write the values
-             // add = (unsigned long)FLASH_Settings_VAddr_P1;
-             error = (int)NVMErasePage(&add);
-           }
-           
-           //if page erase didn't suceed return the error
-           //leave ram indicator in its current state
-           if(error){
-             #if FlashDebug == 1
-               while(DMA_IsOn(1));
-               dma_printf("error:= %d\n",error);
-             #endif
-             return error;
-           }
+           //set the ram loaded indicator for startup
+           buffA[FLASH_LOADED_OFFSET] = 0x7FFFFFFF;
            
            //set the ram indicator back to zero if a write succeeded
            //to indicate to the next process that it has to reload
@@ -757,9 +769,11 @@ int val_temp = 0;
            //all the changes necessary prior to using this statement
            set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
            
-           #if GlobalsDebug == 2
+           #if GlobalsDebug == 22
            while(DMA_IsOn(1));
-           dma_printf("ram_loaded_indicator:= %d\n",read_ram_loaded_indicator());
+           dma_printf("ram_loaded_indicator:= %d\t%d\t%d\n",
+                       read_ram_loaded_indicator(),
+                       error,settings.flags);
            #endif
          }
        break;

@@ -103,7 +103,6 @@ int Rst_motionmode(){
 ///////////////////////////////////////////////////////////////
 //Gcodes {G 0,1,2,3,80}
 int G_Mode(int mode){
- //gc.inches_mode = 0;//temp for debugging
  group_number = Set_Modal_Groups(mode);
  motion_mode = Set_Motion_Mode(mode);
  return motion_mode;

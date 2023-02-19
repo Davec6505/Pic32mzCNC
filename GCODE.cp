@@ -146,7 +146,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 160 "c:/users/git/pic32mzcnc/settings.h"
+#line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  afloat steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -484,7 +484,7 @@ typedef struct Steps{
 
  homing_t homing;
 }STP;
-extern STP STPS[ 4 ];
+extern volatile STP STPS[ 4 ];
 
 
 
@@ -514,8 +514,8 @@ int GetAxisDirection(long mm2move);
 
 void ResetHoming();
 int Home(int axis);
-void Home_Axis(double distance,long speed,int axis);
-void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,long speed,int axis);
+static void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -715,6 +715,7 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 47 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 20 ][ 64 ]);
@@ -933,7 +934,6 @@ int Rst_motionmode(){
 
 
 int G_Mode(int mode){
-
  group_number = Set_Modal_Groups(mode);
  motion_mode = Set_Motion_Mode(mode);
  return motion_mode;
@@ -945,7 +945,7 @@ void M_Instruction(int flow){
 
  group_number = Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
-#line 122 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 121 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 }
 
 
@@ -1018,15 +1018,7 @@ int i;
  }
 
  }
-
-
- while(DMA_IsOn(1));
-#line 198 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- dma_printf("report!\n[status_code:= %d]\n[motion_mode:= %d]\n                 [modal_group_words:= %d]\n[non_modal_action:= %d]\n"
- ,status_code,modal_group_words
- ,motion_mode,non_modal_action);
-
-
+#line 202 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 }
 
 
@@ -1054,7 +1046,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 233 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 232 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  status_code = 3 ; ;break;
@@ -1098,7 +1090,7 @@ int i = 0;
 
  if(!gc.absolute_override)
   (non_modal_words |= (1 << non_modal_action) ) ;
-#line 284 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 283 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -1129,14 +1121,7 @@ int i = 0;
  }
  break;
  case  1 :
-
-
-
-
-
- while(DMA_IsOn(1));
- dma_printf("axis_words:= %d\n",(int)axis_words & 0x00FF);
-
+#line 321 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  if (axis_words == 0) {
   status_code = 6 ; ;
  }else {
@@ -1174,28 +1159,28 @@ int i = 0;
  status_code =  0 ;
   status_code = 0 ; ;
  }
-#line 365 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 364 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
 
 
  if (group_number ==  4 ){
-#line 377 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 376 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
 
 
  if (group_number ==  6 ){
-#line 389 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 388 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
 
 
  if (group_number ==  7 ){
-#line 401 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 400 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
@@ -1207,12 +1192,12 @@ int i = 0;
  status_code =  1 ;
  else
  status_code =  0 ;
-#line 418 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 417 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
  }
-#line 430 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 429 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
 }
@@ -1276,7 +1261,7 @@ int F_Val,O_Val;
  if(F_Val < 0){
   status_code = 13 ; ;
  }
-#line 499 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 498 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  gc.frequency = F_Val;
  break;
  case 'P':
@@ -1304,7 +1289,7 @@ int F_Val,O_Val;
  break;
  default: status_code = 3 ; ;break;
  }
-#line 535 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 534 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }
 
