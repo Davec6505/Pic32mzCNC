@@ -6,49 +6,6 @@
 //led status for time function; uncommentr if not needed
 #define LED_STATUS
 
-//default configurations
-#define DEFAULTS_GENERIC
-
-#ifdef DEFAULTS_GENERIC
-  // Grbl generic default settings. Should work across different machines.
-  #define DEFAULT_FEEDRATE 250.0
-  #define DEFAULT_X_STEPS_PER_MM 250.0
-  #define DEFAULT_Y_STEPS_PER_MM 250.0
-  #define DEFAULT_Z_STEPS_PER_MM 250.0
-  #define DEFAULT_STEP_PULSE_MICROSECONDS 10
-  #define DEFAULT_RAPID_FEEDRATE 500.0 // mm/min
-  #define DEFAULT_FEEDRATE 250.0
-  #define DEFAULT_ACCELERATION (10.0*60*60) // 10 mm/min^2
-  #define DEFAULT_JUNCTION_DEVIATION 0.05 // mm
-  #define DEFAULT_STEPPING_INVERT_MASK ((1<<Y_DIRECTION_BIT)|(1<<Z_DIRECTION_BIT))
-  #define DEFAULT_REPORT_INCHES 0 // false
-  #define DEFAULT_AUTO_START 1 // true
-  #define DEFAULT_INVERT_ST_ENABLE 0 // false
-  #define DEFAULT_HARD_LIMIT_ENABLE 0  // false
-  #define DEFAULT_HOMING_ENABLE 0  // false
-  #define DEFAULT_HOMING_DIR_MASK 0 // move positive dir
-  #define DEFAULT_HOMING_RAPID_FEEDRATE 250.0 // mm/min
-  #define DEFAULT_HOMING_FEEDRATE 25.0 // mm/min
-  #define DEFAULT_HOMING_DEBOUNCE_DELAY 100 // msec (0-65k)
-  #define DEFAULT_HOMING_PULLOFF 1.0 // mm
-  #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
-  #define DEFAULT_DECIMAL_PLACES 3
-  #define DEFAULT_N_ARC_CORRECTION 25
-  #define DEFAULT_MM_PER_ARC_SEGMENT 0.8
-#endif
-  // IMPORTANT: Any changes here requires a full re-compiling of the source code to propagate them.
-
-
-// Define runtime command special characters. These characters are 'picked-off' directly from the
-// serial read data stream and are not passed to the grbl line execution parser. Select characters
-// that do not and must not exist in the streamed g-code program. ASCII control characters may be
-// used, if they are available per user setup. Also, extended ASCII codes (>127), which are never in
-// g-code programs, maybe selected for interface programs.
-// NOTE: If changed, manually update help message in report.c.
-#define CMD_STATUS_REPORT '?'
-#define CMD_FEED_HOLD '!'
-#define CMD_CYCLE_START '~'
-#define CMD_RESET 0x18 // ctrl-x
 
 // The temporal resolution of the acceleration management subsystem. Higher number give smoother
 // acceleration but may impact performance.
@@ -59,7 +16,7 @@
 // round-off can be great enough to cause problems and/or it's too fast for the Arduino. The correct
 // value for this parameter is machine dependent, so it's advised to set this only as high as needed.
 // Approximate successful values can range from 30L to 100L or more.
-#define ACCELERATION_TICKS_PER_SECOND 50L
+ //#define ACCELERATION_TICKS_PER_SECOND 50L
 
 // Minimum planner junction speed. Sets the default minimum speed the planner plans for at the end
 // of the buffer and all stops. This should not be much greater than zero and should only be changed

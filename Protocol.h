@@ -9,7 +9,7 @@
 #include "Config.h"
 #include "Nuts_Bolts.h"
 #include "Globals.h"
-//#include "report.h"
+#include "Timers.h"
 #include "Kinematics.h"
 
 
@@ -26,6 +26,16 @@
 // parser state depending on user preferences.
 #define N_STARTUP_LINE 2 // Integer (1-5)
 
+// Define runtime command special characters. These characters are 'picked-off' directly from the
+// serial read data stream and are not passed to the grbl line execution parser. Select characters
+// that do not and must not exist in the streamed g-code program. ASCII control characters may be
+// used, if they are available per user setup. Also, extended ASCII codes (>127), which are never in
+// g-code programs, maybe selected for interface programs.
+// NOTE: If changed, manually update help message in report.c.
+#define CMD_STATUS_REPORT '?'
+#define CMD_FEED_HOLD '!'
+#define CMD_CYCLE_START '~'
+#define CMD_RESET 0x18 // ctrl-x
 
 
 

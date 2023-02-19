@@ -18,14 +18,31 @@ typedef __attribute__((aligned (32))) float afloat;
 //from this position until a new one is called upon
 #define NUMBER_OF_DATUMS 9
 
+/////////////////////////////////////////////////////////////////
 // Define bit flag masks for the boolean settings in settings.flag.
-#define BITFLAG_REPORT_INCHES      bit(0)
-#define BITFLAG_AUTO_START         bit(1)
-#define BITFLAG_INVERT_ST_ENABLE   bit(2)
-#define BITFLAG_HARD_LIMIT_ENABLE  bit(3)
-#define BITFLAG_HOMING_ENABLE      bit(4)
+
+//indices of flags in word
+#define FLAG_REPORT_INCHES            1
+#define FLAG_AUTO_START               2
+#define FLAG_INVERT_ST_ENABLE         4
+#define FLAG_HARD_LIMIT_ENABLE        8
+#define FLAG_HOMING_ENABLE            16
 
 
+#define BITFLAG_REPORT_INCHES         bit(0)
+#define BITFLAG_AUTO_START            bit(1)
+#define BITFLAG_INVERT_ST_ENABLE      bit(2)
+#define BITFLAG_HARD_LIMIT_ENABLE     bit(3)
+#define BITFLAG_HOMING_ENABLE         bit(4)
+
+//flags
+#define DEFAULT_REPORT_INCHES          true
+#define DEFAULT_AUTO_START             true
+#define DEFAULT_INVERT_ST_ENABLE       true
+#define DEFAULT_HARD_LIMIT_ENABLE      true
+#define DEFAULT_HOMING_ENABLE          true
+
+//default values of words and flags
 #define DEFAULT_X_STEPS_PER_MM         250.00
 #define DEFAULT_Y_STEPS_PER_MM         250.00
 #define DEFAULT_Z_STEPS_PER_MM         250.00
@@ -36,12 +53,6 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_FEEDRATE               250.0
 #define DEFAULT_ACCELERATION           (10.0*60.0*60.0) // 10 mm/min^2
 #define DEFAULT_JUNCTION_DEVIATION     0.05 // mm
-#define DEFAULT_REPORT_INCHES          0 // false
-#define DEFAULT_AUTO_START             1 // true
-#define DEFAULT_INVERT_ST_ENABLE       0 // false
-#define DEFAULT_HARD_LIMIT_ENABLE      1  // false
-#define DEFAULT_HOMING_ENABLE          0  // false
-#define DEFAULT_HOMING_DIR_MASK        0 // move positive dir
 #define DEFAULT_HOMING_RAPID_FEEDRATE  250.0 // mm/min
 #define DEFAULT_HOMING_FEEDRATE        25.0 // mm/min
 #define DEFAULT_HOMING_DEBOUNCE_DELAY  100 // msec (0-65k)
@@ -49,6 +60,10 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
 #define DEFAULT_DECIMAL_PLACES         3
 #define DEFAULT_N_ARC_CORRECTION       25
+#define DEFAULT_HOME_DIR_MASK        15 // move positive dir
+#define DEFAULT_INVERT_MASK            15 // move positive dir
+
+
 
 ////////////////////////////////////////////////////////////////
 // NOTE: Work coordinate indices are (0=G54, 1=G55, ... , 6=G59)
@@ -61,13 +76,7 @@ typedef __attribute__((aligned (32))) float afloat;
 #define SETTING_INDEX_G30  SETTING_INDEX_NCOORD + 1  // Home position 2
 // #define SETTING_INDEX_G92    2  // Coordinate offset (G92.2,G92.3 not supported)
 
-/////////////////////////////////////////////////////////////////
-// Define bit flag masks for the boolean settings in settings.flag.
-#define BITFLAG_REPORT_INCHES      bit(0)
-#define BITFLAG_AUTO_START         bit(1)
-#define BITFLAG_INVERT_ST_ENABLE   bit(2)
-#define BITFLAG_HARD_LIMIT_ENABLE  bit(3)
-#define BITFLAG_HOMING_ENABLE      bit(4)
+
 
 ////////////////////////////////////////////////////////////
 //              Stepper Motor Settings                    //

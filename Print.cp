@@ -32,7 +32,7 @@ void report_realtime_status();
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 160 "c:/users/git/pic32mzcnc/settings.h"
+#line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  afloat steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -518,7 +518,7 @@ typedef struct Steps{
 
  homing_t homing;
 }STP;
-extern STP STPS[ 4 ];
+extern volatile STP STPS[ 4 ];
 
 
 
@@ -547,9 +547,9 @@ int GetAxisDirection(long mm2move);
 
 
 void ResetHoming();
-void Home(int axis);
-void Home_Axis(double distance,long speed,int axis);
-void Inv_Home_Axis(double distance,long speed,int axis);
+int Home(int axis);
+static void Home_Axis(double distance,long speed,int axis);
+static void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -726,8 +726,9 @@ char FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 37 "c:/users/git/pic32mzcnc/protocol.h"
+#line 47 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 20 ][ 64 ]);
 void Str_clear(char *str,int len);
 
@@ -990,11 +991,11 @@ float acc = settings.acceleration;
  ,settings.mm_per_arc_segment
  ,settings.n_arc_correction
  ,settings.decimal_places
- , ((settings.flags & (1 << 0) ) != 0) 
- , ((settings.flags & (1 << 1) ) != 0) 
- , ((settings.flags & (1 << 2) ) != 0) 
- , ((settings.flags & (1 << 3) ) != 0) 
- , ((settings.flags & (1 << 4) ) != 0) 
+ , ((settings.flags & 1 ) != 0) 
+ , ((settings.flags & 2 ) != 0) 
+ , ((settings.flags & 4 ) != 0) 
+ , ((settings.flags & 8 ) != 0) 
+ , ((settings.flags & 16 ) != 0) 
  ,settings.homing_dir_mask
  ,settings.homing_feed_rate
  ,settings.homing_seek_rate
@@ -1041,7 +1042,7 @@ void report_realtime_status(){
 
  for (i=0; i<= 2; i++) {
  print_position[i] = current_position[i]/settings.steps_per_mm[i];
- if ( ((settings.flags & (1 << 0) ) != 0) ) { print_position[i] *=  (0.0393701) ; }
+ if ( ((settings.flags & 1 ) != 0) ) { print_position[i] *=  (0.0393701) ; }
  }
 
  while(DMA_IsOn(1));
@@ -1052,7 +1053,7 @@ void report_realtime_status(){
 
 
  for (i=0; i<= 2; i++) {
- if ( ((settings.flags & (1 << 0) ) != 0) ) {
+ if ( ((settings.flags & 1 ) != 0) ) {
  print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])* (0.0393701) ;
  } else {
  print_position[i] -= gc.coord_system[i]+gc.coord_offset[i];
@@ -1098,7 +1099,7 @@ int coord_select, i;
  }
  for (i=0; i< 4 ; i++) {
  while(DMA_IsOn(1));
- if ( ((settings.flags & (1 << 0) ) != 0) ) {
+ if ( ((settings.flags & 1 ) != 0) ) {
  dma_printf("%f ",coord_system[coord_select].coord[i]* (0.0393701) );
  }else {
  dma_printf("%f ",coord_system[coord_select].coord[i]);
@@ -1115,7 +1116,7 @@ int coord_select, i;
  dma_printf("[G92:");
  for (i=0; i< 4 ; i++) {
  while(DMA_IsOn(1));
- if ( ((settings.flags & (1 << 0) ) != 0) ){
+ if ( ((settings.flags & 1 ) != 0) ){
  dma_printf("%f ",gc.coord_offset[i]* (0.0393701) );
  }else {
  dma_printf("%f ",gc.coord_offset[i]);

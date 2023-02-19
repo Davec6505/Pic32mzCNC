@@ -363,7 +363,7 @@ int i = 0;
 }
 //////////////////////////////////////////////////////////////////
 //Homeing sequence is a 2 bounce
-void Home(int axis){
+int Home(int axis){
 long speed = 0;
 
      if(!STPS[axis].homing.set){
@@ -405,13 +405,15 @@ long speed = 0;
           STPS[axis].homing.complete      = true;
           STPS[axis].step_count           = 0;
           STPS[axis].steps_abs_position   = 0;
+          
+          return STPS[axis].homing.complete;
       }
    }
-   
+   return 0;
 }
 
 //Home single axis
-void Home_Axis(double distance,long speed,int axis){
+static void Home_Axis(double distance,long speed,int axis){
       distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
       distance = (distance < 0.0)? distance : -distance;
      // STPS[axis].mmToTravel = belt_steps(distance);
@@ -419,7 +421,7 @@ void Home_Axis(double distance,long speed,int axis){
      // SingleAxisStep(STPS[axis].mmToTravel,axis);
 }
 //Re verse
-void Inv_Home_Axis(double distance,long speed,int axis){
+static void Inv_Home_Axis(double distance,long speed,int axis){
       distance = (distance > 10.0)?  10.0 : distance;
       distance *= (distance < 0.0)?  -1.0 : 1.0;
     //  STPS[axis].mmToTravel = belt_steps(distance);
@@ -449,6 +451,7 @@ void mc_reset(){
       case STATE_CYCLE: case STATE_HOLD: case STATE_HOMING: // case STATE_JOG:
         sys.execute |= EXEC_ALARM; // Execute alarm state.
         disableOCx(); // Execute alarm force kills steppers. Position likely lost.
+        ResetHoming();
     }
   }
 }

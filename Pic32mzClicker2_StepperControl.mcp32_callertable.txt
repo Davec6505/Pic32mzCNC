@@ -91,14 +91,6 @@ main
 				Step_Cycle
 				Pulse
 					AccDec
-		Home
-			FP
-				Test_Min
-			StopAxis
-			Inv_Home_Axis
-			FN
-				Test_Min
-			Home_Axis
 		r_or_ijk
 			sqrt
 				frexp
@@ -137,6 +129,14 @@ main
 				Test_Port_Pins
 				disableOCx
 				__CC2DW
+		Home
+			FP
+				Test_Min
+			StopAxis
+			Inv_Home_Axis
+			FN
+				Test_Min
+			Home_Axis
 	Rst_Axisword
 	Modal_Group_Actions4
 	Modal_Group_Actions7
@@ -145,7 +145,6 @@ main
 		DMA_IsOn
 		dma_printf
 	Sample_Ringbuffer
-		__CC2DW
 		Get_Difference
 		report_realtime_status
 			DMA_IsOn
@@ -194,9 +193,13 @@ main
 			__CC2DW
 		mc_reset
 			disableOCx
+			ResetHoming
 		report_feedback_message
 			DMA_IsOn
 			dma_printf
+		Home
+		DMA_IsOn
+		dma_printf
 		settings_read_startup_line
 			memcpy
 		report_status_message
@@ -238,9 +241,6 @@ main
 			Set_Modal_Groups
 			Set_Motion_Mode
 				Select_Plane
-				DMA_IsOn
-				dma_printf
-				__CC2DW
 		Instruction_Values
 			To_Millimeters
 		M_Instruction
@@ -248,10 +248,8 @@ main
 			Set_M_Commands
 		Check_group_multiple_violations
 			Rst_modalgroup
-			DMA_IsOn
-			dma_printf
 			Rst_modalword
-			__CC2DW
+		__CC2DW
 	protocol_execute_runtime
 		report_alarm_message
 			DMA_IsOn

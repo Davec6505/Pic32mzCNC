@@ -1,3 +1,21 @@
+/* ****************************************************
+ *$$ (view Grbl settings)
+ *$# (view # parameters)
+ *$G (view parser state)
+ *$I (view build info)
+ *$N (view startup blocks)
+ *$x=value (save Grbl setting)
+ *$Nx=line (save startup block)
+ *$C (check gcode mode)
+ *$X (kill alarm lock)
+ *$H (run homing cycle)
+ *~ (cycle start)
+ *! (feed hold)
+ *? (current status)
+ *ctrl-x (reset Grbl)
+*******************************************************/
+
+
 #include "protocol.h"
 #include "Print.h"
 ////////////////////////////////////////////////////
@@ -166,20 +184,42 @@ START_LINE://label to rerun startup line if it has one
               break;
             case 'H' : // Perform homing cycle
                startup = 2;
-               if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) {
-               // Only perform homing if Grbl is idle or lost.
+               if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
+                int axis_to_home = 0;
+                  // Only perform homing if Grbl is idle or lost.
                   if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
-                    // mc_go_home();
-                     if (!sys.abort) {
-                       // protocol_execute_startup();
-                     } // Execute startup scripts after successful homing.
+                    while(axis_to_home != NoOfAxis){
+                     axis_to_home = Home(axis_to_home);
+                     LED2 = TMR.clock >> 3;
+                     if(Get_Difference() > 0){
+                       Get_Line(str,dif);
+                       strsplit(gcode,str,0x20);
+                       #if HomeDebug == 1
+                          while(DMA_IsOn(1));
+                          dma_printf("GCODE:= %s\n",gcode[0]);
+
+                       #endif
+                        if(gcode[0][1] == '!'){
+                           LED2 = false;
+                           mc_reset();
+                           break;
+                        }
+                       //will need to test for abort!!!
+                       if (sys.abort) {
+                         return(ALARM_ABORT_CYCLE);
+                         break;
+                       }
+                     }
+                    }
+                    // Execute startup scripts after successful homing.
                   } else {
                      return(STATUS_IDLE_ERROR); 
                   }
                } else { 
                   return(STATUS_SETTING_DISABLED);
                }
-              break; //'H'
+               return(STATUS_OK);
+               break; //'H'
             case 'N' : // Startup lines.
                startup = 2;
                if ( gcode[0][2] < 0x20 ) { // Print startup lines
@@ -256,7 +296,17 @@ START_LINE://label to rerun startup line if it has one
 
                     }
                }
-                break;
+               break;
+             case '~': //*~ (cycle start)
+               sys.execute |= EXEC_CYCLE_START;
+               break;
+             case '!': //*! (feed hold)
+               sys.execute |= EXEC_FEED_HOLD;
+               break;
+             case 0x18: // *ctrl-x (reset Grbl)
+               mc_reset();
+               break;
+
             case '0': case '1': case '2': case'3':  case '4': case '5':
             case '6': case '7': case '8': case '9':
                //extract the value from the string if = is at [2]
@@ -286,7 +336,7 @@ START_LINE://label to rerun startup line if it has one
                  value = atof(str_val);
                  #if ProtoDebug == 6
                  while(DMA_IsOn(1));
-                 dma_printf("%s\t%f\n",str_val,value);
+                 dma_printf("%d\t%s\t%f\n",N_Val,str_val,value);
                  #endif
                  settings_store_global_setting(N_Val,value);
                  // if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }
@@ -493,8 +543,8 @@ START_LINE://label to rerun startup line if it has one
                          break;
                    }
                 }
-                  //get  pos f value; gcodes should not go beyond this
-                  //G02/G03 = J1.0 / F0.2;
+                //get  pos f value; gcodes should not go beyond this
+                //G02/G03 = J1.0 / F0.2;
                 if(*(*(gcode+6)+0) != 0){
                   i = cpy_val_from_str(temp,(*(gcode+6)),1,strlen(*(gcode+6)));
                    switch(*(*(gcode+6))) {
@@ -555,9 +605,9 @@ START_LINE://label to rerun startup line if it has one
                       PrintDebug(gcode[0],temp,&XYZ_Val);
                    #endif
               }
-                              //get position b
-               //G00/G01 X12.5 Y14.7 F0.2;
-               //G02/G03 X12.5 Y14.7 I1.0 J2.0 F0.2;
+              //get position b
+              //G00/G01 X12.5 Y14.7 F0.2;
+              //G02/G03 X12.5 Y14.7 I1.0 J2.0 F0.2;
               if(*(*(gcode+1)+0) != 0){
                    xyz[1] = *(*(gcode+1)+0);no_of_axis++;
                    i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
@@ -582,7 +632,6 @@ START_LINE://label to rerun startup line if it has one
                          #endif
                         // }
                          break;
-
                    }
                }
               break;

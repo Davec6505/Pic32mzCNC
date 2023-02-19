@@ -30,7 +30,7 @@
 //1/4th of row for coords [1st 1/3rd] starts at C000
 //rows for mz2048 are 512 32bit words in size.
 //G10 Pnnn coordinate recipes memory offsets
-#define  FLASH_Settings_VAddr_P1  0xBD1BC000//Row 1
+#define  FLASH_Settings_VAddr_P1  0xBD1BC000//Row start address
 #define  FLASH_Settings_VAddr_P2  0xBD1BC010//
 #define  FLASH_Settings_VAddr_P3  0xBD1BC020//
 #define  FLASH_Settings_VAddr_P4  0xBD1BC030//
