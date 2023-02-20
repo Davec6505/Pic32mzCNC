@@ -182,7 +182,7 @@ START_LINE://label to rerun startup line if it has one
               }
               query = 1; //status ok response
               break;
-            case 'H' : // Perform homing cycle
+            case 'H' : // Perform homing cycle $H
                startup = 2;
 
                if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
@@ -207,8 +207,8 @@ START_LINE://label to rerun startup line if it has one
                   return(STATUS_SETTING_DISABLED);
                }
                return(STATUS_OK);
-               break; //'H'
-            case 'N' : // Startup lines.
+               break;
+            case 'N' : // Startup lines. $N
                startup = 2;
                if ( gcode[0][2] < 0x20 ) { // Print startup lines
                   for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {

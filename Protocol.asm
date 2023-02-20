@@ -423,7 +423,7 @@ SH	R2, Offset(Sample_Ringbuffer_query_L0+0)(GP)
 ;Protocol.c,184 :: 		break;
 J	L_Sample_Ringbuffer19
 NOP	
-;Protocol.c,185 :: 		case 'H' : // Perform homing cycle
+;Protocol.c,185 :: 		case 'H' : // Perform homing cycle $H
 L_Sample_Ringbuffer30:
 ;Protocol.c,186 :: 		startup = 2;
 ORI	R2, R0, 2
@@ -529,7 +529,7 @@ L_Sample_Ringbuffer39:
 MOVZ	R2, R0, R0
 J	L_end_Sample_Ringbuffer
 NOP	
-;Protocol.c,211 :: 		case 'N' : // Startup lines.
+;Protocol.c,211 :: 		case 'N' : // Startup lines. $N
 L_Sample_Ringbuffer40:
 ;Protocol.c,212 :: 		startup = 2;
 ORI	R2, R0, 2
