@@ -60,6 +60,12 @@ void G_Initialise(){
   gc.absolute_mode     = true;
 }
 
+//Set Modal group manually.... typically for homing
+//instruction in protocol $H etc...
+void Set_modalgroup(int value){
+  bit_true( modal_group_words,bit( value));
+}
+
 //Modal group as per RS274NGC Spec
 int Get_modalgroup(){
   return modal_group_words;
@@ -68,6 +74,13 @@ int Get_modalgroup(){
 int Rst_modalgroup(){
    modal_group_words = 0;
    return modal_group_words;
+}
+
+
+//Set Modal group manually.... typically for homing
+//instruction in protocol $H etc...
+void Set_modalword(int value){
+  bit_true( non_modal_words,bit( value));
 }
 
 //modal modes within each group

@@ -184,34 +184,22 @@ START_LINE://label to rerun startup line if it has one
               break;
             case 'H' : // Perform homing cycle
                startup = 2;
+
                if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
                 int axis_to_home = 0;
+
                   // Only perform homing if Grbl is idle or lost.
                   if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
-                    while(axis_to_home != NoOfAxis){
-                     axis_to_home = Home(axis_to_home);
-                     LED2 = TMR.clock >> 3;
-                     if(Get_Difference() > 0){
-                       Get_Line(str,dif);
-                       strsplit(gcode,str,0x20);
-                       #if HomeDebug == 1
-                          while(DMA_IsOn(1));
-                          dma_printf("GCODE:= %s\n",gcode[0]);
-
-                       #endif
-                        if(gcode[0][1] == '!'){
-                           LED2 = false;
-                           mc_reset();
-                           break;
-                        }
-                       //will need to test for abort!!!
-                       if (sys.abort) {
-                         return(ALARM_ABORT_CYCLE);
-                         break;
-                       }
-                     }
-                    }
-                    // Execute startup scripts after successful homing.
+                    Set_modalgroup(HOME_ALL);
+                   #if HomeDebug == 1
+                    while(DMA_IsOn(1));
+                    dma_printf("GCODE:= %s\tmodal_group:= %d\n",gcode[0],Get_modalgroup());
+                   #endif
+                   //will need to test for abort!!!
+                   if (sys.abort) {
+                      return(ALARM_ABORT_CYCLE);
+                      break;
+                   }
                   } else {
                      return(STATUS_IDLE_ERROR); 
                   }

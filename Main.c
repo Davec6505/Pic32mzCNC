@@ -48,6 +48,7 @@ unsigned long rowbuff[128]={0};
 //////////////////////////////////////////
 //file scope vars
 static unsigned int disable_steps;//stepper timeout
+static int axis_to_home = 0;
 
 /////////////////////////////////////////
 //condition externs
@@ -114,6 +115,11 @@ static int cntr = 0,a = 0;
                break;
           case 512:// [G54,G55,G56,G57,G58,G59] Coordinate system selection
                Modal_Group_Actions12(gc.coord_select);//implimentation needed
+               break;
+          case 1024:
+               if(axis_to_home < NoOfAxis){
+                  axis_to_home  = Modal_Group_Actions1(ALL_AXIS);
+               }
                break;
        }
      }else{
@@ -423,13 +429,34 @@ static int Modal_Group_Actions1(int action){
        case 15://Homing Y axis
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
-       case 31://Homing X axis
+       case ALL_AXIS://Homing X axis
             if(action){
-             int axis_to_home = 0;
-               axis_to_home = Home(sys.homing_cnt);
+            int home_status;
+               if( axis_to_home < NoOfAxis){
+                 home_status = Home(axis_to_home);
+                 LED2 = TMR.clock >> 3;
+                 #if HomeDebug == 1
+                 while(DMA_IsOn(1));
+                 dma_printf("axis:= %d\n",axis_to_home);
+                 #endif
+                 if(home_status){
+                   LED2 = false;
+                   axis_to_home++;
+                   if(axis_to_home > NoOfAxis){mc_reset();}
+                   break;
+                 }
+                 //will need to test for abort!!!
+                 if (sys.abort) {
+                   return(ALARM_ABORT_CYCLE);
+                   break;
+                 }
+               }
+               // Execute startup scripts after successful homing????.
             }
+            //return the number of axis completed
+            return axis_to_home;
             break;
-        default: action = 0;
+        default: return action = 0;
               break;
     }
     
@@ -506,7 +533,7 @@ static int Modal_Group_Actions12(int action){
 // limit switches, or the main program.
 void protocol_execute_runtime(){
   if (sys.execute) { // Enter only if any bit flag is true
-    uint8_t rt_exec = sys.execute; // Avoid calling volatile multiple times
+    char rt_exec = sys.execute; // Avoid calling volatile multiple times
 
     // System alarm. Everything has shutdown by something that has gone severely wrong. Report
     // the source of the error to the user. If critical, Grbl disables by entering an infinite

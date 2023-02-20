@@ -297,9 +297,11 @@ enum IJK{I,J,K};
 
 void G_Initialise();
 
+void Set_modalgroup(int value);
 int Get_modalgroup();
 int Rst_modalgroup();
 
+void Set_modalword(int value);
 int Get_modalword();
 int Rst_modalword();
 
@@ -329,7 +331,7 @@ static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 34 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 36 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
 char home: 1;

@@ -367,7 +367,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 34 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 36 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
 char home: 1;
@@ -527,9 +527,11 @@ enum IJK{I,J,K};
 
 void G_Initialise();
 
+void Set_modalgroup(int value);
 int Get_modalgroup();
 int Rst_modalgroup();
 
+void Set_modalword(int value);
 int Get_modalword();
 int Rst_modalword();
 

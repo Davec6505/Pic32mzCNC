@@ -417,9 +417,11 @@ enum IJK{I,J,K};
 
 void G_Initialise();
 
+void Set_modalgroup(int value);
 int Get_modalgroup();
 int Rst_modalgroup();
 
+void Set_modalword(int value);
 int Get_modalword();
 int Rst_modalword();
 
@@ -742,7 +744,7 @@ void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 34 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 36 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 char set: 1;
 char home: 1;

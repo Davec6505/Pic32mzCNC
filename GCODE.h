@@ -111,7 +111,7 @@ extern volatile int status_code;   // Status of instructions
 #define NON_MODAL_SET_COORDINATE_OFFSET_BIT bit(7)
 #define NON_MODAL_RESET_COORDINATE_OFFSET 8       //G92.1
 #define NON_MODAL_RESET_COORDINATE_OFFSET_BIT bit(8)
-
+#define HOME_ALL 10                     //$H
 
 
 ////////////////////////////////////////////////////////
@@ -200,9 +200,11 @@ enum IJK{I,J,K};
 
 void G_Initialise();
 
+void Set_modalgroup(int value);
 int Get_modalgroup();
 int Rst_modalgroup();
 
+void Set_modalword(int value);
 int Get_modalword();
 int Rst_modalword();
 

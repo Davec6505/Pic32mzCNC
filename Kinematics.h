@@ -30,6 +30,8 @@
 #define CW  0
 #define CCW 1
 
+//axis >> 1 to Home all axis 1 at a time
+#define ALL_AXIS (((NoOfAxis*NoOfAxis)*2)-1)
 
 typedef struct {
 char set: 1;

@@ -137,6 +137,12 @@ main
 			FN
 				Test_Min
 			Home_Axis
+		DMA_IsOn
+		dma_printf
+		mc_reset
+			disableOCx
+			ResetHoming
+		__CC2DW
 	Rst_Axisword
 	Modal_Group_Actions4
 	Modal_Group_Actions7
@@ -192,14 +198,13 @@ main
 			dma_printf
 			__CC2DW
 		mc_reset
-			disableOCx
-			ResetHoming
 		report_feedback_message
 			DMA_IsOn
 			dma_printf
-		Home
+		Set_modalgroup
 		DMA_IsOn
 		dma_printf
+		Get_modalgroup
 		settings_read_startup_line
 			memcpy
 		report_status_message
