@@ -572,7 +572,7 @@ typedef struct Steps{
 
  homing_t homing;
 }STP;
-extern volatile STP STPS[ 4 ];
+extern STP STPS[ 4 ];
 
 
 
@@ -814,6 +814,11 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
+
+
+
+
+ static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;

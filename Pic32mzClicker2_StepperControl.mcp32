@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Protocol.c
+Value=Main.c
 =======
 =======
 >>>>>>> patch1
@@ -137,7 +137,10 @@ File3=Kinematics.c
 File4=Kinematics.h
 File5=GCODE.c
 File6=GCODE.h
-Count=7
+File7=DEFINES.pld
+File8=Planner.c
+File9=Stepper.c
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -217,4 +220,5 @@ USE_SRS=7
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
 18=Header Files
-Count=3
+37=Project Level Defines
+Count=4

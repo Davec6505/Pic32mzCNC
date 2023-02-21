@@ -572,7 +572,7 @@ typedef struct Steps{
 
  homing_t homing;
 }STP;
-extern volatile STP STPS[ 4 ];
+extern STP STPS[ 4 ];
 
 
 
@@ -814,6 +814,11 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
+
+
+
+
+ static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -853,7 +858,7 @@ void protocol_execute_runtime();
 #line 38 "C:/Users/Git/Pic32mzCNC/Main.c"
 volatile system_t sys;
 volatile coord_sys coord_system[ 9 ];
-volatile STP STPS[ 4 ];
+STP STPS[ 4 ];
 volatile settings_t settings;
 
 bit oneShotA; sfr;
@@ -913,7 +918,22 @@ static int cntr = 0,a = 0;
  break;
  case 4:
  axis_to_run = Get_Axisword();
+
+
+ if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
+ while(DMA_IsOn(1));
+ dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+ (STPS[X].run_state&0xff),STPS[X].step_count,
+ SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+ }
+
+
+
  if(axis_to_run){
+
+ while(DMA_IsOn(1));
+ dma_printf("axis_to_run:= %d\n",axis_to_run);
+
  EnableSteppers(2);
  Modal_Group_Actions1(axis_to_run);
  axis_to_run = Rst_Axisword();
@@ -954,7 +974,11 @@ static int cntr = 0,a = 0;
 
  if(disable_steps <=  10 )
  disable_steps = TMR.Reset( 10 ,disable_steps);
-#line 156 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+
+
+
  protocol_execute_runtime();
  WDTCONSET = 0x01;
  }
@@ -995,7 +1019,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 208 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 213 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1036,12 +1060,24 @@ unsigned long _flash,*addr;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 255 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
+ temp_axis,i,coord_data[i],indx);
+
+
  }else{
 
 
  coord_data[i] = gc.next_position[i];
-#line 266 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.next_position[%d]:= %f\n"
+ ,i,gc.next_position[i]);
+
+
  }
  indx++;
  }
@@ -1058,7 +1094,14 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-#line 290 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("axis_words:= %d\n",axis_words);
+
+
+
+
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1090,7 +1133,10 @@ unsigned long _flash,*addr;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 325 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("coord[%d]:= %f\n",j,_data);
+
  i++;
 
 
@@ -1168,11 +1214,7 @@ static int Modal_Group_Actions1(int action){
  SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
  break;
  case 3:
-
-
  DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
-
-
  break;
  case 4:
  SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
@@ -1248,7 +1290,10 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 486 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.program_flow:= %d\n",gc.program_flow);
+
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
   status_code = 6 ; ;
@@ -1260,7 +1305,10 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 501 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.spindle_direction:= %d\n",gc.spindle_direction);
+
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
   status_code = 6 ; ;
 
@@ -1271,10 +1319,13 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 515 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("GROUP_12 modal actions\taction:= %d\n",action);
+
  return action;
 }
-#line 534 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 535 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  char rt_exec = sys.execute;

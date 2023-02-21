@@ -37,7 +37,7 @@
 //parser_state_t gc;
 volatile system_t sys;
 volatile coord_sys coord_system[NUMBER_OF_DATUMS];
-volatile STP STPS[NoOfAxis];
+STP STPS[NoOfAxis];
 volatile settings_t settings;
 
 bit oneShotA; sfr;
@@ -97,7 +97,22 @@ static int cntr = 0,a = 0;
                break;
           case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
               axis_to_run = Get_Axisword();
+             //temp debug for steppers
+             #if StepperDebug == 1
+             if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
+               while(DMA_IsOn(1));
+               dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+                         (STPS[X].run_state&0xff),STPS[X].step_count,
+                          SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+              }
+             #endif
+             //Execute this once only, once the axis are started the
+             //OCx interrupts take control fo the axis
               if(axis_to_run){
+                #if MainDebug == 1
+                while(DMA_IsOn(1));
+                dma_printf("axis_to_run:= %d\n",axis_to_run);
+                #endif
                 EnableSteppers(2);
                 Modal_Group_Actions1(axis_to_run);
                 axis_to_run = Rst_Axisword();
@@ -142,16 +157,6 @@ static int cntr = 0,a = 0;
       #endif
 
 
-     //temp debug for steppers
-     #if StepperDebug == 1
-     if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
-       while(DMA_IsOn(1));
-       dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
-                 (STPS[X].run_state&0xff),STPS[X].step_count,
-                  SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
-      }
-     #endif
-     
      //run at end of every scan
      protocol_execute_runtime();
      WDTCONSET = 0x01;
@@ -399,11 +404,7 @@ static int Modal_Group_Actions1(int action){
              SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
              break;
        case 3://b0000 0011
-             //while(DMA_IsOn(1));
-             //dma_printf("X:= %f | Y:=%f\n",gc.next_position[X],gc.next_position[Y]);
              DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
-             //while(DMA_IsOn(1));
-             //dma_printf("SdlyX:=%l\taccX:=%l\tdecX:=%l\n",STPS[X].StartUp_delay,STPS[X].max_step_lim,STPS[X].decel_start);
              break;
       case 4://b0000 0100
             SingleAxisStep(gc.next_position[Z],gc.frequency,Z);

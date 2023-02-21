@@ -206,10 +206,8 @@ int i;
  
   #if GcodeDebug == 2
      while(DMA_IsOn(1));
-     dma_printf("report!\n[status_code:= %d]\n[motion_mode:= %d]\n\
-                 [modal_group_words:= %d]\n[non_modal_action:= %d]\n"
-                 ,status_code,modal_group_words
-                 ,motion_mode,non_modal_action);
+     dma_printf("report!\n[status_code:= %d]\n[mode:= %d]\n[motion_mode:= %d]\n[non_modal_action:= %d]\n"
+                 ,status_code ,mode ,motion_mode ,non_modal_action);
   #endif
 
 }
@@ -266,7 +264,7 @@ int i = 0;
    FAIL(STATUS_MODAL_GROUP_VIOLATION);
    return STATUS_MODAL_GROUP_VIOLATION;
  }
-      
+ 
  if(group_number > 0) {
    
    if(group_number != last_group_number)
@@ -305,7 +303,11 @@ int i = 0;
    //check for cancel from group 1
    if(group_number == MODAL_GROUP_1){
       status_code = STATUS_OK;
-      
+      #if GcodeDebug == 2
+       while(DMA_IsOn(1));
+       dma_printf("[group_number:= %d][motion_mode:= %d]\n"
+                   ,group_number,motion_mode);
+      #endif
       //motion_mode holds movement set in G_Mode()!!
        switch (motion_mode) {
           case MOTION_MODE_CANCEL:
@@ -327,10 +329,6 @@ int i = 0;
             // to check for initial F-word upon startup. Maybe just set to zero upon initialization
             // and after an inverse time move and then check for non-zero feed rate each time. This
             // should be efficient and effective.
-            #if GcodeDebug == 2
-             while(DMA_IsOn(1));
-             dma_printf("axis_words:= %d\n",(int)axis_words & 0x00FF);
-            #endif
             if (axis_words == 0) {
                FAIL(STATUS_INVALID_STATEMENT);
             }else {
