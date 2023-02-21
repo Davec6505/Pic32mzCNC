@@ -104,7 +104,7 @@ typedef struct Steps{
  //!Homing specific data
  homing_t homing;
 }STP;
-extern volatile STP STPS[NoOfAxis];
+extern STP STPS[NoOfAxis];
 
 
 ///////////////////////////////////////////

@@ -1,6 +1,4 @@
 main
-	__CC2DW
-	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -51,7 +49,6 @@ main
 		Reset_Min_Limit
 		Reset_Min_Debounce
 	Get_modalgroup
-	Get_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
 			__CC2DW
@@ -64,6 +61,19 @@ main
 		memcpy
 		Get_Axisword
 		ulong2flt
+		DMA_IsOn
+		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 		SingleAxisStep
 			Single_Axis_Enable
 			belt_steps
@@ -76,8 +86,12 @@ main
 				toggleOCx
 		GET_RunState
 		memset
+		__CC2DW
+	Get_modalword
 	Rst_modalgroup
 	Get_Axisword
+	DMA_IsOn
+	dma_printf
 	EnableSteppers
 	Modal_Group_Actions1
 		SingleAxisStep
@@ -108,17 +122,6 @@ main
 				fabs
 				floor
 				dma_printf
-					DMA_CH_Busy
-					sprintf
-						_doprntf
-							isdigit
-							scale
-							fround
-					strcat
-					strlen
-					strncpy
-					DMA1_Enable
-					__CC2DW
 				cos
 					sin
 						floor
@@ -145,8 +148,17 @@ main
 		__CC2DW
 	Rst_Axisword
 	Modal_Group_Actions4
+		DMA_IsOn
+		dma_printf
+		__CC2DW
 	Modal_Group_Actions7
+		DMA_IsOn
+		dma_printf
+		__CC2DW
 	Modal_Group_Actions12
+		DMA_IsOn
+		dma_printf
+		__CC2DW
 	report_status_message
 		DMA_IsOn
 		dma_printf
@@ -158,6 +170,8 @@ main
 			dma_printf
 			__CC2DW
 		DMA0_ReadDstPtr
+		DMA_IsOn
+		dma_printf
 		DMA0_Abort
 			DMA_IsOn
 			DMA0_Enable
@@ -202,8 +216,6 @@ main
 			DMA_IsOn
 			dma_printf
 		Set_modalgroup
-		DMA_IsOn
-		dma_printf
 		Get_modalgroup
 		settings_read_startup_line
 			memcpy
@@ -246,11 +258,21 @@ main
 			Set_Modal_Groups
 			Set_Motion_Mode
 				Select_Plane
+		PrintDebug
+			DMA_IsOn
+			dma_printf
+			__CC2DW
 		Instruction_Values
 			To_Millimeters
+			DMA_IsOn
+			dma_printf
+			__CC2DW
 		M_Instruction
 			Set_M_Modal_Commands
 			Set_M_Commands
+			DMA_IsOn
+			dma_printf
+			__CC2DW
 		Check_group_multiple_violations
 			Rst_modalgroup
 			Rst_modalword
@@ -261,6 +283,8 @@ main
 			dma_printf
 		report_feedback_message
 		report_realtime_status
+	__CC2DW
+	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepZ
