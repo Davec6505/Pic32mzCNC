@@ -137,9 +137,13 @@ main
 				Test_Min
 			StopAxis
 			Inv_Home_Axis
+				belt_steps
+				SingleAxisStep
 			FN
 				Test_Min
 			Home_Axis
+				belt_steps
+				SingleAxisStep
 		DMA_IsOn
 		dma_printf
 		mc_reset
@@ -170,8 +174,6 @@ main
 			dma_printf
 			__CC2DW
 		DMA0_ReadDstPtr
-		DMA_IsOn
-		dma_printf
 		DMA0_Abort
 			DMA_IsOn
 			DMA0_Enable
@@ -215,7 +217,10 @@ main
 		report_feedback_message
 			DMA_IsOn
 			dma_printf
+		Rst_modalgroup
 		Set_modalgroup
+		DMA_IsOn
+		dma_printf
 		Get_modalgroup
 		settings_read_startup_line
 			memcpy
@@ -258,21 +263,11 @@ main
 			Set_Modal_Groups
 			Set_Motion_Mode
 				Select_Plane
-		PrintDebug
-			DMA_IsOn
-			dma_printf
-			__CC2DW
 		Instruction_Values
 			To_Millimeters
-			DMA_IsOn
-			dma_printf
-			__CC2DW
 		M_Instruction
 			Set_M_Modal_Commands
 			Set_M_Commands
-			DMA_IsOn
-			dma_printf
-			__CC2DW
 		Check_group_multiple_violations
 			Rst_modalgroup
 			Rst_modalword

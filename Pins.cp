@@ -142,7 +142,7 @@ sbit PLS_Step_PinDirA at TRISF1_bit;
 
 
 
-sbit X_Min_Limit at RF3_bit;
-sbit X_Min_Limit_Dir at TRISF3_bit;
+sbit X_Min_Limit at RB0_bit;
+sbit X_Min_Limit_Dir at TRISB0_bit;
 sbit Y_Min_Limit at RB15_bit;
 sbit Y_Min_Limit_Dir at TRISB15_bit;

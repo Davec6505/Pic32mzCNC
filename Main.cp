@@ -376,8 +376,8 @@ typedef struct {
  int coord_select;
 
 
- int frequency;
  int L;
+ unsigned long frequency;
  float feed_rate;
 
  volatile float position[ 4 ];
@@ -394,7 +394,7 @@ typedef struct {
  int P;
  int S;
 } parser_state_t;
-extern volatile parser_state_t gc;
+extern parser_state_t gc;
 
 
 enum IJK{I,J,K};
@@ -814,11 +814,6 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -954,6 +949,13 @@ static int cntr = 0,a = 0;
  break;
  case 1024:
  if(axis_to_home <  4 ){
+
+
+ while(DMA_IsOn(1));
+ dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+ (STPS[X].run_state&0xff),STPS[X].step_count,
+ SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+
  axis_to_home = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
  }
  break;
@@ -1019,7 +1021,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 213 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 220 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1206,6 +1208,7 @@ unsigned long _flash,*addr;
 
 
 static int Modal_Group_Actions1(int action){
+#line 410 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.frequency,X);
@@ -1325,7 +1328,7 @@ static int Modal_Group_Actions12(int action){
 
  return action;
 }
-#line 535 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 546 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  char rt_exec = sys.execute;

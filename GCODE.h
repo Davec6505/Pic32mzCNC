@@ -170,8 +170,8 @@ typedef struct {
   int  coord_select;                      // Active work coordinate system number. Default: 0=G54.
  // int status_code;                      // Parser status for current block
  // int motion_mode;                      // {G0, G1, G2, G3, G80}
-  int frequency;                          // Speed expressed as Frequency of pulses
   int L;                                  //L2 tells the G10 we’re setting standard work offsets
+  unsigned long frequency;                // Speed expressed as Frequency of pulses
   float feed_rate;                        // Millimeters/min
 //  float seek_rate;                      // Millimeters/min. Will be used in v0.9 when axis independence is installed
   volatile float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
@@ -188,7 +188,7 @@ typedef struct {
   int P;               //Pause as in msec if sent with G04 else Coord-position
   int S;               //Pause as in sec
 } parser_state_t;
-extern volatile parser_state_t gc;
+extern parser_state_t gc;
 
 
 enum IJK{I,J,K};

@@ -416,17 +416,17 @@ long speed = 0;
 static void Home_Axis(double distance,long speed,int axis){
       distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
       distance = (distance < 0.0)? distance : -distance;
-     // STPS[axis].mmToTravel = belt_steps(distance);
-     // speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
-     // SingleAxisStep(STPS[axis].mmToTravel,axis);
+      STPS[axis].mmToTravel = belt_steps(distance);
+      //speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
+      SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 //Re verse
 static void Inv_Home_Axis(double distance,long speed,int axis){
       distance = (distance > 10.0)?  10.0 : distance;
       distance *= (distance < 0.0)?  -1.0 : 1.0;
-    //  STPS[axis].mmToTravel = belt_steps(distance);
-    //  speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
-    //  SingleAxisStep(STPS[axis].mmToTravel,axis);
+      STPS[axis].mmToTravel = belt_steps(distance);
+      //speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
+      SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 
 // Method to ready the system to reset by setting the runtime reset command and killing any

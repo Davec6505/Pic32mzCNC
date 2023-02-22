@@ -497,8 +497,8 @@ typedef struct {
  int coord_select;
 
 
- int frequency;
  int L;
+ unsigned long frequency;
  float feed_rate;
 
  volatile float position[ 4 ];
@@ -515,7 +515,7 @@ typedef struct {
  int P;
  int S;
 } parser_state_t;
-extern volatile parser_state_t gc;
+extern parser_state_t gc;
 
 
 enum IJK{I,J,K};
@@ -707,11 +707,6 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;

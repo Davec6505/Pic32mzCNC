@@ -1601,13 +1601,15 @@ SB	R2, 0(R3)
 ;Kinematics.c,388 :: 		Inv_Home_Axis(2.0,speed, axis);
 LUI	R2, 16384
 ORI	R2, R2, 0
-SH	R25, 8(SP)
+SW	R4, 8(SP)
+SH	R25, 12(SP)
 SEH	R26, R25
 MOVZ	R25, R4, R0
 MTC1	R2, S12
 JAL	Kinematics_Inv_Home_Axis+0
 NOP	
-LH	R25, 8(SP)
+LH	R25, 12(SP)
+LW	R4, 8(SP)
 ;Kinematics.c,389 :: 		}
 L_Home55:
 ;Kinematics.c,390 :: 		STPS[axis].homing.home_cnt++;
@@ -1823,6 +1825,8 @@ NOP
 ; end of _Home
 Kinematics_Home_Axis:
 ;Kinematics.c,416 :: 		static void Home_Axis(double distance,long speed,int axis){
+ADDIU	SP, SP, -16
+SW	RA, 0(SP)
 ;Kinematics.c,417 :: 		distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
 SEH	R2, R26
 SLL	R3, R2, 2
@@ -1880,14 +1884,52 @@ MOV.S 	S0, S1
 L_Kinematics_Home_Axis67:
 ; ?FLOC__Kinematics_Home_Axis?T556 start address is: 0 (R0)
 MOV.S 	S12, S0
+;Kinematics.c,419 :: 		STPS[axis].mmToTravel = belt_steps(distance);
+SEH	R3, R26
+ORI	R2, R0, 104
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R2, R2, 76
+SW	R2, 12(SP)
+SH	R26, 4(SP)
 ; ?FLOC__Kinematics_Home_Axis?T556 end address is: 0 (R0)
+SW	R25, 8(SP)
+MOV.S 	S12, S0
+JAL	_belt_steps+0
+NOP	
+LW	R25, 8(SP)
+LH	R26, 4(SP)
+LW	R3, 12(SP)
+SW	R2, 0(R3)
+;Kinematics.c,421 :: 		SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
+SEH	R3, R26
+ORI	R2, R0, 104
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R2, R2, 76
+LW	R2, 0(R2)
+MTC1	R2, S0
+CVT32.W 	S0, S0
+MOV.S 	S12, S0
+JAL	_SingleAxisStep+0
+NOP	
 ;Kinematics.c,422 :: 		}
 L_end_Home_Axis:
+LW	RA, 0(SP)
+ADDIU	SP, SP, 16
 JR	RA
 NOP	
 ; end of Kinematics_Home_Axis
 Kinematics_Inv_Home_Axis:
 ;Kinematics.c,424 :: 		static void Inv_Home_Axis(double distance,long speed,int axis){
+ADDIU	SP, SP, -16
+SW	RA, 0(SP)
 ;Kinematics.c,425 :: 		distance = (distance > 10.0)?  10.0 : distance;
 LUI	R2, 16672
 ORI	R2, R2, 0
@@ -1900,17 +1942,17 @@ NOP
 L_Kinematics_Inv_Home_Axis157:
 LUI	R2, 16672
 ORI	R2, R2, 0
-; ?FLOC__Kinematics_Inv_Home_Axis?T559 start address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T573 start address is: 8 (R2)
 MTC1	R2, S1
-; ?FLOC__Kinematics_Inv_Home_Axis?T559 end address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T573 end address is: 8 (R2)
 J	L_Kinematics_Inv_Home_Axis69
 NOP	
 L_Kinematics_Inv_Home_Axis68:
-; ?FLOC__Kinematics_Inv_Home_Axis?T559 start address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T573 start address is: 8 (R2)
 MOV.S 	S1, S12
-; ?FLOC__Kinematics_Inv_Home_Axis?T559 end address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T573 end address is: 8 (R2)
 L_Kinematics_Inv_Home_Axis69:
-; ?FLOC__Kinematics_Inv_Home_Axis?T559 start address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T573 start address is: 8 (R2)
 MOV.S 	S12, S1
 ;Kinematics.c,426 :: 		distance *= (distance < 0.0)?  -1.0 : 1.0;
 MOVZ	R2, R0, R0
@@ -1921,27 +1963,63 @@ NOP
 J	L_Kinematics_Inv_Home_Axis70
 NOP	
 L_Kinematics_Inv_Home_Axis158:
-; ?FLOC__Kinematics_Inv_Home_Axis?T559 end address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T573 end address is: 8 (R2)
 LUI	R2, 49024
 ORI	R2, R2, 0
-; ?FLOC__Kinematics_Inv_Home_Axis?T561 start address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T575 start address is: 8 (R2)
 MTC1	R2, S1
-; ?FLOC__Kinematics_Inv_Home_Axis?T561 end address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T575 end address is: 8 (R2)
 J	L_Kinematics_Inv_Home_Axis71
 NOP	
 L_Kinematics_Inv_Home_Axis70:
 LUI	R2, 16256
 ORI	R2, R2, 0
-; ?FLOC__Kinematics_Inv_Home_Axis?T561 start address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T575 start address is: 8 (R2)
 MTC1	R2, S1
-; ?FLOC__Kinematics_Inv_Home_Axis?T561 end address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T575 end address is: 8 (R2)
 L_Kinematics_Inv_Home_Axis71:
-; ?FLOC__Kinematics_Inv_Home_Axis?T561 start address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T575 start address is: 8 (R2)
 MUL.S 	S0, S12, S1
-; ?FLOC__Kinematics_Inv_Home_Axis?T561 end address is: 8 (R2)
+; ?FLOC__Kinematics_Inv_Home_Axis?T575 end address is: 8 (R2)
 MOV.S 	S12, S0
+;Kinematics.c,427 :: 		STPS[axis].mmToTravel = belt_steps(distance);
+SEH	R3, R26
+ORI	R2, R0, 104
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R2, R2, 76
+SW	R2, 12(SP)
+SH	R26, 4(SP)
+SW	R25, 8(SP)
+MOV.S 	S12, S0
+JAL	_belt_steps+0
+NOP	
+LW	R25, 8(SP)
+LH	R26, 4(SP)
+LW	R3, 12(SP)
+SW	R2, 0(R3)
+;Kinematics.c,429 :: 		SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
+SEH	R3, R26
+ORI	R2, R0, 104
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R2, R2, 76
+LW	R2, 0(R2)
+MTC1	R2, S0
+CVT32.W 	S0, S0
+MOV.S 	S12, S0
+JAL	_SingleAxisStep+0
+NOP	
 ;Kinematics.c,430 :: 		}
 L_end_Inv_Home_Axis:
+LW	RA, 0(SP)
+ADDIU	SP, SP, 16
 JR	RA
 NOP	
 ; end of Kinematics_Inv_Home_Axis
