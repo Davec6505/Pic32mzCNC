@@ -97,7 +97,7 @@ static int cntr = 0,a = 0;
                break;
           case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
               axis_to_run = Get_Axisword();
-             //temp debug for steppers
+              //temp debug for steppers
              #if StepperDebug == 1
              if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
                while(DMA_IsOn(1));
@@ -131,9 +131,16 @@ static int cntr = 0,a = 0;
           case 512:// [G54,G55,G56,G57,G58,G59] Coordinate system selection
                Modal_Group_Actions12(gc.coord_select);//implimentation needed
                break;
-          case 1024:
+          case 1024: //$H Home all axis
                if(axis_to_home < NoOfAxis){
-                  axis_to_home  = Modal_Group_Actions1(ALL_AXIS);
+                 //temp debug for steppers
+                 #if StepperDebug == 1
+                   while(DMA_IsOn(1));
+                   dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+                             (STPS[X].run_state&0xff),STPS[X].step_count,
+                              SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+                 #endif
+                 axis_to_home  = Modal_Group_Actions1(ALL_AXIS);
                }
                break;
        }
@@ -396,6 +403,10 @@ unsigned long _flash,*addr;
 //               GROUP_1 MODAL ACTIONS [G0,G1,G2,G3,G80] MOTION               //
 ////////////////////////////////////////////////////////////////////////////////
 static int Modal_Group_Actions1(int action){
+    #if MainDebug == 10
+    while(DMA_IsOn(1));
+    dma_printf("gc.frequency:= %l\n",gc.frequency);
+    #endif
     switch(action){
       case 1: //b0000 0001
              SingleAxisStep(gc.next_position[X],gc.frequency,X);

@@ -726,11 +726,6 @@ int Sample_Ringbuffer();
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 28 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -792,8 +787,8 @@ typedef struct {
  int coord_select;
 
 
- int frequency;
  int L;
+ unsigned long frequency;
  float feed_rate;
 
  volatile float position[ 4 ];
@@ -810,7 +805,7 @@ typedef struct {
  int P;
  int S;
 } parser_state_t;
-extern volatile parser_state_t gc;
+extern parser_state_t gc;
 
 
 enum IJK{I,J,K};
@@ -856,7 +851,12 @@ static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
 #line 21 "C:/Users/Git/Pic32mzCNC/GCODE.c"
-volatile parser_state_t gc;
+parser_state_t gc;
+
+
+
+
+
 
 volatile int status_code;
 volatile float coord_data[ 4 ];
@@ -965,10 +965,7 @@ void M_Instruction(int flow){
 
  group_number = Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
-
- while(DMA_IsOn(1));
- dma_printf("gc.program_flow:= %d\n",flow);
-
+#line 139 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 }
 
 
@@ -993,13 +990,14 @@ int gp_num;
 
 
 static int Set_Motion_Mode(int mode){
-int i;
+int i,m_mode;
   status_code = 0 ; ;
+
  switch(mode){
- case 0: motion_mode =  0 ; break;
- case 1: motion_mode =  1 ; break;
- case 2: motion_mode =  2 ; break;
- case 3: motion_mode =  3 ; break;
+ case 0: m_mode =  0 ; break;
+ case 1: m_mode =  1 ; break;
+ case 2: m_mode =  2 ; break;
+ case 3: m_mode =  3 ; break;
  case 4: non_modal_action =  1 ; break;
  case 10: non_modal_action =  2 ; break;
  case 17: Select_Plane(xy);return  0 ; break;
@@ -1041,7 +1039,8 @@ int i;
  }
 
  }
-#line 213 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 218 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ return m_mode;
 }
 
 
@@ -1069,7 +1068,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 243 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 249 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default:  status_code = 3 ; ;break;
@@ -1113,7 +1112,7 @@ int i = 0;
 
  if(!gc.absolute_override)
   (non_modal_words |= (1 << non_modal_action) ) ;
-#line 294 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 300 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -1126,7 +1125,7 @@ int i = 0;
 
  if(group_number ==  2 ){
  status_code =  0 ;
-#line 312 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 318 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  switch (motion_mode) {
  case  4 :
 
@@ -1184,28 +1183,28 @@ int i = 0;
  status_code =  0 ;
   status_code = 0 ; ;
  }
-#line 375 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 381 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
 
 
  if (group_number ==  4 ){
-#line 387 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 393 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
 
 
  if (group_number ==  6 ){
-#line 399 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 405 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
 
 
  if (group_number ==  7 ){
-#line 411 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 417 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
@@ -1217,12 +1216,12 @@ int i = 0;
  status_code =  1 ;
  else
  status_code =  0 ;
-#line 428 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 434 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
  }
  }
-#line 440 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 446 "C:/Users/Git/Pic32mzCNC/GCODE.c"
   status_code = 0 ; ;
  return status_code;
 }
@@ -1286,8 +1285,9 @@ int F_Val,O_Val;
  if(F_Val < 0){
   status_code = 13 ; ;
  }
-#line 509 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- gc.frequency = F_Val;
+#line 515 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ gc.frequency = (unsigned long)F_Val;
+#line 520 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
@@ -1314,15 +1314,7 @@ int F_Val,O_Val;
  break;
  default: status_code = 3 ; ;break;
  }
-
- while(DMA_IsOn(1));
- if(c[0] == 'X' || c[0] == 'Y' || c[0] == 'Z' || c[0] == 'R' || c[0] == 'I' || c[0] == 'J')
- dma_printf("\t%c\t%f\n",c[0],XYZ_Val);
- else if(c[0] == 'F')
- dma_printf("\t%c\t%d\n",c[0],F_Val);
- else if(c[0] == 'S' || c[0] == 'P' || c[0] == 'L')
- dma_printf("\t%c\t%d\n",c[0],O_Val);
-
+#line 555 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }
 

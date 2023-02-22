@@ -18,7 +18,12 @@
 *******************************************************************************/
 #include "GCODE.h"
 
-volatile parser_state_t gc;
+parser_state_t gc;
+
+//the use of volatile here is as a result of the compiler continously
+//optomising out these variables cousing the code to fail or values not
+//changing when required, either by gcodes or code!! MIKROC!!!! a need to
+//understand this compiler better!!!!!!
 
 volatile int status_code;  // Status of instructions
 volatile float coord_data[NoOfAxis];
@@ -155,13 +160,14 @@ int gp_num;
 
 //set the G commands as per grbl
 static int Set_Motion_Mode(int mode){
-int i;
+int i,m_mode;
  FAIL(STATUS_OK);
+ 
   switch(mode){
-    case 0: motion_mode    = MOTION_MODE_SEEK;    break;
-    case 1: motion_mode    = MOTION_MODE_LINEAR;  break;
-    case 2: motion_mode    = MOTION_MODE_CW_ARC;  break;
-    case 3: motion_mode    = MOTION_MODE_CCW_ARC; break;
+    case 0: m_mode    = MOTION_MODE_SEEK;    break;
+    case 1: m_mode    = MOTION_MODE_LINEAR;  break;
+    case 2: m_mode    = MOTION_MODE_CW_ARC;  break;
+    case 3: m_mode    = MOTION_MODE_CCW_ARC; break;
     case 4: non_modal_action  = NON_MODAL_DWELL;     break;
     case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
     case 17: Select_Plane(xy);return STATUS_OK; break;
@@ -209,7 +215,7 @@ int i;
      dma_printf("report!\n[status_code:= %d]\n[mode:= %d]\n[motion_mode:= %d]\n[non_modal_action:= %d]\n"
                  ,status_code ,mode ,motion_mode ,non_modal_action);
   #endif
-
+   return m_mode;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -303,7 +309,7 @@ int i = 0;
    //check for cancel from group 1
    if(group_number == MODAL_GROUP_1){
       status_code = STATUS_OK;
-      #if GcodeDebug == 2
+      #if GcodeDebug == 10
        while(DMA_IsOn(1));
        dma_printf("[group_number:= %d][motion_mode:= %d]\n"
                    ,group_number,motion_mode);
@@ -506,7 +512,11 @@ int F_Val,O_Val;
             } else {
               gc.feed_rate = To_Millimeters(F_Val); // millimeters per minute
             } */
-            gc.frequency = F_Val;
+            gc.frequency = (unsigned long)F_Val;
+              #if GcodeDebug == 1
+              while(DMA_IsOn(1));
+              dma_printf("gc.frequency:= %l\n",gc.frequency);
+              #endif
             break;
       case 'P':
             O_Val = *(int*)any;

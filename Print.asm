@@ -1697,12 +1697,12 @@ ADDIU	R3, SP, 28
 SEH	R2, R5
 SLL	R4, R2, 2
 ADDU	R3, R3, R4
-LUI	R2, hi_addr(_gc+40)
-ORI	R2, R2, lo_addr(_gc+40)
+LUI	R2, hi_addr(_gc+44)
+ORI	R2, R2, lo_addr(_gc+44)
 ADDU	R2, R2, R4
 LWC1	S1, 0(R2)
-LUI	R2, hi_addr(_gc+56)
-ORI	R2, R2, lo_addr(_gc+56)
+LUI	R2, hi_addr(_gc+60)
+ORI	R2, R2, lo_addr(_gc+60)
 ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 ADD.S 	S1, S1, S0
@@ -1722,12 +1722,12 @@ ADDIU	R3, SP, 28
 SEH	R2, R5
 SLL	R4, R2, 2
 ADDU	R3, R3, R4
-LUI	R2, hi_addr(_gc+40)
-ORI	R2, R2, lo_addr(_gc+40)
+LUI	R2, hi_addr(_gc+44)
+ORI	R2, R2, lo_addr(_gc+44)
 ADDU	R2, R2, R4
 LWC1	S1, 0(R2)
-LUI	R2, hi_addr(_gc+56)
-ORI	R2, R2, lo_addr(_gc+56)
+LUI	R2, hi_addr(_gc+60)
+ORI	R2, R2, lo_addr(_gc+60)
 ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 ADD.S 	S1, S1, S0
@@ -2316,8 +2316,8 @@ L__report_gcode_parameters363:
 ;Print.c,306 :: 		dma_printf("%f ",gc.coord_offset[i]*INCH_PER_MM);
 LH	R2, 10(SP)
 SLL	R3, R2, 2
-LUI	R2, hi_addr(_gc+56)
-ORI	R2, R2, lo_addr(_gc+56)
+LUI	R2, hi_addr(_gc+60)
+ORI	R2, R2, lo_addr(_gc+60)
 ADDU	R2, R2, R3
 LWC1	S1, 0(R2)
 LUI	R2, 15649
@@ -2346,8 +2346,8 @@ L_report_gcode_parameters140:
 ;Print.c,308 :: 		dma_printf("%f ",gc.coord_offset[i]);
 LH	R2, 10(SP)
 SLL	R3, R2, 2
-LUI	R2, hi_addr(_gc+56)
-ORI	R2, R2, lo_addr(_gc+56)
+LUI	R2, hi_addr(_gc+60)
+ORI	R2, R2, lo_addr(_gc+60)
 ADDU	R2, R2, R3
 LWC1	S0, 0(R2)
 ORI	R30, R0, 37
@@ -3098,7 +3098,7 @@ J	L_report_gcode_modes195
 NOP	
 L__report_gcode_modes419:
 ;Print.c,367 :: 		dma_printf(" T %dF %f",gc.tool,gc.feed_rate*INCH_PER_MM);
-LWC1	S1, Offset(_gc+20)(GP)
+LWC1	S1, Offset(_gc+24)(GP)
 LUI	R2, 15649
 ORI	R2, R2, 17035
 MTC1	R2, S0
@@ -3129,7 +3129,7 @@ ORI	R24, R24, lo_addr(?ICS?lstr109_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R3, SP, 113
-LW	R2, Offset(_gc+20)(GP)
+LW	R2, Offset(_gc+24)(GP)
 ADDIU	SP, SP, -12
 SW	R2, 8(SP)
 LBU	R2, Offset(_gc+10)(GP)

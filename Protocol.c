@@ -190,6 +190,8 @@ START_LINE://label to rerun startup line if it has one
 
                   // Only perform homing if Grbl is idle or lost.
                   if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
+                    Rst_modalgroup();
+                    //set bit 10 [1024] for homing
                     Set_modalgroup(HOME_ALL);
                    #if HomeDebug == 1
                     while(DMA_IsOn(1));
