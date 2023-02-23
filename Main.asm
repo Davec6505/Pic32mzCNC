@@ -1578,13 +1578,15 @@ NOP
 ADDIU	SP, SP, 8
 LH	R25, 14(SP)
 LH	R4, 12(SP)
-;Main.c,448 :: 		if(home_status){
-BNE	R4, R0, L_Main_Modal_Group_Actions1226
+;Main.c,448 :: 		if(bit_istrue(home_status,HOME_COMPLETE)){
+ANDI	R2, R4, 5
+; home_status end address is: 16 (R4)
+SEH	R2, R2
+BNE	R2, R0, L_Main_Modal_Group_Actions1226
 NOP	
 J	L_Main_Modal_Group_Actions1102
 NOP	
 L_Main_Modal_Group_Actions1226:
-; home_status end address is: 16 (R4)
 ;Main.c,449 :: 		LED2 = false;
 _LX	
 INS	R2, R0, BitPos(LED2+0), 1

@@ -130,6 +130,8 @@ main
 				disableOCx
 				__CC2DW
 		Home
+			DMA_IsOn
+			dma_printf
 			EnableSteppers
 			Single_Axis_Enable
 			FP
@@ -141,8 +143,12 @@ main
 			FN
 				Test_Min
 			Home_Axis
+				DMA_IsOn
+				dma_printf
 				belt_steps
 				SingleAxisStep
+				__CC2DW
+			__CC2DW
 		DMA_IsOn
 		dma_printf
 		mc_reset
@@ -210,6 +216,9 @@ main
 		Rst_modalgroup
 		Set_modalgroup
 		Set_Axisword
+		DMA_IsOn
+		dma_printf
+		Get_modalgroup
 		settings_read_startup_line
 			memcpy
 		report_status_message
@@ -217,8 +226,6 @@ main
 			DMA_IsOn
 			dma_printf
 			__CC2DW
-		DMA_IsOn
-		dma_printf
 		atoi
 			isdigit
 		strncpy

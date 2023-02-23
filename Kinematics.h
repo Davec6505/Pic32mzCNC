@@ -18,6 +18,7 @@
 #define CW_   1
 #define CCW_ -1
 #define zero 0
+
 #define Direction(a) (((a) < (0))? (CCW_) : (CW_))
 //Bresenhams differential calculation
 #define BresIncVal(a) ((2)*(a))

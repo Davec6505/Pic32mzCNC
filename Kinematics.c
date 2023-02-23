@@ -374,16 +374,18 @@ long speed = 0;
     //STPS[axis].homing.set = true;
     #if HomeDebug == 1
     while(DMA_IsOn(1));
-    dma_printf("home_state:= %d\n",homing[axis].home_state);
+    dma_printf("[home_state:= %d ][home_cnt:= %d]\n"
+                ,homing[axis].home_state
+                ,homing[axis].home_cnt);
     #endif
     
     EnableSteppers(2);
     for(i=0;i<NoOfAxis;i++)
         Single_Axis_Enable(i);
 
-
+    //make sure Home_complete is off at start of homing
     bit_false(homing[axis].home_state,HOME_COMPLETE);
-    //STPS[axis].homing.complete = false;
+    //set counter to 0
     homing[axis].home_cnt = 0;
 
     if(homing[axis].home_cnt == 0)
@@ -397,6 +399,10 @@ long speed = 0;
      
    //test if limit has been hit with rising edge
    if(FP(axis)){
+     #if HomeDebug == 1
+     while(DMA_IsOn(1));
+     dma_printf("%s\n","FP_Limit hit");
+     #endif
      if(axis == X)
         StopAxis(X);
      else if(axis == Y)
@@ -405,12 +411,16 @@ long speed = 0;
      if(bit_isfalse(homing[axis].home_state,HOME_COMPLETE)){
          bit_true(homing[axis].home_state,HOME_REV);
          //STPS[axis].homing.rev = true;
-         Inv_Home_Axis(2.0,speed, axis);
+         Inv_Home_Axis(-2.0,speed, axis);
      }
      homing[axis].home_cnt++;
    }
    //use falling edge to stop after 1 cycle
    if(FN(axis)){
+   #if HomeDebug == 1
+     while(DMA_IsOn(1));
+     dma_printf("%s\n","FN_Limit hit");
+   #endif
      bit_false(homing[axis].home_state,HOME);
      //STPS[axis].homing.home = false;
    }
@@ -418,11 +428,14 @@ long speed = 0;
    if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
       if(bit_isfalse(homing[axis].home_state,HOME)){
       //if(!STPS[axis].homing.home){
-        bit_false(homing[axis].home_state,HOME);
+        bit_true(homing[axis].home_state,HOME);
         //STPS[axis].homing.home = true;
         #if HomeDebug == 1
          while(DMA_IsOn(1));
-         dma_printf("Home_axis(%l,%d);\n",speed,axis);
+         dma_printf("state:= %d\tHome_Axis(%l,%d);\n"
+                     ,homing[axis].home_state
+                     ,speed
+                     ,axis);
         #endif
         Home_Axis(-290.00,speed,axis);
       }
@@ -441,6 +454,10 @@ long speed = 0;
 static void Home_Axis(double distance,long speed,int axis){
       distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
       distance = (distance < 0.0)? distance : -distance;
+     #if HomeDebug == 1
+     while(DMA_IsOn(1));
+     dma_printf("Home_dist(%f);\n",distance);
+     #endif
       STPS[axis].mmToTravel = belt_steps(distance);
       //speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
       SingleAxisStep(STPS[axis].mmToTravel, speed,axis);

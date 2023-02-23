@@ -441,11 +441,11 @@ static int Modal_Group_Actions1(int action){
                if( axis_to_home < NoOfAxis){
                  home_status = Home(axis_to_home);
                  LED2 = TMR.clock >> 3;
-                 #if HomeDebug == -1
+                 #if HomeDebug == 1
                  while(DMA_IsOn(1));
                  dma_printf("axis:= %d\n",axis_to_home);
                  #endif
-                 if(home_status){
+                 if(bit_istrue(home_status,HOME_COMPLETE)){
                    LED2 = false;
                    axis_to_home++;
                    if(axis_to_home > NoOfAxis){mc_reset();}

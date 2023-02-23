@@ -501,7 +501,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 42 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 43 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -1206,7 +1206,7 @@ static int Modal_Group_Actions1(int action){
  while(DMA_IsOn(1));
  dma_printf("axis:= %d\n",axis_to_home);
 
- if(home_status){
+ if( ((home_status & 5 ) != 0) ){
  LED2 =  0 ;
  axis_to_home++;
  if(axis_to_home >  4 ){mc_reset();}

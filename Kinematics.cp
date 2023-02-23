@@ -745,7 +745,7 @@ void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 42 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 43 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -1163,7 +1163,14 @@ long speed = 0;
  if( ((homing[axis].home_state & 1 ) == 0) ){
  int i = 0;
   (homing[axis].home_state |= 1 ) ;
-#line 380 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("[home_state:= %d ][home_cnt:= %d]\n"
+ ,homing[axis].home_state
+ ,homing[axis].home_cnt);
+
+
  EnableSteppers(2);
  for(i=0;i< 4 ;i++)
  Single_Axis_Enable(i);
@@ -1184,6 +1191,10 @@ long speed = 0;
 
 
  if(FP(axis)){
+
+ while(DMA_IsOn(1));
+ dma_printf("%s\n","FP_Limit hit");
+
  if(axis == X)
  StopAxis(X);
  else if(axis == Y)
@@ -1192,12 +1203,16 @@ long speed = 0;
  if( ((homing[axis].home_state & 5 ) == 0) ){
   (homing[axis].home_state |= 3 ) ;
 
- Inv_Home_Axis(2.0,speed, axis);
+ Inv_Home_Axis(-2.0,speed, axis);
  }
  homing[axis].home_cnt++;
  }
 
  if(FN(axis)){
+
+ while(DMA_IsOn(1));
+ dma_printf("%s\n","FN_Limit hit");
+
   (homing[axis].home_state &= ~ 2 ) ;
 
  }
@@ -1205,8 +1220,15 @@ long speed = 0;
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
  if( ((homing[axis].home_state & 2 ) == 0) ){
 
-  (homing[axis].home_state &= ~ 2 ) ;
-#line 427 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+  (homing[axis].home_state |= 2 ) ;
+
+
+ while(DMA_IsOn(1));
+ dma_printf("state:= %d\tHome_Axis(%l,%d);\n"
+ ,homing[axis].home_state
+ ,speed
+ ,axis);
+
  Home_Axis(-290.00,speed,axis);
  }
 
@@ -1224,6 +1246,10 @@ long speed = 0;
 static void Home_Axis(double distance,long speed,int axis){
  distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
  distance = (distance < 0.0)? distance : -distance;
+
+ while(DMA_IsOn(1));
+ dma_printf("Home_dist(%f);\n",distance);
+
  STPS[axis].mmToTravel = belt_steps(distance);
 
  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);

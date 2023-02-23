@@ -413,7 +413,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 42 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 43 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -999,7 +999,11 @@ START_LINE:
  Set_modalgroup( 10 );
  for(i=1;i< 4 ;i++)
  Set_Axisword(i);
-#line 204 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("GCODE:= %s\tmodal_group:= %d\n",gcode[0],Get_modalgroup());
+
+
  if (sys.abort) {
  return( -2 );
  break;
