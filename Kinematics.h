@@ -33,12 +33,14 @@
 //axis >> 1 to Home all axis 1 at a time
 #define ALL_AXIS (((NoOfAxis*NoOfAxis)*2)-1)
 
+#define HOME_SET      1
+#define HOME          2
+#define HOME_REV      3
+#define HOME_BACK     4
+#define HOME_COMPLETE 5
+
 typedef struct {
-char set: 1;
-char home: 1;
-char rev: 1;
-char back: 1;
-char complete: 1;
+unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
 //extern Homing homing[NoOfAxis];
@@ -101,8 +103,6 @@ typedef struct Steps{
  int  axis_dir;
  //! the master axis indicator
  char master: 1;
- //!Homing specific data
- homing_t homing;
 }STP;
 extern STP STPS[NoOfAxis];
 

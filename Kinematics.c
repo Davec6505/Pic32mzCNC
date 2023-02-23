@@ -14,6 +14,11 @@ char txtB[200];
 //static file vars
 static long d2;
 
+//////////////////////////////////
+//homing data
+//static unsigned int home_state = 0;
+//static unsigned int home_cnt = 0;
+static homing_t homing[NoOfAxis];
 ///////////////////////////////////////////////////////
 //         INITIALIZE THE AXIS AND PLATFROM          //
 ///////////////////////////////////////////////////////
@@ -354,11 +359,8 @@ int GetAxisDirection(long mm2move){
 void ResetHoming(){
 int i = 0;
    for(i = 0;i< NoOfAxis;i++){
-        STPS[i].homing.set = 0;
-        STPS[i].homing.complete = 0;
-        STPS[i].homing.home_cnt = 0;
-        STPS[i].homing.rev = 0;
-        STPS[i].homing.home = 0;
+        homing[i].home_state = 0;
+        homing[i].home_cnt = 0;
    }
 }
 //////////////////////////////////////////////////////////////////
@@ -366,14 +368,31 @@ int i = 0;
 int Home(int axis){
 long speed = 0;
 
-     if(!STPS[axis].homing.set){
-        STPS[axis].homing.set = 1;
-        STPS[axis].homing.complete = 0;
-        STPS[axis].homing.home_cnt = 0;
-        speed = 2000;
-     }else{
-        speed = 100;
-     }
+  if(bit_isfalse(homing[axis].home_state,HOME_SET)){
+  int i = 0;
+    bit_true(homing[axis].home_state,HOME_SET);
+    //STPS[axis].homing.set = true;
+    #if HomeDebug == 1
+    while(DMA_IsOn(1));
+    dma_printf("home_state:= %d\n",homing[axis].home_state);
+    #endif
+    
+    EnableSteppers(2);
+    for(i=0;i<NoOfAxis;i++)
+        Single_Axis_Enable(i);
+
+
+    bit_false(homing[axis].home_state,HOME_COMPLETE);
+    //STPS[axis].homing.complete = false;
+    homing[axis].home_cnt = 0;
+
+    if(homing[axis].home_cnt == 0)
+      speed = 2000;
+    else
+      speed = 100;
+      
+    sys.state = STATE_HOMING;
+  }
 
      
    //test if limit has been hit with rising edge
@@ -383,33 +402,39 @@ long speed = 0;
      else if(axis == Y)
         StopAxis(Y);
 
-     if(!STPS[axis].homing.rev){
-         STPS[axis].homing.rev = 1;
+     if(bit_isfalse(homing[axis].home_state,HOME_COMPLETE)){
+         bit_true(homing[axis].home_state,HOME_REV);
+         //STPS[axis].homing.rev = true;
          Inv_Home_Axis(2.0,speed, axis);
      }
-     STPS[axis].homing.home_cnt++;
+     homing[axis].home_cnt++;
    }
    //use falling edge to stop after 1 cycle
    if(FN(axis)){
-     STPS[axis].homing.home = 0;
+     bit_false(homing[axis].home_state,HOME);
+     //STPS[axis].homing.home = false;
    }
 
    if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-
-      if(!STPS[axis].homing.home){
-        STPS[axis].homing.home = 1;
+      if(bit_isfalse(homing[axis].home_state,HOME)){
+      //if(!STPS[axis].homing.home){
+        bit_false(homing[axis].home_state,HOME);
+        //STPS[axis].homing.home = true;
+        #if HomeDebug == 1
+         while(DMA_IsOn(1));
+         dma_printf("Home_axis(%l,%d);\n",speed,axis);
+        #endif
         Home_Axis(-290.00,speed,axis);
       }
 
-      if((STPS[axis].homing.home_cnt >= 2)&&(!STPS[axis].homing.complete)){
-          STPS[axis].homing.complete      = true;
+      if((homing[axis].home_cnt >= 2)&&(bit_isfalse(homing[axis].home_state,HOME_COMPLETE))){//(!STPS[axis].homing.complete)){
+          bit_true(homing[axis].home_state,HOME_COMPLETE);
+          //STPS[axis].homing.complete      = true;
           STPS[axis].step_count           = 0;
           STPS[axis].steps_abs_position   = 0;
-          
-          return STPS[axis].homing.complete;
       }
    }
-   return 0;
+   return homing[axis].home_state;;
 }
 
 //Home single axis

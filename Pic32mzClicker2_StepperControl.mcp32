@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Stepper.c
+Value=Kinematics.c
 =======
 =======
 >>>>>>> patch1
@@ -131,17 +131,17 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Protocol.c
-File2=Protocol.h
-File3=GCODE.c
-File4=GCODE.h
-File5=DEFINES.pld
-File6=Kinematics.c
-File7=Kinematics.h
-File8=Planner.c
-File9=Planner.h
-File10=Stepper.c
-File11=Stepper.h
+File1=DEFINES.pld
+File2=Kinematics.c
+File3=Kinematics.h
+File4=Planner.c
+File5=Planner.h
+File6=Stepper.c
+File7=Stepper.h
+File8=Globals.h
+File9=Globals.c
+File10=Protocol.c
+File11=Print.c
 Count=12
 [EEPROM]
 Count=0

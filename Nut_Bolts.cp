@@ -399,6 +399,7 @@ void Set_modalword(int value);
 int Get_modalword();
 int Rst_modalword();
 
+void Set_Axisword(int value);
 int Get_Axisword();
 int Rst_Axisword();
 
@@ -485,13 +486,9 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 36 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 42 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
-char set: 1;
-char home: 1;
-char rev: 1;
-char back: 1;
-char complete: 1;
+unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
 
@@ -554,8 +551,6 @@ typedef struct Steps{
  int axis_dir;
 
  char master: 1;
-
- homing_t homing;
 }STP;
 extern STP STPS[ 4 ];
 

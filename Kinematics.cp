@@ -425,6 +425,7 @@ void Set_modalword(int value);
 int Get_modalword();
 int Rst_modalword();
 
+void Set_Axisword(int value);
 int Get_Axisword();
 int Rst_Axisword();
 
@@ -744,13 +745,9 @@ void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 36 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 42 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
-char set: 1;
-char home: 1;
-char rev: 1;
-char back: 1;
-char complete: 1;
+unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
 
@@ -813,8 +810,6 @@ typedef struct Steps{
  int axis_dir;
 
  char master: 1;
-
- homing_t homing;
 }STP;
 extern STP STPS[ 4 ];
 
@@ -868,6 +863,11 @@ static long d2;
 
 
 
+
+static homing_t homing[ 4 ];
+
+
+
 void SetInitialSizes(STP axis[6]){
 int i = 0;
 
@@ -899,14 +899,14 @@ static void Set_Axisdirection(long temp,int axis){
  default: break;
  }
 }
-#line 63 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 68 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void SingleAxisStep(double newxyz,long speed,int axis_No){
 long tempA = 0;
 int dir = 0;
  Single_Axis_Enable(axis_No);
  tempA = belt_steps(newxyz);
  speed_cntr_Move(tempA , speed , axis_No);
-#line 73 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 78 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  Set_Axisdirection(tempA,axis_No);
  STPS[axis_No].axis_dir =  (((tempA) < (0))? ( -1 ) : ( 1 )) ;
  SV.Single_Dual = 0;
@@ -996,7 +996,7 @@ int dirA,dirB;
 
 
 }
-#line 195 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 200 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void mc_arc(double *position, double *target, double *offset, int axis_0, int axis_1,
  int axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
  long tempA,tempB;
@@ -1127,9 +1127,9 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  break;
  i++;
  }
-#line 331 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-}
 #line 336 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+}
+#line 341 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 float hypot(float angular_travel, float linear_travel){
  return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
 }
@@ -1151,11 +1151,8 @@ int GetAxisDirection(long mm2move){
 void ResetHoming(){
 int i = 0;
  for(i = 0;i<  4 ;i++){
- STPS[i].homing.set = 0;
- STPS[i].homing.complete = 0;
- STPS[i].homing.home_cnt = 0;
- STPS[i].homing.rev = 0;
- STPS[i].homing.home = 0;
+ homing[i].home_state = 0;
+ homing[i].home_cnt = 0;
  }
 }
 
@@ -1163,13 +1160,25 @@ int i = 0;
 int Home(int axis){
 long speed = 0;
 
- if(!STPS[axis].homing.set){
- STPS[axis].homing.set = 1;
- STPS[axis].homing.complete = 0;
- STPS[axis].homing.home_cnt = 0;
+ if( ((homing[axis].home_state & 1 ) == 0) ){
+ int i = 0;
+  (homing[axis].home_state |= 1 ) ;
+#line 380 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ EnableSteppers(2);
+ for(i=0;i< 4 ;i++)
+ Single_Axis_Enable(i);
+
+
+  (homing[axis].home_state &= ~ 5 ) ;
+
+ homing[axis].home_cnt = 0;
+
+ if(homing[axis].home_cnt == 0)
  speed = 2000;
- }else{
+ else
  speed = 100;
+
+ sys.state =  5 ;
  }
 
 
@@ -1180,33 +1189,35 @@ long speed = 0;
  else if(axis == Y)
  StopAxis(Y);
 
- if(!STPS[axis].homing.rev){
- STPS[axis].homing.rev = 1;
+ if( ((homing[axis].home_state & 5 ) == 0) ){
+  (homing[axis].home_state |= 3 ) ;
+
  Inv_Home_Axis(2.0,speed, axis);
  }
- STPS[axis].homing.home_cnt++;
+ homing[axis].home_cnt++;
  }
 
  if(FN(axis)){
- STPS[axis].homing.home = 0;
+  (homing[axis].home_state &= ~ 2 ) ;
+
  }
 
  if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
+ if( ((homing[axis].home_state & 2 ) == 0) ){
 
- if(!STPS[axis].homing.home){
- STPS[axis].homing.home = 1;
+  (homing[axis].home_state &= ~ 2 ) ;
+#line 427 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  Home_Axis(-290.00,speed,axis);
  }
 
- if((STPS[axis].homing.home_cnt >= 2)&&(!STPS[axis].homing.complete)){
- STPS[axis].homing.complete =  1 ;
+ if((homing[axis].home_cnt >= 2)&&( ((homing[axis].home_state & 5 ) == 0) )){
+  (homing[axis].home_state |= 5 ) ;
+
  STPS[axis].step_count = 0;
  STPS[axis].steps_abs_position = 0;
-
- return STPS[axis].homing.complete;
  }
  }
- return 0;
+ return homing[axis].home_state;;
 }
 
 
