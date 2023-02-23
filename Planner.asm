@@ -16,7 +16,7 @@ NOP
 L__plan_init41:
 ;Planner.c,13 :: 		STPS[i].acc = accel;
 SEH	R3, R4
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -26,7 +26,7 @@ ADDIU	R2, R2, 32
 SW	R25, 0(R2)
 ;Planner.c,14 :: 		STPS[i].dec = decel;
 SEH	R3, R4
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -67,7 +67,7 @@ L__speed_cntr_Move43:
 ; abs_mmSteps end address is: 28 (R7)
 ;Planner.c,40 :: 		STPS[axis_No].accel_count = -1;        // Move one step...
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -79,7 +79,7 @@ ORI	R2, R2, 65535
 SW	R2, 0(R3)
 ;Planner.c,41 :: 		STPS[axis_No].run_state = DECEL;       // ...in DECEL state.
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -90,7 +90,7 @@ ORI	R2, R0, 2
 SH	R2, 0(R3)
 ;Planner.c,42 :: 		STPS[axis_No].step_delay = 20000;      // Just a short delay so main() can act on 'running'.
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -122,7 +122,7 @@ L__speed_cntr_Move47:
 L__speed_cntr_Move34:
 ;Planner.c,49 :: 		if(STPS[axis_No].run_state != STOP)
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -153,7 +153,7 @@ L_speed_cntr_Move9:
 ;Planner.c,57 :: 		STPS[axis_No].min_delay =  A_T_x100 / temp_speed;
 ; temp_speed start address is: 24 (R6)
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -167,7 +167,7 @@ MFLO	R2
 SW	R2, 0(R3)
 ;Planner.c,62 :: 		STPS[axis_No].step_delay = labs(T1_FREQ_148 * ((sqrt_(A_SQ / STPS[axis_No].acc))/100));
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -199,7 +199,7 @@ LW	R3, 12(SP)
 SW	R2, 0(R3)
 ;Planner.c,63 :: 		STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -211,7 +211,7 @@ LW	R2, 0(R2)
 SW	R2, 0(R3)
 ;Planner.c,66 :: 		STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(long)(2.0*ALPHA*(double)STPS[axis_No].acc*100.0);
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -239,7 +239,7 @@ MFLO	R2
 SW	R2, 0(R4)
 ;Planner.c,72 :: 		if(STPS[axis_No].max_step_lim == 0){
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -254,7 +254,7 @@ NOP
 L__speed_cntr_Move50:
 ;Planner.c,73 :: 		STPS[axis_No].max_step_lim = 1;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -267,7 +267,7 @@ SW	R2, 0(R3)
 L_speed_cntr_Move10:
 ;Planner.c,78 :: 		STPS[axis_No].accel_lim = (abs_mmSteps * STPS[axis_No].dec) / (STPS[axis_No].acc + STPS[axis_No].dec);
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -286,7 +286,7 @@ MFLO	R2
 SW	R2, 0(R5)
 ;Planner.c,80 :: 		if(STPS[axis_No].accel_lim == 0){
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -301,7 +301,7 @@ NOP
 L__speed_cntr_Move51:
 ;Planner.c,81 :: 		STPS[axis_No].accel_lim = 1;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -314,7 +314,7 @@ SW	R2, 0(R3)
 L_speed_cntr_Move11:
 ;Planner.c,85 :: 		if(STPS[axis_No].accel_lim < STPS[axis_No].max_step_lim){
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -332,7 +332,7 @@ NOP
 L__speed_cntr_Move52:
 ;Planner.c,86 :: 		STPS[axis_No].decel_val = STPS[axis_No].accel_lim - mmSteps;//-(abs_mmSteps - STPS[axis_No].max_step_lim);
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -349,7 +349,7 @@ NOP
 L_speed_cntr_Move12:
 ;Planner.c,88 :: 		STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim *STPS[axis_No].acc)/STPS[axis_No].dec);
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -372,7 +372,7 @@ SW	R2, 0(R4)
 L_speed_cntr_Move13:
 ;Planner.c,91 :: 		if(STPS[axis_No].decel_val == 0)
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -387,7 +387,7 @@ NOP
 L__speed_cntr_Move53:
 ;Planner.c,92 :: 		STPS[axis_No].decel_val = -1;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -407,7 +407,7 @@ NOP
 L__speed_cntr_Move54:
 ;Planner.c,96 :: 		STPS[axis_No].decel_start = -(mmSteps - STPS[axis_No].decel_val);
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -426,7 +426,7 @@ NOP
 L_speed_cntr_Move15:
 ;Planner.c,99 :: 		STPS[axis_No].decel_start = mmSteps + STPS[axis_No].decel_val;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -441,7 +441,7 @@ SW	R2, 0(R3)
 L_speed_cntr_Move16:
 ;Planner.c,104 :: 		if(STPS[axis_No].StartUp_delay <= STPS[axis_No].min_delay){
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -459,7 +459,7 @@ NOP
 L__speed_cntr_Move55:
 ;Planner.c,105 :: 		STPS[axis_No].step_delay = STPS[axis_No].min_delay;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -471,7 +471,7 @@ LW	R2, 0(R2)
 SW	R2, 0(R3)
 ;Planner.c,106 :: 		STPS[axis_No].run_state = RUN;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -486,7 +486,7 @@ NOP
 L_speed_cntr_Move17:
 ;Planner.c,108 :: 		STPS[axis_No].step_delay = labs(STPS[axis_No].StartUp_delay);
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -502,7 +502,7 @@ LW	R3, 12(SP)
 SW	R2, 0(R3)
 ;Planner.c,109 :: 		STPS[axis_No].run_state = ACCEL;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -520,7 +520,7 @@ L__speed_cntr_Move35:
 L_speed_cntr_Move4:
 ;Planner.c,114 :: 		STPS[axis_No].step_count  = 0;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -530,7 +530,7 @@ ADDIU	R2, R2, 40
 SW	R0, 0(R2)
 ;Planner.c,115 :: 		STPS[axis_No].rest        = 0;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -540,7 +540,7 @@ ADDIU	R2, R2, 68
 SW	R0, 0(R2)
 ;Planner.c,116 :: 		STPS[axis_No].accel_count = 1;
 SEH	R3, R27
-ORI	R2, R0, 104
+ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)

@@ -106,13 +106,13 @@ static int cntr = 0,a = 0;
                           SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
               }
              #endif
+             #if MainDebug == 1
+             while(DMA_IsOn(1));
+             dma_printf("axis_to_run:= %d\n",axis_to_run);
+             #endif
              //Execute this once only, once the axis are started the
              //OCx interrupts take control fo the axis
-              if(axis_to_run){
-                #if MainDebug == 1
-                while(DMA_IsOn(1));
-                dma_printf("axis_to_run:= %d\n",axis_to_run);
-                #endif
+              if(axis_to_run>0){
                 EnableSteppers(2);
                 Modal_Group_Actions1(axis_to_run);
                 axis_to_run = Rst_Axisword();
@@ -134,12 +134,6 @@ static int cntr = 0,a = 0;
           case 1024: //$H Home all axis
                if(axis_to_home < NoOfAxis){
                  //temp debug for steppers
-                 #if StepperDebug == 1
-                   while(DMA_IsOn(1));
-                   dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
-                             (STPS[X].run_state&0xff),STPS[X].step_count,
-                              SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
-                 #endif
                  axis_to_home  = Modal_Group_Actions1(ALL_AXIS);
                }
                break;
@@ -447,7 +441,7 @@ static int Modal_Group_Actions1(int action){
                if( axis_to_home < NoOfAxis){
                  home_status = Home(axis_to_home);
                  LED2 = TMR.clock >> 3;
-                 #if HomeDebug == 1
+                 #if HomeDebug == -1
                  while(DMA_IsOn(1));
                  dma_printf("axis:= %d\n",axis_to_home);
                  #endif
@@ -463,6 +457,12 @@ static int Modal_Group_Actions1(int action){
                    break;
                  }
                }
+               #if StepperDebug == 1
+                   while(DMA_IsOn(1));
+                   dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+                             (STPS[X].run_state&0xff),STPS[X].step_count,
+                              SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+               #endif
                // Execute startup scripts after successful homing????.
             }
             //return the number of axis completed

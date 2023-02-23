@@ -98,6 +98,13 @@ int Rst_modalword(){
    return non_modal_words;
 }
 
+
+//Set axis_words group manually.... typically for homing
+//instruction in protocol $H etc...
+void Set_Axisword(int value){
+  bit_true( axis_words,bit( value));
+}
+
 //Axis to run
 int Get_Axisword(){
   return (int)axis_words & 0x00ff;

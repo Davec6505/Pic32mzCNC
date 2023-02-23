@@ -208,6 +208,7 @@ void Set_modalword(int value);
 int Get_modalword();
 int Rst_modalword();
 
+void Set_Axisword(int value);
 int Get_Axisword();
 int Rst_Axisword();
 

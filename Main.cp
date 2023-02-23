@@ -414,6 +414,7 @@ void Set_modalword(int value);
 int Get_modalword();
 int Rst_modalword();
 
+void Set_Axisword(int value);
 int Get_Axisword();
 int Rst_Axisword();
 
@@ -500,13 +501,9 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 36 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 42 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
-char set: 1;
-char home: 1;
-char rev: 1;
-char back: 1;
-char complete: 1;
+unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
 
@@ -569,8 +566,6 @@ typedef struct Steps{
  int axis_dir;
 
  char master: 1;
-
- homing_t homing;
 }STP;
 extern STP STPS[ 4 ];
 
@@ -913,22 +908,8 @@ static int cntr = 0,a = 0;
  break;
  case 4:
  axis_to_run = Get_Axisword();
-
-
- if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
- while(DMA_IsOn(1));
- dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
- (STPS[X].run_state&0xff),STPS[X].step_count,
- SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
- }
-
-
-
- if(axis_to_run){
-
- while(DMA_IsOn(1));
- dma_printf("axis_to_run:= %d\n",axis_to_run);
-
+#line 115 "C:/Users/Git/Pic32mzCNC/Main.c"
+ if(axis_to_run>0){
  EnableSteppers(2);
  Modal_Group_Actions1(axis_to_run);
  axis_to_run = Rst_Axisword();
@@ -949,12 +930,6 @@ static int cntr = 0,a = 0;
  break;
  case 1024:
  if(axis_to_home <  4 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
- (STPS[X].run_state&0xff),STPS[X].step_count,
- SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
 
  axis_to_home = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
  }
@@ -1021,7 +996,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 220 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 214 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1062,24 +1037,12 @@ unsigned long _flash,*addr;
 
 
  coord_data[i] = ulong2flt(_flash);
-
-
- while(DMA_IsOn(1));
- dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
- temp_axis,i,coord_data[i],indx);
-
-
+#line 261 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
 
 
  coord_data[i] = gc.next_position[i];
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.next_position[%d]:= %f\n"
- ,i,gc.next_position[i]);
-
-
+#line 272 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1096,14 +1059,7 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-
-
- while(DMA_IsOn(1));
- dma_printf("axis_words:= %d\n",axis_words);
-
-
-
-
+#line 296 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1135,10 +1091,7 @@ unsigned long _flash,*addr;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-
- while(DMA_IsOn(1));
- dma_printf("coord[%d]:= %f\n",j,_data);
-
+#line 331 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1208,7 +1161,7 @@ unsigned long _flash,*addr;
 
 
 static int Modal_Group_Actions1(int action){
-#line 410 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 404 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.frequency,X);
@@ -1265,7 +1218,7 @@ static int Modal_Group_Actions1(int action){
  break;
  }
  }
-
+#line 467 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
 
  return axis_to_home;
@@ -1293,10 +1246,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-
- while(DMA_IsOn(1));
- dma_printf("gc.program_flow:= %d\n",gc.program_flow);
-
+#line 498 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
   status_code = 6 ; ;
@@ -1308,10 +1258,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-
- while(DMA_IsOn(1));
- dma_printf("gc.spindle_direction:= %d\n",gc.spindle_direction);
-
+#line 513 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
   status_code = 6 ; ;
 
@@ -1322,10 +1269,7 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-
- while(DMA_IsOn(1));
- dma_printf("GROUP_12 modal actions\taction:= %d\n",action);
-
+#line 527 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 #line 546 "C:/Users/Git/Pic32mzCNC/Main.c"
