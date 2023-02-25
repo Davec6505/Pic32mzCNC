@@ -1521,48 +1521,48 @@ J	L_report_realtime_status82
 NOP	
 ;Print.c,226 :: 		}
 L_report_realtime_status81:
-LBU	R2, Offset(_sys+1)(GP)
+LH	R2, Offset(_sys+2)(GP)
 BNE	R2, R0, L__report_realtime_status302
 NOP	
 J	L_report_realtime_status83
 NOP	
 L__report_realtime_status302:
-LBU	R3, Offset(_sys+1)(GP)
+LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 2
 BNE	R3, R2, L__report_realtime_status304
 NOP	
 J	L_report_realtime_status84
 NOP	
 L__report_realtime_status304:
-LBU	R3, Offset(_sys+1)(GP)
+LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 3
 BNE	R3, R2, L__report_realtime_status306
 NOP	
 J	L_report_realtime_status85
 NOP	
 L__report_realtime_status306:
-LBU	R3, Offset(_sys+1)(GP)
+LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 4
 BNE	R3, R2, L__report_realtime_status308
 NOP	
 J	L_report_realtime_status86
 NOP	
 L__report_realtime_status308:
-LBU	R3, Offset(_sys+1)(GP)
+LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 5
 BNE	R3, R2, L__report_realtime_status310
 NOP	
 J	L_report_realtime_status87
 NOP	
 L__report_realtime_status310:
-LBU	R3, Offset(_sys+1)(GP)
+LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 6
 BNE	R3, R2, L__report_realtime_status312
 NOP	
 J	L_report_realtime_status88
 NOP	
 L__report_realtime_status312:
-LBU	R3, Offset(_sys+1)(GP)
+LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 7
 BNE	R3, R2, L__report_realtime_status314
 NOP	

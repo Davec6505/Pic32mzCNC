@@ -4,8 +4,6 @@
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 
 
@@ -85,6 +83,8 @@ extern sfr sbit X_Min_Limit;
 extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/steptodistance.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
@@ -301,16 +301,16 @@ extern unsigned long volatile buffA[128];
 
 
 typedef struct {
- char abort;
- char state;
+ int abort;
+ int state;
  int homing;
  int homing_cnt;
  long position[ 4 ];
 
- char auto_start;
- volatile char execute;
+ int auto_start;
+ int execute;
 } system_t;
-extern volatile system_t sys;
+extern system_t sys;
 
 
 
@@ -367,7 +367,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 42 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -703,7 +703,7 @@ static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
-#line 28 "c:/users/git/pic32mzcnc/config.h"
+#line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
 extern bit oneShotB; sfr;
@@ -823,6 +823,7 @@ void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
 void EnableSteppers(int steppers);
+void EnableStepper(int stepper);
 void DisableStepper();
 void disableOCx();
 

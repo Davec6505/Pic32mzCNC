@@ -1,11 +1,5 @@
 #line 1 "C:/Users/Git/Pic32mzCNC/Main.c"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 
 
@@ -85,6 +79,13 @@ extern sfr sbit X_Min_Limit;
 extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 
@@ -288,16 +289,16 @@ extern unsigned long volatile buffA[128];
 
 
 typedef struct {
- char abort;
- char state;
+ int abort;
+ int state;
  int homing;
  int homing_cnt;
  long position[ 4 ];
 
- char auto_start;
- volatile char execute;
+ int auto_start;
+ int execute;
 } system_t;
-extern volatile system_t sys;
+extern system_t sys;
 
 
 
@@ -501,7 +502,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 42 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -667,6 +668,7 @@ void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
 void EnableSteppers(int steppers);
+void EnableStepper(int stepper);
 void DisableStepper();
 void disableOCx();
 
@@ -706,7 +708,6 @@ void InitTimer8();
 static void ClockPulse();
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/steptodistance.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
@@ -810,7 +811,7 @@ static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
-#line 28 "c:/users/git/pic32mzcnc/config.h"
+#line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
 extern bit oneShotB; sfr;
@@ -846,7 +847,7 @@ static int Modal_Group_Actions12(int action);
 
 void protocol_execute_runtime();
 #line 38 "C:/Users/Git/Pic32mzCNC/Main.c"
-volatile system_t sys;
+system_t sys;
 volatile coord_sys coord_system[ 9 ];
 STP STPS[ 4 ];
 volatile settings_t settings;
@@ -929,10 +930,10 @@ static int cntr = 0,a = 0;
  Modal_Group_Actions12(gc.coord_select);
  break;
  case 1024:
- if(axis_to_home <  4 ){
 
- axis_to_home = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
- }
+
+ Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
+
  break;
  }
  }else{
@@ -1197,31 +1198,27 @@ static int Modal_Group_Actions1(int action){
  r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
  break;
  case  ((( 4 * 4 )*2)-1) :
- if(action){
- int home_status;
- if( axis_to_home <  4 ){
- home_status = Home(axis_to_home);
+ if(action && (axis_to_home <  4 )){
+
+ axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
 
- while(DMA_IsOn(1));
- dma_printf("axis:= %d\n",axis_to_home);
-
- if(home_status){
+ if(axis_to_home >= 2){
  LED2 =  0 ;
- axis_to_home++;
- if(axis_to_home >  4 ){mc_reset();}
- break;
+ action = 0;
  }
 
  if (sys.abort) {
  return( -2 );
  break;
  }
- }
-#line 467 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 461 "C:/Users/Git/Pic32mzCNC/Main.c"
+ }else{
+ mc_reset();
  }
 
- return axis_to_home;
+
+ return action;
  break;
  default: return action = 0;
  break;
@@ -1246,7 +1243,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 498 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 495 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
   status_code = 6 ; ;
@@ -1258,7 +1255,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 513 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 510 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
   status_code = 6 ; ;
 
@@ -1269,13 +1266,13 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 527 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 524 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
-#line 546 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 543 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
- char rt_exec = sys.execute;
+ int rt_exec = sys.execute;
 
 
 

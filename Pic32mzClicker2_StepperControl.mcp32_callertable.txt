@@ -48,8 +48,21 @@ main
 		DisableStepper
 	Debounce_Limits
 		Test_Port_Pins
+		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 		Reset_Min_Limit
 		Reset_Min_Debounce
+		__CC2DW
 	Get_modalgroup
 	Get_modalword
 	Modal_Group_Actions0
@@ -108,17 +121,6 @@ main
 				fabs
 				floor
 				dma_printf
-					DMA_CH_Busy
-					sprintf
-						_doprntf
-							isdigit
-							scale
-							fround
-					strcat
-					strlen
-					strncpy
-					DMA1_Enable
-					__CC2DW
 				cos
 					sin
 						floor
@@ -130,25 +132,25 @@ main
 				disableOCx
 				__CC2DW
 		Home
-			EnableSteppers
-			Single_Axis_Enable
-			FP
-				Test_Min
-			StopAxis
-			Inv_Home_Axis
+			EnableStepper
+			Home_Axis
+				StopAxis
+				DMA_IsOn
+				dma_printf
 				belt_steps
 				SingleAxisStep
+				__CC2DW
+			DMA_IsOn
+			dma_printf
 			FN
 				Test_Min
-			Home_Axis
-				belt_steps
-				SingleAxisStep
-		DMA_IsOn
-		dma_printf
+			StopAxis
+			FP
+				Test_Min
+			__CC2DW
 		mc_reset
 			disableOCx
 			ResetHoming
-		__CC2DW
 	Rst_Axisword
 	Modal_Group_Actions4
 	Modal_Group_Actions7
@@ -210,6 +212,9 @@ main
 		Rst_modalgroup
 		Set_modalgroup
 		Set_Axisword
+		DMA_IsOn
+		dma_printf
+		Get_modalgroup
 		settings_read_startup_line
 			memcpy
 		report_status_message
@@ -217,8 +222,6 @@ main
 			DMA_IsOn
 			dma_printf
 			__CC2DW
-		DMA_IsOn
-		dma_printf
 		atoi
 			isdigit
 		strncpy
@@ -272,6 +275,7 @@ main
 		DisableStepper
 StepZ
 	SingleStepAxis
+		StopAxis
 		Step_Cycle
 		Pulse
 	Axis_Interpolate

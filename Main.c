@@ -35,7 +35,7 @@
 //external scope variables
 //settings_t settings;
 //parser_state_t gc;
-volatile system_t sys;
+system_t sys;
 volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 STP STPS[NoOfAxis];
 volatile settings_t settings;
@@ -84,7 +84,7 @@ static int cntr = 0,a = 0;
      //continously test the limits
      Debounce_Limits(X);
      Debounce_Limits(Y);
-     
+
      //continously check the communication channel
     if(!status_of_gcode){
       //get the modal_group
@@ -132,10 +132,10 @@ static int cntr = 0,a = 0;
                Modal_Group_Actions12(gc.coord_select);//implimentation needed
                break;
           case 1024: //$H Home all axis
-               if(axis_to_home < NoOfAxis){
+               //if(axis_to_home < NoOfAxis){
                  //temp debug for steppers
-                 axis_to_home  = Modal_Group_Actions1(ALL_AXIS);
-               }
+                Modal_Group_Actions1(ALL_AXIS);
+               //}
                break;
        }
      }else{
@@ -436,37 +436,34 @@ static int Modal_Group_Actions1(int action){
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
        case ALL_AXIS://Homing X axis
-            if(action){
-            int home_status;
-               if( axis_to_home < NoOfAxis){
-                 home_status = Home(axis_to_home);
-                 LED2 = TMR.clock >> 3;
-                 #if HomeDebug == -1
-                 while(DMA_IsOn(1));
-                 dma_printf("axis:= %d\n",axis_to_home);
-                 #endif
-                 if(home_status){
-                   LED2 = false;
-                   axis_to_home++;
-                   if(axis_to_home > NoOfAxis){mc_reset();}
-                   break;
-                 }
+            if(action && (axis_to_home < NoOfAxis)){
+            
+              axis_to_home = Home(axis_to_home);
+              LED2 = TMR.clock >> 3;
+
+              if(axis_to_home >= 2){
+                LED2 = false;
+                action = 0;
+              }
                  //will need to test for abort!!!
-                 if (sys.abort) {
-                   return(ALARM_ABORT_CYCLE);
-                   break;
-                 }
-               }
-               #if StepperDebug == 1
+              if (sys.abort) {
+                return(ALARM_ABORT_CYCLE);
+                break;
+              }
+              // }
+              #if StepperDebug == 1
                    while(DMA_IsOn(1));
                    dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
                              (STPS[X].run_state&0xff),STPS[X].step_count,
                               SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
-               #endif
+              #endif
                // Execute startup scripts after successful homing????.
+            }else{
+               mc_reset();
             }
+
             //return the number of axis completed
-            return axis_to_home;
+            return action;
             break;
         default: return action = 0;
               break;
@@ -545,7 +542,7 @@ static int Modal_Group_Actions12(int action){
 // limit switches, or the main program.
 void protocol_execute_runtime(){
   if (sys.execute) { // Enter only if any bit flag is true
-    char rt_exec = sys.execute; // Avoid calling volatile multiple times
+    int rt_exec = sys.execute; // Avoid calling volatile multiple times
 
     // System alarm. Everything has shutdown by something that has gone severely wrong. Report
     // the source of the error to the user. If critical, Grbl disables by entering an infinite
@@ -614,51 +611,3 @@ void protocol_execute_runtime(){
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-//                    OBSOLETE CODE FROM INITIAL TESTS                        //
-////////////////////////////////////////////////////////////////////////////////
-//KEEPING FOR REFERENCE
-/* 
- *temp disabled code to get gcode send working
-     if(!SW2){
-       Toggle  = 0;
-       disable_steps = 0;
-       disableOCx();
-     }
-
-     if((!SW1)&&(!Toggle)){
-        LED1 = 0;
-        Toggle = 1;
-        EnStepperX();
-        EnStepperY();
-        EnStepperZ();
-        EnStepperA();
-        ResetHoming();
-        a = 0;
-     }
-     //X Y Z
-     if(Toggle){
-
-       if((a > 19)){
-         if(STPS[X].homing.home_cnt >= 2){
-            STPS[X].homing.home_cnt = 0;
-            a = 11;
-            dma_printf("\nXCnt:= %d : a:= %d",STPS[X].homing.home_cnt,a);
-         }
-         if(STPS[Y].homing.home_cnt >= 2){
-            STPS[Y].homing.home_cnt = 0;
-            a = 12;
-            dma_printf("\nXCnt:= %d : a:= %d",STPS[Y].homing.home_cnt,a);
-         }
-        // Modal_Group1(a);
-       }else{
-          if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-            // a = Modal_Group1(a);
-#if DMADebug == 1
-             dma_printf("\na:= %d : Step:=\t%l mm2mve:=\t%l : Step:=\t%l",
-                     a,STPS[X].dist,STPS[X].mmToTravel,
-                     STPS[X].step_count);
-#endif
-          }
-       }
-}*/

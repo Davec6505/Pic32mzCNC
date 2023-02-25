@@ -363,96 +363,118 @@ int i = 0;
         homing[i].home_cnt = 0;
    }
 }
+
 //////////////////////////////////////////////////////////////////
-//Homeing sequence is a 2 bounce
+//Homing sequence =>
+// 1) axis moves toward the limits 
+// 2) at 1st hit of limit axis reverses
+// 3) at 2nd hit on limit axis stops and
+// 4) next axis starts from 1 & repeats until NoOfAxis is reached
 int Home(int axis){
 long speed = 0;
+int ax_en = 0;
 
-  if(bit_isfalse(homing[axis].home_state,HOME_SET)){
-  int i = 0;
-    bit_true(homing[axis].home_state,HOME_SET);
-    //STPS[axis].homing.set = true;
-    #if HomeDebug == 1
-    while(DMA_IsOn(1));
-    dma_printf("home_state:= %d\n",homing[axis].home_state);
-    #endif
-    
-    EnableSteppers(2);
-    for(i=0;i<NoOfAxis;i++)
-        Single_Axis_Enable(i);
-
-
-    bit_false(homing[axis].home_state,HOME_COMPLETE);
-    //STPS[axis].homing.complete = false;
+  //idle homing can only take place once all alarms are cleared
+  if(sys.state == STATE_IDLE){
+    speed = 1000;
+    //make sure Home_complete is off at start of homing
+    bit_false(homing[axis].home_state,bit(HOME_COMPLETE));
+    //set counter to 0
     homing[axis].home_cnt = 0;
-
-    if(homing[axis].home_cnt == 0)
-      speed = 2000;
-    else
-      speed = 100;
-      
+    //indicator for interface
     sys.state = STATE_HOMING;
+    
+    //enable all axis at the start
+    EnableStepper(axis);//sort this out
+   
+   //start the movement
+   Home_Axis(-500.00,speed,axis);
+
+   #if HomeDebug == 1
+    while(DMA_IsOn(1));
+    dma_printf("[sys.state:= %d ][home_state:= %d ][home_cnt:= %d]\n"
+                ,sys.state
+                ,homing[axis].home_state
+                ,homing[axis].home_cnt);
+   #endif
+    return axis;
   }
 
      
    //test if limit has been hit with rising edge
-   if(FP(axis)){
-     if(axis == X)
-        StopAxis(X);
-     else if(axis == Y)
-        StopAxis(Y);
+   if(sys.state == STATE_HOMING){
+   
+  /*  if(homing[axis].home_cnt <= 0){speed = 2000;}
+    else{speed = 100;} */
+    
+     //rising edge of limit switch
+    if(FN(axis)){
 
-     if(bit_isfalse(homing[axis].home_state,HOME_COMPLETE)){
-         bit_true(homing[axis].home_state,HOME_REV);
-         //STPS[axis].homing.rev = true;
-         Inv_Home_Axis(2.0,speed, axis);
-     }
-     homing[axis].home_cnt++;
-   }
-   //use falling edge to stop after 1 cycle
-   if(FN(axis)){
-     bit_false(homing[axis].home_state,HOME);
-     //STPS[axis].homing.home = false;
-   }
+       #if HomeDebug == 1
+       while(DMA_IsOn(1));
+       dma_printf("[%s][axis:= %d][cnt:= %d]\n","FP_Limit hit",axis,homing[axis].home_cnt);
+       #endif
 
-   if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
-      if(bit_isfalse(homing[axis].home_state,HOME)){
-      //if(!STPS[axis].homing.home){
-        bit_false(homing[axis].home_state,HOME);
-        //STPS[axis].homing.home = true;
-        #if HomeDebug == 1
+       //check if homing has completed its cycle
+       if(bit_isfalse(homing[axis].home_state,BIT_HOME_COMPLETE)){
+         if(bit_isfalse(homing[axis].home_state,BIT_HOME_REV)){
+           if(homing[axis].home_cnt == 1){
+               bit_true(homing[axis].home_state,bit(HOME_REV));
+               bit_false(homing[axis].home_state,bit(HOME));
+               Home_Axis(2.0,100, axis);
+           }else if(homing[axis].home_cnt > 1){
+               bit_true(homing[axis].home_state,bit(HOME_COMPLETE));
+               StopAxis(axis);
+               axis++;
+               sys.state = STATE_IDLE;
+               homing[axis].home_cnt = 0;
+               #if HomeDebug == 1
+               while(DMA_IsOn(1));
+               dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n","axis finnished"
+                          ,sys.state
+                          ,axis
+                          ,homing[axis].home_cnt);
+               #endif
+               return axis;
+           }
+         }
+         #if HomeDebug == 1
          while(DMA_IsOn(1));
-         dma_printf("Home_axis(%l,%d);\n",speed,axis);
-        #endif
-        Home_Axis(-290.00,speed,axis);
-      }
+         dma_printf("axis[%d].home_state:= %d\n",axis,homing[axis].home_state);
+         #endif
+       }
+     }
 
-      if((homing[axis].home_cnt >= 2)&&(bit_isfalse(homing[axis].home_state,HOME_COMPLETE))){//(!STPS[axis].homing.complete)){
-          bit_true(homing[axis].home_state,HOME_COMPLETE);
-          //STPS[axis].homing.complete      = true;
-          STPS[axis].step_count           = 0;
-          STPS[axis].steps_abs_position   = 0;
-      }
+     //falling edge of limit to stop after 1 cycle
+     if(FP(axis)){
+       homing[axis].home_cnt++;
+       if(bit_istrue(homing[axis].home_state,BIT_HOME_REV)){
+          bit_false(homing[axis].home_state,bit(HOME_REV));
+          Home_Axis(-290.00,50,axis);
+       }
+     }
    }
-   return homing[axis].home_state;;
+   return axis;
 }
 
 //Home single axis
 static void Home_Axis(double distance,long speed,int axis){
-      distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
-      distance = (distance < 0.0)? distance : -distance;
-      STPS[axis].mmToTravel = belt_steps(distance);
-      //speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
-      SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
+  //force a stop of the axis
+  StopAxis(axis);
+  STPS[axis].run_state = STOP ;
+  //make sure the travel is long enough to get Home tsto limi
+  distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
+  distance = (distance < 0.0)? distance : -distance;
+  
+  #if HomeDebug == 1
+   while(DMA_IsOn(1));
+   dma_printf("Home_dist(%f,%l,%d);\n",distance,speed,axis);
+  #endif
+  //calculate the distance in Steps and send to stepper control
+  STPS[axis].mmToTravel = belt_steps(distance);
+  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
-//Re verse
-static void Inv_Home_Axis(double distance,long speed,int axis){
-      distance = (distance > 10.0)?  10.0 : distance;
-      distance *= (distance < 0.0)?  -1.0 : 1.0;
-      STPS[axis].mmToTravel = belt_steps(distance);
-      //speed_cntr_Move(STPS[axis].mmToTravel, speed ,axis);
-      SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
-}
+
 
 // Method to ready the system to reset by setting the runtime reset command and killing any
 // active processes in the system. This also checks if a system reset is issued while Grbl

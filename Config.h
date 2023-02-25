@@ -1,10 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-
+#include "Pins.h"
 #include "Timers.h"
 #include "built_in.h"
-#include "Pins.h"
 #include "Stepper.h"
 #include "Steptodistance.h"
 #include "Serial_Dma.h"

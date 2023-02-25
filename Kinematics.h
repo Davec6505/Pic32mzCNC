@@ -18,6 +18,7 @@
 #define CW_   1
 #define CCW_ -1
 #define zero 0
+
 #define Direction(a) (((a) < (0))? (CCW_) : (CW_))
 //Bresenhams differential calculation
 #define BresIncVal(a) ((2)*(a))
@@ -33,11 +34,22 @@
 //axis >> 1 to Home all axis 1 at a time
 #define ALL_AXIS (((NoOfAxis*NoOfAxis)*2)-1)
 
-#define HOME_SET      1
-#define HOME          2
-#define HOME_REV      3
-#define HOME_BACK     4
-#define HOME_COMPLETE 5
+//Homing control
+#define HOME_SET         1
+#define HOME             2
+#define HOME_REV         3
+#define HOME_BACK        4
+#define HOME_COMPLETE    5
+
+
+//bitflags defined
+#define BIT_HOME_SET      bit(1)
+#define BIT_HOME          bit(2)
+#define BIT_HOME_REV      bit(3)
+#define BIT_HOME_BACK     bit(4)
+#define BIT_HOME_COMPLETE bit(5)
+
+
 
 typedef struct {
 unsigned int home_state;

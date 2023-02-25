@@ -6,22 +6,14 @@
 //Limits variables
 static struct limit Limit[NoOfAxis];
 
-//////////////////////////////////////
-//static local variables
-static unsigned int last_cntX_min;
-static unsigned int last_cntY_min;
-static unsigned int last_cntZ_min;
-static unsigned int last_cntA_min;
-
 //////////////////////////////////////////////////////
-//                LIMITS INITAILIZE                 //
+//                LIMITS INITAILIZE  Y12 & X13        //
 //////////////////////////////////////////////////////
-
 
 /////////////////////////////////////
 //Configure Pins for Limits as inputs
 void Limit_Initialize(){
-
+ int i = 0;
    //set the limit ports to inputs
 
    X_Min_Limit_Dir = 1;
@@ -31,19 +23,17 @@ void Limit_Initialize(){
    Limit[X].Limit_Min = 0;
    Limit[Y].Limit_Min = 0;
 
-   //keep track of 100ms pulse
-   last_cntX_min = 0;
-   last_cntY_min = 0;
-   last_cntZ_min = 0;
-   last_cntA_min = 0;
-
    //disable external interrupts 1 and 2
    IEC0  |= 0x21 << 8;
 
    
    X_Min_Limit_Setup();
    Y_Min_Limit_Setup();
-
+ 
+   //pre condition last know Limit luesva
+  /* for(i = 0;i < NoOfAxis;i++){
+     Limit[i].old_Fval = Limit[i].old_Pval = Test_Min(i) & 0x0001;
+   }  */
 }
 
 ////////////////////////////////////////////////////////
@@ -88,8 +78,7 @@ void Y_Min_Limit_Setup(){
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
    INT1IF_bit = 0;
    if(!Limit[X].Limit_Min)
-        Limit[X].Limit_Min = 1;
-        
+        Limit[X].Limit_Min = true;
 }
 
 ///////////////////////////////////////////////////////////
@@ -97,8 +86,7 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
    INT2IF_bit = 0;
    if(!Limit[Y].Limit_Min)
-      Limit[Y].Limit_Min = 1;
-        
+      Limit[Y].Limit_Min = true;
 }
 
 
@@ -111,7 +99,7 @@ void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
 
 
 char Test_Min(int axis){
-   return (Limit[axis].Limit_Min & 0x0001)? 1:0;
+   return (Limit[axis].Limit_Min & 0x01)? 1:0;
 }
 
 ///////////////////////////////////////////////////////////
@@ -144,7 +132,7 @@ void Debounce_Limits(int axis){
       if(!Limit[axis].T0 && !Limit[axis].T2){
          Limit[axis].T2 = 1;
          Limit[axis].Min_DeBnc++;
-      #if DMADebug == 10
+      #if LimitDebug == 1
           dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
       #endif
         if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
@@ -183,7 +171,7 @@ char tmp = 0;
 //negative edge
 char FN(int axis){
 char tmp = 0;
-   Limit[axis].new_val = Test_Min(axis) & 0x0001;
+   Limit[axis].new_val = Test_Min(axis) & 0x01;
    if(Limit[axis].new_val < Limit[axis].old_Fval){
       tmp = 1;
    }else

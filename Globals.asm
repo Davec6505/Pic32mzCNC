@@ -24,15 +24,15 @@ NOP
 L__settings_init126:
 ; ptr end address is: 8 (R2)
 ;Globals.c,38 :: 		sys.abort           = 0;
-SB	R0, Offset(_sys+0)(GP)
+SH	R0, Offset(_sys+0)(GP)
 ;Globals.c,39 :: 		sys.state           = 0;
-SB	R0, Offset(_sys+1)(GP)
-;Globals.c,40 :: 		sys.homing          = 0;
 SH	R0, Offset(_sys+2)(GP)
+;Globals.c,40 :: 		sys.homing          = 0;
+SH	R0, Offset(_sys+4)(GP)
 ;Globals.c,41 :: 		sys.execute         = 0;
-SB	R0, Offset(_sys+25)(GP)
+SH	R0, Offset(_sys+26)(GP)
 ;Globals.c,42 :: 		sys.auto_start      = 0;
-SB	R0, Offset(_sys+24)(GP)
+SH	R0, Offset(_sys+24)(GP)
 ;Globals.c,43 :: 		}else{
 J	L_settings_init1
 NOP	
