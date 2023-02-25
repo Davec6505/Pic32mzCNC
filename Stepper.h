@@ -49,6 +49,7 @@ void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
 void EnableSteppers(int steppers);
+void EnableStepper(int stepper);
 void DisableStepper();
 void disableOCx();
 

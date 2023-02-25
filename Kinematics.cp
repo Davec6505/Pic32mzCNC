@@ -86,8 +86,6 @@ extern volatile settings_t settings;
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 
 
@@ -167,6 +165,8 @@ extern sfr sbit X_Min_Limit;
 extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/steptodistance.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
@@ -299,16 +299,16 @@ extern unsigned long volatile buffA[128];
 
 
 typedef struct {
- char abort;
- char state;
+ int abort;
+ int state;
  int homing;
  int homing_cnt;
  long position[ 4 ];
 
- char auto_start;
- volatile char execute;
+ int auto_start;
+ int execute;
 } system_t;
-extern volatile system_t sys;
+extern system_t sys;
 
 
 
@@ -599,7 +599,7 @@ static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
-#line 28 "c:/users/git/pic32mzcnc/config.h"
+#line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
 extern bit oneShotB; sfr;
@@ -719,6 +719,7 @@ void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
 void EnableSteppers(int steppers);
+void EnableStepper(int stepper);
 void DisableStepper();
 void disableOCx();
 
@@ -745,7 +746,7 @@ void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 43 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -1157,111 +1158,112 @@ int i = 0;
 }
 
 
+
+
+
+
+
 int Home(int axis){
 long speed = 0;
-
- if( ((homing[axis].home_state & 1 ) == 0) ){
- int i = 0;
-  (homing[axis].home_state |= 1 ) ;
+int ax_en = 0;
 
 
- while(DMA_IsOn(1));
- dma_printf("[home_state:= %d ][home_cnt:= %d]\n"
- ,homing[axis].home_state
- ,homing[axis].home_cnt);
+ if(sys.state ==  0 ){
+ speed = 1000;
 
-
- EnableSteppers(2);
- for(i=0;i< 4 ;i++)
- Single_Axis_Enable(i);
-
-
-  (homing[axis].home_state &= ~ 5 ) ;
+  (homing[axis].home_state &= ~ (1 << 5 ) ) ;
 
  homing[axis].home_cnt = 0;
 
- if(homing[axis].home_cnt == 0)
- speed = 2000;
- else
- speed = 100;
-
  sys.state =  5 ;
+
+
+ EnableStepper(axis);
+
+
+ Home_Axis(-500.00,speed,axis);
+
+
+ while(DMA_IsOn(1));
+ dma_printf("[sys.state:= %d ][home_state:= %d ][home_cnt:= %d]\n"
+ ,sys.state
+ ,homing[axis].home_state
+ ,homing[axis].home_cnt);
+
+ return axis;
  }
 
+
+
+ if(sys.state ==  5 ){
+#line 411 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ if(FN(axis)){
+
+
+ while(DMA_IsOn(1));
+ dma_printf("[%s][axis:= %d][cnt:= %d]\n","FP_Limit hit",axis,homing[axis].home_cnt);
+
+
+
+ if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
+ if( ((homing[axis].home_state & (1 << 3) ) == 0) ){
+ if(homing[axis].home_cnt == 1){
+  (homing[axis].home_state |= (1 << 3 ) ) ;
+  (homing[axis].home_state &= ~ (1 << 2 ) ) ;
+ Home_Axis(2.0,100, axis);
+ }else if(homing[axis].home_cnt > 1){
+  (homing[axis].home_state |= (1 << 5 ) ) ;
+ StopAxis(axis);
+ axis++;
+ sys.state =  0 ;
+ homing[axis].home_cnt = 0;
+
+ while(DMA_IsOn(1));
+ dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n","axis finnished"
+ ,sys.state
+ ,axis
+ ,homing[axis].home_cnt);
+
+ return axis;
+ }
+ }
+
+ while(DMA_IsOn(1));
+ dma_printf("axis[%d].home_state:= %d\n",axis,homing[axis].home_state);
+
+ }
+ }
 
 
  if(FP(axis)){
-
- while(DMA_IsOn(1));
- dma_printf("%s\n","FP_Limit hit");
-
- if(axis == X)
- StopAxis(X);
- else if(axis == Y)
- StopAxis(Y);
-
- if( ((homing[axis].home_state & 5 ) == 0) ){
-  (homing[axis].home_state |= 3 ) ;
-
- Inv_Home_Axis(-2.0,speed, axis);
- }
  homing[axis].home_cnt++;
- }
-
- if(FN(axis)){
-
- while(DMA_IsOn(1));
- dma_printf("%s\n","FN_Limit hit");
-
-  (homing[axis].home_state &= ~ 2 ) ;
-
- }
-
- if((!OC5IE_bit && !OC2IE_bit && !OC7IE_bit && !OC3IE_bit)){
- if( ((homing[axis].home_state & 2 ) == 0) ){
-
-  (homing[axis].home_state |= 2 ) ;
-
-
- while(DMA_IsOn(1));
- dma_printf("state:= %d\tHome_Axis(%l,%d);\n"
- ,homing[axis].home_state
- ,speed
- ,axis);
-
- Home_Axis(-290.00,speed,axis);
- }
-
- if((homing[axis].home_cnt >= 2)&&( ((homing[axis].home_state & 5 ) == 0) )){
-  (homing[axis].home_state |= 5 ) ;
-
- STPS[axis].step_count = 0;
- STPS[axis].steps_abs_position = 0;
+ if( ((homing[axis].home_state & (1 << 3) ) != 0) ){
+  (homing[axis].home_state &= ~ (1 << 3 ) ) ;
+ Home_Axis(-290.00,50,axis);
  }
  }
- return homing[axis].home_state;;
+ }
+ return axis;
 }
 
 
 static void Home_Axis(double distance,long speed,int axis){
+
+ StopAxis(axis);
+ STPS[axis].run_state =  0  ;
+
  distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
  distance = (distance < 0.0)? distance : -distance;
 
+
  while(DMA_IsOn(1));
- dma_printf("Home_dist(%f);\n",distance);
+ dma_printf("Home_dist(%f,%l,%d);\n",distance,speed,axis);
+
 
  STPS[axis].mmToTravel = belt_steps(distance);
-
  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 
-static void Inv_Home_Axis(double distance,long speed,int axis){
- distance = (distance > 10.0)? 10.0 : distance;
- distance *= (distance < 0.0)? -1.0 : 1.0;
- STPS[axis].mmToTravel = belt_steps(distance);
-
- SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
-}
 
 
 

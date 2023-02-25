@@ -83,6 +83,17 @@ int i;
   }
 }
 
+void EnableStepper(int stepper){
+    switch(stepper){
+     case X:EN_StepX = 0; break;
+     case Y:EN_StepY = 0; break;
+     case Z:EN_StepZ = 0; break;
+     case A:EN_StepA = 0; break;
+     //case B:EN_StepB = 0; break;
+     //case C:EN_StepC = 0; break;
+    }
+}
+
 void DisableStepper(){
    EN_StepX      = 1;
    EN_StepY      = 1;
@@ -374,7 +385,8 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 void SingleStepAxis(int axis){
     if(STPS[axis].step_count >= STPS[axis].dist){
-      return;//StopAxis(axis);
+      StopAxis(axis);
+      return;
     }
     else{
       Step_Cycle(axis);

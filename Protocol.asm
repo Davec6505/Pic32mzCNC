@@ -79,9 +79,9 @@ NOP
 ; dif start address is: 20 (R5)
 SEH	R5, R2
 ;Protocol.c,61 :: 		if(bit_istrue(sys.execute,EXEC_STATUS_REPORT)&& !startup){
-LBU	R2, Offset(_sys+25)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ANDI	R2, R2, 1
-ANDI	R2, R2, 255
+SEH	R2, R2
 BNE	R2, R0, L__Sample_Ringbuffer265
 NOP	
 J	L__Sample_Ringbuffer243
@@ -99,10 +99,10 @@ L__Sample_Ringbuffer241:
 ORI	R2, R0, 1
 SB	R2, Offset(Protocol_startup+0)(GP)
 ;Protocol.c,63 :: 		bit_false(sys.execute,EXEC_STATUS_REPORT);
-LBU	R3, Offset(_sys+25)(GP)
-ORI	R2, R0, 254
+LH	R3, Offset(_sys+26)(GP)
+ORI	R2, R0, 65534
 AND	R2, R3, R2
-SB	R2, Offset(_sys+25)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ;Protocol.c,64 :: 		report_realtime_status();
 JAL	_report_realtime_status+0
 NOP	
@@ -148,18 +148,18 @@ L__Sample_Ringbuffer270:
 JAL	_DMA0_Abort+0
 NOP	
 ;Protocol.c,78 :: 		if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
-LBU	R2, Offset(_sys+25)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ANDI	R2, R2, 1
-ANDI	R2, R2, 255
+SEH	R2, R2
 BEQ	R2, R0, L__Sample_Ringbuffer271
 NOP	
 J	L_Sample_Ringbuffer9
 NOP	
 L__Sample_Ringbuffer271:
 ;Protocol.c,79 :: 		bit_true(sys.execute,EXEC_STATUS_REPORT);
-LBU	R2, Offset(_sys+25)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 1
-SB	R2, Offset(_sys+25)(GP)
+SH	R2, Offset(_sys+26)(GP)
 L_Sample_Ringbuffer9:
 ;Protocol.c,80 :: 		startup = 0;
 SB	R0, Offset(Protocol_startup+0)(GP)
@@ -254,18 +254,18 @@ L__Sample_Ringbuffer274:
 ;Protocol.c,130 :: 		startup = 0;
 SB	R0, Offset(Protocol_startup+0)(GP)
 ;Protocol.c,131 :: 		if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
-LBU	R2, Offset(_sys+25)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ANDI	R2, R2, 1
-ANDI	R2, R2, 255
+SEH	R2, R2
 BEQ	R2, R0, L__Sample_Ringbuffer275
 NOP	
 J	L_Sample_Ringbuffer14
 NOP	
 L__Sample_Ringbuffer275:
 ;Protocol.c,132 :: 		bit_true(sys.execute,EXEC_STATUS_REPORT);
-LBU	R2, Offset(_sys+25)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 1
-SB	R2, Offset(_sys+25)(GP)
+SH	R2, Offset(_sys+26)(GP)
 L_Sample_Ringbuffer14:
 ;Protocol.c,133 :: 		}else if(gcode[0][0] =='$'){
 J	L_Sample_Ringbuffer15
@@ -335,18 +335,18 @@ NOP
 ORI	R2, R0, 1
 SH	R2, Offset(Sample_Ringbuffer_query_L0+0)(GP)
 ;Protocol.c,157 :: 		if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
-LBU	R2, Offset(_sys+25)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ANDI	R2, R2, 1
-ANDI	R2, R2, 255
+SEH	R2, R2
 BEQ	R2, R0, L__Sample_Ringbuffer278
 NOP	
 J	L_Sample_Ringbuffer23
 NOP	
 L__Sample_Ringbuffer278:
 ;Protocol.c,158 :: 		bit_true(sys.execute,EXEC_STATUS_REPORT);
-LBU	R2, Offset(_sys+25)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 1
-SB	R2, Offset(_sys+25)(GP)
+SH	R2, Offset(_sys+26)(GP)
 L_Sample_Ringbuffer23:
 ;Protocol.c,159 :: 		break;
 J	L_Sample_Ringbuffer19
@@ -357,7 +357,7 @@ L_Sample_Ringbuffer24:
 ORI	R2, R0, 2
 SB	R2, Offset(Protocol_startup+0)(GP)
 ;Protocol.c,165 :: 		if ( sys.state == STATE_CHECK_MODE ) {
-LBU	R3, Offset(_sys+1)(GP)
+LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 7
 BEQ	R3, R2, L__Sample_Ringbuffer279
 NOP	
@@ -376,7 +376,7 @@ J	L_Sample_Ringbuffer26
 NOP	
 L_Sample_Ringbuffer25:
 ;Protocol.c,170 :: 		if (sys.state) { return(STATUS_IDLE_ERROR); }
-LBU	R2, Offset(_sys+1)(GP)
+LH	R2, Offset(_sys+2)(GP)
 BNE	R2, R0, L__Sample_Ringbuffer281
 NOP	
 J	L_Sample_Ringbuffer27
@@ -388,7 +388,7 @@ NOP
 L_Sample_Ringbuffer27:
 ;Protocol.c,172 :: 		sys.state = STATE_CHECK_MODE;
 ORI	R2, R0, 7
-SB	R2, Offset(_sys+1)(GP)
+SH	R2, Offset(_sys+2)(GP)
 ;Protocol.c,173 :: 		report_feedback_message(MESSAGE_ENABLED);
 ORI	R25, R0, 4
 JAL	_report_feedback_message+0
@@ -404,7 +404,7 @@ L_Sample_Ringbuffer28:
 ORI	R2, R0, 2
 SB	R2, Offset(Protocol_startup+0)(GP)
 ;Protocol.c,178 :: 		if (sys.state == STATE_ALARM) {
-LBU	R3, Offset(_sys+1)(GP)
+LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 6
 BEQ	R3, R2, L__Sample_Ringbuffer282
 NOP	
@@ -416,7 +416,7 @@ ORI	R25, R0, 3
 JAL	_report_feedback_message+0
 NOP	
 ;Protocol.c,180 :: 		sys.state = STATE_IDLE;
-SB	R0, Offset(_sys+1)(GP)
+SH	R0, Offset(_sys+2)(GP)
 ;Protocol.c,182 :: 		}
 L_Sample_Ringbuffer29:
 ;Protocol.c,183 :: 		query = 1; //status ok response
@@ -441,13 +441,13 @@ NOP
 L__Sample_Ringbuffer284:
 ;Protocol.c,189 :: 		int axis_to_home = 0;
 ;Protocol.c,192 :: 		if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
-LBU	R2, Offset(_sys+1)(GP)
+LH	R2, Offset(_sys+2)(GP)
 BNE	R2, R0, L__Sample_Ringbuffer286
 NOP	
 J	L__Sample_Ringbuffer245
 NOP	
 L__Sample_Ringbuffer286:
-LBU	R3, Offset(_sys+1)(GP)
+LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 6
 BNE	R3, R2, L__Sample_Ringbuffer288
 NOP	
@@ -526,7 +526,7 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 12
 ;Protocol.c,204 :: 		if (sys.abort) {
-LBU	R2, Offset(_sys+0)(GP)
+LH	R2, Offset(_sys+0)(GP)
 BNE	R2, R0, L__Sample_Ringbuffer293
 NOP	
 J	L_Sample_Ringbuffer40
@@ -829,18 +829,18 @@ NOP
 ;Protocol.c,293 :: 		case '~': //*~ (cycle start)
 L_Sample_Ringbuffer62:
 ;Protocol.c,294 :: 		sys.execute |= EXEC_CYCLE_START;
-LBU	R2, Offset(_sys+25)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 2
-SB	R2, Offset(_sys+25)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ;Protocol.c,295 :: 		break;
 J	L_Sample_Ringbuffer19
 NOP	
 ;Protocol.c,296 :: 		case '!': //*! (feed hold)
 L_Sample_Ringbuffer63:
 ;Protocol.c,297 :: 		sys.execute |= EXEC_FEED_HOLD;
-LBU	R2, Offset(_sys+25)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 8
-SB	R2, Offset(_sys+25)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ;Protocol.c,298 :: 		break;
 J	L_Sample_Ringbuffer19
 NOP	

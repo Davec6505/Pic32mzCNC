@@ -12,7 +12,7 @@ diagnostics: 0	122	Compilation Started	pins.h
 hint: 170	1354	members of  array this type can not be alligned, align ignored	Main.c
 hint: 175	1163	Variable 'a_val' has been declared, but not used	Main.c
 hint: 179	1163	Variable 'addr' has been declared, but not used	Main.c
-diagnostics: 613	123	Compiled Successfully	Main.c
+diagnostics: 610	123	Compiled Successfully	Main.c
 hint: 69	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
 hint: 70	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
 hint: 70	1164	Variable 'a' has been eliminated by optimizer	Main.c
@@ -29,7 +29,7 @@ hint: 0	1004	interrupt handler (StepX at 0x001B)	Stepper.c
 hint: 0	1004	interrupt handler (StepY at 0x000C)	Stepper.c
 hint: 0	1004	interrupt handler (StepZ at 0x0023)	Stepper.c
 hint: 0	1004	interrupt handler (StepA at 0x0011)	Stepper.c
-diagnostics: 424	123	Compiled Successfully	Stepper.c
+diagnostics: 436	123	Compiled Successfully	Stepper.c
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 69	123	Compiled Successfully	Steptodistance.c
 hint: 18	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
@@ -47,8 +47,7 @@ hint: 104	1354	argument may be out of range [axisA]	Kinematics.c
 hint: 105	1354	argument may be out of range [axisB]	Kinematics.c
 hint: 95	1163	Variable 'dirA' has been declared, but not used	Kinematics.c
 hint: 95	1163	Variable 'dirB' has been declared, but not used	Kinematics.c
-hint: 384	1354	argument may be out of range [i]	Kinematics.c
-diagnostics: 499	123	Compiled Successfully	Kinematics.c
+diagnostics: 504	123	Compiled Successfully	Kinematics.c
 warning: 128	1512	variable 'tempC' might not have been initialized	Kinematics.c
 warning: 307	1512	variable 'tempB' might not have been initialized	Kinematics.c
 warning: 307	1512	variable 'tempA' might not have been initialized	Kinematics.c
@@ -56,6 +55,7 @@ hint: 70	1164	Variable 'dir' has been eliminated by optimizer	Kinematics.c
 hint: 219	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
 hint: 221	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
 hint: 214	1164	Variable 'rads' has been eliminated by optimizer	Kinematics.c
+hint: 375	1164	Variable 'ax_en' has been eliminated by optimizer	Kinematics.c
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 76	123	Compiled Successfully	Pins.c
 diagnostics: 0	122	Compilation Started	stdlib.h
@@ -95,7 +95,8 @@ hint: 603	1164	Variable 'val_temp' has been eliminated by optimizer	Globals.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (X_Min_Limit at 0x0008)	Limits.c
 hint: 0	1004	interrupt handler (Y_Min_Limit at 0x000D)	Limits.c
-diagnostics: 218	123	Compiled Successfully	Limits.c
+diagnostics: 206	123	Compiled Successfully	Limits.c
+hint: 16	1164	Variable 'i' has been eliminated by optimizer	Limits.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 170	1354	members of  array this type can not be alligned, align ignored	Protocol.c
 warning: 562	1503	Result is not defined in function: ''	Protocol.c
@@ -132,13 +133,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 2235 ms	 
+diagnostics: 0	127	All files Compiled in 3360 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 5559   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5559   Dynamic RAM (bytes): 507381
+hint: 0	1144	Static RAM (bytes): 5551   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5551   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 78937 (4%)  Free ROM (bytes): 2018215 (96%)	Used ROM (bytes): 78937 (4%)  Free ROM (bytes): 2018215 (96%)
+hint: 0	1144	Used ROM (bytes): 78706 (4%)  Free ROM (bytes): 2018446 (96%)	Used ROM (bytes): 78706 (4%)  Free ROM (bytes): 2018446 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 750 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4547 ms	 
-diagnostics: 0	103	Finished successfully: 23 Feb 2023, 09:16:25	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 906 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6094 ms	 
+diagnostics: 0	103	Finished successfully: 25 Feb 2023, 22:54:29	Pic32mzClicker2_StepperControl.mcp32

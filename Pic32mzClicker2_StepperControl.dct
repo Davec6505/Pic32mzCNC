@@ -27771,6 +27771,7 @@ en_stepa
 en_stepx
 en_stepy
 en_stepz
+enablestepper
 enablesteppers
 endcmp
 endcmp

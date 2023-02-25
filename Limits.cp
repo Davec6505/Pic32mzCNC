@@ -81,9 +81,9 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
@@ -291,16 +291,16 @@ extern unsigned long volatile buffA[128];
 
 
 typedef struct {
- char abort;
- char state;
+ int abort;
+ int state;
  int homing;
  int homing_cnt;
  long position[ 4 ];
 
- char auto_start;
- volatile char execute;
+ int auto_start;
+ int execute;
 } system_t;
-extern volatile system_t sys;
+extern system_t sys;
 
 
 
@@ -504,7 +504,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 43 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -670,6 +670,7 @@ void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
 void EnableSteppers(int steppers);
+void EnableStepper(int stepper);
 void DisableStepper();
 void disableOCx();
 
@@ -753,7 +754,7 @@ static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
-#line 28 "c:/users/git/pic32mzcnc/config.h"
+#line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 extern bit oneShotA; sfr;
 extern bit oneShotB; sfr;
@@ -850,20 +851,12 @@ static struct limit Limit[ 4 ];
 
 
 
-static unsigned int last_cntX_min;
-static unsigned int last_cntY_min;
-static unsigned int last_cntZ_min;
-static unsigned int last_cntA_min;
-
-
-
-
 
 
 
 
 void Limit_Initialize(){
-
+ int i = 0;
 
 
  X_Min_Limit_Dir = 1;
@@ -874,18 +867,12 @@ void Limit_Initialize(){
  Limit[Y].Limit_Min = 0;
 
 
- last_cntX_min = 0;
- last_cntY_min = 0;
- last_cntZ_min = 0;
- last_cntA_min = 0;
-
-
  IEC0 |= 0x21 << 8;
 
 
  X_Min_Limit_Setup();
  Y_Min_Limit_Setup();
-
+#line 37 "C:/Users/Git/Pic32mzCNC/Limits.c"
 }
 
 
@@ -930,8 +917,7 @@ void Y_Min_Limit_Setup(){
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
  INT1IF_bit = 0;
  if(!Limit[X].Limit_Min)
- Limit[X].Limit_Min = 1;
-
+ Limit[X].Limit_Min =  1 ;
 }
 
 
@@ -939,8 +925,7 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  INT2IF_bit = 0;
  if(!Limit[Y].Limit_Min)
- Limit[Y].Limit_Min = 1;
-
+ Limit[Y].Limit_Min =  1 ;
 }
 
 
@@ -953,7 +938,7 @@ void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
 
 
 char Test_Min(int axis){
- return (Limit[axis].Limit_Min & 0x0001)? 1:0;
+ return (Limit[axis].Limit_Min & 0x01)? 1:0;
 }
 
 
@@ -986,7 +971,9 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 150 "C:/Users/Git/Pic32mzCNC/Limits.c"
+
+ dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
+
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }
@@ -1023,7 +1010,7 @@ char tmp = 0;
 
 char FN(int axis){
 char tmp = 0;
- Limit[axis].new_val = Test_Min(axis) & 0x0001;
+ Limit[axis].new_val = Test_Min(axis) & 0x01;
  if(Limit[axis].new_val < Limit[axis].old_Fval){
  tmp = 1;
  }else
