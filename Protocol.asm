@@ -425,17 +425,8 @@ SH	R2, Offset(Sample_Ringbuffer_query_L0+0)(GP)
 ;Protocol.c,184 :: 		break;
 J	L_Sample_Ringbuffer19
 NOP	
-<<<<<<< HEAD
 ;Protocol.c,185 :: 		case 'H' : // Perform homing cycle $H
 L_Sample_Ringbuffer30:
-=======
-;Protocol.c,185 :: 		case 'H' : // Perform homing cycle
-<<<<<<< HEAD
-L_Sample_Ringbuffer32:
->>>>>>> patch2
-=======
-L_Sample_Ringbuffer30:
->>>>>>> patch2
 ;Protocol.c,186 :: 		startup = 2;
 ORI	R2, R0, 2
 SB	R2, Offset(Protocol_startup+0)(GP)
@@ -571,26 +562,9 @@ L_Sample_Ringbuffer42:
 MOVZ	R2, R0, R0
 J	L_end_Sample_Ringbuffer
 NOP	
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-;Protocol.c,211 :: 		case 'N' : // Startup lines. $N
-L_Sample_Ringbuffer40:
-=======
-;Protocol.c,211 :: 		case 'N' : // Startup lines.
-L_Sample_Ringbuffer42:
->>>>>>> patch2
-;Protocol.c,212 :: 		startup = 2;
-=======
-;Protocol.c,213 :: 		case 'N' : // Startup lines.
-L_Sample_Ringbuffer40:
-;Protocol.c,214 :: 		startup = 2;
->>>>>>> patch2
-=======
-;Protocol.c,216 :: 		case 'N' : // Startup lines.
+;Protocol.c,216 :: 		case 'N' : // Startup lines. $N
 L_Sample_Ringbuffer43:
 ;Protocol.c,217 :: 		startup = 2;
->>>>>>> patch2
 ORI	R2, R0, 2
 SB	R2, Offset(Protocol_startup+0)(GP)
 ;Protocol.c,218 :: 		if ( gcode[0][2] < 0x20 ) { // Print startup lines

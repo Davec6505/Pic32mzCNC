@@ -56485,6 +56485,7 @@ sessrqie_bit
 sessrqif
 sessrqif
 sessrqif_bit
+set_axisword
 set_modalgroup
 set_modalword
 set_performance_mode
