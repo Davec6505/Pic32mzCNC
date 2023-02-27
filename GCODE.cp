@@ -413,7 +413,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 58 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;

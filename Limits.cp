@@ -504,7 +504,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 58 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -884,12 +884,12 @@ void X_Min_Limit_Setup(){
 
 
 
- IPC2 |= 17 ;
+ IPC2SET = 17 ;
 
 
- IEC0 |= 1 << 8;
+ IEC0SET = 1 << 8;
 
- IFS0 |= ~(1 << 8);
+ IFS0CLR = 1 << 8;
 }
 
 
@@ -901,12 +901,13 @@ void Y_Min_Limit_Setup(){
 
 
 
- IPC3 |= 18 << 8;
+
+ IPC3SET = 17 << 8;
 
 
- IEC0 |= 1 << 13;
+ IEC0SET = 1 << 13;
 
- IFS0 |= ~(1 << 13);
+ IFS0CLR = (1 << 13);
 }
 
 
@@ -965,20 +966,24 @@ void Debounce_Limits(int axis){
  Limit[axis].T0 = (TMR.clock >>  0 )&1;
 
 
+
  Limit[axis].Pin = Test_Port_Pins(axis);
 
  if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
+
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
 
  dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
 
+
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }
  }else if(Limit[axis].T0 && Limit[axis].T2)
  Limit[axis].T2 = 0;
+
 
  if(Limit[axis].Min_DeBnc >  5 )
  Reset_Min_Limit(axis);

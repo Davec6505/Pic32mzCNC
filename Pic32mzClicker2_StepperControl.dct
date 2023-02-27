@@ -47217,7 +47217,6 @@ reset_min_debounce
 reset_min_limit
 reset_ring
 reset_usbcsr0_bit
-resethoming
 resetie
 resetie
 resetie_bit

@@ -450,7 +450,7 @@ static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 58 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;

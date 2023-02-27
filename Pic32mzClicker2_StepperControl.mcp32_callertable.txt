@@ -133,6 +133,7 @@ main
 				__CC2DW
 		Home
 			EnableStepper
+			Test_Min
 			Home_Axis
 				StopAxis
 				DMA_IsOn
@@ -142,10 +143,10 @@ main
 				__CC2DW
 			DMA_IsOn
 			dma_printf
-			FN
+			FP
 				Test_Min
 			StopAxis
-			FP
+			FN
 				Test_Min
 			__CC2DW
 		mc_reset

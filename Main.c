@@ -38,7 +38,7 @@
 system_t sys;
 volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 STP STPS[NoOfAxis];
-volatile settings_t settings;
+settings_t settings;
 
 bit oneShotA; sfr;
 bit oneShotB; sfr;
@@ -608,6 +608,3 @@ void protocol_execute_runtime(){
   // Overrides flag byte (sys.override) and execution should be installed here, since they
   // are runtime and require a direct and controlled interface to the main stepper program.
 }
-
-
-

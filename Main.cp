@@ -502,7 +502,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 58 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -850,7 +850,7 @@ void protocol_execute_runtime();
 system_t sys;
 volatile coord_sys coord_system[ 9 ];
 STP STPS[ 4 ];
-volatile settings_t settings;
+settings_t settings;
 
 bit oneShotA; sfr;
 bit oneShotB; sfr;

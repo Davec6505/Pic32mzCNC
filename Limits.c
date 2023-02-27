@@ -8,7 +8,7 @@ static struct limit Limit[NoOfAxis];
 
 //////////////////////////////////////////////////////
 //                LIMITS INITAILIZE  Y12 & X13        //
-//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////                                                `1
 
 /////////////////////////////////////
 //Configure Pins for Limits as inputs
@@ -45,12 +45,12 @@ void X_Min_Limit_Setup(){
 //IPC2<1:0>
 
  //Set Priority level to 4 & sub 1
- IPC2 |= 17 ;
+ IPC2SET = 17 ;
  
  // enable INT0
- IEC0 |= 1 << 8;
+ IEC0SET = 1 << 8;
  // clear the interrupt flag
- IFS0 |= ~(1 << 8);
+ IFS0CLR  = 1 << 8;
 }
 
 ////////////////////////////////////////////////////////
@@ -61,13 +61,14 @@ void Y_Min_Limit_Setup(){
 //IPC3<12:10>
 //IPC3<9:8>
 
- //Set Priority level to 3 & sub 2
- IPC3 |= 18 << 8;
+ //Set Priority level to 3 & sub 1
+ //limits should seldom hit at the sametime [same sub prior]
+ IPC3SET = 17 << 8;
 
  // enable INT0
- IEC0 |= 1 << 13;
+ IEC0SET = 1 << 13;
  // clear the interrupt flag
- IFS0 |= ~(1 << 13);
+ IFS0CLR = (1 << 13);
 }
 
 /////////////////////////////////////////////////////////////
@@ -126,21 +127,25 @@ void Debounce_Limits(int axis){
    Limit[axis].T0 = (TMR.clock >> BASE_TMR)&1;
   // Limit[axis].T1 = Limit[axis].Limit_Min;
    
+   //sample the physical pin for is current state
    Limit[axis].Pin = Test_Port_Pins(axis);
    
    if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
+      //if pin is low state && T2 low state[T2 set && add dbnc cntr]
       if(!Limit[axis].T0 && !Limit[axis].T2){
          Limit[axis].T2 = 1;
          Limit[axis].Min_DeBnc++;
       #if LimitDebug == 1
           dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
       #endif
+        //questionable block of code
         if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
            Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
         }
       }else if(Limit[axis].T0 && Limit[axis].T2)
          Limit[axis].T2 = 0;
-
+         
+      //reset debounce once count has reached threshold
       if(Limit[axis].Min_DeBnc > DEBOUNCE_COUNT)
           Reset_Min_Limit(axis);
 
