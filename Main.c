@@ -436,7 +436,7 @@ static int Modal_Group_Actions1(int action){
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
        case ALL_AXIS://Homing X axis
-            if(action && (axis_to_home < NoOfAxis)){
+            if(action){
             
               axis_to_home = Home(axis_to_home);
               LED2 = TMR.clock >> 3;

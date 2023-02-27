@@ -1198,7 +1198,7 @@ static int Modal_Group_Actions1(int action){
  r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
  break;
  case  ((( 4 * 4 )*2)-1) :
- if(action && (axis_to_home <  4 )){
+ if(action){
 
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;

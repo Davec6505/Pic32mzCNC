@@ -35,8 +35,8 @@
 #define ALL_AXIS (((NoOfAxis*NoOfAxis)*2)-1)
 
 //rising or falling edge triggers
-#define POSITIVE_EDGE
-//#define NEGATIVE_EDGE
+//#define POSITIVE_EDGE
+#define NEGATIVE_EDGE
 
 //Homing control
 #define HOME_SET         1

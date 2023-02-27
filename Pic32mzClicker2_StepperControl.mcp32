@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Main.c
+Value=Kinematics.c
 =======
 =======
 >>>>>>> patch1
@@ -136,7 +136,12 @@ File2=Kinematics.h
 File3=DEFINES.pld
 File4=Limits.c
 File5=Limits.h
-Count=6
+File6=Config.c
+File7=Config.h
+File8=Protocol.c
+File9=Protocol.h
+File10=Stepper.c
+Count=11
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

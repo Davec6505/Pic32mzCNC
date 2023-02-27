@@ -23,7 +23,7 @@ hint: 172	1164	Variable 'result' has been eliminated by optimizer	Main.c
 hint: 172	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (UART2 at 0x0092)	Config.c
-diagnostics: 390	123	Compiled Successfully	Config.c
+diagnostics: 391	123	Compiled Successfully	Config.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (StepX at 0x001B)	Stepper.c
 hint: 0	1004	interrupt handler (StepY at 0x000C)	Stepper.c
@@ -95,7 +95,7 @@ hint: 603	1164	Variable 'val_temp' has been eliminated by optimizer	Globals.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (X_Min_Limit at 0x0008)	Limits.c
 hint: 0	1004	interrupt handler (Y_Min_Limit at 0x000D)	Limits.c
-diagnostics: 211	123	Compiled Successfully	Limits.c
+diagnostics: 212	123	Compiled Successfully	Limits.c
 hint: 16	1164	Variable 'i' has been eliminated by optimizer	Limits.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 170	1354	members of  array this type can not be alligned, align ignored	Protocol.c
@@ -133,13 +133,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 2235 ms	 
+diagnostics: 0	127	All files Compiled in 3485 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
 hint: 0	1144	Static RAM (bytes): 5551   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5551   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 78687 (4%)  Free ROM (bytes): 2018465 (96%)	Used ROM (bytes): 78687 (4%)  Free ROM (bytes): 2018465 (96%)
+hint: 0	1144	Used ROM (bytes): 78606 (4%)  Free ROM (bytes): 2018546 (96%)	Used ROM (bytes): 78606 (4%)  Free ROM (bytes): 2018546 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 719 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4407 ms	 
-diagnostics: 0	103	Finished successfully: 27 Feb 2023, 21:05:40	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 1062 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6578 ms	 
+diagnostics: 0	103	Finished successfully: 27 Feb 2023, 23:01:42	Pic32mzClicker2_StepperControl.mcp32

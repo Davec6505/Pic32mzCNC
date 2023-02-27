@@ -1184,9 +1184,9 @@ int ax_en = 0;
 
 
  if(sys.state ==  5 ){
-#line 409 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
- if(FP(axis)){
-#line 413 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 411 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ if(FN(axis)){
+
  speed = 100;
 
  while(DMA_IsOn(1));
@@ -1239,8 +1239,10 @@ int ax_en = 0;
 
 
 
- if(FN(axis)){
-#line 469 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+ if(FP(axis)){
+
  homing[axis].home_cnt++;
  if( ((homing[axis].home_state & (1 << 3) ) != 0) ){
   (homing[axis].home_state &= ~ (1 << 3 ) ) ;

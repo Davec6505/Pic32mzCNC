@@ -24,7 +24,7 @@ void Limit_Initialize(){
    Limit[Y].Limit_Min = 0;
 
    //disable external interrupts 1 and 2
-   IEC0  |= 0x21 << 8;
+   IEC0CLR  = 0x21 << 8;
 
    
    X_Min_Limit_Setup();
@@ -45,7 +45,7 @@ void X_Min_Limit_Setup(){
 //IPC2<1:0>
 
  //Set Priority level to 4 & sub 1
- IPC2SET = 17 ;
+ IPC2SET = 11 ;
  
  // enable INT0
  IEC0SET = 1 << 8;
@@ -63,7 +63,7 @@ void Y_Min_Limit_Setup(){
 
  //Set Priority level to 3 & sub 1
  //limits should seldom hit at the sametime [same sub prior]
- IPC3SET = 17 << 8;
+ IPC3SET = 11 << 8;
 
  // enable INT0
  IEC0SET = 1 << 13;
@@ -80,6 +80,7 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
    INT1IF_bit = 0;
    if(!Limit[X].Limit_Min)
         Limit[X].Limit_Min = true;
+        
 }
 
 ///////////////////////////////////////////////////////////
