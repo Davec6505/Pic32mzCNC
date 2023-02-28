@@ -1151,7 +1151,6 @@ int ax_en = 0;
 
 
  if(sys.state ==  0 ){
-
  speed = 1000;
 
   (homing[axis].home_state &= ~ (1 << 5 ) ) ;
@@ -1165,7 +1164,7 @@ int ax_en = 0;
  sys.state =  5 ;
 
 
- if(!Test_Min(axis))return axis;
+ if(Test_Min(axis))return axis;
 
 
 
@@ -1184,7 +1183,7 @@ int ax_en = 0;
 
 
  if(sys.state ==  5 ){
-#line 411 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 410 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(FN(axis)){
 
  speed = 100;

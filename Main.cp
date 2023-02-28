@@ -932,7 +932,7 @@ static int cntr = 0,a = 0;
  case 1024:
 
 
- Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
+ modal_action = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
 
  break;
  }
@@ -1198,27 +1198,23 @@ static int Modal_Group_Actions1(int action){
  r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
  break;
  case  ((( 4 * 4 )*2)-1) :
- if(action){
-
  axis_to_home = Home(axis_to_home);
+ if(axis_to_home < 2){
  LED2 = TMR.clock >> 3;
 
- if(axis_to_home >= 2){
- LED2 =  0 ;
- action = 0;
- }
-
  if (sys.abort) {
- return( -2 );
- break;
+ action =( -2 );
  }
-#line 461 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
+
+ LED2 =  0 ;
  mc_reset();
+ axis_to_home = 0;
+
+ sys.state =  0 ;
+ action =  0 ;
  }
-
-
- return action;
+#line 462 "C:/Users/Git/Pic32mzCNC/Main.c"
  break;
  default: return action = 0;
  break;
@@ -1243,7 +1239,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 495 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 490 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
   status_code = 6 ; ;
@@ -1255,7 +1251,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 510 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 505 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
   status_code = 6 ; ;
 
@@ -1266,10 +1262,10 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 524 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 519 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
-#line 543 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 538 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  int rt_exec = sys.execute;

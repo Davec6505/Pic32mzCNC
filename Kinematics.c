@@ -368,7 +368,6 @@ int ax_en = 0;
 
   //idle homing can only take place once all alarms are cleared
   if(sys.state == STATE_IDLE){
-
     speed = 1000;//settings.homing_feed_rate;
     //make sure Home_complete is off at start of homing
     bit_false(homing[axis].home_state,bit(HOME_COMPLETE));
@@ -382,8 +381,8 @@ int ax_en = 0;
     sys.state = STATE_HOMING;
 
     //if limit is already made go to rev mode
-    if(!Test_Min(axis))return axis;
-
+    if(Test_Min(axis))return axis;
+    
     //start the movement
     //(max_sizes[axis]+10.0)
     Home_Axis(-500.0,speed,axis);

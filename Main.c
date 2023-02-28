@@ -134,7 +134,7 @@ static int cntr = 0,a = 0;
           case 1024: //$H Home all axis
                //if(axis_to_home < NoOfAxis){
                  //temp debug for steppers
-                Modal_Group_Actions1(ALL_AXIS);
+               modal_action = Modal_Group_Actions1(ALL_AXIS);
                //}
                break;
        }
@@ -436,34 +436,29 @@ static int Modal_Group_Actions1(int action){
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
        case ALL_AXIS://Homing X axis
-            if(action){
-            
-              axis_to_home = Home(axis_to_home);
+            axis_to_home = Home(axis_to_home);
+            if(axis_to_home < 2){
               LED2 = TMR.clock >> 3;
-
-              if(axis_to_home >= 2){
-                LED2 = false;
-                action = 0;
-              }
-                 //will need to test for abort!!!
+              //will need to test for abort!!!
               if (sys.abort) {
-                return(ALARM_ABORT_CYCLE);
-                break;
+                  action =(ALARM_ABORT_CYCLE);
               }
-              // }
-              #if StepperDebug == 1
-                   while(DMA_IsOn(1));
-                   dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
-                             (STPS[X].run_state&0xff),STPS[X].step_count,
-                              SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
-              #endif
-               // Execute startup scripts after successful homing????.
             }else{
-               mc_reset();
+              // Execute startup scripts after successful homing????.
+              LED2 = false;
+              mc_reset();
+              axis_to_home = 0;
+              //return the number of axis completed
+              sys.state = STATE_IDLE;
+              action = STATE_IDLE;
             }
+            #if StepperDebug == 1
+            while(DMA_IsOn(1));
+            dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+                      (STPS[X].run_state&0xff),STPS[X].step_count,
+                       SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+            #endif
 
-            //return the number of axis completed
-            return action;
             break;
         default: return action = 0;
               break;
