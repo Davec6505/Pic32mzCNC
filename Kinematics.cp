@@ -545,6 +545,7 @@ void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+void Min_Set(int axis);
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
@@ -1165,7 +1166,14 @@ int ax_en = 0;
  sys.state =  5 ;
 
 
- if(Test_Min(axis))return axis;
+ if(!Test_Port_Pins(axis)){
+
+ if(Test_Min(axis))
+ Reset_Min_Limit(axis);
+
+ Min_Set(axis);
+ return axis;
+ }
 
 
 
@@ -1184,7 +1192,7 @@ int ax_en = 0;
 
 
  if(sys.state ==  5 ){
-#line 410 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 417 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(FN(axis)){
 
  speed = 100;

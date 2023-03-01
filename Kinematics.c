@@ -379,9 +379,16 @@ int ax_en = 0;
 
     //indicator for interface
     sys.state = STATE_HOMING;
-
+    
     //if limit is already made go to rev mode
-    if(Test_Min(axis))return axis;
+    if(!Test_Port_Pins(axis)){
+     //test for edge set or reset bit
+     if(Test_Min(axis))
+       Reset_Min_Limit(axis);
+       
+       Min_Set(axis);
+       return axis;
+    }
     
     //start the movement
     //(max_sizes[axis]+10.0)

@@ -839,6 +839,7 @@ void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+void Min_Set(int axis);
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
@@ -918,17 +919,23 @@ void Y_Min_Limit_Setup(){
 
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
  INT1IF_bit = 0;
- if(!Limit[X].Limit_Min)
- Limit[X].Limit_Min =  1 ;
-
+ Min_Set(X);
 }
+
 
 
 
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  INT2IF_bit = 0;
- if(!Limit[Y].Limit_Min)
- Limit[Y].Limit_Min =  1 ;
+ Min_Set(Y);
+}
+
+
+
+void Min_Set(int axis){
+
+ if(!Limit[axis].Limit_Min)
+ Limit[axis].Limit_Min =  1 ;
 }
 
 
@@ -976,7 +983,7 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 143 "C:/Users/Git/Pic32mzCNC/Limits.c"
+#line 149 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }

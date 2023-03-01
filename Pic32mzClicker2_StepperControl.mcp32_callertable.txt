@@ -131,7 +131,10 @@ main
 				__CC2DW
 		Home
 			EnableStepper
+			Test_Port_Pins
 			Test_Min
+			Reset_Min_Limit
+			Min_Set
 			Home_Axis
 				StopAxis
 				DMA_IsOn
@@ -292,7 +295,9 @@ StepY
 	SingleStepAxis
 	Axis_Interpolate
 X_Min_Limit
+	Min_Set
 Y_Min_Limit
+	Min_Set
 DMA_CH1_ISR
 UART2
 	UART3_Write

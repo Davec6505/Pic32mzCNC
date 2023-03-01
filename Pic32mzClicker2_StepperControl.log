@@ -10,17 +10,17 @@ warning: 174	1508	Implicit conversion of int to ptr	__Lib_MemManager.c
 diagnostics: 297	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 170	1354	members of  array this type can not be alligned, align ignored	Main.c
-hint: 175	1163	Variable 'a_val' has been declared, but not used	Main.c
-hint: 179	1163	Variable 'addr' has been declared, but not used	Main.c
-diagnostics: 612	123	Compiled Successfully	Main.c
+hint: 179	1163	Variable 'a_val' has been declared, but not used	Main.c
+hint: 183	1163	Variable 'addr' has been declared, but not used	Main.c
+diagnostics: 620	123	Compiled Successfully	Main.c
 hint: 69	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
 hint: 70	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
 hint: 70	1164	Variable 'a' has been eliminated by optimizer	Main.c
 hint: 67	1164	Variable 'error' has been eliminated by optimizer	Main.c
 hint: 68	1164	Variable 'has_flash' has been eliminated by optimizer	Main.c
 hint: 69	1164	Variable 'dif' has been eliminated by optimizer	Main.c
-hint: 172	1164	Variable 'result' has been eliminated by optimizer	Main.c
-hint: 172	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
+hint: 176	1164	Variable 'result' has been eliminated by optimizer	Main.c
+hint: 176	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (UART2 at 0x0092)	Config.c
 diagnostics: 391	123	Compiled Successfully	Config.c
@@ -47,7 +47,7 @@ hint: 104	1354	argument may be out of range [axisA]	Kinematics.c
 hint: 105	1354	argument may be out of range [axisB]	Kinematics.c
 hint: 95	1163	Variable 'dirA' has been declared, but not used	Kinematics.c
 hint: 95	1163	Variable 'dirB' has been declared, but not used	Kinematics.c
-diagnostics: 537	123	Compiled Successfully	Kinematics.c
+diagnostics: 544	123	Compiled Successfully	Kinematics.c
 warning: 128	1512	variable 'tempC' might not have been initialized	Kinematics.c
 warning: 307	1512	variable 'tempB' might not have been initialized	Kinematics.c
 warning: 307	1512	variable 'tempA' might not have been initialized	Kinematics.c
@@ -95,18 +95,18 @@ hint: 603	1164	Variable 'val_temp' has been eliminated by optimizer	Globals.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (X_Min_Limit at 0x0008)	Limits.c
 hint: 0	1004	interrupt handler (Y_Min_Limit at 0x000D)	Limits.c
-diagnostics: 212	123	Compiled Successfully	Limits.c
+diagnostics: 218	123	Compiled Successfully	Limits.c
 hint: 16	1164	Variable 'i' has been eliminated by optimizer	Limits.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 170	1354	members of  array this type can not be alligned, align ignored	Protocol.c
-warning: 562	1503	Result is not defined in function: ''	Protocol.c
+warning: 563	1503	Result is not defined in function: ''	Protocol.c
 hint: 50	1163	Variable 'axis_to_run' has been declared, but not used	Protocol.c
 hint: 51	1163	Variable 'j' has been declared, but not used	Protocol.c
 hint: 52	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
 hint: 52	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
-warning: 693	1505	Suspicious pointer conversion	Protocol.c
-diagnostics: 721	123	Compiled Successfully	Protocol.c
-warning: 660	1512	variable 'status' might not have been initialized	Protocol.c
+warning: 694	1505	Suspicious pointer conversion	Protocol.c
+diagnostics: 722	123	Compiled Successfully	Protocol.c
+warning: 661	1512	variable 'status' might not have been initialized	Protocol.c
 hint: 44	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
 hint: 49	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
 hint: 49	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
@@ -114,7 +114,7 @@ hint: 51	1164	Variable 'i' has been eliminated by optimizer	Protocol.c
 hint: 51	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
 hint: 52	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
 hint: 189	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
-hint: 278	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
+hint: 279	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 117	123	Compiled Successfully	Nut_Bolts.c
 hint: 111	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
@@ -133,13 +133,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 2203 ms	 
+diagnostics: 0	127	All files Compiled in 3625 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
 hint: 0	1144	Static RAM (bytes): 5551   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5551   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 79090 (4%)  Free ROM (bytes): 2018062 (96%)	Used ROM (bytes): 79090 (4%)  Free ROM (bytes): 2018062 (96%)
+hint: 0	1144	Used ROM (bytes): 79270 (4%)  Free ROM (bytes): 2017882 (96%)	Used ROM (bytes): 79270 (4%)  Free ROM (bytes): 2017882 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 703 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4375 ms	 
-diagnostics: 0	103	Finished successfully: 01 Mar 2023, 07:03:47	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 1219 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 7000 ms	 
+diagnostics: 0	103	Finished successfully: 01 Mar 2023, 22:48:37	Pic32mzClicker2_StepperControl.mcp32

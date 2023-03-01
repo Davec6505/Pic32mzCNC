@@ -78,17 +78,23 @@ void Y_Min_Limit_Setup(){
 //X Min Limit interrupt
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
    INT1IF_bit = 0;
-   if(!Limit[X].Limit_Min)
-        Limit[X].Limit_Min = true;
-        
+   Min_Set(X);
 }
+
 
 ///////////////////////////////////////////////////////////
 //Y Min Limit interrupt
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
    INT2IF_bit = 0;
-   if(!Limit[Y].Limit_Min)
-      Limit[Y].Limit_Min = true;
+   Min_Set(Y);
+}
+
+//////////////////////////////////////////////////////////
+//Force a set on the min Limit
+void Min_Set(int axis){
+//if the pin is pulled low
+  if(!Limit[axis].Limit_Min)
+     Limit[axis].Limit_Min = true;
 }
 
 

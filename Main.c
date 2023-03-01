@@ -135,6 +135,10 @@ static int cntr = 0,a = 0;
                //if(axis_to_home < NoOfAxis){
                  //temp debug for steppers
                modal_action = Modal_Group_Actions1(ALL_AXIS);
+               #if HomeDebug == 10
+               while(DMA_IsOn(1));
+               dma_printf("modal_action:= %d\n",modal_action);
+              #endif
                if(modal_action <= 0)modal_group = Rst_modalgroup();
                break;
        }
@@ -440,9 +444,9 @@ static int Modal_Group_Actions1(int action){
             if(axis_to_home < 2){
               LED2 = TMR.clock >> 3;
               //will need to test for abort!!!
-              if (sys.abort) {
+             /* if (sys.abort) {
                   action =(ALARM_ABORT_CYCLE);
-              }
+              } */
             }else{
               int l = 0;
               // Execute startup scripts after successful homing????.
@@ -456,6 +460,10 @@ static int Modal_Group_Actions1(int action){
                  sys.position[l] = STPS[l].steps_abs_position;
               }
               sys_sync_current_position();
+              
+              //axis_to_home must be reset at end
+              axis_to_home = 0;
+              
               //return the number of axis completed
               sys.state = STATE_IDLE;
             }

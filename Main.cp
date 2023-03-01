@@ -761,6 +761,7 @@ void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+void Min_Set(int axis);
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
@@ -934,6 +935,7 @@ static int cntr = 0,a = 0;
 
 
  modal_action = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
+#line 142 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(modal_action <= 0)modal_group = Rst_modalgroup();
  break;
  }
@@ -998,7 +1000,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 214 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 218 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1039,12 +1041,12 @@ unsigned long _flash,*addr;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 261 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 265 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
 
 
  coord_data[i] = gc.next_position[i];
-#line 272 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 276 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1061,7 +1063,7 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-#line 296 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 300 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1093,7 +1095,7 @@ unsigned long _flash,*addr;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 331 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 335 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1163,7 +1165,7 @@ unsigned long _flash,*addr;
 
 
 static int Modal_Group_Actions1(int action){
-#line 404 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 408 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.frequency,X);
@@ -1202,10 +1204,7 @@ static int Modal_Group_Actions1(int action){
  axis_to_home = Home(axis_to_home);
  if(axis_to_home < 2){
  LED2 = TMR.clock >> 3;
-
- if (sys.abort) {
- action =( -2 );
- }
+#line 450 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
  int l = 0;
 
@@ -1220,9 +1219,13 @@ static int Modal_Group_Actions1(int action){
  }
  sys_sync_current_position();
 
+
+ axis_to_home = 0;
+
+
  sys.state =  0 ;
  }
-#line 469 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 477 "C:/Users/Git/Pic32mzCNC/Main.c"
  break;
  default: return action = 0;
  break;
@@ -1247,7 +1250,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 497 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 505 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
   status_code = 6 ; ;
@@ -1259,7 +1262,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 512 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 520 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
   status_code = 6 ; ;
 
@@ -1270,10 +1273,10 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 526 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 534 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
-#line 545 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 553 "C:/Users/Git/Pic32mzCNC/Main.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  int rt_exec = sys.execute;
