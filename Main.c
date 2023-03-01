@@ -135,7 +135,7 @@ static int cntr = 0,a = 0;
                //if(axis_to_home < NoOfAxis){
                  //temp debug for steppers
                modal_action = Modal_Group_Actions1(ALL_AXIS);
-               //}
+               if(modal_action <= 0)modal_group = Rst_modalgroup();
                break;
        }
      }else{
@@ -444,13 +444,20 @@ static int Modal_Group_Actions1(int action){
                   action =(ALARM_ABORT_CYCLE);
               }
             }else{
+              int l = 0;
               // Execute startup scripts after successful homing????.
               LED2 = false;
               mc_reset();
-              axis_to_home = 0;
+              action = 0;
+              for(l=0;l<NoOfAxis;l++){
+                 //may need to condition this further for coord system
+                 //to Home to!!!!
+                 STPS[l].steps_abs_position = 0;
+                 sys.position[l] = STPS[l].steps_abs_position;
+              }
+              sys_sync_current_position();
               //return the number of axis completed
               sys.state = STATE_IDLE;
-              action = STATE_IDLE;
             }
             #if StepperDebug == 1
             while(DMA_IsOn(1));

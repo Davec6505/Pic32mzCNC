@@ -44468,6 +44468,7 @@ pktpendie
 pktpendie
 pktpendie_bit
 plan_init
+plan_set_current_position
 plane_axis_0
 plane_axis_1
 plane_axis_2

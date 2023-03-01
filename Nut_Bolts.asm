@@ -566,10 +566,3 @@ ADDIU	SP, SP, 12
 JR	RA
 NOP	
 ; end of _round
-_sys_sync_current_position:
-;Nut_Bolts.c,120 :: 		void sys_sync_current_position()
-;Nut_Bolts.c,124 :: 		}
-L_end_sys_sync_current_position:
-JR	RA
-NOP	
-; end of _sys_sync_current_position

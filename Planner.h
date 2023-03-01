@@ -76,6 +76,10 @@ extern sVars SV;
 void plan_init(long accel,long decel);
 //Acceleration, speed and Circ calcs
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+//sync the current position of axis
+void sys_sync_current_position();
+//set the current position to sys.position
+void plan_set_current_position(long x, long y, long z);
 //efficient sqrt interger calculation
 unsigned long sqrt_(unsigned long v);
 //calculation of vectors for radius

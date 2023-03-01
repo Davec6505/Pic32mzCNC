@@ -116,12 +116,3 @@ double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
   return (int)temp;
 }
 
-// Syncs all internal position vectors to the current system position.
-void sys_sync_current_position()
-{
- /* plan_set_current_position(sys.position[X_AXIS],sys.position[Y_AXIS],sys.position[Z_AXIS]);
-  gc_set_current_position(sys.position[X_AXIS],sys.position[Y_AXIS],sys.position[Z_AXIS]); */
-}
-
-
-

@@ -276,10 +276,7 @@ int read_float(char *line, char *char_counter, float *float_ptr);
 unsigned long flt2ulong(float f_);
 
 
-float ulong2flt(unsigned long ui_) ;
-
-
-void sys_sync_current_position();
+float ulong2flt(unsigned long ui_);
 
 
 int round(double val);
@@ -642,6 +639,10 @@ extern sVars SV;
 void plan_init(long accel,long decel);
 
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+
+void sys_sync_current_position();
+
+void plan_set_current_position(long x, long y, long z);
 
 unsigned long sqrt_(unsigned long v);
 

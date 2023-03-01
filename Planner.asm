@@ -880,106 +880,136 @@ ADDIU	SP, SP, 100
 JR	RA
 NOP	
 ; end of _r_or_ijk
+_sys_sync_current_position:
+;Planner.c,280 :: 		void sys_sync_current_position(){
+ADDIU	SP, SP, -16
+SW	RA, 0(SP)
+;Planner.c,283 :: 		gc_set_current_position(sys.position[X],sys.position[Y],sys.position[Z]);
+SW	R25, 4(SP)
+SW	R26, 8(SP)
+SW	R27, 12(SP)
+LW	R27, Offset(_sys+16)(GP)
+LW	R26, Offset(_sys+12)(GP)
+LW	R25, Offset(_sys+8)(GP)
+JAL	_gc_set_current_position+0
+NOP	
+;Planner.c,284 :: 		}
+L_end_sys_sync_current_position:
+LW	R27, 12(SP)
+LW	R26, 8(SP)
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 16
+JR	RA
+NOP	
+; end of _sys_sync_current_position
+_plan_set_current_position:
+;Planner.c,287 :: 		void plan_set_current_position(long x, long y, long z)
+;Planner.c,292 :: 		}
+L_end_plan_set_current_position:
+JR	RA
+NOP	
+; end of _plan_set_current_position
 _sqrt_:
-;Planner.c,292 :: 		unsigned long sqrt_(unsigned long x){
-;Planner.c,298 :: 		xr = 0;                     // clear result
+;Planner.c,310 :: 		unsigned long sqrt_(unsigned long x){
+;Planner.c,316 :: 		xr = 0;                     // clear result
 ; xr start address is: 20 (R5)
 MOVZ	R5, R0, R0
-;Planner.c,299 :: 		q2 = 0x40000000L;           // higest possible result bit
+;Planner.c,317 :: 		q2 = 0x40000000L;           // higest possible result bit
 ; q2 start address is: 12 (R3)
 LUI	R3, 16384
 ; xr end address is: 20 (R5)
 ; q2 end address is: 12 (R3)
-;Planner.c,300 :: 		do
+;Planner.c,318 :: 		do
 J	L_sqrt_24
 NOP	
 L__sqrt_32:
-;Planner.c,314 :: 		} while(q2 >>= 2);          // shift twice
+;Planner.c,332 :: 		} while(q2 >>= 2);          // shift twice
 MOVZ	R5, R4, R0
-;Planner.c,300 :: 		do
+;Planner.c,318 :: 		do
 L_sqrt_24:
-;Planner.c,302 :: 		if((xr + q2) <= x)
+;Planner.c,320 :: 		if((xr + q2) <= x)
 ; q2 start address is: 12 (R3)
 ; xr start address is: 20 (R5)
 ADDU	R2, R5, R3
 SLTU	R2, R25, R2
-BEQ	R2, R0, L__sqrt_62
+BEQ	R2, R0, L__sqrt_64
 NOP	
 J	L_sqrt_27
 NOP	
-L__sqrt_62:
-;Planner.c,304 :: 		x -= xr + q2;
+L__sqrt_64:
+;Planner.c,322 :: 		x -= xr + q2;
 ADDU	R2, R5, R3
 SUBU	R2, R25, R2
 MOVZ	R25, R2, R0
-;Planner.c,305 :: 		f = 1;                  // set flag
+;Planner.c,323 :: 		f = 1;                  // set flag
 ; f start address is: 16 (R4)
 ORI	R4, R0, 1
-;Planner.c,306 :: 		}
+;Planner.c,324 :: 		}
 ; f end address is: 16 (R4)
 J	L_sqrt_28
 NOP	
 L_sqrt_27:
-;Planner.c,308 :: 		f = 0;                  // clear flag
+;Planner.c,326 :: 		f = 0;                  // clear flag
 ; f start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; f end address is: 16 (R4)
-;Planner.c,309 :: 		}
+;Planner.c,327 :: 		}
 L_sqrt_28:
-;Planner.c,310 :: 		xr >>= 1;
+;Planner.c,328 :: 		xr >>= 1;
 ; f start address is: 16 (R4)
 SRL	R2, R5, 1
 MOVZ	R5, R2, R0
-;Planner.c,311 :: 		if(f){
-BNE	R4, R0, L__sqrt_64
+;Planner.c,329 :: 		if(f){
+BNE	R4, R0, L__sqrt_66
 NOP	
 J	L__sqrt_33
 NOP	
-L__sqrt_64:
+L__sqrt_66:
 ; f end address is: 16 (R4)
-;Planner.c,312 :: 		xr += q2;               // test flag
+;Planner.c,330 :: 		xr += q2;               // test flag
 ADDU	R2, R5, R3
 ; xr end address is: 20 (R5)
 ; xr start address is: 16 (R4)
 MOVZ	R4, R2, R0
 ; xr end address is: 16 (R4)
-;Planner.c,313 :: 		}
+;Planner.c,331 :: 		}
 J	L_sqrt_29
 NOP	
 L__sqrt_33:
-;Planner.c,311 :: 		if(f){
+;Planner.c,329 :: 		if(f){
 MOVZ	R4, R5, R0
-;Planner.c,313 :: 		}
+;Planner.c,331 :: 		}
 L_sqrt_29:
-;Planner.c,314 :: 		} while(q2 >>= 2);          // shift twice
+;Planner.c,332 :: 		} while(q2 >>= 2);          // shift twice
 ; xr start address is: 16 (R4)
 SRL	R2, R3, 2
 MOVZ	R3, R2, R0
-BEQ	R2, R0, L__sqrt_65
+BEQ	R2, R0, L__sqrt_67
 NOP	
 J	L__sqrt_32
 NOP	
-L__sqrt_65:
+L__sqrt_67:
 ; q2 end address is: 12 (R3)
-;Planner.c,315 :: 		if(xr < x){
+;Planner.c,333 :: 		if(xr < x){
 SLTU	R2, R4, R25
-BNE	R2, R0, L__sqrt_66
+BNE	R2, R0, L__sqrt_68
 NOP	
 J	L_sqrt_30
 NOP	
-L__sqrt_66:
-;Planner.c,316 :: 		return xr +1;             // add for rounding
+L__sqrt_68:
+;Planner.c,334 :: 		return xr +1;             // add for rounding
 ADDIU	R2, R4, 1
 ; xr end address is: 16 (R4)
 J	L_end_sqrt_
 NOP	
-;Planner.c,317 :: 		}
+;Planner.c,335 :: 		}
 L_sqrt_30:
-;Planner.c,319 :: 		return xr;
+;Planner.c,337 :: 		return xr;
 ; xr start address is: 16 (R4)
 MOVZ	R2, R4, R0
 ; xr end address is: 16 (R4)
-;Planner.c,321 :: 		}
+;Planner.c,339 :: 		}
 L_end_sqrt_:
 JR	RA
 NOP	

@@ -287,10 +287,7 @@ int read_float(char *line, char *char_counter, float *float_ptr);
 unsigned long flt2ulong(float f_);
 
 
-float ulong2flt(unsigned long ui_) ;
-
-
-void sys_sync_current_position();
+float ulong2flt(unsigned long ui_);
 
 
 int round(double val);
@@ -842,6 +839,10 @@ void plan_init(long accel,long decel);
 
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 
+void sys_sync_current_position();
+
+void plan_set_current_position(long x, long y, long z);
+
 unsigned long sqrt_(unsigned long v);
 
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
@@ -1013,7 +1014,22 @@ int axis_plane_a,axis_plane_b;
  mc_arc(position, target, offset, axis_A, axis_B, Z,
   250.0 , gc.inverse_feed_rate_mode,r, isclockwise);
 }
+
+
+
+
+void sys_sync_current_position(){
+
+
+ gc_set_current_position(sys.position[X],sys.position[Y],sys.position[Z]);
+}
+
+
+void plan_set_current_position(long x, long y, long z)
+{
 #line 292 "C:/Users/Git/Pic32mzCNC/Planner.c"
+}
+#line 310 "C:/Users/Git/Pic32mzCNC/Planner.c"
 unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;

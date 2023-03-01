@@ -274,6 +274,24 @@ int axis_plane_a,axis_plane_b;
                  DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
+
+
+// Syncs all internal position vectors to the current system position.
+void sys_sync_current_position(){
+
+ // plan_set_current_position(sys.position[X],sys.position[Y],sys.position[Z]);
+  gc_set_current_position(sys.position[X],sys.position[Y],sys.position[Z]);
+}
+
+// Reset the planner position vector (in steps). Called by the system abort routine.
+void plan_set_current_position(long x, long y, long z)
+{
+ /* pl.position[X] = x;
+  pl.position[Y] = y;
+  pl.position[Z] = z; */
+}
+
+
 ////////////////////////////////////////////////
 //              CALCULATIONS                  //
 ////////////////////////////////////////////////

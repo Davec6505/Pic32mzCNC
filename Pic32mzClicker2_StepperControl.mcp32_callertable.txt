@@ -150,6 +150,9 @@ main
 		mc_reset
 			disableOCx
 			ResetHoming
+		sys_sync_current_position
+			gc_set_current_position
+				ulong2flt
 	Rst_Axisword
 	Modal_Group_Actions4
 	Modal_Group_Actions7
