@@ -38,7 +38,7 @@
 system_t sys;
 volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 STP STPS[NoOfAxis];
-volatile settings_t settings;
+settings_t settings;
 
 bit oneShotA; sfr;
 bit oneShotB; sfr;
@@ -134,8 +134,12 @@ static int cntr = 0,a = 0;
           case 1024: //$H Home all axis
                //if(axis_to_home < NoOfAxis){
                  //temp debug for steppers
-                Modal_Group_Actions1(ALL_AXIS);
-               //}
+               modal_action = Modal_Group_Actions1(ALL_AXIS);
+               #if HomeDebug == 10
+               while(DMA_IsOn(1));
+               dma_printf("modal_action:= %d\n",modal_action);
+              #endif
+               if(modal_action <= 0)modal_group = Rst_modalgroup();
                break;
        }
      }else{
@@ -436,34 +440,40 @@ static int Modal_Group_Actions1(int action){
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
        case ALL_AXIS://Homing X axis
-            if(action && (axis_to_home < NoOfAxis)){
-            
-              axis_to_home = Home(axis_to_home);
+            axis_to_home = Home(axis_to_home);
+            if(axis_to_home < 2){
               LED2 = TMR.clock >> 3;
-
-              if(axis_to_home >= 2){
-                LED2 = false;
-                action = 0;
-              }
-                 //will need to test for abort!!!
-              if (sys.abort) {
-                return(ALARM_ABORT_CYCLE);
-                break;
-              }
-              // }
-              #if StepperDebug == 1
-                   while(DMA_IsOn(1));
-                   dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
-                             (STPS[X].run_state&0xff),STPS[X].step_count,
-                              SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
-              #endif
-               // Execute startup scripts after successful homing????.
+              //will need to test for abort!!!
+             /* if (sys.abort) {
+                  action =(ALARM_ABORT_CYCLE);
+              } */
             }else{
-               mc_reset();
+              int l = 0;
+              // Execute startup scripts after successful homing????.
+              LED2 = false;
+              mc_reset();
+              action = 0;
+              for(l=0;l<NoOfAxis;l++){
+                 //may need to condition this further for coord system
+                 //to Home to!!!!
+                 STPS[l].steps_abs_position = 0;
+                 sys.position[l] = STPS[l].steps_abs_position;
+              }
+              sys_sync_current_position();
+              
+              //axis_to_home must be reset at end
+              axis_to_home = 0;
+              
+              //return the number of axis completed
+              sys.state = STATE_IDLE;
             }
+            #if StepperDebug == 1
+            while(DMA_IsOn(1));
+            dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+                      (STPS[X].run_state&0xff),STPS[X].step_count,
+                       SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+            #endif
 
-            //return the number of axis completed
-            return action;
             break;
         default: return action = 0;
               break;
@@ -608,6 +618,3 @@ void protocol_execute_runtime(){
   // Overrides flag byte (sys.override) and execution should be installed here, since they
   // are runtime and require a direct and controlled interface to the main stepper program.
 }
-
-
-

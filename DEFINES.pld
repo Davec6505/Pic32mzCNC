@@ -7,4 +7,4 @@ FlashDebug=-22
 LoopBackDebug=-1
 GlobalsDebug=-22
 HomeDebug=1
-LimitDebug=1
+LimitDebug=-1

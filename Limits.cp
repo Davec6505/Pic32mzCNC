@@ -276,10 +276,7 @@ int read_float(char *line, char *char_counter, float *float_ptr);
 unsigned long flt2ulong(float f_);
 
 
-float ulong2flt(unsigned long ui_) ;
-
-
-void sys_sync_current_position();
+float ulong2flt(unsigned long ui_);
 
 
 int round(double val);
@@ -504,7 +501,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 58 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -642,6 +639,10 @@ extern sVars SV;
 void plan_init(long accel,long decel);
 
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+
+void sys_sync_current_position();
+
+void plan_set_current_position(long x, long y, long z);
 
 unsigned long sqrt_(unsigned long v);
 
@@ -838,6 +839,7 @@ void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+void Min_Set(int axis);
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
@@ -867,7 +869,7 @@ void Limit_Initialize(){
  Limit[Y].Limit_Min = 0;
 
 
- IEC0 |= 0x21 << 8;
+ IEC0CLR = 0x21 << 8;
 
 
  X_Min_Limit_Setup();
@@ -884,12 +886,12 @@ void X_Min_Limit_Setup(){
 
 
 
- IPC2 |= 17 ;
+ IPC2SET = 11 ;
 
 
- IEC0 |= 1 << 8;
+ IEC0SET = 1 << 8;
 
- IFS0 |= ~(1 << 8);
+ IFS0CLR = 1 << 8;
 }
 
 
@@ -901,12 +903,13 @@ void Y_Min_Limit_Setup(){
 
 
 
- IPC3 |= 18 << 8;
+
+ IPC3SET = 11 << 8;
 
 
- IEC0 |= 1 << 13;
+ IEC0SET = 1 << 13;
 
- IFS0 |= ~(1 << 13);
+ IFS0CLR = (1 << 13);
 }
 
 
@@ -916,16 +919,23 @@ void Y_Min_Limit_Setup(){
 
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
  INT1IF_bit = 0;
- if(!Limit[X].Limit_Min)
- Limit[X].Limit_Min =  1 ;
+ Min_Set(X);
 }
+
 
 
 
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  INT2IF_bit = 0;
- if(!Limit[Y].Limit_Min)
- Limit[Y].Limit_Min =  1 ;
+ Min_Set(Y);
+}
+
+
+
+void Min_Set(int axis){
+
+ if(!Limit[axis].Limit_Min)
+ Limit[axis].Limit_Min =  1 ;
 }
 
 
@@ -965,20 +975,21 @@ void Debounce_Limits(int axis){
  Limit[axis].T0 = (TMR.clock >>  0 )&1;
 
 
+
  Limit[axis].Pin = Test_Port_Pins(axis);
 
  if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
+
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-
- dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
-
+#line 149 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }
  }else if(Limit[axis].T0 && Limit[axis].T2)
  Limit[axis].T2 = 0;
+
 
  if(Limit[axis].Min_DeBnc >  5 )
  Reset_Min_Limit(axis);

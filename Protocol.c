@@ -192,6 +192,7 @@ START_LINE://label to rerun startup line if it has one
                   if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
                     int i = 0;
                     Rst_modalgroup();
+                    
                     //set bit 10 [1024] for homing
                     Set_modalgroup(HOME_ALL);
                     for(i=1;i<NoOfAxis;i++)

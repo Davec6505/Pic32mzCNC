@@ -284,10 +284,7 @@ int read_float(char *line, char *char_counter, float *float_ptr);
 unsigned long flt2ulong(float f_);
 
 
-float ulong2flt(unsigned long ui_) ;
-
-
-void sys_sync_current_position();
+float ulong2flt(unsigned long ui_);
 
 
 int round(double val);
@@ -548,6 +545,7 @@ void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+void Min_Set(int axis);
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
@@ -692,6 +690,10 @@ void plan_init(long accel,long decel);
 
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 
+void sys_sync_current_position();
+
+void plan_set_current_position(long x, long y, long z);
+
 unsigned long sqrt_(unsigned long v);
 
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
@@ -746,7 +748,7 @@ void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 58 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -1144,25 +1146,7 @@ float hypot(float angular_travel, float linear_travel){
 int GetAxisDirection(long mm2move){
  return(mm2move < 0)?  -1 : 1  ;
 }
-
-
-
-
-
-void ResetHoming(){
-int i = 0;
- for(i = 0;i<  4 ;i++){
- homing[i].home_state = 0;
- homing[i].home_cnt = 0;
- }
-}
-
-
-
-
-
-
-
+#line 365 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 int Home(int axis){
 long speed = 0;
 int ax_en = 0;
@@ -1175,13 +1159,25 @@ int ax_en = 0;
 
  homing[axis].home_cnt = 0;
 
- sys.state =  5 ;
-
 
  EnableStepper(axis);
 
 
- Home_Axis(-500.00,speed,axis);
+ sys.state =  5 ;
+
+
+ if(!Test_Port_Pins(axis)){
+
+ if(Test_Min(axis))
+ Reset_Min_Limit(axis);
+
+ Min_Set(axis);
+ return axis;
+ }
+
+
+
+ Home_Axis(-500.0,speed,axis);
 
 
  while(DMA_IsOn(1));
@@ -1196,27 +1192,40 @@ int ax_en = 0;
 
 
  if(sys.state ==  5 ){
-#line 411 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 417 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(FN(axis)){
 
+ speed = 100;
 
  while(DMA_IsOn(1));
- dma_printf("[%s][axis:= %d][cnt:= %d]\n","FP_Limit hit",axis,homing[axis].home_cnt);
+ dma_printf("[%s][axis:= %d][cnt:= %d]\n"
+ ,"FN"
+ ,axis
+ ,homing[axis].home_cnt);
 
 
 
  if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
+
  if( ((homing[axis].home_state & (1 << 3) ) == 0) ){
+
+
  if(homing[axis].home_cnt == 1){
+
   (homing[axis].home_state |= (1 << 3 ) ) ;
   (homing[axis].home_state &= ~ (1 << 2 ) ) ;
- Home_Axis(2.0,100, axis);
+
+
+ Home_Axis(12.0,100, axis);
+
  }else if(homing[axis].home_cnt > 1){
+
   (homing[axis].home_state |= (1 << 5 ) ) ;
  StopAxis(axis);
  axis++;
  sys.state =  0 ;
  homing[axis].home_cnt = 0;
+
 
  while(DMA_IsOn(1));
  dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n","axis finnished"
@@ -1224,23 +1233,37 @@ int ax_en = 0;
  ,axis
  ,homing[axis].home_cnt);
 
+
  return axis;
  }
  }
 
  while(DMA_IsOn(1));
- dma_printf("axis[%d].home_state:= %d\n",axis,homing[axis].home_state);
+ dma_printf("homing[%d].home_state:= %d\n",axis,homing[axis].home_state);
 
  }
  }
+
+
+
+
 
 
  if(FP(axis)){
+
  homing[axis].home_cnt++;
  if( ((homing[axis].home_state & (1 << 3) ) != 0) ){
   (homing[axis].home_state &= ~ (1 << 3 ) ) ;
  Home_Axis(-290.00,50,axis);
  }
+
+ while(DMA_IsOn(1));
+ dma_printf("[%s][axis[%d].home_cnt:= %d][home_state:= %d]\n"
+ ,"FP"
+ ,axis
+ ,homing[axis].home_cnt
+ ,homing[axis].home_state);
+
  }
  }
  return axis;
@@ -1252,18 +1275,25 @@ static void Home_Axis(double distance,long speed,int axis){
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
 
- distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
- distance = (distance < 0.0)? distance : -distance;
+
+
 
 
  while(DMA_IsOn(1));
- dma_printf("Home_dist(%f,%l,%d);\n",distance,speed,axis);
+ dma_printf("HomeAxis(%f,%l,%d);\n",distance,speed,axis);
 
 
  STPS[axis].mmToTravel = belt_steps(distance);
  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 
+static void ResetHoming(){
+int i = 0;
+ for(i = 0;i<  4 ;i++){
+ homing[i].home_state = 0;
+ homing[i].home_cnt = 0;
+ }
+}
 
 
 

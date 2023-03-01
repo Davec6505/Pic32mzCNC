@@ -286,10 +286,7 @@ int read_float(char *line, char *char_counter, float *float_ptr);
 unsigned long flt2ulong(float f_);
 
 
-float ulong2flt(unsigned long ui_) ;
-
-
-void sys_sync_current_position();
+float ulong2flt(unsigned long ui_);
 
 
 int round(double val);
@@ -367,7 +364,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 54 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 58 "c:/users/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -652,6 +649,7 @@ void Y_Min_Limit_Setup();
 void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
+void Min_Set(int axis);
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
@@ -795,6 +793,10 @@ extern sVars SV;
 void plan_init(long accel,long decel);
 
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+
+void sys_sync_current_position();
+
+void plan_set_current_position(long x, long y, long z);
 
 unsigned long sqrt_(unsigned long v);
 

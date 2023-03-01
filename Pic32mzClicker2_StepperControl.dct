@@ -39133,6 +39133,7 @@ miimbusy
 miimbusy_bit
 miimbusy_emacxmind_bit
 min
+min_set
 min01
 min01
 min01
@@ -44468,6 +44469,7 @@ pktpendie
 pktpendie
 pktpendie_bit
 plan_init
+plan_set_current_position
 plane_axis_0
 plane_axis_1
 plane_axis_2
@@ -47217,7 +47219,6 @@ reset_min_debounce
 reset_min_limit
 reset_ring
 reset_usbcsr0_bit
-resethoming
 resetie
 resetie
 resetie_bit

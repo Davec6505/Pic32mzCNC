@@ -34,7 +34,8 @@ void PinMode(){
      ANSELG = 0X0000;
      TRISG  = 0X0000;
      
-     CNPUB = 0x0000;
+     CNPUB  = 0;//1 << 15;
+     CNPUF  = 0;//1 << 3;
 ////////////////////////////////////////////////////
 //outputs
     LED1_Dir = 0;
