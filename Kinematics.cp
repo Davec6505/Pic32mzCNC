@@ -540,20 +540,24 @@ long Soft_Limit_Min;
 
 void Limit_Initialize();
 
-void X_Min_Limit_Setup();
-void Y_Min_Limit_Setup();
-void Z_Min_Limit_Setup();
+static void X_Min_Limit_Setup();
+static void Y_Min_Limit_Setup();
+static void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
-void Min_Set(int axis);
+void Set_Min_Limit(int axis);
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
+void XOR_Min_Limit(int axis);
+void Invert_Min_Limit(int axis);
 void Debounce_Limits(int axis);
 void Reset_Min_Debounce(int axis);
 
 char FP(int axis);
+void Rst_FP(int axis);
 char FN(int axis);
+void Rst_FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/protocol.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -1155,7 +1159,15 @@ int ax_en = 0;
  if(sys.state ==  0 ){
  speed = 1000;
 
+
+ Rst_FP(axis);Rst_FN(axis);
+
+
   (homing[axis].home_state &= ~ (1 << 5 ) ) ;
+
+
+  (homing[axis].home_state &= ~ (1 << 3 ) ) ;
+
 
  homing[axis].home_cnt = 0;
 
@@ -1168,11 +1180,10 @@ int ax_en = 0;
 
  if(!Test_Port_Pins(axis)){
 
- if(Test_Min(axis))
- Reset_Min_Limit(axis);
 
- Min_Set(axis);
- return axis;
+ homing[axis].home_cnt = 1;
+
+ goto HOMED;
  }
 
 
@@ -1192,9 +1203,11 @@ int ax_en = 0;
 
 
  if(sys.state ==  5 ){
-#line 417 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 424 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(FN(axis)){
 
+
+HOMED:
  speed = 100;
 
  while(DMA_IsOn(1));
@@ -1206,6 +1219,7 @@ int ax_en = 0;
 
 
  if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
+
 
  if( ((homing[axis].home_state & (1 << 3) ) == 0) ){
 
@@ -1228,7 +1242,8 @@ int ax_en = 0;
 
 
  while(DMA_IsOn(1));
- dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n","axis finnished"
+ dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n"
+ ,"axis finnished"
  ,sys.state
  ,axis
  ,homing[axis].home_cnt);
@@ -1249,7 +1264,9 @@ int ax_en = 0;
 
 
 
+
  if(FP(axis)){
+
 
  homing[axis].home_cnt++;
  if( ((homing[axis].home_state & (1 << 3) ) != 0) ){

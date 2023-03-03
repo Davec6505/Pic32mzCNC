@@ -37048,6 +37048,7 @@ inttostrwithzeros
 inverse_feed_rate
 inverse_feed_rate_mode
 invert_mask
+invert_min_limit
 ioancpen
 ioancpen
 ioancpen_bit
@@ -39133,7 +39134,6 @@ miimbusy
 miimbusy_bit
 miimbusy_emacxmind_bit
 min
-min_set
 min01
 min01
 min01
@@ -47215,7 +47215,6 @@ reset
 reset
 reset_
 reset_bit
-reset_min_debounce
 reset_min_limit
 reset_ring
 reset_usbcsr0_bit
@@ -48603,6 +48602,8 @@ rslp_refo2con_bit
 rslp_refo3con_bit
 rslp_refo4con_bit
 rst_axisword
+rst_fn
+rst_fp
 rst_modalgroup
 rst_modalword
 rst_motionmode
@@ -56487,6 +56488,7 @@ sessrqif
 sessrqif
 sessrqif_bit
 set_axisword
+set_min_limit
 set_modalgroup
 set_modalword
 set_performance_mode
@@ -81481,12 +81483,11 @@ wtid3_bit
 x_min_limit
 x_min_limit
 x_min_limit_dir
-x_min_limit_setup
+xor_min_limit
 xtoi
 y_min_limit
 y_min_limit
 y_min_limit_dir
-y_min_limit_setup
 year01
 year01
 year01

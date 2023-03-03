@@ -667,20 +667,24 @@ long Soft_Limit_Min;
 
 void Limit_Initialize();
 
-void X_Min_Limit_Setup();
-void Y_Min_Limit_Setup();
-void Z_Min_Limit_Setup();
+static void X_Min_Limit_Setup();
+static void Y_Min_Limit_Setup();
+static void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
-void Min_Set(int axis);
+void Set_Min_Limit(int axis);
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
+void XOR_Min_Limit(int axis);
+void Invert_Min_Limit(int axis);
 void Debounce_Limits(int axis);
 void Reset_Min_Debounce(int axis);
 
 char FP(int axis);
+void Rst_FP(int axis);
 char FN(int axis);
+void Rst_FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/protocol.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
