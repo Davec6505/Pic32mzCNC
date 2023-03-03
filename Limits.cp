@@ -834,20 +834,24 @@ long Soft_Limit_Min;
 
 void Limit_Initialize();
 
-void X_Min_Limit_Setup();
-void Y_Min_Limit_Setup();
-void Z_Min_Limit_Setup();
+static void X_Min_Limit_Setup();
+static void Y_Min_Limit_Setup();
+static void Z_Min_Limit_Setup();
 void A_Min_Limit_Setup();
 
-void Min_Set(int axis);
+void Set_Min_Limit(int axis);
 char Test_Port_Pins(int axis);
 char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
+void XOR_Min_Limit(int axis);
+void Invert_Min_Limit(int axis);
 void Debounce_Limits(int axis);
 void Reset_Min_Debounce(int axis);
 
 char FP(int axis);
+void Rst_FP(int axis);
 char FN(int axis);
+void Rst_FN(int axis);
 #line 7 "C:/Users/Git/Pic32mzCNC/Limits.c"
 static struct limit Limit[ 4 ];
 
@@ -879,7 +883,7 @@ void Limit_Initialize(){
 
 
 
-void X_Min_Limit_Setup(){
+static void X_Min_Limit_Setup(){
 
 
 
@@ -896,7 +900,7 @@ void X_Min_Limit_Setup(){
 
 
 
-void Y_Min_Limit_Setup(){
+static void Y_Min_Limit_Setup(){
 
 
 
@@ -919,7 +923,7 @@ void Y_Min_Limit_Setup(){
 
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
  INT1IF_bit = 0;
- Min_Set(X);
+ Set_Min_Limit(X);
 }
 
 
@@ -927,18 +931,8 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  INT2IF_bit = 0;
- Min_Set(Y);
+ Set_Min_Limit(Y);
 }
-
-
-
-void Min_Set(int axis){
-
- if(!Limit[axis].Limit_Min)
- Limit[axis].Limit_Min =  1 ;
-}
-
-
 
 
 
@@ -956,18 +950,31 @@ char Test_Min(int axis){
 
 
 void Reset_Min_Limit(int axis){
+ Limit[axis].Limit_Min =  0 ;
+}
+
+void XOR_Min_Limit(int axis){
  Limit[axis].Limit_Min =  1  ^ Limit[axis].Limit_Min;
 }
 
+void Invert_Min_Limit(int axis){
+ Limit[axis].Limit_Min = (~Limit[axis].Limit_Min) & 0x01;
+}
+
+void Set_Min_Limit(int axis){
+
+ if(!Limit[axis].Limit_Min)
+ Limit[axis].Limit_Min =  1 ;
+}
 
 
 
 
-void Reset_Min_Debounce(int axis){
+
+static void Reset_Min_Debounce(int axis){
  Limit[axis].Min_DeBnc = 0;
  Limit[axis].last_cnt_min = 0;
 }
-
 
 
 
@@ -978,12 +985,13 @@ void Debounce_Limits(int axis){
 
  Limit[axis].Pin = Test_Port_Pins(axis);
 
+
  if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
 
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 149 "C:/Users/Git/Pic32mzCNC/Limits.c"
+#line 153 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }
@@ -1019,6 +1027,11 @@ char tmp = 0;
 }
 
 
+void Rst_FP(int axis){
+ Limit[axis].old_Pval =  0 ;
+}
+
+
 char FN(int axis){
 char tmp = 0;
  Limit[axis].new_val = Test_Min(axis) & 0x01;
@@ -1028,6 +1041,11 @@ char tmp = 0;
  tmp = 0;
  Limit[axis].old_Fval = Limit[axis].new_val;
  return tmp;
+}
+
+
+void Rst_FN(int axis){
+ Limit[axis].old_Fval =  1 ;
 }
 
 

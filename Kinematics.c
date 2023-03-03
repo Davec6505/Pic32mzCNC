@@ -369,8 +369,16 @@ int ax_en = 0;
   //idle homing can only take place once all alarms are cleared
   if(sys.state == STATE_IDLE){
     speed = 1000;//settings.homing_feed_rate;
+    
+    //condition the triggers
+    Rst_FP(axis);Rst_FN(axis);
+    
     //make sure Home_complete is off at start of homing
     bit_false(homing[axis].home_state,bit(HOME_COMPLETE));
+    
+    //Force a reversal of axis
+    bit_false(homing[axis].home_state,bit(HOME_REV));
+    
     //set counter to 0
     homing[axis].home_cnt = 0;
 
@@ -382,12 +390,11 @@ int ax_en = 0;
     
     //if limit is already made go to rev mode
     if(!Test_Port_Pins(axis)){
-     //test for edge set or reset bit
-     if(Test_Min(axis))
-       Reset_Min_Limit(axis);
-       
-       Min_Set(axis);
-       return axis;
+
+      //Force the homing counter to 1 == reverse state
+      homing[axis].home_cnt = 1;
+      // goto homed lable to start reversing
+      goto HOMED;
     }
     
     //start the movement
@@ -416,6 +423,8 @@ int ax_en = 0;
 #else
     if(FN(axis)){
 #endif
+//label to force a reversal of axis
+HOMED:
        speed = 100;//settings.homing_seek_rate;
        #if HomeDebug == 1
        while(DMA_IsOn(1));
@@ -427,6 +436,7 @@ int ax_en = 0;
 
        //check if homing has completed its cycle
        if(bit_isfalse(homing[axis].home_state,BIT_HOME_COMPLETE)){
+
          //if not yet reversing
          if(bit_isfalse(homing[axis].home_state,BIT_HOME_REV)){
 
@@ -449,7 +459,8 @@ int ax_en = 0;
 
                #if HomeDebug == 1
                while(DMA_IsOn(1));
-               dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n","axis finnished"
+               dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n"
+                          ,"axis finnished"
                           ,sys.state
                           ,axis
                           ,homing[axis].home_cnt);
@@ -465,13 +476,15 @@ int ax_en = 0;
        }
      }
 
-     //falling edge of limit to stop after 1 cycle
+
 #ifdef POSITIVE_EDGE
      //rising edge of limit switch
      if(FN(axis)){
 #else
+    //falling edge of limit ISR set to hi to low transition give a FP
      if(FP(axis)){
 #endif
+
        homing[axis].home_cnt++;
        if(bit_istrue(homing[axis].home_state,BIT_HOME_REV)){
           bit_false(homing[axis].home_state,bit(HOME_REV));

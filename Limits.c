@@ -38,7 +38,7 @@ void Limit_Initialize(){
 
 ////////////////////////////////////////////////////////
 //X_Limit SETUP
-void X_Min_Limit_Setup(){
+static void X_Min_Limit_Setup(){
 //IFS0<8>
 //IEC0<8>
 //IPC2<4:2>
@@ -55,7 +55,7 @@ void X_Min_Limit_Setup(){
 
 ////////////////////////////////////////////////////////
 //Y_Limit SETUP
-void Y_Min_Limit_Setup(){
+static void Y_Min_Limit_Setup(){
 //IFS0<13>
 //IEC0<13>
 //IPC3<12:10>
@@ -78,7 +78,7 @@ void Y_Min_Limit_Setup(){
 //X Min Limit interrupt
 void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
    INT1IF_bit = 0;
-   Min_Set(X);
+   Set_Min_Limit(X);
 }
 
 
@@ -86,15 +86,7 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 //Y Min Limit interrupt
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
    INT2IF_bit = 0;
-   Min_Set(Y);
-}
-
-//////////////////////////////////////////////////////////
-//Force a set on the min Limit
-void Min_Set(int axis){
-//if the pin is pulled low
-  if(!Limit[axis].Limit_Min)
-     Limit[axis].Limit_Min = true;
+   Set_Min_Limit(Y);
 }
 
 
@@ -104,29 +96,40 @@ void Min_Set(int axis){
 
 ///////////////////////////////////////////////////////////
 //Get the value of the X Min Limit interrupt
-
-
 char Test_Min(int axis){
    return (Limit[axis].Limit_Min & 0x01)? 1:0;
 }
 
 ///////////////////////////////////////////////////////////
-//                  LIMIT BITS RESET                     //
+//             LIMIT BITS / set / RESET / ^ / ~          //
 ///////////////////////////////////////////////////////////
 
 void Reset_Min_Limit(int axis){
+   Limit[axis].Limit_Min = false;//INV ^ Limit[axis].Limit_Min;
+}
+
+void XOR_Min_Limit(int axis){
    Limit[axis].Limit_Min = INV ^ Limit[axis].Limit_Min;
 }
 
+void Invert_Min_Limit(int axis){
+   Limit[axis].Limit_Min = (~Limit[axis].Limit_Min) & 0x01;
+}
+
+void Set_Min_Limit(int axis){
+//if the pin is pulled low
+  if(!Limit[axis].Limit_Min)
+     Limit[axis].Limit_Min = true;
+}
 
 /////////////////////////////////////////////////////////
 //         Debounce the resetting Limits               //
 /////////////////////////////////////////////////////////
-void Reset_Min_Debounce(int axis){
+
+static void Reset_Min_Debounce(int axis){
   Limit[axis].Min_DeBnc = 0;
   Limit[axis].last_cnt_min = 0;
 }
-
 
 ////////////////////////////////////////////////////////
 //
@@ -137,6 +140,7 @@ void Debounce_Limits(int axis){
    //sample the physical pin for is current state
    Limit[axis].Pin = Test_Port_Pins(axis);
    
+   //IF Limit is low == on
    if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
       //if pin is low state && T2 low state[T2 set && add dbnc cntr]
       if(!Limit[axis].T0 && !Limit[axis].T2){
@@ -145,7 +149,7 @@ void Debounce_Limits(int axis){
       #if LimitDebug == 1
           dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
       #endif
-        //questionable block of code
+        //stop from inc further
         if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
            Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
         }
@@ -180,6 +184,11 @@ char tmp = 0;
    return tmp;
 }
 
+//reset the trigger edge stats
+void Rst_FP(int axis){
+   Limit[axis].old_Pval = false;
+}
+
 //negative edge
 char FN(int axis){
 char tmp = 0;
@@ -190,6 +199,11 @@ char tmp = 0;
       tmp = 0;
    Limit[axis].old_Fval = Limit[axis].new_val;
    return tmp;
+}
+
+//reset the trigger edge stats
+void Rst_FN(int axis){
+   Limit[axis].old_Fval = true;
 }
 
 /////////////////////////////////////////////////////////

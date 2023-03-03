@@ -134,12 +134,10 @@ File0=Main.c
 File1=Kinematics.c
 File2=Kinematics.h
 File3=DEFINES.pld
-File4=Protocol.c
-File5=Protocol.h
-File6=Limits.c
-File7=Limits.h
-File8=Globals.h
-Count=9
+File4=Limits.c
+File5=Limits.h
+File6=Globals.h
+Count=7
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
