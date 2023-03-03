@@ -149,7 +149,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 typedef __attribute__((aligned (32))) float afloat;
 #line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- afloat steps_per_mm[ 4 ];
+ float steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;

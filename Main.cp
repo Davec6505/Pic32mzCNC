@@ -147,7 +147,7 @@ typedef unsigned long long uintmax_t;
 typedef __attribute__((aligned (32))) float afloat;
 #line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- afloat steps_per_mm[ 4 ];
+ float steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -1219,7 +1219,7 @@ static int Modal_Group_Actions1(int action){
 
 
  STPS[l].steps_abs_position = 0;
- sys.position[l] = ulong2flt(STPS[l].steps_abs_position);
+ sys.position[l] = STPS[l].steps_abs_position;
  }
  sys_sync_current_position();
 

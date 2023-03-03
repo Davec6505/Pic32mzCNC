@@ -150,7 +150,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 typedef __attribute__((aligned (32))) float afloat;
 #line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- afloat steps_per_mm[ 4 ];
+ float steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -1007,11 +1007,7 @@ START_LINE:
  Set_modalgroup( 10 );
  for(i=1;i< 4 ;i++)
  Set_Axisword(i);
-
- while(DMA_IsOn(1));
- dma_printf("GCODE:= %s\tmodal_group:= %d\n",gcode[0],Get_modalgroup());
-
-
+#line 205 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  if (sys.abort) {
  return( -2 );
  break;
@@ -1033,10 +1029,7 @@ START_LINE:
  } else {
  report_startup_line(helper_var,gcode[0]);
  }
-
- while(DMA_IsOn(1));
- dma_printf("gcode[%d]:= %s\n",helper_var,gcode[0]);
-
+#line 230 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
 
 
@@ -1073,13 +1066,7 @@ START_LINE:
 #line 278 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }else{
  int str_length = 0;
-
-
- while(DMA_IsOn(1));
- dma_printf("%s\n",str);
-
-
-
+#line 287 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  settings_store_startup_line(N_Val,str+4);
  query = 1;
  }

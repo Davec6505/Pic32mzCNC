@@ -457,7 +457,7 @@ static int Modal_Group_Actions1(int action){
                  //may need to condition this further for coord system
                  //to Home to!!!!
                  STPS[l].steps_abs_position = 0;
-                 sys.position[l] = ulong2flt(STPS[l].steps_abs_position);
+                 sys.position[l] = STPS[l].steps_abs_position;
               }
               sys_sync_current_position();
               

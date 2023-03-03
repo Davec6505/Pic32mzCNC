@@ -1326,7 +1326,7 @@ NOP
 ; end of Main_Modal_Group_Actions0
 Main_Modal_Group_Actions1:
 ;Main.c,403 :: 		static int Modal_Group_Actions1(int action){
-ADDIU	SP, SP, -20
+ADDIU	SP, SP, -16
 SW	RA, 0(SP)
 ;Main.c,408 :: 		switch(action){
 SW	R26, 4(SP)
@@ -1550,12 +1550,12 @@ LH	R25, 12(SP)
 ;Main.c,455 :: 		action = 0;
 MOVZ	R25, R0, R0
 ;Main.c,456 :: 		for(l=0;l<NoOfAxis;l++){
-; l start address is: 16 (R4)
-MOVZ	R4, R0, R0
-; l end address is: 16 (R4)
+; l start address is: 20 (R5)
+MOVZ	R5, R0, R0
+; l end address is: 20 (R5)
 L_Main_Modal_Group_Actions1100:
-; l start address is: 16 (R4)
-SEH	R2, R4
+; l start address is: 20 (R5)
+SEH	R2, R5
 SLTI	R2, R2, 4
 BNE	R2, R0, L_Main_Modal_Group_Actions1219
 NOP	
@@ -1563,7 +1563,7 @@ J	L_Main_Modal_Group_Actions1101
 NOP	
 L_Main_Modal_Group_Actions1219:
 ;Main.c,459 :: 		STPS[l].steps_abs_position = 0;
-SEH	R3, R4
+SEH	R3, R5
 ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
@@ -1572,14 +1572,13 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 80
 SW	R0, 0(R2)
-;Main.c,460 :: 		sys.position[l] = ulong2flt(STPS[l].steps_abs_position);
-SEH	R2, R4
+;Main.c,460 :: 		sys.position[l] = STPS[l].steps_abs_position;
+SEH	R2, R5
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_sys+8)
 ORI	R2, R2, lo_addr(_sys+8)
-ADDU	R2, R2, R3
-SW	R2, 16(SP)
-SEH	R3, R4
+ADDU	R4, R2, R3
+SEH	R3, R5
 ORI	R2, R0, 100
 MULTU	R2, R3
 MFLO	R3
@@ -1587,22 +1586,13 @@ LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 80
-SH	R4, 12(SP)
-SH	R25, 14(SP)
-LW	R25, 0(R2)
-JAL	_ulong2flt+0
-NOP	
-LH	R25, 14(SP)
-LH	R4, 12(SP)
-CVT36.S 	S0, S0
-MFC1	R3, S0
-LW	R2, 16(SP)
-SW	R3, 0(R2)
+LW	R2, 0(R2)
+SW	R2, 0(R4)
 ;Main.c,456 :: 		for(l=0;l<NoOfAxis;l++){
-ADDIU	R2, R4, 1
-SEH	R4, R2
+ADDIU	R2, R5, 1
+SEH	R5, R2
 ;Main.c,461 :: 		}
-; l end address is: 16 (R4)
+; l end address is: 20 (R5)
 J	L_Main_Modal_Group_Actions1100
 NOP	
 L_Main_Modal_Group_Actions1101:
@@ -1724,7 +1714,7 @@ L_end_Modal_Group_Actions1:
 LW	R27, 8(SP)
 LW	R26, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 20
+ADDIU	SP, SP, 16
 JR	RA
 NOP	
 ; end of Main_Modal_Group_Actions1

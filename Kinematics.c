@@ -363,8 +363,7 @@ int GetAxisDirection(long mm2move){
 // 3) at 2nd hit axis stops and
 // 4) next axis starts from 1 & repeats until NoOfAxis is reached
 int Home(int axis){
-long speed = 0;
-int ax_en = 0;
+static long speed = 0;
 
   //idle homing can only take place once all alarms are cleared
   if(sys.state == STATE_IDLE){
@@ -426,7 +425,7 @@ int ax_en = 0;
 //label to force a reversal of axis
 HOMED:
        speed = 100;//settings.homing_seek_rate;
-       #if HomeDebug == 1
+       #if HomeDebug == 2
        while(DMA_IsOn(1));
        dma_printf("[%s][axis:= %d][cnt:= %d]\n"
                   ,"FN"
@@ -457,7 +456,7 @@ HOMED:
                sys.state = STATE_IDLE;
                homing[axis].home_cnt = 0;
 
-               #if HomeDebug == 1
+               #if HomeDebug == 3
                while(DMA_IsOn(1));
                dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n"
                           ,"axis finnished"
@@ -469,7 +468,7 @@ HOMED:
                return axis;
            }
          }
-         #if HomeDebug == 1
+         #if HomeDebug == 4
          while(DMA_IsOn(1));
          dma_printf("homing[%d].home_state:= %d\n",axis,homing[axis].home_state);
          #endif
@@ -490,7 +489,7 @@ HOMED:
           bit_false(homing[axis].home_state,bit(HOME_REV));
           Home_Axis(-290.00,50,axis);
        }
-       #if HomeDebug == 1
+       #if HomeDebug == 5
        while(DMA_IsOn(1));
        dma_printf("[%s][axis[%d].home_cnt:= %d][home_state:= %d]\n"
        ,"FP"
@@ -512,7 +511,7 @@ static void Home_Axis(double distance,long speed,int axis){
 // distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
 //  distance = (distance < 0.0)? distance : -distance;
 
-  #if HomeDebug == 1
+  #if HomeDebug == 6
    while(DMA_IsOn(1));
    dma_printf("HomeAxis(%f,%l,%d);\n",distance,speed,axis);
   #endif

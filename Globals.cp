@@ -11,7 +11,7 @@
 typedef __attribute__((aligned (32))) float afloat;
 #line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- afloat steps_per_mm[ 4 ];
+ float steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -1074,7 +1074,10 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 278 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
+
  }
 
 

@@ -39,7 +39,21 @@ main
 				NVMWriteRow
 					NVMUnlock
 				read_row_from_flash
+					DMA_IsOn
+					dma_printf
+						DMA_CH_Busy
+						sprintf
+							_doprntf
+								isdigit
+								scale
+								fround
+						strcat
+						strlen
+						strncpy
+						DMA1_Enable
+						__CC2DW
 					set_ram_loaded_indicator
+					__CC2DW
 				set_ram_loaded_indicator
 				ulong2flt
 					memcpy
@@ -108,17 +122,6 @@ main
 				fabs
 				floor
 				dma_printf
-					DMA_CH_Busy
-					sprintf
-						_doprntf
-							isdigit
-							scale
-							fround
-					strcat
-					strlen
-					strncpy
-					DMA1_Enable
-					__CC2DW
 				cos
 					sin
 						floor
@@ -136,23 +139,16 @@ main
 			Test_Port_Pins
 			Home_Axis
 				StopAxis
-				DMA_IsOn
-				dma_printf
 				belt_steps
 				SingleAxisStep
-				__CC2DW
-			DMA_IsOn
-			dma_printf
 			FN
 				Test_Min
 			StopAxis
 			FP
 				Test_Min
-			__CC2DW
 		mc_reset
 			disableOCx
 			ResetHoming
-		ulong2flt
 		sys_sync_current_position
 			gc_set_current_position
 				ulong2flt
@@ -164,6 +160,7 @@ main
 		DMA_IsOn
 		dma_printf
 	Sample_Ringbuffer
+		__CC2DW
 		Get_Difference
 		report_realtime_status
 			DMA_IsOn
@@ -217,9 +214,6 @@ main
 		Rst_modalgroup
 		Set_modalgroup
 		Set_Axisword
-		DMA_IsOn
-		dma_printf
-		Get_modalgroup
 		settings_read_startup_line
 			memcpy
 		report_status_message
@@ -269,7 +263,6 @@ main
 		Check_group_multiple_violations
 			Rst_modalgroup
 			Rst_modalword
-		__CC2DW
 	protocol_execute_runtime
 		report_alarm_message
 			DMA_IsOn
