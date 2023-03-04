@@ -701,6 +701,7 @@ void Str_clear(char *str,int len);
 int Sample_Ringbuffer();
 
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
+static int strsplit2(char arg[ 20 ][ 64 ],char *str);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
@@ -834,7 +835,7 @@ void disableOCx();
 
 
 unsigned int GET_RunState(int axis_No);
-
+unsigned int Get_AxisStatus(int stepper);
 
 void SingleStepAxis(int axis);
 void Axis_Interpolate(int axisA,int axisB);
@@ -959,6 +960,19 @@ void DisableStepper(){
 
 unsigned int GET_RunState(int axis_No){
  return STPS[axis_No].run_state;
+}
+
+unsigned int Get_AxisStatus(int stepper){
+unsigned int state = 0;
+ switch(stepper){
+ case X:state = EN_StepX&1; break;
+ case Y:state = EN_StepY&1; break;
+ case Z:state = EN_StepZ&1; break;
+ case A:state = EN_StepA&1; break;
+
+
+ }
+ return state;
 }
 
 
@@ -1086,7 +1100,7 @@ void Step_Cycle(int axis_No){
 
 
 int Pulse(int axis_No){
-#line 241 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 254 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  switch(STPS[axis_No].run_state) {
  case  0 :
  STPS[axis_No].run_state =  0 ;

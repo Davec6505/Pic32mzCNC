@@ -316,7 +316,7 @@ int i = 0;
    //check for cancel from group 1
    if(group_number == MODAL_GROUP_1){
       status_code = STATUS_OK;
-      #if GcodeDebug == 10
+      #if GcodeDebug == 3
        while(DMA_IsOn(1));
        dma_printf("[group_number:= %d][motion_mode:= %d]\n"
                    ,group_number,motion_mode);

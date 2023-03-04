@@ -400,7 +400,7 @@ static long speed = 0;
     //(max_sizes[axis]+10.0)
     Home_Axis(-500.0,speed,axis);
 
-   #if HomeDebug == 1
+   #if HomeDebug == 2
     while(DMA_IsOn(1));
     dma_printf("[sys.state:= %d ][home_state:= %d ][home_cnt:= %d]\n"
                 ,sys.state
@@ -441,7 +441,7 @@ HOMED:
 
 
            if(homing[axis].home_cnt == 1){ //at 1st hit of limit
-
+           
                bit_true(homing[axis].home_state,bit(HOME_REV));
                bit_false(homing[axis].home_state,bit(HOME));
                //distance here is any value to move off the limit
@@ -456,7 +456,7 @@ HOMED:
                sys.state = STATE_IDLE;
                homing[axis].home_cnt = 0;
 
-               #if HomeDebug == 3
+               #if HomeDebug == 2
                while(DMA_IsOn(1));
                dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n"
                           ,"axis finnished"
@@ -468,7 +468,7 @@ HOMED:
                return axis;
            }
          }
-         #if HomeDebug == 4
+         #if HomeDebug == 3
          while(DMA_IsOn(1));
          dma_printf("homing[%d].home_state:= %d\n",axis,homing[axis].home_state);
          #endif
@@ -489,7 +489,7 @@ HOMED:
           bit_false(homing[axis].home_state,bit(HOME_REV));
           Home_Axis(-290.00,50,axis);
        }
-       #if HomeDebug == 5
+       #if HomeDebug == 2
        while(DMA_IsOn(1));
        dma_printf("[%s][axis[%d].home_cnt:= %d][home_state:= %d]\n"
        ,"FP"
@@ -511,7 +511,7 @@ static void Home_Axis(double distance,long speed,int axis){
 // distance = (distance < max_sizes[axis])? max_sizes[axis]:distance;
 //  distance = (distance < 0.0)? distance : -distance;
 
-  #if HomeDebug == 6
+  #if HomeDebug == 2
    while(DMA_IsOn(1));
    dma_printf("HomeAxis(%f,%l,%d);\n",distance,speed,axis);
   #endif
@@ -550,6 +550,7 @@ void mc_reset(){
       case STATE_CYCLE: case STATE_HOLD: case STATE_HOMING: // case STATE_JOG:
         sys.execute |= EXEC_ALARM; // Execute alarm state.
         disableOCx(); // Execute alarm force kills steppers. Position likely lost.
+        DisableStepper();
         ResetHoming();
     }
   }

@@ -675,7 +675,7 @@ void disableOCx();
 
 
 unsigned int GET_RunState(int axis_No);
-
+unsigned int Get_AxisStatus(int stepper);
 
 void SingleStepAxis(int axis);
 void Axis_Interpolate(int axisA,int axisB);
@@ -814,6 +814,7 @@ void Str_clear(char *str,int len);
 int Sample_Ringbuffer();
 
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
+static int strsplit2(char arg[ 20 ][ 64 ],char *str);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
@@ -884,19 +885,12 @@ void Conditin_Externs(){
 void main() {
 int error = 0;
 int has_flash = 0;
-int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
+int axis_to_run,dif,modal_group,modal_action,status_of_gcode;
 static int cntr = 0,a = 0;
 
  Conditin_Externs();
 
- cntr = a = axis_to_run = dif = status_of_gcode = 0;
-
-
-
-
-
-
-
+ cntr = a = axis_to_run = dif = status_of_gcode = modal_group = modal_action = 0;
 
  while(1){
 
@@ -907,6 +901,7 @@ static int cntr = 0,a = 0;
  if(!status_of_gcode){
 
  modal_group = Get_modalgroup();
+
  switch(modal_group){
  case 0:break;
  case 2:
@@ -915,12 +910,16 @@ static int cntr = 0,a = 0;
  break;
  case 4:
  axis_to_run = Get_Axisword();
-#line 115 "C:/Users/Git/Pic32mzCNC/Main.c"
- if(axis_to_run>0){
- EnableSteppers(2);
+#line 103 "C:/Users/Git/Pic32mzCNC/Main.c"
+ EnableSteppers( ((( 4 * 4 )*2)-1) );
  Modal_Group_Actions1(axis_to_run);
  axis_to_run = Rst_Axisword();
- }
+
+
+
+
+
+ modal_group = Rst_modalgroup();
  break;
 
 
@@ -939,7 +938,7 @@ static int cntr = 0,a = 0;
 
 
  modal_action = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
-#line 142 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 134 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(modal_action <= 0)modal_group = Rst_modalgroup();
  break;
  }
@@ -948,6 +947,7 @@ static int cntr = 0,a = 0;
  }
 
  status_of_gcode = Sample_Ringbuffer();
+
 
 
 
@@ -1004,7 +1004,7 @@ unsigned long _flash,*addr;
  LED2 =  0 ;
  break;
  case 4:
-#line 218 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 211 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1045,12 +1045,12 @@ unsigned long _flash,*addr;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 265 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 258 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
 
 
  coord_data[i] = gc.next_position[i];
-#line 276 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 269 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1067,7 +1067,7 @@ unsigned long _flash,*addr;
 
 
  axis_words = Get_Axisword();
-#line 300 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 293 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1099,7 +1099,7 @@ unsigned long _flash,*addr;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 335 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 328 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1169,7 +1169,7 @@ unsigned long _flash,*addr;
 
 
 static int Modal_Group_Actions1(int action){
-#line 408 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 401 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.frequency,X);
@@ -1208,7 +1208,7 @@ static int Modal_Group_Actions1(int action){
  axis_to_home = Home(axis_to_home);
  if(axis_to_home < 2){
  LED2 = TMR.clock >> 3;
-#line 450 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 443 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
  int l = 0;
 
@@ -1220,21 +1220,27 @@ static int Modal_Group_Actions1(int action){
 
  STPS[l].steps_abs_position = 0;
  sys.position[l] = STPS[l].steps_abs_position;
+
+
+ if(STPS[l].run_state !=  0 )
+ STPS[l].run_state =  0 ;
  }
  sys_sync_current_position();
 
 
- axis_to_home = 0;
+
+
+ while(axis_to_home)
+ axis_to_home = Rst_Axisword();
 
 
  sys.state =  0 ;
  }
-#line 477 "C:/Users/Git/Pic32mzCNC/Main.c"
  break;
  default: return action = 0;
  break;
  }
-
+#line 482 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }
 

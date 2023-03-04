@@ -66,20 +66,13 @@ void Conditin_Externs(){
 void main() {
 int error = 0;
 int has_flash = 0;
-int axis_to_run,dif = 0,status_of_gcode,modal_group,modal_action;
+int axis_to_run,dif,modal_group,modal_action,status_of_gcode;
 static int cntr = 0,a = 0;
 
  Conditin_Externs();
   
- cntr = a = axis_to_run = dif = status_of_gcode = 0;
+ cntr = a = axis_to_run = dif = status_of_gcode = modal_group = modal_action = 0;
  
-
- //if there is memory in flash use this otherwise use default settings
-// if(read_ram_loaded_indicator()){
-//    settings_read_coord_data();
-// }
-
-
   while(1){
      //continously test the limits
      Debounce_Limits(X);
@@ -89,6 +82,7 @@ static int cntr = 0,a = 0;
     if(!status_of_gcode){
       //get the modal_group
       modal_group = Get_modalgroup();
+
        switch(modal_group){
           case 0:break;
           case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
@@ -98,25 +92,23 @@ static int cntr = 0,a = 0;
           case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
               axis_to_run = Get_Axisword();
               //temp debug for steppers
-             #if StepperDebug == 1
-             if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
-               while(DMA_IsOn(1));
-               dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
-                         (STPS[X].run_state&0xff),STPS[X].step_count,
-                          SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
-              }
-             #endif
-             #if MainDebug == 1
+
+             #if MainDebug == 10
              while(DMA_IsOn(1));
-             dma_printf("axis_to_run:= %d\n",axis_to_run);
+             dma_printf("status_of_gcode:= %d\taxis_to_run:= %d\n",status_of_gcode,axis_to_run);
              #endif
              //Execute this once only, once the axis are started the
              //OCx interrupts take control fo the axis
-              if(axis_to_run>0){
-                EnableSteppers(2);
+              //if(axis_to_run>0){
+                EnableSteppers(ALL_AXIS);
                 Modal_Group_Actions1(axis_to_run);
                 axis_to_run = Rst_Axisword();
-              }
+             // }else{
+             //   if(STPS[X].run_state == STOP && STPS[Y].run_state == STOP){
+             //     modal_group = Rst_modalgroup();
+             //   }
+             // }
+                 modal_group = Rst_modalgroup();
                break;
           //case 8:break;// [G17,G18,G19] Plane selection
           //case 16:break;// [G90,G91] Distance mode
@@ -149,10 +141,11 @@ static int cntr = 0,a = 0;
      status_of_gcode = Sample_Ringbuffer();
 
 
-      //code execution confirmation led on clicker2 board
-      #ifdef LED_STATUS
-       LED1 = TMR.clock >> 4;
-      #endif
+     
+     //code execution confirmation led on clicker2 board
+     #ifdef LED_STATUS
+     LED1 = TMR.clock >> 4;
+     #endif
       
       //disable the steppers after a long idle state, switch off in "Settings.h"
       #ifdef RESET_STEPPER_TIME
@@ -255,13 +248,13 @@ unsigned long _flash,*addr;
                    //it update current coordinate in which case use gc.coord_data[]
                    //as this is the current machine units
                    coord_data[i] = ulong2flt(_flash);
-                   
+
                 #if MainDebug == 1
                  while(DMA_IsOn(1));
                  dma_printf("temp_axis:= %d\tcoord_data[%d]:=%f\tindx:= %d\n",
                              temp_axis,i,coord_data[i],indx);
                 #endif
-                
+
                 }else{
                 
                  //???? should be gc.coord_data
@@ -403,7 +396,7 @@ unsigned long _flash,*addr;
 static int Modal_Group_Actions1(int action){
     #if MainDebug == 10
     while(DMA_IsOn(1));
-    dma_printf("gc.frequency:= %l\n",gc.frequency);
+    dma_printf("action:= %d\tgc.frequency:= %l\n",action,gc.frequency);
     #endif
     switch(action){
       case 1: //b0000 0001
@@ -458,27 +451,34 @@ static int Modal_Group_Actions1(int action){
                  //to Home to!!!!
                  STPS[l].steps_abs_position = 0;
                  sys.position[l] = STPS[l].steps_abs_position;
+                 
+                //force the axis into stop mode after homing
+                if(STPS[l].run_state != STOP)
+                    STPS[l].run_state = STOP;
               }
               sys_sync_current_position();
               
+
+                    
               //axis_to_home must be reset at end
-              axis_to_home = 0;
+              while(axis_to_home)
+                  axis_to_home = Rst_Axisword();
               
               //return the number of axis completed
               sys.state = STATE_IDLE;
             }
-            #if StepperDebug == 1
-            while(DMA_IsOn(1));
-            dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
-                      (STPS[X].run_state&0xff),STPS[X].step_count,
-                       SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
-            #endif
-
             break;
         default: return action = 0;
               break;
     }
-    
+    #if StepperDebug == 1
+    if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
+      while(DMA_IsOn(1));
+      dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+                (STPS[X].run_state&0xff),STPS[X].step_count,
+                SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+    }
+    #endif
     return action;
 }
 

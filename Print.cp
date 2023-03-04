@@ -623,7 +623,7 @@ void disableOCx();
 
 
 unsigned int GET_RunState(int axis_No);
-
+unsigned int Get_AxisStatus(int stepper);
 
 void SingleStepAxis(int axis);
 void Axis_Interpolate(int axisA,int axisB);
@@ -739,6 +739,7 @@ void Str_clear(char *str,int len);
 int Sample_Ringbuffer();
 
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
+static int strsplit2(char arg[ 20 ][ 64 ],char *str);
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
 static int str2int(char *str,int base);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
