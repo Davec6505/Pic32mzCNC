@@ -14,7 +14,10 @@
  *? (current status)
  *ctrl-x (reset Grbl)
 *******************************************************/
-
+/*
+G21G91G1X0.991F102
+G91 G21
+*/
 
 #include "protocol.h"
 #include "Print.h"
@@ -52,7 +55,7 @@ char xyz[6];
 int F_1_Once=0,no_of_axis=0;
 int axis_to_run = 0;
 
-
+  num_of_strings = 0;
   //read head and tail pointer difference
   //if there is a difference then process line
   dif = 0;
@@ -93,16 +96,18 @@ int axis_to_run = 0;
 START_LINE://label to rerun startup line if it has one
 
     //split up the line into string array using SPC seperator
-    num_of_strings = strsplit(gcode,str,0x20);
+    num_of_strings = strsplit2(gcode,str,0x20);
 
     str_len = strlen(gcode[0]);
     
-    #if ProtoDebug == 6
+    #if ProtoDebug == 16
     while(DMA_IsOn(1));
-    dma_printf("noOfstrs:= %d\t%s:=\t%d\t%s:=\t%d\n"
+    dma_printf("noOfstrs:= %d\t%s:=\t%d\t%s:=\t%d\t%s:=\t%d\t%s:=\t%d\n"
                ,num_of_strings
                ,gcode[0],str_len
-               ,gcode[1],str_len);
+               ,gcode[1],str_len
+               ,gcode[2],str_len
+               ,gcode[3],str_len);
     #endif
     
     //condition each string by seperating the 1st char from the value
@@ -696,28 +701,36 @@ int i,ii,kk,err,lasti,len;
 }
 
 ///////////////////////////////////////////////////////
-// Split the string according to the char
+// Split the string according to the char or space
 //G00X100.0Y100.0F1000
-static int strsplit2(char arg[arr_size][str_size],char *str){
-int i,ii,kk,err,lasti,len;
-    Str_Initialize(arg);
-    len = strlen(str);
-    ii=kk=err=lasti=0;
-    for (i = 0; i < len;i++){
-        err = i - lasti; //test if string in string is < 49
-        if(*(str+i) < 0x30 || *(str+i) > 0x39 || *(str+i) == '\n'  || err > 49){
-          arg[kk++][ii] = 0;
-          ii=err=0;
-          lasti = i;
-          //continue;
-        }else{
-          arg[kk][ii++] = *(str+i);
-       }
-       if(*(str+i)==0)
-          break;
-    }
-    arg[kk][0] = 0;
-    return kk;
+static int strsplit2(char arg[arr_size][str_size],char *str, char c){
+int i,ii,kk,err,lasti,len,track_char;
+  Str_Initialize(arg);
+  len = strlen(str);
+  track_char=ii=kk=err=lasti=0;
+  for (i = 0;i < len;i++){
+    err = i - lasti; //test if string in string is < 49
+    if(*(str+i) == c || *(str+i) == '\n'  || err > 49){
+      arg[kk++][ii] = 0;
+      ii=err=0;
+      lasti = i;
+      track_char++;
+      continue;
+    }else{
+      if(i > 0 && (*(str+0) != '$') ){
+        if(!track_char && *(str+i) > 0x39){
+         arg[kk++][ii] = 0;
+         ii=err=0;
+         lasti = i;
+        }
+      }
+      arg[kk][ii++] = *(str+i);
+   }
+   if(*(str+i)==0)
+      break;
+  }
+  arg[kk][0] = 0;
+  return kk;
 }
 
 /////////////////////////////////////////////////////

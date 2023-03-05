@@ -162,6 +162,7 @@ main
 		DMA_IsOn
 		dma_printf
 	Sample_Ringbuffer
+		__CC2DW
 		Get_Difference
 		report_realtime_status
 			DMA_IsOn
@@ -169,8 +170,6 @@ main
 			dma_printf
 			__CC2DW
 		DMA0_ReadDstPtr
-		DMA_IsOn
-		dma_printf
 		DMA0_Abort
 			DMA_IsOn
 			DMA0_Enable
@@ -179,7 +178,7 @@ main
 		Get_Line
 			strncpy
 		strlen
-		strsplit
+		strsplit2
 			Str_Initialize
 				memset
 			strlen
@@ -266,7 +265,6 @@ main
 		Check_group_multiple_violations
 			Rst_modalgroup
 			Rst_modalword
-		__CC2DW
 	protocol_execute_runtime
 		report_alarm_message
 			DMA_IsOn

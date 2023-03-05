@@ -1,6 +1,6 @@
 MainDebug=-10
 DMADebug=-1
-ProtoDebug=6
+ProtoDebug=-16
 GcodeDebug=-3
 StepperDebug=-1
 FlashDebug=22
