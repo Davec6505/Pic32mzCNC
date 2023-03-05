@@ -734,14 +734,25 @@ void Rst_FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 47 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 20 ][ 64 ]);
+
+
 void Str_clear(char *str,int len);
+
 
 int Sample_Ringbuffer();
 
+
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int strsplit2(char arg[ 20 ][ 64 ],char *str,char c);
+
+
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
+
+
 static int str2int(char *str,int base);
+
+
+void protocol_execute_runtime();
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -971,8 +982,9 @@ void report_init_message(){
 
 void report_grbl_help() {
  while(DMA_IsOn(1));
-#line 134 "C:/Users/Git/Pic32mzCNC/Print.c"
- dma_printf("%s","$$ (view Grbl settings)\r\n                   $# (view # parameters)\r\n                   $G (view parser state)\r\n                   $N (view startup blocks)\r\n                   $x=value (save Grbl setting)\r\n                   $Nx=line (save startup block)\r\n                   $C (check gcode mode)\r\n                   $X (kill alarm lock)\r\n                   $H (run homing cycle)\r\n                   ~ (cycle start)\r\n                   ! (feed hold)\r\n                   ? (current status)\r\n                   ctrl-x (reset Grbl)\r\n");
+ dma_printf("%s",
+#line 136 "C:/Users/Git/Pic32mzCNC/Print.c"
+ "              $$ (view Grbl settings)\r\n              $# (view # parameters)\r\n              $G (view parser state)\r\n              $N (view startup blocks)\r\n              $x=value (save Grbl setting)\r\n              $Nx=line (save startup block)\r\n              $C (check gcode mode)\r\n              $X (kill alarm lock)\r\n              $H (run homing cycle)\r\n              ~ (cycle start)\r\n              ! (feed hold)\r\n              ? (current status)\r\n              ctrl-x (reset Grbl)\r\n");
 }
 
 
@@ -981,8 +993,8 @@ void report_grbl_settings() {
 float acc = settings.acceleration;
  acc /=(60*60);
  while(DMA_IsOn(1));
-#line 166 "C:/Users/Git/Pic32mzCNC/Print.c"
- dma_printf("\n              $0=%f (x, step/mm)\r\n              $1=%f (y, step/mm)\r\n              $2=%f (z, step/mm)\r\n              $3=%d (step pulse, usec)\r\n              $4=%f (default feed, mm/min)\r\n              $5=%f (default seek, mm/min)\r\n              $6=%d (step port invert mask, int) \r\n              $7=%d (step idle delay, msec)\r\n              $8=%f (acceleration, mm/sec^2)\r\n              $9=%f (junction deviation, mm)\r\n              $10=%f (arc, mm/segment)\r\n              $11=%d (n-arc correction, int)\r\n              $12=%d (n-decimals, int)\r\n              $13=%d (report inches, bool)\r\n              $14=%d (auto start, bool)\r\n              $15=%d (invert step enable, bool)\r\n              $16=%d (hard limits, bool)\r\n              $17=%d (homing cycle, bool)\r\n              $18=%d (homing dir invert mask, int:)\r\n              $19=%f (homing feed, mm/min)\r\n              $20=%f (homing seek, mm/min)\r\n              $21=%d (homing debounce, msec)\r\n              $22=%f (homing pull-off, mm)\r\n"
+#line 168 "C:/Users/Git/Pic32mzCNC/Print.c"
+ dma_printf("\r\n              $0=%f (x, step/mm)\r\n              $1=%f (y, step/mm)\r\n              $2=%f (z, step/mm)\r\n              $3=%d (step pulse, usec)\r\n              $4=%f (default feed, mm/min)\r\n              $5=%f (default seek, mm/min)\r\n              $6=%d (step port invert mask, int)\r\n              $7=%d (step idle delay, msec)\r\n              $8=%f (acceleration, mm/sec^2)\r\n              $9=%f (junction deviation, mm)\r\n              $10=%f (arc, mm/segment)\r\n              $11=%d (n-arc correction, int)\r\n              $12=%d (n-decimals, int)\r\n              $13=%d (report inches, bool)\r\n              $14=%d (auto start, bool)\r\n              $15=%d (invert step enable, bool)\r\n              $16=%d (hard limits, bool)\r\n              $17=%d (homing cycle, bool)\r\n              $18=%d (homing dir invert mask, int:)\r\n              $19=%f (homing feed, mm/min)\r\n              $20=%f (homing seek, mm/min)\r\n              $21=%d (homing debounce, msec)\r\n              $22=%f (homing pull-off, mm)\r\n"
  ,settings.steps_per_mm[X]
  ,settings.steps_per_mm[Y]
  ,settings.steps_per_mm[Z]
@@ -1175,7 +1187,7 @@ void report_gcode_modes(){
  }
  while(DMA_IsOn(1));
  switch (gc.coolant_mode) {
-#line 364 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 366 "C:/Users/Git/Pic32mzCNC/Print.c"
  }
  while(DMA_IsOn(1));
  if (gc.inches_mode)

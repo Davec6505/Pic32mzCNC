@@ -149,6 +149,10 @@ START_LINE://label to rerun startup line if it has one
           goto end;
        }
        switch(gcode[0][1]){
+            case '?': // Prints Grbl setting
+              report_grbl_help();
+              query = 1;
+              break;
             case '$': // Prints Grbl setting
               report_grbl_settings();
               query = 1;
@@ -158,7 +162,6 @@ START_LINE://label to rerun startup line if it has one
               query = 1;
               break;
             case 'G' : // Prints gcode parser state
-
                 startup = 0;
                 report_gcode_modes();
                 query = 1;
@@ -182,6 +185,8 @@ START_LINE://label to rerun startup line if it has one
                   sys.state = STATE_CHECK_MODE;
                   report_feedback_message(MESSAGE_ENABLED);
                 }
+                status = STATUS_OK;
+                goto end;
               break;
             case 'X' : // Disable alarm lock
               startup = 2; //for 1st scan to get ugs to connect
@@ -387,6 +392,23 @@ START_LINE://label to rerun startup line if it has one
                  #endif
                  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
                  switch(*(*(gcode+1)+0)) {
+                      case 'G':case 'g':
+                           if(i < 3){ //G00 - G99
+                             G_Val = atoi(temp);
+                             //Compensation for G28,G30 & G92 have other codes with
+                             //decimal places, resulting in G280,G300 etc
+                             if(G_Val == 28 || G_Val == 30 || G_Val == 92)
+                                G_Val *= 10;
+                           }else{
+                            //G28.1,G30.1 & G92.1 resulting in G281,G301 etc
+                             G_Val = (int)(atof(temp)*10.0);
+                           }
+
+                           motion_mode = G_Mode(G_Val);
+                           #if ProtoDebug == 1
+                            PrintDebug(*(*(gcode)+0),temp,&G_Val);
+                           #endif
+                        break;
                       case 'X':case 'x':
                       case 'Y':case 'y':
                       case 'Z':case 'z':
@@ -432,13 +454,30 @@ START_LINE://label to rerun startup line if it has one
                //G02/G03 X12.5 Y14.7 I1.0 J2.0 F0.2;
                //G10 Pnn  toolnumber
                 if(*(*(gcode+2)+0) != 0){
-                   no_of_axis++;
                    i = cpy_val_from_str(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
                    switch(*(*(gcode+2)+0)) {
+                      case 'G':case 'g':
+                           if(i < 3){ //G00 - G99
+                             G_Val = atoi(temp);
+                             //Compensation for G28,G30 & G92 have other codes with
+                             //decimal places, resulting in G280,G300 etc
+                             if(G_Val == 28 || G_Val == 30 || G_Val == 92)
+                                G_Val *= 10;
+                           }else{
+                            //G28.1,G30.1 & G92.1 resulting in G281,G301 etc
+                             G_Val = (int)(atof(temp)*10.0);
+                           }
+
+                           motion_mode = G_Mode(G_Val);
+                           #if ProtoDebug == 1
+                            PrintDebug(*(*(gcode)+0),temp,&G_Val);
+                           #endif
+                        break;
                       case 'X':case 'x':
                       case 'Y':case 'y':
                       case 'Z':case 'z':
                       case 'A':case 'a':
+                         no_of_axis++;
                          XYZ_Val = atof(temp);
                          status = Instruction_Values(gcode[2],&XYZ_Val);
                          #if ProtoDebug == 1
@@ -479,12 +518,29 @@ START_LINE://label to rerun startup line if it has one
                   //G10 X0.00 offset
                   //G02/G03 = R2.0 /  I1.0 / F0.2;
                 if(*(*(gcode+3)+0) != 0){
-                  no_of_axis++;
-                  i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
-                   switch(*(*(gcode+3)+0)) {
+                     i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
+                     switch(*(*(gcode+3)+0)) {
+                          case 'G':case 'g':
+                             if(i < 3){ //G00 - G99
+                               G_Val = atoi(temp);
+                               //Compensation for G28,G30 & G92 have other codes with
+                               //decimal places, resulting in G280,G300 etc
+                               if(G_Val == 28 || G_Val == 30 || G_Val == 92)
+                                  G_Val *= 10;
+                             }else{
+                              //G28.1,G30.1 & G92.1 resulting in G281,G301 etc
+                               G_Val = (int)(atof(temp)*10.0);
+                             }
+
+                             motion_mode = G_Mode(G_Val);
+                             #if ProtoDebug == 1
+                              PrintDebug(*(*(gcode)+0),temp,&G_Val);
+                             #endif
+                        break;
                       case 'X':case 'x':case 'Y':case 'y':
                       case 'Z':case 'z':case 'R':case 'r':
                       case 'I':case 'i':
+                         no_of_axis++;
                          XYZ_Val = atof(temp);
                          status = Instruction_Values(gcode[3],&XYZ_Val);
                          #if ProtoDebug == 1
@@ -657,20 +713,20 @@ START_LINE://label to rerun startup line if it has one
        }
      }
      
-     if(query == 1){     status = STATUS_OK;goto end;}
+     if(query == 1){status = STATUS_OK;goto end;}
      else if(query == 2){status = STATUS_BAD_NUMBER_FORMAT;goto end;}
      else if(query == 3){status = STATUS_UNSUPPORTED_STATEMENT;goto end;}
-     
+
+     //report group violations
      ret:
      status = Check_group_multiple_violations();
+     
+     //block end for status returns
      end:
-
 
     if(!status)
       report_status_message(status);
   }
-
-     
   return status;
 }
 
@@ -806,3 +862,88 @@ static void PrintStatus(int state){
   dma_printf("status:= %d\n",state);
 }
 #endif
+
+
+////////////////////////////////////////////////////////////////////////////////
+//      PROTOCOL EXECUTE RUNTIME FROM GRBL [STILL IMPLIMENTING ???]           //
+////////////////////////////////////////////////////////////////////////////////
+
+// Executes run-time commands, when required. This is called from various check points in the main
+// program, primarily where there may be a while loop waiting for a buffer to clear space or any
+// point where the execution time from the last check point may be more than a fraction of a second.
+// This is a way to execute runtime commands asynchronously (aka multitasking) with grbl's g-code
+// parsing and planning functions. This function also serves as an interface for the interrupts to
+// set the system runtime flags, where only the main program handles them, removing the need to
+// define more computationally-expensive volatile variables. This also provides a controlled way to
+// execute certain tasks without having two or more instances of the same task, such as the planner
+// recalculating the buffer upon a feedhold or override.
+// NOTE: The sys.execute variable flags are set by any process, step or serial interrupts, pinouts,
+// limit switches, or the main program.
+void protocol_execute_runtime(){
+  if (sys.execute) { // Enter only if any bit flag is true
+    int rt_exec = sys.execute; // Avoid calling volatile multiple times
+
+    // System alarm. Everything has shutdown by something that has gone severely wrong. Report
+    // the source of the error to the user. If critical, Grbl disables by entering an infinite
+    // loop until system reset/abort.
+    if (rt_exec & (EXEC_ALARM | EXEC_CRIT_EVENT)) {
+      sys.state = STATE_ALARM; // Set system alarm state
+
+      // Critical event. Only hard limit qualifies. Update this as new critical events surface.
+      if (rt_exec & EXEC_CRIT_EVENT) {
+        report_alarm_message(ALARM_HARD_LIMIT);
+        report_feedback_message(MESSAGE_CRITICAL_EVENT);
+        bit_false(sys.execute,EXEC_RESET); // Disable any existing reset
+        do {
+          // Nothing. Block EVERYTHING until user issues reset or power cycles. Hard limits
+          // typically occur while unattended or not paying attention. Gives the user time
+          // to do what is needed before resetting, like killing the incoming stream.
+        } while (bit_isfalse(sys.execute,EXEC_RESET));
+
+      // Standard alarm event. Only abort during motion qualifies.
+      } else {
+        // Runtime abort command issued during a cycle, feed hold, or homing cycle. Message the
+        // user that position may have been lost and set alarm state to enable the alarm lockout
+        // to indicate the possible severity of the problem.
+        report_alarm_message(ALARM_ABORT_CYCLE);
+      }
+      bit_false(sys.execute,(EXEC_ALARM | EXEC_CRIT_EVENT));
+    }
+
+    // Execute system abort.
+    if (rt_exec & EXEC_RESET) {
+      sys.abort = true;  // Only place this is set true.
+      return; // Nothing else to do but exit.
+    }
+
+    // Execute and serial print status
+    if (rt_exec & EXEC_STATUS_REPORT) {
+      report_realtime_status();
+      bit_false(sys.execute,EXEC_STATUS_REPORT);
+    }
+
+    // Initiate stepper feed hold
+    if (rt_exec & EXEC_FEED_HOLD) {
+      //st_feed_hold(); // Initiate feed hold.
+      bit_false(sys.execute,EXEC_FEED_HOLD);
+    }
+
+    // Reinitializes the stepper module running state and, if a feed hold, re-plans the buffer.
+    // NOTE: EXEC_CYCLE_STOP is set by the stepper subsystem when a cycle or feed hold completes.
+    if (rt_exec & EXEC_CYCLE_STOP) {
+      //st_cycle_reinitialize();
+      bit_false(sys.execute,EXEC_CYCLE_STOP);
+    }
+
+    if (rt_exec & EXEC_CYCLE_START) {
+      //st_cycle_start(); // Issue cycle start command to stepper subsystem
+      if (bit_istrue(settings.flags,FLAG_AUTO_START)) {
+        sys.auto_start = true; // Re-enable auto start after feed hold.
+      }
+      bit_false(sys.execute,EXEC_CYCLE_START);
+    }
+  }
+
+  // Overrides flag byte (sys.override) and execution should be installed here, since they
+  // are runtime and require a direct and controlled interface to the main stepper program.
+}

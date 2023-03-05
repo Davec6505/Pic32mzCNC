@@ -45,14 +45,26 @@
 //function prototypes
 //init the array of stringto empty strings
 void Str_Initialize(char arg[arr_size][str_size]);
+
+//clear the string buffer prepare for new string
 void Str_clear(char *str,int len);
+
 //Get the instruction from the ring buffer
 int Sample_Ringbuffer();
+
 //split up the instructin
 static int strsplit(char arg[arr_size][str_size],char *str, char c);
 static int strsplit2(char arg[arr_size][str_size],char *str,char c);
+
+//copies the alpha numeric chars from the string and returns number of chars
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
+
+//converts string to int is all cahrs are alpha numeric
 static int str2int(char *str,int base);
+
+//Runtime checking of status states
+void protocol_execute_runtime();
+
 
 /////////////////////////////////////////////
 //puerly for debug purposes
