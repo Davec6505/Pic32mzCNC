@@ -161,14 +161,22 @@ main
 	report_status_message
 		DMA_IsOn
 		dma_printf
-	Sample_Ringbuffer
-		__CC2DW
-		Get_Difference
+	protocol_execute_runtime
+		report_alarm_message
+			DMA_IsOn
+			dma_printf
+		report_feedback_message
+			DMA_IsOn
+			dma_printf
 		report_realtime_status
 			DMA_IsOn
 			memcpy
 			dma_printf
 			__CC2DW
+	Sample_Ringbuffer
+		__CC2DW
+		Get_Difference
+		report_realtime_status
 		DMA0_ReadDstPtr
 		DMA0_Abort
 			DMA_IsOn
@@ -211,8 +219,6 @@ main
 			__CC2DW
 		mc_reset
 		report_feedback_message
-			DMA_IsOn
-			dma_printf
 		Rst_modalgroup
 		Set_modalgroup
 		Set_Axisword
@@ -265,12 +271,6 @@ main
 		Check_group_multiple_violations
 			Rst_modalgroup
 			Rst_modalword
-	protocol_execute_runtime
-		report_alarm_message
-			DMA_IsOn
-			dma_printf
-		report_feedback_message
-		report_realtime_status
 	ResetSteppers
 		DisableStepper
 StepZ

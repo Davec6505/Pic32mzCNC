@@ -119,19 +119,21 @@ void report_init_message(){
 // Grbl help message
 void report_grbl_help() {
   while(DMA_IsOn(1));
-  dma_printf("%s","$$ (view Grbl settings)\r\n\
-                   $# (view # parameters)\r\n\
-                   $G (view parser state)\r\n\
-                   $N (view startup blocks)\r\n\
-                   $x=value (save Grbl setting)\r\n\
-                   $Nx=line (save startup block)\r\n\
-                   $C (check gcode mode)\r\n\
-                   $X (kill alarm lock)\r\n\
-                   $H (run homing cycle)\r\n\
-                   ~ (cycle start)\r\n\
-                   ! (feed hold)\r\n\
-                   ? (current status)\r\n\
-                   ctrl-x (reset Grbl)\r\n");
+  dma_printf("%s",
+              "\
+              $$ (view Grbl settings)\r\n\
+              $# (view # parameters)\r\n\
+              $G (view parser state)\r\n\
+              $N (view startup blocks)\r\n\
+              $x=value (save Grbl setting)\r\n\
+              $Nx=line (save startup block)\r\n\
+              $C (check gcode mode)\r\n\
+              $X (kill alarm lock)\r\n\
+              $H (run homing cycle)\r\n\
+              ~ (cycle start)\r\n\
+              ! (feed hold)\r\n\
+              ? (current status)\r\n\
+              ctrl-x (reset Grbl)\r\n");
 }
 
 // Grbl global settings print out.
@@ -140,14 +142,14 @@ void report_grbl_settings() {
 float acc = settings.acceleration;
   acc /=(60*60);
   while(DMA_IsOn(1));
-  dma_printf("\n\
+  dma_printf("\r\n\
               $0=%f (x, step/mm)\r\n\
               $1=%f (y, step/mm)\r\n\
               $2=%f (z, step/mm)\r\n\
               $3=%d (step pulse, usec)\r\n\
               $4=%f (default feed, mm/min)\r\n\
               $5=%f (default seek, mm/min)\r\n\
-              $6=%d (step port invert mask, int) \r\n\
+              $6=%d (step port invert mask, int)\r\n\
               $7=%d (step idle delay, msec)\r\n\
               $8=%f (acceleration, mm/sec^2)\r\n\
               $9=%f (junction deviation, mm)\r\n\

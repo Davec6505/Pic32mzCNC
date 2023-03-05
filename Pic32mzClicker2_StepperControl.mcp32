@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=DEFINES.pld
+Value=Protocol.c
 =======
 =======
 >>>>>>> patch1
@@ -132,17 +132,12 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 File1=DEFINES.pld
-File2=Stepper.c
-File3=Stepper.h
-File4=Kinematics.c
-File5=Kinematics.h
-File6=Planner.c
-File7=Planner.h
-File8=GCODE.c
-File9=GCODE.h
-File10=Protocol.c
-File11=Protocol.h
-Count=12
+File2=GCODE.c
+File3=GCODE.h
+File4=Protocol.c
+File5=Protocol.h
+File6=Print.c
+Count=7
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

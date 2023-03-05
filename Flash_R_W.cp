@@ -732,14 +732,25 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 47 "c:/users/git/pic32mzcnc/protocol.h"
 void Str_Initialize(char arg[ 20 ][ 64 ]);
+
+
 void Str_clear(char *str,int len);
+
 
 int Sample_Ringbuffer();
 
+
 static int strsplit(char arg[ 20 ][ 64 ],char *str, char c);
 static int strsplit2(char arg[ 20 ][ 64 ],char *str,char c);
+
+
 static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char);
+
+
 static int str2int(char *str,int base);
+
+
+void protocol_execute_runtime();
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
