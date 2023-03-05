@@ -14,7 +14,10 @@
  *? (current status)
  *ctrl-x (reset Grbl)
 *******************************************************/
-
+/*
+G21G91G1X0.991F102
+G91 G21
+*/
 
 #include "protocol.h"
 #include "Print.h"
@@ -40,18 +43,19 @@ void Str_clear(char *str,int len){
 ///////////////////////////////////////////////////
 //sample the ring buffer to check for data
 int Sample_Ringbuffer(){
-unsigned char *ptr;
+float XYZ_Val;
 static int motion_mode,str_len,query;
 int status;
+int dif,i,j,num_of_strings;
+int G_Val,F_Val,M_Val,S_Val,O_Val,P_Val;
+unsigned char *ptr;
 char str[64];
 char temp[9];
 char xyz[6];
-char F_1_Once,no_of_axis;
-char axis_to_run;
-int dif,i,j,num_of_strings;
-int G_Val,F_Val,M_Val,S_Val,O_Val,P_Val;
-float XYZ_Val;
+int F_1_Once=0,no_of_axis=0;
+int axis_to_run = 0;
 
+  num_of_strings = 0;
   //read head and tail pointer difference
   //if there is a difference then process line
   dif = 0;
@@ -70,7 +74,7 @@ float XYZ_Val;
      if(DMA0_ReadDstPtr()){
        ptr = (char*)RXBUFF;
        if(*ptr == '?'){
-         #if ProtoDebug == 1
+         #if ProtoDebug == 6
          while(DMA_IsOn(1));
          dma_printf("%d\n",ptr);
          #endif
@@ -92,12 +96,18 @@ float XYZ_Val;
 START_LINE://label to rerun startup line if it has one
 
     //split up the line into string array using SPC seperator
-    num_of_strings = strsplit(gcode,str,0x20);
+    num_of_strings = strsplit2(gcode,str,0x20);
+
     str_len = strlen(gcode[0]);
     
-    #if ProtoDebug == 2
+    #if ProtoDebug == 16
     while(DMA_IsOn(1));
-    dma_printf("%s:=\t%d\n",gcode[0],str_len);
+    dma_printf("noOfstrs:= %d\t%s:=\t%d\t%s:=\t%d\t%s:=\t%d\t%s:=\t%d\n"
+               ,num_of_strings
+               ,gcode[0],str_len
+               ,gcode[1],str_len
+               ,gcode[2],str_len
+               ,gcode[3],str_len);
     #endif
     
     //condition each string by seperating the 1st char from the value
@@ -121,9 +131,9 @@ START_LINE://label to rerun startup line if it has one
        //goto end;
      }
      
-     #if ProtoDebug == 4
-       while(DMA_IsOn(1));
-         dma_printf("%s\t%d\n",gcode[0],str_len);
+     #if ProtoDebug == 7
+     while(DMA_IsOn(1));
+     dma_printf("%s\t%d\n",gcode[0],str_len);
      #endif
      
      if(gcode[0][0] =='?'){
@@ -223,7 +233,7 @@ START_LINE://label to rerun startup line if it has one
                     } else {
                       report_startup_line(helper_var,gcode[0]);
                     }
-                   #if ProtoDebug == -1
+                   #if ProtoDebug == 6
                    while(DMA_IsOn(1));
                    dma_printf("gcode[%d]:= %s\n",helper_var,gcode[0]);
                    #endif
@@ -278,7 +288,7 @@ START_LINE://label to rerun startup line if it has one
                        }else{
                         int str_length = 0;
                         // debug to check string argument of startup line
-                         #if ProtoDebug == -1
+                         #if ProtoDebug == 6
                           while(DMA_IsOn(1));
                           dma_printf("%s\n",str);
                          #endif
@@ -372,6 +382,9 @@ START_LINE://label to rerun startup line if it has one
                //G10 Lnn Pnn Xnn Ynn Znn offsets can be G10 Pn Rnn Snn
                 if(*(*(gcode+1)+0) != 0){
                  no_of_axis++;
+                 #if ProtoDebug == 1
+                 dma_printf("no_of_axis:= %d\n",no_of_axis);
+                 #endif
                  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
                  switch(*(*(gcode+1)+0)) {
                       case 'X':case 'x':
@@ -664,6 +677,7 @@ START_LINE://label to rerun startup line if it has one
 
 ///////////////////////////////////////////////////////
 // Split the string according to the char
+//G00X100.0Y100.0F1000
 static int strsplit(char arg[arr_size][str_size],char *str, char c){
 int i,ii,kk,err,lasti,len;
     Str_Initialize(arg);
@@ -684,6 +698,39 @@ int i,ii,kk,err,lasti,len;
     }
     arg[kk][0] = 0;
     return kk;
+}
+
+///////////////////////////////////////////////////////
+// Split the string according to the char or space
+//G00X100.0Y100.0F1000
+static int strsplit2(char arg[arr_size][str_size],char *str, char c){
+int i,ii,kk,err,lasti,len,track_char;
+  Str_Initialize(arg);
+  len = strlen(str);
+  track_char=ii=kk=err=lasti=0;
+  for (i = 0;i < len;i++){
+    err = i - lasti; //test if string in string is < 49
+    if(*(str+i) == c || *(str+i) == '\n'  || err > 49){
+      arg[kk++][ii] = 0;
+      ii=err=0;
+      lasti = i;
+      track_char++;
+      continue;
+    }else{
+      if(i > 0 && (*(str+0) != '$') ){
+        if(!track_char && *(str+i) > 0x39){
+         arg[kk++][ii] = 0;
+         ii=err=0;
+         lasti = i;
+        }
+      }
+      arg[kk][ii++] = *(str+i);
+   }
+   if(*(str+i)==0)
+      break;
+  }
+  arg[kk][0] = 0;
+  return kk;
 }
 
 /////////////////////////////////////////////////////

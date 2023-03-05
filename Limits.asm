@@ -167,18 +167,18 @@ NOP
 J	L_Test_Min0
 NOP	
 L__Test_Min44:
-; ?FLOC___Test_Min?T19 start address is: 8 (R2)
+; ?FLOC___Test_Min?T20 start address is: 8 (R2)
 ORI	R2, R0, 1
-; ?FLOC___Test_Min?T19 end address is: 8 (R2)
+; ?FLOC___Test_Min?T20 end address is: 8 (R2)
 J	L_Test_Min1
 NOP	
 L_Test_Min0:
-; ?FLOC___Test_Min?T19 start address is: 8 (R2)
+; ?FLOC___Test_Min?T20 start address is: 8 (R2)
 MOVZ	R2, R0, R0
-; ?FLOC___Test_Min?T19 end address is: 8 (R2)
+; ?FLOC___Test_Min?T20 end address is: 8 (R2)
 L_Test_Min1:
-; ?FLOC___Test_Min?T19 start address is: 8 (R2)
-; ?FLOC___Test_Min?T19 end address is: 8 (R2)
+; ?FLOC___Test_Min?T20 start address is: 8 (R2)
+; ?FLOC___Test_Min?T20 end address is: 8 (R2)
 ;Limits.c,101 :: 		}
 L_end_Test_Min:
 JR	RA

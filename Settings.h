@@ -167,7 +167,7 @@ typedef __attribute__((aligned (32))) float afloat;
 ///////////////////////////////////////////////////////////////////////////////
  // Global persistent settings (Stored from byte EEPROM_ADDR_GLOBAL onwards)
 typedef struct {
-  afloat steps_per_mm[NoOfAxis];
+  float steps_per_mm[NoOfAxis];
   float default_feed_rate;
   float default_seek_rate;
   float homing_feed_rate;
