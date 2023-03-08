@@ -467,7 +467,7 @@ void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 49 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 158 "c:/users/git/pic32mzcnc/gcode.h"
+#line 160 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;

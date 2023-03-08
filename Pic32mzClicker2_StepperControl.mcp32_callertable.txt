@@ -231,7 +231,6 @@ main
 		FAIL
 		settings_read_startup_line
 			memcpy
-		report_status_message
 		report_startup_line
 			DMA_IsOn
 			dma_printf
@@ -278,6 +277,7 @@ main
 			Set_M_Modal_Commands
 			Set_M_Commands
 				FAIL
+		report_status_message
 		Check_group_multiple_violations
 			FAIL
 			Rst_modalgroup

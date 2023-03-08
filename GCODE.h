@@ -131,6 +131,8 @@ extern volatile int status_code;   // Status of instructions
 #define STATUS_ALARM_LOCK 12
 #define STATUS_SPEED_ERROR 13
 #define STATUS_EI_ERROR 14
+#define STATUS_COMMAND_EXECUTE_MOTION 20
+
 
 ////////////////////////////////////////////////////////
 // Define Grbl alarm codes. Less than zero to distinguish alarm error from status error.

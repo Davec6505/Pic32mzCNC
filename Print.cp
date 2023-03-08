@@ -362,7 +362,7 @@ void write_global_settings();
 int settings_store_global_setting(int parameter, float value);
 #line 49 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 158 "c:/users/git/pic32mzcnc/gcode.h"
+#line 160 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;

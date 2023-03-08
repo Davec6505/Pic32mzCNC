@@ -240,18 +240,17 @@ START_LINE://label to rerun startup line if it has one
                if ( gcode[0][2] < 0x20 ) { // Print startup lines
                   for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
                     if ((settings_read_startup_line(helper_var, gcode[0]))) {
-                      report_status_message(STATUS_SETTING_READ_FAIL);
+                      //report_status_message(STATUS_SETTING_READ_FAIL);
+                      query = 8;
                     } else {
                       report_startup_line(helper_var,gcode[0]);
+                      query = 1; //report status is ok continue
                     }
                    #if ProtoDebug == 6
                    while(DMA_IsOn(1));
                    dma_printf("gcode[%d]:= %s\n",helper_var,gcode[0]);
                    #endif
                   }
-                  //no need to report error on exit, a response has already been
-                  //sent to gcode sender
-                  query = 1; //report status is ok continue
                   break;
                }else { // Store startup line
                   int N_Val = 0;
@@ -270,7 +269,7 @@ START_LINE://label to rerun startup line if it has one
                       while(DMA_IsOn(1));
                       dma_printf("%s\t%d\n",num,N_Val);
                       #endif
-                          
+
                    }else {
                       query = 2; //STATUS_BAD_NUMBER_FORMAT;
                       break;
@@ -305,20 +304,23 @@ START_LINE://label to rerun startup line if it has one
                          
                          // Prepare saving gcode block to line number 0 | 1
                          settings_store_startup_line(N_Val,str+4);
-                         query = 1; //noneed to send erro report
                        }
 
                     }
                }
+               query = 1; //STATUS_OK;
                break;
              case '~': //*~ (cycle start)
                sys.execute |= EXEC_CYCLE_START;
+               query = 1;  //STATUS_OK
                break;
              case '!': //*! (feed hold)
                sys.execute |= EXEC_FEED_HOLD;
                break;
+               query = 1;  //STATUS_OK
              case 0x18: // *ctrl-x (reset Grbl)
                mc_reset();
+               query = 1;  //STATUS_OK
                break;
 
             case '0': case '1': case '2': case'3':  case '4': case '5':
@@ -345,7 +347,7 @@ START_LINE://label to rerun startup line if it has one
                  //check if 1st char is a digit if not value extraction
                  //failed and result will be 0.0 !!! report status bad number
                  if((value < 0.0) || (!isdigit(str_val[0]))){
-                     return(STATUS_UNSUPPORTED_STATEMENT);
+                     query = 3;//STATUS_UNSUPPORTED_STATEMENT
                  }
                  value = atof(str_val);
                  #if ProtoDebug == 6
@@ -355,12 +357,9 @@ START_LINE://label to rerun startup line if it has one
                  settings_store_global_setting(N_Val,value);
                  // if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }
                  // return(settings_store_global_setting(parameter, value));*/
-                 query = 1; //noneed to send erro report
-                 break;
+                 query = 1;
                }
-               query = 3;
                break;
-                
        }
 
      }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){//[A ... Z]
@@ -636,6 +635,7 @@ START_LINE://label to rerun startup line if it has one
               }else {
                 return;
               }
+              query = 20;
               break;
          case 'M':
          case 'm':
@@ -662,6 +662,7 @@ START_LINE://label to rerun startup line if it has one
                            break;
                      }
                 }
+              query = 20;
               break;
          case 'X':case 'x':case 'Y':case 'y':
          case 'Z':case 'z':case 'A':case 'a':
@@ -702,6 +703,7 @@ START_LINE://label to rerun startup line if it has one
                          break;
                    }
                }
+              query = 20;
               break;
            case 'F':
              //get g instruction
@@ -713,8 +715,8 @@ START_LINE://label to rerun startup line if it has one
                     PrintDebug(gcode[6],temp,&F_Val);
                  #endif
                }
+              query = STATUS_COMMAND_EXECUTE_MOTION;
               break;
-
        }
      }
      report:
@@ -725,9 +727,14 @@ START_LINE://label to rerun startup line if it has one
      else if(query == 5){status = ALARM_ABORT_CYCLE;}
      else if(query == 6){status = STATUS_IDLE_ERROR;}
      else if(query == 7){status = STATUS_SETTING_DISABLED;}
-
+     else if(query == 8){status = STATUS_SETTING_READ_FAIL;}
+     else if(query == 20){status = STATUS_COMMAND_EXECUTE_MOTION; goto ret;}
+     
+     //report on status messages
      report_status_message(status);
-     //report group violations
+     goto end;
+     
+     //use group violations for modal and non_modal functionality
      ret:
      status = Check_group_multiple_violations();
      
