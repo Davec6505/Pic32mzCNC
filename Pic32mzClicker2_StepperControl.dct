@@ -28662,6 +28662,7 @@ extr
 extr
 extr_bit
 fabs
+fail
 fceie
 fceie
 fceie
@@ -45808,6 +45809,7 @@ protocol
 protocol
 protocol
 protocol_execute_runtime
+protocol_system_check
 protocol0
 protocol0_bit
 protocol0_usbe1csr2_bit

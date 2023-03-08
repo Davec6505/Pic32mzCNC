@@ -62,6 +62,12 @@ static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char
 //converts string to int is all cahrs are alpha numeric
 static int str2int(char *str,int base);
 
+// Executes user startup script, if stored.
+void protocol_execute_startup();
+
+//check for errors or resets
+void protocol_system_check();
+
 //Runtime checking of status states
 void protocol_execute_runtime();
 

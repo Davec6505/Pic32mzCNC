@@ -54,6 +54,12 @@ static void Select_Plane(int axis_combo){
 /////////////////////////////////////////////////////////////
 //                GLOBAL SCOPE FUNCTIONS                   //
 /////////////////////////////////////////////////////////////
+
+//status code failures
+void FAIL(int status){
+  status_code = status;
+}
+
 //init vals to defaults
 void G_Initialise(){
   group_number         = 0;
@@ -376,7 +382,6 @@ int i = 0;
        status_code = STATUS_INVALID_STATEMENT;
        FAIL(STATUS_INVALID_STATEMENT);
      }else{
-       status_code = STATUS_OK;
        FAIL(STATUS_OK);
      }
      
@@ -385,7 +390,7 @@ int i = 0;
      dma_printf("axis_xyz:= %d\n",axis_xyz);
      #endif
 
-    FAIL(STATUS_OK);
+     //FAIL(STATUS_OK);
      return status_code;
    }
    
@@ -428,17 +433,16 @@ int i = 0;
    //G54.... Coordinate system selection
    if (group_number == MODAL_GROUP_12){
 
-     if(gc.coord_select < 0|| gc.coord_select > 7)
-        status_code = STATUS_BAD_NUMBER_FORMAT;
+     if(gc.coord_select < 0 || gc.coord_select > 7)
+        FAIL(STATUS_BAD_NUMBER_FORMAT);
      else
-        status_code = STATUS_OK;
+        FAIL(STATUS_OK);
         
      #if GcodeDebug == 3
      while(DMA_IsOn(1));
      dma_printf("gc.coord_select:= %d\n",gc.coord_select);
      #endif
 
-     FAIL(STATUS_OK);
      return status_code;
    }
  }

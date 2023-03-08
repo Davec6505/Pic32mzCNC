@@ -65,6 +65,7 @@ main
 		Reset_Min_Limit
 		Reset_Min_Debounce
 	Get_modalgroup
+	FAIL
 	Get_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
@@ -89,6 +90,7 @@ main
 			Step_Cycle
 				toggleOCx
 		GET_RunState
+		FAIL
 		memset
 	Rst_modalgroup
 	Get_Axisword
@@ -156,18 +158,20 @@ main
 		Rst_Axisword
 	Rst_Axisword
 	Modal_Group_Actions4
+		FAIL
 	Modal_Group_Actions7
+		FAIL
 	Modal_Group_Actions12
-	report_status_message
-		DMA_IsOn
-		dma_printf
+	protocol_system_check
+		sys_sync_current_position
+		report_feedback_message
+			DMA_IsOn
+			dma_printf
 	protocol_execute_runtime
 		report_alarm_message
 			DMA_IsOn
 			dma_printf
 		report_feedback_message
-			DMA_IsOn
-			dma_printf
 		report_realtime_status
 			DMA_IsOn
 			memcpy
@@ -211,6 +215,8 @@ main
 				set_coord_data_read_indicator
 			read_ram_loaded_indicator
 			report_status_message
+				DMA_IsOn
+				dma_printf
 			DMA_IsOn
 			dma_printf
 		report_gcode_modes
@@ -222,6 +228,7 @@ main
 		Rst_modalgroup
 		Set_modalgroup
 		Set_Axisword
+		FAIL
 		settings_read_startup_line
 			memcpy
 		report_status_message
@@ -262,13 +269,17 @@ main
 		G_Mode
 			Set_Modal_Groups
 			Set_Motion_Mode
+				FAIL
 				Select_Plane
 		Instruction_Values
 			To_Millimeters
+			FAIL
 		M_Instruction
 			Set_M_Modal_Commands
 			Set_M_Commands
+				FAIL
 		Check_group_multiple_violations
+			FAIL
 			Rst_modalgroup
 			Rst_modalword
 	ResetSteppers
