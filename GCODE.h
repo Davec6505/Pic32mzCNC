@@ -46,8 +46,8 @@ Group 0 {G04, G10, G28, G30, G53, G92, G92.1, G92.2, G92.3}
 ///////////////////////////////////////////////////////////////////////////////
 //                             MACROS                                        //
 ///////////////////////////////////////////////////////////////////////////////
-#define FAIL(status) status_code = status;
 extern volatile int status_code;   // Status of instructions
+//#define FAIL(status) status_code = status;
 
 ///////////////////////////////////////////////////////////////////////////////
 //                             DEFINES                                       //
@@ -131,6 +131,8 @@ extern volatile int status_code;   // Status of instructions
 #define STATUS_ALARM_LOCK 12
 #define STATUS_SPEED_ERROR 13
 #define STATUS_EI_ERROR 14
+#define STATUS_COMMAND_EXECUTE_MOTION 20
+
 
 ////////////////////////////////////////////////////////
 // Define Grbl alarm codes. Less than zero to distinguish alarm error from status error.
@@ -144,6 +146,10 @@ extern volatile int status_code;   // Status of instructions
 #define MESSAGE_ALARM_UNLOCK 3
 #define MESSAGE_ENABLED 4
 #define MESSAGE_DISABLED 5
+
+///////////////////////////////////////////////////////
+//#define next instruction, a wait state for ok on 
+//motion moves
 
 
 
@@ -197,7 +203,7 @@ enum IJK{I,J,K};
 ///////////////////////////////////////////////////////////////////////////////
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
-
+void FAIL(int status);
 void G_Initialise();
 
 void Set_modalgroup(int value);

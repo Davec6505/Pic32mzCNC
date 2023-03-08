@@ -28,6 +28,7 @@
 
 #define MAX_ACC_LIM 5000
 #define MIN_ACC_LIN 10
+
 /************************************************************************
 * Maths constants. To simplify maths when calculating in speed_cntr_Move().
 * Alpha is stepangle in radians 2*pi/spr in rad  || (1.8 * Pi) / 180
@@ -40,7 +41,9 @@
 #define A_SQ (long)(ALPHA*2*10000000000)          // ALPHA*2*10000000000
 #define A_x20000 (long)(ALPHA*20000)              // ALPHA*20000
 
-//////////////////////////////////////////
+
+
+////////////////////////////////////////////////////
 //structs enums and constants
 
 ////////////////////////////////////////////////////

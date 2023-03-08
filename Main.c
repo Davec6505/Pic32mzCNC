@@ -74,6 +74,7 @@ static int cntr = 0,a = 0;
  cntr = a = axis_to_run = dif = status_of_gcode = modal_group = modal_action = 0;
  
   while(1){
+
      //continously test the limits
      Debounce_Limits(X);
      Debounce_Limits(Y);
@@ -82,10 +83,10 @@ static int cntr = 0,a = 0;
      //if STSTUS_OK or OTHER
      if(!status_of_gcode){
       //get the modal_group
-      modal_group = Get_modalgroup();
+       modal_group = Get_modalgroup();
 
        switch(modal_group){
-          case 0:break;
+          case 0:FAIL(STATUS_OK);break;
           case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
                modal_action = Modal_Group_Actions0(Get_modalword());
                modal_group = Rst_modalgroup();
@@ -135,18 +136,23 @@ static int cntr = 0,a = 0;
                if(modal_action <= 0)modal_group = Rst_modalgroup();
                break;
        }
+
      }else{
         //need to report ok once movement has started or g commands
         //are sent in quick succession!!!
-        report_status_message(status_of_gcode);
+        //if(!SV.Tog){report_status_message(status_of_gcode);}
      }
+     
+     //state check for resets
+     protocol_system_check();
      
      //run at end of every scan
      protocol_execute_runtime();
      
      //check ring buffer for data transfer
      status_of_gcode = Sample_Ringbuffer();
-
+     //report_status_message(status_of_gcode);
+     
      //code execution confirmation led on clicker2 board
      #ifdef LED_STATUS
      LED1 = TMR.clock >> 4;
@@ -535,4 +541,3 @@ static int Modal_Group_Actions12(int action){
     #endif
     return action;
 }
-

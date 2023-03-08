@@ -466,9 +466,9 @@ void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 50 "c:/users/git/pic32mzcnc/gcode.h"
+#line 49 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 154 "c:/users/git/pic32mzcnc/gcode.h"
+#line 160 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;
@@ -515,7 +515,7 @@ enum IJK{I,J,K};
 
 
 
-
+void FAIL(int status);
 void G_Initialise();
 
 void Set_modalgroup(int value);
@@ -715,6 +715,12 @@ static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char
 static int str2int(char *str,int base);
 
 
+void protocol_execute_startup();
+
+
+void protocol_system_check();
+
+
 void protocol_execute_runtime();
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
@@ -778,7 +784,7 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 49 "c:/users/git/pic32mzcnc/planner.h"
+#line 52 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  int Single_Dual;
  unsigned short running: 1;

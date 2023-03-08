@@ -354,9 +354,9 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 50 "c:/users/git/pic32mzcnc/gcode.h"
+#line 49 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 154 "c:/users/git/pic32mzcnc/gcode.h"
+#line 160 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;
@@ -403,7 +403,7 @@ enum IJK{I,J,K};
 
 
 
-
+void FAIL(int status);
 void G_Initialise();
 
 void Set_modalgroup(int value);
@@ -608,7 +608,7 @@ void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 49 "c:/users/git/pic32mzcnc/planner.h"
+#line 52 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  int Single_Dual;
  unsigned short running: 1;
@@ -763,6 +763,12 @@ static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char
 
 
 static int str2int(char *str,int base);
+
+
+void protocol_execute_startup();
+
+
+void protocol_system_check();
 
 
 void protocol_execute_runtime();

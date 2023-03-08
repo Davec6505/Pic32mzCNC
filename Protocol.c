@@ -127,8 +127,7 @@ START_LINE://label to rerun startup line if it has one
        DCH0DAT = '\n';
        status = STATUS_OK;
        startup = 1;
-       return STATUS_OK;
-       //goto end;
+       goto report;
      }
      
      #if ProtoDebug == 7
@@ -140,13 +139,13 @@ START_LINE://label to rerun startup line if it has one
         startup = 0;
         if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
              bit_true(sys.execute,EXEC_STATUS_REPORT);
+        goto end;
      }else if(gcode[0][0] =='$'){
        int helper_var;
        if(str_len < 2){
           report_grbl_help();
           query = 1;
-          status = STATUS_OK;
-          goto end;
+          goto report;
        }
        switch(gcode[0][1]){
             case '?': // Prints Grbl setting
@@ -164,11 +163,11 @@ START_LINE://label to rerun startup line if it has one
             case 'G' : // Prints gcode parser state
                 startup = 0;
                 report_gcode_modes();
-                query = 1;
                 //will report the current status of the machine after it is asked
                 //for gcode_report
                 if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
                     bit_true(sys.execute,EXEC_STATUS_REPORT);
+                query = 1;
                 break;
             case 'C' : // Set check g-code mode
                 startup = 2; //for 1st scan to get ugs to connect
@@ -178,15 +177,19 @@ START_LINE://label to rerun startup line if it has one
                 if ( sys.state == STATE_CHECK_MODE ) {
                   mc_reset();
                   report_feedback_message(MESSAGE_DISABLED);
+                  goto end;
                 } else {
                   //if not in idle then ignore request
-                  if (sys.state) { return(STATUS_IDLE_ERROR); }
+                  if (sys.state) { 
+                    query = 4;
+                    goto report;//return(STATUS_IDLE_ERROR); 
+                  }
                   //only in idle will this respond
                   sys.state = STATE_CHECK_MODE;
                   report_feedback_message(MESSAGE_ENABLED);
                 }
-                status = STATUS_OK;
-                goto end;
+                query = 1;
+                goto report;
               break;
             case 'X' : // Disable alarm lock
               startup = 2; //for 1st scan to get ugs to connect
@@ -218,34 +221,36 @@ START_LINE://label to rerun startup line if it has one
                    #endif
                    //will need to test for abort!!!
                    if (sys.abort) {
-                      return(ALARM_ABORT_CYCLE);
+                      query = 5; //ALARM_ABORT
                       break;
                    }
                   } else {
-                     return(STATUS_IDLE_ERROR); 
+                     query = 6;//return(STATUS_IDLE_ERROR);
+                     break;
                   }
                } else { 
-                  return(STATUS_SETTING_DISABLED);
+                  query = 7;//return(STATUS_SETTING_DISABLED);
+                  break;
                }
-               return(STATUS_OK);
+               FAIL(STATUS_OK);
+               goto end;
                break;
             case 'N' : // Startup lines. $N
                startup = 2;
                if ( gcode[0][2] < 0x20 ) { // Print startup lines
                   for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
                     if ((settings_read_startup_line(helper_var, gcode[0]))) {
-                      report_status_message(STATUS_SETTING_READ_FAIL);
+                      //report_status_message(STATUS_SETTING_READ_FAIL);
+                      query = 8;
                     } else {
                       report_startup_line(helper_var,gcode[0]);
+                      query = 1; //report status is ok continue
                     }
                    #if ProtoDebug == 6
                    while(DMA_IsOn(1));
                    dma_printf("gcode[%d]:= %s\n",helper_var,gcode[0]);
                    #endif
                   }
-                  //no need to report error on exit, a response has already been
-                  //sent to gcode sender
-                  query = 1; //report status is ok continue
                   break;
                }else { // Store startup line
                   int N_Val = 0;
@@ -264,10 +269,9 @@ START_LINE://label to rerun startup line if it has one
                       while(DMA_IsOn(1));
                       dma_printf("%s\t%d\n",num,N_Val);
                       #endif
-                          
+
                    }else {
-                      query = 0; //report bad status
-                      status = STATUS_BAD_NUMBER_FORMAT;
+                      query = 2; //STATUS_BAD_NUMBER_FORMAT;
                       break;
                    }
                    //$Nn\r\n leads to gocde execute startup line, providng it
@@ -300,20 +304,23 @@ START_LINE://label to rerun startup line if it has one
                          
                          // Prepare saving gcode block to line number 0 | 1
                          settings_store_startup_line(N_Val,str+4);
-                         query = 1; //noneed to send erro report
                        }
 
                     }
                }
+               query = 1; //STATUS_OK;
                break;
              case '~': //*~ (cycle start)
                sys.execute |= EXEC_CYCLE_START;
+               query = 1;  //STATUS_OK
                break;
              case '!': //*! (feed hold)
                sys.execute |= EXEC_FEED_HOLD;
                break;
+               query = 1;  //STATUS_OK
              case 0x18: // *ctrl-x (reset Grbl)
                mc_reset();
+               query = 1;  //STATUS_OK
                break;
 
             case '0': case '1': case '2': case'3':  case '4': case '5':
@@ -340,7 +347,7 @@ START_LINE://label to rerun startup line if it has one
                  //check if 1st char is a digit if not value extraction
                  //failed and result will be 0.0 !!! report status bad number
                  if((value < 0.0) || (!isdigit(str_val[0]))){
-                     return(STATUS_UNSUPPORTED_STATEMENT);
+                     query = 3;//STATUS_UNSUPPORTED_STATEMENT
                  }
                  value = atof(str_val);
                  #if ProtoDebug == 6
@@ -350,12 +357,9 @@ START_LINE://label to rerun startup line if it has one
                  settings_store_global_setting(N_Val,value);
                  // if(line[char_counter] != 0) { return(STATUS_UNSUPPORTED_STATEMENT); }
                  // return(settings_store_global_setting(parameter, value));*/
-                 query = 1; //noneed to send erro report
-                 break;
+                 query = 1;
                }
-               query = 3;
                break;
-                
        }
 
      }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){//[A ... Z]
@@ -631,6 +635,7 @@ START_LINE://label to rerun startup line if it has one
               }else {
                 return;
               }
+              query = 20;
               break;
          case 'M':
          case 'm':
@@ -657,6 +662,7 @@ START_LINE://label to rerun startup line if it has one
                            break;
                      }
                 }
+              query = 20;
               break;
          case 'X':case 'x':case 'Y':case 'y':
          case 'Z':case 'z':case 'A':case 'a':
@@ -697,6 +703,7 @@ START_LINE://label to rerun startup line if it has one
                          break;
                    }
                }
+              query = 20;
               break;
            case 'F':
              //get g instruction
@@ -708,25 +715,32 @@ START_LINE://label to rerun startup line if it has one
                     PrintDebug(gcode[6],temp,&F_Val);
                  #endif
                }
+              query = STATUS_COMMAND_EXECUTE_MOTION;
               break;
-
        }
      }
+     report:
+     if(query == 1){status = STATUS_OK;}
+     else if(query == 2){status = STATUS_BAD_NUMBER_FORMAT;}
+     else if(query == 3){status = STATUS_UNSUPPORTED_STATEMENT;}
+     else if(query == 4){status = STATUS_IDLE_ERROR;}
+     else if(query == 5){status = ALARM_ABORT_CYCLE;}
+     else if(query == 6){status = STATUS_IDLE_ERROR;}
+     else if(query == 7){status = STATUS_SETTING_DISABLED;}
+     else if(query == 8){status = STATUS_SETTING_READ_FAIL;}
+     else if(query == 20){status = STATUS_COMMAND_EXECUTE_MOTION; goto ret;}
      
-     if(query == 1){status = STATUS_OK;goto end;}
-     else if(query == 2){status = STATUS_BAD_NUMBER_FORMAT;goto end;}
-     else if(query == 3){status = STATUS_UNSUPPORTED_STATEMENT;goto end;}
-
-     //report group violations
+     //report on status messages
+     report_status_message(status);
+     goto end;
+     
+     //use group violations for modal and non_modal functionality
      ret:
      status = Check_group_multiple_violations();
      
-     //block end for status returns
-     end:
-
-    if(!status)
-      report_status_message(status);
   }
+  //block end for status returns
+  end:
   return status;
 }
 
@@ -946,4 +960,52 @@ void protocol_execute_runtime(){
 
   // Overrides flag byte (sys.override) and execution should be installed here, since they
   // are runtime and require a direct and controlled interface to the main stepper program.
+}
+
+
+//check for errors or resets
+void protocol_system_check(){
+    // Execute system reset upon a system abort, where the main program will return to this loop.
+    // Once here, it is safe to re-initialize the system. At startup, the system will automatically
+    // reset to finish the initialization process.
+  if (sys.abort) {
+      // Reset system.
+      //serial_reset_read_buffer(); // Clear serial read buffer
+      //plan_init(); // Clear block buffer and planner variables
+      //gc_init(); // Set g-code parser to default state
+      //protocol_init(); // Clear incoming line data and execute startup lines
+      //spindle_init();
+      //coolant_init();
+      //limits_init();
+      //st_reset(); // Clear stepper subsystem variables.
+
+      // Sync cleared gcode and planner positions to current system position, which is only
+      // cleared upon startup, not a reset/abort.
+      sys_sync_current_position();
+
+      // Reset system variables.
+      sys.abort = false;
+      sys.execute = 0;
+      if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) { sys.auto_start = true; }
+
+      // Check for power-up and set system alarm if homing is enabled to force homing cycle
+      // by setting Grbl's alarm state. Alarm locks out all g-code commands, including the
+      // startup scripts, but allows access to settings and internal commands. Only a homing
+      // cycle '$H' or kill alarm locks '$X' will disable the alarm.
+      // NOTE: The startup script will run after successful completion of the homing cycle, but
+      // not after disabling the alarm locks. Prevents motion startup blocks from crashing into
+      // things uncontrollably. Very bad.
+      #ifdef HOMING_INIT_LOCK
+        if (sys.state == STATE_INIT && bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) { sys.state = STATE_ALARM; }
+      #endif
+
+      // Check for and report alarm state after a reset, error, or an initial power up.
+      if (sys.state == STATE_ALARM) {
+        report_feedback_message(MESSAGE_ALARM_LOCK);
+      } else {
+        // All systems go. Set system to ready and execute startup script.
+        sys.state = STATE_IDLE;
+        //protocol_execute_startup();
+      }
+  }
 }
