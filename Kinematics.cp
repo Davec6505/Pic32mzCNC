@@ -621,8 +621,6 @@ void protocol_execute_runtime();
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
-extern bit oneShotA; sfr;
-extern bit oneShotB; sfr;
 
 
 
@@ -771,11 +769,17 @@ void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 58 "c:/users/git/pic32mzcnc/kinematics.h"
+extern char stepper_state;
+extern sfr stp_stopped;
+extern sfr stp_run;
+extern sfr stp_pause;
+
+
+
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
-
 
 typedef struct Steps{
 
@@ -878,13 +882,20 @@ const code double max_sizes[]={ 300.00 , 300.00 , 100.00 , 100.00 , 100.00 , 100
 
 volatile void (*AxisPulse[3])();
 
+
+
+
+sbit stp_stopped at stepper_state.B0;
+sbit stp_run at stepper_state.B1;
+sbit stp_pause at stepper_state.B2;
+
+
+
 char txtA[] = " : ";
 char txtC[] = "\r";
 char txtB[200];
 
-
 static long d2;
-
 
 
 
@@ -924,14 +935,14 @@ static void Set_Axisdirection(long temp,int axis){
  default: break;
  }
 }
-#line 68 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 75 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void SingleAxisStep(double newxyz,long speed,int axis_No){
 long tempA = 0;
 int dir = 0;
  Single_Axis_Enable(axis_No);
  tempA = belt_steps(newxyz);
  speed_cntr_Move(tempA , speed , axis_No);
-#line 78 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 85 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  Set_Axisdirection(tempA,axis_No);
  STPS[axis_No].axis_dir =  (((tempA) < (0))? ( -1 ) : ( 1 )) ;
  SV.Single_Dual = 0;
@@ -1021,7 +1032,7 @@ int dirA,dirB;
 
 
 }
-#line 200 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 207 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void mc_arc(double *position, double *target, double *offset, int axis_0, int axis_1,
  int axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
  long tempA,tempB;
@@ -1152,9 +1163,9 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  break;
  i++;
  }
-#line 336 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 343 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 }
-#line 341 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 348 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 float hypot(float angular_travel, float linear_travel){
  return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
 }
@@ -1168,7 +1179,7 @@ float hypot(float angular_travel, float linear_travel){
 int GetAxisDirection(long mm2move){
  return(mm2move < 0)?  -1 : 1  ;
 }
-#line 365 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 372 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 int Home(int axis){
 static long speed = 0;
 
@@ -1206,20 +1217,20 @@ static long speed = 0;
 
 
  Home_Axis(-500.0,speed,axis);
-#line 410 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 417 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  return axis;
  }
 
 
 
  if(sys.state ==  5 ){
-#line 423 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 430 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(FN(axis)){
 
 
 HOMED:
  speed = 100;
-#line 437 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 444 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
 
 
@@ -1241,11 +1252,11 @@ HOMED:
  axis++;
  sys.state =  0 ;
  homing[axis].home_cnt = 0;
-#line 468 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 475 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  return axis;
  }
  }
-#line 475 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 482 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
 
@@ -1263,7 +1274,7 @@ HOMED:
   (homing[axis].home_state &= ~ (1 << 3 ) ) ;
  Home_Axis(-290.00,50,axis);
  }
-#line 500 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 507 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
  return axis;
@@ -1274,7 +1285,7 @@ static void Home_Axis(double distance,long speed,int axis){
 
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
-#line 519 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 526 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis].mmToTravel = belt_steps(distance);
  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }

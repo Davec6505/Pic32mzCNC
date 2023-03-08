@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Protocol.c
+Value=DEFINES.pld
 =======
 =======
 >>>>>>> patch1
@@ -136,7 +136,11 @@ File2=GCODE.c
 File3=GCODE.h
 File4=Protocol.h
 File5=Protocol.c
-Count=6
+File6=Kinematics.c
+File7=Kinematics.h
+File8=Stepper.c
+File9=Planner.c
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

@@ -1,6 +1,4 @@
 main
-	__CC2DW
-	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -39,21 +37,7 @@ main
 				NVMWriteRow
 					NVMUnlock
 				read_row_from_flash
-					DMA_IsOn
-					dma_printf
-						DMA_CH_Busy
-						sprintf
-							_doprntf
-								isdigit
-								scale
-								fround
-						strcat
-						strlen
-						strncpy
-						DMA1_Enable
-						__CC2DW
 					set_ram_loaded_indicator
-					__CC2DW
 				set_ram_loaded_indicator
 				ulong2flt
 					memcpy
@@ -66,7 +50,6 @@ main
 		Reset_Min_Debounce
 	Get_modalgroup
 	FAIL
-	Get_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
 			__CC2DW
@@ -92,7 +75,22 @@ main
 		GET_RunState
 		FAIL
 		memset
+	Get_modalword
 	Rst_modalgroup
+	report_status_message
+		DMA_IsOn
+		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 	Get_Axisword
 	EnableSteppers
 	Modal_Group_Actions1
@@ -162,6 +160,8 @@ main
 	Modal_Group_Actions7
 		FAIL
 	Modal_Group_Actions12
+	DMA_IsOn
+	dma_printf
 	protocol_system_check
 		sys_sync_current_position
 		report_feedback_message
@@ -215,8 +215,6 @@ main
 				set_coord_data_read_indicator
 			read_ram_loaded_indicator
 			report_status_message
-				DMA_IsOn
-				dma_printf
 			DMA_IsOn
 			dma_printf
 		report_gcode_modes
@@ -228,7 +226,6 @@ main
 		Rst_modalgroup
 		Set_modalgroup
 		Set_Axisword
-		FAIL
 		settings_read_startup_line
 			memcpy
 		report_startup_line
@@ -282,6 +279,8 @@ main
 			FAIL
 			Rst_modalgroup
 			Rst_modalword
+	__CC2DW
+	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepZ

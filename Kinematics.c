@@ -7,14 +7,21 @@ const code double max_sizes[]={X_MAX_SIZE,Y_MAX_SIZE,Z_MAX_SIZE,A_MAX_SIZE,B_MAX
 //FUNCTION POINTERS
 volatile void (*AxisPulse[3])();
 
+/////////////////////////////////
+//globals
+//char MyVar located int Config.h
+sbit stp_stopped at stepper_state.B0;
+sbit stp_run at stepper_state.B1;
+sbit stp_pause at stepper_state.B2;
+
+//////////////////////////////////
+//static file vars
 char txtA[] = " : ";
 char txtC[] =  "\r";
 char txtB[200];
-//////////////////////////////////
-//static file vars
+
 static long d2;
 
-//////////////////////////////////
 //homing data
 //static unsigned int home_state = 0;
 //static unsigned int home_cnt = 0;

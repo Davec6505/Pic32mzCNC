@@ -169,6 +169,7 @@ void StopAxis(int axis){
    default : break;
   }
   STPS[axis].stopAxis = 1;
+  SV.Tog = 1;
 }
 
 
@@ -254,7 +255,7 @@ int Pulse(int axis_No){
     switch(STPS[axis_No].run_state) {
       case STOP:
            STPS[axis_No].run_state  = STOP;
-           SV.Tog = 1;
+           //SV.Tog = 1;
         break;
 
       case ACCEL:

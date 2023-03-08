@@ -43680,8 +43680,6 @@ on_uefmode_bit
 on_ughmode_bit
 on_ujkmode_bit
 on_ulmmode_bit
-oneshota
-oneshotb
 opmod
 opmod
 opmod
@@ -61275,6 +61273,9 @@ stnaddr67
 stnaddr67_bit
 stnaddr67_emacxsa0_bit
 stopaxis
+stp_pause
+stp_run
+stp_stopped
 stps
 str_clear
 str_initialize
