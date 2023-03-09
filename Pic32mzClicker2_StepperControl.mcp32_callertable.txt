@@ -39,21 +39,7 @@ main
 				NVMWriteRow
 					NVMUnlock
 				read_row_from_flash
-					DMA_IsOn
-					dma_printf
-						DMA_CH_Busy
-						sprintf
-							_doprntf
-								isdigit
-								scale
-								fround
-						strcat
-						strlen
-						strncpy
-						DMA1_Enable
-						__CC2DW
 					set_ram_loaded_indicator
-					__CC2DW
 				set_ram_loaded_indicator
 				ulong2flt
 					memcpy
@@ -93,6 +79,20 @@ main
 		FAIL
 		memset
 	Rst_modalgroup
+	report_status_message
+		DMA_IsOn
+		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 	Get_Axisword
 	EnableSteppers
 	Modal_Group_Actions1
@@ -104,6 +104,7 @@ main
 			labs
 			speed_cntr_Move
 			Axis_Interpolate
+				StopAxis
 				Step_Cycle
 				Pulse
 					AccDec
@@ -162,6 +163,7 @@ main
 	Modal_Group_Actions7
 		FAIL
 	Modal_Group_Actions12
+	Get_Axis_Enable_States
 	protocol_system_check
 		sys_sync_current_position
 		report_feedback_message
@@ -215,8 +217,6 @@ main
 				set_coord_data_read_indicator
 			read_ram_loaded_indicator
 			report_status_message
-				DMA_IsOn
-				dma_printf
 			DMA_IsOn
 			dma_printf
 		report_gcode_modes
@@ -228,7 +228,6 @@ main
 		Rst_modalgroup
 		Set_modalgroup
 		Set_Axisword
-		FAIL
 		settings_read_startup_line
 			memcpy
 		report_startup_line

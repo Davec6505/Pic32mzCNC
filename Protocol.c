@@ -86,7 +86,7 @@ int axis_to_run = 0;
      }
      return STATUS_OK;
   }else if(dif > 0){
-
+    int modal_response = 0;
     F_1_Once = no_of_axis = query = 0 ; //for buffer and axis refreshing
 
     Str_clear(str,str_len+2);    //reset the string to empty
@@ -134,7 +134,7 @@ START_LINE://label to rerun startup line if it has one
      while(DMA_IsOn(1));
      dma_printf("%s\t%d\n",gcode[0],str_len);
      #endif
-     
+
      if(gcode[0][0] =='?'){
         startup = 0;
         if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
@@ -232,8 +232,7 @@ START_LINE://label to rerun startup line if it has one
                   query = 7;//return(STATUS_SETTING_DISABLED);
                   break;
                }
-               FAIL(STATUS_OK);
-               goto end;
+               query = 21;
                break;
             case 'N' : // Startup lines. $N
                startup = 2;
@@ -363,6 +362,7 @@ START_LINE://label to rerun startup line if it has one
        }
 
      }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){//[A ... Z]
+        query = 20;
         switch(*(*gcode+0)+0){
          case 'G':case 'g':
               //1st char usually 'G'
@@ -383,7 +383,8 @@ START_LINE://label to rerun startup line if it has one
                  #if ProtoDebug == 1
                   PrintDebug(*(*(gcode)+0),temp,&G_Val);
                  #endif
-                 
+                 //if Gnn is sent alone
+                 query = 1;
 
                //get position a
                //G00/G01 X12.5 Y14.7 F0.2;
@@ -412,6 +413,8 @@ START_LINE://label to rerun startup line if it has one
                            #if ProtoDebug == 1
                             PrintDebug(*(*(gcode)+0),temp,&G_Val);
                            #endif
+                         //if Gnn is sent alone
+                         query = 1;
                         break;
                       case 'X':case 'x':
                       case 'Y':case 'y':
@@ -561,9 +564,9 @@ START_LINE://label to rerun startup line if it has one
                    }
                 }
 
-                  //get  pos d value
-                  //G10 Y0.00 offset
-                  //G02/G03 = J1.0 / F0.2;
+                //get  pos d value
+                //G10 Y0.00 offset
+                //G02/G03 = J1.0 / F0.2;
                 if(*(*(gcode+4)+0) != 0){
                   i = cpy_val_from_str(temp,(*(gcode+4)),1,strlen(*(gcode+4)));
                    switch(*(*(gcode+4))) {
@@ -632,10 +635,8 @@ START_LINE://label to rerun startup line if it has one
 
                    }
                 }
-              }else {
-                return;
               }
-              query = 20;
+              query = (query==20)? 20:query;
               break;
          case 'M':
          case 'm':
@@ -659,16 +660,15 @@ START_LINE://label to rerun startup line if it has one
                            #if ProtoDebug == 1
                              PrintDebug(gcode[0],temp,&XYZ_Val);
                            #endif
-                           break;
                      }
                 }
-              query = 20;
+              query = 1;
               break;
          case 'X':case 'x':case 'Y':case 'y':
          case 'Z':case 'z':case 'A':case 'a':
               if(*(*(gcode)+0)=='X'){
                    i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
-                   XYZ_Val = atof(temp);
+                   XYZ_Val = atof(temp);//no_of_axis++;
                    status = Instruction_Values(gcode[0],&XYZ_Val);
                    #if ProtoDebug == 1
                       PrintDebug(gcode[0],temp,&XYZ_Val);
@@ -715,7 +715,7 @@ START_LINE://label to rerun startup line if it has one
                     PrintDebug(gcode[6],temp,&F_Val);
                  #endif
                }
-              query = STATUS_COMMAND_EXECUTE_MOTION;
+              query = 1;
               break;
        }
      }
@@ -729,15 +729,17 @@ START_LINE://label to rerun startup line if it has one
      else if(query == 7){status = STATUS_SETTING_DISABLED;}
      else if(query == 8){status = STATUS_SETTING_READ_FAIL;}
      else if(query == 20){status = STATUS_COMMAND_EXECUTE_MOTION; goto ret;}
-     
+     else if(query == 21){status = STATUS_COMMAND_EXECUTE_MOTION; goto end;}
      //report on status messages
      report_status_message(status);
      goto end;
      
      //use group violations for modal and non_modal functionality
      ret:
-     status = Check_group_multiple_violations();
-     
+     modal_response = Check_group_multiple_violations();
+     //if the return val from modal_group() is error then replace 20
+     //with error to return to maing function
+     status = (modal_response > 0)? modal_response:status;
   }
   //block end for status returns
   end:
@@ -984,7 +986,7 @@ void protocol_system_check(){
       sys_sync_current_position();
 
       // Reset system variables.
-      sys.abort = false;
+      sys.abort = 0;
       sys.execute = 0;
       if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) { sys.auto_start = true; }
 

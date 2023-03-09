@@ -53,13 +53,19 @@
 #define BIT_HOME_BACK     bit(4)
 #define BIT_HOME_COMPLETE bit(5)
 
+/////////////////////////////////////////////////////////
+//sbits and bit types
+extern char stepper_state;
+extern sfr stp_stopped;
+extern sfr stp_run;
+extern sfr stp_pause;
 
-
+/////////////////////////////////////////////////////////
+//Structs enums consts etc
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
-//extern Homing homing[NoOfAxis];
 
 typedef struct Steps{
    //! micro sec  count value for clock pluse compare

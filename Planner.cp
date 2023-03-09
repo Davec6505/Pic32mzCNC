@@ -366,11 +366,17 @@ void write_global_settings();
 
 int settings_store_global_setting(int parameter, float value);
 #line 58 "c:/users/git/pic32mzcnc/kinematics.h"
+extern char stepper_state;
+extern sfr stp_stopped;
+extern sfr stp_run;
+extern sfr stp_pause;
+
+
+
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
-
 
 typedef struct Steps{
 
@@ -726,8 +732,6 @@ void protocol_execute_runtime();
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
-extern bit oneShotA; sfr;
-extern bit oneShotB; sfr;
 
 
 
@@ -809,8 +813,10 @@ void DisableStepper();
 void disableOCx();
 
 
-unsigned int GET_RunState(int axis_No);
-unsigned int Get_AxisStatus(int stepper);
+int GET_RunState(int axis_No);
+int Get_AxisStatus(int stepper);
+int Get_Axis_Enable_States();
+
 
 void SingleStepAxis(int axis);
 void Axis_Interpolate(int axisA,int axisB);
