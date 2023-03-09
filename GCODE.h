@@ -87,6 +87,7 @@ extern volatile int status_code;   // Status of instructions
 #define MOTION_MODE_CCW_ARC 3  // G3
 #define MOTION_MODE_CANCEL  4  // G80
 #define MOTION_MODE_MCODES  5  // M....
+#define MOTION_MODE_NULL    6  // .....
 
 //PROGRAM FLOW VALUES
 #define PROGRAM_FLOW_RUNNING   0

@@ -81,7 +81,8 @@ static int cntr = 0,a = 0;
 
      //continously check the communication channel
      //if STSTUS_OK or OTHER
-     if(status_of_gcode == STATUS_COMMAND_EXECUTE_MOTION){
+     if(status_of_gcode == STATUS_COMMAND_EXECUTE_MOTION ||
+        status_of_gcode == STATUS_OK){
       //get the modal_group
        modal_group = Get_modalgroup();
 
@@ -130,22 +131,20 @@ static int cntr = 0,a = 0;
                modal_group = Rst_modalgroup();
                break;
           case 1024: //$H Home all axis
-               //if(axis_to_home < NoOfAxis){
+               SV.Tog = 0;
                  //temp debug for steppers
                modal_action = Modal_Group_Actions1(ALL_AXIS);
                #if HomeDebug == 10
                while(DMA_IsOn(1));
                dma_printf("modal_action:= %d\n",modal_action);
               #endif
-               if(modal_action != 0)modal_group = Rst_modalgroup();
+               if(modal_action == 0)modal_group = Rst_modalgroup();
                break;
        }
-       
-       //need to report ok once movement has started or g commands
-       //are sent in quick succession!!!
      }
      if(!Get_Axis_Enable_States() && SV.Tog==1){
-       report_status_message(STATUS_OK);
+       status_of_gcode == STATUS_OK;
+       report_status_message(status_of_gcode);
        SV.Tog = 0;
      }
      #if StepperDebug == 1
@@ -166,13 +165,15 @@ static int cntr = 0,a = 0;
      protocol_execute_runtime();
      
      //check ring buffer for data transfer
-     status_of_gcode = Sample_Ringbuffer();
-     #if MainDebug == 11
-     if(status_of_gcode > 0){
-      while(DMA_IsOn(1));
-      dma_printf("status_of_gcode:= %d\n",status_of_gcode);
-     }
-     #endif
+    // if(!SV.Tog){
+       status_of_gcode = Sample_Ringbuffer();
+       #if MainDebug == 11
+       if(status_of_gcode > 0){
+        while(DMA_IsOn(1));
+        dma_printf("status_of_gcode:= %d\n",status_of_gcode);
+       }
+       #endif
+   //  }
 
      
      //code execution confirmation led on clicker2 board
@@ -467,12 +468,17 @@ static int Modal_Group_Actions1(int action){
             break;
        case ALL_AXIS://Homing X axis
             axis_to_home = Home(axis_to_home);
+            LED2 = TMR.clock >> 3;
+            #if HomeDebug == 10
+            while(DMA_IsOn(1));
+            dma_printf("axis_to_home:= %d\n",axis_to_home);
+            #endif
             if(axis_to_home < 2){
-              LED2 = TMR.clock >> 3;
+
               //will need to test for abort!!!
-             /* if (sys.abort) {
+              if (sys.abort) {
                   action =(ALARM_ABORT_CYCLE);
-              } */
+              }
             }else{
               int l = 0;
               // Execute startup scripts after successful homing????.

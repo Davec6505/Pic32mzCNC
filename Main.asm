@@ -49,274 +49,286 @@ NOP
 ORI	R25, R0, 1
 JAL	_Debounce_Limits+0
 NOP	
-;Main.c,84 :: 		if(status_of_gcode == STATUS_COMMAND_EXECUTE_MOTION){
+;Main.c,85 :: 		status_of_gcode == STATUS_OK){
 LH	R3, 2(SP)
 ORI	R2, R0, 20
-BEQ	R3, R2, L__main132
+BNE	R3, R2, L__main139
 NOP	
-J	L_main2
+J	L__main133
 NOP	
+L__main139:
+LH	R2, 2(SP)
+BNE	R2, R0, L__main141
+NOP	
+J	L__main132
+NOP	
+L__main141:
+J	L_main4
+NOP	
+L__main133:
 L__main132:
-;Main.c,86 :: 		modal_group = Get_modalgroup();
+;Main.c,87 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
 ; modal_group start address is: 16 (R4)
 SEH	R4, R2
-;Main.c,88 :: 		switch(modal_group){
-J	L_main3
+;Main.c,89 :: 		switch(modal_group){
+J	L_main5
 NOP	
 ; modal_group end address is: 16 (R4)
-;Main.c,89 :: 		case 0:FAIL(STATUS_OK);break;
-L_main5:
+;Main.c,90 :: 		case 0:FAIL(STATUS_OK);break;
+L_main7:
 MOVZ	R25, R0, R0
 JAL	_FAIL+0
 NOP	
-J	L_main4
+J	L_main6
 NOP	
-;Main.c,90 :: 		case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
-L_main6:
-;Main.c,91 :: 		modal_action = Modal_Group_Actions0(Get_modalword());
+;Main.c,91 :: 		case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
+L_main8:
+;Main.c,92 :: 		modal_action = Modal_Group_Actions0(Get_modalword());
 JAL	_Get_modalword+0
 NOP	
 SEH	R25, R2
 JAL	Main_Modal_Group_Actions0+0
 NOP	
-;Main.c,92 :: 		modal_group = Rst_modalgroup();
+;Main.c,93 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
-;Main.c,93 :: 		report_status_message(STATUS_OK);
+;Main.c,94 :: 		report_status_message(STATUS_OK);
 MOVZ	R25, R0, R0
 JAL	_report_status_message+0
 NOP	
-;Main.c,94 :: 		break;
-J	L_main4
+;Main.c,95 :: 		break;
+J	L_main6
 NOP	
-;Main.c,95 :: 		case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
-L_main7:
-;Main.c,96 :: 		axis_to_run = Get_Axisword();
+;Main.c,96 :: 		case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
+L_main9:
+;Main.c,97 :: 		axis_to_run = Get_Axisword();
 JAL	_Get_Axisword+0
 NOP	
 SH	R2, 0(SP)
-;Main.c,106 :: 		EnableSteppers(ALL_AXIS);
+;Main.c,107 :: 		EnableSteppers(ALL_AXIS);
 ORI	R25, R0, 31
 JAL	_EnableSteppers+0
 NOP	
-;Main.c,107 :: 		Modal_Group_Actions1(axis_to_run);
+;Main.c,108 :: 		Modal_Group_Actions1(axis_to_run);
 LH	R25, 0(SP)
 JAL	Main_Modal_Group_Actions1+0
 NOP	
-;Main.c,108 :: 		axis_to_run = Rst_Axisword();
+;Main.c,109 :: 		axis_to_run = Rst_Axisword();
 JAL	_Rst_Axisword+0
 NOP	
-;Main.c,114 :: 		modal_group = Rst_modalgroup();
+;Main.c,115 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
-;Main.c,115 :: 		break;
-J	L_main4
+;Main.c,116 :: 		break;
+J	L_main6
 NOP	
-;Main.c,118 :: 		case 32://MODAL_GROUP_4 [M0,M1,M2,M30] Stopping
-L_main8:
-;Main.c,119 :: 		Modal_Group_Actions4(1);//implimentation needed
+;Main.c,119 :: 		case 32://MODAL_GROUP_4 [M0,M1,M2,M30] Stopping
+L_main10:
+;Main.c,120 :: 		Modal_Group_Actions4(1);//implimentation needed
 ORI	R25, R0, 1
 JAL	Main_Modal_Group_Actions4+0
 NOP	
-;Main.c,120 :: 		modal_group = Rst_modalgroup();
+;Main.c,121 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
-;Main.c,121 :: 		break;
-J	L_main4
+;Main.c,122 :: 		break;
+J	L_main6
 NOP	
-;Main.c,124 :: 		case 256://MODAL_GROUP_7 [M3,M4,M5] Spindle turning
-L_main9:
-;Main.c,125 :: 		Modal_Group_Actions7(1);//implimentation needed
+;Main.c,125 :: 		case 256://MODAL_GROUP_7 [M3,M4,M5] Spindle turning
+L_main11:
+;Main.c,126 :: 		Modal_Group_Actions7(1);//implimentation needed
 ORI	R25, R0, 1
 JAL	Main_Modal_Group_Actions7+0
 NOP	
-;Main.c,126 :: 		modal_group = Rst_modalgroup();
+;Main.c,127 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
-;Main.c,127 :: 		break;
-J	L_main4
+;Main.c,128 :: 		break;
+J	L_main6
 NOP	
-;Main.c,128 :: 		case 512:// [G54,G55,G56,G57,G58,G59] Coordinate system selection
-L_main10:
-;Main.c,129 :: 		Modal_Group_Actions12(gc.coord_select);//implimentation needed
+;Main.c,129 :: 		case 512:// [G54,G55,G56,G57,G58,G59] Coordinate system selection
+L_main12:
+;Main.c,130 :: 		Modal_Group_Actions12(gc.coord_select);//implimentation needed
 LH	R25, Offset(_gc+14)(GP)
 JAL	Main_Modal_Group_Actions12+0
 NOP	
-;Main.c,130 :: 		modal_group = Rst_modalgroup();
+;Main.c,131 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
-;Main.c,131 :: 		break;
-J	L_main4
+;Main.c,132 :: 		break;
+J	L_main6
 NOP	
-;Main.c,132 :: 		case 1024: //$H Home all axis
-L_main11:
-;Main.c,135 :: 		modal_action = Modal_Group_Actions1(ALL_AXIS);
+;Main.c,133 :: 		case 1024: //$H Home all axis
+L_main13:
+;Main.c,134 :: 		SV.Tog = 0;
+SH	R0, Offset(_SV+4)(GP)
+;Main.c,136 :: 		modal_action = Modal_Group_Actions1(ALL_AXIS);
 ORI	R25, R0, 31
 JAL	Main_Modal_Group_Actions1+0
 NOP	
-;Main.c,140 :: 		if(modal_action != 0)modal_group = Rst_modalgroup();
+;Main.c,141 :: 		if(modal_action == 0)modal_group = Rst_modalgroup();
 SEH	R2, R2
-BNE	R2, R0, L__main134
+BEQ	R2, R0, L__main142
 NOP	
-J	L_main12
+J	L_main14
 NOP	
-L__main134:
+L__main142:
 JAL	_Rst_modalgroup+0
 NOP	
-L_main12:
-;Main.c,141 :: 		break;
-J	L_main4
-NOP	
-;Main.c,142 :: 		}
-L_main3:
-; modal_group start address is: 16 (R4)
-SEH	R2, R4
-BNE	R2, R0, L__main136
-NOP	
-J	L_main5
-NOP	
-L__main136:
-SEH	R3, R4
-ORI	R2, R0, 2
-BNE	R3, R2, L__main138
-NOP	
+L_main14:
+;Main.c,142 :: 		break;
 J	L_main6
 NOP	
-L__main138:
-SEH	R3, R4
-ORI	R2, R0, 4
-BNE	R3, R2, L__main140
+;Main.c,143 :: 		}
+L_main5:
+; modal_group start address is: 16 (R4)
+SEH	R2, R4
+BNE	R2, R0, L__main144
 NOP	
 J	L_main7
 NOP	
-L__main140:
+L__main144:
 SEH	R3, R4
-ORI	R2, R0, 32
-BNE	R3, R2, L__main142
+ORI	R2, R0, 2
+BNE	R3, R2, L__main146
 NOP	
 J	L_main8
 NOP	
-L__main142:
+L__main146:
 SEH	R3, R4
-ORI	R2, R0, 256
-BNE	R3, R2, L__main144
+ORI	R2, R0, 4
+BNE	R3, R2, L__main148
 NOP	
 J	L_main9
 NOP	
-L__main144:
+L__main148:
 SEH	R3, R4
-ORI	R2, R0, 512
-BNE	R3, R2, L__main146
+ORI	R2, R0, 32
+BNE	R3, R2, L__main150
 NOP	
 J	L_main10
 NOP	
-L__main146:
+L__main150:
 SEH	R3, R4
-; modal_group end address is: 16 (R4)
-ORI	R2, R0, 1024
-BNE	R3, R2, L__main148
+ORI	R2, R0, 256
+BNE	R3, R2, L__main152
 NOP	
 J	L_main11
 NOP	
-L__main148:
+L__main152:
+SEH	R3, R4
+ORI	R2, R0, 512
+BNE	R3, R2, L__main154
+NOP	
+J	L_main12
+NOP	
+L__main154:
+SEH	R3, R4
+; modal_group end address is: 16 (R4)
+ORI	R2, R0, 1024
+BNE	R3, R2, L__main156
+NOP	
+J	L_main13
+NOP	
+L__main156:
+L_main6:
+;Main.c,144 :: 		}
 L_main4:
-;Main.c,146 :: 		}
-L_main2:
-;Main.c,147 :: 		if(!Get_Axis_Enable_States() && SV.Tog==1){
+;Main.c,145 :: 		if(!Get_Axis_Enable_States() && SV.Tog==1){
 JAL	_Get_Axis_Enable_States+0
 NOP	
-BEQ	R2, R0, L__main149
+BEQ	R2, R0, L__main157
 NOP	
-J	L__main129
+J	L__main135
 NOP	
-L__main149:
+L__main157:
 LH	R3, Offset(_SV+4)(GP)
 ORI	R2, R0, 1
-BEQ	R3, R2, L__main150
+BEQ	R3, R2, L__main158
 NOP	
-J	L__main128
+J	L__main134
 NOP	
-L__main150:
-L__main127:
-;Main.c,148 :: 		report_status_message(STATUS_OK);
-MOVZ	R25, R0, R0
+L__main158:
+L__main130:
+;Main.c,147 :: 		report_status_message(status_of_gcode);
+LH	R25, 2(SP)
 JAL	_report_status_message+0
 NOP	
-;Main.c,149 :: 		SV.Tog = 0;
+;Main.c,148 :: 		SV.Tog = 0;
 SH	R0, Offset(_SV+4)(GP)
-;Main.c,147 :: 		if(!Get_Axis_Enable_States() && SV.Tog==1){
-L__main129:
-L__main128:
-;Main.c,163 :: 		protocol_system_check();
+;Main.c,145 :: 		if(!Get_Axis_Enable_States() && SV.Tog==1){
+L__main135:
+L__main134:
+;Main.c,162 :: 		protocol_system_check();
 JAL	_protocol_system_check+0
 NOP	
-;Main.c,166 :: 		protocol_execute_runtime();
+;Main.c,165 :: 		protocol_execute_runtime();
 JAL	_protocol_execute_runtime+0
 NOP	
 ;Main.c,169 :: 		status_of_gcode = Sample_Ringbuffer();
 JAL	_Sample_Ringbuffer+0
 NOP	
 SH	R2, 2(SP)
-;Main.c,180 :: 		LED1 = TMR.clock >> 4;
+;Main.c,181 :: 		LED1 = TMR.clock >> 4;
 LBU	R2, Offset(_TMR+0)(GP)
 SRL	R3, R2, 4
 _LX	
 INS	R2, R3, BitPos(LED1+0), 1
 _SX	
-;Main.c,185 :: 		if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
+;Main.c,186 :: 		if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
 LHU	R2, Offset(Main_disable_steps+0)(GP)
 SLTIU	R2, R2, 11
-BNE	R2, R0, L__main151
+BNE	R2, R0, L__main159
 NOP	
-J	L_main16
+J	L_main18
 NOP	
-L__main151:
-;Main.c,186 :: 		disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
+L__main159:
+;Main.c,187 :: 		disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
 LHU	R26, Offset(Main_disable_steps+0)(GP)
 ORI	R25, R0, 10
 LW	R30, Offset(_TMR+4)(GP)
 JALR	RA, R30
 NOP	
 SH	R2, Offset(Main_disable_steps+0)(GP)
-L_main16:
-;Main.c,190 :: 		WDTCONSET = 0x01;
+L_main18:
+;Main.c,191 :: 		WDTCONSET = 0x01;
 ORI	R2, R0, 1
 SW	R2, Offset(WDTCONSET+0)(GP)
-;Main.c,191 :: 		}
+;Main.c,192 :: 		}
 J	L_main0
 NOP	
-;Main.c,192 :: 		}
+;Main.c,193 :: 		}
 L_end_main:
 L__main_end_loop:
 J	L__main_end_loop
 NOP	
 ; end of _main
 Main_Modal_Group_Actions0:
-;Main.c,198 :: 		static int Modal_Group_Actions0(int action){
-ADDIU	SP, SP, -44
+;Main.c,199 :: 		static int Modal_Group_Actions0(int action){
+ADDIU	SP, SP, -48
 SW	RA, 0(SP)
-;Main.c,201 :: 		unsigned int home_select = 0;
+;Main.c,202 :: 		unsigned int home_select = 0;
 SW	R26, 4(SP)
 SW	R27, 8(SP)
-;Main.c,210 :: 		switch(action){
-J	L_Main_Modal_Group_Actions017
+;Main.c,211 :: 		switch(action){
+J	L_Main_Modal_Group_Actions019
 NOP	
-;Main.c,211 :: 		case 2:  //NON_MODAL_DWELL
-L_Main_Modal_Group_Actions019:
-;Main.c,212 :: 		i = 0;
+;Main.c,212 :: 		case 2:  //NON_MODAL_DWELL
+L_Main_Modal_Group_Actions021:
+;Main.c,213 :: 		i = 0;
 ; i start address is: 20 (R5)
 MOVZ	R5, R0, R0
-;Main.c,214 :: 		if(gc.S > 0){ //wait in seconds
+;Main.c,215 :: 		if(gc.S > 0){ //wait in seconds
 LH	R2, Offset(_gc+122)(GP)
 SLTI	R2, R2, 1
-BEQ	R2, R0, L_Main_Modal_Group_Actions0154
+BEQ	R2, R0, L_Main_Modal_Group_Actions0162
 NOP	
-J	L_Main_Modal_Group_Actions020
+J	L_Main_Modal_Group_Actions022
 NOP	
-L_Main_Modal_Group_Actions0154:
-;Main.c,215 :: 		dly_time = gc.S * 1000;
+L_Main_Modal_Group_Actions0162:
+;Main.c,216 :: 		dly_time = gc.S * 1000;
 LH	R3, Offset(_gc+122)(GP)
 ORI	R2, R0, 1000
 MUL	R2, R3, R2
@@ -324,136 +336,136 @@ MUL	R2, R3, R2
 SEH	R4, R2
 ; dly_time end address is: 16 (R4)
 ; i end address is: 20 (R5)
-;Main.c,216 :: 		while(i < dly_time){
-L_Main_Modal_Group_Actions021:
+;Main.c,217 :: 		while(i < dly_time){
+L_Main_Modal_Group_Actions023:
 ; dly_time start address is: 16 (R4)
 ; i start address is: 20 (R5)
 SEH	R3, R5
 SEH	R2, R4
 SLT	R2, R3, R2
-BNE	R2, R0, L_Main_Modal_Group_Actions0155
+BNE	R2, R0, L_Main_Modal_Group_Actions0163
 NOP	
-J	L_Main_Modal_Group_Actions022
+J	L_Main_Modal_Group_Actions024
 NOP	
-L_Main_Modal_Group_Actions0155:
-;Main.c,217 :: 		LED2 = TMR.clock >> 1;
+L_Main_Modal_Group_Actions0163:
+;Main.c,218 :: 		LED2 = TMR.clock >> 1;
 LBU	R2, Offset(_TMR+0)(GP)
 SRL	R3, R2, 1
 _LX	
 INS	R2, R3, BitPos(LED2+0), 1
 _SX	
-;Main.c,218 :: 		Delay_ms(1);
+;Main.c,219 :: 		Delay_ms(1);
 LUI	R24, 1
 ORI	R24, R24, 1130
-L_Main_Modal_Group_Actions023:
+L_Main_Modal_Group_Actions025:
 ADDIU	R24, R24, -1
-BNE	R24, R0, L_Main_Modal_Group_Actions023
+BNE	R24, R0, L_Main_Modal_Group_Actions025
 NOP	
-;Main.c,219 :: 		i++;
+;Main.c,220 :: 		i++;
 ADDIU	R2, R5, 1
 SEH	R5, R2
-;Main.c,220 :: 		}
+;Main.c,221 :: 		}
 ; dly_time end address is: 16 (R4)
 ; i end address is: 20 (R5)
-J	L_Main_Modal_Group_Actions021
+J	L_Main_Modal_Group_Actions023
+NOP	
+L_Main_Modal_Group_Actions024:
+;Main.c,222 :: 		}else if(gc.P > 0){ //wait in msec
+J	L_Main_Modal_Group_Actions027
 NOP	
 L_Main_Modal_Group_Actions022:
-;Main.c,221 :: 		}else if(gc.P > 0){ //wait in msec
-J	L_Main_Modal_Group_Actions025
-NOP	
-L_Main_Modal_Group_Actions020:
 ; i start address is: 20 (R5)
 LH	R2, Offset(_gc+120)(GP)
 SLTI	R2, R2, 1
-BEQ	R2, R0, L_Main_Modal_Group_Actions0156
+BEQ	R2, R0, L_Main_Modal_Group_Actions0164
 NOP	
-J	L_Main_Modal_Group_Actions026
+J	L_Main_Modal_Group_Actions028
 NOP	
-L_Main_Modal_Group_Actions0156:
-;Main.c,222 :: 		dly_time = (unsigned long)gc.P;
+L_Main_Modal_Group_Actions0164:
+;Main.c,223 :: 		dly_time = (unsigned long)gc.P;
 LH	R2, Offset(_gc+120)(GP)
 ; dly_time start address is: 16 (R4)
 MOVZ	R4, R2, R0
 ; dly_time end address is: 16 (R4)
 ; i end address is: 20 (R5)
-;Main.c,223 :: 		while(i < dly_time){
-L_Main_Modal_Group_Actions027:
+;Main.c,224 :: 		while(i < dly_time){
+L_Main_Modal_Group_Actions029:
 ; dly_time start address is: 16 (R4)
 ; i start address is: 20 (R5)
 SEH	R3, R5
 SEH	R2, R4
 SLT	R2, R3, R2
-BNE	R2, R0, L_Main_Modal_Group_Actions0157
+BNE	R2, R0, L_Main_Modal_Group_Actions0165
 NOP	
-J	L_Main_Modal_Group_Actions028
+J	L_Main_Modal_Group_Actions030
 NOP	
-L_Main_Modal_Group_Actions0157:
-;Main.c,224 :: 		LED2 = TMR.clock >> 1;
+L_Main_Modal_Group_Actions0165:
+;Main.c,225 :: 		LED2 = TMR.clock >> 1;
 LBU	R2, Offset(_TMR+0)(GP)
 SRL	R3, R2, 1
 _LX	
 INS	R2, R3, BitPos(LED2+0), 1
 _SX	
-;Main.c,225 :: 		Delay_ms(1);
+;Main.c,226 :: 		Delay_ms(1);
 LUI	R24, 1
 ORI	R24, R24, 1130
-L_Main_Modal_Group_Actions029:
+L_Main_Modal_Group_Actions031:
 ADDIU	R24, R24, -1
-BNE	R24, R0, L_Main_Modal_Group_Actions029
+BNE	R24, R0, L_Main_Modal_Group_Actions031
 NOP	
-;Main.c,226 :: 		i++;
+;Main.c,227 :: 		i++;
 ADDIU	R2, R5, 1
 SEH	R5, R2
-;Main.c,227 :: 		}
+;Main.c,228 :: 		}
 ; dly_time end address is: 16 (R4)
 ; i end address is: 20 (R5)
-J	L_Main_Modal_Group_Actions027
+J	L_Main_Modal_Group_Actions029
 NOP	
+L_Main_Modal_Group_Actions030:
+;Main.c,229 :: 		}
 L_Main_Modal_Group_Actions028:
-;Main.c,228 :: 		}
-L_Main_Modal_Group_Actions026:
-L_Main_Modal_Group_Actions025:
-;Main.c,229 :: 		LED2 = false;
+L_Main_Modal_Group_Actions027:
+;Main.c,230 :: 		LED2 = false;
 _LX	
 INS	R2, R0, BitPos(LED2+0), 1
 _SX	
-;Main.c,230 :: 		break;
-J	L_Main_Modal_Group_Actions018
+;Main.c,231 :: 		break;
+J	L_Main_Modal_Group_Actions020
 NOP	
-;Main.c,231 :: 		case 4:  //NON_MODAL_SET_COORDINATE_DATA
-L_Main_Modal_Group_Actions031:
-;Main.c,244 :: 		if(gc.L != 2 && gc.L != 20)
+;Main.c,232 :: 		case 4:  //NON_MODAL_SET_COORDINATE_DATA
+L_Main_Modal_Group_Actions033:
+;Main.c,245 :: 		if(gc.L != 2 && gc.L != 20)
 LH	R3, Offset(_gc+16)(GP)
 ORI	R2, R0, 2
-BNE	R3, R2, L_Main_Modal_Group_Actions0159
+BNE	R3, R2, L_Main_Modal_Group_Actions0167
 NOP	
-J	L_Main_Modal_Group_Actions0117
+J	L_Main_Modal_Group_Actions0120
 NOP	
-L_Main_Modal_Group_Actions0159:
+L_Main_Modal_Group_Actions0167:
 LH	R3, Offset(_gc+16)(GP)
 ORI	R2, R0, 20
-BNE	R3, R2, L_Main_Modal_Group_Actions0161
+BNE	R3, R2, L_Main_Modal_Group_Actions0169
 NOP	
-J	L_Main_Modal_Group_Actions0116
+J	L_Main_Modal_Group_Actions0119
 NOP	
-L_Main_Modal_Group_Actions0161:
-L_Main_Modal_Group_Actions0115:
-;Main.c,245 :: 		return -1;
+L_Main_Modal_Group_Actions0169:
+L_Main_Modal_Group_Actions0118:
+;Main.c,246 :: 		return -1;
 ORI	R2, R0, 65535
 J	L_end_Modal_Group_Actions0
 NOP	
-;Main.c,244 :: 		if(gc.L != 2 && gc.L != 20)
-L_Main_Modal_Group_Actions0117:
-L_Main_Modal_Group_Actions0116:
-;Main.c,246 :: 		if (gc.L == 20) {
+;Main.c,245 :: 		if(gc.L != 2 && gc.L != 20)
+L_Main_Modal_Group_Actions0120:
+L_Main_Modal_Group_Actions0119:
+;Main.c,247 :: 		if (gc.L == 20) {
 LH	R3, Offset(_gc+16)(GP)
 ORI	R2, R0, 20
-BEQ	R3, R2, L_Main_Modal_Group_Actions0162
+BEQ	R3, R2, L_Main_Modal_Group_Actions0170
 NOP	
-J	L_Main_Modal_Group_Actions035
+J	L_Main_Modal_Group_Actions037
 NOP	
-L_Main_Modal_Group_Actions0162:
-;Main.c,248 :: 		result = settings_write_coord_data((int)gc.P,gc.next_position );
+L_Main_Modal_Group_Actions0170:
+;Main.c,249 :: 		result = settings_write_coord_data((int)gc.P,gc.next_position );
 SH	R25, 12(SP)
 LUI	R26, hi_addr(_gc+76)
 ORI	R26, R26, lo_addr(_gc+76)
@@ -461,27 +473,27 @@ LH	R25, Offset(_gc+120)(GP)
 JAL	_settings_write_coord_data+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,250 :: 		if(result){ //response if write to flash failed new result
-BNE	R2, R0, L_Main_Modal_Group_Actions0164
+;Main.c,251 :: 		if(result){ //response if write to flash failed new result
+BNE	R2, R0, L_Main_Modal_Group_Actions0172
 NOP	
-J	L_Main_Modal_Group_Actions036
+J	L_Main_Modal_Group_Actions038
 NOP	
-L_Main_Modal_Group_Actions0164:
-;Main.c,251 :: 		return NVM_COORDINATE_WRITE_ERROR;
+L_Main_Modal_Group_Actions0172:
+;Main.c,252 :: 		return NVM_COORDINATE_WRITE_ERROR;
 ORI	R2, R0, 1
 J	L_end_Modal_Group_Actions0
 NOP	
-;Main.c,252 :: 		}
-L_Main_Modal_Group_Actions036:
-;Main.c,255 :: 		if (gc.coord_select > 0) {
+;Main.c,253 :: 		}
+L_Main_Modal_Group_Actions038:
+;Main.c,256 :: 		if (gc.coord_select > 0) {
 LH	R2, Offset(_gc+14)(GP)
 SLTI	R2, R2, 1
-BEQ	R2, R0, L_Main_Modal_Group_Actions0165
+BEQ	R2, R0, L_Main_Modal_Group_Actions0173
 NOP	
-J	L_Main_Modal_Group_Actions037
+J	L_Main_Modal_Group_Actions039
 NOP	
-L_Main_Modal_Group_Actions0165:
-;Main.c,256 :: 		memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
+L_Main_Modal_Group_Actions0173:
+;Main.c,257 :: 		memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
 SH	R25, 12(SP)
 ORI	R27, R0, 16
 LUI	R26, hi_addr(_gc+76)
@@ -491,25 +503,25 @@ ORI	R25, R25, lo_addr(_gc+44)
 JAL	_memcpy+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,257 :: 		}
-L_Main_Modal_Group_Actions037:
-;Main.c,259 :: 		} else {
-J	L_Main_Modal_Group_Actions038
+;Main.c,258 :: 		}
+L_Main_Modal_Group_Actions039:
+;Main.c,260 :: 		} else {
+J	L_Main_Modal_Group_Actions040
 NOP	
-L_Main_Modal_Group_Actions035:
-;Main.c,265 :: 		temp = indx = (gc.P-1) & 0xFF;
+L_Main_Modal_Group_Actions037:
+;Main.c,266 :: 		temp = indx = (gc.P-1) & 0xFF;
 LH	R2, Offset(_gc+120)(GP)
 ADDIU	R2, R2, -1
 ANDI	R2, R2, 255
-;Main.c,266 :: 		indx *= 4;
+;Main.c,267 :: 		indx *= 4;
 SEH	R2, R2
 SLL	R2, R2, 2
 ; indx start address is: 12 (R3)
 SEH	R3, R2
-;Main.c,267 :: 		axis_cnt = 0;
+;Main.c,268 :: 		axis_cnt = 0;
 ; axis_cnt start address is: 16 (R4)
 MOVZ	R4, R0, R0
-;Main.c,271 :: 		axis_words = Get_Axisword();
+;Main.c,272 :: 		axis_words = Get_Axisword();
 SH	R4, 12(SP)
 SH	R3, 14(SP)
 SH	R25, 16(SP)
@@ -520,7 +532,7 @@ LH	R3, 14(SP)
 LH	R4, 12(SP)
 ; axis_words start address is: 20 (R5)
 SEH	R5, R2
-;Main.c,272 :: 		for(i = 0; i < 3;i++){
+;Main.c,273 :: 		for(i = 0; i < 3;i++){
 ; i start address is: 24 (R6)
 MOVZ	R6, R0, R0
 ; indx end address is: 12 (R3)
@@ -528,7 +540,7 @@ MOVZ	R6, R0, R0
 ; i end address is: 24 (R6)
 SEH	R7, R3
 SEH	R8, R4
-L_Main_Modal_Group_Actions039:
+L_Main_Modal_Group_Actions041:
 ; i start address is: 24 (R6)
 ; axis_words start address is: 20 (R5)
 ; axis_words end address is: 20 (R5)
@@ -536,46 +548,46 @@ L_Main_Modal_Group_Actions039:
 ; indx start address is: 28 (R7)
 SEH	R2, R6
 SLTI	R2, R2, 3
-BNE	R2, R0, L_Main_Modal_Group_Actions0166
+BNE	R2, R0, L_Main_Modal_Group_Actions0174
 NOP	
-J	L_Main_Modal_Group_Actions040
+J	L_Main_Modal_Group_Actions042
 NOP	
-L_Main_Modal_Group_Actions0166:
+L_Main_Modal_Group_Actions0174:
 ; axis_words end address is: 20 (R5)
-;Main.c,273 :: 		temp_axis = (axis_words >> i) & 1;
+;Main.c,274 :: 		temp_axis = (axis_words >> i) & 1;
 ; axis_words start address is: 20 (R5)
 SEH	R3, R5
 SEH	R2, R6
 SRAV	R2, R3, R2
 ANDI	R2, R2, 1
-;Main.c,275 :: 		if(temp_axis == 0){
+;Main.c,276 :: 		if(temp_axis == 0){
 SEH	R2, R2
-BEQ	R2, R0, L_Main_Modal_Group_Actions0167
+BEQ	R2, R0, L_Main_Modal_Group_Actions0175
 NOP	
-J	L_Main_Modal_Group_Actions042
+J	L_Main_Modal_Group_Actions044
 NOP	
-L_Main_Modal_Group_Actions0167:
-;Main.c,276 :: 		axis_cnt++;
+L_Main_Modal_Group_Actions0175:
+;Main.c,277 :: 		axis_cnt++;
 ADDIU	R2, R8, 1
 ; axis_cnt end address is: 32 (R8)
 ; axis_cnt start address is: 16 (R4)
 SEH	R4, R2
-;Main.c,277 :: 		if(axis_cnt > 2)break;
+;Main.c,278 :: 		if(axis_cnt > 2)break;
 SEH	R2, R2
 SLTI	R2, R2, 3
-BEQ	R2, R0, L_Main_Modal_Group_Actions0168
+BEQ	R2, R0, L_Main_Modal_Group_Actions0176
 NOP	
-J	L_Main_Modal_Group_Actions043
+J	L_Main_Modal_Group_Actions045
 NOP	
-L_Main_Modal_Group_Actions0168:
+L_Main_Modal_Group_Actions0176:
 ; axis_words end address is: 20 (R5)
 ; axis_cnt end address is: 16 (R4)
 ; indx end address is: 28 (R7)
 ; i end address is: 24 (R6)
-J	L_Main_Modal_Group_Actions040
+J	L_Main_Modal_Group_Actions042
 NOP	
-L_Main_Modal_Group_Actions043:
-;Main.c,279 :: 		_flash = buffA[indx];
+L_Main_Modal_Group_Actions045:
+;Main.c,280 :: 		_flash = buffA[indx];
 ; i start address is: 24 (R6)
 ; indx start address is: 28 (R7)
 ; axis_cnt start address is: 16 (R4)
@@ -586,21 +598,19 @@ LUI	R2, hi_addr(_buffA+0)
 ORI	R2, R2, lo_addr(_buffA+0)
 ADDU	R2, R2, R3
 LW	R2, 0(R2)
-; _flash start address is: 32 (R8)
-MOVZ	R8, R2, R0
-;Main.c,283 :: 		coord_data[i] = ulong2flt(_flash);
-ADDIU	R3, SP, 24
+SW	R2, 24(SP)
+;Main.c,284 :: 		coord_data[i] = ulong2flt(_flash);
+ADDIU	R3, SP, 28
 SEH	R2, R6
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
-SW	R2, 40(SP)
+SW	R2, 44(SP)
 SH	R4, 12(SP)
-; _flash end address is: 32 (R8)
 SH	R7, 14(SP)
 SH	R5, 16(SP)
 SH	R6, 18(SP)
 SH	R25, 20(SP)
-MOVZ	R25, R8, R0
+LW	R25, 24(SP)
 JAL	_ulong2flt+0
 NOP	
 LH	R25, 20(SP)
@@ -608,17 +618,17 @@ LH	R6, 18(SP)
 LH	R5, 16(SP)
 LH	R7, 14(SP)
 LH	R4, 12(SP)
-LW	R2, 40(SP)
+LW	R2, 44(SP)
 SWC1	S0, 0(R2)
-;Main.c,291 :: 		}else{
+;Main.c,292 :: 		}else{
 SEH	R8, R4
 ; axis_cnt end address is: 16 (R4)
-J	L_Main_Modal_Group_Actions044
+J	L_Main_Modal_Group_Actions046
 NOP	
-L_Main_Modal_Group_Actions042:
-;Main.c,294 :: 		coord_data[i] = gc.next_position[i];
+L_Main_Modal_Group_Actions044:
+;Main.c,295 :: 		coord_data[i] = gc.next_position[i];
 ; axis_cnt start address is: 32 (R8)
-ADDIU	R3, SP, 24
+ADDIU	R3, SP, 28
 SEH	R2, R6
 SLL	R4, R2, 2
 ADDU	R3, R3, R4
@@ -628,32 +638,32 @@ ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
 ; axis_cnt end address is: 32 (R8)
-;Main.c,302 :: 		}
-L_Main_Modal_Group_Actions044:
-;Main.c,303 :: 		indx++;
+;Main.c,303 :: 		}
+L_Main_Modal_Group_Actions046:
+;Main.c,304 :: 		indx++;
 ; axis_cnt start address is: 32 (R8)
 ADDIU	R2, R7, 1
 SEH	R7, R2
-;Main.c,272 :: 		for(i = 0; i < 3;i++){
+;Main.c,273 :: 		for(i = 0; i < 3;i++){
 ADDIU	R2, R6, 1
 SEH	R6, R2
-;Main.c,304 :: 		}
+;Main.c,305 :: 		}
 ; axis_words end address is: 20 (R5)
 ; axis_cnt end address is: 32 (R8)
 ; indx end address is: 28 (R7)
 ; i end address is: 24 (R6)
-J	L_Main_Modal_Group_Actions039
+J	L_Main_Modal_Group_Actions041
 NOP	
-L_Main_Modal_Group_Actions040:
-;Main.c,306 :: 		result = settings_write_coord_data((int)gc.P,coord_data);
-ADDIU	R2, SP, 24
+L_Main_Modal_Group_Actions042:
+;Main.c,307 :: 		result = settings_write_coord_data((int)gc.P,coord_data);
+ADDIU	R2, SP, 28
 SH	R25, 12(SP)
 MOVZ	R26, R2, R0
 LH	R25, Offset(_gc+120)(GP)
 JAL	_settings_write_coord_data+0
 NOP	
-;Main.c,309 :: 		memcpy(gc.coord_system,coord_data,sizeof(coord_data));
-ADDIU	R2, SP, 24
+;Main.c,310 :: 		memcpy(gc.coord_system,coord_data,sizeof(coord_data));
+ADDIU	R2, SP, 28
 ORI	R27, R0, 16
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gc+44)
@@ -661,62 +671,62 @@ ORI	R25, R25, lo_addr(_gc+44)
 JAL	_memcpy+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,310 :: 		}
-L_Main_Modal_Group_Actions038:
-;Main.c,312 :: 		break;
-J	L_Main_Modal_Group_Actions018
+;Main.c,311 :: 		}
+L_Main_Modal_Group_Actions040:
+;Main.c,313 :: 		break;
+J	L_Main_Modal_Group_Actions020
 NOP	
-;Main.c,313 :: 		case  8:  //NON_MODAL_GO_HOME_0_BIT
-L_Main_Modal_Group_Actions045:
-;Main.c,314 :: 		case 32:  //NON_MODAL_GO_HOME_1_BIT
-L_Main_Modal_Group_Actions046:
-;Main.c,317 :: 		axis_words = Get_Axisword();
+;Main.c,314 :: 		case  8:  //NON_MODAL_GO_HOME_0_BIT
+L_Main_Modal_Group_Actions047:
+;Main.c,315 :: 		case 32:  //NON_MODAL_GO_HOME_1_BIT
+L_Main_Modal_Group_Actions048:
+;Main.c,318 :: 		axis_words = Get_Axisword();
 SH	R25, 12(SP)
 JAL	_Get_Axisword+0
 NOP	
 LH	R25, 12(SP)
 ; axis_words start address is: 24 (R6)
 SEH	R6, R2
-;Main.c,326 :: 		if (axis_words) {
-BNE	R2, R0, L_Main_Modal_Group_Actions0170
+;Main.c,327 :: 		if (axis_words) {
+BNE	R2, R0, L_Main_Modal_Group_Actions0178
 NOP	
-J	L_Main_Modal_Group_Actions047
+J	L_Main_Modal_Group_Actions049
 NOP	
-L_Main_Modal_Group_Actions0170:
-;Main.c,328 :: 		for (i=0; i<NoOfAxis; i++){
+L_Main_Modal_Group_Actions0178:
+;Main.c,329 :: 		for (i=0; i<NoOfAxis; i++){
 ; i start address is: 20 (R5)
 MOVZ	R5, R0, R0
 ; axis_words end address is: 24 (R6)
 ; i end address is: 20 (R5)
-L_Main_Modal_Group_Actions048:
+L_Main_Modal_Group_Actions050:
 ; i start address is: 20 (R5)
 ; axis_words start address is: 24 (R6)
 SEH	R2, R5
 SLTI	R2, R2, 4
-BNE	R2, R0, L_Main_Modal_Group_Actions0171
+BNE	R2, R0, L_Main_Modal_Group_Actions0179
 NOP	
-J	L_Main_Modal_Group_Actions049
+J	L_Main_Modal_Group_Actions051
 NOP	
-L_Main_Modal_Group_Actions0171:
-;Main.c,330 :: 		if ( bit_istrue(axis_words,bit(i)) ) {
+L_Main_Modal_Group_Actions0179:
+;Main.c,331 :: 		if ( bit_istrue(axis_words,bit(i)) ) {
 SEH	R3, R5
 ORI	R2, R0, 1
 SLLV	R2, R2, R3
 AND	R2, R6, R2
 SEH	R2, R2
-BNE	R2, R0, L_Main_Modal_Group_Actions0173
+BNE	R2, R0, L_Main_Modal_Group_Actions0181
 NOP	
-J	L_Main_Modal_Group_Actions051
+J	L_Main_Modal_Group_Actions053
 NOP	
-L_Main_Modal_Group_Actions0173:
-;Main.c,331 :: 		if (gc.absolute_mode) {
+L_Main_Modal_Group_Actions0181:
+;Main.c,332 :: 		if (gc.absolute_mode) {
 LBU	R2, Offset(_gc+5)(GP)
-BNE	R2, R0, L_Main_Modal_Group_Actions0175
+BNE	R2, R0, L_Main_Modal_Group_Actions0183
 NOP	
-J	L_Main_Modal_Group_Actions052
+J	L_Main_Modal_Group_Actions054
 NOP	
-L_Main_Modal_Group_Actions0175:
-;Main.c,332 :: 		gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i];
+L_Main_Modal_Group_Actions0183:
+;Main.c,333 :: 		gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i];
 SEH	R2, R5
 SLL	R4, R2, 2
 LUI	R2, hi_addr(_gc+76)
@@ -734,11 +744,11 @@ ADD.S 	S1, S1, S0
 LWC1	S0, 0(R3)
 ADD.S 	S0, S0, S1
 SWC1	S0, 0(R3)
-;Main.c,333 :: 		} else {
-J	L_Main_Modal_Group_Actions053
+;Main.c,334 :: 		} else {
+J	L_Main_Modal_Group_Actions055
 NOP	
-L_Main_Modal_Group_Actions052:
-;Main.c,334 :: 		gc.next_position[i] += gc.position[i];
+L_Main_Modal_Group_Actions054:
+;Main.c,335 :: 		gc.next_position[i] += gc.position[i];
 SEH	R2, R5
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_gc+76)
@@ -751,13 +761,13 @@ LWC1	S1, 0(R2)
 LWC1	S0, 0(R4)
 ADD.S 	S0, S0, S1
 SWC1	S0, 0(R4)
-;Main.c,335 :: 		}
-L_Main_Modal_Group_Actions053:
-;Main.c,336 :: 		} else {
-J	L_Main_Modal_Group_Actions054
+;Main.c,336 :: 		}
+L_Main_Modal_Group_Actions055:
+;Main.c,337 :: 		} else {
+J	L_Main_Modal_Group_Actions056
 NOP	
-L_Main_Modal_Group_Actions051:
-;Main.c,337 :: 		gc.next_position[i] = gc.position[i];
+L_Main_Modal_Group_Actions053:
+;Main.c,338 :: 		gc.next_position[i] = gc.position[i];
 SEH	R2, R5
 SLL	R4, R2, 2
 LUI	R2, hi_addr(_gc+76)
@@ -768,9 +778,9 @@ ORI	R2, R2, lo_addr(_gc+28)
 ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
-;Main.c,338 :: 		}
-L_Main_Modal_Group_Actions054:
-;Main.c,343 :: 		SingleAxisStep(gc.next_position[i],settings.default_seek_rate,i);
+;Main.c,339 :: 		}
+L_Main_Modal_Group_Actions056:
+;Main.c,344 :: 		SingleAxisStep(gc.next_position[i],settings.default_seek_rate,i);
 LWC1	S0, Offset(_settings+20)(GP)
 CVT36.S 	S0, S0
 MFC1	R4, S0
@@ -795,8 +805,8 @@ LH	R5, 14(SP)
 LH	R6, 12(SP)
 SEH	R4, R5
 SEH	R3, R6
-;Main.c,344 :: 		while(GET_RunState(i));
-L_Main_Modal_Group_Actions055:
+;Main.c,345 :: 		while(GET_RunState(i));
+L_Main_Modal_Group_Actions057:
 ; axis_words start address is: 12 (R3)
 ; i start address is: 16 (R4)
 SH	R4, 12(SP)
@@ -808,69 +818,69 @@ NOP
 LH	R25, 16(SP)
 LH	R3, 14(SP)
 LH	R4, 12(SP)
-BNE	R2, R0, L_Main_Modal_Group_Actions0177
+BNE	R2, R0, L_Main_Modal_Group_Actions0185
 NOP	
-J	L_Main_Modal_Group_Actions056
+J	L_Main_Modal_Group_Actions058
 NOP	
-L_Main_Modal_Group_Actions0177:
-J	L_Main_Modal_Group_Actions055
+L_Main_Modal_Group_Actions0185:
+J	L_Main_Modal_Group_Actions057
 NOP	
-L_Main_Modal_Group_Actions056:
-;Main.c,328 :: 		for (i=0; i<NoOfAxis; i++){
+L_Main_Modal_Group_Actions058:
+;Main.c,329 :: 		for (i=0; i<NoOfAxis; i++){
 ADDIU	R2, R4, 1
 ; i end address is: 16 (R4)
 ; i start address is: 20 (R5)
 SEH	R5, R2
-;Main.c,345 :: 		}
+;Main.c,346 :: 		}
 SEH	R6, R3
 ; axis_words end address is: 12 (R3)
 ; i end address is: 20 (R5)
-J	L_Main_Modal_Group_Actions048
+J	L_Main_Modal_Group_Actions050
 NOP	
+L_Main_Modal_Group_Actions051:
+;Main.c,347 :: 		}
 L_Main_Modal_Group_Actions049:
-;Main.c,346 :: 		}
-L_Main_Modal_Group_Actions047:
-;Main.c,348 :: 		temp = SETTING_INDEX_G28;  //home to zero pos / at limits
+;Main.c,349 :: 		temp = SETTING_INDEX_G28;  //home to zero pos / at limits
 ; temp start address is: 24 (R6)
 ORI	R6, R0, 10
-;Main.c,350 :: 		if (action == NON_MODAL_GO_HOME_1_BIT){temp = SETTING_INDEX_G30;}
+;Main.c,351 :: 		if (action == NON_MODAL_GO_HOME_1_BIT){temp = SETTING_INDEX_G30;}
 SEH	R3, R25
 ORI	R2, R0, 32
-BEQ	R3, R2, L_Main_Modal_Group_Actions0178
+BEQ	R3, R2, L_Main_Modal_Group_Actions0186
 NOP	
-J	L_Main_Modal_Group_Actions0118
+J	L_Main_Modal_Group_Actions0121
 NOP	
-L_Main_Modal_Group_Actions0178:
+L_Main_Modal_Group_Actions0186:
 ORI	R6, R0, 11
 ; temp end address is: 24 (R6)
-J	L_Main_Modal_Group_Actions057
+J	L_Main_Modal_Group_Actions059
 NOP	
-L_Main_Modal_Group_Actions0118:
-L_Main_Modal_Group_Actions057:
-;Main.c,351 :: 		i = (temp)*4 ; //place the new data into the correct position
+L_Main_Modal_Group_Actions0121:
+L_Main_Modal_Group_Actions059:
+;Main.c,352 :: 		i = (temp)*4 ; //place the new data into the correct position
 ; temp start address is: 24 (R6)
 SEH	R2, R6
 SLL	R2, R2, 2
 ; i start address is: 16 (R4)
 SEH	R4, R2
-;Main.c,354 :: 		for(j = 0;j<4;j++){
+;Main.c,355 :: 		for(j = 0;j<4;j++){
 ; j start address is: 20 (R5)
 MOVZ	R5, R0, R0
 ; i end address is: 16 (R4)
 ; temp end address is: 24 (R6)
 ; j end address is: 20 (R5)
-L_Main_Modal_Group_Actions058:
+L_Main_Modal_Group_Actions060:
 ; j start address is: 20 (R5)
 ; i start address is: 16 (R4)
 ; temp start address is: 24 (R6)
 SEH	R2, R5
 SLTI	R2, R2, 4
-BNE	R2, R0, L_Main_Modal_Group_Actions0179
+BNE	R2, R0, L_Main_Modal_Group_Actions0187
 NOP	
-J	L_Main_Modal_Group_Actions059
+J	L_Main_Modal_Group_Actions061
 NOP	
-L_Main_Modal_Group_Actions0179:
-;Main.c,355 :: 		_data = buffA[i];
+L_Main_Modal_Group_Actions0187:
+;Main.c,356 :: 		_data = buffA[i];
 SEH	R2, R4
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_buffA+0)
@@ -879,7 +889,7 @@ ADDU	R2, R2, R3
 LW	R2, 0(R2)
 ; _data start address is: 28 (R7)
 MOVZ	R7, R2, R0
-;Main.c,356 :: 		coord_system[temp].coord[j] = ulong2flt(_data);
+;Main.c,357 :: 		coord_system[temp].coord[j] = ulong2flt(_data);
 SEH	R2, R6
 SLL	R3, R2, 5
 LUI	R2, hi_addr(_coord_system+0)
@@ -888,7 +898,7 @@ ADDU	R3, R2, R3
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
-SW	R2, 40(SP)
+SW	R2, 44(SP)
 SH	R6, 12(SP)
 ; _data end address is: 28 (R7)
 SH	R4, 14(SP)
@@ -901,14 +911,14 @@ LH	R25, 18(SP)
 LH	R5, 16(SP)
 LH	R4, 14(SP)
 LH	R6, 12(SP)
-LW	R2, 40(SP)
+LW	R2, 44(SP)
 SWC1	S0, 0(R2)
-;Main.c,361 :: 		i++;
+;Main.c,362 :: 		i++;
 ADDIU	R2, R4, 1
 ; i end address is: 16 (R4)
 ; i start address is: 28 (R7)
 SEH	R7, R2
-;Main.c,364 :: 		SingleAxisStep(coord_system[temp].coord[j],settings.default_seek_rate,j);
+;Main.c,365 :: 		SingleAxisStep(coord_system[temp].coord[j],settings.default_seek_rate,j);
 LWC1	S0, Offset(_settings+20)(GP)
 CVT36.S 	S0, S0
 MFC1	R4, S0
@@ -939,8 +949,8 @@ LH	R6, 14(SP)
 LH	R7, 12(SP)
 SEH	R4, R6
 SEH	R3, R7
-;Main.c,365 :: 		while(GET_RunState(j));
-L_Main_Modal_Group_Actions061:
+;Main.c,366 :: 		while(GET_RunState(j));
+L_Main_Modal_Group_Actions063:
 ; i start address is: 12 (R3)
 ; temp start address is: 16 (R4)
 ; j start address is: 20 (R5)
@@ -955,52 +965,52 @@ LH	R25, 18(SP)
 LH	R3, 16(SP)
 LH	R4, 14(SP)
 LH	R5, 12(SP)
-BNE	R2, R0, L_Main_Modal_Group_Actions0181
+BNE	R2, R0, L_Main_Modal_Group_Actions0189
 NOP	
-J	L_Main_Modal_Group_Actions062
+J	L_Main_Modal_Group_Actions064
 NOP	
-L_Main_Modal_Group_Actions0181:
-J	L_Main_Modal_Group_Actions061
+L_Main_Modal_Group_Actions0189:
+J	L_Main_Modal_Group_Actions063
 NOP	
-L_Main_Modal_Group_Actions062:
-;Main.c,354 :: 		for(j = 0;j<4;j++){
+L_Main_Modal_Group_Actions064:
+;Main.c,355 :: 		for(j = 0;j<4;j++){
 ADDIU	R2, R5, 1
 SEH	R5, R2
-;Main.c,366 :: 		}
+;Main.c,367 :: 		}
 SEH	R6, R4
 ; i end address is: 12 (R3)
 ; temp end address is: 16 (R4)
 ; j end address is: 20 (R5)
 SEH	R4, R3
-J	L_Main_Modal_Group_Actions058
+J	L_Main_Modal_Group_Actions060
 NOP	
-L_Main_Modal_Group_Actions059:
-;Main.c,368 :: 		break;
-J	L_Main_Modal_Group_Actions018
+L_Main_Modal_Group_Actions061:
+;Main.c,369 :: 		break;
+J	L_Main_Modal_Group_Actions020
 NOP	
-;Main.c,369 :: 		case 16:
-L_Main_Modal_Group_Actions063:
-;Main.c,371 :: 		home_select = SETTING_INDEX_G28;
+;Main.c,370 :: 		case 16:
+L_Main_Modal_Group_Actions065:
+;Main.c,372 :: 		home_select = SETTING_INDEX_G28;
 ; home_select start address is: 16 (R4)
 ORI	R4, R0, 10
-;Main.c,372 :: 		if (action == NON_MODAL_SET_HOME_1) { home_select = SETTING_INDEX_G30; }
+;Main.c,373 :: 		if (action == NON_MODAL_SET_HOME_1) { home_select = SETTING_INDEX_G30; }
 SEH	R3, R25
 ORI	R2, R0, 6
-BEQ	R3, R2, L_Main_Modal_Group_Actions0182
+BEQ	R3, R2, L_Main_Modal_Group_Actions0190
 NOP	
-J	L_Main_Modal_Group_Actions0119
+J	L_Main_Modal_Group_Actions0122
 NOP	
-L_Main_Modal_Group_Actions0182:
+L_Main_Modal_Group_Actions0190:
 ; home_select end address is: 16 (R4)
 ; home_select start address is: 8 (R2)
 ORI	R2, R0, 11
 ; home_select end address is: 8 (R2)
-J	L_Main_Modal_Group_Actions064
+J	L_Main_Modal_Group_Actions066
 NOP	
-L_Main_Modal_Group_Actions0119:
+L_Main_Modal_Group_Actions0122:
 ANDI	R2, R4, 65535
-L_Main_Modal_Group_Actions064:
-;Main.c,373 :: 		settings_write_coord_data(home_select,gc.position);
+L_Main_Modal_Group_Actions066:
+;Main.c,374 :: 		settings_write_coord_data(home_select,gc.position);
 ; home_select start address is: 8 (R2)
 SH	R25, 12(SP)
 LUI	R26, hi_addr(_gc+28)
@@ -1010,61 +1020,61 @@ ANDI	R25, R2, 65535
 JAL	_settings_write_coord_data+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,374 :: 		break;
-J	L_Main_Modal_Group_Actions018
+;Main.c,375 :: 		break;
+J	L_Main_Modal_Group_Actions020
 NOP	
-;Main.c,375 :: 		case 53:
-L_Main_Modal_Group_Actions065:
-;Main.c,376 :: 		axis_words = Get_Axisword();
+;Main.c,376 :: 		case 53:
+L_Main_Modal_Group_Actions067:
+;Main.c,377 :: 		axis_words = Get_Axisword();
 SH	R25, 12(SP)
 JAL	_Get_Axisword+0
 NOP	
 LH	R25, 12(SP)
 ; axis_words start address is: 20 (R5)
 SEH	R5, R2
-;Main.c,381 :: 		for (i=0; i<=2; i++) {
+;Main.c,382 :: 		for (i=0; i<=2; i++) {
 ; i start address is: 24 (R6)
 MOVZ	R6, R0, R0
 ; i end address is: 24 (R6)
-L_Main_Modal_Group_Actions066:
+L_Main_Modal_Group_Actions068:
 ; i start address is: 24 (R6)
 ; axis_words start address is: 20 (R5)
 ; axis_words end address is: 20 (R5)
 SEH	R2, R6
 SLTI	R2, R2, 3
-BNE	R2, R0, L_Main_Modal_Group_Actions0183
+BNE	R2, R0, L_Main_Modal_Group_Actions0191
 NOP	
-J	L_Main_Modal_Group_Actions067
+J	L_Main_Modal_Group_Actions069
 NOP	
-L_Main_Modal_Group_Actions0183:
+L_Main_Modal_Group_Actions0191:
 ; axis_words end address is: 20 (R5)
-;Main.c,382 :: 		if ( bit_istrue(axis_words,bit(i)) ) {
+;Main.c,383 :: 		if ( bit_istrue(axis_words,bit(i)) ) {
 ; axis_words start address is: 20 (R5)
 SEH	R3, R6
 ORI	R2, R0, 1
 SLLV	R2, R2, R3
 AND	R2, R5, R2
 SEH	R2, R2
-BNE	R2, R0, L_Main_Modal_Group_Actions0185
-NOP	
-J	L_Main_Modal_Group_Actions069
-NOP	
-L_Main_Modal_Group_Actions0185:
-;Main.c,383 :: 		if (!gc.absolute_override) {
-LBU	R2, Offset(_gc+4)(GP)
-BEQ	R2, R0, L_Main_Modal_Group_Actions0186
-NOP	
-J	L_Main_Modal_Group_Actions070
-NOP	
-L_Main_Modal_Group_Actions0186:
-;Main.c,384 :: 		if (!gc.absolute_mode) { // Do not update target in absolute override mode
-LBU	R2, Offset(_gc+5)(GP)
-BEQ	R2, R0, L_Main_Modal_Group_Actions0187
+BNE	R2, R0, L_Main_Modal_Group_Actions0193
 NOP	
 J	L_Main_Modal_Group_Actions071
 NOP	
-L_Main_Modal_Group_Actions0187:
-;Main.c,385 :: 		gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i]; // Absolute mode
+L_Main_Modal_Group_Actions0193:
+;Main.c,384 :: 		if (!gc.absolute_override) {
+LBU	R2, Offset(_gc+4)(GP)
+BEQ	R2, R0, L_Main_Modal_Group_Actions0194
+NOP	
+J	L_Main_Modal_Group_Actions072
+NOP	
+L_Main_Modal_Group_Actions0194:
+;Main.c,385 :: 		if (!gc.absolute_mode) { // Do not update target in absolute override mode
+LBU	R2, Offset(_gc+5)(GP)
+BEQ	R2, R0, L_Main_Modal_Group_Actions0195
+NOP	
+J	L_Main_Modal_Group_Actions073
+NOP	
+L_Main_Modal_Group_Actions0195:
+;Main.c,386 :: 		gc.next_position[i] += gc.coord_system[i] + gc.coord_offset[i]; // Absolute mode
 SEH	R2, R6
 SLL	R4, R2, 2
 LUI	R2, hi_addr(_gc+76)
@@ -1082,11 +1092,11 @@ ADD.S 	S1, S1, S0
 LWC1	S0, 0(R3)
 ADD.S 	S0, S0, S1
 SWC1	S0, 0(R3)
-;Main.c,386 :: 		} else {
-J	L_Main_Modal_Group_Actions072
+;Main.c,387 :: 		} else {
+J	L_Main_Modal_Group_Actions074
 NOP	
-L_Main_Modal_Group_Actions071:
-;Main.c,387 :: 		gc.next_position[i] += gc.position[i]; // Incremental mode
+L_Main_Modal_Group_Actions073:
+;Main.c,388 :: 		gc.next_position[i] += gc.position[i]; // Incremental mode
 SEH	R2, R6
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_gc+76)
@@ -1099,13 +1109,13 @@ LWC1	S1, 0(R2)
 LWC1	S0, 0(R4)
 ADD.S 	S0, S0, S1
 SWC1	S0, 0(R4)
-;Main.c,388 :: 		}
-L_Main_Modal_Group_Actions072:
-;Main.c,389 :: 		} else {
-J	L_Main_Modal_Group_Actions073
+;Main.c,389 :: 		}
+L_Main_Modal_Group_Actions074:
+;Main.c,390 :: 		} else {
+J	L_Main_Modal_Group_Actions075
 NOP	
-L_Main_Modal_Group_Actions070:
-;Main.c,390 :: 		gc.next_position[i] = gc.position[i]; // No axis word in block. Keep same axis position.
+L_Main_Modal_Group_Actions072:
+;Main.c,391 :: 		gc.next_position[i] = gc.position[i]; // No axis word in block. Keep same axis position.
 SEH	R2, R6
 SLL	R4, R2, 2
 LUI	R2, hi_addr(_gc+76)
@@ -1116,45 +1126,45 @@ ORI	R2, R2, lo_addr(_gc+28)
 ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
-;Main.c,391 :: 		}
-L_Main_Modal_Group_Actions073:
 ;Main.c,392 :: 		}
-L_Main_Modal_Group_Actions069:
-;Main.c,381 :: 		for (i=0; i<=2; i++) {
+L_Main_Modal_Group_Actions075:
+;Main.c,393 :: 		}
+L_Main_Modal_Group_Actions071:
+;Main.c,382 :: 		for (i=0; i<=2; i++) {
 ADDIU	R2, R6, 1
 SEH	R6, R2
-;Main.c,393 :: 		}
+;Main.c,394 :: 		}
 ; axis_words end address is: 20 (R5)
 ; i end address is: 24 (R6)
-J	L_Main_Modal_Group_Actions066
+J	L_Main_Modal_Group_Actions068
 NOP	
-L_Main_Modal_Group_Actions067:
-;Main.c,394 :: 		break;
-J	L_Main_Modal_Group_Actions018
+L_Main_Modal_Group_Actions069:
+;Main.c,395 :: 		break;
+J	L_Main_Modal_Group_Actions020
 NOP	
-;Main.c,395 :: 		case 64:   //NON_MODAL_SET_HOME_1
-L_Main_Modal_Group_Actions074:
-;Main.c,396 :: 		temp = SETTING_INDEX_G28;
+;Main.c,396 :: 		case 64:   //NON_MODAL_SET_HOME_1
+L_Main_Modal_Group_Actions076:
+;Main.c,397 :: 		temp = SETTING_INDEX_G28;
 ; temp start address is: 16 (R4)
 ORI	R4, R0, 10
-;Main.c,397 :: 		if (action == NON_MODAL_SET_HOME_1_BIT) { temp = SETTING_INDEX_G30; }
+;Main.c,398 :: 		if (action == NON_MODAL_SET_HOME_1_BIT) { temp = SETTING_INDEX_G30; }
 SEH	R3, R25
 ORI	R2, R0, 64
-BEQ	R3, R2, L_Main_Modal_Group_Actions0188
+BEQ	R3, R2, L_Main_Modal_Group_Actions0196
 NOP	
-J	L_Main_Modal_Group_Actions0120
+J	L_Main_Modal_Group_Actions0123
 NOP	
-L_Main_Modal_Group_Actions0188:
+L_Main_Modal_Group_Actions0196:
 ; temp end address is: 16 (R4)
 ; temp start address is: 8 (R2)
 ORI	R2, R0, 11
 ; temp end address is: 8 (R2)
-J	L_Main_Modal_Group_Actions075
+J	L_Main_Modal_Group_Actions077
 NOP	
-L_Main_Modal_Group_Actions0120:
+L_Main_Modal_Group_Actions0123:
 SEH	R2, R4
-L_Main_Modal_Group_Actions075:
-;Main.c,398 :: 		settings_write_coord_data(temp,gc.position);
+L_Main_Modal_Group_Actions077:
+;Main.c,399 :: 		settings_write_coord_data(temp,gc.position);
 ; temp start address is: 8 (R2)
 SH	R25, 12(SP)
 LUI	R26, hi_addr(_gc+28)
@@ -1164,65 +1174,65 @@ SEH	R25, R2
 JAL	_settings_write_coord_data+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,399 :: 		break;
-J	L_Main_Modal_Group_Actions018
+;Main.c,400 :: 		break;
+J	L_Main_Modal_Group_Actions020
 NOP	
-;Main.c,400 :: 		case 128:  //NON_MODAL_SET_COORDINATE_OFFSET NOT WRITTEN TO FLASH LOST ON RESET
-L_Main_Modal_Group_Actions076:
-;Main.c,401 :: 		axis_words = Get_Axisword();
+;Main.c,401 :: 		case 128:  //NON_MODAL_SET_COORDINATE_OFFSET NOT WRITTEN TO FLASH LOST ON RESET
+L_Main_Modal_Group_Actions078:
+;Main.c,402 :: 		axis_words = Get_Axisword();
 SH	R25, 12(SP)
 JAL	_Get_Axisword+0
 NOP	
 LH	R25, 12(SP)
 ; axis_words start address is: 20 (R5)
 SEH	R5, R2
-;Main.c,403 :: 		if (!axis_words) { // No axis words
-BEQ	R2, R0, L_Main_Modal_Group_Actions0189
+;Main.c,404 :: 		if (!axis_words) { // No axis words
+BEQ	R2, R0, L_Main_Modal_Group_Actions0197
 NOP	
-J	L_Main_Modal_Group_Actions077
+J	L_Main_Modal_Group_Actions079
 NOP	
-L_Main_Modal_Group_Actions0189:
+L_Main_Modal_Group_Actions0197:
 ; axis_words end address is: 20 (R5)
-;Main.c,404 :: 		FAIL(STATUS_INVALID_STATEMENT);
+;Main.c,405 :: 		FAIL(STATUS_INVALID_STATEMENT);
 SH	R25, 12(SP)
 ORI	R25, R0, 6
 JAL	_FAIL+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,405 :: 		} else {
-J	L_Main_Modal_Group_Actions078
+;Main.c,406 :: 		} else {
+J	L_Main_Modal_Group_Actions080
 NOP	
-L_Main_Modal_Group_Actions077:
-;Main.c,409 :: 		for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used.
+L_Main_Modal_Group_Actions079:
+;Main.c,410 :: 		for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used.
 ; i start address is: 24 (R6)
 ; axis_words start address is: 20 (R5)
 MOVZ	R6, R0, R0
 ; i end address is: 24 (R6)
-L_Main_Modal_Group_Actions079:
+L_Main_Modal_Group_Actions081:
 ; i start address is: 24 (R6)
 ; axis_words start address is: 20 (R5)
 ; axis_words end address is: 20 (R5)
 SEH	R2, R6
 SLTI	R2, R2, 3
-BNE	R2, R0, L_Main_Modal_Group_Actions0190
+BNE	R2, R0, L_Main_Modal_Group_Actions0198
 NOP	
-J	L_Main_Modal_Group_Actions080
+J	L_Main_Modal_Group_Actions082
 NOP	
-L_Main_Modal_Group_Actions0190:
+L_Main_Modal_Group_Actions0198:
 ; axis_words end address is: 20 (R5)
-;Main.c,410 :: 		if (bit_istrue(axis_words,bit(i)) ) {
+;Main.c,411 :: 		if (bit_istrue(axis_words,bit(i)) ) {
 ; axis_words start address is: 20 (R5)
 SEH	R3, R6
 ORI	R2, R0, 1
 SLLV	R2, R2, R3
 AND	R2, R5, R2
 SEH	R2, R2
-BNE	R2, R0, L_Main_Modal_Group_Actions0192
+BNE	R2, R0, L_Main_Modal_Group_Actions0200
 NOP	
-J	L_Main_Modal_Group_Actions082
+J	L_Main_Modal_Group_Actions084
 NOP	
-L_Main_Modal_Group_Actions0192:
-;Main.c,411 :: 		gc.coord_offset[i] = gc.position[i]-gc.coord_system[i]-gc.next_position[i];
+L_Main_Modal_Group_Actions0200:
+;Main.c,412 :: 		gc.coord_offset[i] = gc.position[i]-gc.coord_system[i]-gc.next_position[i];
 SEH	R2, R6
 SLL	R4, R2, 2
 LUI	R2, hi_addr(_gc+60)
@@ -1243,22 +1253,22 @@ ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 SUB.S 	S0, S1, S0
 SWC1	S0, 0(R3)
-;Main.c,412 :: 		}
-L_Main_Modal_Group_Actions082:
-;Main.c,409 :: 		for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used.
+;Main.c,413 :: 		}
+L_Main_Modal_Group_Actions084:
+;Main.c,410 :: 		for (i=0; i<=2; i++) { // Axes indices are consistent, so loop may be used.
 ADDIU	R2, R6, 1
 SEH	R6, R2
-;Main.c,413 :: 		}
+;Main.c,414 :: 		}
 ; axis_words end address is: 20 (R5)
 ; i end address is: 24 (R6)
-J	L_Main_Modal_Group_Actions079
+J	L_Main_Modal_Group_Actions081
 NOP	
+L_Main_Modal_Group_Actions082:
+;Main.c,415 :: 		}
 L_Main_Modal_Group_Actions080:
-;Main.c,414 :: 		}
-L_Main_Modal_Group_Actions078:
-;Main.c,416 :: 		case 256: //NON_MODAL_RESET_COORDINATE_OFFSET
-L_Main_Modal_Group_Actions083:
-;Main.c,418 :: 		clear_vector(gc.coord_offset);
+;Main.c,417 :: 		case 256: //NON_MODAL_RESET_COORDINATE_OFFSET
+L_Main_Modal_Group_Actions085:
+;Main.c,419 :: 		clear_vector(gc.coord_offset);
 SH	R25, 12(SP)
 ORI	R27, R0, 16
 MOVZ	R26, R0, R0
@@ -1267,108 +1277,108 @@ ORI	R25, R25, lo_addr(_gc+60)
 JAL	_memset+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,419 :: 		break;
-J	L_Main_Modal_Group_Actions018
+;Main.c,420 :: 		break;
+J	L_Main_Modal_Group_Actions020
 NOP	
-;Main.c,420 :: 		default: action = -1; //error in action msg ???
-L_Main_Modal_Group_Actions084:
+;Main.c,421 :: 		default: action = -1; //error in action msg ???
+L_Main_Modal_Group_Actions086:
 ORI	R25, R0, 65535
-;Main.c,421 :: 		break;
-J	L_Main_Modal_Group_Actions018
+;Main.c,422 :: 		break;
+J	L_Main_Modal_Group_Actions020
 NOP	
-;Main.c,422 :: 		}
-L_Main_Modal_Group_Actions017:
+;Main.c,423 :: 		}
+L_Main_Modal_Group_Actions019:
 SEH	R3, R25
 ORI	R2, R0, 2
-BNE	R3, R2, L_Main_Modal_Group_Actions0194
-NOP	
-J	L_Main_Modal_Group_Actions019
-NOP	
-L_Main_Modal_Group_Actions0194:
-SEH	R3, R25
-ORI	R2, R0, 4
-BNE	R3, R2, L_Main_Modal_Group_Actions0196
-NOP	
-J	L_Main_Modal_Group_Actions031
-NOP	
-L_Main_Modal_Group_Actions0196:
-SEH	R3, R25
-ORI	R2, R0, 8
-BNE	R3, R2, L_Main_Modal_Group_Actions0198
-NOP	
-J	L_Main_Modal_Group_Actions045
-NOP	
-L_Main_Modal_Group_Actions0198:
-SEH	R3, R25
-ORI	R2, R0, 32
-BNE	R3, R2, L_Main_Modal_Group_Actions0200
-NOP	
-J	L_Main_Modal_Group_Actions046
-NOP	
-L_Main_Modal_Group_Actions0200:
-SEH	R3, R25
-ORI	R2, R0, 16
 BNE	R3, R2, L_Main_Modal_Group_Actions0202
 NOP	
-J	L_Main_Modal_Group_Actions063
+J	L_Main_Modal_Group_Actions021
 NOP	
 L_Main_Modal_Group_Actions0202:
 SEH	R3, R25
-ORI	R2, R0, 53
+ORI	R2, R0, 4
 BNE	R3, R2, L_Main_Modal_Group_Actions0204
 NOP	
-J	L_Main_Modal_Group_Actions065
+J	L_Main_Modal_Group_Actions033
 NOP	
 L_Main_Modal_Group_Actions0204:
 SEH	R3, R25
-ORI	R2, R0, 64
+ORI	R2, R0, 8
 BNE	R3, R2, L_Main_Modal_Group_Actions0206
 NOP	
-J	L_Main_Modal_Group_Actions074
+J	L_Main_Modal_Group_Actions047
 NOP	
 L_Main_Modal_Group_Actions0206:
 SEH	R3, R25
-ORI	R2, R0, 128
+ORI	R2, R0, 32
 BNE	R3, R2, L_Main_Modal_Group_Actions0208
 NOP	
-J	L_Main_Modal_Group_Actions076
+J	L_Main_Modal_Group_Actions048
 NOP	
 L_Main_Modal_Group_Actions0208:
 SEH	R3, R25
-ORI	R2, R0, 256
+ORI	R2, R0, 16
 BNE	R3, R2, L_Main_Modal_Group_Actions0210
 NOP	
-J	L_Main_Modal_Group_Actions083
+J	L_Main_Modal_Group_Actions065
 NOP	
 L_Main_Modal_Group_Actions0210:
-J	L_Main_Modal_Group_Actions084
+SEH	R3, R25
+ORI	R2, R0, 53
+BNE	R3, R2, L_Main_Modal_Group_Actions0212
 NOP	
-L_Main_Modal_Group_Actions018:
-;Main.c,423 :: 		return action;
+J	L_Main_Modal_Group_Actions067
+NOP	
+L_Main_Modal_Group_Actions0212:
+SEH	R3, R25
+ORI	R2, R0, 64
+BNE	R3, R2, L_Main_Modal_Group_Actions0214
+NOP	
+J	L_Main_Modal_Group_Actions076
+NOP	
+L_Main_Modal_Group_Actions0214:
+SEH	R3, R25
+ORI	R2, R0, 128
+BNE	R3, R2, L_Main_Modal_Group_Actions0216
+NOP	
+J	L_Main_Modal_Group_Actions078
+NOP	
+L_Main_Modal_Group_Actions0216:
+SEH	R3, R25
+ORI	R2, R0, 256
+BNE	R3, R2, L_Main_Modal_Group_Actions0218
+NOP	
+J	L_Main_Modal_Group_Actions085
+NOP	
+L_Main_Modal_Group_Actions0218:
+J	L_Main_Modal_Group_Actions086
+NOP	
+L_Main_Modal_Group_Actions020:
+;Main.c,424 :: 		return action;
 SEH	R2, R25
-;Main.c,424 :: 		}
-;Main.c,423 :: 		return action;
-;Main.c,424 :: 		}
+;Main.c,425 :: 		}
+;Main.c,424 :: 		return action;
+;Main.c,425 :: 		}
 L_end_Modal_Group_Actions0:
 LW	R27, 8(SP)
 LW	R26, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 44
+ADDIU	SP, SP, 48
 JR	RA
 NOP	
 ; end of Main_Modal_Group_Actions0
 Main_Modal_Group_Actions1:
-;Main.c,429 :: 		static int Modal_Group_Actions1(int action){
+;Main.c,430 :: 		static int Modal_Group_Actions1(int action){
 ADDIU	SP, SP, -16
 SW	RA, 0(SP)
-;Main.c,434 :: 		switch(action){
+;Main.c,435 :: 		switch(action){
 SW	R26, 4(SP)
 SW	R27, 8(SP)
-J	L_Main_Modal_Group_Actions185
+J	L_Main_Modal_Group_Actions187
 NOP	
-;Main.c,435 :: 		case 1: //b0000 0001
-L_Main_Modal_Group_Actions187:
-;Main.c,436 :: 		SingleAxisStep(gc.next_position[X],gc.frequency,X);
+;Main.c,436 :: 		case 1: //b0000 0001
+L_Main_Modal_Group_Actions189:
+;Main.c,437 :: 		SingleAxisStep(gc.next_position[X],gc.frequency,X);
 SH	R25, 12(SP)
 MOVZ	R26, R0, R0
 LW	R25, Offset(_gc+20)(GP)
@@ -1376,12 +1386,12 @@ LWC1	S12, Offset(_gc+76)(GP)
 JAL	_SingleAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,437 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,438 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,438 :: 		case 2://b0000 0010
-L_Main_Modal_Group_Actions188:
-;Main.c,439 :: 		SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
+;Main.c,439 :: 		case 2://b0000 0010
+L_Main_Modal_Group_Actions190:
+;Main.c,440 :: 		SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
 SH	R25, 12(SP)
 ORI	R26, R0, 1
 LW	R25, Offset(_gc+20)(GP)
@@ -1389,12 +1399,12 @@ LWC1	S12, Offset(_gc+80)(GP)
 JAL	_SingleAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,440 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,441 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,441 :: 		case 3://b0000 0011
-L_Main_Modal_Group_Actions189:
-;Main.c,442 :: 		DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+;Main.c,442 :: 		case 3://b0000 0011
+L_Main_Modal_Group_Actions191:
+;Main.c,443 :: 		DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
 SH	R25, 12(SP)
 LW	R27, Offset(_gc+20)(GP)
 ORI	R26, R0, 1
@@ -1404,12 +1414,12 @@ LWC1	S12, Offset(_gc+76)(GP)
 JAL	_DualAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,443 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,444 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,444 :: 		case 4://b0000 0100
-L_Main_Modal_Group_Actions190:
-;Main.c,445 :: 		SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
+;Main.c,445 :: 		case 4://b0000 0100
+L_Main_Modal_Group_Actions192:
+;Main.c,446 :: 		SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
 SH	R25, 12(SP)
 ORI	R26, R0, 2
 LW	R25, Offset(_gc+20)(GP)
@@ -1417,12 +1427,12 @@ LWC1	S12, Offset(_gc+84)(GP)
 JAL	_SingleAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,446 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,447 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,447 :: 		case 5://b0000 0101
-L_Main_Modal_Group_Actions191:
-;Main.c,448 :: 		DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
+;Main.c,448 :: 		case 5://b0000 0101
+L_Main_Modal_Group_Actions193:
+;Main.c,449 :: 		DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
 SH	R25, 12(SP)
 LW	R27, Offset(_gc+20)(GP)
 ORI	R26, R0, 2
@@ -1432,12 +1442,12 @@ LWC1	S12, Offset(_gc+76)(GP)
 JAL	_DualAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,449 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,450 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,450 :: 		case 6://b0000 0110
-L_Main_Modal_Group_Actions192:
-;Main.c,451 :: 		DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
+;Main.c,451 :: 		case 6://b0000 0110
+L_Main_Modal_Group_Actions194:
+;Main.c,452 :: 		DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
 SH	R25, 12(SP)
 LW	R27, Offset(_gc+20)(GP)
 ORI	R26, R0, 2
@@ -1447,12 +1457,12 @@ LWC1	S12, Offset(_gc+80)(GP)
 JAL	_DualAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,452 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,453 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,453 :: 		case 8://b0000 1000
-L_Main_Modal_Group_Actions193:
-;Main.c,454 :: 		SingleAxisStep(gc.next_position[A],gc.frequency,A);
+;Main.c,454 :: 		case 8://b0000 1000
+L_Main_Modal_Group_Actions195:
+;Main.c,455 :: 		SingleAxisStep(gc.next_position[A],gc.frequency,A);
 SH	R25, 12(SP)
 ORI	R26, R0, 3
 LW	R25, Offset(_gc+20)(GP)
@@ -1460,12 +1470,12 @@ LWC1	S12, Offset(_gc+88)(GP)
 JAL	_SingleAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,455 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,456 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,456 :: 		case 9://b0000 1001
-L_Main_Modal_Group_Actions194:
-;Main.c,457 :: 		DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
+;Main.c,457 :: 		case 9://b0000 1001
+L_Main_Modal_Group_Actions196:
+;Main.c,458 :: 		DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
 SH	R25, 12(SP)
 LW	R27, Offset(_gc+20)(GP)
 ORI	R26, R0, 3
@@ -1475,12 +1485,12 @@ LWC1	S12, Offset(_gc+76)(GP)
 JAL	_DualAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,458 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,459 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,459 :: 		case 10://b0000 1010
-L_Main_Modal_Group_Actions195:
-;Main.c,460 :: 		DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
+;Main.c,460 :: 		case 10://b0000 1010
+L_Main_Modal_Group_Actions197:
+;Main.c,461 :: 		DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
 SH	R25, 12(SP)
 LW	R27, Offset(_gc+20)(GP)
 ORI	R26, R0, 3
@@ -1490,12 +1500,12 @@ LWC1	S12, Offset(_gc+80)(GP)
 JAL	_DualAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,461 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,462 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,462 :: 		case 12://b0000 1100
-L_Main_Modal_Group_Actions196:
-;Main.c,463 :: 		DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
+;Main.c,463 :: 		case 12://b0000 1100
+L_Main_Modal_Group_Actions198:
+;Main.c,464 :: 		DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
 SH	R25, 12(SP)
 LW	R27, Offset(_gc+20)(GP)
 ORI	R26, R0, 3
@@ -1505,12 +1515,12 @@ LWC1	S12, Offset(_gc+84)(GP)
 JAL	_DualAxisStep+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,464 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,465 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,465 :: 		case 15://Homing Y axis
-L_Main_Modal_Group_Actions197:
-;Main.c,466 :: 		r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
+;Main.c,466 :: 		case 15://Homing Y axis
+L_Main_Modal_Group_Actions199:
+;Main.c,467 :: 		r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
 LUI	R5, 16880
 ORI	R5, R5, 0
 LUI	R4, 17174
@@ -1540,62 +1550,73 @@ JAL	_r_or_ijk+0
 NOP	
 ADDIU	SP, SP, 16
 LH	R25, 12(SP)
-;Main.c,467 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,468 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,468 :: 		case ALL_AXIS://Homing X axis
-L_Main_Modal_Group_Actions198:
-;Main.c,469 :: 		axis_to_home = Home(axis_to_home);
+;Main.c,469 :: 		case ALL_AXIS://Homing X axis
+L_Main_Modal_Group_Actions1100:
+;Main.c,470 :: 		axis_to_home = Home(axis_to_home);
 SH	R25, 12(SP)
 LH	R25, Offset(Main_axis_to_home+0)(GP)
 JAL	_Home+0
 NOP	
 LH	R25, 12(SP)
 SH	R2, Offset(Main_axis_to_home+0)(GP)
-;Main.c,470 :: 		if(axis_to_home < 2){
+;Main.c,471 :: 		LED2 = TMR.clock >> 3;
+LBU	R3, Offset(_TMR+0)(GP)
+SRL	R4, R3, 3
+_LX	
+INS	R3, R4, BitPos(LED2+0), 1
+_SX	
+;Main.c,476 :: 		if(axis_to_home < 2){
 SEH	R2, R2
 SLTI	R2, R2, 2
-BNE	R2, R0, L_Main_Modal_Group_Actions1212
+BNE	R2, R0, L_Main_Modal_Group_Actions1220
 NOP	
-J	L_Main_Modal_Group_Actions199
+J	L_Main_Modal_Group_Actions1101
 NOP	
-L_Main_Modal_Group_Actions1212:
-;Main.c,471 :: 		LED2 = TMR.clock >> 3;
-LBU	R2, Offset(_TMR+0)(GP)
-SRL	R3, R2, 3
-_LX	
-INS	R2, R3, BitPos(LED2+0), 1
-_SX	
-;Main.c,476 :: 		}else{
-J	L_Main_Modal_Group_Actions1100
+L_Main_Modal_Group_Actions1220:
+;Main.c,479 :: 		if (sys.abort) {
+LH	R2, Offset(_sys+0)(GP)
+BNE	R2, R0, L_Main_Modal_Group_Actions1222
 NOP	
-L_Main_Modal_Group_Actions199:
-;Main.c,477 :: 		int l = 0;
-;Main.c,479 :: 		LED2 = false;
+J	L_Main_Modal_Group_Actions1102
+NOP	
+L_Main_Modal_Group_Actions1222:
+;Main.c,480 :: 		action =(ALARM_ABORT_CYCLE);
+ORI	R25, R0, 65534
+;Main.c,481 :: 		}
+L_Main_Modal_Group_Actions1102:
+;Main.c,482 :: 		}else{
+J	L_Main_Modal_Group_Actions1103
+NOP	
+L_Main_Modal_Group_Actions1101:
+;Main.c,483 :: 		int l = 0;
+;Main.c,485 :: 		LED2 = false;
 _LX	
 INS	R2, R0, BitPos(LED2+0), 1
 _SX	
-;Main.c,480 :: 		mc_reset();
+;Main.c,486 :: 		mc_reset();
 SH	R25, 12(SP)
 JAL	_mc_reset+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,481 :: 		action = 0;
+;Main.c,487 :: 		action = 0;
 MOVZ	R25, R0, R0
-;Main.c,482 :: 		for(l=0;l<NoOfAxis;l++){
+;Main.c,488 :: 		for(l=0;l<NoOfAxis;l++){
 ; l start address is: 20 (R5)
 MOVZ	R5, R0, R0
 ; l end address is: 20 (R5)
-L_Main_Modal_Group_Actions1101:
+L_Main_Modal_Group_Actions1104:
 ; l start address is: 20 (R5)
 SEH	R2, R5
 SLTI	R2, R2, 4
-BNE	R2, R0, L_Main_Modal_Group_Actions1213
+BNE	R2, R0, L_Main_Modal_Group_Actions1223
 NOP	
-J	L_Main_Modal_Group_Actions1102
+J	L_Main_Modal_Group_Actions1105
 NOP	
-L_Main_Modal_Group_Actions1213:
-;Main.c,485 :: 		STPS[l].steps_abs_position = 0;
+L_Main_Modal_Group_Actions1223:
+;Main.c,491 :: 		STPS[l].steps_abs_position = 0;
 SEH	R3, R5
 ORI	R2, R0, 100
 MULTU	R2, R3
@@ -1605,7 +1626,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 80
 SW	R0, 0(R2)
-;Main.c,486 :: 		sys.position[l] = STPS[l].steps_abs_position;
+;Main.c,492 :: 		sys.position[l] = STPS[l].steps_abs_position;
 SEH	R2, R5
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_sys+8)
@@ -1621,7 +1642,7 @@ ADDU	R2, R2, R3
 ADDIU	R2, R2, 80
 LW	R2, 0(R2)
 SW	R2, 0(R4)
-;Main.c,489 :: 		if(STPS[l].run_state != STOP)
+;Main.c,495 :: 		if(STPS[l].run_state != STOP)
 SEH	R3, R5
 ORI	R2, R0, 100
 MULTU	R2, R3
@@ -1632,12 +1653,12 @@ ADDU	R2, R2, R3
 ADDIU	R2, R2, 6
 LHU	R2, 0(R2)
 ANDI	R2, R2, 65535
-BNE	R2, R0, L_Main_Modal_Group_Actions1215
+BNE	R2, R0, L_Main_Modal_Group_Actions1225
 NOP	
-J	L_Main_Modal_Group_Actions1104
+J	L_Main_Modal_Group_Actions1107
 NOP	
-L_Main_Modal_Group_Actions1215:
-;Main.c,490 :: 		STPS[l].run_state = STOP;
+L_Main_Modal_Group_Actions1225:
+;Main.c,496 :: 		STPS[l].run_state = STOP;
 SEH	R3, R5
 ORI	R2, R0, 100
 MULTU	R2, R3
@@ -1647,144 +1668,144 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 6
 SH	R0, 0(R2)
-L_Main_Modal_Group_Actions1104:
-;Main.c,482 :: 		for(l=0;l<NoOfAxis;l++){
+L_Main_Modal_Group_Actions1107:
+;Main.c,488 :: 		for(l=0;l<NoOfAxis;l++){
 ADDIU	R2, R5, 1
 SEH	R5, R2
-;Main.c,491 :: 		}
+;Main.c,497 :: 		}
 ; l end address is: 20 (R5)
-J	L_Main_Modal_Group_Actions1101
+J	L_Main_Modal_Group_Actions1104
 NOP	
-L_Main_Modal_Group_Actions1102:
-;Main.c,492 :: 		sys_sync_current_position();
+L_Main_Modal_Group_Actions1105:
+;Main.c,498 :: 		sys_sync_current_position();
 SH	R25, 12(SP)
 JAL	_sys_sync_current_position+0
 NOP	
 LH	R25, 12(SP)
-;Main.c,497 :: 		while(axis_to_home)
-L_Main_Modal_Group_Actions1105:
+;Main.c,503 :: 		while(axis_to_home)
+L_Main_Modal_Group_Actions1108:
 LH	R2, Offset(Main_axis_to_home+0)(GP)
-BNE	R2, R0, L_Main_Modal_Group_Actions1217
+BNE	R2, R0, L_Main_Modal_Group_Actions1227
 NOP	
-J	L_Main_Modal_Group_Actions1106
+J	L_Main_Modal_Group_Actions1109
 NOP	
-L_Main_Modal_Group_Actions1217:
-;Main.c,498 :: 		axis_to_home = Rst_Axisword();
+L_Main_Modal_Group_Actions1227:
+;Main.c,504 :: 		axis_to_home = Rst_Axisword();
 SH	R25, 12(SP)
 JAL	_Rst_Axisword+0
 NOP	
 LH	R25, 12(SP)
 SH	R2, Offset(Main_axis_to_home+0)(GP)
-J	L_Main_Modal_Group_Actions1105
+J	L_Main_Modal_Group_Actions1108
 NOP	
-L_Main_Modal_Group_Actions1106:
-;Main.c,501 :: 		sys.state = STATE_IDLE;
+L_Main_Modal_Group_Actions1109:
+;Main.c,507 :: 		sys.state = STATE_IDLE;
 SH	R0, Offset(_sys+2)(GP)
-;Main.c,502 :: 		}
-L_Main_Modal_Group_Actions1100:
-;Main.c,503 :: 		break;
-J	L_Main_Modal_Group_Actions186
+;Main.c,508 :: 		}
+L_Main_Modal_Group_Actions1103:
+;Main.c,509 :: 		break;
+J	L_Main_Modal_Group_Actions188
 NOP	
-;Main.c,504 :: 		default: return action = 0;
-L_Main_Modal_Group_Actions1107:
+;Main.c,510 :: 		default: return action = 0;
+L_Main_Modal_Group_Actions1110:
 MOVZ	R25, R0, R0
 MOVZ	R2, R0, R0
 J	L_end_Modal_Group_Actions1
 NOP	
-;Main.c,506 :: 		}
-L_Main_Modal_Group_Actions185:
+;Main.c,512 :: 		}
+L_Main_Modal_Group_Actions187:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L_Main_Modal_Group_Actions1219
-NOP	
-J	L_Main_Modal_Group_Actions187
-NOP	
-L_Main_Modal_Group_Actions1219:
-SEH	R3, R25
-ORI	R2, R0, 2
-BNE	R3, R2, L_Main_Modal_Group_Actions1221
-NOP	
-J	L_Main_Modal_Group_Actions188
-NOP	
-L_Main_Modal_Group_Actions1221:
-SEH	R3, R25
-ORI	R2, R0, 3
-BNE	R3, R2, L_Main_Modal_Group_Actions1223
+BNE	R3, R2, L_Main_Modal_Group_Actions1229
 NOP	
 J	L_Main_Modal_Group_Actions189
 NOP	
-L_Main_Modal_Group_Actions1223:
+L_Main_Modal_Group_Actions1229:
 SEH	R3, R25
-ORI	R2, R0, 4
-BNE	R3, R2, L_Main_Modal_Group_Actions1225
+ORI	R2, R0, 2
+BNE	R3, R2, L_Main_Modal_Group_Actions1231
 NOP	
 J	L_Main_Modal_Group_Actions190
 NOP	
-L_Main_Modal_Group_Actions1225:
+L_Main_Modal_Group_Actions1231:
 SEH	R3, R25
-ORI	R2, R0, 5
-BNE	R3, R2, L_Main_Modal_Group_Actions1227
+ORI	R2, R0, 3
+BNE	R3, R2, L_Main_Modal_Group_Actions1233
 NOP	
 J	L_Main_Modal_Group_Actions191
 NOP	
-L_Main_Modal_Group_Actions1227:
+L_Main_Modal_Group_Actions1233:
 SEH	R3, R25
-ORI	R2, R0, 6
-BNE	R3, R2, L_Main_Modal_Group_Actions1229
+ORI	R2, R0, 4
+BNE	R3, R2, L_Main_Modal_Group_Actions1235
 NOP	
 J	L_Main_Modal_Group_Actions192
 NOP	
-L_Main_Modal_Group_Actions1229:
+L_Main_Modal_Group_Actions1235:
 SEH	R3, R25
-ORI	R2, R0, 8
-BNE	R3, R2, L_Main_Modal_Group_Actions1231
+ORI	R2, R0, 5
+BNE	R3, R2, L_Main_Modal_Group_Actions1237
 NOP	
 J	L_Main_Modal_Group_Actions193
 NOP	
-L_Main_Modal_Group_Actions1231:
+L_Main_Modal_Group_Actions1237:
 SEH	R3, R25
-ORI	R2, R0, 9
-BNE	R3, R2, L_Main_Modal_Group_Actions1233
+ORI	R2, R0, 6
+BNE	R3, R2, L_Main_Modal_Group_Actions1239
 NOP	
 J	L_Main_Modal_Group_Actions194
 NOP	
-L_Main_Modal_Group_Actions1233:
+L_Main_Modal_Group_Actions1239:
 SEH	R3, R25
-ORI	R2, R0, 10
-BNE	R3, R2, L_Main_Modal_Group_Actions1235
+ORI	R2, R0, 8
+BNE	R3, R2, L_Main_Modal_Group_Actions1241
 NOP	
 J	L_Main_Modal_Group_Actions195
 NOP	
-L_Main_Modal_Group_Actions1235:
+L_Main_Modal_Group_Actions1241:
 SEH	R3, R25
-ORI	R2, R0, 12
-BNE	R3, R2, L_Main_Modal_Group_Actions1237
+ORI	R2, R0, 9
+BNE	R3, R2, L_Main_Modal_Group_Actions1243
 NOP	
 J	L_Main_Modal_Group_Actions196
 NOP	
-L_Main_Modal_Group_Actions1237:
+L_Main_Modal_Group_Actions1243:
 SEH	R3, R25
-ORI	R2, R0, 15
-BNE	R3, R2, L_Main_Modal_Group_Actions1239
+ORI	R2, R0, 10
+BNE	R3, R2, L_Main_Modal_Group_Actions1245
 NOP	
 J	L_Main_Modal_Group_Actions197
 NOP	
-L_Main_Modal_Group_Actions1239:
+L_Main_Modal_Group_Actions1245:
 SEH	R3, R25
-ORI	R2, R0, 31
-BNE	R3, R2, L_Main_Modal_Group_Actions1241
+ORI	R2, R0, 12
+BNE	R3, R2, L_Main_Modal_Group_Actions1247
 NOP	
 J	L_Main_Modal_Group_Actions198
 NOP	
-L_Main_Modal_Group_Actions1241:
-J	L_Main_Modal_Group_Actions1107
+L_Main_Modal_Group_Actions1247:
+SEH	R3, R25
+ORI	R2, R0, 15
+BNE	R3, R2, L_Main_Modal_Group_Actions1249
 NOP	
-L_Main_Modal_Group_Actions186:
-;Main.c,508 :: 		return action;
+J	L_Main_Modal_Group_Actions199
+NOP	
+L_Main_Modal_Group_Actions1249:
+SEH	R3, R25
+ORI	R2, R0, 31
+BNE	R3, R2, L_Main_Modal_Group_Actions1251
+NOP	
+J	L_Main_Modal_Group_Actions1100
+NOP	
+L_Main_Modal_Group_Actions1251:
+J	L_Main_Modal_Group_Actions1110
+NOP	
+L_Main_Modal_Group_Actions188:
+;Main.c,514 :: 		return action;
 SEH	R2, R25
-;Main.c,509 :: 		}
-;Main.c,508 :: 		return action;
-;Main.c,509 :: 		}
+;Main.c,515 :: 		}
+;Main.c,514 :: 		return action;
+;Main.c,515 :: 		}
 L_end_Modal_Group_Actions1:
 LW	R27, 8(SP)
 LW	R26, 4(SP)
@@ -1794,27 +1815,27 @@ JR	RA
 NOP	
 ; end of Main_Modal_Group_Actions1
 Main_Modal_Group_Actions3:
-;Main.c,515 :: 		static int Modal_Group_Actions3(int action){
+;Main.c,521 :: 		static int Modal_Group_Actions3(int action){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Main.c,517 :: 		if(gc.inches_mode > 1)
+;Main.c,523 :: 		if(gc.inches_mode > 1)
 LBU	R2, Offset(_gc+3)(GP)
 SLTIU	R2, R2, 2
-BEQ	R2, R0, L_Main_Modal_Group_Actions3243
+BEQ	R2, R0, L_Main_Modal_Group_Actions3253
 NOP	
-J	L_Main_Modal_Group_Actions3108
+J	L_Main_Modal_Group_Actions3111
 NOP	
-L_Main_Modal_Group_Actions3243:
-;Main.c,518 :: 		FAIL(STATUS_SETTING_READ_FAIL);
+L_Main_Modal_Group_Actions3253:
+;Main.c,524 :: 		FAIL(STATUS_SETTING_READ_FAIL);
 SH	R25, 4(SP)
 ORI	R25, R0, 10
 JAL	_FAIL+0
 NOP	
 LH	R25, 4(SP)
-L_Main_Modal_Group_Actions3108:
-;Main.c,520 :: 		return action;
+L_Main_Modal_Group_Actions3111:
+;Main.c,526 :: 		return action;
 SEH	R2, R25
-;Main.c,521 :: 		}
+;Main.c,527 :: 		}
 L_end_Modal_Group_Actions3:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -1822,38 +1843,38 @@ JR	RA
 NOP	
 ; end of Main_Modal_Group_Actions3
 Main_Modal_Group_Actions4:
-;Main.c,526 :: 		static int Modal_Group_Actions4(int action){
+;Main.c,532 :: 		static int Modal_Group_Actions4(int action){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Main.c,532 :: 		gc.program_flow > PROGRAM_FLOW_COMPLETED)
+;Main.c,538 :: 		gc.program_flow > PROGRAM_FLOW_COMPLETED)
 LBU	R2, Offset(_gc+9)(GP)
 SLTIU	R2, R2, 0
-BEQ	R2, R0, L_Main_Modal_Group_Actions4245
+BEQ	R2, R0, L_Main_Modal_Group_Actions4255
 NOP	
-J	L_Main_Modal_Group_Actions4123
+J	L_Main_Modal_Group_Actions4126
 NOP	
-L_Main_Modal_Group_Actions4245:
+L_Main_Modal_Group_Actions4255:
 LBU	R2, Offset(_gc+9)(GP)
 SLTIU	R2, R2, 3
-BNE	R2, R0, L_Main_Modal_Group_Actions4246
+BNE	R2, R0, L_Main_Modal_Group_Actions4256
 NOP	
-J	L_Main_Modal_Group_Actions4122
+J	L_Main_Modal_Group_Actions4125
 NOP	
-L_Main_Modal_Group_Actions4246:
-J	L_Main_Modal_Group_Actions4111
+L_Main_Modal_Group_Actions4256:
+J	L_Main_Modal_Group_Actions4114
 NOP	
-L_Main_Modal_Group_Actions4123:
-L_Main_Modal_Group_Actions4122:
-;Main.c,533 :: 		FAIL(STATUS_INVALID_STATEMENT);
+L_Main_Modal_Group_Actions4126:
+L_Main_Modal_Group_Actions4125:
+;Main.c,539 :: 		FAIL(STATUS_INVALID_STATEMENT);
 SH	R25, 4(SP)
 ORI	R25, R0, 6
 JAL	_FAIL+0
 NOP	
 LH	R25, 4(SP)
-L_Main_Modal_Group_Actions4111:
-;Main.c,535 :: 		return action;
+L_Main_Modal_Group_Actions4114:
+;Main.c,541 :: 		return action;
 SEH	R2, R25
-;Main.c,536 :: 		}
+;Main.c,542 :: 		}
 L_end_Modal_Group_Actions4:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -1861,38 +1882,38 @@ JR	RA
 NOP	
 ; end of Main_Modal_Group_Actions4
 Main_Modal_Group_Actions7:
-;Main.c,541 :: 		static int Modal_Group_Actions7(int action){
+;Main.c,547 :: 		static int Modal_Group_Actions7(int action){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Main.c,546 :: 		if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
+;Main.c,552 :: 		if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
 LBU	R2, Offset(_gc+6)(GP)
 SLTI	R2, R2, -1
-BEQ	R2, R0, L_Main_Modal_Group_Actions7248
+BEQ	R2, R0, L_Main_Modal_Group_Actions7258
 NOP	
-J	L_Main_Modal_Group_Actions7126
+J	L_Main_Modal_Group_Actions7129
 NOP	
-L_Main_Modal_Group_Actions7248:
+L_Main_Modal_Group_Actions7258:
 LBU	R2, Offset(_gc+6)(GP)
 SLTIU	R2, R2, 2
-BNE	R2, R0, L_Main_Modal_Group_Actions7249
+BNE	R2, R0, L_Main_Modal_Group_Actions7259
 NOP	
-J	L_Main_Modal_Group_Actions7125
+J	L_Main_Modal_Group_Actions7128
 NOP	
-L_Main_Modal_Group_Actions7249:
-J	L_Main_Modal_Group_Actions7114
+L_Main_Modal_Group_Actions7259:
+J	L_Main_Modal_Group_Actions7117
 NOP	
-L_Main_Modal_Group_Actions7126:
-L_Main_Modal_Group_Actions7125:
-;Main.c,547 :: 		FAIL(STATUS_INVALID_STATEMENT);
+L_Main_Modal_Group_Actions7129:
+L_Main_Modal_Group_Actions7128:
+;Main.c,553 :: 		FAIL(STATUS_INVALID_STATEMENT);
 SH	R25, 4(SP)
 ORI	R25, R0, 6
 JAL	_FAIL+0
 NOP	
 LH	R25, 4(SP)
-L_Main_Modal_Group_Actions7114:
-;Main.c,549 :: 		return action;
+L_Main_Modal_Group_Actions7117:
+;Main.c,555 :: 		return action;
 SEH	R2, R25
-;Main.c,550 :: 		}
+;Main.c,556 :: 		}
 L_end_Modal_Group_Actions7:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -1900,10 +1921,10 @@ JR	RA
 NOP	
 ; end of Main_Modal_Group_Actions7
 Main_Modal_Group_Actions12:
-;Main.c,555 :: 		static int Modal_Group_Actions12(int action){
-;Main.c,560 :: 		return action;
+;Main.c,561 :: 		static int Modal_Group_Actions12(int action){
+;Main.c,566 :: 		return action;
 SEH	R2, R25
-;Main.c,561 :: 		}
+;Main.c,567 :: 		}
 L_end_Modal_Group_Actions12:
 JR	RA
 NOP	
