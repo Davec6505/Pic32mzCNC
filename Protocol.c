@@ -213,12 +213,9 @@ START_LINE://label to rerun startup line if it has one
                     
                     //set bit 10 [1024] for homing
                     Set_modalgroup(HOME_ALL);
-                    for(i=1;i<NoOfAxis;i++)
+                    for(i=0;i<=NoOfAxis;i++)
                       Set_Axisword(i);
-                   #if HomeDebug == 1
-                    while(DMA_IsOn(1));
-                    dma_printf("GCODE:= %s\tmodal_group:= %d\n",gcode[0],Get_modalgroup());
-                   #endif
+
                    //will need to test for abort!!!
                    if (sys.abort) {
                       query = 5; //ALARM_ABORT
@@ -380,11 +377,12 @@ START_LINE://label to rerun startup line if it has one
                  }
                  
                  motion_mode = G_Mode(G_Val);
+                 //if movement is needed query = 20
+                 query = (motion_mode == MOTION_MODE_NULL)? 1:20;
+                 
                  #if ProtoDebug == 1
                   PrintDebug(*(*(gcode)+0),temp,&G_Val);
                  #endif
-                 //if Gnn is sent alone
-                 query = 1;
 
                //get position a
                //G00/G01 X12.5 Y14.7 F0.2;
@@ -410,11 +408,13 @@ START_LINE://label to rerun startup line if it has one
                            }
 
                            motion_mode = G_Mode(G_Val);
+                           //if movement is needed query = 20
+                           query = (motion_mode == MOTION_MODE_NULL)? 1:20;
+                           
                            #if ProtoDebug == 1
                             PrintDebug(*(*(gcode)+0),temp,&G_Val);
                            #endif
-                         //if Gnn is sent alone
-                         query = 1;
+
                         break;
                       case 'X':case 'x':
                       case 'Y':case 'y':
@@ -476,6 +476,8 @@ START_LINE://label to rerun startup line if it has one
                            }
 
                            motion_mode = G_Mode(G_Val);
+                           //if movement is needed query = 20
+                           query = (motion_mode == MOTION_MODE_NULL)? 1:20;
                            #if ProtoDebug == 1
                             PrintDebug(*(*(gcode)+0),temp,&G_Val);
                            #endif
@@ -540,6 +542,8 @@ START_LINE://label to rerun startup line if it has one
                              }
 
                              motion_mode = G_Mode(G_Val);
+                             //if movement is needed query = 20
+                             query = (motion_mode == MOTION_MODE_NULL)? 1:20;
                              #if ProtoDebug == 1
                               PrintDebug(*(*(gcode)+0),temp,&G_Val);
                              #endif
@@ -720,6 +724,11 @@ START_LINE://label to rerun startup line if it has one
        }
      }
      report:
+     #if ProtoDebug == 10
+     while(DMA_IsOn(1));
+     dma_printf("query:= %d\n",query);
+     #endif
+     
      if(query == 1){status = STATUS_OK;}
      else if(query == 2){status = STATUS_BAD_NUMBER_FORMAT;}
      else if(query == 3){status = STATUS_UNSUPPORTED_STATEMENT;}
@@ -730,6 +739,7 @@ START_LINE://label to rerun startup line if it has one
      else if(query == 8){status = STATUS_SETTING_READ_FAIL;}
      else if(query == 20){status = STATUS_COMMAND_EXECUTE_MOTION; goto ret;}
      else if(query == 21){status = STATUS_COMMAND_EXECUTE_MOTION; goto end;}
+     
      //report on status messages
      report_status_message(status);
      goto end;

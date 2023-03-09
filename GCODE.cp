@@ -792,7 +792,7 @@ void protocol_execute_runtime();
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 49 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 160 "c:/users/git/pic32mzcnc/gcode.h"
+#line 161 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;
@@ -1039,20 +1039,20 @@ int i,m_mode;
  case 3: m_mode =  3 ; break;
  case 4: non_modal_action =  1 ; break;
  case 10: non_modal_action =  2 ; break;
- case 17: Select_Plane(xy);return  0 ; break;
- case 18: Select_Plane(xz);return  0 ; break;
- case 19: Select_Plane(yz);return  0 ; break;
- case 20: gc.inches_mode = 1;return  0 ; break;
- case 21: gc.inches_mode = 0;return  0 ; break;
- case 53: gc.absolute_override =  1 ;return  0 ; break;
+ case 17: Select_Plane(xy);m_mode =  6 ; break;
+ case 18: Select_Plane(xz);m_mode =  6 ; break;
+ case 19: Select_Plane(yz);m_mode =  6 ; break;
+ case 20: gc.inches_mode = 1;m_mode =  6 ; break;
+ case 21: gc.inches_mode = 0;m_mode =  6 ; break;
+ case 53: gc.absolute_override =  1 ;m_mode =  6 ; break;
  case 54: case 55: case 56: case 57: case 58: case 59:
  gc.coord_select = (mode - 53);
- return  0 ;break;
+ m_mode =  6 ;break;
  case 80: motion_mode =  4 ; break;
- case 90: gc.absolute_mode =  1 ; return  0 ; break;
- case 91: gc.absolute_mode =  0 ; return  0 ; break;
- case 93: gc.inverse_feed_rate_mode =  1 ;return  0 ; break;
- case 94: gc.inverse_feed_rate_mode =  0 ;return  0 ; break;
+ case 90: gc.absolute_mode =  1 ; m_mode =  6 ; break;
+ case 91: gc.absolute_mode =  0 ; m_mode =  6 ; break;
+ case 93: gc.inverse_feed_rate_mode =  1 ;m_mode =  6 ; break;
+ case 94: gc.inverse_feed_rate_mode =  0 ;m_mode =  6 ; break;
  case 280: non_modal_action =  3 ; break;
  case 281: non_modal_action =  4 ; break;
  case 300: non_modal_action =  5 ; break;

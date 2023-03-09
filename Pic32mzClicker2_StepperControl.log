@@ -9,17 +9,17 @@ warning: 155	1506	Implicit conversion of pointer to int	__Lib_MemManager.c
 warning: 174	1508	Implicit conversion of int to ptr	__Lib_MemManager.c
 diagnostics: 297	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	pins.h
-hint: 203	1163	Variable 'addr' has been declared, but not used	Main.c
-hint: 205	1163	Variable 'a_val' has been declared, but not used	Main.c
-diagnostics: 561	123	Compiled Successfully	Main.c
+hint: 204	1163	Variable 'addr' has been declared, but not used	Main.c
+hint: 206	1163	Variable 'a_val' has been declared, but not used	Main.c
+diagnostics: 567	123	Compiled Successfully	Main.c
 hint: 69	1164	Variable 'dif' has been eliminated by optimizer	Main.c
 hint: 69	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
 hint: 70	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
 hint: 70	1164	Variable 'a' has been eliminated by optimizer	Main.c
 hint: 67	1164	Variable 'error' has been eliminated by optimizer	Main.c
 hint: 68	1164	Variable 'has_flash' has been eliminated by optimizer	Main.c
-hint: 200	1164	Variable 'result' has been eliminated by optimizer	Main.c
-hint: 200	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
+hint: 201	1164	Variable 'result' has been eliminated by optimizer	Main.c
+hint: 201	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (UART2 at 0x0092)	Config.c
 diagnostics: 391	123	Compiled Successfully	Config.c
@@ -96,13 +96,13 @@ diagnostics: 0	122	Compilation Started	stdint.h
 hint: 49	1163	Variable 'j' has been declared, but not used	Protocol.c
 hint: 50	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
 hint: 50	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
-warning: 813	1505	Suspicious pointer conversion	Protocol.c
-diagnostics: 1013	123	Compiled Successfully	Protocol.c
+warning: 823	1505	Suspicious pointer conversion	Protocol.c
+diagnostics: 1023	123	Compiled Successfully	Protocol.c
 hint: 47	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
 hint: 49	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
 hint: 50	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
 hint: 207	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
-hint: 297	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
+hint: 294	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
 hint: 55	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
 hint: 55	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
 hint: 56	1164	Variable 'axis_to_run' has been eliminated by optimizer	Protocol.c
@@ -130,6 +130,7 @@ hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 diagnostics: 0	127	All files Compiled in 2172 ms	 
 =======
 diagnostics: 0	127	All files Compiled in 3625 ms	 
@@ -149,12 +150,16 @@ diagnostics: 0	127	All files Compiled in 3265 ms
 =======
 diagnostics: 0	127	All files Compiled in 3219 ms	 
 >>>>>>> patch2
+=======
+diagnostics: 0	127	All files Compiled in 2281 ms	 
+>>>>>>> patch2
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
 hint: 0	1144	Static RAM (bytes): 5527   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5527   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 79864 (4%)  Free ROM (bytes): 2017288 (96%)	Used ROM (bytes): 79864 (4%)  Free ROM (bytes): 2017288 (96%)
+hint: 0	1144	Used ROM (bytes): 80072 (4%)  Free ROM (bytes): 2017080 (96%)	Used ROM (bytes): 80072 (4%)  Free ROM (bytes): 2017080 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -193,4 +198,9 @@ diagnostics: 0	103	Finished successfully: 08 Mar 2023, 07:19:36	Pic32mzClicker2_
 diagnostics: 0	128	Linked in 938 ms	 
 diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 5969 ms	 
 diagnostics: 0	103	Finished successfully: 09 Mar 2023, 07:06:55	Pic32mzClicker2_StepperControl.mcp32
+>>>>>>> patch2
+=======
+diagnostics: 0	128	Linked in 703 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4437 ms	 
+diagnostics: 0	103	Finished successfully: 09 Mar 2023, 22:32:25	Pic32mzClicker2_StepperControl.mcp32
 >>>>>>> patch2

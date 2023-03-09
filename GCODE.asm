@@ -556,49 +556,55 @@ ORI	R2, R0, 2
 SH	R2, Offset(_non_modal_action+0)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,186 :: 		case 17: Select_Plane(xy);return STATUS_OK; break;
+;GCODE.c,186 :: 		case 17: Select_Plane(xy);m_mode    = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode40:
 MOVZ	R25, R0, R0
 JAL	GCODE_Select_Plane+0
 NOP	
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,187 :: 		case 18: Select_Plane(xz);return STATUS_OK; break;
+;GCODE.c,187 :: 		case 18: Select_Plane(xz);m_mode    = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode41:
 ORI	R25, R0, 1
 JAL	GCODE_Select_Plane+0
 NOP	
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,188 :: 		case 19: Select_Plane(yz);return STATUS_OK; break;
+;GCODE.c,188 :: 		case 19: Select_Plane(yz);m_mode    = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode42:
 ORI	R25, R0, 2
 JAL	GCODE_Select_Plane+0
 NOP	
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,189 :: 		case 20: gc.inches_mode = 1;return STATUS_OK; break;
+;GCODE.c,189 :: 		case 20: gc.inches_mode = 1;m_mode  = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode43:
 ORI	R2, R0, 1
 SB	R2, Offset(_gc+3)(GP)
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,190 :: 		case 21: gc.inches_mode = 0;return STATUS_OK; break;
+;GCODE.c,190 :: 		case 21: gc.inches_mode = 0;m_mode  = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode44:
 SB	R0, Offset(_gc+3)(GP)
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,191 :: 		case 53: gc.absolute_override = true;return STATUS_OK; break;
+;GCODE.c,191 :: 		case 53: gc.absolute_override = true;m_mode = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode45:
 ORI	R2, R0, 1
 SB	R2, Offset(_gc+4)(GP)
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
 ;GCODE.c,192 :: 		case 54: case 55: case 56: case 57: case 58: case 59:
 L_GCODE_Set_Motion_Mode46:
@@ -610,9 +616,10 @@ L_GCODE_Set_Motion_Mode51:
 ;GCODE.c,193 :: 		gc.coord_select = (mode - 53);//G54-53 == 1...;
 ADDIU	R2, R25, -53
 SH	R2, Offset(_gc+14)(GP)
-;GCODE.c,194 :: 		return STATUS_OK;break;
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+;GCODE.c,194 :: 		m_mode = MOTION_MODE_NULL;break;
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
 ;GCODE.c,195 :: 		case 80: motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
 L_GCODE_Set_Motion_Mode52:
@@ -620,31 +627,35 @@ ORI	R2, R0, 4
 SH	R2, Offset(GCODE_motion_mode+0)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,196 :: 		case 90: gc.absolute_mode = true; return STATUS_OK; break;
+;GCODE.c,196 :: 		case 90: gc.absolute_mode = true; m_mode    = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode53:
 ORI	R2, R0, 1
 SB	R2, Offset(_gc+5)(GP)
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,197 :: 		case 91: gc.absolute_mode = false; return STATUS_OK; break;
+;GCODE.c,197 :: 		case 91: gc.absolute_mode = false; m_mode   = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode54:
 SB	R0, Offset(_gc+5)(GP)
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,198 :: 		case 93: gc.inverse_feed_rate_mode = true;return STATUS_OK; break;
+;GCODE.c,198 :: 		case 93: gc.inverse_feed_rate_mode = true;m_mode  = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode55:
 ORI	R2, R0, 1
 SB	R2, Offset(_gc+2)(GP)
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,199 :: 		case 94: gc.inverse_feed_rate_mode = false;return STATUS_OK; break;
+;GCODE.c,199 :: 		case 94: gc.inverse_feed_rate_mode = false;m_mode = MOTION_MODE_NULL; break;
 L_GCODE_Set_Motion_Mode56:
 SB	R0, Offset(_gc+2)(GP)
-MOVZ	R2, R0, R0
-J	L_end_Set_Motion_Mode
+ORI	R2, R0, 6
+SH	R2, 10(SP)
+J	L_GCODE_Set_Motion_Mode33
 NOP	
 ;GCODE.c,200 :: 		case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
 L_GCODE_Set_Motion_Mode57:
