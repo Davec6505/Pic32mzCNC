@@ -855,8 +855,10 @@ void DisableStepper();
 void disableOCx();
 
 
-unsigned int GET_RunState(int axis_No);
-unsigned int Get_AxisStatus(int stepper);
+int GET_RunState(int axis_No);
+int Get_AxisStatus(int stepper);
+int Get_Axis_Enable_States();
+
 
 void SingleStepAxis(int axis);
 void Axis_Interpolate(int axisA,int axisB);
@@ -979,12 +981,12 @@ void DisableStepper(){
 
 
 
-unsigned int GET_RunState(int axis_No){
+int GET_RunState(int axis_No){
  return STPS[axis_No].run_state;
 }
 
-unsigned int Get_AxisStatus(int stepper){
-unsigned int state = 0;
+int Get_AxisStatus(int stepper){
+int state = 0;
  switch(stepper){
  case X:state = EN_StepX&1; break;
  case Y:state = EN_StepY&1; break;
@@ -995,6 +997,18 @@ unsigned int state = 0;
  }
  return state;
 }
+
+
+
+int Get_Axis_Enable_States(){
+ int temp = 0;
+ temp |= OC3IE_bit << 3;
+ temp |= OC7IE_bit << 2;
+ temp |= OC2IE_bit << 1;
+ temp |= OC3IE_bit << 0;
+ return temp;
+}
+
 
 
 
@@ -1122,7 +1136,7 @@ void Step_Cycle(int axis_No){
 
 
 int Pulse(int axis_No){
-#line 255 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 267 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  switch(STPS[axis_No].run_state) {
  case  0 :
  STPS[axis_No].run_state =  0 ;
@@ -1292,8 +1306,8 @@ static int cnt;
  cnt = 0;
  }
  if((STPS[axisA].step_count > SV.dA)||(STPS[axisB].step_count > SV.dB)){
-
-
+ StopAxis(axisA);
+ StopAxis(axisB);
  return;
  }
 

@@ -54,8 +54,10 @@ void DisableStepper();
 void disableOCx();
 
 //Axis status
-unsigned int GET_RunState(int axis_No);
-unsigned int Get_AxisStatus(int stepper);
+int GET_RunState(int axis_No);
+int Get_AxisStatus(int stepper);
+int Get_Axis_Enable_States();
+
 //Axis control functions
 void SingleStepAxis(int axis);
 void Axis_Interpolate(int axisA,int axisB);

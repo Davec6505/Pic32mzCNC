@@ -1,4 +1,6 @@
 main
+	__CC2DW
+	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -50,6 +52,7 @@ main
 		Reset_Min_Debounce
 	Get_modalgroup
 	FAIL
+	Get_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
 			__CC2DW
@@ -75,7 +78,6 @@ main
 		GET_RunState
 		FAIL
 		memset
-	Get_modalword
 	Rst_modalgroup
 	report_status_message
 		DMA_IsOn
@@ -102,6 +104,7 @@ main
 			labs
 			speed_cntr_Move
 			Axis_Interpolate
+				StopAxis
 				Step_Cycle
 				Pulse
 					AccDec
@@ -160,8 +163,7 @@ main
 	Modal_Group_Actions7
 		FAIL
 	Modal_Group_Actions12
-	DMA_IsOn
-	dma_printf
+	Get_Axis_Enable_States
 	protocol_system_check
 		sys_sync_current_position
 		report_feedback_message
@@ -279,8 +281,6 @@ main
 			FAIL
 			Rst_modalgroup
 			Rst_modalword
-	__CC2DW
-	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepZ

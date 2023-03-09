@@ -362,6 +362,7 @@ START_LINE://label to rerun startup line if it has one
        }
 
      }else if((*(*gcode+0)+0)>64 && (*(*gcode+0)+0)<91){//[A ... Z]
+        query = 20;
         switch(*(*gcode+0)+0){
          case 'G':case 'g':
               //1st char usually 'G'
@@ -382,7 +383,8 @@ START_LINE://label to rerun startup line if it has one
                  #if ProtoDebug == 1
                   PrintDebug(*(*(gcode)+0),temp,&G_Val);
                  #endif
-                 
+                 //if Gnn is sent alone
+                 query = 1;
 
                //get position a
                //G00/G01 X12.5 Y14.7 F0.2;
@@ -411,6 +413,8 @@ START_LINE://label to rerun startup line if it has one
                            #if ProtoDebug == 1
                             PrintDebug(*(*(gcode)+0),temp,&G_Val);
                            #endif
+                         //if Gnn is sent alone
+                         query = 1;
                         break;
                       case 'X':case 'x':
                       case 'Y':case 'y':
@@ -632,7 +636,7 @@ START_LINE://label to rerun startup line if it has one
                    }
                 }
               }
-              query = 20;
+              query = (query==20)? 20:query;
               break;
          case 'M':
          case 'm':
@@ -656,16 +660,15 @@ START_LINE://label to rerun startup line if it has one
                            #if ProtoDebug == 1
                              PrintDebug(gcode[0],temp,&XYZ_Val);
                            #endif
-                           break;
                      }
                 }
-              query = 20;
+              query = 1;
               break;
          case 'X':case 'x':case 'Y':case 'y':
          case 'Z':case 'z':case 'A':case 'a':
               if(*(*(gcode)+0)=='X'){
                    i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
-                   XYZ_Val = atof(temp);
+                   XYZ_Val = atof(temp);//no_of_axis++;
                    status = Instruction_Values(gcode[0],&XYZ_Val);
                    #if ProtoDebug == 1
                       PrintDebug(gcode[0],temp,&XYZ_Val);
@@ -712,7 +715,7 @@ START_LINE://label to rerun startup line if it has one
                     PrintDebug(gcode[6],temp,&F_Val);
                  #endif
                }
-              query = 20;
+              query = 1;
               break;
        }
      }

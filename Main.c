@@ -144,7 +144,7 @@ static int cntr = 0,a = 0;
        //need to report ok once movement has started or g commands
        //are sent in quick succession!!!
      }
-     if(SV.Tog==1){
+     if(!Get_Axis_Enable_States() && SV.Tog==1){
        report_status_message(STATUS_OK);
        SV.Tog = 0;
      }
@@ -152,9 +152,9 @@ static int cntr = 0,a = 0;
      if(!SV.Tog){
       if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
       while(DMA_IsOn(1));
-      dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
+      dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
                 (STPS[X].run_state&0xff),STPS[X].step_count,
-                SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
+                SV.dA,STPS[Y].step_count,STPS[X].step_delay,gc.frequency);
       } 
      }
      #endif

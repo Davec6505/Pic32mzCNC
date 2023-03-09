@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=DEFINES.pld
+Value=Stepper.c
 =======
 =======
 >>>>>>> patch1
@@ -140,7 +140,8 @@ File6=Kinematics.c
 File7=Kinematics.h
 File8=Stepper.c
 File9=Planner.c
-Count=10
+File10=Stepper.h
+Count=11
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

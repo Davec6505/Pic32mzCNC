@@ -104,12 +104,12 @@ void DisableStepper(){
 //////////////////////////////////////////////////////////
 //            POL THE AXIS BITS                      //
 //////////////////////////////////////////////////////////
-unsigned int GET_RunState(int axis_No){
+int GET_RunState(int axis_No){
     return STPS[axis_No].run_state;
 }
 
-unsigned int Get_AxisStatus(int stepper){
-unsigned int state = 0;
+int Get_AxisStatus(int stepper){
+int state = 0;
     switch(stepper){
      case X:state = EN_StepX&1; break;
      case Y:state = EN_StepY&1; break;
@@ -120,6 +120,18 @@ unsigned int state = 0;
     }
     return state;
 }
+
+//////////////////////////////////////////////////////////
+//returns the output state of the axis
+int Get_Axis_Enable_States(){
+ int temp = 0;
+ temp |= OC3IE_bit << 3;
+ temp |= OC7IE_bit << 2;
+ temp |= OC2IE_bit << 1;
+ temp |= OC3IE_bit << 0;
+ return temp;
+}
+
 //////////////////////////////////////////////////////////
 //      ENABLE / DISABLE  SINGLE AXIS  CONTROL          //
 //////////////////////////////////////////////////////////
@@ -421,8 +433,8 @@ static int cnt;
         cnt = 0;
       }
    if((STPS[axisA].step_count > SV.dA)||(STPS[axisB].step_count > SV.dB)){
-        //StopAxis(axisA);
-        //StopAxis(axisB);
+        StopAxis(axisA);
+        StopAxis(axisB);
         return;
    }
 

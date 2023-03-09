@@ -680,8 +680,10 @@ void DisableStepper();
 void disableOCx();
 
 
-unsigned int GET_RunState(int axis_No);
-unsigned int Get_AxisStatus(int stepper);
+int GET_RunState(int axis_No);
+int Get_AxisStatus(int stepper);
+int Get_Axis_Enable_States();
+
 
 void SingleStepAxis(int axis);
 void Axis_Interpolate(int axisA,int axisB);
@@ -972,22 +974,11 @@ static int cntr = 0,a = 0;
 
 
  }
- if(SV.Tog==1){
+ if(!Get_Axis_Enable_States() && SV.Tog==1){
  report_status_message( 0 );
  SV.Tog = 0;
  }
-
- if(!SV.Tog){
- if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
- while(DMA_IsOn(1));
- dma_printf("run_state:= %d\t%l\t%l\t%l\t%l\t%d\n",
- (STPS[X].run_state&0xff),STPS[X].step_count,
- SV.dA,STPS[Y].step_count,SV.dB,STPS[X].step_delay);
- }
- }
-
-
-
+#line 163 "C:/Users/Git/Pic32mzCNC/Main.c"
  protocol_system_check();
 
 
