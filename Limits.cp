@@ -617,8 +617,9 @@ void mc_reset();
 #line 52 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  int Single_Dual;
- unsigned short running: 1;
- unsigned short startPulses: 1;
+ char running: 1;
+ char startPulses: 1;
+ char homed: 1;
  int Tog;
  int AxisNo;
 

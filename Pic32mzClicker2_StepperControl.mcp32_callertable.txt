@@ -66,9 +66,8 @@ main
 		Get_Axisword
 		ulong2flt
 		SingleAxisStep
-			ulong2flt
-			Single_Axis_Enable
 			belt_steps
+			Single_Axis_Enable
 			speed_cntr_Move
 				labs
 				sqrt_
@@ -99,7 +98,6 @@ main
 	Modal_Group_Actions1
 		SingleAxisStep
 		DualAxisStep
-			ulong2flt
 			belt_steps
 			Single_Axis_Enable
 			Set_Axisdirection
@@ -178,7 +176,6 @@ main
 		report_feedback_message
 		report_realtime_status
 			DMA_IsOn
-			memcpy
 			dma_printf
 			__CC2DW
 	Sample_Ringbuffer

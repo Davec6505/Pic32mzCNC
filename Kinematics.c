@@ -73,21 +73,33 @@ static void Set_Axisdirection(long temp,int axis){
 //                SINGLE AXIS MOVEMENT                   //
 ///////////////////////////////////////////////////////////
 void SingleAxisStep(double newxyz,long speed,int axis_No){
-long  tempA = 0;
-int   dir = 0;
+long  absxyz = 0;
+long  tempA  = 0;
+int   dir    = 0;
       //if absolute mode ~ newxyz = new_position - current_position
-      if(gc.absolute_mode == true){
-        //get current position
-      volatile double absxyz = ulong2flt( STPS[axis_No].steps_abs_position);
-        //subtract new from current
-        newxyz = newxyz - absxyz;
-      }
-      Single_Axis_Enable(axis_No);
-      tempA = belt_steps(newxyz);
-      speed_cntr_Move(tempA , speed , axis_No);
+  if(gc.absolute_mode == true){
+    //get current position
+    tempA = belt_steps(newxyz);
+    
+    //subtract new from current
+    tempA = tempA - STPS[axis_No].steps_abs_position;
+
+    #if KineDebug == 1
+    while(DMA_IsOn(1));
+    dma_printf("cur_pos:= %l\tabsxyz:= %f\tnewxyz:= %f\n"
+              ,tempA
+              ,absxyz
+              ,newxyz);
+    #endif
+  }else{
+    tempA = belt_steps(newxyz);
+  }
+  
+  Single_Axis_Enable(axis_No);
+  speed_cntr_Move(tempA , speed , axis_No);
       
 //static long dist;
-      /* if(STPS[axis].psingle != newxyz)
+    /* if(STPS[axis].psingle != newxyz)
              STPS[axis].psingle = newxyz; */
      Set_Axisdirection(tempA,axis_No);
      STPS[axis_No].axis_dir = Direction(tempA);
@@ -111,18 +123,18 @@ int dirA,dirB;
     //if absolute mode ~ newxyz = new_position - current_position
    if(gc.absolute_mode == true){
       //get current position
-   volatile double old_axis_a = ulong2flt( STPS[axisA].steps_abs_position);
-   volatile double old_axis_b = ulong2flt( STPS[axisB].steps_abs_position);
+    tempA = belt_steps(axis_a);//ulong2flt( STPS[axisA].steps_abs_position);
+    tempB = belt_steps(axis_b);//ulong2flt( STPS[axisB].steps_abs_position);
       //subtract new from current
-     axis_a = axis_a - old_axis_a;
-     axis_b = axis_b - old_axis_b;
+     tempA = tempA - STPS[axisA].steps_abs_position;
+     tempB = tempB - STPS[axisB].steps_abs_position;
+   }else{
+      tempA = belt_steps(axis_a);
+      tempB = belt_steps(axis_b);
    }
    SV.over=0;
    SV.dif = 0;
 
-   tempA = belt_steps(axis_a);
-   tempB = belt_steps(axis_b);
-   
    //Enable the relevant axis in Stepper.c
    SV.Single_Dual = 1;
    Single_Axis_Enable(axisA);
@@ -390,56 +402,52 @@ int Home(int axis){
 static long speed = 0;
 
   //idle homing can only take place once all alarms are cleared
-  if(sys.state == STATE_IDLE){
-    speed = 1000;//settings.homing_feed_rate;
+ if(sys.state == STATE_IDLE){
+  speed = 1000;//settings.homing_feed_rate;
+  
+ //condition the triggers
+  Rst_FP(axis);Rst_FN(axis);
     
-    //condition the triggers
-    Rst_FP(axis);Rst_FN(axis);
+  //make sure Home_complete is off at start of homing
+  bit_false(homing[axis].home_state,bit(HOME_COMPLETE));
     
-    //make sure Home_complete is off at start of homing
-    bit_false(homing[axis].home_state,bit(HOME_COMPLETE));
+  //Force a reversal of axis
+  bit_false(homing[axis].home_state,bit(HOME_REV));
     
-    //Force a reversal of axis
-    bit_false(homing[axis].home_state,bit(HOME_REV));
-    
-    //set counter to 0
-    homing[axis].home_cnt = 0;
+  //set counter to 0
+  homing[axis].home_cnt = 0;
 
-    //enable all axis at the start
-    EnableStepper(axis);//sort this out
+  //enable all axis at the start
+  EnableStepper(axis);//sort this out
 
-    //indicator for interface
-    sys.state = STATE_HOMING;
+  //indicator for interface
+  sys.state = STATE_HOMING;
     
     //if limit is already made go to rev mode
-    if(!Test_Port_Pins(axis)){
-
-      //Force the homing counter to 1 == reverse state
-      homing[axis].home_cnt = 1;
-      // goto homed lable to start reversing
-      goto HOMED;
-    }
+  if(!Test_Port_Pins(axis)){
+    //Force the homing counter to 1 == reverse state
+    homing[axis].home_cnt = 1;
+    // goto homed lable to start reversing
+    goto HOMED;
+  }
     
-    //start the movement
-    //(max_sizes[axis]+10.0)
-    Home_Axis(-500.0,speed,axis);
+  //start the movement
+  //(max_sizes[axis]+10.0)
+  Home_Axis(-500.0,speed,axis);
 
    #if HomeDebug == 2
-    while(DMA_IsOn(1));
+   while(DMA_IsOn(1));
     dma_printf("[sys.state:= %d ][home_state:= %d ][home_cnt:= %d]\n"
                 ,sys.state
                 ,homing[axis].home_state
                 ,homing[axis].home_cnt);
    #endif
-    return axis;
-  }
+   return axis;
+ }
 
 
    //test if limit has been hit with rising edge
-   if(sys.state == STATE_HOMING){
-
-  /*  if(homing[axis].home_cnt <= 0){speed = 2000;}
-    else{speed = 100;} */
+ if(sys.state == STATE_HOMING){
 #ifdef POSITIVE_EDGE
      //rising edge of limit switch
     if(FP(axis)){
@@ -456,14 +464,12 @@ HOMED:
                   ,axis
                   ,homing[axis].home_cnt);
        #endif
-
        //check if homing has completed its cycle
        if(bit_isfalse(homing[axis].home_state,BIT_HOME_COMPLETE)){
-
          //if not yet reversing
          if(bit_isfalse(homing[axis].home_state,BIT_HOME_REV)){
 
-
+           //move Home iterations
            if(homing[axis].home_cnt == 1){ //at 1st hit of limit
            
                bit_true(homing[axis].home_state,bit(HOME_REV));
@@ -473,13 +479,16 @@ HOMED:
                Home_Axis(12.0,100, axis);
 
            }else if(homing[axis].home_cnt > 1){//2nd hit of limit
-
+           
                bit_true(homing[axis].home_state,bit(HOME_COMPLETE));
                StopAxis(axis);
                axis++;
+               //reset to idle sto start at fast feed rate for homing
                sys.state = STATE_IDLE;
+               
+               //reset the Home count for new axis bounce
                homing[axis].home_cnt = 0;
-
+               
                #if HomeDebug == 2
                while(DMA_IsOn(1));
                dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n"
@@ -488,7 +497,8 @@ HOMED:
                           ,axis
                           ,homing[axis].home_cnt);
                #endif
-
+               
+               //return the next axis to be homed
                return axis;
            }
          }
@@ -507,7 +517,6 @@ HOMED:
     //falling edge of limit ISR set to hi to low transition give a FP
      if(FP(axis)){
 #endif
-
        homing[axis].home_cnt++;
        if(bit_istrue(homing[axis].home_state,BIT_HOME_REV)){
           bit_false(homing[axis].home_state,bit(HOME_REV));

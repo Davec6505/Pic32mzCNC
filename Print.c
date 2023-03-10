@@ -213,7 +213,7 @@ void report_realtime_status(){
   float print_position[3];
   while(DMA_IsOn(1));
   
-  memcpy(current_position,sys.position,sizeof(sys.position));
+ // memcpy(current_position,sys.position,sizeof(sys.position));
   
   // Report current machine state
   switch (sys.state) {

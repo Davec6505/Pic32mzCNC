@@ -131,10 +131,9 @@ static int cntr = 0,a = 0;
              modal_group = Rst_modalgroup();
              break;
         case 1024: //$H Home all axis
-             SV.Tog = 0;
-               //temp debug for steppers
+             //temp debug for steppers
              modal_action = Modal_Group_Actions1(ALL_AXIS);
-             #if HomeDebug == 10
+             #if HomeDebug == 11
              while(DMA_IsOn(1));
              dma_printf("modal_action:= %d\n",modal_action);
             #endif
@@ -142,50 +141,60 @@ static int cntr = 0,a = 0;
              break;
      }
    }
-   if(!Get_Axis_Enable_States() && SV.Tog==1){
+   
+   if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed ){
+     //debug STATUS_OK response after moves complete
+     #if MainDebug == 12
+     while(DMA_IsOn(1));
+     dma_printf("SV.Tog:= %d\tSV.homed:= %d\n"
+                ,SV.Tog&0xFF
+                ,SV.homed&0xFF);
+     #endif
+     
      status_of_gcode == STATUS_OK;
      report_status_message(status_of_gcode);
+     //reset SV.Tog if an error has occured prior to move finishing
      SV.Tog = 0;
    }
-   #if StepperDebug == 1
-   if(!SV.Tog){
+   
+  //Debug for stepper report if not connected to unit
+  #if StepperDebug == 1
+  if(!SV.Tog){
     if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
-    while(DMA_IsOn(1));
-    dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
-              (STPS[X].run_state&0xff),STPS[X].step_count,
-              SV.dA,STPS[Y].step_count,STPS[X].step_delay,gc.frequency);
-    } 
-   }
-   #endif
-
-   //state check for resets
-   protocol_system_check();
-   
-   //run at end of every scan
-   protocol_execute_runtime();
-   
-   //check ring buffer for data transfer
-  // if(!SV.Tog){
-     status_of_gcode = Sample_Ringbuffer();
-     #if MainDebug == 11
-     if(status_of_gcode > 0){
-      while(DMA_IsOn(1));
-      dma_printf("status_of_gcode:= %d\n",status_of_gcode);
+     while(DMA_IsOn(1));
+     dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
+               (STPS[X].run_state&0xff),STPS[X].step_count,
+                SV.dA,STPS[Y].step_count,STPS[X].step_delay,gc.frequency);
      }
-     #endif
- //  }
+   }
+  #endif
 
+  //state check for resets
+  protocol_system_check();
    
-   //code execution confirmation led on clicker2 board
-   #ifdef LED_STATUS
-   LED1 = TMR.clock >> 4;
-   #endif
+  //run at end of every scan
+  protocol_execute_runtime();
+   
+  //check ring buffer for data transfer
+  status_of_gcode = Sample_Ringbuffer();
+  
+  #if MainDebug == 11
+  if(status_of_gcode > 0){
+   while(DMA_IsOn(1));
+   dma_printf("status_of_gcode:= %d\n",status_of_gcode);
+  }
+  #endif
+
+  //code execution confirmation led on clicker2 board
+  #ifdef LED_STATUS
+  LED1 = TMR.clock >> 4;
+  #endif
     
-   //disable the steppers after a long idle state, switch off in "Settings.h"
-   #ifdef RESET_STEPPER_TIME
-     if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
-         disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
-   #endif
+  //disable the steppers after a long idle state, switch off in "Settings.h"
+  #ifdef RESET_STEPPER_TIME
+  if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
+      disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
+  #endif
 
    //on system failure reset the device
    WDTCONSET = 0x01;
@@ -495,16 +504,17 @@ static int Modal_Group_Actions1(int action){
                 if(STPS[l].run_state != STOP)
                     STPS[l].run_state = STOP;
               }
+              
+              //sync the homing position to zero
               sys_sync_current_position();
               
-
-                    
               //axis_to_home must be reset at end
               while(axis_to_home)
                   axis_to_home = Rst_Axisword();
               
               //return the number of axis completed
-              sys.state = STATE_IDLE;
+              //sys.state = STATE_IDLE;
+              SV.homed = false;
             }
             break;
         default: return action = 0;

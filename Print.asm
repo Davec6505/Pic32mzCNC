@@ -1360,12 +1360,10 @@ NOP
 ; end of _report_startup_line
 _report_realtime_status:
 ;Print.c,206 :: 		void report_realtime_status(){
-ADDIU	SP, SP, -96
+ADDIU	SP, SP, -88
 SW	RA, 0(SP)
 ;Print.c,214 :: 		while(DMA_IsOn(1));
 SW	R25, 4(SP)
-SW	R26, 8(SP)
-SW	R27, 12(SP)
 L_report_realtime_status79:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -1378,26 +1376,18 @@ L__report_realtime_status300:
 J	L_report_realtime_status79
 NOP	
 L_report_realtime_status80:
-;Print.c,216 :: 		memcpy(current_position,sys.position,sizeof(sys.position));
-ADDIU	R2, SP, 16
-ORI	R27, R0, 16
-LUI	R26, hi_addr(_sys+8)
-ORI	R26, R26, lo_addr(_sys+8)
-MOVZ	R25, R2, R0
-JAL	_memcpy+0
-NOP	
 ;Print.c,219 :: 		switch (sys.state) {
 J	L_report_realtime_status81
 NOP	
 ;Print.c,220 :: 		case STATE_IDLE:       dma_printf("%s","<Idle"); break;
 L_report_realtime_status83:
 ORI	R30, R0, 37
-SB	R30, 40(SP)
+SB	R30, 32(SP)
 ORI	R30, R0, 115
-SB	R30, 41(SP)
+SB	R30, 33(SP)
 MOVZ	R30, R0, R0
-SB	R30, 42(SP)
-ADDIU	R3, SP, 40
+SB	R30, 34(SP)
+ADDIU	R3, SP, 32
 LUI	R2, hi_addr(?lstr_54_Print+0)
 ORI	R2, R2, lo_addr(?lstr_54_Print+0)
 ADDIU	SP, SP, -8
@@ -1411,12 +1401,12 @@ NOP
 ;Print.c,222 :: 		case STATE_QUEUED:     dma_printf("%s","<Queue"); break;
 L_report_realtime_status84:
 ORI	R30, R0, 37
-SB	R30, 43(SP)
+SB	R30, 35(SP)
 ORI	R30, R0, 115
-SB	R30, 44(SP)
+SB	R30, 36(SP)
 MOVZ	R30, R0, R0
-SB	R30, 45(SP)
-ADDIU	R3, SP, 43
+SB	R30, 37(SP)
+ADDIU	R3, SP, 35
 LUI	R2, hi_addr(?lstr_56_Print+0)
 ORI	R2, R2, lo_addr(?lstr_56_Print+0)
 ADDIU	SP, SP, -8
@@ -1430,12 +1420,12 @@ NOP
 ;Print.c,223 :: 		case STATE_CYCLE:      dma_printf("%s","<Run"); break;
 L_report_realtime_status85:
 ORI	R30, R0, 37
-SB	R30, 46(SP)
+SB	R30, 38(SP)
 ORI	R30, R0, 115
-SB	R30, 47(SP)
+SB	R30, 39(SP)
 MOVZ	R30, R0, R0
-SB	R30, 48(SP)
-ADDIU	R3, SP, 46
+SB	R30, 40(SP)
+ADDIU	R3, SP, 38
 LUI	R2, hi_addr(?lstr_58_Print+0)
 ORI	R2, R2, lo_addr(?lstr_58_Print+0)
 ADDIU	SP, SP, -8
@@ -1449,12 +1439,12 @@ NOP
 ;Print.c,224 :: 		case STATE_HOLD:       dma_printf("%s","<Hold"); break;
 L_report_realtime_status86:
 ORI	R30, R0, 37
-SB	R30, 49(SP)
+SB	R30, 41(SP)
 ORI	R30, R0, 115
-SB	R30, 50(SP)
+SB	R30, 42(SP)
 MOVZ	R30, R0, R0
-SB	R30, 51(SP)
-ADDIU	R3, SP, 49
+SB	R30, 43(SP)
+ADDIU	R3, SP, 41
 LUI	R2, hi_addr(?lstr_60_Print+0)
 ORI	R2, R2, lo_addr(?lstr_60_Print+0)
 ADDIU	SP, SP, -8
@@ -1468,12 +1458,12 @@ NOP
 ;Print.c,225 :: 		case STATE_HOMING:     dma_printf("%s","<Home"); break;
 L_report_realtime_status87:
 ORI	R30, R0, 37
-SB	R30, 52(SP)
+SB	R30, 44(SP)
 ORI	R30, R0, 115
-SB	R30, 53(SP)
+SB	R30, 45(SP)
 MOVZ	R30, R0, R0
-SB	R30, 54(SP)
-ADDIU	R3, SP, 52
+SB	R30, 46(SP)
+ADDIU	R3, SP, 44
 LUI	R2, hi_addr(?lstr_62_Print+0)
 ORI	R2, R2, lo_addr(?lstr_62_Print+0)
 ADDIU	SP, SP, -8
@@ -1487,12 +1477,12 @@ NOP
 ;Print.c,226 :: 		case STATE_ALARM:      dma_printf("%s","<Alarm"); break;
 L_report_realtime_status88:
 ORI	R30, R0, 37
-SB	R30, 55(SP)
+SB	R30, 47(SP)
 ORI	R30, R0, 115
-SB	R30, 56(SP)
+SB	R30, 48(SP)
 MOVZ	R30, R0, R0
-SB	R30, 57(SP)
-ADDIU	R3, SP, 55
+SB	R30, 49(SP)
+ADDIU	R3, SP, 47
 LUI	R2, hi_addr(?lstr_64_Print+0)
 ORI	R2, R2, lo_addr(?lstr_64_Print+0)
 ADDIU	SP, SP, -8
@@ -1506,12 +1496,12 @@ NOP
 ;Print.c,227 :: 		case STATE_CHECK_MODE: dma_printf("%s","<Check"); break;
 L_report_realtime_status89:
 ORI	R30, R0, 37
-SB	R30, 58(SP)
+SB	R30, 50(SP)
 ORI	R30, R0, 115
-SB	R30, 59(SP)
+SB	R30, 51(SP)
 MOVZ	R30, R0, R0
-SB	R30, 60(SP)
-ADDIU	R3, SP, 58
+SB	R30, 52(SP)
+ADDIU	R3, SP, 50
 LUI	R2, hi_addr(?lstr_66_Print+0)
 ORI	R2, R2, lo_addr(?lstr_66_Print+0)
 ADDIU	SP, SP, -8
@@ -1587,11 +1577,11 @@ J	L_report_realtime_status91
 NOP	
 L__report_realtime_status315:
 ;Print.c,232 :: 		print_position[i] = current_position[i]/settings.steps_per_mm[i];
-ADDIU	R3, SP, 28
+ADDIU	R3, SP, 20
 SEH	R2, R6
 SLL	R4, R2, 2
 ADDU	R5, R3, R4
-ADDIU	R2, SP, 16
+ADDIU	R2, SP, 8
 ADDU	R2, R2, R4
 LW	R3, 0(R2)
 LUI	R2, hi_addr(_settings+0)
@@ -1611,7 +1601,7 @@ NOP
 J	L_report_realtime_status93
 NOP	
 L__report_realtime_status317:
-ADDIU	R3, SP, 28
+ADDIU	R3, SP, 20
 SEH	R2, R6
 SLL	R2, R2, 2
 ADDU	R3, R3, R2
@@ -1644,7 +1634,7 @@ J	L_report_realtime_status94
 NOP	
 L_report_realtime_status95:
 ;Print.c,240 :: 		,print_position[2]);
-ADDIU	R3, SP, 28
+ADDIU	R3, SP, 20
 ADDIU	R2, R3, 8
 LWC1	S2, 0(R2)
 ;Print.c,239 :: 		,print_position[1]
@@ -1653,13 +1643,13 @@ LWC1	S1, 0(R2)
 ;Print.c,238 :: 		,print_position[0]
 LWC1	S0, 0(R3)
 ;Print.c,237 :: 		dma_printf(",MPos: %f,%f,%f,"
-ADDIU	R23, SP, 61
+ADDIU	R23, SP, 53
 ADDIU	R22, R23, 17
 LUI	R24, hi_addr(?ICS?lstr67_Print+0)
 ORI	R24, R24, lo_addr(?ICS?lstr67_Print+0)
 JAL	___CC2DW+0
 NOP	
-ADDIU	R2, SP, 61
+ADDIU	R2, SP, 53
 ;Print.c,240 :: 		,print_position[2]);
 ADDIU	SP, SP, -16
 SWC1	S2, 12(SP)
@@ -1696,7 +1686,7 @@ J	L_report_realtime_status99
 NOP	
 L__report_realtime_status322:
 ;Print.c,245 :: 		print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])*INCH_PER_MM;
-ADDIU	R3, SP, 28
+ADDIU	R3, SP, 20
 SEH	R2, R5
 SLL	R4, R2, 2
 ADDU	R3, R3, R4
@@ -1721,7 +1711,7 @@ J	L_report_realtime_status100
 NOP	
 L_report_realtime_status99:
 ;Print.c,247 :: 		print_position[i] -= gc.coord_system[i]+gc.coord_offset[i];
-ADDIU	R3, SP, 28
+ADDIU	R3, SP, 20
 SEH	R2, R5
 SLL	R4, R2, 2
 ADDU	R3, R3, R4
@@ -1761,7 +1751,7 @@ J	L_report_realtime_status101
 NOP	
 L_report_realtime_status102:
 ;Print.c,255 :: 		,print_position[2]);
-ADDIU	R3, SP, 28
+ADDIU	R3, SP, 20
 ADDIU	R2, R3, 8
 LWC1	S2, 0(R2)
 ;Print.c,254 :: 		,print_position[1]
@@ -1770,13 +1760,13 @@ LWC1	S1, 0(R2)
 ;Print.c,253 :: 		,print_position[0]
 LWC1	S0, 0(R3)
 ;Print.c,252 :: 		dma_printf("WPos: %f,%f,%f>\r\n"
-ADDIU	R23, SP, 78
+ADDIU	R23, SP, 70
 ADDIU	R22, R23, 18
 LUI	R24, hi_addr(?ICS?lstr68_Print+0)
 ORI	R24, R24, lo_addr(?ICS?lstr68_Print+0)
 JAL	___CC2DW+0
 NOP	
-ADDIU	R2, SP, 78
+ADDIU	R2, SP, 70
 ;Print.c,255 :: 		,print_position[2]);
 ADDIU	SP, SP, -16
 SWC1	S2, 12(SP)
@@ -1792,11 +1782,9 @@ NOP
 ADDIU	SP, SP, 16
 ;Print.c,256 :: 		}
 L_end_report_realtime_status:
-LW	R27, 12(SP)
-LW	R26, 8(SP)
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 96
+ADDIU	SP, SP, 88
 JR	RA
 NOP	
 ; end of _report_realtime_status

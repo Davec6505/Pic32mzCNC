@@ -50,9 +50,10 @@
 //  ****** INTERPOLATION SPECIFIC  ******         //
 ////////////////////////////////////////////////////
 typedef struct genVars{
-  int Single_Dual;
-  unsigned short running: 1;       //running bit
-  unsigned short startPulses: 1;
+  int   Single_Dual;
+  char  running: 1;       //running bit
+  char  startPulses: 1;
+  char  homed: 1;
   int   Tog;
   int   AxisNo;
  // long  i;

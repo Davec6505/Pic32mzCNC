@@ -56,6 +56,7 @@ int F_1_Once=0,no_of_axis=0;
 int axis_to_run = 0;
 
   num_of_strings = 0;
+  
   //read head and tail pointer difference
   //if there is a difference then process line
   dif = 0;
@@ -134,7 +135,12 @@ START_LINE://label to rerun startup line if it has one
      while(DMA_IsOn(1));
      dma_printf("%s\t%d\n",gcode[0],str_len);
      #endif
-
+     
+     //start with homed bit reset for response from codes
+     //unless homing is instructed to run
+     SV.homed = false;
+     
+     //First string is key to instruction direction
      if(gcode[0][0] =='?'){
         startup = 0;
         if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
@@ -148,19 +154,19 @@ START_LINE://label to rerun startup line if it has one
           goto report;
        }
        switch(gcode[0][1]){
-            case '?': // Prints Grbl setting
+         case '?': // Prints Grbl setting
               report_grbl_help();
               query = 1;
               break;
-            case '$': // Prints Grbl setting
+         case '$': // Prints Grbl setting
               report_grbl_settings();
               query = 1;
               break;
-            case '#' : // Print gcode parameters
+         case '#' : // Print gcode parameters
               report_gcode_parameters();
               query = 1;
               break;
-            case 'G' : // Prints gcode parser state
+         case 'G' : // Prints gcode parser state
                 startup = 0;
                 report_gcode_modes();
                 //will report the current status of the machine after it is asked
@@ -169,7 +175,7 @@ START_LINE://label to rerun startup line if it has one
                     bit_true(sys.execute,EXEC_STATUS_REPORT);
                 query = 1;
                 break;
-            case 'C' : // Set check g-code mode
+         case 'C' : // Set check g-code mode
                 startup = 2; //for 1st scan to get ugs to connect
                 // Perform reset when toggling off. Check g-code mode should only work if Grbl
                 // is idle and ready, regardless of alarm locks. This is mainly to keep things
@@ -191,7 +197,7 @@ START_LINE://label to rerun startup line if it has one
                 query = 1;
                 goto report;
               break;
-            case 'X' : // Disable alarm lock
+         case 'X' : // Disable alarm lock
               startup = 2; //for 1st scan to get ugs to connect
               if (sys.state == STATE_ALARM) {
                 report_feedback_message(MESSAGE_ALARM_UNLOCK);
@@ -200,7 +206,7 @@ START_LINE://label to rerun startup line if it has one
               }
               query = 1; //status ok response
               break;
-            case 'H' : // Perform homing cycle $H
+         case 'H' : // Perform homing cycle $H
                startup = 2;
 
                if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
@@ -208,14 +214,14 @@ START_LINE://label to rerun startup line if it has one
 
                   // Only perform homing if Grbl is idle or lost.
                   if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
-                    int i = 0;
-                    Rst_modalgroup();
+                   int i = 0;
+                   Rst_modalgroup();
                     
                     //set bit 10 [1024] for homing
-                    Set_modalgroup(HOME_ALL);
-                    for(i=0;i<=NoOfAxis;i++)
+                   Set_modalgroup(HOME_ALL);
+                   for(i=0;i<=NoOfAxis;i++)
                       Set_Axisword(i);
-
+                    //set the global homed bit to false
                    //will need to test for abort!!!
                    if (sys.abort) {
                       query = 5; //ALARM_ABORT
@@ -229,9 +235,12 @@ START_LINE://label to rerun startup line if it has one
                   query = 7;//return(STATUS_SETTING_DISABLED);
                   break;
                }
+               //if we have made it this far we need to reset
+               //SV.Tog to prepare for ok response
+               SV.homed = true;
                query = 21;
                break;
-            case 'N' : // Startup lines. $N
+         case 'N' : // Startup lines. $N
                startup = 2;
                if ( gcode[0][2] < 0x20 ) { // Print startup lines
                   for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
@@ -306,21 +315,20 @@ START_LINE://label to rerun startup line if it has one
                }
                query = 1; //STATUS_OK;
                break;
-             case '~': //*~ (cycle start)
+         case '~': //*~ (cycle start)
                sys.execute |= EXEC_CYCLE_START;
                query = 1;  //STATUS_OK
                break;
-             case '!': //*! (feed hold)
+         case '!': //*! (feed hold)
                sys.execute |= EXEC_FEED_HOLD;
                break;
                query = 1;  //STATUS_OK
-             case 0x18: // *ctrl-x (reset Grbl)
+         case 0x18: // *ctrl-x (reset Grbl)
                mc_reset();
                query = 1;  //STATUS_OK
                break;
-
-            case '0': case '1': case '2': case'3':  case '4': case '5':
-            case '6': case '7': case '8': case '9':
+         case '0': case '1': case '2': case'3':  case '4': case '5':
+         case '6': case '7': case '8': case '9':
                //extract the value from the string if = is at [2]
                //[        $  n  =  *value-str ]
                //[$n=val [0][1][2] *[3]      ]
@@ -750,9 +758,12 @@ START_LINE://label to rerun startup line if it has one
      //if the return val from modal_group() is error then replace 20
      //with error to return to maing function
      status = (modal_response > 0)? modal_response:status;
+     
+     end: return status;
+     
   }
   //block end for status returns
-  end:
+
   return status;
 }
 
