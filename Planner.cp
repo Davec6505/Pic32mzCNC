@@ -876,7 +876,7 @@ unsigned long sqrt_(unsigned long v);
 
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir);
-#line 4 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 9 "C:/Users/Git/Pic32mzCNC/Planner.c"
 sVars SV;
 
 
@@ -890,12 +890,13 @@ int i = 0;
  STPS[i].dec = decel;
  }
 }
-#line 31 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 36 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void speed_cntr_Move(signed long mmSteps, signed long speed, int axis_No){
 int ii;
 long temp_speed;
 static long last_speed;
 long abs_mmSteps = labs(mmSteps);
+
 
 
 
@@ -906,6 +907,8 @@ long abs_mmSteps = labs(mmSteps);
  SV.running = 1;
 
  }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
+
+
 
 
 
@@ -932,6 +935,7 @@ long abs_mmSteps = labs(mmSteps);
 
 
 
+
  if(STPS[axis_No].max_step_lim == 0){
  STPS[axis_No].max_step_lim = 1;
  }
@@ -939,6 +943,7 @@ long abs_mmSteps = labs(mmSteps);
 
 
  STPS[axis_No].accel_lim = (abs_mmSteps * STPS[axis_No].dec) / (STPS[axis_No].acc + STPS[axis_No].dec);
+
 
  if(STPS[axis_No].accel_lim == 0){
  STPS[axis_No].accel_lim = 1;
@@ -981,7 +986,7 @@ long abs_mmSteps = labs(mmSteps);
  SV.running = 1;
  last_speed = speed;
 }
-#line 132 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 142 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,
  double r, double i, double j, double k, int axis_A,int axis_B,int dir){
 unsigned short isclockwise = 0;
@@ -1006,7 +1011,7 @@ int axis_plane_a,axis_plane_b;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 219 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 229 "C:/Users/Git/Pic32mzCNC/Planner.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -1019,7 +1024,7 @@ int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (Get_motionmode() ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 253 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 263 "C:/Users/Git/Pic32mzCNC/Planner.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -1056,9 +1061,9 @@ void sys_sync_current_position(){
 
 void plan_set_current_position(long x, long y, long z)
 {
-#line 292 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 302 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
-#line 310 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 320 "C:/Users/Git/Pic32mzCNC/Planner.c"
 unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;

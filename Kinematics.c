@@ -73,8 +73,15 @@ static void Set_Axisdirection(long temp,int axis){
 //                SINGLE AXIS MOVEMENT                   //
 ///////////////////////////////////////////////////////////
 void SingleAxisStep(double newxyz,long speed,int axis_No){
-long tempA = 0;
-int dir = 0;
+long  tempA = 0;
+int   dir = 0;
+      //if absolute mode ~ newxyz = new_position - current_position
+      if(gc.absolute_mode == true){
+        //get current position
+      volatile double absxyz = ulong2flt( STPS[axis_No].steps_abs_position);
+        //subtract new from current
+        newxyz = newxyz - absxyz;
+      }
       Single_Axis_Enable(axis_No);
       tempA = belt_steps(newxyz);
       speed_cntr_Move(tempA , speed , axis_No);
@@ -100,6 +107,16 @@ int dir = 0;
 void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed){//,int xyza){
 long tempA,tempB,tempC;
 int dirA,dirB;
+
+    //if absolute mode ~ newxyz = new_position - current_position
+   if(gc.absolute_mode == true){
+      //get current position
+   volatile double old_axis_a = ulong2flt( STPS[axisA].steps_abs_position);
+   volatile double old_axis_b = ulong2flt( STPS[axisB].steps_abs_position);
+      //subtract new from current
+     axis_a = axis_a - old_axis_a;
+     axis_b = axis_b - old_axis_b;
+   }
    SV.over=0;
    SV.dif = 0;
 

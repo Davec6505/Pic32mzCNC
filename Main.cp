@@ -910,6 +910,7 @@ int has_flash = 0;
 int axis_to_run,dif,modal_group,modal_action,status_of_gcode;
 static int cntr = 0,a = 0;
 
+
  Conditin_Externs();
 
  cntr = a = axis_to_run = dif = status_of_gcode = modal_group = modal_action = 0;
@@ -922,10 +923,14 @@ static int cntr = 0,a = 0;
 
 
 
+
+
+
  if(status_of_gcode ==  20  ||
  status_of_gcode ==  0 ){
 
  modal_group = Get_modalgroup();
+
 
  switch(modal_group){
  case 0:FAIL( 0 );break;
@@ -936,15 +941,10 @@ static int cntr = 0,a = 0;
  break;
  case 4:
  axis_to_run = Get_Axisword();
-#line 107 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 112 "C:/Users/Git/Pic32mzCNC/Main.c"
  EnableSteppers( ((( 4 * 4 )*2)-1) );
  Modal_Group_Actions1(axis_to_run);
  axis_to_run = Rst_Axisword();
-
-
-
-
-
  modal_group = Rst_modalgroup();
  break;
 

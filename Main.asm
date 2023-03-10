@@ -34,22 +34,22 @@ _main:
 ADDIU	SP, SP, -4
 ;Main.c,67 :: 		int error = 0;
 ;Main.c,68 :: 		int has_flash = 0;
-;Main.c,72 :: 		Conditin_Externs();
+;Main.c,73 :: 		Conditin_Externs();
 JAL	_Conditin_Externs+0
 NOP	
-;Main.c,74 :: 		cntr = a = axis_to_run = dif = status_of_gcode = modal_group = modal_action = 0;
+;Main.c,75 :: 		cntr = a = axis_to_run = dif = status_of_gcode = modal_group = modal_action = 0;
 SH	R0, 2(SP)
-;Main.c,76 :: 		while(1){
+;Main.c,77 :: 		while(1){
 L_main0:
-;Main.c,79 :: 		Debounce_Limits(X);
+;Main.c,80 :: 		Debounce_Limits(X);
 MOVZ	R25, R0, R0
 JAL	_Debounce_Limits+0
 NOP	
-;Main.c,80 :: 		Debounce_Limits(Y);
+;Main.c,81 :: 		Debounce_Limits(Y);
 ORI	R25, R0, 1
 JAL	_Debounce_Limits+0
 NOP	
-;Main.c,85 :: 		status_of_gcode == STATUS_OK){
+;Main.c,89 :: 		status_of_gcode == STATUS_OK){
 LH	R3, 2(SP)
 ORI	R2, R0, 20
 BNE	R3, R2, L__main139
@@ -67,55 +67,55 @@ J	L_main4
 NOP	
 L__main133:
 L__main132:
-;Main.c,87 :: 		modal_group = Get_modalgroup();
+;Main.c,91 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
 ; modal_group start address is: 16 (R4)
 SEH	R4, R2
-;Main.c,89 :: 		switch(modal_group){
+;Main.c,94 :: 		switch(modal_group){
 J	L_main5
 NOP	
 ; modal_group end address is: 16 (R4)
-;Main.c,90 :: 		case 0:FAIL(STATUS_OK);break;
+;Main.c,95 :: 		case 0:FAIL(STATUS_OK);break;
 L_main7:
 MOVZ	R25, R0, R0
 JAL	_FAIL+0
 NOP	
 J	L_main6
 NOP	
-;Main.c,91 :: 		case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
+;Main.c,96 :: 		case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
 L_main8:
-;Main.c,92 :: 		modal_action = Modal_Group_Actions0(Get_modalword());
+;Main.c,97 :: 		modal_action = Modal_Group_Actions0(Get_modalword());
 JAL	_Get_modalword+0
 NOP	
 SEH	R25, R2
 JAL	Main_Modal_Group_Actions0+0
 NOP	
-;Main.c,93 :: 		modal_group = Rst_modalgroup();
+;Main.c,98 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
-;Main.c,94 :: 		report_status_message(STATUS_OK);
+;Main.c,99 :: 		report_status_message(STATUS_OK);
 MOVZ	R25, R0, R0
 JAL	_report_status_message+0
 NOP	
-;Main.c,95 :: 		break;
+;Main.c,100 :: 		break;
 J	L_main6
 NOP	
-;Main.c,96 :: 		case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
+;Main.c,101 :: 		case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
 L_main9:
-;Main.c,97 :: 		axis_to_run = Get_Axisword();
+;Main.c,102 :: 		axis_to_run = Get_Axisword();
 JAL	_Get_Axisword+0
 NOP	
 SH	R2, 0(SP)
-;Main.c,107 :: 		EnableSteppers(ALL_AXIS);
+;Main.c,112 :: 		EnableSteppers(ALL_AXIS);
 ORI	R25, R0, 31
 JAL	_EnableSteppers+0
 NOP	
-;Main.c,108 :: 		Modal_Group_Actions1(axis_to_run);
+;Main.c,113 :: 		Modal_Group_Actions1(axis_to_run);
 LH	R25, 0(SP)
 JAL	Main_Modal_Group_Actions1+0
 NOP	
-;Main.c,109 :: 		axis_to_run = Rst_Axisword();
+;Main.c,114 :: 		axis_to_run = Rst_Axisword();
 JAL	_Rst_Axisword+0
 NOP	
 ;Main.c,115 :: 		modal_group = Rst_modalgroup();

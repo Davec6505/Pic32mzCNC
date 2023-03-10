@@ -1,3 +1,8 @@
+/************************************************************************
+* if G90 absolute mode mmSteps must be added or subtracted from last known
+* position
+*************************************************************************/
+
 #include "Planner.h"
 
 
@@ -33,6 +38,7 @@ int ii;
 long temp_speed;
 static long last_speed;
 long abs_mmSteps = labs(mmSteps);
+
   // If moving only 1 step then set accel counter
   // and run state to decellerate -ve acc count value
   // is for addition to step couter.
@@ -44,7 +50,9 @@ long abs_mmSteps = labs(mmSteps);
 
   }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
     //if the motor is still moving at time of recalculating then use difference
-    //still need to figure out if we should be doing this during acc / dec
+    //still need to figure out if we should be doing this gcode is ususlly specific
+    //to finnishing a move before starting a next!!!!
+    
     //dly = (Vlast - Vcur) / (2 . a)
     if(STPS[axis_No].run_state != STOP)
         temp_speed = last_speed - speed;
@@ -65,8 +73,9 @@ long abs_mmSteps = labs(mmSteps);
     // Find out after how many Steps before the speed hits the max speed limit.
     STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(long)(2.0*ALPHA*(double)STPS[axis_No].acc*100.0);
 
-
+    //test calc using A_x20000 ???
     //STPS.max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
+    
     // If we hit max speed limit before 0,5 step it will round to 0.
     // But in practice we need to move atleast 1 step to get any speed at all.
     if(STPS[axis_No].max_step_lim == 0){
@@ -76,6 +85,7 @@ long abs_mmSteps = labs(mmSteps);
     // Find out after how many Steps before we must start deceleration.
     // n1 = (n1+n2)decel / (accel + decel) which is 50%
      STPS[axis_No].accel_lim = (abs_mmSteps * STPS[axis_No].dec) / (STPS[axis_No].acc + STPS[axis_No].dec);
+     
     // We must accelrate at least 1 step before we can start deceleration.
     if(STPS[axis_No].accel_lim == 0){
        STPS[axis_No].accel_lim = 1;
