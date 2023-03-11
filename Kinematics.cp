@@ -58,9 +58,9 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 169 "c:/users/git/pic32mzcnc/settings.h"
+#line 171 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[ 4 ];
+ float steps_per_mm[ 2 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -178,6 +178,7 @@ const float Dia;
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
+float beltsteps2mm(long steps);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -300,7 +301,7 @@ typedef struct {
  int state;
  int homing;
  int homing_cnt;
- long position[ 4 ];
+ long position[ 2 ];
 
  int auto_start;
  int execute;
@@ -310,8 +311,8 @@ extern system_t sys;
 
 
 typedef struct{
- float coord[ 4 ];
- float coord_offset[ 4 ];
+ float coord[ 2 ];
+ float coord_offset[ 2 ];
 }coord_sys;
 extern volatile coord_sys coord_system[ 9 ];
 
@@ -388,12 +389,12 @@ typedef struct {
  unsigned long frequency;
  float feed_rate;
 
- volatile float position[ 4 ];
- volatile float coord_system[ 4 ];
+ volatile float position[ 2 ];
+ volatile float coord_system[ 2 ];
 
- volatile float coord_offset[ 4 ];
+ volatile float coord_offset[ 2 ];
 
- volatile float next_position[ 4 ];
+ volatile float next_position[ 2 ];
  volatile float offset[3];
  float R;
  float I;
@@ -442,7 +443,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
+void gc_set_current_position(long x,long y,long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -715,6 +716,8 @@ void sys_sync_current_position();
 
 void plan_set_current_position(long x, long y, long z);
 
+void plan_reset_absolute_position();
+
 unsigned long sqrt_(unsigned long v);
 
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
@@ -833,17 +836,17 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- double mm_position;
+ float mm_position;
 
- double mm_home_position;
+ float mm_home_position;
 
- double max_travel;
+ float max_travel;
 
  int axis_dir;
 
  char master: 1;
 }STP;
-extern STP STPS[ 4 ];
+extern STP STPS[ 2 ];
 
 
 
@@ -903,7 +906,7 @@ static long d2;
 
 
 
-static homing_t homing[ 4 ];
+static homing_t homing[ 2 ];
 
 
 
@@ -912,7 +915,7 @@ int i = 0;
 
  gc.absolute_mode = 0;
 
- for (i = 0;i< 4 ;i++){
+ for (i = 0;i< 2 ;i++){
  axis[i].max_travel = max_sizes[i];
  }
 }
@@ -1320,7 +1323,7 @@ static void Home_Axis(double distance,long speed,int axis){
 
 static void ResetHoming(){
 int i = 0;
- for(i = 0;i<  4 ;i++){
+ for(i = 0;i<  2 ;i++){
  homing[i].home_state = 0;
  homing[i].home_cnt = 0;
  }

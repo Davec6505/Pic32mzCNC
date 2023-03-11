@@ -32,9 +32,9 @@ void report_realtime_status();
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 169 "c:/users/git/pic32mzcnc/settings.h"
+#line 171 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[ 4 ];
+ float steps_per_mm[ 2 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -298,7 +298,7 @@ typedef struct {
  int state;
  int homing;
  int homing_cnt;
- long position[ 4 ];
+ long position[ 2 ];
 
  int auto_start;
  int execute;
@@ -308,8 +308,8 @@ extern system_t sys;
 
 
 typedef struct{
- float coord[ 4 ];
- float coord_offset[ 4 ];
+ float coord[ 2 ];
+ float coord_offset[ 2 ];
 }coord_sys;
 extern volatile coord_sys coord_system[ 9 ];
 
@@ -386,12 +386,12 @@ typedef struct {
  unsigned long frequency;
  float feed_rate;
 
- volatile float position[ 4 ];
- volatile float coord_system[ 4 ];
+ volatile float position[ 2 ];
+ volatile float coord_system[ 2 ];
 
- volatile float coord_offset[ 4 ];
+ volatile float coord_offset[ 2 ];
 
- volatile float next_position[ 4 ];
+ volatile float next_position[ 2 ];
  volatile float offset[3];
  float R;
  float I;
@@ -440,7 +440,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
+void gc_set_current_position(long x,long y,long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -509,17 +509,17 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- double mm_position;
+ float mm_position;
 
- double mm_home_position;
+ float mm_home_position;
 
- double max_travel;
+ float max_travel;
 
  int axis_dir;
 
  char master: 1;
 }STP;
-extern STP STPS[ 4 ];
+extern STP STPS[ 2 ];
 
 
 
@@ -596,6 +596,8 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 void sys_sync_current_position();
 
 void plan_set_current_position(long x, long y, long z);
+
+void plan_reset_absolute_position();
 
 unsigned long sqrt_(unsigned long v);
 
@@ -677,6 +679,7 @@ const float Dia;
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
+float beltsteps2mm(long steps);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -1051,12 +1054,10 @@ void report_realtime_status(){
 
 
  int i;
- long current_position[3];
- float print_position[3];
+ static float print_position[ 2 ];
+
+
  while(DMA_IsOn(1));
-
-
-
 
  switch (sys.state) {
  case  0 : dma_printf("%s","<Idle"); break;
@@ -1070,8 +1071,8 @@ void report_realtime_status(){
  }
 
 
- for (i=0; i<= 2; i++) {
- print_position[i] = current_position[i]/settings.steps_per_mm[i];
+ for (i=0; i<=  2 ; i++) {
+ print_position[i] = beltsteps2mm(STPS[i].steps_abs_position);
  if ( ((settings.flags & 1 ) != 0) ) { print_position[i] *=  (0.0393701) ; }
  }
 
@@ -1101,7 +1102,7 @@ void report_realtime_status(){
 
 
 void report_gcode_parameters(){
-float coord_data[ 4 ];
+float coord_data[ 2 ];
 int coord_select, i;
 
  if (!read_coord_data_indicator()){
@@ -1127,7 +1128,7 @@ int coord_select, i;
  case 8: dma_printf("30:"); break;
 
  }
- for (i=0; i< 4 ; i++) {
+ for (i=0; i< 2 ; i++) {
  while(DMA_IsOn(1));
  if ( ((settings.flags & 1 ) != 0) ) {
  dma_printf("%f ",coord_system[coord_select].coord[i]* (0.0393701) );
@@ -1135,7 +1136,7 @@ int coord_select, i;
  dma_printf("%f ",coord_system[coord_select].coord[i]);
  }
  while(DMA_IsOn(1));
- if (i < ( 4 -1)) {
+ if (i < ( 2 -1)) {
  dma_printf(",");
  }else {
  dma_printf("]\r\n");
@@ -1144,7 +1145,7 @@ int coord_select, i;
  }
  while(DMA_IsOn(1));
  dma_printf("[G92:");
- for (i=0; i< 4 ; i++) {
+ for (i=0; i< 2 ; i++) {
  while(DMA_IsOn(1));
  if ( ((settings.flags & 1 ) != 0) ){
  dma_printf("%f ",gc.coord_offset[i]* (0.0393701) );
@@ -1152,7 +1153,7 @@ int coord_select, i;
  dma_printf("%f ",gc.coord_offset[i]);
  }
  while(DMA_IsOn(1));
- if (i < ( 4 -1)) {
+ if (i < ( 2 -1)) {
  dma_printf(",");
  }else {
  dma_printf("]\r\n"); }
@@ -1200,7 +1201,7 @@ void report_gcode_modes(){
  }
  while(DMA_IsOn(1));
  switch (gc.coolant_mode) {
-#line 366 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 364 "C:/Users/Git/Pic32mzCNC/Print.c"
  }
  while(DMA_IsOn(1));
  if (gc.inches_mode)

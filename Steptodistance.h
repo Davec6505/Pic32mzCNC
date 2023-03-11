@@ -37,6 +37,7 @@ const float Dia;
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
+float beltsteps2mm(long steps);
 double mm2in(double mm);
 double in2mm(double inch);
 

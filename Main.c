@@ -513,7 +513,7 @@ static int Modal_Group_Actions1(int action){
                   axis_to_home = Rst_Axisword();
               
               //return the number of axis completed
-              //sys.state = STATE_IDLE;
+              sys.state = STATE_IDLE;
               SV.homed = false;
             }
             break;

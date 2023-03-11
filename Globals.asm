@@ -30,9 +30,9 @@ SH	R0, Offset(_sys+2)(GP)
 ;Globals.c,40 :: 		sys.homing          = 0;
 SH	R0, Offset(_sys+4)(GP)
 ;Globals.c,41 :: 		sys.execute         = 0;
-SH	R0, Offset(_sys+26)(GP)
+SH	R0, Offset(_sys+18)(GP)
 ;Globals.c,42 :: 		sys.auto_start      = 0;
-SH	R0, Offset(_sys+24)(GP)
+SH	R0, Offset(_sys+16)(GP)
 ;Globals.c,43 :: 		}else{
 J	L_settings_init1
 NOP	
@@ -107,142 +107,144 @@ SW	R2, Offset(-1610612468)(GP)
 ;Globals.c,76 :: 		settings.default_feed_rate = DEFAULT_FEEDRATE;
 LUI	R2, 17274
 ORI	R2, R2, 0
-SW	R2, Offset(_settings+16)(GP)
+SW	R2, Offset(_settings+8)(GP)
 ;Globals.c,77 :: 		buffA[D_FEED_RATE_OFFSET]  = flt2ulong(settings.default_feed_rate);
-LWC1	S12, Offset(_settings+16)(GP)
+LUI	R2, 17274
+ORI	R2, R2, 0
+MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612452)(GP)
 ;Globals.c,79 :: 		settings.default_seek_rate = DEFAULT_RAPID_FEEDRATE;
 LUI	R2, 17402
 ORI	R2, R2, 0
-SW	R2, Offset(_settings+20)(GP)
+SW	R2, Offset(_settings+12)(GP)
 ;Globals.c,80 :: 		buffA[D_SEEK_RATE_OFFSET]  = flt2ulong(settings.default_seek_rate);
-LWC1	S12, Offset(_settings+20)(GP)
+LUI	R2, 17402
+ORI	R2, R2, 0
+MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612448)(GP)
 ;Globals.c,82 :: 		settings.homing_feed_rate   = DEFAULT_HOMING_FEEDRATE;
 LUI	R2, 16840
 ORI	R2, R2, 0
-SW	R2, Offset(_settings+24)(GP)
+SW	R2, Offset(_settings+16)(GP)
 ;Globals.c,83 :: 		buffA[H_FEED_RATE_OFFSET]   = flt2ulong(settings.homing_feed_rate);
-LWC1	S12, Offset(_settings+24)(GP)
+LWC1	S12, Offset(_settings+16)(GP)
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612444)(GP)
 ;Globals.c,85 :: 		settings.homing_seek_rate   = DEFAULT_HOMING_RAPID_FEEDRATE ;
 LUI	R2, 17274
 ORI	R2, R2, 0
-SW	R2, Offset(_settings+28)(GP)
+SW	R2, Offset(_settings+20)(GP)
 ;Globals.c,86 :: 		buffA[H_SEEK_RATE_OFFSET]   = flt2ulong(settings.homing_seek_rate);
-LWC1	S12, Offset(_settings+28)(GP)
+LWC1	S12, Offset(_settings+20)(GP)
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612440)(GP)
 ;Globals.c,88 :: 		settings.homing_pulloff     = DEFAULT_HOMING_PULLOFF;
 LUI	R2, 16256
 ORI	R2, R2, 0
-SW	R2, Offset(_settings+32)(GP)
+SW	R2, Offset(_settings+24)(GP)
 ;Globals.c,89 :: 		buffA[H_PULL_OFF_OFFSET]    = flt2ulong(settings.homing_pulloff);
-LWC1	S12, Offset(_settings+32)(GP)
+LWC1	S12, Offset(_settings+24)(GP)
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612436)(GP)
 ;Globals.c,91 :: 		settings.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
 LUI	R2, 15820
 ORI	R2, R2, 52429
-SW	R2, Offset(_settings+36)(GP)
+SW	R2, Offset(_settings+28)(GP)
 ;Globals.c,92 :: 		buffA[MM_ARC_SEG_OFFSET]    =  flt2ulong(settings.mm_per_arc_segment);
-LWC1	S12, Offset(_settings+36)(GP)
+LWC1	S12, Offset(_settings+28)(GP)
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612432)(GP)
 ;Globals.c,94 :: 		settings.acceleration      = DEFAULT_ACCELERATION;
 LUI	R2, 18188
 ORI	R2, R2, 40960
-SW	R2, Offset(_settings+40)(GP)
+SW	R2, Offset(_settings+32)(GP)
 ;Globals.c,95 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(settings.acceleration);
-LWC1	S12, Offset(_settings+40)(GP)
+LWC1	S12, Offset(_settings+32)(GP)
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612428)(GP)
 ;Globals.c,97 :: 		settings.junction_deviation = DEFAULT_JUNCTION_DEVIATION;
 LUI	R2, 15692
 ORI	R2, R2, 52429
-SW	R2, Offset(_settings+44)(GP)
+SW	R2, Offset(_settings+36)(GP)
 ;Globals.c,98 :: 		buffA[JUNCTION_DEV_OFFSET]  = flt2ulong(settings.junction_deviation);
-LWC1	S12, Offset(_settings+44)(GP)
+LWC1	S12, Offset(_settings+36)(GP)
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612424)(GP)
 ;Globals.c,101 :: 		settings.n_arc_correction   = DEFAULT_N_ARC_CORRECTION;
 ORI	R2, R0, 25
-SH	R2, Offset(_settings+48)(GP)
+SH	R2, Offset(_settings+40)(GP)
 ;Globals.c,102 :: 		buffA[N_ARC_CORREC_OFFSET]  = (unsigned long)N_ARC_CORREC_OFFSET;
 ORI	R2, R0, 79
 SW	R2, Offset(-1610612420)(GP)
 ;Globals.c,104 :: 		settings.stepper_idle_lock_time = DEFAULT_STEPPER_IDLE_LOCK_TIME; // If max value 255, steppers do not disable.
 ORI	R2, R0, 25
-SH	R2, Offset(_settings+56)(GP)
+SH	R2, Offset(_settings+48)(GP)
 ;Globals.c,105 :: 		buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)settings.stepper_idle_lock_time;
-LHU	R2, Offset(_settings+56)(GP)
+LHU	R2, Offset(_settings+48)(GP)
 SW	R2, Offset(-1610612404)(GP)
 ;Globals.c,107 :: 		settings.homing_debounce_delay = DEFAULT_HOMING_DEBOUNCE_DELAY;
 ORI	R2, R0, 100
-SH	R2, Offset(_settings+54)(GP)
+SH	R2, Offset(_settings+46)(GP)
 ;Globals.c,108 :: 		buffA[H_DEBNC_DLY_OFFSET]   = (unsigned long)settings.homing_debounce_delay;
-LHU	R2, Offset(_settings+54)(GP)
+LHU	R2, Offset(_settings+46)(GP)
 SW	R2, Offset(-1610612408)(GP)
 ;Globals.c,110 :: 		settings.p_usec             = DEFAUT_P_USEC;
 ORI	R2, R0, 100
-SH	R2, Offset(_settings+60)(GP)
+SH	R2, Offset(_settings+52)(GP)
 ;Globals.c,111 :: 		buffA[P_USEC_OFFSET]        = (unsigned long)settings.p_usec;
-LHU	R2, Offset(_settings+60)(GP)
+LHU	R2, Offset(_settings+52)(GP)
 SW	R2, Offset(-1610612456)(GP)
 ;Globals.c,113 :: 		settings.decimal_places     = DEFAULT_DECIMAL_PLACES;
 ORI	R2, R0, 3
-SH	R2, Offset(_settings+62)(GP)
+SH	R2, Offset(_settings+54)(GP)
 ;Globals.c,114 :: 		buffA[DEC_PLACES_OFFSET]    = (unsigned int)settings.decimal_places;
-LHU	R2, Offset(_settings+62)(GP)
+LHU	R2, Offset(_settings+54)(GP)
 ANDI	R2, R2, 65535
 SW	R2, Offset(-1610612392)(GP)
 ;Globals.c,116 :: 		settings.homing_dir_mask    = DEFAULT_HOME_DIR_MASK;
 ORI	R2, R0, 15
-SH	R2, Offset(_settings+64)(GP)
+SH	R2, Offset(_settings+56)(GP)
 ;Globals.c,117 :: 		buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)settings.homing_dir_mask;
-LHU	R2, Offset(_settings+64)(GP)
+LHU	R2, Offset(_settings+56)(GP)
 SW	R2, Offset(-1610612388)(GP)
 ;Globals.c,119 :: 		settings.invert_mask        = DEFAULT_INVERT_MASK;
 ORI	R2, R0, 15
-SH	R2, Offset(_settings+66)(GP)
+SH	R2, Offset(_settings+58)(GP)
 ;Globals.c,120 :: 		buffA[INVERT_MASK_OFFSET]   = (unsigned long)settings.invert_mask;
-LHU	R2, Offset(_settings+66)(GP)
+LHU	R2, Offset(_settings+58)(GP)
 SW	R2, Offset(-1610612384)(GP)
 ;Globals.c,122 :: 		settings.flags  = 0;
-SH	R0, Offset(_settings+50)(GP)
+SH	R0, Offset(_settings+42)(GP)
 ;Globals.c,123 :: 		if (DEFAULT_REPORT_INCHES)    {settings.flags |= BITFLAG_REPORT_INCHES;}
-LHU	R2, Offset(_settings+50)(GP)
-ORI	R2, R2, 1
-SH	R2, Offset(_settings+50)(GP)
+L_settings_init3:
 ;Globals.c,128 :: 		if (DEFAULT_AUTO_START)       { settings.flags |= (BITFLAG_AUTO_START);}
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 2
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,133 :: 		if (DEFAULT_INVERT_ST_ENABLE) { settings.flags |= (BITFLAG_INVERT_ST_ENABLE);}
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 4
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,138 :: 		if (DEFAULT_HARD_LIMIT_ENABLE){ settings.flags |= (BITFLAG_HARD_LIMIT_ENABLE);}
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 8
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,143 :: 		if (DEFAULT_HOMING_ENABLE)    { settings.flags |= (BITFLAG_HOMING_ENABLE);}
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 16
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,148 :: 		buffA[0x50] = ((unsigned long)settings.flags) & 0x1F;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 31
 SW	R2, Offset(-1610612416)(GP)
 ;Globals.c,159 :: 		buffA[FLASH_LOADED_OFFSET] = 0x7FFFFFFF;
@@ -345,69 +347,69 @@ SWC1	S0, Offset(_settings+8)(GP)
 LW	R25, Offset(-1610612452)(GP)
 JAL	_ulong2flt+0
 NOP	
-SWC1	S0, Offset(_settings+16)(GP)
+SWC1	S0, Offset(_settings+8)(GP)
 ;Globals.c,189 :: 		settings.default_seek_rate      = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
 LW	R25, Offset(-1610612448)(GP)
 JAL	_ulong2flt+0
 NOP	
-SWC1	S0, Offset(_settings+20)(GP)
+SWC1	S0, Offset(_settings+12)(GP)
 ;Globals.c,190 :: 		settings.homing_feed_rate       = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
 LW	R25, Offset(-1610612444)(GP)
 JAL	_ulong2flt+0
 NOP	
-SWC1	S0, Offset(_settings+24)(GP)
+SWC1	S0, Offset(_settings+16)(GP)
 ;Globals.c,191 :: 		settings.homing_seek_rate       = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
 LW	R25, Offset(-1610612440)(GP)
 JAL	_ulong2flt+0
 NOP	
-SWC1	S0, Offset(_settings+28)(GP)
+SWC1	S0, Offset(_settings+20)(GP)
 ;Globals.c,192 :: 		settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
 LW	R25, Offset(-1610612436)(GP)
 JAL	_ulong2flt+0
 NOP	
-SWC1	S0, Offset(_settings+32)(GP)
+SWC1	S0, Offset(_settings+24)(GP)
 ;Globals.c,193 :: 		settings.mm_per_arc_segment     = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
 LW	R25, Offset(-1610612432)(GP)
 JAL	_ulong2flt+0
 NOP	
-SWC1	S0, Offset(_settings+36)(GP)
+SWC1	S0, Offset(_settings+28)(GP)
 ;Globals.c,194 :: 		settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET]);
 LW	R25, Offset(-1610612428)(GP)
 JAL	_ulong2flt+0
 NOP	
-SWC1	S0, Offset(_settings+40)(GP)
+SWC1	S0, Offset(_settings+32)(GP)
 ;Globals.c,195 :: 		settings.junction_deviation     = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
 LW	R25, Offset(-1610612424)(GP)
 JAL	_ulong2flt+0
 NOP	
-SWC1	S0, Offset(_settings+44)(GP)
+SWC1	S0, Offset(_settings+36)(GP)
 ;Globals.c,196 :: 		settings.n_arc_correction       = (unsigned int)buffA[N_ARC_CORREC_OFFSET];
 LW	R2, Offset(-1610612420)(GP)
-SH	R2, Offset(_settings+48)(GP)
+SH	R2, Offset(_settings+40)(GP)
 ;Globals.c,197 :: 		settings.flags                  = ((unsigned int)buffA[0x50]);//FLAGS_OFFSET]);
 LW	R2, Offset(-1610612416)(GP)
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,198 :: 		settings.stepper_idle_lock_time = (unsigned int)buffA[STEP_IDLE_DLY_OFFSET];// If max value 255, steppers do not disable.
 LW	R2, Offset(-1610612412)(GP)
-SH	R2, Offset(_settings+56)(GP)
+SH	R2, Offset(_settings+48)(GP)
 ;Globals.c,199 :: 		settings.microsteps             = (unsigned int)buffA[MICROSTEPS_OFFSET];
 LW	R2, Offset(-1610612400)(GP)
-SH	R2, Offset(_settings+58)(GP)
+SH	R2, Offset(_settings+50)(GP)
 ;Globals.c,200 :: 		settings.p_usec                 = (unsigned int)buffA[P_USEC_OFFSET];
 LW	R2, Offset(-1610612456)(GP)
-SH	R2, Offset(_settings+60)(GP)
+SH	R2, Offset(_settings+52)(GP)
 ;Globals.c,201 :: 		settings.decimal_places         = (unsigned int)buffA[DEC_PLACES_OFFSET];
 LW	R2, Offset(-1610612392)(GP)
-SH	R2, Offset(_settings+62)(GP)
+SH	R2, Offset(_settings+54)(GP)
 ;Globals.c,202 :: 		settings.homing_debounce_delay  = (unsigned int)buffA[H_DEBNC_DLY_OFFSET];
 LW	R2, Offset(-1610612408)(GP)
-SH	R2, Offset(_settings+54)(GP)
+SH	R2, Offset(_settings+46)(GP)
 ;Globals.c,203 :: 		settings.homing_dir_mask        = (unsigned int)buffA[HOME_DIR_MASK_OFFSET];
 LW	R2, Offset(-1610612388)(GP)
-SH	R2, Offset(_settings+64)(GP)
+SH	R2, Offset(_settings+56)(GP)
 ;Globals.c,204 :: 		settings.invert_mask            = (unsigned int)buffA[INVERT_MASK_OFFSET];
 LW	R2, Offset(-1610612384)(GP)
-SH	R2, Offset(_settings+66)(GP)
+SH	R2, Offset(_settings+58)(GP)
 ;Globals.c,205 :: 		}
 L_settings_init1:
 ;Globals.c,207 :: 		}
@@ -972,7 +974,7 @@ L__settings_read_coord_data177:
 SW	R0, Offset(_j+0)(GP)
 L_settings_read_coord_data43:
 LW	R2, Offset(_j+0)(GP)
-SLTIU	R2, R2, 4
+SLTIU	R2, R2, 2
 BNE	R2, R0, L__settings_read_coord_data178
 NOP	
 J	L_settings_read_coord_data44
@@ -980,7 +982,7 @@ NOP
 L__settings_read_coord_data178:
 ;Globals.c,419 :: 		temp = buffA[(i*NoOfAxis) + j];
 LW	R2, Offset(_i+0)(GP)
-SLL	R3, R2, 2
+SLL	R3, R2, 1
 LW	R2, Offset(_j+0)(GP)
 ADDU	R2, R3, R2
 SLL	R3, R2, 2
@@ -1018,7 +1020,7 @@ JAL	_ulong2flt+0
 NOP	
 ;Globals.c,424 :: 		coord_system[i].coord[j] = value;
 LW	R2, Offset(_i+0)(GP)
-SLL	R3, R2, 5
+SLL	R3, R2, 4
 LUI	R2, hi_addr(_coord_system+0)
 ORI	R2, R2, lo_addr(_coord_system+0)
 ADDU	R3, R2, R3
@@ -1058,11 +1060,11 @@ NOP
 ; end of _settings_read_coord_data
 _settings_write_one_coord:
 ;Globals.c,444 :: 		unsigned int settings_write_one_coord(int coord_select,float *coord){
-ADDIU	SP, SP, -52
+ADDIU	SP, SP, -36
 SW	RA, 0(SP)
 ;Globals.c,450 :: 		recipe = coord_select * NoOfAxis;
 SEH	R2, R25
-SLL	R2, R2, 2
+SLL	R2, R2, 1
 ; recipe start address is: 20 (R5)
 SEH	R5, R2
 ;Globals.c,453 :: 		j=0;
@@ -1073,7 +1075,7 @@ SW	R2, Offset(_i+0)(GP)
 ; recipe end address is: 20 (R5)
 L_settings_write_one_coord47:
 ; recipe start address is: 20 (R5)
-ADDIU	R2, R5, 4
+ADDIU	R2, R5, 2
 SEH	R3, R2
 LW	R2, Offset(_i+0)(GP)
 SLTU	R2, R2, R3
@@ -1093,11 +1095,11 @@ ADDU	R2, R26, R2
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
 ;Globals.c,457 :: 		temp[j] = flt2ulong(coord_data[j]);
-ADDIU	R3, SP, 32
+ADDIU	R3, SP, 24
 LW	R2, Offset(_j+0)(GP)
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
-SW	R2, 48(SP)
+SW	R2, 32(SP)
 LW	R2, Offset(_j+0)(GP)
 SLL	R2, R2, 2
 ADDU	R2, R4, R2
@@ -1110,7 +1112,7 @@ NOP
 LH	R25, 12(SP)
 LW	R26, 8(SP)
 LH	R5, 4(SP)
-LW	R3, 48(SP)
+LW	R3, 32(SP)
 SW	R2, 0(R3)
 ;Globals.c,458 :: 		buffA[i] = temp[j];
 LW	R2, Offset(_i+0)(GP)
@@ -1118,7 +1120,7 @@ SLL	R3, R2, 2
 LUI	R2, 40960
 ORI	R2, R2, 0
 ADDU	R4, R2, R3
-ADDIU	R3, SP, 32
+ADDIU	R3, SP, 24
 LW	R2, Offset(_j+0)(GP)
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
@@ -1347,7 +1349,7 @@ J	L_settings_write_one_coord65
 NOP	
 L__settings_write_one_coord207:
 ;Globals.c,504 :: 		set_ram_loaded_indicator(NVMWriteQuad (&add, temp));
-ADDIU	R2, SP, 32
+ADDIU	R2, SP, 24
 SW	R26, 4(SP)
 SH	R25, 8(SP)
 MOVZ	R26, R2, R0
@@ -1368,7 +1370,7 @@ LHU	R2, Offset(_error+0)(GP)
 ;Globals.c,507 :: 		}
 L_end_settings_write_one_coord:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 52
+ADDIU	SP, SP, 36
 JR	RA
 NOP	
 ; end of _settings_write_one_coord
@@ -1713,7 +1715,7 @@ L_settings_store_global_setting88:
 JAL	_round+0
 NOP	
 ;Globals.c,656 :: 		settings.p_usec = val_temp;
-SH	R2, Offset(_settings+60)(GP)
+SH	R2, Offset(_settings+52)(GP)
 ;Globals.c,658 :: 		buffA[P_USEC_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612456)(GP)
@@ -1722,7 +1724,7 @@ J	L_settings_store_global_setting82
 NOP	
 ;Globals.c,660 :: 		case 4: settings.default_feed_rate = value;
 L_settings_store_global_setting89:
-SWC1	S12, Offset(_settings+16)(GP)
+SWC1	S12, Offset(_settings+8)(GP)
 ;Globals.c,661 :: 		buffA[D_FEED_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
@@ -1732,7 +1734,7 @@ J	L_settings_store_global_setting82
 NOP	
 ;Globals.c,663 :: 		case 5: settings.default_seek_rate = value;
 L_settings_store_global_setting90:
-SWC1	S12, Offset(_settings+20)(GP)
+SWC1	S12, Offset(_settings+12)(GP)
 ;Globals.c,664 :: 		buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
@@ -1747,7 +1749,7 @@ JAL	_floor+0
 NOP	
 CVT36.S 	S0, S0
 MFC1	R2, S0
-SH	R2, Offset(_settings+66)(GP)
+SH	R2, Offset(_settings+58)(GP)
 ;Globals.c,668 :: 		buffA[INVERT_MASK_OFFSET] = flt2ulong(floor(value));
 JAL	_floor+0
 NOP	
@@ -1764,7 +1766,7 @@ L_settings_store_global_setting92:
 JAL	_round+0
 NOP	
 ;Globals.c,672 :: 		settings.stepper_idle_lock_time = val_temp;
-SH	R2, Offset(_settings+56)(GP)
+SH	R2, Offset(_settings+48)(GP)
 ;Globals.c,673 :: 		buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612404)(GP)
@@ -1782,7 +1784,7 @@ LUI	R2, 17008
 ORI	R2, R2, 0
 MTC1	R2, S0
 MUL.S 	S0, S1, S0
-SWC1	S0, Offset(_settings+40)(GP)
+SWC1	S0, Offset(_settings+32)(GP)
 ;Globals.c,677 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
@@ -1794,7 +1796,7 @@ NOP
 L_settings_store_global_setting94:
 JAL	_fabs+0
 NOP	
-SWC1	S0, Offset(_settings+44)(GP)
+SWC1	S0, Offset(_settings+36)(GP)
 ;Globals.c,680 :: 		buffA[JUNCTION_DEV_OFFSET] = flt2ulong(fabs(value));
 JAL	_fabs+0
 NOP	
@@ -1814,7 +1816,7 @@ NOP
 SEH	R3, R2
 MTC1	R3, S0
 CVT32.W 	S0, S0
-SWC1	S0, Offset(_settings+36)(GP)
+SWC1	S0, Offset(_settings+28)(GP)
 ;Globals.c,685 :: 		buffA[MM_ARC_SEG_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612432)(GP)
@@ -1827,7 +1829,7 @@ L_settings_store_global_setting96:
 JAL	_round+0
 NOP	
 ;Globals.c,689 :: 		settings.n_arc_correction = val_temp;
-SH	R2, Offset(_settings+48)(GP)
+SH	R2, Offset(_settings+40)(GP)
 ;Globals.c,690 :: 		buffA[N_ARC_CORREC_OFFSET] = (int)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612420)(GP)
@@ -1840,7 +1842,7 @@ L_settings_store_global_setting97:
 JAL	_round+0
 NOP	
 ;Globals.c,694 :: 		settings.decimal_places = val_temp;
-SH	R2, Offset(_settings+62)(GP)
+SH	R2, Offset(_settings+54)(GP)
 ;Globals.c,695 :: 		buffA[DEC_PLACES_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612392)(GP)
@@ -1858,22 +1860,22 @@ J	L_settings_store_global_setting99
 NOP	
 L__settings_store_global_setting229:
 ;Globals.c,699 :: 		settings.flags |= BITFLAG_REPORT_INCHES;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 1
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,700 :: 		}else{
 J	L_settings_store_global_setting100
 NOP	
 L_settings_store_global_setting99:
 ;Globals.c,701 :: 		settings.flags &= ~BITFLAG_REPORT_INCHES;
-LHU	R3, Offset(_settings+50)(GP)
+LHU	R3, Offset(_settings+42)(GP)
 ORI	R2, R0, 65534
 AND	R2, R3, R2
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,702 :: 		}
 L_settings_store_global_setting100:
 ;Globals.c,703 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 SW	R2, Offset(-1610612416)(GP)
 ;Globals.c,704 :: 		break;
 J	L_settings_store_global_setting82
@@ -1889,22 +1891,22 @@ J	L_settings_store_global_setting102
 NOP	
 L__settings_store_global_setting231:
 ;Globals.c,707 :: 		settings.flags |= BITFLAG_AUTO_START;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 2
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,708 :: 		}else{
 J	L_settings_store_global_setting103
 NOP	
 L_settings_store_global_setting102:
 ;Globals.c,709 :: 		settings.flags &= ~BITFLAG_AUTO_START;
-LHU	R3, Offset(_settings+50)(GP)
+LHU	R3, Offset(_settings+42)(GP)
 ORI	R2, R0, 65533
 AND	R2, R3, R2
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,710 :: 		}
 L_settings_store_global_setting103:
 ;Globals.c,711 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 SW	R2, Offset(-1610612416)(GP)
 ;Globals.c,712 :: 		break;
 J	L_settings_store_global_setting82
@@ -1920,22 +1922,22 @@ J	L_settings_store_global_setting105
 NOP	
 L__settings_store_global_setting233:
 ;Globals.c,715 :: 		settings.flags |= BITFLAG_INVERT_ST_ENABLE;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 4
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,716 :: 		}else{
 J	L_settings_store_global_setting106
 NOP	
 L_settings_store_global_setting105:
 ;Globals.c,717 :: 		settings.flags &= ~BITFLAG_INVERT_ST_ENABLE;
-LHU	R3, Offset(_settings+50)(GP)
+LHU	R3, Offset(_settings+42)(GP)
 ORI	R2, R0, 65531
 AND	R2, R3, R2
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,718 :: 		}
 L_settings_store_global_setting106:
 ;Globals.c,719 :: 		buffA[FLAGS_OFFSET] |= (unsigned long)settings.flags;
-LHU	R3, Offset(_settings+50)(GP)
+LHU	R3, Offset(_settings+42)(GP)
 LW	R2, Offset(-1610612416)(GP)
 OR	R2, R2, R3
 SW	R2, Offset(-1610612416)(GP)
@@ -1953,22 +1955,22 @@ J	L_settings_store_global_setting108
 NOP	
 L__settings_store_global_setting235:
 ;Globals.c,723 :: 		settings.flags |= BITFLAG_HARD_LIMIT_ENABLE;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 8
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,724 :: 		}else{
 J	L_settings_store_global_setting109
 NOP	
 L_settings_store_global_setting108:
 ;Globals.c,725 :: 		settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
-LHU	R3, Offset(_settings+50)(GP)
+LHU	R3, Offset(_settings+42)(GP)
 ORI	R2, R0, 65527
 AND	R2, R3, R2
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,726 :: 		}
 L_settings_store_global_setting109:
 ;Globals.c,727 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 SW	R2, Offset(-1610612416)(GP)
 ;Globals.c,729 :: 		break;
 J	L_settings_store_global_setting82
@@ -1984,22 +1986,22 @@ J	L_settings_store_global_setting111
 NOP	
 L__settings_store_global_setting237:
 ;Globals.c,732 :: 		settings.flags |= BITFLAG_HOMING_ENABLE;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 16
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,733 :: 		}else{
 J	L_settings_store_global_setting112
 NOP	
 L_settings_store_global_setting111:
 ;Globals.c,734 :: 		settings.flags &= ~BITFLAG_HOMING_ENABLE;
-LHU	R3, Offset(_settings+50)(GP)
+LHU	R3, Offset(_settings+42)(GP)
 ORI	R2, R0, 65519
 AND	R2, R3, R2
-SH	R2, Offset(_settings+50)(GP)
+SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,735 :: 		}
 L_settings_store_global_setting112:
 ;Globals.c,736 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 SW	R2, Offset(-1610612416)(GP)
 ;Globals.c,737 :: 		break;
 J	L_settings_store_global_setting82
@@ -2010,7 +2012,7 @@ L_settings_store_global_setting113:
 JAL	_round+0
 NOP	
 ;Globals.c,740 :: 		settings.homing_dir_mask = val_temp;
-SH	R2, Offset(_settings+64)(GP)
+SH	R2, Offset(_settings+56)(GP)
 ;Globals.c,741 :: 		buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612388)(GP)
@@ -2019,7 +2021,7 @@ J	L_settings_store_global_setting82
 NOP	
 ;Globals.c,743 :: 		case 19: settings.homing_feed_rate = value;
 L_settings_store_global_setting114:
-SWC1	S12, Offset(_settings+24)(GP)
+SWC1	S12, Offset(_settings+16)(GP)
 ;Globals.c,744 :: 		buffA[H_FEED_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
@@ -2029,7 +2031,7 @@ J	L_settings_store_global_setting82
 NOP	
 ;Globals.c,746 :: 		case 20: settings.homing_seek_rate = value;
 L_settings_store_global_setting115:
-SWC1	S12, Offset(_settings+28)(GP)
+SWC1	S12, Offset(_settings+20)(GP)
 ;Globals.c,747 :: 		buffA[H_SEEK_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
@@ -2043,7 +2045,7 @@ L_settings_store_global_setting116:
 JAL	_round+0
 NOP	
 ;Globals.c,751 :: 		settings.homing_debounce_delay = val_temp;
-SH	R2, Offset(_settings+54)(GP)
+SH	R2, Offset(_settings+46)(GP)
 ;Globals.c,752 :: 		buffA[H_DEBNC_DLY_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612408)(GP)
@@ -2059,7 +2061,7 @@ NOP
 SEH	R3, R2
 MTC1	R3, S0
 CVT32.W 	S0, S0
-SWC1	S0, Offset(_settings+32)(GP)
+SWC1	S0, Offset(_settings+24)(GP)
 ;Globals.c,757 :: 		buffA[H_PULL_OFF_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612436)(GP)

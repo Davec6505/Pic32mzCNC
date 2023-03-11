@@ -145,9 +145,9 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 169 "c:/users/git/pic32mzcnc/settings.h"
+#line 171 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[ 4 ];
+ float steps_per_mm[ 2 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -290,7 +290,7 @@ typedef struct {
  int state;
  int homing;
  int homing_cnt;
- long position[ 4 ];
+ long position[ 2 ];
 
  int auto_start;
  int execute;
@@ -300,8 +300,8 @@ extern system_t sys;
 
 
 typedef struct{
- float coord[ 4 ];
- float coord_offset[ 4 ];
+ float coord[ 2 ];
+ float coord_offset[ 2 ];
 }coord_sys;
 extern volatile coord_sys coord_system[ 9 ];
 
@@ -378,12 +378,12 @@ typedef struct {
  unsigned long frequency;
  float feed_rate;
 
- volatile float position[ 4 ];
- volatile float coord_system[ 4 ];
+ volatile float position[ 2 ];
+ volatile float coord_system[ 2 ];
 
- volatile float coord_offset[ 4 ];
+ volatile float coord_offset[ 2 ];
 
- volatile float next_position[ 4 ];
+ volatile float next_position[ 2 ];
  volatile float offset[3];
  float R;
  float I;
@@ -432,7 +432,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
+void gc_set_current_position(long x,long y,long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -561,17 +561,17 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- double mm_position;
+ float mm_position;
 
- double mm_home_position;
+ float mm_home_position;
 
- double max_travel;
+ float max_travel;
 
  int axis_dir;
 
  char master: 1;
 }STP;
-extern STP STPS[ 4 ];
+extern STP STPS[ 2 ];
 
 
 
@@ -648,6 +648,8 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 void sys_sync_current_position();
 
 void plan_set_current_position(long x, long y, long z);
+
+void plan_reset_absolute_position();
 
 unsigned long sqrt_(unsigned long v);
 
@@ -729,6 +731,7 @@ const float Dia;
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
+float beltsteps2mm(long steps);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -880,7 +883,7 @@ void protocol_execute_runtime();
 #line 39 "C:/Users/Git/Pic32mzCNC/Main.c"
 system_t sys;
 volatile coord_sys coord_system[ 9 ];
-STP STPS[ 4 ];
+STP STPS[ 2 ];
 settings_t settings;
 
 
@@ -943,7 +946,7 @@ static int cntr = 0,a = 0;
  case 4:
  axis_to_run = Get_Axisword();
 #line 112 "C:/Users/Git/Pic32mzCNC/Main.c"
- EnableSteppers( ((( 4 * 4 )*2)-1) );
+ EnableSteppers( ((( 2 * 2 )*2)-1) );
  Modal_Group_Actions1(axis_to_run);
  axis_to_run = Rst_Axisword();
  modal_group = Rst_modalgroup();
@@ -966,7 +969,7 @@ static int cntr = 0,a = 0;
  break;
  case 1024:
 
- modal_action = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
+ modal_action = Modal_Group_Actions1( ((( 2 * 2 )*2)-1) );
 #line 140 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(modal_action == 0)modal_group = Rst_modalgroup();
  break;
@@ -1013,7 +1016,7 @@ int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
 unsigned int home_select = 0;
 unsigned long _data;
 unsigned long _flash,*addr;
-float coord_data[ 4 ];
+float coord_data[ 2 ];
 float a_val;
 
 
@@ -1107,7 +1110,7 @@ float a_val;
 #line 336 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
- for (i=0; i< 4 ; i++){
+ for (i=0; i< 2 ; i++){
 
  if (  ((axis_words & (1 << i) ) != 0)  ) {
  if (gc.absolute_mode) {
@@ -1241,7 +1244,7 @@ static int Modal_Group_Actions1(int action){
  case 15:
  r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
  break;
- case  ((( 4 * 4 )*2)-1) :
+ case  ((( 2 * 2 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
 #line 485 "C:/Users/Git/Pic32mzCNC/Main.c"
@@ -1257,7 +1260,7 @@ static int Modal_Group_Actions1(int action){
  LED2 =  0 ;
  mc_reset();
  action = 0;
- for(l=0;l< 4 ;l++){
+ for(l=0;l< 2 ;l++){
 
 
  STPS[l].steps_abs_position = 0;
@@ -1276,7 +1279,7 @@ static int Modal_Group_Actions1(int action){
  axis_to_home = Rst_Axisword();
 
 
-
+ sys.state =  0 ;
  SV.homed =  0 ;
  }
  break;

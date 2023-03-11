@@ -570,13 +570,8 @@ int F_Val,O_Val;
 // Sets g-code parser position in mm. Input in steps. Called by the system abort and hard
 // limit pull-off routines.
 // don't know yet ????????????
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z){
-int i;
-float temp[3];
-  for(i=0;i<3;i++){
-      temp[i] = ulong2flt(settings.steps_per_mm[i]);
-  }
-  gc.position[X] = x/temp[X];
-  gc.position[Y] = y/temp[Y];
-  gc.position[Z] = z/temp[Z];
+void gc_set_current_position(long x,long y,long z){
+  gc.position[X] = beltsteps2mm(x);
+  gc.position[Y] = beltsteps2mm(Y);
+  gc.position[Z] = beltsteps2mm(Z);
 }

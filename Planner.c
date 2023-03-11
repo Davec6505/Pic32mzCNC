@@ -290,18 +290,26 @@ int axis_plane_a,axis_plane_b;
 void sys_sync_current_position(){
 
  // plan_set_current_position(sys.position[X],sys.position[Y],sys.position[Z]);
-  gc_set_current_position(sys.position[X],sys.position[Y],sys.position[Z]);
+  gc_set_current_position(STPS[X].steps_abs_position
+                          ,STPS[Y].steps_abs_position
+                          ,STPS[Z].steps_abs_position);
 }
 
 // Reset the planner position vector (in steps). Called by the system abort routine.
 void plan_set_current_position(long x, long y, long z)
 {
- /* pl.position[X] = x;
-  pl.position[Y] = y;
-  pl.position[Z] = z; */
+ /* pl.position[X] = beltsteps2mm(x);
+  pl.position[Y] = beltsteps2mm(Y);
+  pl.position[Z] = beltsteps2mm(Z); */
 }
 
-
+// Reset the planner position vector (in steps). Called by the system abort routine.
+void plan_reset_absolute_position(){
+ int i = 0;
+ for(i=0;i<NoOfAxis;i++)
+     STPS[X].steps_abs_position = 0;
+     
+}
 ////////////////////////////////////////////////
 //              CALCULATIONS                  //
 ////////////////////////////////////////////////

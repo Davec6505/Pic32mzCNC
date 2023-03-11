@@ -155,7 +155,7 @@ main
 			ResetHoming
 		sys_sync_current_position
 			gc_set_current_position
-				ulong2flt
+				beltsteps2mm
 		Rst_Axisword
 	Rst_Axisword
 	Modal_Group_Actions4
@@ -177,6 +177,7 @@ main
 		report_realtime_status
 			DMA_IsOn
 			dma_printf
+			beltsteps2mm
 			__CC2DW
 	Sample_Ringbuffer
 		__CC2DW

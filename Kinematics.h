@@ -116,11 +116,11 @@ typedef struct Steps{
  //!  Real-time machine (aka home) abs position vector in steps.
  long steps_abs_position;
  //! Real-time machine positions in mm or inches
- double mm_position;
+ float mm_position;
  //! Home positions saved if offsets are needed for limit switches
- double mm_home_position;
+ float mm_home_position;
  //! Max axis size to travel from origin 0,0
- double max_travel;
+ float max_travel;
 //! Track the direction of the axis for absolute value tracking
  int  axis_dir;
  //! the master axis indicator

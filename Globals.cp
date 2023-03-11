@@ -9,9 +9,9 @@
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 169 "c:/users/git/pic32mzcnc/settings.h"
+#line 171 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[ 4 ];
+ float steps_per_mm[ 2 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -272,12 +272,12 @@ typedef struct {
  unsigned long frequency;
  float feed_rate;
 
- volatile float position[ 4 ];
- volatile float coord_system[ 4 ];
+ volatile float position[ 2 ];
+ volatile float coord_system[ 2 ];
 
- volatile float coord_offset[ 4 ];
+ volatile float coord_offset[ 2 ];
 
- volatile float next_position[ 4 ];
+ volatile float next_position[ 2 ];
  volatile float offset[3];
  float R;
  float I;
@@ -326,7 +326,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
+void gc_set_current_position(long x,long y,long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -395,17 +395,17 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- double mm_position;
+ float mm_position;
 
- double mm_home_position;
+ float mm_home_position;
 
- double max_travel;
+ float max_travel;
 
  int axis_dir;
 
  char master: 1;
 }STP;
-extern STP STPS[ 4 ];
+extern STP STPS[ 2 ];
 
 
 
@@ -482,6 +482,8 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 void sys_sync_current_position();
 
 void plan_set_current_position(long x, long y, long z);
+
+void plan_reset_absolute_position();
 
 unsigned long sqrt_(unsigned long v);
 
@@ -563,6 +565,7 @@ const float Dia;
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
+float beltsteps2mm(long steps);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -815,7 +818,7 @@ typedef struct {
  int state;
  int homing;
  int homing_cnt;
- long position[ 4 ];
+ long position[ 2 ];
 
  int auto_start;
  int execute;
@@ -825,8 +828,8 @@ extern system_t sys;
 
 
 typedef struct{
- float coord[ 4 ];
- float coord_offset[ 4 ];
+ float coord[ 2 ];
+ float coord_offset[ 2 ];
 }coord_sys;
 extern volatile coord_sys coord_system[ 9 ];
 
@@ -987,7 +990,7 @@ int retry_flash_write = 0;
  buffA[ 0x58 ] = (unsigned long)settings.invert_mask;
 
  settings.flags = 0;
- if ( 1 ) {settings.flags |=  (1 << 0) ;}
+ if ( 0 ) {settings.flags |=  (1 << 0) ;}
 #line 128 "C:/Users/Git/Pic32mzCNC/Globals.c"
  if ( 1 ) { settings.flags |= ( (1 << 1) );}
 #line 133 "C:/Users/Git/Pic32mzCNC/Globals.c"
@@ -1193,8 +1196,8 @@ void settings_read_coord_data(){
  unsigned long temp = 0UL;
  float value = 0.00;
  for(i = 0; i < 9; i++){
- for(j = 0 ; j <  4 ; j++){
- temp = buffA[(i* 4 ) + j];
+ for(j = 0 ; j <  2 ; j++){
+ temp = buffA[(i* 2 ) + j];
 
  if(temp == -1)
  temp = 0UL;
@@ -1214,16 +1217,16 @@ void settings_read_coord_data(){
 
 
 unsigned int settings_write_one_coord(int coord_select,float *coord){
-float coord_data[ 4 ];
+float coord_data[ 2 ];
 int recipe;
-unsigned long temp[ 4 ];
+unsigned long temp[ 2 ];
 
 
- recipe = coord_select *  4 ;
+ recipe = coord_select *  2 ;
 
 
  j=0;
- for(i = recipe;i< recipe+ 4 ;i++){
+ for(i = recipe;i< recipe+ 2 ;i++){
 
  coord_data[j] = *(coord+j);
  temp[j] = flt2ulong(coord_data[j]);

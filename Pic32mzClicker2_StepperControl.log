@@ -30,12 +30,13 @@ hint: 0	1004	interrupt handler (StepZ at 0x0023)	Stepper.c
 hint: 0	1004	interrupt handler (StepA at 0x0011)	Stepper.c
 diagnostics: 462	123	Compiled Successfully	Stepper.c
 diagnostics: 0	122	Compilation Started	pins.h
-diagnostics: 69	123	Compiled Successfully	Steptodistance.c
+diagnostics: 82	123	Compiled Successfully	Steptodistance.c
 hint: 18	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
 hint: 32	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
-hint: 56	1164	Variable 'circ' has been eliminated by optimizer	Steptodistance.c
-hint: 56	1164	Variable 'cirDivision' has been eliminated by optimizer	Steptodistance.c
-hint: 56	1164	Variable 'stepsToMove' has been eliminated by optimizer	Steptodistance.c
+hint: 41	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
+hint: 69	1164	Variable 'circ' has been eliminated by optimizer	Steptodistance.c
+hint: 69	1164	Variable 'cirDivision' has been eliminated by optimizer	Steptodistance.c
+hint: 69	1164	Variable 'stepsToMove' has been eliminated by optimizer	Steptodistance.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (Timer1Interrupt at 0x0004)	Timers.c
 hint: 0	1004	interrupt handler (Timer8Interrupt at 0x0024)	Timers.c
@@ -66,14 +67,14 @@ hint: 423	1163	Variable 'tmp_' has been declared, but not used	Serial_Dma.c
 hint: 520	1163	Variable 'temp' has been declared, but not used	Serial_Dma.c
 diagnostics: 538	123	Compiled Successfully	Serial_Dma.c
 diagnostics: 0	122	Compilation Started	print.h
-hint: 262	1163	Variable 'coord_data' has been declared, but not used	Print.c
-diagnostics: 374	123	Compiled Successfully	Print.c
+hint: 260	1163	Variable 'coord_data' has been declared, but not used	Print.c
+diagnostics: 372	123	Compiled Successfully	Print.c
 hint: 142	1164	Variable 'acc' has been eliminated by optimizer	Print.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 51	1354	argument may be out of range [axis_combo]	GCODE.c
 warning: 206	1503	Result is not defined in function: ''	GCODE.c
 hint: 176	1163	Variable 'i' has been declared, but not used	GCODE.c
-diagnostics: 582	123	Compiled Successfully	GCODE.c
+diagnostics: 577	123	Compiled Successfully	GCODE.c
 hint: 276	1164	Variable 'last_non_modal_action' has been eliminated by optimizer	GCODE.c
 hint: 465	1164	Variable 'XYZ_Val' has been eliminated by optimizer	GCODE.c
 diagnostics: 0	122	Compilation Started	settings.h
@@ -114,7 +115,7 @@ hint: 111	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
 hint: 111	1164	Variable 'dec' has been eliminated by optimizer	Nut_Bolts.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 37	1163	Variable 'ii' has been declared, but not used	Planner.c
-diagnostics: 349	123	Compiled Successfully	Planner.c
+diagnostics: 357	123	Compiled Successfully	Planner.c
 warning: 229	1512	variable 'axis_plane_a' might not have been initialized	Planner.c
 warning: 231	1512	variable 'axis_plane_b' might not have been initialized	Planner.c
 hint: 145	1164	Variable 'inverse_feed_rate' has been eliminated by optimizer	Planner.c
@@ -126,13 +127,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 3656 ms	 
+diagnostics: 0	127	All files Compiled in 3532 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 5527   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5527   Dynamic RAM (bytes): 507381
+hint: 0	1144	Static RAM (bytes): 5111   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5111   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 80364 (4%)  Free ROM (bytes): 2016788 (96%)	Used ROM (bytes): 80364 (4%)  Free ROM (bytes): 2016788 (96%)
+hint: 0	1144	Used ROM (bytes): 80256 (4%)  Free ROM (bytes): 2016896 (96%)	Used ROM (bytes): 80256 (4%)  Free ROM (bytes): 2016896 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 844 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6906 ms	 
-diagnostics: 0	103	Finished successfully: 10 Mar 2023, 23:40:19	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 1047 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6875 ms	 
+diagnostics: 0	103	Finished successfully: 11 Mar 2023, 08:37:36	Pic32mzClicker2_StepperControl.mcp32

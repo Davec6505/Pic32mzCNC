@@ -235,7 +235,7 @@ int Instruction_Values(char *c,void *any);
 //movement of axis
 void Movement_Condition();
 //update current position ??? prehaps move to another location
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
+void gc_set_current_position(long x,long y,long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);

@@ -81,7 +81,7 @@ NOP
 ; dif start address is: 20 (R5)
 SEH	R5, R2
 ;Protocol.c,66 :: 		if(bit_istrue(sys.execute,EXEC_STATUS_REPORT)&& !startup){
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ANDI	R2, R2, 1
 SEH	R2, R2
 BNE	R2, R0, L__Sample_Ringbuffer371
@@ -101,10 +101,10 @@ L__Sample_Ringbuffer329:
 ORI	R2, R0, 1
 SB	R2, Offset(Protocol_startup+0)(GP)
 ;Protocol.c,68 :: 		bit_false(sys.execute,EXEC_STATUS_REPORT);
-LH	R3, Offset(_sys+26)(GP)
+LH	R3, Offset(_sys+18)(GP)
 ORI	R2, R0, 65534
 AND	R2, R3, R2
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 ;Protocol.c,69 :: 		report_realtime_status();
 JAL	_report_realtime_status+0
 NOP	
@@ -150,7 +150,7 @@ L__Sample_Ringbuffer376:
 JAL	_DMA0_Abort+0
 NOP	
 ;Protocol.c,83 :: 		if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ANDI	R2, R2, 1
 SEH	R2, R2
 BEQ	R2, R0, L__Sample_Ringbuffer377
@@ -159,9 +159,9 @@ J	L_Sample_Ringbuffer9
 NOP	
 L__Sample_Ringbuffer377:
 ;Protocol.c,84 :: 		bit_true(sys.execute,EXEC_STATUS_REPORT);
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ORI	R2, R2, 1
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 L_Sample_Ringbuffer9:
 ;Protocol.c,85 :: 		startup = 0;
 SB	R0, Offset(Protocol_startup+0)(GP)
@@ -260,7 +260,7 @@ L__Sample_Ringbuffer380:
 ;Protocol.c,145 :: 		startup = 0;
 SB	R0, Offset(Protocol_startup+0)(GP)
 ;Protocol.c,146 :: 		if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ANDI	R2, R2, 1
 SEH	R2, R2
 BEQ	R2, R0, L__Sample_Ringbuffer381
@@ -269,9 +269,9 @@ J	L_Sample_Ringbuffer14
 NOP	
 L__Sample_Ringbuffer381:
 ;Protocol.c,147 :: 		bit_true(sys.execute,EXEC_STATUS_REPORT);
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ORI	R2, R2, 1
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 L_Sample_Ringbuffer14:
 ;Protocol.c,148 :: 		goto end;
 J	___Sample_Ringbuffer_end
@@ -348,7 +348,7 @@ SB	R0, Offset(Protocol_startup+0)(GP)
 JAL	_report_gcode_modes+0
 NOP	
 ;Protocol.c,174 :: 		if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ANDI	R2, R2, 1
 SEH	R2, R2
 BEQ	R2, R0, L__Sample_Ringbuffer384
@@ -357,9 +357,9 @@ J	L_Sample_Ringbuffer24
 NOP	
 L__Sample_Ringbuffer384:
 ;Protocol.c,175 :: 		bit_true(sys.execute,EXEC_STATUS_REPORT);
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ORI	R2, R2, 1
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 L_Sample_Ringbuffer24:
 ;Protocol.c,176 :: 		query = 1;
 ORI	R2, R0, 1
@@ -453,7 +453,7 @@ L_Sample_Ringbuffer31:
 ORI	R2, R0, 2
 SB	R2, Offset(Protocol_startup+0)(GP)
 ;Protocol.c,212 :: 		if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 16
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__Sample_Ringbuffer390
@@ -495,7 +495,7 @@ MOVZ	R3, R0, R0
 L_Sample_Ringbuffer36:
 ; i start address is: 12 (R3)
 SEH	R2, R3
-SLTI	R2, R2, 5
+SLTI	R2, R2, 3
 BNE	R2, R0, L__Sample_Ringbuffer395
 NOP	
 J	L_Sample_Ringbuffer37
@@ -751,9 +751,9 @@ NOP
 ;Protocol.c,318 :: 		case '~': //*~ (cycle start)
 L_Sample_Ringbuffer57:
 ;Protocol.c,319 :: 		sys.execute |= EXEC_CYCLE_START;
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ORI	R2, R2, 2
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 ;Protocol.c,320 :: 		query = 1;  //STATUS_OK
 ORI	R2, R0, 1
 SH	R2, Offset(Sample_Ringbuffer_query_L0+0)(GP)
@@ -763,9 +763,9 @@ NOP
 ;Protocol.c,322 :: 		case '!': //*! (feed hold)
 L_Sample_Ringbuffer58:
 ;Protocol.c,323 :: 		sys.execute |= EXEC_FEED_HOLD;
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ORI	R2, R2, 8
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 ;Protocol.c,324 :: 		break;
 J	L_Sample_Ringbuffer19
 NOP	
@@ -3966,7 +3966,7 @@ ADDIU	SP, SP, -12
 SW	RA, 0(SP)
 ;Protocol.c,920 :: 		if (sys.execute) { // Enter only if any bit flag is true
 SW	R25, 4(SP)
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 BNE	R2, R0, L__protocol_execute_runtime740
 NOP	
 J	L_protocol_execute_runtime285
@@ -3974,9 +3974,9 @@ NOP
 L__protocol_execute_runtime740:
 ;Protocol.c,921 :: 		int rt_exec = sys.execute; // Avoid calling volatile multiple times
 ; rt_exec start address is: 16 (R4)
-LH	R4, Offset(_sys+26)(GP)
+LH	R4, Offset(_sys+18)(GP)
 ;Protocol.c,926 :: 		if (rt_exec & (EXEC_ALARM | EXEC_CRIT_EVENT)) {
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ANDI	R2, R2, 96
 BNE	R2, R0, L__protocol_execute_runtime742
 NOP	
@@ -4004,10 +4004,10 @@ JAL	_report_feedback_message+0
 NOP	
 LH	R4, 8(SP)
 ;Protocol.c,933 :: 		bit_false(sys.execute,EXEC_RESET); // Disable any existing reset
-LH	R3, Offset(_sys+26)(GP)
+LH	R3, Offset(_sys+18)(GP)
 ORI	R2, R0, 65519
 AND	R2, R3, R2
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 ; rt_exec end address is: 16 (R4)
 SEH	R3, R4
 ;Protocol.c,934 :: 		do {
@@ -4021,7 +4021,7 @@ L_protocol_execute_runtime288:
 ; rt_exec start address is: 12 (R3)
 ; rt_exec start address is: 12 (R3)
 ; rt_exec end address is: 12 (R3)
-LH	R2, Offset(_sys+26)(GP)
+LH	R2, Offset(_sys+18)(GP)
 ANDI	R2, R2, 16
 SEH	R2, R2
 BNE	R2, R0, L__protocol_execute_runtime746
@@ -4049,10 +4049,10 @@ LH	R4, 8(SP)
 L_protocol_execute_runtime291:
 ;Protocol.c,947 :: 		bit_false(sys.execute,(EXEC_ALARM | EXEC_CRIT_EVENT));
 ; rt_exec start address is: 16 (R4)
-LH	R3, Offset(_sys+26)(GP)
+LH	R3, Offset(_sys+18)(GP)
 ORI	R2, R0, 65439
 AND	R2, R3, R2
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 ; rt_exec end address is: 16 (R4)
 ;Protocol.c,948 :: 		}
 J	L_protocol_execute_runtime286
@@ -4092,10 +4092,10 @@ JAL	_report_realtime_status+0
 NOP	
 LH	R4, 8(SP)
 ;Protocol.c,959 :: 		bit_false(sys.execute,EXEC_STATUS_REPORT);
-LH	R3, Offset(_sys+26)(GP)
+LH	R3, Offset(_sys+18)(GP)
 ORI	R2, R0, 65534
 AND	R2, R3, R2
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 ;Protocol.c,960 :: 		}
 L_protocol_execute_runtime293:
 ;Protocol.c,963 :: 		if (rt_exec & EXEC_FEED_HOLD) {
@@ -4106,10 +4106,10 @@ J	L_protocol_execute_runtime294
 NOP	
 L__protocol_execute_runtime752:
 ;Protocol.c,965 :: 		bit_false(sys.execute,EXEC_FEED_HOLD);
-LH	R3, Offset(_sys+26)(GP)
+LH	R3, Offset(_sys+18)(GP)
 ORI	R2, R0, 65527
 AND	R2, R3, R2
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 ;Protocol.c,966 :: 		}
 L_protocol_execute_runtime294:
 ;Protocol.c,970 :: 		if (rt_exec & EXEC_CYCLE_STOP) {
@@ -4120,10 +4120,10 @@ J	L_protocol_execute_runtime295
 NOP	
 L__protocol_execute_runtime754:
 ;Protocol.c,972 :: 		bit_false(sys.execute,EXEC_CYCLE_STOP);
-LH	R3, Offset(_sys+26)(GP)
+LH	R3, Offset(_sys+18)(GP)
 ORI	R2, R0, 65531
 AND	R2, R3, R2
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 ;Protocol.c,973 :: 		}
 L_protocol_execute_runtime295:
 ;Protocol.c,975 :: 		if (rt_exec & EXEC_CYCLE_START) {
@@ -4135,7 +4135,7 @@ J	L_protocol_execute_runtime296
 NOP	
 L__protocol_execute_runtime756:
 ;Protocol.c,977 :: 		if (bit_istrue(settings.flags,FLAG_AUTO_START)) {
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 2
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__protocol_execute_runtime758
@@ -4145,14 +4145,14 @@ NOP
 L__protocol_execute_runtime758:
 ;Protocol.c,978 :: 		sys.auto_start = true; // Re-enable auto start after feed hold.
 ORI	R2, R0, 1
-SH	R2, Offset(_sys+24)(GP)
+SH	R2, Offset(_sys+16)(GP)
 ;Protocol.c,979 :: 		}
 L_protocol_execute_runtime297:
 ;Protocol.c,980 :: 		bit_false(sys.execute,EXEC_CYCLE_START);
-LH	R3, Offset(_sys+26)(GP)
+LH	R3, Offset(_sys+18)(GP)
 ORI	R2, R0, 65533
 AND	R2, R3, R2
-SH	R2, Offset(_sys+26)(GP)
+SH	R2, Offset(_sys+18)(GP)
 ;Protocol.c,981 :: 		}
 L_protocol_execute_runtime296:
 ;Protocol.c,982 :: 		}
@@ -4183,9 +4183,9 @@ NOP
 ;Protocol.c,1010 :: 		sys.abort = 0;
 SH	R0, Offset(_sys+0)(GP)
 ;Protocol.c,1011 :: 		sys.execute = 0;
-SH	R0, Offset(_sys+26)(GP)
+SH	R0, Offset(_sys+18)(GP)
 ;Protocol.c,1012 :: 		if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) { sys.auto_start = true; }
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 2
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__protocol_system_check763
@@ -4194,7 +4194,7 @@ J	L_protocol_system_check299
 NOP	
 L__protocol_system_check763:
 ORI	R2, R0, 1
-SH	R2, Offset(_sys+24)(GP)
+SH	R2, Offset(_sys+16)(GP)
 L_protocol_system_check299:
 ;Protocol.c,1022 :: 		if (sys.state == STATE_INIT && bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) { sys.state = STATE_ALARM; }
 LH	R3, Offset(_sys+2)(GP)
@@ -4204,7 +4204,7 @@ NOP
 J	L__protocol_system_check365
 NOP	
 L__protocol_system_check764:
-LHU	R2, Offset(_settings+50)(GP)
+LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 16
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__protocol_system_check766

@@ -36,7 +36,7 @@ typedef __attribute__((aligned (32))) float afloat;
 #define BITFLAG_HOMING_ENABLE         bit(4)
 
 //flags
-#define DEFAULT_REPORT_INCHES          true
+#define DEFAULT_REPORT_INCHES          false
 #define DEFAULT_AUTO_START             true
 #define DEFAULT_INVERT_ST_ENABLE       true
 #define DEFAULT_HARD_LIMIT_ENABLE      true
@@ -81,11 +81,13 @@ typedef __attribute__((aligned (32))) float afloat;
 ////////////////////////////////////////////////////////////
 //              Stepper Motor Settings                    //
 ////////////////////////////////////////////////////////////
-#define NoOfAxis 4
+#define NoOfAxis 2
 #define  _X      0
 #define  _Y      1
 #define  _Z      2
 #define  _A      3
+#define  _B      4
+#define  _C      5
 
 //Number of planes must be adjusted acording to NoOfAxis
 //4 axis has 4 planes XY XZ YZ [XA YA

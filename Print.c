@@ -209,12 +209,10 @@ void report_realtime_status(){
   // to be added are distance to go on block, processed block id, and feed rate. Also a settings bitmask
   // for a user to select the desired real-time data.
   int i;
-  long current_position[3]; // Copy current state of the system position variable
-  float print_position[3];
+  static float print_position[NoOfAxis];
+  
+  //to ensure dma is not busy, under construction to move away from while()
   while(DMA_IsOn(1));
-  
- // memcpy(current_position,sys.position,sizeof(sys.position));
-  
   // Report current machine state
   switch (sys.state) {
     case STATE_IDLE:       dma_printf("%s","<Idle"); break;
@@ -228,8 +226,8 @@ void report_realtime_status(){
   }
 
   // Report machine position
-  for (i=0; i<= 2; i++) {
-    print_position[i] = current_position[i]/settings.steps_per_mm[i];
+  for (i=0; i<= NoOfAxis; i++) {
+    print_position[i] = beltsteps2mm(STPS[i].steps_abs_position);
     if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
   }
   

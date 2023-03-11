@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Planner.h
+Value=Settings.h
 =======
 =======
 >>>>>>> patch1
@@ -138,9 +138,15 @@ File4=Stepper.c
 File5=Stepper.h
 File6=Print.c
 File7=Settings.h
-File8=Planner.h
-File9=Planner.c
-Count=10
+File8=Steptodistance.c
+File9=Steptodistance.h
+File10=Planner.c
+File11=GCODE.c
+File12=GCODE.h
+File13=Globals.h
+File14=Planner.h
+File15=Globals.c
+Count=16
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

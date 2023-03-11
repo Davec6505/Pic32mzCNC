@@ -99,9 +99,9 @@ extern sfr sbit Y_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 169 "c:/users/git/pic32mzcnc/settings.h"
+#line 171 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[ 4 ];
+ float steps_per_mm[ 2 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -129,6 +129,7 @@ const float Dia;
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
 long belt_steps(double move_distance);
+float beltsteps2mm(long steps);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -303,7 +304,7 @@ typedef struct {
  int state;
  int homing;
  int homing_cnt;
- long position[ 4 ];
+ long position[ 2 ];
 
  int auto_start;
  int execute;
@@ -313,8 +314,8 @@ extern system_t sys;
 
 
 typedef struct{
- float coord[ 4 ];
- float coord_offset[ 4 ];
+ float coord[ 2 ];
+ float coord_offset[ 2 ];
 }coord_sys;
 extern volatile coord_sys coord_system[ 9 ];
 
@@ -427,17 +428,17 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- double mm_position;
+ float mm_position;
 
- double mm_home_position;
+ float mm_home_position;
 
- double max_travel;
+ float max_travel;
 
  int axis_dir;
 
  char master: 1;
 }STP;
-extern STP STPS[ 4 ];
+extern STP STPS[ 2 ];
 
 
 
@@ -499,12 +500,12 @@ typedef struct {
  unsigned long frequency;
  float feed_rate;
 
- volatile float position[ 4 ];
- volatile float coord_system[ 4 ];
+ volatile float position[ 2 ];
+ volatile float coord_system[ 2 ];
 
- volatile float coord_offset[ 4 ];
+ volatile float coord_offset[ 2 ];
 
- volatile float next_position[ 4 ];
+ volatile float next_position[ 2 ];
  volatile float offset[3];
  float R;
  float I;
@@ -553,7 +554,7 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
+void gc_set_current_position(long x,long y,long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -873,6 +874,8 @@ void sys_sync_current_position();
 
 void plan_set_current_position(long x, long y, long z);
 
+void plan_reset_absolute_position();
+
 unsigned long sqrt_(unsigned long v);
 
 void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
@@ -886,7 +889,7 @@ sVars SV;
 void plan_init(long accel,long decel)
 {
 int i = 0;
- for(i = 0; i <  4 ; i++){
+ for(i = 0; i <  2 ; i++){
  STPS[i].acc = accel;
  STPS[i].dec = decel;
  }
@@ -992,9 +995,9 @@ void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_a
  double r, double i, double j, double k, int axis_A,int axis_B,int dir){
 unsigned short isclockwise = 0;
 double inverse_feed_rate = -1;
-double position[ 4 ];
-double target[ 4 ];
-double offset[ 4 ];
+double position[ 2 ];
+double target[ 2 ];
+double offset[ 2 ];
 double x = 0.00;
 double y = 0.00;
 double h_x2_div_d = 0.00;
@@ -1056,15 +1059,25 @@ int axis_plane_a,axis_plane_b;
 void sys_sync_current_position(){
 
 
- gc_set_current_position(sys.position[X],sys.position[Y],sys.position[Z]);
+ gc_set_current_position(STPS[X].steps_abs_position
+ ,STPS[Y].steps_abs_position
+ ,STPS[Z].steps_abs_position);
 }
 
 
 void plan_set_current_position(long x, long y, long z)
 {
-#line 302 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 304 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
-#line 320 "C:/Users/Git/Pic32mzCNC/Planner.c"
+
+
+void plan_reset_absolute_position(){
+ int i = 0;
+ for(i=0;i< 2 ;i++)
+ STPS[X].steps_abs_position = 0;
+
+}
+#line 328 "C:/Users/Git/Pic32mzCNC/Planner.c"
 unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;
