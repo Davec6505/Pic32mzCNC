@@ -122,13 +122,13 @@ typedef struct {
 
 } settings_t;
 extern volatile settings_t settings;
-#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
-long belt_steps(double move_distance);
-float beltsteps2mm(long steps);
+long belt_steps(double move_distance,int axis);
+float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -488,12 +488,10 @@ typedef struct {
  char motion_mode;
  char program_flow;
  char tool;
-
  char plane_axis_0,
  plane_axis_1,
  plane_axis_2;
  int coord_select;
-
 
  int L;
  unsigned long frequency;
@@ -729,6 +727,12 @@ void protocol_system_check();
 
 
 void protocol_execute_runtime();
+
+
+
+
+
+ static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -883,13 +887,13 @@ void Test_CycleZ();
 void Test_CycleA();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
-long belt_steps(double move_distance);
-float beltsteps2mm(long steps);
+long belt_steps(double move_distance,int axis);
+float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
@@ -908,17 +912,17 @@ double temp = 0.00;
 
 
 
-long belt_steps(double move_distance){
+long belt_steps(double move_distance,int axis){
  double temp = 0;
- temp = ( ( 188 * 32 ) /( 2 * 20 ))*move_distance;
+ temp = (( 32.0  * settings.steps_per_mm[axis])/( 2.0  *  20.0 )) * move_distance;
  return (long)temp;
 }
 
 
 
 
-float beltsteps2mm(long steps){
- float temp = ( 2 * 20 *steps)/ ( 188 * 32 ) ;
+float beltsteps2mm(long Steps,int axis){
+ float temp = ( 2.0 * 20.0 *(float)Steps)/( 32.0  * settings.steps_per_mm[axis]);
 #line 46 "C:/Users/Git/Pic32mzCNC/Steptodistance.c"
  return temp;
 }
@@ -952,7 +956,7 @@ double circ,cirDivision,stepsToMove;
 
 
  cirDivision = mmsToMove / circ;
- stepsToMove = cirDivision *  ( 188 * 32 ) ;
+ stepsToMove = cirDivision *  ( 188 * 32.0 ) ;
 
 
  return (long)stepsToMove;

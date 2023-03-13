@@ -472,7 +472,7 @@ static int Modal_Group_Actions1(int action){
        case 12://b0000 1100
             DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
             break;
-       case 15://Homing Y axis
+       case 15://Circle interpolation
             r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
             break;
        case ALL_AXIS://Homing X axis
@@ -504,7 +504,7 @@ static int Modal_Group_Actions1(int action){
                 if(STPS[l].run_state != STOP)
                     STPS[l].run_state = STOP;
               }
-              
+//              
               //sync the homing position to zero
               sys_sync_current_position();
               

@@ -261,12 +261,10 @@ typedef struct {
  char motion_mode;
  char program_flow;
  char tool;
-
  char plane_axis_0,
  plane_axis_1,
  plane_axis_2;
  int coord_select;
-
 
  int L;
  unsigned long frequency;
@@ -559,13 +557,13 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
-long belt_steps(double move_distance);
-float beltsteps2mm(long steps);
+long belt_steps(double move_distance,int axis);
+float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -694,6 +692,12 @@ void protocol_system_check();
 
 
 void protocol_execute_runtime();
+
+
+
+
+
+ static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -934,13 +938,13 @@ int retry_flash_write = 0;
 
 
 
- settings.steps_per_mm[X] =  250.00 ;
+ settings.steps_per_mm[X] =  200.00 ;
  buffA[ 0x40 ] = flt2ulong(settings.steps_per_mm[X]);
- settings.steps_per_mm[Y] =  250.00 ;
+ settings.steps_per_mm[Y] =  200.00 ;
  buffA[ 0x41 ] = flt2ulong(settings.steps_per_mm[Y]);
- settings.steps_per_mm[Z] =  250.00 ;
+ settings.steps_per_mm[Z] =  200.00 ;
  buffA[ 0x42 ] = flt2ulong(settings.steps_per_mm[Z]);
- settings.steps_per_mm[A] =  250.00 ;
+ settings.steps_per_mm[A] =  200.00 ;
  buffA[ 0x43 ] = flt2ulong(settings.steps_per_mm[A]);
 
  settings.default_feed_rate =  250.0 ;

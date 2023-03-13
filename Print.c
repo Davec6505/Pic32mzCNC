@@ -227,7 +227,7 @@ void report_realtime_status(){
 
   // Report machine position
   for (i=0; i<= NoOfAxis; i++) {
-    print_position[i] = beltsteps2mm(STPS[i].steps_abs_position);
+    print_position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
     if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
   }
   

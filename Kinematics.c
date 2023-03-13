@@ -79,7 +79,7 @@ int   dir    = 0;
       //if absolute mode ~ newxyz = new_position - current_position
   if(gc.absolute_mode == true){
     //get current position
-    tempA = belt_steps(newxyz);
+    tempA = belt_steps(newxyz,axis_No);
     
     //subtract new from current
     tempA = tempA - STPS[axis_No].steps_abs_position;
@@ -92,7 +92,7 @@ int   dir    = 0;
               ,newxyz);
     #endif
   }else{
-    tempA = belt_steps(newxyz);
+    tempA = belt_steps(newxyz,axis_No);
   }
   
   Single_Axis_Enable(axis_No);
@@ -123,14 +123,14 @@ int dirA,dirB;
     //if absolute mode ~ newxyz = new_position - current_position
    if(gc.absolute_mode == true){
       //get current position
-    tempA = belt_steps(axis_a);//ulong2flt( STPS[axisA].steps_abs_position);
-    tempB = belt_steps(axis_b);//ulong2flt( STPS[axisB].steps_abs_position);
+    tempA = belt_steps(axis_a,axisA);//ulong2flt( STPS[axisA].steps_abs_position);
+    tempB = belt_steps(axis_b,axisB);//ulong2flt( STPS[axisB].steps_abs_position);
       //subtract new from current
      tempA = tempA - STPS[axisA].steps_abs_position;
      tempB = tempB - STPS[axisB].steps_abs_position;
    }else{
-      tempA = belt_steps(axis_a);
-      tempB = belt_steps(axis_b);
+      tempA = belt_steps(axis_a,axisA);
+      tempB = belt_steps(axis_b,axisB);
    }
    SV.over=0;
    SV.dif = 0;
@@ -549,7 +549,7 @@ static void Home_Axis(double distance,long speed,int axis){
    dma_printf("HomeAxis(%f,%l,%d);\n",distance,speed,axis);
   #endif
   //calculate the distance in Steps and send to stepper control
-  STPS[axis].mmToTravel = belt_steps(distance);
+  STPS[axis].mmToTravel = belt_steps(distance,axis);
   SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 

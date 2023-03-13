@@ -636,13 +636,13 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
-long belt_steps(double move_distance);
-float beltsteps2mm(long steps);
+long belt_steps(double move_distance,int axis);
+float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -757,6 +757,12 @@ void protocol_system_check();
 
 
 void protocol_execute_runtime();
+
+
+
+
+
+ static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -809,12 +815,10 @@ typedef struct {
  char motion_mode;
  char program_flow;
  char tool;
-
  char plane_axis_0,
  plane_axis_1,
  plane_axis_2;
  int coord_select;
-
 
  int L;
  unsigned long frequency;
@@ -1155,7 +1159,14 @@ int i = 0;
 
  if(!gc.absolute_override)
   (non_modal_words |= (1 << non_modal_action) ) ;
-#line 313 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("group_number:= %d\tgc.absolute_override:= %d\n"
+ ,group_number,gc.absolute_override);
+
+
+
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -1168,7 +1179,12 @@ int i = 0;
 
  if(group_number ==  2 ){
  status_code =  0 ;
-#line 331 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("[group_number:= %d][motion_mode:= %d]\n"
+ ,group_number,motion_mode);
+
+
  switch (motion_mode) {
  case  4 :
 
@@ -1203,6 +1219,10 @@ int i = 0;
  ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
  FAIL( 6 );
  } else {
+
+ while(DMA_IsOn(1));
+ dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
+
  if (gc.R != 0) {
 
  asm{nop;}
@@ -1225,27 +1245,48 @@ int i = 0;
  }else{
  FAIL( 0 );
  }
-#line 394 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("axis_xyz:= %d\n",axis_xyz);
+
+
+
  return status_code;
  }
 
 
  if (group_number ==  4 ){
-#line 405 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.absolute_mode:= %d\n",gc.absolute_mode);
+
+
  FAIL( 0 );
  return status_code;
  }
 
 
  if (group_number ==  6 ){
-#line 417 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.inverse_feed_rate_mode:= %d\n",gc.inverse_feed_rate_mode);
+
+
  FAIL( 0 );
  return status_code;
  }
 
 
  if (group_number ==  7 ){
-#line 429 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.inches_mode:= %d\n",gc.inches_mode);
+
+
  FAIL( 0 );
  return status_code;
  }
@@ -1257,11 +1298,16 @@ int i = 0;
  FAIL( 1 );
  else
  FAIL( 0 );
-#line 446 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.coord_select:= %d\n",gc.coord_select);
+
+
  return status_code;
  }
  }
-#line 457 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 461 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  FAIL( 0 );
  return status_code;
 }
@@ -1325,9 +1371,9 @@ int F_Val,O_Val;
  if(F_Val < 0){
  FAIL( 13 );
  }
-#line 526 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 530 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  gc.frequency = (unsigned long)F_Val;
-#line 531 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 535 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
@@ -1354,7 +1400,7 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 566 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 570 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }
 
@@ -1363,7 +1409,7 @@ int F_Val,O_Val;
 
 
 void gc_set_current_position(long x,long y,long z){
- gc.position[X] = beltsteps2mm(x);
- gc.position[Y] = beltsteps2mm(Y);
- gc.position[Z] = beltsteps2mm(Z);
+ gc.position[X] = beltsteps2mm(x,X);
+ gc.position[Y] = beltsteps2mm(y,Y);
+ gc.position[Z] = beltsteps2mm(z,Z);
 }

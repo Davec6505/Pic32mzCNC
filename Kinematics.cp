@@ -172,13 +172,13 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
-long belt_steps(double move_distance);
-float beltsteps2mm(long steps);
+long belt_steps(double move_distance,int axis);
+float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -378,12 +378,10 @@ typedef struct {
  char motion_mode;
  char program_flow;
  char tool;
-
  char plane_axis_0,
  plane_axis_1,
  plane_axis_2;
  int coord_select;
-
 
  int L;
  unsigned long frequency;
@@ -619,6 +617,12 @@ void protocol_system_check();
 
 
 void protocol_execute_runtime();
+
+
+
+
+
+ static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -949,13 +953,13 @@ int dir = 0;
 
  if(gc.absolute_mode ==  1 ){
 
- tempA = belt_steps(newxyz);
+ tempA = belt_steps(newxyz,axis_No);
 
 
  tempA = tempA - STPS[axis_No].steps_abs_position;
 #line 94 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }else{
- tempA = belt_steps(newxyz);
+ tempA = belt_steps(newxyz,axis_No);
  }
 
  Single_Axis_Enable(axis_No);
@@ -983,14 +987,14 @@ int dirA,dirB;
 
  if(gc.absolute_mode ==  1 ){
 
- tempA = belt_steps(axis_a);
- tempB = belt_steps(axis_b);
+ tempA = belt_steps(axis_a,axisA);
+ tempB = belt_steps(axis_b,axisB);
 
  tempA = tempA - STPS[axisA].steps_abs_position;
  tempB = tempB - STPS[axisB].steps_abs_position;
  }else{
- tempA = belt_steps(axis_a);
- tempB = belt_steps(axis_b);
+ tempA = belt_steps(axis_a,axisA);
+ tempB = belt_steps(axis_b,axisB);
  }
  SV.over=0;
  SV.dif = 0;
@@ -1317,7 +1321,7 @@ static void Home_Axis(double distance,long speed,int axis){
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
 #line 552 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
- STPS[axis].mmToTravel = belt_steps(distance);
+ STPS[axis].mmToTravel = belt_steps(distance,axis);
  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 

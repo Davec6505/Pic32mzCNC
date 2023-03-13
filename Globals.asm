@@ -61,44 +61,44 @@ JAL	_NVMErasePage+0
 NOP	
 SH	R2, Offset(_error+0)(GP)
 ;Globals.c,67 :: 		settings.steps_per_mm[X]   = DEFAULT_X_STEPS_PER_MM;
-LUI	R2, 17274
+LUI	R2, 17224
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+0)(GP)
 ;Globals.c,68 :: 		buffA[SPMMX_OFFSET]        = flt2ulong(settings.steps_per_mm[X]);
-LUI	R2, 17274
+LUI	R2, 17224
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612480)(GP)
 ;Globals.c,69 :: 		settings.steps_per_mm[Y]   = DEFAULT_Y_STEPS_PER_MM;
-LUI	R2, 17274
+LUI	R2, 17224
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+4)(GP)
 ;Globals.c,70 :: 		buffA[SPMMY_OFFSET]        = flt2ulong(settings.steps_per_mm[Y]);
-LUI	R2, 17274
+LUI	R2, 17224
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612476)(GP)
 ;Globals.c,71 :: 		settings.steps_per_mm[Z]   = DEFAULT_Z_STEPS_PER_MM;
-LUI	R2, 17274
+LUI	R2, 17224
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+8)(GP)
 ;Globals.c,72 :: 		buffA[SPMMZ_OFFSET]        = flt2ulong(settings.steps_per_mm[Z]);
-LUI	R2, 17274
+LUI	R2, 17224
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612472)(GP)
 ;Globals.c,73 :: 		settings.steps_per_mm[A]   = DEFAULT_A_STEPS_PER_MM;
-LUI	R2, 17274
+LUI	R2, 17224
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+12)(GP)
 ;Globals.c,74 :: 		buffA[SPMMA_OFFSET]        = flt2ulong(settings.steps_per_mm[A]);
-LUI	R2, 17274
+LUI	R2, 17224
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0

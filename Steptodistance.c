@@ -28,17 +28,17 @@ double temp = 0.00;
 //Calculate the setp count to move for
 //a belt driven axis
 // SPMM = 1/p * 1/uStep * 1/BTC * SPR
-long belt_steps(double move_distance){
+long belt_steps(double move_distance,int axis){
  double temp = 0;
-  temp = (SPRU/(BELT_PITCH*PULLEY_TOOTH_COUNT))*move_distance;
+  temp = ((M_STEP * settings.steps_per_mm[axis])/(BELT_PITCH * PULLEY_TOOTH_COUNT)) * move_distance; //mmtostep(move_distance);
   return (long)temp;
 }
 
 ///////////////////////////////////////////
 //Calculate from Steps to mm
 //SPMM = p^-1 * frq *
-float beltsteps2mm(long steps){
- float temp = (BELT_PITCH*PULLEY_TOOTH_COUNT*steps)/SPRU;
+float beltsteps2mm(long Steps,int axis){
+ float temp = (BELT_PITCH*PULLEY_TOOTH_COUNT*(float)Steps)/(M_STEP * settings.steps_per_mm[axis]); //steptomm(steps);
  #if CalcsDebug == 1
  while(DMA_IsOn(1));
  dma_printf("steps1mm:= %f\n",temp);

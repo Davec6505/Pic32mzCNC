@@ -170,13 +170,11 @@ typedef struct {
   char motion_mode;              // {G0, G1, G2, G3, G80}
   char program_flow;             // {M0, M1, M2, M30}
   char tool;
-  //  uint16_t spindle_speed;    // RPM/100
   char plane_axis_0,
        plane_axis_1,
        plane_axis_2;                      // The axes of the selected plane
   int  coord_select;                      // Active work coordinate system number. Default: 0=G54.
- // int status_code;                      // Parser status for current block
- // int motion_mode;                      // {G0, G1, G2, G3, G80}
+ // int spindle_speed;                    // RPM/100
   int L;                                  //L2 tells the G10 we’re setting standard work offsets
   unsigned long frequency;                // Speed expressed as Frequency of pulses
   float feed_rate;                        // Millimeters/min

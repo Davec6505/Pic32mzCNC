@@ -20,7 +20,12 @@
 #define INVERSE_BELT_PITCH    (1/BELT_PITCH)
 #define INVERSE_PULLEY_TOOTH_COUNT (1/PULLEY_TOOTH_COUNT)
 #define INVERSE_LEADSCREW_PITCH (1/LEADSCREW_PITCH)
+#define BELT_AND_PITCH (PULLEY_TOOTH_COUNT*BELT_PITCH)
 
+//useful macros
+#define step1mm ((SPRU)/(BELT_AND_PITCH))
+#define mmtostep(mm) ((step1mm) * (mm))
+#define steptomm(step) ((step) / (step1mm))
 
 const float Dia;
 
@@ -36,8 +41,8 @@ const float Dia;
 
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
-long belt_steps(double move_distance);
-float beltsteps2mm(long steps);
+long belt_steps(double move_distance,int axis);
+float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
 double in2mm(double inch);
 

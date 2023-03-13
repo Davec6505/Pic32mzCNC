@@ -362,6 +362,10 @@ int i = 0;
                  ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
               FAIL(STATUS_INVALID_STATEMENT);
             } else {
+              #if GcodeDebug == 3
+              while(DMA_IsOn(1));
+              dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
+              #endif
               if (gc.R != 0) {
                  // Arc Mode radius is passed over to the arc function
                  asm{nop;}
@@ -571,7 +575,7 @@ int F_Val,O_Val;
 // limit pull-off routines.
 // don't know yet ????????????
 void gc_set_current_position(long x,long y,long z){
-  gc.position[X] = beltsteps2mm(x);
-  gc.position[Y] = beltsteps2mm(Y);
-  gc.position[Z] = beltsteps2mm(Z);
+  gc.position[X] = beltsteps2mm(x,X);
+  gc.position[Y] = beltsteps2mm(y,Y);
+  gc.position[Z] = beltsteps2mm(z,Z);
 }

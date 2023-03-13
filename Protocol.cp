@@ -637,13 +637,13 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
-long belt_steps(double move_distance);
-float beltsteps2mm(long steps);
+long belt_steps(double move_distance,int axis);
+float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -751,12 +751,10 @@ typedef struct {
  char motion_mode;
  char program_flow;
  char tool;
-
  char plane_axis_0,
  plane_axis_1,
  plane_axis_2;
  int coord_select;
-
 
  int L;
  unsigned long frequency;
@@ -880,8 +878,14 @@ void protocol_system_check();
 
 
 void protocol_execute_runtime();
+
+
+
+
+
+ static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/print.h"
-#line 26 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 29 "C:/Users/Git/Pic32mzCNC/Protocol.c"
 const code char SL[] = "$N";
 char gcode[ 20 ][ 64 ];
 static unsigned short startup = 0;
@@ -934,7 +938,7 @@ int axis_to_run = 0;
  if(DMA0_ReadDstPtr()){
  ptr = (char*) 0xA0002000 ;
  if(*ptr == '?'){
-#line 82 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 85 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  DMA0_Abort();
  if( ((sys.execute & (1 << 0) ) == 0) )
   (sys.execute |= (1 << 0) ) ;
@@ -956,16 +960,16 @@ START_LINE:
  num_of_strings = strsplit2(gcode,str,0x20);
 
  str_len = strlen(gcode[0]);
-#line 122 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 125 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  if(DCH0DAT == '?'){
-#line 127 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 130 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  report_init_message();
  DCH0DAT = '\n';
  status =  0 ;
  startup = 1;
  goto report;
  }
-#line 141 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 144 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  SV.homed =  0 ;
 
 
@@ -1079,7 +1083,7 @@ START_LINE:
  report_startup_line(helper_var,gcode[0]);
  query = 1;
  }
-#line 258 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 261 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
  break;
  }else {
@@ -1094,7 +1098,7 @@ START_LINE:
 
  num[0] = gcode[0][2];
  N_Val = atoi(num);
-#line 278 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 281 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }else {
  query = 2;
  break;
@@ -1107,12 +1111,12 @@ START_LINE:
 
  helper_var = strlen((gcode[0]));
  strncpy(str,(gcode[0]),helper_var);
-#line 297 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 300 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  str_len = strlen(str);
-#line 302 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 305 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }else{
  int str_length = 0;
-#line 311 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 314 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  settings_store_startup_line(N_Val,str+4);
  }
 
@@ -1159,7 +1163,7 @@ START_LINE:
  query = 3;
  }
  value = atof(str_val);
-#line 361 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 364 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  settings_store_global_setting(N_Val,value);
 
 
@@ -1189,10 +1193,20 @@ START_LINE:
  motion_mode = G_Mode(G_Val);
 
  query = (motion_mode ==  6 )? 1:20;
-#line 399 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+
+ PrintDebug(*(*(gcode)+0),temp,&G_Val);
+
+
+
+
+
+
  if(*(*(gcode+1)+0) != 0){
  no_of_axis++;
-#line 404 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ dma_printf("no_of_axis:= %d\n",no_of_axis);
+
  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
  switch(*(*(gcode+1)+0)) {
  case 'G':case 'g':
@@ -1210,7 +1224,11 @@ START_LINE:
  motion_mode = G_Mode(G_Val);
 
  query = (motion_mode ==  6 )? 1:20;
-#line 426 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+
+ PrintDebug(*(*(gcode)+0),temp,&G_Val);
+
+
  break;
  case 'X':case 'x':
  case 'Y':case 'y':
@@ -1218,27 +1236,37 @@ START_LINE:
  case 'A':case 'a':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[1],&XYZ_Val);
-#line 436 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[1],temp,&XYZ_Val);
+
  break;
  case 'L':case 'l':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[1],&O_Val);
-#line 443 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[1],temp,&O_Val);
+
  break;
  case 'F':case 'f':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[1],&O_Val);
-#line 450 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[1],temp,&O_Val);
+
  break;
  case 'P':case 'p':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[1],&O_Val);
-#line 457 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[1],temp,&O_Val);
+
  break;
  case 'S':case 's':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[1],&O_Val);
-#line 464 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[1],temp,&O_Val);
+
  break;
  }
  }
@@ -1264,7 +1292,9 @@ START_LINE:
  motion_mode = G_Mode(G_Val);
 
  query = (motion_mode ==  6 )? 1:20;
-#line 492 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*(*(gcode)+0),temp,&G_Val);
+
  break;
  case 'X':case 'x':
  case 'Y':case 'y':
@@ -1273,27 +1303,37 @@ START_LINE:
  no_of_axis++;
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[2],&XYZ_Val);
-#line 503 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[2],temp,&XYZ_Val);
+
  break;
  case 'L':case 'l':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[2],&O_Val);
-#line 510 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[2],temp,&O_Val);
+
  break;
  case 'F':case 'f':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[2],&O_Val);
-#line 517 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[2],temp,&O_Val);
+
  break;
  case 'P':case 'p':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[2],&O_Val);
-#line 524 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[2],temp,&O_Val);
+
  break;
  case 'S':case 's':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[2],&O_Val);
-#line 531 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[2],temp,&O_Val);
+
  break;
  }
  }
@@ -1318,7 +1358,9 @@ START_LINE:
  motion_mode = G_Mode(G_Val);
 
  query = (motion_mode ==  6 )? 1:20;
-#line 558 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*(*(gcode)+0),temp,&G_Val);
+
  break;
  case 'X':case 'x':case 'Y':case 'y':
  case 'Z':case 'z':case 'R':case 'r':
@@ -1326,12 +1368,16 @@ START_LINE:
  no_of_axis++;
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[3],&XYZ_Val);
-#line 568 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[3],temp,&XYZ_Val);
+
  break;
  case 'F': case 'f':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[3],&O_Val);
-#line 575 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[3],temp,&O_Val);
+
  break;
  }
  }
@@ -1347,12 +1393,16 @@ START_LINE:
  case 'J':case 'j':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[4],&XYZ_Val);
-#line 593 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[4],temp,&XYZ_Val);
+
  break;
  case 'F':case 'f':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[4],&O_Val);
-#line 600 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[4],temp,&O_Val);
+
  break;
 
  }
@@ -1368,12 +1418,16 @@ START_LINE:
  case 'J':case 'j':
  XYZ_Val = atof(temp);
  Instruction_Values(gcode[5],&XYZ_Val);
-#line 618 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[5],temp,&XYZ_Val);
+
  break;
  case 'F':case 'f':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[5],&O_Val);
-#line 625 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(*gcode[5],temp,&O_Val);
+
  break;
  }
  }
@@ -1385,12 +1439,16 @@ START_LINE:
  case 'J':case 'j':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[6],&XYZ_Val);
-#line 639 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(gcode[6],temp,&XYZ_Val);
+
  break;
  case 'F':case 'f':
  O_Val = atoi(temp);
  status = Instruction_Values(gcode[6],&O_Val);
-#line 646 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(gcode[6],temp,&O_Val);
+
  break;
 
  }
@@ -1404,7 +1462,11 @@ START_LINE:
  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
  M_Val = atoi(temp);
  M_Instruction(M_Val);
-#line 664 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(gcode[0],temp,&M_Val);
+
+
+
  if((*(gcode+1)) != 0){
  switch(*(*(gcode+1))){
  case 'S':
@@ -1413,7 +1475,9 @@ START_LINE:
  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
  XYZ_Val = atoi(temp);
  status = Instruction_Values(gcode[0],&XYZ_Val);
-#line 675 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(gcode[0],temp,&XYZ_Val);
+
  }
  }
  query = 1;
@@ -1424,7 +1488,9 @@ START_LINE:
  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[0],&XYZ_Val);
-#line 688 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(gcode[0],temp,&XYZ_Val);
+
  }
 
 
@@ -1438,7 +1504,9 @@ START_LINE:
  case 'A':case 'a':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[1],&XYZ_Val);
-#line 704 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(gcode[1],temp,&XYZ_Val);
+
  break;
  case 'F':
  case 'f':
@@ -1446,7 +1514,10 @@ START_LINE:
  F_1_Once = 1;
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[2],&F_Val);
-#line 715 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(gcode[1],temp,&F_Val);
+
+
  break;
  }
  }
@@ -1458,14 +1529,16 @@ START_LINE:
  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
  F_Val = atoi(temp);
  status = Instruction_Values(gcode[0],&F_Val);
-#line 729 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ PrintDebug(gcode[6],temp,&F_Val);
+
  }
  query = 1;
  break;
  }
  }
  report:
-#line 740 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 743 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  if(query == 1){status =  0 ;}
  else if(query == 2){status =  1 ;}
  else if(query == 3){status =  3 ;}
@@ -1589,7 +1662,39 @@ int result = 0;
 
  return result;
 }
-#line 919 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+
+
+
+static void PrintDebug(char c,char *strB,void *ptr){
+int G_Val;
+float XYZ_Val;
+
+ switch(c){
+ case 'G':case 'g':
+ case 'F':case 'f':
+ case 'M':case 'm':
+ case 'S':case 's':
+ case 'P':case 'p':
+ case 'L':case 'l':
+ case 'T':case 't':
+ G_Val = *(int*)ptr;
+ while(DMA_IsOn(1));
+ dma_printf("%c\t%s\t%d\n",c,strB,G_Val);
+ break;
+ case 'X':case 'x':
+ case 'Y':case 'y':
+ case 'Z':case 'z':
+ case 'A':case 'a':
+ XYZ_Val = *(float*)ptr;
+ while(DMA_IsOn(1));
+ dma_printf("%c\t%s\t%f\n",c,strB,XYZ_Val);
+ break;
+ default:break;
+ }
+ return;
+}
+#line 922 "C:/Users/Git/Pic32mzCNC/Protocol.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  int rt_exec = sys.execute;
@@ -1666,7 +1771,7 @@ void protocol_system_check(){
 
 
  if (sys.abort) {
-#line 1007 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 1010 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  sys_sync_current_position();
 
 
