@@ -159,7 +159,7 @@ extern volatile int status_code;   // Status of instructions
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef struct {
-  char r:                      1;
+  char r: 1;
   char no_axis_interpolate;      //Single or dual axis for interpolation
   char inverse_feed_rate_mode;   // {G93, G94}
   char inches_mode;              // 0 = millimeter mode, 1 = inches mode {G20, G21}
@@ -192,6 +192,7 @@ typedef struct {
   float K;
   int P;               //Pause as in msec if sent with G04 else Coord-position
   int S;               //Pause as in sec
+  int DIR;
 } parser_state_t;
 extern parser_state_t gc;
 

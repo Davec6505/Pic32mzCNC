@@ -473,7 +473,8 @@ static int Modal_Group_Actions1(int action){
             DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
             break;
        case 15://Circle interpolation
-            r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
+            sys_sync_current_position();
+            r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
             break;
        case ALL_AXIS://Homing X axis
             axis_to_home = Home(axis_to_home);

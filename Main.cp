@@ -389,6 +389,7 @@ typedef struct {
  float K;
  int P;
  int S;
+ int DIR;
 } parser_state_t;
 extern parser_state_t gc;
 
@@ -844,12 +845,6 @@ void protocol_system_check();
 
 
 void protocol_execute_runtime();
-
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -949,15 +944,7 @@ static int cntr = 0,a = 0;
  break;
  case 4:
  axis_to_run = Get_Axisword();
-
-
-
- while(DMA_IsOn(1));
- dma_printf("status_of_gcode:= %d\taxis_to_run:= %d\n",status_of_gcode,axis_to_run);
-
-
-
-
+#line 112 "C:/Users/Git/Pic32mzCNC/Main.c"
  EnableSteppers( ((( 2 * 2 )*2)-1) );
  Modal_Group_Actions1(axis_to_run);
  axis_to_run = Rst_Axisword();
@@ -1221,10 +1208,7 @@ float a_val;
 
 
 static int Modal_Group_Actions1(int action){
-
- while(DMA_IsOn(1));
- dma_printf("action:= %d\tgc.frequency:= %l\n",action,gc.frequency);
-
+#line 444 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.frequency,X);
@@ -1257,12 +1241,13 @@ static int Modal_Group_Actions1(int action){
  DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
  break;
  case 15:
- r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y, 0 );
+ sys_sync_current_position();
+ r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
  break;
  case  ((( 2 * 2 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
-#line 485 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 486 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(axis_to_home < 2){
 
 
@@ -1321,7 +1306,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 547 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 548 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
  FAIL( 6 );
@@ -1333,7 +1318,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 562 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 563 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
  FAIL( 6 );
 
@@ -1344,6 +1329,6 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 576 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 577 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }

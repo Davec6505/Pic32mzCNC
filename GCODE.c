@@ -28,7 +28,7 @@ parser_state_t gc;
 volatile int status_code;  // Status of instructions
 volatile float coord_data[NoOfAxis];
 
-static volatile char axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
+static volatile unsigned int axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
 static volatile int modal_group_words;  // Bitflag variable to track and check modal group words in block
 static volatile int non_modal_words;    // Bitflags to track non-modal actions
 static volatile int motion_mode;
@@ -111,6 +111,11 @@ void Set_Axisword(int value){
   bit_true( axis_words,bit( value));
 }
 
+//Set the axis word to a specific value instead of a bit
+/*static void Set_Axisword(int value){
+  axis_words = value;
+}*/
+
 //Axis to run
 int Get_Axisword(){
   return (int)axis_words & 0x00ff;
@@ -179,8 +184,8 @@ int i,m_mode;
   switch(mode){
     case 0: m_mode    = MOTION_MODE_SEEK;    break;
     case 1: m_mode    = MOTION_MODE_LINEAR;  break;
-    case 2: m_mode    = MOTION_MODE_CW_ARC;  break;
-    case 3: m_mode    = MOTION_MODE_CCW_ARC; break;
+    case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;  break;
+    case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW; break;
     case 4: non_modal_action  = NON_MODAL_DWELL;     break;
     case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
     case 17: Select_Plane(xy);m_mode    = MOTION_MODE_NULL; break;
@@ -362,14 +367,16 @@ int i = 0;
                  ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
               FAIL(STATUS_INVALID_STATEMENT);
             } else {
+              //set axis_word to 15 this tells modal_function1(axis_words)
+              //to run arc interpolation
+              for(i=0;i<=3;i++)
+                  Set_Axisword(i);
+
               #if GcodeDebug == 3
+              //test if axis_word will run arc
               while(DMA_IsOn(1));
               dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
               #endif
-              if (gc.R != 0) {
-                 // Arc Mode radius is passed over to the arc function
-                 asm{nop;}
-              }
             }
             break;
        }

@@ -400,6 +400,7 @@ typedef struct {
  float K;
  int P;
  int S;
+ int DIR;
 } parser_state_t;
 extern parser_state_t gc;
 
@@ -617,12 +618,6 @@ void protocol_system_check();
 
 
 void protocol_execute_runtime();
-
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -1135,10 +1130,7 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  nPy = arc_target[axis_1] = position[axis_1];
  OC5IE_bit = OC2IE_bit = 0;
  i = 0;
-
- dma_printf("\n[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%d]\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\n[LinPseg:= %f : *pSeg:= %f]",
- cos_T,sin_T,radius,segments,angular_travel,mm_of_travel,linear_travel,linear_per_segment,theta_per_segment);
-
+#line 310 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  while(i < segments) {
 
  if (count < n_arc_correction) {
@@ -1168,13 +1160,7 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
 
  STPS[axis_0].step_delay = 1000;
  STPS[axis_1].step_delay = 1000;
-
-
- if(!DMA_IsOn(1));
- dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f : X:= %l : Y:= %l",
- i,segments,nPx,nPy,tempA,tempB);
-
-
+#line 346 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  SV.cir = 1;
  DualAxisStep(nPx, nPy,axis_0,axis_1,1000);
 

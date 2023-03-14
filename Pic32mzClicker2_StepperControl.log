@@ -11,7 +11,7 @@ diagnostics: 297	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 213	1163	Variable 'addr' has been declared, but not used	Main.c
 hint: 215	1163	Variable 'a_val' has been declared, but not used	Main.c
-diagnostics: 577	123	Compiled Successfully	Main.c
+diagnostics: 578	123	Compiled Successfully	Main.c
 hint: 69	1164	Variable 'dif' has been eliminated by optimizer	Main.c
 hint: 69	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
 hint: 70	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
@@ -47,10 +47,10 @@ hint: 140	1354	argument may be out of range [axisA]	Kinematics.c
 hint: 141	1354	argument may be out of range [axisB]	Kinematics.c
 hint: 121	1163	Variable 'dirA' has been declared, but not used	Kinematics.c
 hint: 121	1163	Variable 'dirB' has been declared, but not used	Kinematics.c
+hint: 238	1163	Variable 'tempA' has been declared, but not used	Kinematics.c
+hint: 238	1163	Variable 'tempB' has been declared, but not used	Kinematics.c
 diagnostics: 590	123	Compiled Successfully	Kinematics.c
 warning: 164	1512	variable 'tempC' might not have been initialized	Kinematics.c
-warning: 343	1512	variable 'tempB' might not have been initialized	Kinematics.c
-warning: 343	1512	variable 'tempA' might not have been initialized	Kinematics.c
 hint: 76	1164	Variable 'absxyz' has been eliminated by optimizer	Kinematics.c
 hint: 78	1164	Variable 'dir' has been eliminated by optimizer	Kinematics.c
 hint: 255	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
@@ -72,48 +72,54 @@ diagnostics: 372	123	Compiled Successfully	Print.c
 hint: 142	1164	Variable 'acc' has been eliminated by optimizer	Print.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 51	1354	argument may be out of range [axis_combo]	GCODE.c
-warning: 206	1503	Result is not defined in function: ''	GCODE.c
-hint: 176	1163	Variable 'i' has been declared, but not used	GCODE.c
-diagnostics: 581	123	Compiled Successfully	GCODE.c
-hint: 276	1164	Variable 'last_non_modal_action' has been eliminated by optimizer	GCODE.c
-hint: 469	1164	Variable 'XYZ_Val' has been eliminated by optimizer	GCODE.c
+warning: 211	1503	Result is not defined in function: ''	GCODE.c
+hint: 181	1163	Variable 'i' has been declared, but not used	GCODE.c
+diagnostics: 588	123	Compiled Successfully	GCODE.c
+hint: 281	1164	Variable 'last_non_modal_action' has been eliminated by optimizer	GCODE.c
+hint: 476	1164	Variable 'XYZ_Val' has been eliminated by optimizer	GCODE.c
 diagnostics: 0	122	Compilation Started	settings.h
-warning: 34	1508	Implicit conversion of int to ptr	Globals.c
-warning: 269	1508	Implicit conversion of int to ptr	Globals.c
-hint: 316	1163	Variable 'ptr' has been declared, but not used	Globals.c
-hint: 536	1163	Variable 'temp_char' has been declared, but not used	Globals.c
-warning: 606	1508	Implicit conversion of int to ptr	Globals.c
-diagnostics: 784	123	Compiled Successfully	Globals.c
-hint: 319	1164	Variable 'temp' has been eliminated by optimizer	Globals.c
-hint: 416	1164	Variable 'value' has been eliminated by optimizer	Globals.c
-hint: 601	1164	Variable 'ptr' has been eliminated by optimizer	Globals.c
-hint: 602	1164	Variable 'has_data' has been eliminated by optimizer	Globals.c
-hint: 603	1164	Variable 'val_temp' has been eliminated by optimizer	Globals.c
+warning: 37	1508	Implicit conversion of int to ptr	Globals.c
+warning: 272	1508	Implicit conversion of int to ptr	Globals.c
+hint: 319	1163	Variable 'ptr' has been declared, but not used	Globals.c
+hint: 539	1163	Variable 'temp_char' has been declared, but not used	Globals.c
+warning: 609	1508	Implicit conversion of int to ptr	Globals.c
+diagnostics: 787	123	Compiled Successfully	Globals.c
+hint: 322	1164	Variable 'temp' has been eliminated by optimizer	Globals.c
+hint: 419	1164	Variable 'value' has been eliminated by optimizer	Globals.c
+hint: 604	1164	Variable 'ptr' has been eliminated by optimizer	Globals.c
+hint: 605	1164	Variable 'has_data' has been eliminated by optimizer	Globals.c
+hint: 606	1164	Variable 'val_temp' has been eliminated by optimizer	Globals.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (X_Min_Limit at 0x0008)	Limits.c
 hint: 0	1004	interrupt handler (Y_Min_Limit at 0x000D)	Limits.c
 diagnostics: 232	123	Compiled Successfully	Limits.c
 hint: 16	1164	Variable 'i' has been eliminated by optimizer	Limits.c
 diagnostics: 0	122	Compilation Started	stdint.h
-warning: 640	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 647	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 663	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 676	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 689	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 705	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 715	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 730	1506	Implicit conversion of pointer to int	Protocol.c
+warning: 443	1505	Suspicious pointer conversion	Protocol.c
+warning: 450	1505	Suspicious pointer conversion	Protocol.c
+warning: 457	1505	Suspicious pointer conversion	Protocol.c
+warning: 464	1505	Suspicious pointer conversion	Protocol.c
+warning: 471	1505	Suspicious pointer conversion	Protocol.c
+warning: 516	1505	Suspicious pointer conversion	Protocol.c
+warning: 585	1505	Suspicious pointer conversion	Protocol.c
+warning: 592	1505	Suspicious pointer conversion	Protocol.c
+warning: 614	1505	Suspicious pointer conversion	Protocol.c
+warning: 621	1505	Suspicious pointer conversion	Protocol.c
+warning: 732	1505	Suspicious pointer conversion	Protocol.c
+warning: 742	1505	Suspicious pointer conversion	Protocol.c
 hint: 52	1163	Variable 'j' has been declared, but not used	Protocol.c
 hint: 53	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
 hint: 53	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
-warning: 837	1505	Suspicious pointer conversion	Protocol.c
-diagnostics: 1037	123	Compiled Successfully	Protocol.c
-warning: 770	1512	variable 'status' might not have been initialized	Protocol.c
+warning: 866	1505	Suspicious pointer conversion	Protocol.c
+diagnostics: 1070	123	Compiled Successfully	Protocol.c
+warning: 799	1512	variable 'status' might not have been initialized	Protocol.c
 hint: 50	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
 hint: 52	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
-hint: 216	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
-hint: 306	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
+hint: 53	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
+hint: 218	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
+hint: 308	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
 hint: 58	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
+hint: 58	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
 hint: 59	1164	Variable 'axis_to_run' has been eliminated by optimizer	Protocol.c
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 117	123	Compiled Successfully	Nut_Bolts.c
@@ -133,13 +139,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 3516 ms	 
+diagnostics: 0	127	All files Compiled in 2421 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 5111   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5111   Dynamic RAM (bytes): 507381
+hint: 0	1144	Static RAM (bytes): 5116   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5116   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 82969 (4%)  Free ROM (bytes): 2014183 (96%)	Used ROM (bytes): 82969 (4%)  Free ROM (bytes): 2014183 (96%)
+hint: 0	1144	Used ROM (bytes): 80111 (4%)  Free ROM (bytes): 2017041 (96%)	Used ROM (bytes): 80111 (4%)  Free ROM (bytes): 2017041 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 953 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6406 ms	 
-diagnostics: 0	103	Finished successfully: 13 Mar 2023, 07:20:05	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 719 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4640 ms	 
+diagnostics: 0	103	Finished successfully: 14 Mar 2023, 07:19:07	Pic32mzClicker2_StepperControl.mcp32
