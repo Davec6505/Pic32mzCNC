@@ -457,8 +457,8 @@ void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
 void mc_arc(double *position, double *target, double *offset, int axis_0,
- int axis_1,int axis_linear, double feed_rate,uint8_t invert_feed_rate,
- double radius, uint8_t isclockwise);
+ int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
+ double radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
 
@@ -495,7 +495,7 @@ typedef struct {
  int coord_select;
 
  int L;
- unsigned long frequency;
+ long frequency;
  float feed_rate;
 
  volatile float position[ 2 ];
@@ -729,12 +729,6 @@ void protocol_system_check();
 
 
 void protocol_execute_runtime();
-
-
-
-
-
- static void PrintDebug(char c,char *strB,void *ptr);
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
 #line 27 "c:/users/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
@@ -848,6 +842,7 @@ typedef struct genVars{
  char running: 1;
  char startPulses: 1;
  char homed: 1;
+ char run_circle: 1;
  int Tog;
  int AxisNo;
 
@@ -1055,7 +1050,7 @@ int axis_plane_a,axis_plane_b;
 
 
  mc_arc(position, target, offset, axis_A, axis_B, Z,
-  250.0 , gc.inverse_feed_rate_mode,r, isclockwise);
+ gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
 

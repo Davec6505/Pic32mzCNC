@@ -1852,7 +1852,7 @@ JAL	_Step_Cycle+0
 NOP	
 ;Stepper.c,443 :: 		if(!SV.cir)
 LBU	R2, Offset(_SV+2)(GP)
-EXT	R2, R2, 3, 1
+EXT	R2, R2, 4, 1
 BEQ	R2, R0, L__Axis_Interpolate224
 NOP	
 J	L_Axis_Interpolate95
@@ -1906,7 +1906,7 @@ NOP
 LH	R25, 8(SP)
 ;Stepper.c,453 :: 		if(!SV.cir)
 LBU	R2, Offset(_SV+2)(GP)
-EXT	R2, R2, 3, 1
+EXT	R2, R2, 4, 1
 BEQ	R2, R0, L__Axis_Interpolate226
 NOP	
 J	L_Axis_Interpolate99

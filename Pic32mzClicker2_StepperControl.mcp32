@@ -137,7 +137,10 @@ File3=Protocol.h
 File4=GCODE.c
 File5=GCODE.h
 File6=Kinematics.c
-Count=7
+File7=Planner.h
+File8=Planner.c
+File9=Kinematics.h
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

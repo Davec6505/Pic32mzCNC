@@ -371,7 +371,7 @@ int i = 0;
               //to run arc interpolation
               for(i=0;i<=3;i++)
                   Set_Axisword(i);
-
+                  
               #if GcodeDebug == 3
               //test if axis_word will run arc
               while(DMA_IsOn(1));

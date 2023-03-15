@@ -143,7 +143,7 @@ static int cntr = 0,a = 0;
      }
    }
    
-   if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed ){
+   if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed){
      //debug STATUS_OK response after moves complete
      #if MainDebug == 12
      while(DMA_IsOn(1));
@@ -476,6 +476,7 @@ static int Modal_Group_Actions1(int action){
        case 15://Circle interpolation
             sys_sync_current_position();
             r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
+            //SV.Tog = 1;
             break;
        case ALL_AXIS://Homing X axis
             axis_to_home = Home(axis_to_home);

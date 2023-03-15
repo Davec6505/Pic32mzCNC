@@ -234,7 +234,7 @@ int dirA,dirB;
   */
 
 void mc_arc(double *position, double *target, double *offset, int axis_0, int axis_1,
-  int axis_linear, double feed_rate, uint8_t invert_feed_rate, double radius, uint8_t isclockwise){
+  int axis_linear, long feed_rate, char invert_feed_rate, double radius, char isclockwise){
  long tempA,tempB;
  double center_axis0            = position[axis_0] + offset[axis_0];
  double center_axis1             = position[axis_1] + offset[axis_1];
@@ -305,8 +305,13 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
   i = 0;
 #if KineDebug == 3
   while(DMA_IsOn(1));
-  dma_printf("\n[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%d]\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\n[LinPseg:= %f : *pSeg:= %f]",
-             cos_T,sin_T,radius,segments,angular_travel,mm_of_travel,linear_travel,linear_per_segment,theta_per_segment);
+  dma_printf("\n[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%d]\n\
+            [angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\n\
+            [LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]",
+             cos_T,sin_T,radius,segments
+             ,angular_travel,mm_of_travel
+             ,linear_travel,linear_per_segment
+             ,theta_per_segment,gc.frequency);
 
 #endif
   while(i < segments) { // Increment (segments-1)
@@ -346,14 +351,14 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
 #endif
 
      SV.cir = 1;
-     DualAxisStep(nPx, nPy,axis_0,axis_1,1000);//,xy);
+     DualAxisStep(nPx, nPy,axis_0,axis_1,feed_rate);//,xy);
      
      while(1){
      
-      if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
+    /*  if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
          disableOCx();
          limit_error = 1;
-      }
+      }*/
 
         if(!OC5IE_bit && !OC2IE_bit)
             break;
@@ -373,9 +378,8 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
 
 }
 
-/*!
- *returns hypotinuse of a triangle
- */
+///////////////////////////////////////////////////////////////////////////////
+//returns hypotinuse of a triangle
 float hypot(float angular_travel, float linear_travel){
       return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
 }

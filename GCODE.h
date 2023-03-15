@@ -176,7 +176,7 @@ typedef struct {
   int  coord_select;                      // Active work coordinate system number. Default: 0=G54.
  // int spindle_speed;                    // RPM/100
   int L;                                  //L2 tells the G10 we’re setting standard work offsets
-  unsigned long frequency;                // Speed expressed as Frequency of pulses
+  long frequency;                // Speed expressed as Frequency of pulses
   float feed_rate;                        // Millimeters/min
 //  float seek_rate;                      // Millimeters/min. Will be used in v0.9 when axis independence is installed
   volatile float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code

@@ -281,7 +281,7 @@ int axis_plane_a,axis_plane_b;
         //  gc.plane_axis_2 =1;
           // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
           mc_arc(position, target, offset, axis_A, axis_B, Z,
-                 DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
+                 gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
 

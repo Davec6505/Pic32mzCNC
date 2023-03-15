@@ -51,9 +51,10 @@
 ////////////////////////////////////////////////////
 typedef struct genVars{
   int   Single_Dual;
-  char  running: 1;       //running bit
+  char  running: 1;        //running bit
   char  startPulses: 1;
-  char  homed: 1;
+  char  homed: 1;         //busy homing
+  char  run_circle: 1;        //circle in motion indicator
   int   Tog;
   int   AxisNo;
  // long  i;

@@ -11,7 +11,7 @@ diagnostics: 297	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 214	1163	Variable 'addr' has been declared, but not used	Main.c
 hint: 216	1163	Variable 'a_val' has been declared, but not used	Main.c
-diagnostics: 579	123	Compiled Successfully	Main.c
+diagnostics: 580	123	Compiled Successfully	Main.c
 hint: 69	1164	Variable 'dif' has been eliminated by optimizer	Main.c
 hint: 69	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
 hint: 70	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
@@ -49,7 +49,7 @@ hint: 121	1163	Variable 'dirA' has been declared, but not used	Kinematics.c
 hint: 121	1163	Variable 'dirB' has been declared, but not used	Kinematics.c
 hint: 238	1163	Variable 'tempA' has been declared, but not used	Kinematics.c
 hint: 238	1163	Variable 'tempB' has been declared, but not used	Kinematics.c
-diagnostics: 592	123	Compiled Successfully	Kinematics.c
+diagnostics: 596	123	Compiled Successfully	Kinematics.c
 warning: 164	1512	variable 'tempC' might not have been initialized	Kinematics.c
 hint: 76	1164	Variable 'absxyz' has been eliminated by optimizer	Kinematics.c
 hint: 78	1164	Variable 'dir' has been eliminated by optimizer	Kinematics.c
@@ -105,16 +105,8 @@ warning: 573	1505	Suspicious pointer conversion	Protocol.c
 warning: 580	1505	Suspicious pointer conversion	Protocol.c
 warning: 598	1505	Suspicious pointer conversion	Protocol.c
 warning: 605	1505	Suspicious pointer conversion	Protocol.c
-warning: 646	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 653	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 669	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 682	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 696	1506	Implicit conversion of pointer to int	Protocol.c
 warning: 712	1505	Suspicious pointer conversion	Protocol.c
-warning: 714	1506	Implicit conversion of pointer to int	Protocol.c
 warning: 722	1505	Suspicious pointer conversion	Protocol.c
-warning: 724	1506	Implicit conversion of pointer to int	Protocol.c
-warning: 739	1506	Implicit conversion of pointer to int	Protocol.c
 hint: 52	1163	Variable 'j' has been declared, but not used	Protocol.c
 hint: 53	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
 hint: 53	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
@@ -123,6 +115,7 @@ diagnostics: 1050	123	Compiled Successfully	Protocol.c
 warning: 779	1512	variable 'status' might not have been initialized	Protocol.c
 hint: 50	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
 hint: 52	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
+hint: 53	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
 hint: 218	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
 hint: 308	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
 hint: 58	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
@@ -146,13 +139,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 3672 ms	 
+diagnostics: 0	127	All files Compiled in 2593 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
 hint: 0	1144	Static RAM (bytes): 5116   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5116   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 82945 (4%)  Free ROM (bytes): 2014207 (96%)	Used ROM (bytes): 82945 (4%)  Free ROM (bytes): 2014207 (96%)
+hint: 0	1144	Used ROM (bytes): 79851 (4%)  Free ROM (bytes): 2017301 (96%)	Used ROM (bytes): 79851 (4%)  Free ROM (bytes): 2017301 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 1078 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6750 ms	 
-diagnostics: 0	103	Finished successfully: 15 Mar 2023, 07:19:46	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 860 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4953 ms	 
+diagnostics: 0	103	Finished successfully: 15 Mar 2023, 21:25:50	Pic32mzClicker2_StepperControl.mcp32

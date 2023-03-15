@@ -145,8 +145,8 @@ void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 //Circle move axis
 void mc_arc(double *position, double *target, double *offset, int axis_0,
-            int axis_1,int axis_linear, double feed_rate,uint8_t invert_feed_rate,
-            double radius, uint8_t isclockwise);
+            int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
+            double radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
 

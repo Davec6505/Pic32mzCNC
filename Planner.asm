@@ -822,8 +822,8 @@ MOV.S 	S0, S1
 L_r_or_ijk22:
 ;Planner.c,278 :: 		isclockwise = false;
 ; r start address is: 0 (R0)
-; isclockwise start address is: 24 (R6)
-MOVZ	R6, R0, R0
+; isclockwise start address is: 20 (R5)
+MOVZ	R5, R0, R0
 ;Planner.c,279 :: 		if (dir == CW) { isclockwise = true; }
 SEH	R2, R27
 BEQ	R2, R0, L__r_or_ijk63
@@ -831,44 +831,43 @@ NOP
 J	L__r_or_ijk42
 NOP	
 L__r_or_ijk63:
-ORI	R6, R0, 1
-; isclockwise end address is: 24 (R6)
+ORI	R5, R0, 1
+; isclockwise end address is: 20 (R5)
 J	L_r_or_ijk23
 NOP	
 L__r_or_ijk42:
 L_r_or_ijk23:
 ;Planner.c,283 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
-; isclockwise start address is: 24 (R6)
-ADDIU	R5, SP, 60
-ADDIU	R4, SP, 52
-ADDIU	R3, SP, 44
-;Planner.c,284 :: 		DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
-LUI	R2, 17274
-ORI	R2, R2, 0
-ADDIU	SP, SP, -8
-SB	R6, 5(SP)
+; isclockwise start address is: 20 (R5)
+ADDIU	R4, SP, 60
+ADDIU	R3, SP, 52
+ADDIU	R2, SP, 44
+;Planner.c,284 :: 		gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
+ADDIU	SP, SP, -12
+SB	R5, 9(SP)
 ; r end address is: 0 (R0)
-LBU	R6, Offset(_gc+2)(GP)
-SB	R6, 4(SP)
+LBU	R5, Offset(_gc+2)(GP)
+SB	R5, 8(SP)
+LW	R5, Offset(_gc+20)(GP)
+SW	R5, 4(SP)
 ;Planner.c,283 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
-ORI	R6, R0, 2
-SH	R6, 2(SP)
+ORI	R5, R0, 2
+SH	R5, 2(SP)
 SH	R26, 0(SP)
-;Planner.c,284 :: 		DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
-MTC1	R2, S12
+;Planner.c,284 :: 		gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
+MOV.S 	S12, S0
 ;Planner.c,283 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
 SEH	R28, R25
-MOVZ	R27, R5, R0
-MOVZ	R25, R3, R0
-;Planner.c,284 :: 		DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
-MOV.S 	S13, S0
-; isclockwise end address is: 24 (R6)
+MOVZ	R27, R4, R0
+MOVZ	R25, R2, R0
+;Planner.c,284 :: 		gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
+; isclockwise end address is: 20 (R5)
 ;Planner.c,283 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
-MOVZ	R26, R4, R0
-;Planner.c,284 :: 		DEFAULT_FEEDRATE, gc.inverse_feed_rate_mode,r, isclockwise);
+MOVZ	R26, R3, R0
+;Planner.c,284 :: 		gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
 JAL	_mc_arc+0
 NOP	
-ADDIU	SP, SP, 8
+ADDIU	SP, SP, 12
 ;Planner.c,285 :: 		}
 L_end_r_or_ijk:
 LW	R28, 16(SP)
