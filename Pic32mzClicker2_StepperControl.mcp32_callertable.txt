@@ -124,9 +124,11 @@ main
 					atan
 						fabs
 						eval_poly
-				fabs
 				hypot
+				fabs
 				floor
+				DMA_IsOn
+				dma_printf
 				cos
 					sin
 						floor
@@ -135,6 +137,7 @@ main
 				DualAxisStep
 				Test_Port_Pins
 				disableOCx
+				__CC2DW
 		Home
 			Rst_FP
 			Rst_FN
@@ -177,7 +180,6 @@ main
 			beltsteps2mm
 			__CC2DW
 	Sample_Ringbuffer
-		__CC2DW
 		Get_Difference
 		report_realtime_status
 		DMA0_ReadDstPtr
@@ -266,9 +268,15 @@ main
 			Set_Motion_Mode
 				FAIL
 				Select_Plane
+		PrintDebug
+			DMA_IsOn
+			dma_printf
+			__CC2DW
 		Instruction_Values
 			To_Millimeters
 			FAIL
+		DMA_IsOn
+		dma_printf
 		M_Instruction
 			Set_M_Modal_Commands
 			Set_M_Commands
@@ -278,7 +286,11 @@ main
 			FAIL
 			Rst_modalgroup
 			Rst_modalword
+			DMA_IsOn
+			dma_printf
 			Set_Axisword
+			__CC2DW
+		__CC2DW
 	ResetSteppers
 		DisableStepper
 StepZ

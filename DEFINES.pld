@@ -1,12 +1,12 @@
 MainDebug=-10
 DMADebug=-1
-ProtoDebug=-1
-GcodeDebug=-3
+ProtoDebug=1
+GcodeDebug=3
 StepperDebug=-1
 FlashDebug=-22
 LoopBackDebug=-1
 GlobalsDebug=-22
 HomeDebug=-10
 LimitDebug=-1
-KineDebug=-1
+KineDebug=3
 CalcsDebug=-1

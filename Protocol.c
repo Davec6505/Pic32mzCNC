@@ -375,10 +375,6 @@ START_LINE://label to rerun startup line if it has one
         query = 20;
         switch(*(*gcode+0)+0){
          case 'G':case 'g':
-              #if ProtoDebug == 1
-              while(DMA_IsOn(1));
-              dma_printf("%s\n","G");
-              #endif
               //1st char usually 'G'
               if (*(*(gcode)+0)=='G'){
                  i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
@@ -406,11 +402,6 @@ START_LINE://label to rerun startup line if it has one
                //G02/G03 X12.5 Y14.7 I1.0 J2.0 F0.2;
                //G10 Lnn Pnn Xnn Ynn Znn offsets can be G10 Pn Rnn Snn
                 if(*(*(gcode+1)+0) != 0){
-                 #if ProtoDebug == 1
-                 while(DMA_IsOn(1));
-                 dma_printf("%s\n","1");
-                 #endif
-                 no_of_axis++;
                  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
                  //[1][0]
                  switch(*(*(gcode+1)+0)) {
@@ -439,38 +430,39 @@ START_LINE://label to rerun startup line if it has one
                       case 'Y':case 'y':
                       case 'Z':case 'z':
                       case 'A':case 'a':
+                       no_of_axis++;
                        XYZ_Val = atof(temp);
                        status = Instruction_Values((gcode+1),&XYZ_Val);
                        #if ProtoDebug == 1
-                         PrintDebug(*(gcode+1),temp,&XYZ_Val);
+                         PrintDebug(*(*(gcode+1)+0),temp,&XYZ_Val);
                        #endif
                        break;
                     case 'L':case 'l':
                           O_Val = atoi(temp);
                           status = Instruction_Values((gcode+1),&O_Val);
                        #if ProtoDebug == 1
-                          PrintDebug(*(gcode+1),temp,&O_Val);
+                          PrintDebug(*(*(gcode+1)+0),temp,&O_Val);
                        #endif
                        break;
                     case 'F':case 'f':
                           O_Val = atoi(temp);
                           status = Instruction_Values((gcode+1),&O_Val);
                        #if ProtoDebug == 1
-                          PrintDebug(*(gcode+1),temp,&O_Val);
+                          PrintDebug(*(*(gcode+1)+0),temp,&O_Val);
                        #endif
                        break;
                     case 'P':case 'p':
                           O_Val = atoi(temp);
                           status = Instruction_Values((gcode+1),&O_Val);
                        #if ProtoDebug == 1
-                          PrintDebug(*(gcode+1),temp,&O_Val);
+                          PrintDebug(*(*(gcode+1)+0),temp,&O_Val);
                        #endif
                        break;
                     case 'S':case 's':
                          O_Val = atoi(temp);
                          status = Instruction_Values((gcode+1),&O_Val);
                        #if ProtoDebug == 1
-                         PrintDebug(*(gcode+1),temp,&O_Val);
+                         PrintDebug(*(*(gcode+1)+0),temp,&O_Val);
                        #endif
                        break;
                  }
@@ -480,10 +472,6 @@ START_LINE://label to rerun startup line if it has one
                //G02/G03 X12.5 Y14.7 I1.0 J2.0 F0.2;
                //G10 Pnn  toolnumber
                 if(*(*(gcode+2)+0) != 0){
-                   #if ProtoDebug == 1
-                   while(DMA_IsOn(1));
-                   dma_printf("%s\n","2");
-                   #endif
                    i = cpy_val_from_str(temp,(*(gcode+2)),1,strlen(*(gcode+2)));
                    switch(*(*(gcode+2)+0)) {
                       case 'G':case 'g':
@@ -508,7 +496,7 @@ START_LINE://label to rerun startup line if it has one
                       case 'X':case 'x':
                       case 'Y':case 'y':
                       case 'Z':case 'z':
-                      case 'A':case 'a':
+                      case 'A':case 'a': no_of_axis++;
                       case 'I':case 'i':
                       case 'J':case 'j':
                          no_of_axis++;
@@ -574,8 +562,8 @@ START_LINE://label to rerun startup line if it has one
                              #endif
                          break;
                       case 'X':case 'x':case 'Y':case 'y':
-                      case 'Z':case 'z':case 'R':case 'r':
-                      case 'I':case 'i':
+                      case 'Z':case 'z':no_of_axis++;
+                      case 'R':case 'r':case 'I':case 'i':
                            #if ProtoDebug == 1
                            while(DMA_IsOn(1));
                            dma_printf("%s\t%s\n","3",(gcode+3));
@@ -601,14 +589,10 @@ START_LINE://label to rerun startup line if it has one
                 //G10 Y0.00 offset
                 //G02/G03 = J1.0 / F0.2;
                 if(*(*(gcode+4)+0) != 0){
-                  #if ProtoDebug == 1
-                   while(DMA_IsOn(1));
-                   dma_printf("%s\t%s\n","4",(gcode+4));
-                   #endif
                   i = cpy_val_from_str(temp,(*(gcode+4)),1,strlen(*(gcode+4)));
                    switch(*(*(gcode+4))) {
                       case 'Y':case 'y':
-                      case 'Z':case 'z':
+                      case 'Z':case 'z':no_of_axis++;
                       case 'J':case 'j':
                          XYZ_Val = atof(temp);
                          status = Instruction_Values((gcode+4),&XYZ_Val);
@@ -630,14 +614,10 @@ START_LINE://label to rerun startup line if it has one
                   //G10 Z0.00 offset
                   //G02/G03 = J1.0 / F0.2;
                 if(*(*(gcode+5)+0) != 0){
-                  #if ProtoDebug == 3
-                   while(DMA_IsOn(1));
-                   dma_printf("%s\n","5");
-                   #endif
                   xyz[4] = *(*(gcode+5)+0);no_of_axis++;
                   i = cpy_val_from_str(temp,(*(gcode+5)),1,strlen(*(gcode+5)));
                    switch(*(*(gcode+5))) {
-                      case 'Z':case 'z':
+                      case 'Z':case 'z':no_of_axis++;
                       case 'J':case 'j':
                          XYZ_Val = atof(temp);
                          Instruction_Values(gcode[5],&XYZ_Val);
@@ -706,7 +686,7 @@ START_LINE://label to rerun startup line if it has one
               query = 1;
               break;
          case 'X':case 'x':case 'Y':case 'y':
-         case 'Z':case 'z':case 'A':case 'a':
+         case 'Z':case 'z':case 'A':case 'a': no_of_axis++;
          case 'I':case 'i':case 'J':case 'j':
               if(*(*(gcode)+0)=='X'){
                    i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));

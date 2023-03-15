@@ -303,9 +303,11 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
   nPy = arc_target[axis_1] = position[axis_1];
   OC5IE_bit = OC2IE_bit = 0;
   i = 0;
-#if DMADebug == 1
+#if KineDebug == 3
+  while(DMA_IsOn(1));
   dma_printf("\n[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%d]\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\n[LinPseg:= %f : *pSeg:= %f]",
              cos_T,sin_T,radius,segments,angular_travel,mm_of_travel,linear_travel,linear_per_segment,theta_per_segment);
+
 #endif
   while(i < segments) { // Increment (segments-1)
 
@@ -337,10 +339,10 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
       STPS[axis_0].step_delay = 1000;
       STPS[axis_1].step_delay = 1000;
 
-#if DMADebug == 1
-     if(!DMA_IsOn(1));
-       dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f : X:= %l : Y:= %l",
-                  i,segments,nPx,nPy,tempA,tempB);
+#if KineDebug == 3
+     while(DMA_IsOn(1));
+       dma_printf("\ni:= %d : seg: %d : nPx:= %f : nPy:= %f",
+                  i,segments,nPx,nPy);
 #endif
 
      SV.cir = 1;

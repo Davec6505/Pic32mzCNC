@@ -66,13 +66,13 @@ void Conditin_Externs(){
 void main() {
 int error = 0;
 int has_flash = 0;
-int axis_to_run,dif,modal_group,modal_action,status_of_gcode;
+int dif,modal_group,modal_action,status_of_gcode;
 static int cntr = 0,a = 0;
 
  //setup
  Conditin_Externs();
  //pre condition
- cntr = a = axis_to_run = dif = status_of_gcode = modal_group = modal_action = 0;
+ cntr = a =  dif = status_of_gcode = modal_group = modal_action = 0;
  
  while(1){
 
@@ -87,6 +87,7 @@ static int cntr = 0,a = 0;
    //r STATUS_COMMAND_EXECUTE_MOTION
    if(status_of_gcode == STATUS_COMMAND_EXECUTE_MOTION ||
       status_of_gcode == STATUS_OK){
+    int axis_to_run = 0;
     //get the modal_group
      modal_group = Get_modalgroup();
      //could impliment a minimal state m/c for modal group control rather
@@ -104,7 +105,7 @@ static int cntr = 0,a = 0;
             //temp debug for steppers
            #if MainDebug == 10
            while(DMA_IsOn(1));
-           dma_printf("status_of_gcode:= %d\taxis_to_run:= %d\n",status_of_gcode,axis_to_run);
+           dma_printf("%s","axis_to_run:= %d\n");//,axis_to_run);
            #endif
            
            //Execute this once only, once the axis are started the

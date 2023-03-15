@@ -28,7 +28,7 @@ parser_state_t gc;
 volatile int status_code;  // Status of instructions
 volatile float coord_data[NoOfAxis];
 
-static volatile unsigned int axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
+static volatile int axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
 static volatile int modal_group_words;  // Bitflag variable to track and check modal group words in block
 static volatile int non_modal_words;    // Bitflags to track non-modal actions
 static volatile int motion_mode;
@@ -118,12 +118,12 @@ void Set_Axisword(int value){
 
 //Axis to run
 int Get_Axisword(){
-  return (int)axis_words & 0x00ff;
+  return axis_words & 0x0fff;
 }
 
 int Rst_Axisword(){
-  axis_words=0;
-  return (int)axis_words;
+  axis_words = 0;
+  return axis_words;
 }
 
 //motion mode instruvtion is extracted from G e.g. G0 G1 ect.
@@ -363,10 +363,10 @@ int i = 0;
           case MOTION_MODE_CW_ARC: case MOTION_MODE_CCW_ARC:
             // Check if at least one of the axes of the selected plane has been specified. If in center
             // format arc mode, also check for at least one of the IJK axes of the selected plane was sent.
-            if ( !( bit_false(axis_words,bit(gc.plane_axis_2)) ) ||
+          /*  if ( !( bit_isfalse(axis_words,bit(gc.plane_axis_2)) ) ||
                  ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
               FAIL(STATUS_INVALID_STATEMENT);
-            } else {
+            } else {   */
               //set axis_word to 15 this tells modal_function1(axis_words)
               //to run arc interpolation
               for(i=0;i<=3;i++)
@@ -377,7 +377,7 @@ int i = 0;
               while(DMA_IsOn(1));
               dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
               #endif
-            }
+           // }
             break;
        }
        //track current position
