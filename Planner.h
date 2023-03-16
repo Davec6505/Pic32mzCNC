@@ -84,13 +84,13 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 //sync the current position of axis
 void sys_sync_current_position();
 //set the current position to sys.position
-void plan_set_current_position(long x, long y, long z);
+void plan_set_current_position();
 //after homing set abs osition to 0
 void plan_reset_absolute_position();
 //efficient sqrt interger calculation
 unsigned long sqrt_(unsigned long v);
 //calculation of vectors for radius
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
-              double r, double i, double j, double k, int axis_A,int axis_B,int dir);
+void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
+              float r, float i, float j, float k, int axis_A,int axis_B,int dir);
 
  #endif

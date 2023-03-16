@@ -456,9 +456,9 @@ void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, int axis_0,
+void mc_arc(float *position, float *target, float *offset, int axis_0,
  int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
- double radius, char isclockwise);
+ float radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
 
@@ -552,8 +552,6 @@ int Motion_mode();
 int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
-
-void gc_set_current_position(long x,long y,long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
@@ -872,14 +870,14 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 
 void sys_sync_current_position();
 
-void plan_set_current_position(long x, long y, long z);
+void plan_set_current_position();
 
 void plan_reset_absolute_position();
 
 unsigned long sqrt_(unsigned long v);
 
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
- double r, double i, double j, double k, int axis_A,int axis_B,int dir);
+void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
+ float r, float i, float j, float k, int axis_A,int axis_B,int dir);
 #line 9 "C:/Users/Git/Pic32mzCNC/Planner.c"
 sVars SV;
 
@@ -991,16 +989,16 @@ long abs_mmSteps = labs(mmSteps);
  last_speed = speed;
 }
 #line 142 "C:/Users/Git/Pic32mzCNC/Planner.c"
-void r_or_ijk(double Cur_axis_a,double Cur_axis_b,double Fin_axis_a,double Fin_axis_b,
- double r, double i, double j, double k, int axis_A,int axis_B,int dir){
-unsigned short isclockwise = 0;
-double inverse_feed_rate = -1;
-double position[ 2 ];
-double target[ 2 ];
-double offset[ 2 ];
-double x = 0.00;
-double y = 0.00;
-double h_x2_div_d = 0.00;
+void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
+ float r, float i, float j, float k, int axis_A,int axis_B,int dir){
+char isclockwise = 0;
+float inverse_feed_rate = -1;
+float position[ 2 ]={0.0};
+float target[ 2 ]={0.0};
+float offset[ 2 ]={0.0};
+float x = 0.00;
+float y = 0.00;
+float h_x2_div_d = 0.00;
 int axis_plane_a,axis_plane_b;
 
 
@@ -1047,6 +1045,11 @@ int axis_plane_a,axis_plane_b;
  isclockwise =  0 ;
  if (dir ==  0 ) { isclockwise =  1 ; }
 
+while(DMA_IsOn(1));
+#line 283 "C:/Users/Git/Pic32mzCNC/Planner.c"
+dma_printf("[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f]\n[tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n"
+,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
+
 
 
  mc_arc(position, target, offset, axis_A, axis_B, Z,
@@ -1058,16 +1061,20 @@ int axis_plane_a,axis_plane_b;
 
 void sys_sync_current_position(){
 
-
- gc_set_current_position(STPS[X].steps_abs_position
- ,STPS[Y].steps_abs_position
- ,STPS[Z].steps_abs_position);
+ plan_set_current_position();
 }
 
 
-void plan_set_current_position(long x, long y, long z)
-{
-#line 304 "C:/Users/Git/Pic32mzCNC/Planner.c"
+void plan_set_current_position(){
+int i = 0;
+ for(i=0;i< 2 ;i++)
+ gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
+
+
+while(DMA_IsOn(1));
+dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
+
+
 }
 
 
@@ -1075,9 +1082,8 @@ void plan_reset_absolute_position(){
  int i = 0;
  for(i=0;i< 2 ;i++)
  STPS[X].steps_abs_position = 0;
-
 }
-#line 328 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 335 "C:/Users/Git/Pic32mzCNC/Planner.c"
 unsigned long sqrt_(unsigned long x){
 
  register unsigned long xr;

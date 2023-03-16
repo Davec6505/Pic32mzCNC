@@ -2052,39 +2052,3 @@ ADDIU	SP, SP, 12
 JR	RA
 NOP	
 ; end of _Instruction_Values
-_gc_set_current_position:
-;GCODE.c,584 :: 		void gc_set_current_position(long x,long y,long z){
-ADDIU	SP, SP, -20
-SW	RA, 0(SP)
-;GCODE.c,585 :: 		gc.position[X] = beltsteps2mm(x,X);
-SW	R25, 4(SP)
-SW	R26, 8(SP)
-SW	R27, 12(SP)
-SW	R26, 16(SP)
-MOVZ	R26, R0, R0
-JAL	_beltsteps2mm+0
-NOP	
-LW	R26, 16(SP)
-SWC1	S0, Offset(_gc+28)(GP)
-;GCODE.c,586 :: 		gc.position[Y] = beltsteps2mm(y,Y);
-MOVZ	R25, R26, R0
-ORI	R26, R0, 1
-JAL	_beltsteps2mm+0
-NOP	
-LW	R27, 12(SP)
-SWC1	S0, Offset(_gc+32)(GP)
-;GCODE.c,587 :: 		gc.position[Z] = beltsteps2mm(z,Z);
-ORI	R26, R0, 2
-MOVZ	R25, R27, R0
-JAL	_beltsteps2mm+0
-NOP	
-SWC1	S0, Offset(_gc+36)(GP)
-;GCODE.c,588 :: 		}
-L_end_gc_set_current_position:
-LW	R26, 8(SP)
-LW	R25, 4(SP)
-LW	RA, 0(SP)
-ADDIU	SP, SP, 20
-JR	RA
-NOP	
-; end of _gc_set_current_position

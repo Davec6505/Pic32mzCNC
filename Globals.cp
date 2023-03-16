@@ -325,8 +325,6 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
-void gc_set_current_position(long x,long y,long z);
-
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
@@ -422,9 +420,9 @@ void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, int axis_0,
+void mc_arc(float *position, float *target, float *offset, int axis_0,
  int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
- double radius, char isclockwise);
+ float radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
 
@@ -481,14 +479,14 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 
 void sys_sync_current_position();
 
-void plan_set_current_position(long x, long y, long z);
+void plan_set_current_position();
 
 void plan_reset_absolute_position();
 
 unsigned long sqrt_(unsigned long v);
 
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
- double r, double i, double j, double k, int axis_A,int axis_B,int dir);
+void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
+ float r, float i, float j, float k, int axis_A,int axis_B,int dir);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
 #line 32 "c:/users/git/pic32mzcnc/stepper.h"

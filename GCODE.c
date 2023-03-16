@@ -578,11 +578,3 @@ int F_Val,O_Val;
 }
 
 
-// Sets g-code parser position in mm. Input in steps. Called by the system abort and hard
-// limit pull-off routines.
-// don't know yet ????????????
-void gc_set_current_position(long x,long y,long z){
-  gc.position[X] = beltsteps2mm(x,X);
-  gc.position[Y] = beltsteps2mm(y,Y);
-  gc.position[Z] = beltsteps2mm(z,Z);
-}

@@ -109,8 +109,11 @@ main
 				Pulse
 					AccDec
 		sys_sync_current_position
-			gc_set_current_position
+			plan_set_current_position
 				beltsteps2mm
+				DMA_IsOn
+				dma_printf
+				__CC2DW
 		r_or_ijk
 			sqrt
 				frexp
@@ -118,21 +121,28 @@ main
 			hypot
 				sqrt
 			Get_motionmode
+			DMA_IsOn
+			dma_printf
 			mc_arc
 				atan2
 					fabs
 					atan
 						fabs
 						eval_poly
-				fabs
 				hypot
+				fabs
 				floor
+				DMA_IsOn
+				dma_printf
 				cos
 					sin
 						floor
 						eval_poly
 				sin
 				DualAxisStep
+				report_status_message
+				__CC2DW
+			__CC2DW
 		Home
 			Rst_FP
 			Rst_FN

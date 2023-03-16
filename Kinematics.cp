@@ -442,8 +442,6 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
-void gc_set_current_position(long x,long y,long z);
-
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
@@ -714,14 +712,14 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 
 void sys_sync_current_position();
 
-void plan_set_current_position(long x, long y, long z);
+void plan_set_current_position();
 
 void plan_reset_absolute_position();
 
 unsigned long sqrt_(unsigned long v);
 
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
- double r, double i, double j, double k, int axis_A,int axis_B,int dir);
+void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
+ float r, float i, float j, float k, int axis_A,int axis_B,int dir);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
 #line 32 "c:/users/git/pic32mzcnc/stepper.h"
@@ -864,9 +862,9 @@ void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, int axis_0,
+void mc_arc(float *position, float *target, float *offset, int axis_0,
  int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
- double radius, char isclockwise);
+ float radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
 
@@ -1061,30 +1059,31 @@ int dirA,dirB;
 
 }
 #line 236 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-void mc_arc(double *position, double *target, double *offset, int axis_0, int axis_1,
- int axis_linear, long feed_rate, char invert_feed_rate, double radius, char isclockwise){
+void mc_arc(float *position, float *target, float *offset, int axis_0
+ , int axis_1,int axis_linear, long feed_rate, char invert_feed_rate
+ , float radius, char isclockwise){
  long tempA,tempB;
- double center_axis0 = position[axis_0] + offset[axis_0];
- double center_axis1 = position[axis_1] + offset[axis_1];
- double linear_travel = target[axis_linear] - position[axis_linear];
- double r_axis0 = -offset[axis_0];
- double r_axis1 = -offset[axis_1];
- double rt_axis0 = target[axis_0] - center_axis0;
- double rt_axis1 = target[axis_1] - center_axis1;
- double theta_per_segment = 0.00;
- double linear_per_segment = 0.00;
- double angular_travel = 0.00;
- double mm_of_travel = 0.00;
- double rads = 0.00;
- unsigned int segments = 0;
- double cos_T = 0.00;
- double sin_T = 0.00;
- double arc_target[3];
- double sin_Ti;
- double cos_Ti;
- double r_axisi;
- double nPx,nPy;
- unsigned int i = 0;
+ float center_axis0 = position[axis_0] + offset[axis_0];
+ float center_axis1 = position[axis_1] + offset[axis_1];
+ float linear_travel = target[axis_linear] - position[axis_linear];
+ float r_axis0 = -offset[axis_0];
+ float r_axis1 = -offset[axis_1];
+ float rt_axis0 = target[axis_0] - center_axis0;
+ float rt_axis1 = target[axis_1] - center_axis1;
+ float theta_per_segment = 0.00;
+ float linear_per_segment = 0.00;
+ float angular_travel = 0.00;
+ float mm_of_travel = 0.00;
+ float rads = 0.00;
+ long segments = 0;
+ float cos_T = 0.00;
+ float sin_T = 0.00;
+ float arc_target[3];
+ float sin_Ti;
+ float cos_Ti;
+ float r_axisi;
+ float nPx,nPy;
+ long i = 0;
  int count = 0;
  char n_arc_correction = 3;
  char limit_error = 0;
@@ -1093,7 +1092,9 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  rads = radius *  ( 3.141593 /180.00) ;
 
 
+
  angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0, r_axis0*rt_axis0+r_axis1*rt_axis1);
+
 
  if(isclockwise) {
 
@@ -1109,7 +1110,8 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
  if (mm_of_travel == 0.0) { return; }
 
- segments = (unsigned int)floor(mm_of_travel/ 0.1 );
+ segments = (long)floor(mm_of_travel/ 0.1 );
+
 
 
 
@@ -1117,11 +1119,12 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  feed_rate *= segments;
 
 
- theta_per_segment = angular_travel/segments;
+ theta_per_segment = angular_travel/(float)segments;
 
 
 
- linear_per_segment = linear_travel/(double)segments;
+
+ linear_per_segment = linear_travel/(float)segments;
 
 
  cos_T = 1-0.5*theta_per_segment*theta_per_segment;
@@ -1131,7 +1134,15 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  nPy = arc_target[axis_1] = position[axis_1];
  OC5IE_bit = OC2IE_bit = 0;
  i = 0;
-#line 317 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+while(DMA_IsOn(1));
+#line 316 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+dma_printf("[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%l]\r\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n[LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
+cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
+,linear_travel,linear_per_segment,theta_per_segment,gc.frequency);
+
+
  while(i < segments) {
 
  if (count < n_arc_correction) {
@@ -1155,18 +1166,18 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  arc_target[axis_1] = center_axis1 + r_axis1;
  arc_target[axis_linear] += linear_per_segment;
  nPx = arc_target[axis_0] - position[axis_0];
- position[axis_0] = arc_target[axis_0];
+ position[axis_0] += nPx;
  nPy = arc_target[axis_1] - position[axis_1];
- position[axis_1] = arc_target[axis_1];
+ position[axis_1] += nPy;
 
- STPS[axis_0].step_delay = 1000;
- STPS[axis_1].step_delay = 1000;
-#line 353 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ STPS[axis_0].step_delay = feed_rate;
+ STPS[axis_1].step_delay = feed_rate;
+
  SV.cir = 1;
- DualAxisStep(nPx, nPy,axis_0,axis_1,feed_rate);
+ DualAxisStep(position[axis_0], position[axis_1],axis_0,axis_1,feed_rate);
 
  while(1){
-#line 363 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 361 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(!OC5IE_bit && !OC2IE_bit)
  break;
  }
@@ -1176,8 +1187,16 @@ void mc_arc(double *position, double *target, double *offset, int axis_0, int ax
  if(limit_error)
  break;
  i++;
+
+while(DMA_IsOn(1));
+#line 373 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+dma_printf("[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ][ position[axis_0]:= %f\tposition[axis_1]:= %f ][feed_rate:= %l]\r\n"
+,i,segments,nPx,nPy,position[axis_0],position[axis_1],feed_rate);
+
+
  }
-#line 379 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ report_status_message( 0 );
+#line 385 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 }
 
 
@@ -1195,7 +1214,7 @@ float hypot(float angular_travel, float linear_travel){
 int GetAxisDirection(long mm2move){
  return(mm2move < 0)?  -1 : 1  ;
 }
-#line 407 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 413 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 int Home(int axis){
 static long speed = 0;
 
@@ -1232,7 +1251,7 @@ static long speed = 0;
 
 
  Home_Axis(-500.0,speed,axis);
-#line 451 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 457 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  return axis;
  }
 
@@ -1248,7 +1267,7 @@ static long speed = 0;
 
 HOMED:
  speed = 100;
-#line 474 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 480 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
 
  if( ((homing[axis].home_state & (1 << 3) ) == 0) ){
@@ -1272,11 +1291,11 @@ HOMED:
 
 
  homing[axis].home_cnt = 0;
-#line 508 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 514 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  return axis;
  }
  }
-#line 515 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 521 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
 
@@ -1293,7 +1312,7 @@ HOMED:
   (homing[axis].home_state &= ~ (1 << 3 ) ) ;
  Home_Axis(-290.00,50,axis);
  }
-#line 539 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 545 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
  return axis;
@@ -1304,7 +1323,7 @@ static void Home_Axis(double distance,long speed,int axis){
 
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
-#line 558 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 564 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis].mmToTravel = belt_steps(distance,axis);
  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
