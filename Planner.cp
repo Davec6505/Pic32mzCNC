@@ -1044,14 +1044,7 @@ int axis_plane_a,axis_plane_b;
 
  isclockwise =  0 ;
  if (dir ==  0 ) { isclockwise =  1 ; }
-
-while(DMA_IsOn(1));
-#line 283 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f]\n[tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n"
-,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
-
-
-
+#line 288 "C:/Users/Git/Pic32mzCNC/Planner.c"
  mc_arc(position, target, offset, axis_A, axis_B, Z,
  gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
 }
@@ -1069,12 +1062,7 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 2 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-
-
-while(DMA_IsOn(1));
-dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
-
-
+#line 311 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 
 

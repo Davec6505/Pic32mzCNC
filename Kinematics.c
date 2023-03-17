@@ -341,15 +341,19 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
       arc_target[axis_1] = center_axis1 + r_axis1;
       arc_target[axis_linear] += linear_per_segment;
       nPx =  arc_target[axis_0] - position[axis_0];
-      position[axis_0] += nPx;//arc_target[axis_0];
       nPy =  arc_target[axis_1] - position[axis_1];
-      position[axis_1] += nPy;//arc_target[axis_1];
+      
+      nPx += position[axis_0];// += nPx;//arc_target[axis_0];
+      nPy += position[axis_1];// += nPy;//arc_target[axis_1];
 
-      STPS[axis_0].step_delay = feed_rate;
-      STPS[axis_1].step_delay = feed_rate;
+     //if absolute mode use current position + nP...
+      if(gc.absolute_mode){
+        STPS[axis_0].step_delay = feed_rate;
+        STPS[axis_1].step_delay = feed_rate;
+      }
 
-     SV.cir = 1;
-     DualAxisStep(position[axis_0], position[axis_1],axis_0,axis_1,feed_rate);//,xy);
+     SV.cir = 1;//to indicate DualAxisStep of circle!!!
+     DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);//,xy);
      
      while(1){
      
@@ -368,10 +372,11 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
        break;
    i++;
 #if KineDebug == 3
-while(DMA_IsOn(1));
+if(!DMA_IsOn(1)){
 dma_printf("[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ]\
 [ position[axis_0]:= %f\tposition[axis_1]:= %f ][feed_rate:= %l]\r\n"
 ,i,segments,nPx,nPy,position[axis_0],position[axis_1],feed_rate);
+}
 #endif
 
   }

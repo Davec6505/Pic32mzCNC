@@ -1134,15 +1134,7 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  nPy = arc_target[axis_1] = position[axis_1];
  OC5IE_bit = OC2IE_bit = 0;
  i = 0;
-
-
-while(DMA_IsOn(1));
-#line 316 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-dma_printf("[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%l]\r\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n[LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
-cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
-,linear_travel,linear_per_segment,theta_per_segment,gc.frequency);
-
-
+#line 321 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  while(i < segments) {
 
  if (count < n_arc_correction) {
@@ -1166,18 +1158,22 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
  arc_target[axis_1] = center_axis1 + r_axis1;
  arc_target[axis_linear] += linear_per_segment;
  nPx = arc_target[axis_0] - position[axis_0];
- position[axis_0] += nPx;
  nPy = arc_target[axis_1] - position[axis_1];
- position[axis_1] += nPy;
 
+ nPx += position[axis_0];
+ nPy += position[axis_1];
+
+
+ if(gc.absolute_mode){
  STPS[axis_0].step_delay = feed_rate;
  STPS[axis_1].step_delay = feed_rate;
+ }
 
  SV.cir = 1;
- DualAxisStep(position[axis_0], position[axis_1],axis_0,axis_1,feed_rate);
+ DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);
 
  while(1){
-#line 361 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 365 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(!OC5IE_bit && !OC2IE_bit)
  break;
  }
@@ -1187,16 +1183,10 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
  if(limit_error)
  break;
  i++;
-
-while(DMA_IsOn(1));
-#line 373 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-dma_printf("[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ][ position[axis_0]:= %f\tposition[axis_1]:= %f ][feed_rate:= %l]\r\n"
-,i,segments,nPx,nPy,position[axis_0],position[axis_1],feed_rate);
-
-
+#line 382 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  report_status_message( 0 );
-#line 385 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 390 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 }
 
 
@@ -1214,7 +1204,7 @@ float hypot(float angular_travel, float linear_travel){
 int GetAxisDirection(long mm2move){
  return(mm2move < 0)?  -1 : 1  ;
 }
-#line 413 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 418 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 int Home(int axis){
 static long speed = 0;
 
@@ -1251,7 +1241,7 @@ static long speed = 0;
 
 
  Home_Axis(-500.0,speed,axis);
-#line 457 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 462 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  return axis;
  }
 
@@ -1267,7 +1257,7 @@ static long speed = 0;
 
 HOMED:
  speed = 100;
-#line 480 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 485 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
 
  if( ((homing[axis].home_state & (1 << 3) ) == 0) ){
@@ -1291,11 +1281,11 @@ HOMED:
 
 
  homing[axis].home_cnt = 0;
-#line 514 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 519 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  return axis;
  }
  }
-#line 521 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 526 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
 
@@ -1312,7 +1302,7 @@ HOMED:
   (homing[axis].home_state &= ~ (1 << 3 ) ) ;
  Home_Axis(-290.00,50,axis);
  }
-#line 545 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 550 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
  return axis;
@@ -1323,7 +1313,7 @@ static void Home_Axis(double distance,long speed,int axis){
 
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
-#line 564 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 569 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis].mmToTravel = belt_steps(distance,axis);
  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
