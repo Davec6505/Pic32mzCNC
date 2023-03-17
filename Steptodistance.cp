@@ -494,8 +494,8 @@ typedef struct {
  int coord_select;
 
  int L;
- long frequency;
- float feed_rate;
+ volatile long frequency;
+ volatile float feed_rate;
 
  volatile float position[ 2 ];
  volatile float coord_system[ 2 ];

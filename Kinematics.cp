@@ -384,8 +384,8 @@ typedef struct {
  int coord_select;
 
  int L;
- long frequency;
- float feed_rate;
+ volatile long frequency;
+ volatile float feed_rate;
 
  volatile float position[ 2 ];
  volatile float coord_system[ 2 ];
@@ -1134,7 +1134,15 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  nPy = arc_target[axis_1] = position[axis_1];
  OC5IE_bit = OC2IE_bit = 0;
  i = 0;
-#line 321 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+while(DMA_IsOn(1));
+#line 316 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+dma_printf("[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%l]\r\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n[LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
+cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
+,linear_travel,linear_per_segment,theta_per_segment,gc.frequency);
+
+
  while(i < segments) {
 
  if (count < n_arc_correction) {
@@ -1183,7 +1191,14 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  if(limit_error)
  break;
  i++;
-#line 382 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+if(!DMA_IsOn(1)){
+#line 377 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+dma_printf("[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ][ position[axis_0]:= %f\tposition[axis_1]:= %f ][feed_rate:= %l]\r\n"
+,i,segments,nPx,nPy,position[axis_0],position[axis_1],feed_rate);
+}
+
+
  }
  report_status_message( 0 );
 #line 390 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
