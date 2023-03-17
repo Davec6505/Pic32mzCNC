@@ -14,10 +14,13 @@
  *? (current status)
  *ctrl-x (reset Grbl)
 *******************************************************/
-/*
-G21G91G1X0.991F102
-G91 G21
-*/
+/******************************************************
+**************** examples of GCODES *******************
+*G21G91G1X0.991F102
+*G91 G21
+*G02 X0 Y0.5 I0.5 J0 F2.5
+******************************************************
+******************************************************/
 
 #include "protocol.h"
 #include "Print.h"
@@ -56,6 +59,7 @@ int F_1_Once=0,no_of_axis=0;
 int axis_to_run = 0;
 
   num_of_strings = 0;
+  
   //read head and tail pointer difference
   //if there is a difference then process line
   dif = 0;
@@ -102,12 +106,14 @@ START_LINE://label to rerun startup line if it has one
     
     #if ProtoDebug == 16
     while(DMA_IsOn(1));
-    dma_printf("noOfstrs:= %d\t%s:=\t%d\t%s:=\t%d\t%s:=\t%d\t%s:=\t%d\n"
+    dma_printf("noOfstrs:= %d\n%s:=\t%d\n%s:=\t%d\n%s:=\t%d\n%s:=\t%d\n%s:=\t%d\n%s:=\t%d\n"
                ,num_of_strings
                ,gcode[0],str_len
                ,gcode[1],str_len
                ,gcode[2],str_len
-               ,gcode[3],str_len);
+               ,gcode[3],str_len
+               ,gcode[4],str_len
+               ,gcode[5],str_len);
     #endif
     
     //condition each string by seperating the 1st char from the value
@@ -134,7 +140,12 @@ START_LINE://label to rerun startup line if it has one
      while(DMA_IsOn(1));
      dma_printf("%s\t%d\n",gcode[0],str_len);
      #endif
-
+     
+     //start with homed bit reset for response from codes
+     //unless homing is instructed to run
+     SV.homed = false;
+     
+     //First string is key to instruction direction
      if(gcode[0][0] =='?'){
         startup = 0;
         if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
@@ -148,19 +159,19 @@ START_LINE://label to rerun startup line if it has one
           goto report;
        }
        switch(gcode[0][1]){
-            case '?': // Prints Grbl setting
+         case '?': // Prints Grbl setting
               report_grbl_help();
               query = 1;
               break;
-            case '$': // Prints Grbl setting
+         case '$': // Prints Grbl setting
               report_grbl_settings();
               query = 1;
               break;
-            case '#' : // Print gcode parameters
+         case '#' : // Print gcode parameters
               report_gcode_parameters();
               query = 1;
               break;
-            case 'G' : // Prints gcode parser state
+         case 'G' : // Prints gcode parser state
                 startup = 0;
                 report_gcode_modes();
                 //will report the current status of the machine after it is asked
@@ -169,7 +180,7 @@ START_LINE://label to rerun startup line if it has one
                     bit_true(sys.execute,EXEC_STATUS_REPORT);
                 query = 1;
                 break;
-            case 'C' : // Set check g-code mode
+         case 'C' : // Set check g-code mode
                 startup = 2; //for 1st scan to get ugs to connect
                 // Perform reset when toggling off. Check g-code mode should only work if Grbl
                 // is idle and ready, regardless of alarm locks. This is mainly to keep things
@@ -191,7 +202,7 @@ START_LINE://label to rerun startup line if it has one
                 query = 1;
                 goto report;
               break;
-            case 'X' : // Disable alarm lock
+         case 'X' : // Disable alarm lock
               startup = 2; //for 1st scan to get ugs to connect
               if (sys.state == STATE_ALARM) {
                 report_feedback_message(MESSAGE_ALARM_UNLOCK);
@@ -200,7 +211,7 @@ START_LINE://label to rerun startup line if it has one
               }
               query = 1; //status ok response
               break;
-            case 'H' : // Perform homing cycle $H
+         case 'H' : // Perform homing cycle $H
                startup = 2;
 
                if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
@@ -208,17 +219,14 @@ START_LINE://label to rerun startup line if it has one
 
                   // Only perform homing if Grbl is idle or lost.
                   if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) {
-                    int i = 0;
-                    Rst_modalgroup();
+                   int i = 0;
+                   Rst_modalgroup();
                     
                     //set bit 10 [1024] for homing
-                    Set_modalgroup(HOME_ALL);
-                    for(i=1;i<NoOfAxis;i++)
+                   Set_modalgroup(HOME_ALL);
+                   for(i=0;i<=NoOfAxis;i++)
                       Set_Axisword(i);
-                   #if HomeDebug == 1
-                    while(DMA_IsOn(1));
-                    dma_printf("GCODE:= %s\tmodal_group:= %d\n",gcode[0],Get_modalgroup());
-                   #endif
+                    //set the global homed bit to false
                    //will need to test for abort!!!
                    if (sys.abort) {
                       query = 5; //ALARM_ABORT
@@ -232,9 +240,12 @@ START_LINE://label to rerun startup line if it has one
                   query = 7;//return(STATUS_SETTING_DISABLED);
                   break;
                }
+               //if we have made it this far we need to reset
+               //SV.Tog to prepare for ok response
+               SV.homed = true;
                query = 21;
                break;
-            case 'N' : // Startup lines. $N
+         case 'N' : // Startup lines. $N
                startup = 2;
                if ( gcode[0][2] < 0x20 ) { // Print startup lines
                   for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
@@ -309,21 +320,20 @@ START_LINE://label to rerun startup line if it has one
                }
                query = 1; //STATUS_OK;
                break;
-             case '~': //*~ (cycle start)
+         case '~': //*~ (cycle start)
                sys.execute |= EXEC_CYCLE_START;
                query = 1;  //STATUS_OK
                break;
-             case '!': //*! (feed hold)
+         case '!': //*! (feed hold)
                sys.execute |= EXEC_FEED_HOLD;
                break;
                query = 1;  //STATUS_OK
-             case 0x18: // *ctrl-x (reset Grbl)
+         case 0x18: // *ctrl-x (reset Grbl)
                mc_reset();
                query = 1;  //STATUS_OK
                break;
-
-            case '0': case '1': case '2': case'3':  case '4': case '5':
-            case '6': case '7': case '8': case '9':
+         case '0': case '1': case '2': case'3':  case '4': case '5':
+         case '6': case '7': case '8': case '9':
                //extract the value from the string if = is at [2]
                //[        $  n  =  *value-str ]
                //[$n=val [0][1][2] *[3]      ]
@@ -380,22 +390,20 @@ START_LINE://label to rerun startup line if it has one
                  }
                  
                  motion_mode = G_Mode(G_Val);
+                 //if movement is needed query = 20
+                 query = (motion_mode == MOTION_MODE_NULL)? 1:20;
+                 
                  #if ProtoDebug == 1
                   PrintDebug(*(*(gcode)+0),temp,&G_Val);
                  #endif
-                 //if Gnn is sent alone
-                 query = 1;
 
                //get position a
                //G00/G01 X12.5 Y14.7 F0.2;
                //G02/G03 X12.5 Y14.7 I1.0 J2.0 F0.2;
                //G10 Lnn Pnn Xnn Ynn Znn offsets can be G10 Pn Rnn Snn
                 if(*(*(gcode+1)+0) != 0){
-                 no_of_axis++;
-                 #if ProtoDebug == 1
-                 dma_printf("no_of_axis:= %d\n",no_of_axis);
-                 #endif
                  i = cpy_val_from_str(temp,(*(gcode+1)),1,strlen(*(gcode+1)));
+                 //[1][0]
                  switch(*(*(gcode+1)+0)) {
                       case 'G':case 'g':
                            if(i < 3){ //G00 - G99
@@ -410,48 +418,51 @@ START_LINE://label to rerun startup line if it has one
                            }
 
                            motion_mode = G_Mode(G_Val);
+                           //if movement is needed query = 20
+                           query = (motion_mode == MOTION_MODE_NULL)? 1:20;
+                           
                            #if ProtoDebug == 1
-                            PrintDebug(*(*(gcode)+0),temp,&G_Val);
+                            PrintDebug(*(*(gcode+1)+0),temp,&G_Val);
                            #endif
-                         //if Gnn is sent alone
-                         query = 1;
+
                         break;
                       case 'X':case 'x':
                       case 'Y':case 'y':
                       case 'Z':case 'z':
                       case 'A':case 'a':
+                       no_of_axis++;
                        XYZ_Val = atof(temp);
-                       status = Instruction_Values(gcode[1],&XYZ_Val);
+                       status = Instruction_Values((gcode+1),&XYZ_Val);
                        #if ProtoDebug == 1
-                         PrintDebug(*gcode[1],temp,&XYZ_Val);
+                         PrintDebug(*(*(gcode+1)+0),temp,&XYZ_Val);
                        #endif
                        break;
                     case 'L':case 'l':
                           O_Val = atoi(temp);
-                          status = Instruction_Values(gcode[1],&O_Val);
+                          status = Instruction_Values((gcode+1),&O_Val);
                        #if ProtoDebug == 1
-                          PrintDebug(*gcode[1],temp,&O_Val);
+                          PrintDebug(*(*(gcode+1)+0),temp,&O_Val);
                        #endif
                        break;
                     case 'F':case 'f':
                           O_Val = atoi(temp);
-                          status = Instruction_Values(gcode[1],&O_Val);
+                          status = Instruction_Values((gcode+1),&O_Val);
                        #if ProtoDebug == 1
-                          PrintDebug(*gcode[1],temp,&O_Val);
+                          PrintDebug(*(*(gcode+1)+0),temp,&O_Val);
                        #endif
                        break;
                     case 'P':case 'p':
                           O_Val = atoi(temp);
-                          status = Instruction_Values(gcode[1],&O_Val);
+                          status = Instruction_Values((gcode+1),&O_Val);
                        #if ProtoDebug == 1
-                          PrintDebug(*gcode[1],temp,&O_Val);
+                          PrintDebug(*(*(gcode+1)+0),temp,&O_Val);
                        #endif
                        break;
                     case 'S':case 's':
                          O_Val = atoi(temp);
-                         status = Instruction_Values(gcode[1],&O_Val);
+                         status = Instruction_Values((gcode+1),&O_Val);
                        #if ProtoDebug == 1
-                         PrintDebug(*gcode[1],temp,&O_Val);
+                         PrintDebug(*(*(gcode+1)+0),temp,&O_Val);
                        #endif
                        break;
                  }
@@ -476,47 +487,51 @@ START_LINE://label to rerun startup line if it has one
                            }
 
                            motion_mode = G_Mode(G_Val);
+                           //if movement is needed query = 20
+                           query = (motion_mode == MOTION_MODE_NULL)? 1:20;
                            #if ProtoDebug == 1
-                            PrintDebug(*(*(gcode)+0),temp,&G_Val);
+                            PrintDebug(*(*(gcode+2)+0),temp,&G_Val);
                            #endif
                         break;
                       case 'X':case 'x':
                       case 'Y':case 'y':
                       case 'Z':case 'z':
-                      case 'A':case 'a':
+                      case 'A':case 'a': no_of_axis++;
+                      case 'I':case 'i':
+                      case 'J':case 'j':
                          no_of_axis++;
                          XYZ_Val = atof(temp);
-                         status = Instruction_Values(gcode[2],&XYZ_Val);
+                         status = Instruction_Values((gcode+2),&XYZ_Val);
                          #if ProtoDebug == 1
-                           PrintDebug(*gcode[2],temp,&XYZ_Val);
+                           PrintDebug(*(*(gcode+2)+0),temp,&XYZ_Val);
                          #endif
                          break;
                     case 'L':case 'l':
                           O_Val = atoi(temp);
                           status = Instruction_Values(gcode[2],&O_Val);
                        #if ProtoDebug == 1
-                          PrintDebug(*gcode[2],temp,&O_Val);
+                          PrintDebug(*(*(gcode+2)+0),temp,&O_Val);
                        #endif
                        break;
                     case 'F':case 'f':
                           O_Val = atoi(temp);
                           status = Instruction_Values(gcode[2],&O_Val);
                        #if ProtoDebug == 1
-                          PrintDebug(*gcode[2],temp,&O_Val);
+                          PrintDebug(*(*(gcode+2)+0),temp,&O_Val);
                        #endif
                        break;
                     case 'P':case 'p':
                           O_Val = atoi(temp);
                           status = Instruction_Values(gcode[2],&O_Val);
                        #if ProtoDebug == 1
-                          PrintDebug(*gcode[2],temp,&O_Val);
+                          PrintDebug(*(*(gcode+2)+0),temp,&O_Val);
                        #endif
                        break;
                     case 'S':case 's':
                          O_Val = atoi(temp);
                          status = Instruction_Values(gcode[2],&O_Val);
                        #if ProtoDebug == 1
-                         PrintDebug(*gcode[2],temp,&O_Val);
+                         PrintDebug(*(*(gcode+2)+0),temp,&O_Val);
                        #endif
                        break;
                    }
@@ -525,9 +540,9 @@ START_LINE://label to rerun startup line if it has one
                   //G10 X0.00 offset
                   //G02/G03 = R2.0 /  I1.0 / F0.2;
                 if(*(*(gcode+3)+0) != 0){
-                     i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
-                     switch(*(*(gcode+3)+0)) {
-                          case 'G':case 'g':
+                   i = cpy_val_from_str(temp,(*(gcode+3)),1,strlen(*(gcode+3)));
+                   switch(*(*(gcode+3)+0)) {
+                      case 'G':case 'g':
                              if(i < 3){ //G00 - G99
                                G_Val = atoi(temp);
                                //Compensation for G28,G30 & G92 have other codes with
@@ -540,25 +555,31 @@ START_LINE://label to rerun startup line if it has one
                              }
 
                              motion_mode = G_Mode(G_Val);
+                             //if movement is needed query = 20
+                             query = (motion_mode == MOTION_MODE_NULL)? 1:20;
                              #if ProtoDebug == 1
-                              PrintDebug(*(*(gcode)+0),temp,&G_Val);
+                              PrintDebug(*(*(gcode+3)+0),temp,&G_Val);
                              #endif
-                        break;
+                         break;
                       case 'X':case 'x':case 'Y':case 'y':
-                      case 'Z':case 'z':case 'R':case 'r':
-                      case 'I':case 'i':
-                         no_of_axis++;
-                         XYZ_Val = atof(temp);
-                         status = Instruction_Values(gcode[3],&XYZ_Val);
-                         #if ProtoDebug == 1
-                           PrintDebug(*gcode[3],temp,&XYZ_Val);
-                         #endif
+                      case 'Z':case 'z':no_of_axis++;
+                      case 'R':case 'r':case 'I':case 'i':
+                           #if ProtoDebug == 1
+                           while(DMA_IsOn(1));
+                           dma_printf("%s\t%s\n","3",(gcode+3));
+                           #endif
+                           no_of_axis++;
+                           XYZ_Val = atof(temp);
+                           status = Instruction_Values((gcode+3),&XYZ_Val);
+                           #if ProtoDebug == 1
+                             PrintDebug(*(*(gcode+3)+0),temp,&XYZ_Val);
+                           #endif
                          break;
                       case 'F': case 'f':
                           O_Val = atoi(temp);
-                          status = Instruction_Values(gcode[3],&O_Val);
+                          status = Instruction_Values((gcode+3),&O_Val);
                          #if ProtoDebug == 1
-                          PrintDebug(*gcode[3],temp,&O_Val);
+                          PrintDebug(*(*(gcode+3)+0),temp,&O_Val);
                          #endif
                          break;
                    }
@@ -571,19 +592,19 @@ START_LINE://label to rerun startup line if it has one
                   i = cpy_val_from_str(temp,(*(gcode+4)),1,strlen(*(gcode+4)));
                    switch(*(*(gcode+4))) {
                       case 'Y':case 'y':
-                      case 'Z':case 'z':
+                      case 'Z':case 'z':no_of_axis++;
                       case 'J':case 'j':
                          XYZ_Val = atof(temp);
-                         status = Instruction_Values(gcode[4],&XYZ_Val);
+                         status = Instruction_Values((gcode+4),&XYZ_Val);
                          #if ProtoDebug == 1
-                           PrintDebug(*gcode[4],temp,&XYZ_Val);
+                           PrintDebug(*(*(gcode+4)+0),temp,&XYZ_Val);
                          #endif
                          break;
                       case 'F':case 'f':
                            O_Val = atoi(temp);
-                           status = Instruction_Values(gcode[4],&O_Val);
+                           status = Instruction_Values((gcode+4),&O_Val);
                          #if ProtoDebug == 1
-                           PrintDebug(*gcode[4],temp,&O_Val);
+                           PrintDebug(*(*(gcode+4)+0),temp,&O_Val);
                          #endif
                          break;
 
@@ -596,7 +617,7 @@ START_LINE://label to rerun startup line if it has one
                   xyz[4] = *(*(gcode+5)+0);no_of_axis++;
                   i = cpy_val_from_str(temp,(*(gcode+5)),1,strlen(*(gcode+5)));
                    switch(*(*(gcode+5))) {
-                      case 'Z':case 'z':
+                      case 'Z':case 'z':no_of_axis++;
                       case 'J':case 'j':
                          XYZ_Val = atof(temp);
                          Instruction_Values(gcode[5],&XYZ_Val);
@@ -665,7 +686,8 @@ START_LINE://label to rerun startup line if it has one
               query = 1;
               break;
          case 'X':case 'x':case 'Y':case 'y':
-         case 'Z':case 'z':case 'A':case 'a':
+         case 'Z':case 'z':case 'A':case 'a': no_of_axis++;
+         case 'I':case 'i':case 'J':case 'j':
               if(*(*(gcode)+0)=='X'){
                    i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
                    XYZ_Val = atof(temp);//no_of_axis++;
@@ -684,8 +706,10 @@ START_LINE://label to rerun startup line if it has one
                       case 'Y':case 'y':
                       case 'Z':case 'z':
                       case 'A':case 'a':
+                      case 'I':case 'i':
+                      case 'J':case 'j':
                          XYZ_Val = atof(temp);
-                         status = Instruction_Values(gcode[1],&XYZ_Val);
+                         status = Instruction_Values((gcode+1),&XYZ_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[1],temp,&XYZ_Val);
                          #endif
@@ -695,7 +719,7 @@ START_LINE://label to rerun startup line if it has one
                        //  if(!F_1_Once){
                            F_1_Once = 1;
                            F_Val = atoi(temp);
-                           status = Instruction_Values(gcode[2],&F_Val);
+                           status = Instruction_Values((gcode+2),&F_Val);
                          #if ProtoDebug == 1
                            PrintDebug(gcode[1],temp,&F_Val);
                          #endif
@@ -720,6 +744,11 @@ START_LINE://label to rerun startup line if it has one
        }
      }
      report:
+     #if ProtoDebug == 10
+     while(DMA_IsOn(1));
+     dma_printf("query:= %d\n",query);
+     #endif
+     
      if(query == 1){status = STATUS_OK;}
      else if(query == 2){status = STATUS_BAD_NUMBER_FORMAT;}
      else if(query == 3){status = STATUS_UNSUPPORTED_STATEMENT;}
@@ -730,6 +759,7 @@ START_LINE://label to rerun startup line if it has one
      else if(query == 8){status = STATUS_SETTING_READ_FAIL;}
      else if(query == 20){status = STATUS_COMMAND_EXECUTE_MOTION; goto ret;}
      else if(query == 21){status = STATUS_COMMAND_EXECUTE_MOTION; goto end;}
+     
      //report on status messages
      report_status_message(status);
      goto end;
@@ -740,9 +770,12 @@ START_LINE://label to rerun startup line if it has one
      //if the return val from modal_group() is error then replace 20
      //with error to return to maing function
      status = (modal_response > 0)? modal_response:status;
+    
+     end: return status;
+     
   }
   //block end for status returns
-  end:
+
   return status;
 }
 
@@ -863,6 +896,10 @@ float XYZ_Val;
          case 'Y':case 'y':
          case 'Z':case 'z':
          case 'A':case 'a':
+         case 'I':case 'i':
+         case 'J':case 'j':
+         case 'K':case 'k':
+         case 'R':case 'r':
               XYZ_Val = *(float*)ptr;
               while(DMA_IsOn(1));
               dma_printf("%c\t%s\t%f\n",c,strB,XYZ_Val);

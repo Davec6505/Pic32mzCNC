@@ -87,6 +87,7 @@ extern volatile int status_code;   // Status of instructions
 #define MOTION_MODE_CCW_ARC 3  // G3
 #define MOTION_MODE_CANCEL  4  // G80
 #define MOTION_MODE_MCODES  5  // M....
+#define MOTION_MODE_NULL    6  // .....
 
 //PROGRAM FLOW VALUES
 #define PROGRAM_FLOW_RUNNING   0
@@ -158,7 +159,7 @@ extern volatile int status_code;   // Status of instructions
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef struct {
-  char r:                      1;
+  char r: 1;
   char no_axis_interpolate;      //Single or dual axis for interpolation
   char inverse_feed_rate_mode;   // {G93, G94}
   char inches_mode;              // 0 = millimeter mode, 1 = inches mode {G20, G21}
@@ -169,16 +170,14 @@ typedef struct {
   char motion_mode;              // {G0, G1, G2, G3, G80}
   char program_flow;             // {M0, M1, M2, M30}
   char tool;
-  //  uint16_t spindle_speed;    // RPM/100
   char plane_axis_0,
        plane_axis_1,
        plane_axis_2;                      // The axes of the selected plane
   int  coord_select;                      // Active work coordinate system number. Default: 0=G54.
- // int status_code;                      // Parser status for current block
- // int motion_mode;                      // {G0, G1, G2, G3, G80}
+ // int spindle_speed;                    // RPM/100
   int L;                                  //L2 tells the G10 we’re setting standard work offsets
-  unsigned long frequency;                // Speed expressed as Frequency of pulses
-  float feed_rate;                        // Millimeters/min
+  volatile long frequency;                // Speed expressed as Frequency of pulses
+  volatile float feed_rate;               // Millimeters/min
 //  float seek_rate;                      // Millimeters/min. Will be used in v0.9 when axis independence is installed
   volatile float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
   volatile float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine
@@ -193,6 +192,7 @@ typedef struct {
   float K;
   int P;               //Pause as in msec if sent with G04 else Coord-position
   int S;               //Pause as in sec
+  int DIR;
 } parser_state_t;
 extern parser_state_t gc;
 
@@ -233,8 +233,6 @@ int Motion_mode();
 int Instruction_Values(char *c,void *any);
 //movement of axis
 void Movement_Condition();
-//update current position ??? prehaps move to another location
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
 
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);

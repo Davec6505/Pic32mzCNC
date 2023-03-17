@@ -1,5 +1,8 @@
 #include "Globals.h"
 
+
+
+
 //coordinates struct - easier to work when extracted from flash
 //holds coord[] and coord_offset[]
 // coord_sys coord_system[NUMBER_OF_DATUMS];

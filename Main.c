@@ -66,129 +66,140 @@ void Conditin_Externs(){
 void main() {
 int error = 0;
 int has_flash = 0;
-int axis_to_run,dif,modal_group,modal_action,status_of_gcode;
+int dif,modal_group,modal_action,status_of_gcode;
 static int cntr = 0,a = 0;
 
+ //setup
  Conditin_Externs();
-  
- cntr = a = axis_to_run = dif = status_of_gcode = modal_group = modal_action = 0;
+ //pre condition
+ cntr = a =  dif = status_of_gcode = modal_group = modal_action = 0;
  
-  while(1){
+ while(1){
 
-     //continously test the limits
-     Debounce_Limits(X);
-     Debounce_Limits(Y);
+   //continously test the limits
+   Debounce_Limits(X);
+   Debounce_Limits(Y);
 
-     //continously check the communication channel
-     //if STSTUS_OK or OTHER
-     if(status_of_gcode == STATUS_COMMAND_EXECUTE_MOTION){
-      //get the modal_group
-       modal_group = Get_modalgroup();
-
-       switch(modal_group){
-          case 0:FAIL(STATUS_OK);break;
-          case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
-               modal_action = Modal_Group_Actions0(Get_modalword());
-               modal_group = Rst_modalgroup();
-               report_status_message(STATUS_OK);
-               break;
-          case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
-              axis_to_run = Get_Axisword();
-              //temp debug for steppers
-
-             #if MainDebug == 10
+   //continously check the communication channel
+   //if STATUS_OK because some modal functions here keep their value for 
+   //-> functionality like homing, therefor we continously need to pol
+   //-> homing "this is  non-blocking of motion"
+   //r STATUS_COMMAND_EXECUTE_MOTION
+   if(status_of_gcode == STATUS_COMMAND_EXECUTE_MOTION ||
+      status_of_gcode == STATUS_OK){
+    int axis_to_run = 0;
+    //get the modal_group
+     modal_group = Get_modalgroup();
+     //could impliment a minimal state m/c for modal group control rather
+     //than this switch statement
+     switch(modal_group){
+        case 0:FAIL(STATUS_OK);break;
+        case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
+             modal_action = Modal_Group_Actions0(Get_modalword());
+             modal_group = Rst_modalgroup();
+             report_status_message(STATUS_OK);
+             break;
+        case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
+            axis_to_run = Get_Axisword();
+            
+            //temp debug for steppers
+           #if MainDebug == 10
+           while(DMA_IsOn(1));
+           dma_printf("%s","axis_to_run:= %d\n");//,axis_to_run);
+           #endif
+           
+           //Execute this once only, once the axis are started the
+           //OCx interrupts take control of the axis
+              EnableSteppers(ALL_AXIS);
+              Modal_Group_Actions1(axis_to_run);
+              axis_to_run = Rst_Axisword();
+              modal_group = Rst_modalgroup();
+             break;
+        //case 8:break;// [G17,G18,G19] Plane selection  [not conditioned here]
+        //case 16:break;// [G90,G91] Distance mode  [not conditioned here]
+        case 32://MODAL_GROUP_4 [M0,M1,M2,M30] Stopping
+             Modal_Group_Actions4(1);//implimentation needed
+             modal_group = Rst_modalgroup();
+             break;
+        //case 64:break;// [G93,G94] Feed rate mode [not conditioned here]
+        //case 128:break;// [G20,G21] Units [not conditioned here]
+        case 256://MODAL_GROUP_7 [M3,M4,M5] Spindle turning
+             Modal_Group_Actions7(1);//implimentation needed
+             modal_group = Rst_modalgroup();
+             break;
+        case 512:// [G54,G55,G56,G57,G58,G59] Coordinate system selection
+             Modal_Group_Actions12(gc.coord_select);//implimentation needed
+             modal_group = Rst_modalgroup();
+             break;
+        case 1024: //$H Home all axis
+             //temp debug for steppers
+             modal_action = Modal_Group_Actions1(ALL_AXIS);
+             #if HomeDebug == 11
              while(DMA_IsOn(1));
-             dma_printf("status_of_gcode:= %d\taxis_to_run:= %d\n",status_of_gcode,axis_to_run);
-             #endif
-             //Execute this once only, once the axis are started the
-             //OCx interrupts take control of the axis
-             //if(!SV.Tog){
-                EnableSteppers(ALL_AXIS);
-                Modal_Group_Actions1(axis_to_run);
-                axis_to_run = Rst_Axisword();
-             // }else{
-             //   if(STPS[X].run_state == STOP && STPS[Y].run_state == STOP){
-             //     modal_group = Rst_modalgroup();
-             //   }
-             // }
-                 modal_group = Rst_modalgroup();
-               break;
-          //case 8:break;// [G17,G18,G19] Plane selection
-          //case 16:break;// [G90,G91] Distance mode
-          case 32://MODAL_GROUP_4 [M0,M1,M2,M30] Stopping
-               Modal_Group_Actions4(1);//implimentation needed
-               modal_group = Rst_modalgroup();
-               break;
-          //case 64:break;// [G93,G94] Feed rate mode
-          //case 128:break;// [G20,G21] Units
-          case 256://MODAL_GROUP_7 [M3,M4,M5] Spindle turning
-               Modal_Group_Actions7(1);//implimentation needed
-               modal_group = Rst_modalgroup();
-               break;
-          case 512:// [G54,G55,G56,G57,G58,G59] Coordinate system selection
-               Modal_Group_Actions12(gc.coord_select);//implimentation needed
-               modal_group = Rst_modalgroup();
-               break;
-          case 1024: //$H Home all axis
-               //if(axis_to_home < NoOfAxis){
-                 //temp debug for steppers
-               modal_action = Modal_Group_Actions1(ALL_AXIS);
-               #if HomeDebug == 10
-               while(DMA_IsOn(1));
-               dma_printf("modal_action:= %d\n",modal_action);
-              #endif
-               if(modal_action != 0)modal_group = Rst_modalgroup();
-               break;
-       }
-       
-       //need to report ok once movement has started or g commands
-       //are sent in quick succession!!!
+             dma_printf("modal_action:= %d\n",modal_action);
+            #endif
+             if(modal_action == 0)modal_group = Rst_modalgroup();
+             break;
      }
-     if(!Get_Axis_Enable_States() && SV.Tog==1){
-       report_status_message(STATUS_OK);
-       SV.Tog = 0;
-     }
-     #if StepperDebug == 1
-     if(!SV.Tog){
-      if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
-      while(DMA_IsOn(1));
-      dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
-                (STPS[X].run_state&0xff),STPS[X].step_count,
+   }
+   
+   if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed){
+     //debug STATUS_OK response after moves complete
+     #if MainDebug == 12
+     while(DMA_IsOn(1));
+     dma_printf("SV.Tog:= %d\tSV.homed:= %d\n"
+                ,SV.Tog&0xFF
+                ,SV.homed&0xFF);
+     #endif
+     
+     status_of_gcode == STATUS_OK;
+     report_status_message(status_of_gcode);
+     //reset SV.Tog if an error has occured prior to move finishing
+     SV.Tog = 0;
+   }
+   
+  //Debug for stepper report if not connected to unit
+  #if StepperDebug == 1
+  if(!SV.Tog){
+    if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
+     while(DMA_IsOn(1));
+     dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
+               (STPS[X].run_state&0xff),STPS[X].step_count,
                 SV.dA,STPS[Y].step_count,STPS[X].step_delay,gc.frequency);
-      } 
      }
-     #endif
+   }
+  #endif
 
-     //state check for resets
-     protocol_system_check();
-     
-     //run at end of every scan
-     protocol_execute_runtime();
-     
-     //check ring buffer for data transfer
-     status_of_gcode = Sample_Ringbuffer();
-     #if MainDebug == 11
-     if(status_of_gcode > 0){
-      while(DMA_IsOn(1));
-      dma_printf("status_of_gcode:= %d\n",status_of_gcode);
-     }
-     #endif
-
-     
-     //code execution confirmation led on clicker2 board
-     #ifdef LED_STATUS
-     LED1 = TMR.clock >> 4;
-     #endif
-      
-     //disable the steppers after a long idle state, switch off in "Settings.h"
-     #ifdef RESET_STEPPER_TIME
-       if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
-           disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
-     #endif
-
-     //on system failure reset the device
-     WDTCONSET = 0x01;
+  //state check for resets
+  protocol_system_check();
+   
+  //run at end of every scan
+  protocol_execute_runtime();
+   
+  //check ring buffer for data transfer
+  status_of_gcode = Sample_Ringbuffer();
+  
+  #if MainDebug == 11
+  if(status_of_gcode > 0){
+   while(DMA_IsOn(1));
+   dma_printf("status_of_gcode:= %d\n",status_of_gcode);
   }
+  #endif
+
+  //code execution confirmation led on clicker2 board
+  #ifdef LED_STATUS
+  LED1 = TMR.clock >> 4;
+  #endif
+    
+  //disable the steppers after a long idle state, switch off in "Settings.h"
+  #ifdef RESET_STEPPER_TIME
+  if(disable_steps <= SEC_TO_DISABLE_STEPPERS)
+      disable_steps = TMR.Reset(SEC_TO_DISABLE_STEPPERS,disable_steps);
+  #endif
+
+   //on system failure reset the device
+   WDTCONSET = 0x01;
+ }
 }
 
 
@@ -462,17 +473,23 @@ static int Modal_Group_Actions1(int action){
        case 12://b0000 1100
             DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
             break;
-       case 15://Homing Y axis
-            r_or_ijk(150.00, 30.00, 150.00, 30.00, 0.00, -50.00, 50.00,0.00,X,Y,CW);
+       case 15://Circle interpolation
+            sys_sync_current_position();
+            r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
             break;
        case ALL_AXIS://Homing X axis
             axis_to_home = Home(axis_to_home);
+            LED2 = TMR.clock >> 3;
+            #if HomeDebug == 10
+            while(DMA_IsOn(1));
+            dma_printf("axis_to_home:= %d\n",axis_to_home);
+            #endif
             if(axis_to_home < 2){
-              LED2 = TMR.clock >> 3;
+
               //will need to test for abort!!!
-             /* if (sys.abort) {
+              if (sys.abort) {
                   action =(ALARM_ABORT_CYCLE);
-              } */
+              }
             }else{
               int l = 0;
               // Execute startup scripts after successful homing????.
@@ -489,16 +506,17 @@ static int Modal_Group_Actions1(int action){
                 if(STPS[l].run_state != STOP)
                     STPS[l].run_state = STOP;
               }
+//              
+              //sync the homing position to zero
               sys_sync_current_position();
               
-
-                    
               //axis_to_home must be reset at end
               while(axis_to_home)
                   axis_to_home = Rst_Axisword();
               
               //return the number of axis completed
               sys.state = STATE_IDLE;
+              SV.homed = false;
             }
             break;
         default: return action = 0;

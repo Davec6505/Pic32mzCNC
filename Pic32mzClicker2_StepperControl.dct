@@ -6258,6 +6258,7 @@ bdstate2_bit
 bdstate3
 bdstate3_bit
 belt_steps
+beltsteps2mm
 bf1devcfg0
 bf1devcfg0bits
 bf1devcfg1
@@ -23488,6 +23489,7 @@ digen4_bit
 digen7
 digen7
 digen7_bit
+dir
 dir_step_pindira
 dir_step_pindirx
 dir_step_pindiry
@@ -28662,6 +28664,7 @@ extr
 extr
 extr_bit
 fabs
+fail
 fceie
 fceie
 fceie
@@ -32471,7 +32474,6 @@ fwroverr_bit
 g_initialise
 g_mode
 gc
-gc_set_current_position
 gcen
 gcen
 gcen
@@ -32526,6 +32528,8 @@ gcstat_i2c3stat_bit
 gcstat_i2c4stat_bit
 gcstat_i2c5stat_bit
 get_address_pval
+get_axis_enable_states
+get_axisstatus
 get_axisword
 get_difference
 get_fosc_khz
@@ -33168,6 +33172,7 @@ hold
 hold
 hold_bit
 home
+homed
 homing
 homing_cnt
 homing_debounce_delay
@@ -37048,6 +37053,7 @@ inttostrwithzeros
 inverse_feed_rate
 inverse_feed_rate_mode
 invert_mask
+invert_min_limit
 ioancpen
 ioancpen
 ioancpen_bit
@@ -43677,8 +43683,6 @@ on_uefmode_bit
 on_ughmode_bit
 on_ujkmode_bit
 on_ulmmode_bit
-oneshota
-oneshotb
 opmod
 opmod
 opmod
@@ -44468,6 +44472,8 @@ pktpendie
 pktpendie
 pktpendie_bit
 plan_init
+plan_reset_absolute_position
+plan_set_current_position
 plane_axis_0
 plane_axis_1
 plane_axis_2
@@ -45805,6 +45811,7 @@ protocol
 protocol
 protocol
 protocol_execute_runtime
+protocol_system_check
 protocol0
 protocol0_bit
 protocol0_usbe1csr2_bit
@@ -47213,11 +47220,9 @@ reset
 reset
 reset_
 reset_bit
-reset_min_debounce
 reset_min_limit
 reset_ring
 reset_usbcsr0_bit
-resethoming
 resetie
 resetie
 resetie_bit
@@ -48602,6 +48607,8 @@ rslp_refo2con_bit
 rslp_refo3con_bit
 rslp_refo4con_bit
 rst_axisword
+rst_fn
+rst_fp
 rst_modalgroup
 rst_modalword
 rst_motionmode
@@ -49087,6 +49094,7 @@ rtsmd_uefmode_bit
 rtsmd_ughmode_bit
 rtsmd_ujkmode_bit
 rtsmd_ulmmode_bit
+run_circle
 rundiv
 rundiv
 rundiv
@@ -56486,6 +56494,7 @@ sessrqif
 sessrqif
 sessrqif_bit
 set_axisword
+set_min_limit
 set_modalgroup
 set_modalword
 set_performance_mode
@@ -61269,6 +61278,9 @@ stnaddr67
 stnaddr67_bit
 stnaddr67_emacxsa0_bit
 stopaxis
+stp_pause
+stp_run
+stp_stopped
 stps
 str_clear
 str_initialize
@@ -81480,12 +81492,11 @@ wtid3_bit
 x_min_limit
 x_min_limit
 x_min_limit_dir
-x_min_limit_setup
+xor_min_limit
 xtoi
 y_min_limit
 y_min_limit
 y_min_limit_dir
-y_min_limit_setup
 year01
 year01
 year01

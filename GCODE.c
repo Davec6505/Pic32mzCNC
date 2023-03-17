@@ -28,7 +28,7 @@ parser_state_t gc;
 volatile int status_code;  // Status of instructions
 volatile float coord_data[NoOfAxis];
 
-static volatile char axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
+static volatile int axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
 static volatile int modal_group_words;  // Bitflag variable to track and check modal group words in block
 static volatile int non_modal_words;    // Bitflags to track non-modal actions
 static volatile int motion_mode;
@@ -111,14 +111,19 @@ void Set_Axisword(int value){
   bit_true( axis_words,bit( value));
 }
 
+//Set the axis word to a specific value instead of a bit
+/*static void Set_Axisword(int value){
+  axis_words = value;
+}*/
+
 //Axis to run
 int Get_Axisword(){
-  return (int)axis_words & 0x00ff;
+  return axis_words & 0x0fff;
 }
 
 int Rst_Axisword(){
-  axis_words=0;
-  return (int)axis_words;
+  axis_words = 0;
+  return axis_words;
 }
 
 //motion mode instruvtion is extracted from G e.g. G0 G1 ect.
@@ -179,24 +184,24 @@ int i,m_mode;
   switch(mode){
     case 0: m_mode    = MOTION_MODE_SEEK;    break;
     case 1: m_mode    = MOTION_MODE_LINEAR;  break;
-    case 2: m_mode    = MOTION_MODE_CW_ARC;  break;
-    case 3: m_mode    = MOTION_MODE_CCW_ARC; break;
+    case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;  break;
+    case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW; break;
     case 4: non_modal_action  = NON_MODAL_DWELL;     break;
     case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
-    case 17: Select_Plane(xy);return STATUS_OK; break;
-    case 18: Select_Plane(xz);return STATUS_OK; break;
-    case 19: Select_Plane(yz);return STATUS_OK; break;
-    case 20: gc.inches_mode = 1;return STATUS_OK; break;
-    case 21: gc.inches_mode = 0;return STATUS_OK; break;
-    case 53: gc.absolute_override = true;return STATUS_OK; break;
+    case 17: Select_Plane(xy);m_mode    = MOTION_MODE_NULL; break;
+    case 18: Select_Plane(xz);m_mode    = MOTION_MODE_NULL; break;
+    case 19: Select_Plane(yz);m_mode    = MOTION_MODE_NULL; break;
+    case 20: gc.inches_mode = 1;m_mode  = MOTION_MODE_NULL; break;
+    case 21: gc.inches_mode = 0;m_mode  = MOTION_MODE_NULL; break;
+    case 53: gc.absolute_override = true;m_mode = MOTION_MODE_NULL; break;
     case 54: case 55: case 56: case 57: case 58: case 59:
              gc.coord_select = (mode - 53);//G54-53 == 1...;
-             return STATUS_OK;break;
+             m_mode = MOTION_MODE_NULL;break;
     case 80: motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
-    case 90: gc.absolute_mode = true; return STATUS_OK; break;
-    case 91: gc.absolute_mode = false; return STATUS_OK; break;
-    case 93: gc.inverse_feed_rate_mode = true;return STATUS_OK; break;
-    case 94: gc.inverse_feed_rate_mode = false;return STATUS_OK; break;
+    case 90: gc.absolute_mode = true; m_mode    = MOTION_MODE_NULL; break;
+    case 91: gc.absolute_mode = false; m_mode   = MOTION_MODE_NULL; break;
+    case 93: gc.inverse_feed_rate_mode = true;m_mode  = MOTION_MODE_NULL; break;
+    case 94: gc.inverse_feed_rate_mode = false;m_mode = MOTION_MODE_NULL; break;
     case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
     case 281: non_modal_action = NON_MODAL_SET_HOME_0; break;
     case 300: non_modal_action = NON_MODAL_GO_HOME_1; break;
@@ -358,15 +363,21 @@ int i = 0;
           case MOTION_MODE_CW_ARC: case MOTION_MODE_CCW_ARC:
             // Check if at least one of the axes of the selected plane has been specified. If in center
             // format arc mode, also check for at least one of the IJK axes of the selected plane was sent.
-            if ( !( bit_false(axis_words,bit(gc.plane_axis_2)) ) ||
+          /*  if ( !( bit_isfalse(axis_words,bit(gc.plane_axis_2)) ) ||
                  ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
               FAIL(STATUS_INVALID_STATEMENT);
-            } else {
-              if (gc.R != 0) {
-                 // Arc Mode radius is passed over to the arc function
-                 asm{nop;}
-              }
-            }
+            } else {   */
+              //set axis_word to 15 this tells modal_function1(axis_words)
+              //to run arc interpolation
+              for(i=0;i<=3;i++)
+                  Set_Axisword(i);
+                  
+              #if GcodeDebug == 3
+              //test if axis_word will run arc
+              while(DMA_IsOn(1));
+              dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
+              #endif
+           // }
             break;
        }
        //track current position
@@ -567,16 +578,3 @@ int F_Val,O_Val;
 }
 
 
-// Sets g-code parser position in mm. Input in steps. Called by the system abort and hard
-// limit pull-off routines.
-// don't know yet ????????????
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z){
-int i;
-float temp[3];
-  for(i=0;i<3;i++){
-      temp[i] = ulong2flt(settings.steps_per_mm[i]);
-  }
-  gc.position[X] = x/temp[X];
-  gc.position[Y] = y/temp[Y];
-  gc.position[Z] = z/temp[Z];
-}

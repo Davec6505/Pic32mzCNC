@@ -66,8 +66,8 @@ main
 		Get_Axisword
 		ulong2flt
 		SingleAxisStep
-			Single_Axis_Enable
 			belt_steps
+			Single_Axis_Enable
 			speed_cntr_Move
 				labs
 				sqrt_
@@ -108,7 +108,11 @@ main
 				Step_Cycle
 				Pulse
 					AccDec
+		sys_sync_current_position
+			plan_set_current_position
+				beltsteps2mm
 		r_or_ijk
+			__CC2DW
 			sqrt
 				frexp
 				ldexp
@@ -121,20 +125,16 @@ main
 					atan
 						fabs
 						eval_poly
-				hypot
 				fabs
+				hypot
 				floor
-				dma_printf
 				cos
 					sin
 						floor
 						eval_poly
 				sin
-				DMA_IsOn
 				DualAxisStep
-				Test_Port_Pins
-				disableOCx
-				__CC2DW
+				report_status_message
 		Home
 			Rst_FP
 			Rst_FN
@@ -153,9 +153,6 @@ main
 			disableOCx
 			DisableStepper
 			ResetHoming
-		sys_sync_current_position
-			gc_set_current_position
-				ulong2flt
 		Rst_Axisword
 	Rst_Axisword
 	Modal_Group_Actions4
@@ -176,8 +173,8 @@ main
 		report_feedback_message
 		report_realtime_status
 			DMA_IsOn
-			memcpy
 			dma_printf
+			beltsteps2mm
 			__CC2DW
 	Sample_Ringbuffer
 		__CC2DW
@@ -281,6 +278,7 @@ main
 			FAIL
 			Rst_modalgroup
 			Rst_modalword
+			Set_Axisword
 	ResetSteppers
 		DisableStepper
 StepZ

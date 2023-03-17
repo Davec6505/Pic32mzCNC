@@ -147,9 +147,9 @@ extern sfr sbit Y_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 169 "c:/users/git/pic32mzcnc/settings.h"
+#line 171 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[ 4 ];
+ float steps_per_mm[ 2 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -348,7 +348,7 @@ typedef struct {
  int state;
  int homing;
  int homing_cnt;
- long position[ 4 ];
+ long position[ 2 ];
 
  int auto_start;
  int execute;
@@ -358,8 +358,8 @@ extern system_t sys;
 
 
 typedef struct{
- float coord[ 4 ];
- float coord_offset[ 4 ];
+ float coord[ 2 ];
+ float coord_offset[ 2 ];
 }coord_sys;
 extern volatile coord_sys coord_system[ 9 ];
 
@@ -472,17 +472,17 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- double mm_position;
+ float mm_position;
 
- double mm_home_position;
+ float mm_home_position;
 
- double max_travel;
+ float max_travel;
 
  int axis_dir;
 
  char master: 1;
 }STP;
-extern STP STPS[ 4 ];
+extern STP STPS[ 2 ];
 
 
 
@@ -500,9 +500,9 @@ void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(double newxyz,long speed,int axis_No);
 
 
-void mc_arc(double *position, double *target, double *offset, int axis_0,
- int axis_1,int axis_linear, double feed_rate,uint8_t invert_feed_rate,
- double radius, uint8_t isclockwise);
+void mc_arc(float *position, float *target, float *offset, int axis_0,
+ int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
+ float radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
 
@@ -526,8 +526,10 @@ void mc_reset();
 #line 52 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  int Single_Dual;
- unsigned short running: 1;
- unsigned short startPulses: 1;
+ char running: 1;
+ char startPulses: 1;
+ char homed: 1;
+ char run_circle: 1;
  int Tog;
  int AxisNo;
 
@@ -557,12 +559,14 @@ void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
 
 void sys_sync_current_position();
 
-void plan_set_current_position(long x, long y, long z);
+void plan_set_current_position();
+
+void plan_reset_absolute_position();
 
 unsigned long sqrt_(unsigned long v);
 
-void r_or_ijk(double xCur,double yCur,double xFin,double yFin,
- double r, double i, double j, double k, int axis_A,int axis_B,int dir);
+void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
+ float r, float i, float j, float k, int axis_A,int axis_B,int dir);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
 #line 32 "c:/users/git/pic32mzcnc/stepper.h"
@@ -633,12 +637,13 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 25 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 37 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
 long leadscrew_sets(double move_distance);
-long belt_steps(double move_distance);
+long belt_steps(double move_distance,int axis);
+float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
 double in2mm(double inch);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
@@ -792,7 +797,7 @@ void protocol_execute_runtime();
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 49 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 160 "c:/users/git/pic32mzcnc/gcode.h"
+#line 161 "c:/users/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;
@@ -805,23 +810,21 @@ typedef struct {
  char motion_mode;
  char program_flow;
  char tool;
-
  char plane_axis_0,
  plane_axis_1,
  plane_axis_2;
  int coord_select;
 
-
  int L;
- unsigned long frequency;
+ long frequency;
  float feed_rate;
 
- volatile float position[ 4 ];
- volatile float coord_system[ 4 ];
+ volatile float position[ 2 ];
+ volatile float coord_system[ 2 ];
 
- volatile float coord_offset[ 4 ];
+ volatile float coord_offset[ 2 ];
 
- volatile float next_position[ 4 ];
+ volatile float next_position[ 2 ];
  volatile float offset[3];
  float R;
  float I;
@@ -829,6 +832,7 @@ typedef struct {
  float K;
  int P;
  int S;
+ int DIR;
 } parser_state_t;
 extern parser_state_t gc;
 
@@ -870,8 +874,6 @@ int Instruction_Values(char *c,void *any);
 
 void Movement_Condition();
 
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z);
-
 static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
@@ -885,9 +887,9 @@ parser_state_t gc;
 
 
 volatile int status_code;
-volatile float coord_data[ 4 ];
+volatile float coord_data[ 2 ];
 
-static volatile char axis_words;
+static volatile int axis_words;
 static volatile int modal_group_words;
 static volatile int non_modal_words;
 static volatile int motion_mode;
@@ -969,15 +971,14 @@ int Rst_modalword(){
 void Set_Axisword(int value){
   (axis_words |= (1 << value) ) ;
 }
-
-
+#line 120 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 int Get_Axisword(){
- return (int)axis_words & 0x00ff;
+ return axis_words & 0x0fff;
 }
 
 int Rst_Axisword(){
- axis_words=0;
- return (int)axis_words;
+ axis_words = 0;
+ return axis_words;
 }
 
 
@@ -1004,7 +1005,7 @@ void M_Instruction(int flow){
 
  group_number = Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
-#line 152 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 157 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 }
 
 
@@ -1035,24 +1036,24 @@ int i,m_mode;
  switch(mode){
  case 0: m_mode =  0 ; break;
  case 1: m_mode =  1 ; break;
- case 2: m_mode =  2 ; break;
- case 3: m_mode =  3 ; break;
+ case 2: m_mode =  2 ;gc.DIR =  0 ; break;
+ case 3: m_mode =  3 ;gc.DIR =  1 ; break;
  case 4: non_modal_action =  1 ; break;
  case 10: non_modal_action =  2 ; break;
- case 17: Select_Plane(xy);return  0 ; break;
- case 18: Select_Plane(xz);return  0 ; break;
- case 19: Select_Plane(yz);return  0 ; break;
- case 20: gc.inches_mode = 1;return  0 ; break;
- case 21: gc.inches_mode = 0;return  0 ; break;
- case 53: gc.absolute_override =  1 ;return  0 ; break;
+ case 17: Select_Plane(xy);m_mode =  6 ; break;
+ case 18: Select_Plane(xz);m_mode =  6 ; break;
+ case 19: Select_Plane(yz);m_mode =  6 ; break;
+ case 20: gc.inches_mode = 1;m_mode =  6 ; break;
+ case 21: gc.inches_mode = 0;m_mode =  6 ; break;
+ case 53: gc.absolute_override =  1 ;m_mode =  6 ; break;
  case 54: case 55: case 56: case 57: case 58: case 59:
  gc.coord_select = (mode - 53);
- return  0 ;break;
+ m_mode =  6 ;break;
  case 80: motion_mode =  4 ; break;
- case 90: gc.absolute_mode =  1 ; return  0 ; break;
- case 91: gc.absolute_mode =  0 ; return  0 ; break;
- case 93: gc.inverse_feed_rate_mode =  1 ;return  0 ; break;
- case 94: gc.inverse_feed_rate_mode =  0 ;return  0 ; break;
+ case 90: gc.absolute_mode =  1 ; m_mode =  6 ; break;
+ case 91: gc.absolute_mode =  0 ; m_mode =  6 ; break;
+ case 93: gc.inverse_feed_rate_mode =  1 ;m_mode =  6 ; break;
+ case 94: gc.inverse_feed_rate_mode =  0 ;m_mode =  6 ; break;
  case 280: non_modal_action =  3 ; break;
  case 281: non_modal_action =  4 ; break;
  case 300: non_modal_action =  5 ; break;
@@ -1078,7 +1079,7 @@ int i,m_mode;
  }
 
  }
-#line 231 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 236 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return m_mode;
 }
 
@@ -1107,7 +1108,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 262 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 267 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default: FAIL( 3 );break;
@@ -1151,7 +1152,7 @@ int i = 0;
 
  if(!gc.absolute_override)
   (non_modal_words |= (1 << non_modal_action) ) ;
-#line 313 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 318 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -1164,7 +1165,7 @@ int i = 0;
 
  if(group_number ==  2 ){
  status_code =  0 ;
-#line 331 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 336 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  switch (motion_mode) {
  case  4 :
 
@@ -1193,21 +1194,14 @@ int i = 0;
  }
  break;
  case  2 : case  3 :
-
-
- if ( !(  (axis_words &= ~ (1 << gc.plane_axis_2) )  ) ||
- ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
- FAIL( 6 );
- } else {
- if (gc.R != 0) {
-
- asm{nop;}
- }
- }
+#line 372 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ for(i=0;i<=3;i++)
+ Set_Axisword(i);
+#line 381 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  }
 
- for(i=0;i< 4 ;i++){
+ for(i=0;i< 2 ;i++){
  gc.position[i] = gc.next_position[i];
  }
  }
@@ -1221,27 +1215,27 @@ int i = 0;
  }else{
  FAIL( 0 );
  }
-#line 394 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 405 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
  }
 
 
  if (group_number ==  4 ){
-#line 405 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 416 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  FAIL( 0 );
  return status_code;
  }
 
 
  if (group_number ==  6 ){
-#line 417 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 428 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  FAIL( 0 );
  return status_code;
  }
 
 
  if (group_number ==  7 ){
-#line 429 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 440 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  FAIL( 0 );
  return status_code;
  }
@@ -1253,11 +1247,11 @@ int i = 0;
  FAIL( 1 );
  else
  FAIL( 0 );
-#line 446 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 457 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
  }
  }
-#line 457 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 468 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  FAIL( 0 );
  return status_code;
 }
@@ -1321,9 +1315,9 @@ int F_Val,O_Val;
  if(F_Val < 0){
  FAIL( 13 );
  }
-#line 526 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 537 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  gc.frequency = (unsigned long)F_Val;
-#line 531 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 542 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
@@ -1350,21 +1344,6 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 566 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 577 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
-}
-
-
-
-
-
-void gc_set_current_position(unsigned long x, unsigned long y, unsigned long z){
-int i;
-float temp[3];
- for(i=0;i<3;i++){
- temp[i] = ulong2flt(settings.steps_per_mm[i]);
- }
- gc.position[X] = x/temp[X];
- gc.position[Y] = y/temp[Y];
- gc.position[Z] = z/temp[Z];
 }

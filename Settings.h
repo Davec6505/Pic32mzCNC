@@ -36,17 +36,17 @@ typedef __attribute__((aligned (32))) float afloat;
 #define BITFLAG_HOMING_ENABLE         bit(4)
 
 //flags
-#define DEFAULT_REPORT_INCHES          true
+#define DEFAULT_REPORT_INCHES          false
 #define DEFAULT_AUTO_START             true
 #define DEFAULT_INVERT_ST_ENABLE       true
 #define DEFAULT_HARD_LIMIT_ENABLE      true
 #define DEFAULT_HOMING_ENABLE          true
 
 //default values of words and flags
-#define DEFAULT_X_STEPS_PER_MM         250.00
-#define DEFAULT_Y_STEPS_PER_MM         250.00
-#define DEFAULT_Z_STEPS_PER_MM         250.00
-#define DEFAULT_A_STEPS_PER_MM         250.00
+#define DEFAULT_X_STEPS_PER_MM         200.00
+#define DEFAULT_Y_STEPS_PER_MM         200.00
+#define DEFAULT_Z_STEPS_PER_MM         200.00
+#define DEFAULT_A_STEPS_PER_MM         200.00
 #define DEFAUT_P_USEC                  100
 #define DEFAULT_MM_PER_ARC_SEGMENT     0.1
 #define DEFAULT_RAPID_FEEDRATE         500.0 // mm/min
@@ -81,11 +81,13 @@ typedef __attribute__((aligned (32))) float afloat;
 ////////////////////////////////////////////////////////////
 //              Stepper Motor Settings                    //
 ////////////////////////////////////////////////////////////
-#define NoOfAxis 4
+#define NoOfAxis 2
 #define  _X      0
 #define  _Y      1
 #define  _Z      2
 #define  _A      3
+#define  _B      4
+#define  _C      5
 
 //Number of planes must be adjusted acording to NoOfAxis
 //4 axis has 4 planes XY XZ YZ [XA YA
@@ -93,13 +95,13 @@ typedef __attribute__((aligned (32))) float afloat;
 
 //! Number of (full)steps per round on stepper motor in use.
 #define SPR 188               // 200 Steps per rev
-#define M_STEP 32               //Stepper drive micro steps setting
+#define M_STEP 32.0               //Stepper drive micro steps setting
 
 /**************************************************
 * ! Belt driven systems
 **************************************************/
-#define PULLEY_TOOTH_COUNT 20  //belt pully tooth count
-#define BELT_PITCH 2           // Belt tooth pitch
+#define PULLEY_TOOTH_COUNT 20.0  //belt pully tooth count
+#define BELT_PITCH 2.0           // Belt tooth pitch
 
 /**************************************************
 * uncomment USE_LEADSCREW_PITCH if using N instead of pitch
