@@ -356,8 +356,8 @@ typedef struct {
  int coord_select;
 
  int L;
- long frequency;
- float feed_rate;
+ volatile long frequency;
+ volatile float feed_rate;
 
  volatile float position[ 2 ];
  volatile float coord_system[ 2 ];
@@ -740,12 +740,17 @@ void report_realtime_status();
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 47 "c:/users/git/pic32mzcnc/protocol.h"
+#line 52 "c:/users/git/pic32mzcnc/protocol.h"
+void Init_Protocol();
+
+
 void Str_Initialize(char arg[ 20 ][ 64 ]);
 
 
 void Str_clear(char *str,int len);
 
+
+int Sample_Gocde_Line();
 
 int Sample_Ringbuffer();
 

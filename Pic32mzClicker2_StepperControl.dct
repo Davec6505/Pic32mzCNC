@@ -36541,6 +36541,7 @@ incomptx_usbe6csr0_bit
 incomptx_usbe6csr1_bit
 incomptx_usbe7csr0_bit
 incomptx_usbe7csr1_bit
+init_protocol
 init1cmd1
 init1cmd10
 init1cmd10_bit
@@ -55530,6 +55531,7 @@ samc9_bit
 samp
 samp
 samp_bit
+sample_gocde_line
 sample_ringbuffer
 sbcde
 sbcde

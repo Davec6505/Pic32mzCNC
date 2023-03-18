@@ -55,6 +55,7 @@ static int axis_to_home = 0;
 void Conditin_Externs(){
   PinMode();
   plan_init(15000,15000);
+  Init_Protocol();
   disableOCx();
   DisableStepper();
   //stepper timeout counter
@@ -177,7 +178,8 @@ static int cntr = 0,a = 0;
   protocol_execute_runtime();
    
   //check ring buffer for data transfer
-  status_of_gcode = Sample_Ringbuffer();
+  status_of_gcode = Sample_Gocde_Line();
+  //status_of_gcode = Sample_Ringbuffer();
   
   #if MainDebug == 11
   if(status_of_gcode > 0){

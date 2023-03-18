@@ -20,6 +20,11 @@
 #define arr_size 20
 #define str_size 64
 
+// Startup string from UGS is always ? and there after the ? is asking
+// for the current positions of the head
+#define START_MSG 0
+#define DRO_MSG   1
+
 // Number of blocks Grbl executes upon startup. These blocks are stored in EEPROM, where the size
 // and addresses are defined in settings.h. With the current settings, up to 5 startup blocks may
 // be stored and executed in order. These startup blocks would typically be used to set the g-code
@@ -43,12 +48,17 @@
 
 /////////////////////////////////////////////
 //function prototypes
+//init protocol variables and functions
+void Init_Protocol();
+
 //init the array of stringto empty strings
 void Str_Initialize(char arg[arr_size][str_size]);
 
 //clear the string buffer prepare for new string
 void Str_clear(char *str,int len);
 
+//New gcode string interpreter
+int Sample_Gocde_Line();
 //Get the instruction from the ring buffer
 int Sample_Ringbuffer();
 

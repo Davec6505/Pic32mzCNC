@@ -44,6 +44,7 @@ main
 				ulong2flt
 					memcpy
 		plan_init
+		Init_Protocol
 		disableOCx
 		DisableStepper
 	Debounce_Limits
@@ -176,109 +177,16 @@ main
 			dma_printf
 			beltsteps2mm
 			__CC2DW
-	Sample_Ringbuffer
-		__CC2DW
+	Sample_Gocde_Line
 		Get_Difference
-		report_realtime_status
-		DMA0_ReadDstPtr
-		DMA0_Abort
-			DMA_IsOn
-			DMA0_Enable
 		Str_clear
 			memset
 		Get_Line
 			strncpy
-		strlen
-		strsplit2
-			Str_Initialize
-				memset
-			strlen
 		report_init_message
 			DMA_IsOn
 			dma_printf
 			__CC2DW
-		report_grbl_help
-			DMA_IsOn
-			dma_printf
-		report_grbl_settings
-			DMA_IsOn
-			dma_printf
-			__CC2DW
-		report_gcode_parameters
-			read_coord_data_indicator
-			settings_read_coord_data
-				read_ram_loaded_indicator
-				read_row_from_flash
-				read_coord_data_indicator
-				ulong2flt
-				set_coord_data_read_indicator
-			read_ram_loaded_indicator
-			report_status_message
-			DMA_IsOn
-			dma_printf
-		report_gcode_modes
-			DMA_IsOn
-			dma_printf
-			__CC2DW
-		mc_reset
-		report_feedback_message
-		Rst_modalgroup
-		Set_modalgroup
-		Set_Axisword
-		settings_read_startup_line
-			memcpy
-		report_startup_line
-			DMA_IsOn
-			dma_printf
-			__CC2DW
-		atoi
-			isdigit
-		strncpy
-		settings_store_startup_line
-			strlen
-			read_ram_loaded_indicator
-			read_row_from_flash
-			set_ram_loaded_indicator
-			NVMErasePage
-			memcpy
-			NVMWriteRow
-		isdigit
-		memset
-		atof
-			strtod
-				isspace
-				isdigit
-		settings_store_global_setting
-			read_ram_loaded_indicator
-			read_row_from_flash
-			set_ram_loaded_indicator
-			NVMErasePage
-			flt2ulong
-			round
-				ceil
-				floor
-			floor
-			fabs
-			NVMWriteRow
-		cpy_val_from_str
-		G_Mode
-			Set_Modal_Groups
-			Set_Motion_Mode
-				FAIL
-				Select_Plane
-		Instruction_Values
-			To_Millimeters
-			FAIL
-		M_Instruction
-			Set_M_Modal_Commands
-			Set_M_Commands
-				FAIL
-		report_status_message
-		Check_group_multiple_violations
-			FAIL
-			Rst_modalgroup
-			Rst_modalword
-			Set_Axisword
 	ResetSteppers
 		DisableStepper
 StepZ
