@@ -817,6 +817,11 @@ void Str_clear(char *str,int len);
 
 int Sample_Gocde_Line();
 
+
+static void Do_Startup_Msg(char *str,int _dif_);
+
+
+
 int Sample_Ringbuffer();
 
 

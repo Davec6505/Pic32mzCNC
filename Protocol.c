@@ -342,7 +342,9 @@ int dif;
     #endif
     
     //test is startupmsg has been sent
-    if(bit_isfalse(startup,bit(START_MSG))){
+    if(bit_isfalse(startup,bit(START_MSG)))
+        Do_Startup_Msg(str,dif);
+    /*{
      int i;
      //find ? at startup if it exists set startup bit 0
        for(i = 0;i <= dif;i++){
@@ -353,13 +355,26 @@ int dif;
           }
        }
     }
-    
+    */
     
   }
   return STATUS_OK;
 
 }
 
+
+
+static void Do_Startup_Msg(char *str,int _dif_){
+int i;
+ //find ? at startup if it exists set startup bit 0
+ for(i = 0;i <= _dif_;i++){
+    if(str[i] == '?'){
+     bit_true(startup,bit(START_MSG));
+     report_init_message();
+     DCH0DAT = '\n';
+    }
+ }
+}
 
 
 

@@ -59,6 +59,11 @@ void Str_clear(char *str,int len);
 
 //New gcode string interpreter
 int Sample_Gocde_Line();
+
+//startup message for ugs is ? = Grbl 0.8c ['$' for help]
+static void Do_Startup_Msg(char *str,int _dif_);
+
+
 //Get the instruction from the ring buffer
 int Sample_Ringbuffer();
 

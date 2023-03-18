@@ -183,10 +183,14 @@ main
 			memset
 		Get_Line
 			strncpy
-		report_init_message
-			DMA_IsOn
-			dma_printf
-			__CC2DW
+		DMA_IsOn
+		dma_printf
+		Do_Startup_Msg
+			report_init_message
+				DMA_IsOn
+				dma_printf
+				__CC2DW
+		__CC2DW
 	ResetSteppers
 		DisableStepper
 StepZ

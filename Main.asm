@@ -71,8 +71,6 @@ NOP
 L__main133:
 L__main132:
 ;Main.c,91 :: 		int axis_to_run = 0;
-MOVZ	R30, R0, R0
-SH	R30, 2(SP)
 ;Main.c,93 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
@@ -124,7 +122,6 @@ NOP
 ;Main.c,116 :: 		axis_to_run = Rst_Axisword();
 JAL	_Rst_Axisword+0
 NOP	
-SH	R2, 2(SP)
 ;Main.c,117 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
@@ -319,7 +316,7 @@ NOP
 ; end of _main
 Main_Modal_Group_Actions0:
 ;Main.c,211 :: 		static int Modal_Group_Actions0(int action){
-ADDIU	SP, SP, -36
+ADDIU	SP, SP, -40
 SW	RA, 0(SP)
 ;Main.c,214 :: 		unsigned int home_select = 0;
 SW	R26, 4(SP)
@@ -610,21 +607,19 @@ LUI	R2, hi_addr(_buffA+0)
 ORI	R2, R2, lo_addr(_buffA+0)
 ADDU	R2, R2, R3
 LW	R2, 0(R2)
-; _flash start address is: 32 (R8)
-MOVZ	R8, R2, R0
+SW	R2, 24(SP)
 ;Main.c,296 :: 		coord_data[i] = ulong2flt(_flash);
-ADDIU	R3, SP, 24
+ADDIU	R3, SP, 28
 SEH	R2, R6
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
-SW	R2, 32(SP)
+SW	R2, 36(SP)
 SH	R4, 12(SP)
-; _flash end address is: 32 (R8)
 SH	R7, 14(SP)
 SH	R5, 16(SP)
 SH	R6, 18(SP)
 SH	R25, 20(SP)
-MOVZ	R25, R8, R0
+LW	R25, 24(SP)
 JAL	_ulong2flt+0
 NOP	
 LH	R25, 20(SP)
@@ -632,7 +627,7 @@ LH	R6, 18(SP)
 LH	R5, 16(SP)
 LH	R7, 14(SP)
 LH	R4, 12(SP)
-LW	R2, 32(SP)
+LW	R2, 36(SP)
 SWC1	S0, 0(R2)
 ;Main.c,304 :: 		}else{
 SEH	R8, R4
@@ -642,7 +637,7 @@ NOP
 L_Main_Modal_Group_Actions044:
 ;Main.c,307 :: 		coord_data[i] = gc.next_position[i];
 ; axis_cnt start address is: 32 (R8)
-ADDIU	R3, SP, 24
+ADDIU	R3, SP, 28
 SEH	R2, R6
 SLL	R4, R2, 2
 ADDU	R3, R3, R4
@@ -670,14 +665,14 @@ J	L_Main_Modal_Group_Actions041
 NOP	
 L_Main_Modal_Group_Actions042:
 ;Main.c,319 :: 		result = settings_write_coord_data((int)gc.P,coord_data);
-ADDIU	R2, SP, 24
+ADDIU	R2, SP, 28
 SH	R25, 12(SP)
 MOVZ	R26, R2, R0
 LH	R25, Offset(_gc+88)(GP)
 JAL	_settings_write_coord_data+0
 NOP	
 ;Main.c,322 :: 		memcpy(gc.coord_system,coord_data,sizeof(coord_data));
-ADDIU	R2, SP, 24
+ADDIU	R2, SP, 28
 ORI	R27, R0, 8
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gc+36)
@@ -912,7 +907,7 @@ ADDU	R3, R2, R3
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
-SW	R2, 32(SP)
+SW	R2, 36(SP)
 SH	R6, 12(SP)
 ; _data end address is: 28 (R7)
 SH	R4, 14(SP)
@@ -925,7 +920,7 @@ LH	R25, 18(SP)
 LH	R5, 16(SP)
 LH	R4, 14(SP)
 LH	R6, 12(SP)
-LW	R2, 32(SP)
+LW	R2, 36(SP)
 SWC1	S0, 0(R2)
 ;Main.c,374 :: 		i++;
 ADDIU	R2, R4, 1
@@ -1377,7 +1372,7 @@ L_end_Modal_Group_Actions0:
 LW	R27, 8(SP)
 LW	R26, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 36
+ADDIU	SP, SP, 40
 JR	RA
 NOP	
 ; end of Main_Modal_Group_Actions0

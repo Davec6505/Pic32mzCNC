@@ -99,32 +99,31 @@ warning: 115	1505	Suspicious pointer conversion	Protocol.c
 hint: 325	1163	Variable 'ptr' has been declared, but not used	Protocol.c
 hint: 325	1163	Variable 'temp' has been declared, but not used	Protocol.c
 hint: 325	1163	Variable 'xyz' has been declared, but not used	Protocol.c
-hint: 326	1163	Variable 'str_len' has been declared, but not used	Protocol.c
-warning: 754	1505	Suspicious pointer conversion	Protocol.c
-warning: 761	1505	Suspicious pointer conversion	Protocol.c
-warning: 768	1505	Suspicious pointer conversion	Protocol.c
-warning: 775	1505	Suspicious pointer conversion	Protocol.c
-warning: 782	1505	Suspicious pointer conversion	Protocol.c
-warning: 823	1505	Suspicious pointer conversion	Protocol.c
-warning: 892	1505	Suspicious pointer conversion	Protocol.c
-warning: 899	1505	Suspicious pointer conversion	Protocol.c
+warning: 772	1505	Suspicious pointer conversion	Protocol.c
+warning: 779	1505	Suspicious pointer conversion	Protocol.c
+warning: 786	1505	Suspicious pointer conversion	Protocol.c
+warning: 793	1505	Suspicious pointer conversion	Protocol.c
+warning: 800	1505	Suspicious pointer conversion	Protocol.c
+warning: 841	1505	Suspicious pointer conversion	Protocol.c
+warning: 910	1505	Suspicious pointer conversion	Protocol.c
 warning: 917	1505	Suspicious pointer conversion	Protocol.c
-warning: 924	1505	Suspicious pointer conversion	Protocol.c
-warning: 1031	1505	Suspicious pointer conversion	Protocol.c
-warning: 1041	1505	Suspicious pointer conversion	Protocol.c
-hint: 371	1163	Variable 'j' has been declared, but not used	Protocol.c
-hint: 372	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
-hint: 372	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
-diagnostics: 1099	123	Compiled Successfully	Protocol.c
-warning: 1098	1512	variable 'status' might not have been initialized	Protocol.c
-hint: 369	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
-hint: 371	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
-hint: 372	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
-hint: 537	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
-hint: 627	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
-hint: 377	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
-hint: 377	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
-hint: 378	1164	Variable 'axis_to_run' has been eliminated by optimizer	Protocol.c
+warning: 935	1505	Suspicious pointer conversion	Protocol.c
+warning: 942	1505	Suspicious pointer conversion	Protocol.c
+warning: 1049	1505	Suspicious pointer conversion	Protocol.c
+warning: 1059	1505	Suspicious pointer conversion	Protocol.c
+hint: 389	1163	Variable 'j' has been declared, but not used	Protocol.c
+hint: 390	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
+hint: 390	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
+diagnostics: 1117	123	Compiled Successfully	Protocol.c
+warning: 1116	1512	variable 'status' might not have been initialized	Protocol.c
+hint: 387	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
+hint: 389	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
+hint: 390	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
+hint: 555	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
+hint: 645	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
+hint: 395	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
+hint: 395	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
+hint: 396	1164	Variable 'axis_to_run' has been eliminated by optimizer	Protocol.c
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 117	123	Compiled Successfully	Nut_Bolts.c
 hint: 111	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
@@ -143,13 +142,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 4047 ms	 
+diagnostics: 0	127	All files Compiled in 3844 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 3820   Dynamic RAM (bytes): 507381	Static RAM (bytes): 3820   Dynamic RAM (bytes): 507381
+hint: 0	1144	Static RAM (bytes): 3822   Dynamic RAM (bytes): 507381	Static RAM (bytes): 3822   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 58219 (3%)  Free ROM (bytes): 2038933 (97%)	Used ROM (bytes): 58219 (3%)  Free ROM (bytes): 2038933 (97%)
+hint: 0	1144	Used ROM (bytes): 58475 (3%)  Free ROM (bytes): 2038677 (97%)	Used ROM (bytes): 58475 (3%)  Free ROM (bytes): 2038677 (97%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 984 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 7016 ms	 
-diagnostics: 0	103	Finished successfully: 18 Mar 2023, 08:34:58	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 875 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6922 ms	 
+diagnostics: 0	103	Finished successfully: 18 Mar 2023, 22:55:14	Pic32mzClicker2_StepperControl.mcp32
