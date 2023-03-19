@@ -63,6 +63,16 @@ int Sample_Gocde_Line();
 //startup message for ugs is ? = Grbl 0.8c ['$' for help]
 static void Do_Startup_Msg(char *str,int _dif_);
 
+//after firmware has been sent ugs sends $$ - $G - to get settings
+//from controller and its G code functionality this will be tested
+//here and if these are questions asked then responses must be sent
+//immediately otherwise return a value indicating that the string
+//must be split up into its relative commands, this saves time not
+//splitting unnecessary strings
+static int Check_Query_Type(char *str,int dif);
+
+//after checking for gcode run the gcode instructions
+static int Do_Gcode(char *str,int dif);
 
 //Get the instruction from the ring buffer
 int Sample_Ringbuffer();

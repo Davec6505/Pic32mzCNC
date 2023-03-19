@@ -179,17 +179,90 @@ main
 			__CC2DW
 	Sample_Gocde_Line
 		Get_Difference
+		DMA0_ReadDstPtr
+		DMA0_Abort
+			DMA_IsOn
+			DMA0_Enable
 		Str_clear
 			memset
 		Get_Line
 			strncpy
-		DMA_IsOn
-		dma_printf
 		Do_Startup_Msg
 			report_init_message
 				DMA_IsOn
 				dma_printf
 				__CC2DW
+		Check_Query_Type
+			report_grbl_help
+				DMA_IsOn
+				dma_printf
+			report_grbl_settings
+				DMA_IsOn
+				dma_printf
+				__CC2DW
+			report_gcode_parameters
+				read_coord_data_indicator
+				settings_read_coord_data
+					read_ram_loaded_indicator
+					read_row_from_flash
+					read_coord_data_indicator
+					ulong2flt
+					set_coord_data_read_indicator
+				read_ram_loaded_indicator
+				report_status_message
+				DMA_IsOn
+				dma_printf
+			report_gcode_modes
+				DMA_IsOn
+				dma_printf
+				__CC2DW
+			mc_reset
+			report_feedback_message
+			Rst_modalgroup
+			Set_modalgroup
+			Set_Axisword
+			settings_read_startup_line
+				memcpy
+			report_status_message
+			report_startup_line
+				DMA_IsOn
+				dma_printf
+				__CC2DW
+			atoi
+				isdigit
+			strlen
+			strncpy
+			settings_store_startup_line
+				strlen
+				read_ram_loaded_indicator
+				read_row_from_flash
+				set_ram_loaded_indicator
+				NVMErasePage
+				memcpy
+				NVMWriteRow
+			isdigit
+			memset
+			atof
+				strtod
+					isspace
+					isdigit
+			DMA_IsOn
+			dma_printf
+			settings_store_global_setting
+				read_ram_loaded_indicator
+				read_row_from_flash
+				set_ram_loaded_indicator
+				NVMErasePage
+				flt2ulong
+				round
+					ceil
+					floor
+				floor
+				fabs
+				NVMWriteRow
+			__CC2DW
+		DMA_IsOn
+		dma_printf
 		__CC2DW
 	ResetSteppers
 		DisableStepper

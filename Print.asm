@@ -1149,7 +1149,7 @@ L__report_grbl_help286:
 J	L_report_grbl_help73
 NOP	
 L_report_grbl_help74:
-;Print.c,122 :: 		dma_printf("%s",
+;Print.c,135 :: 		ctrl-x (reset Grbl)\r\n");
 ORI	R30, R0, 37
 SB	R30, 8(SP)
 ORI	R30, R0, 115
@@ -1157,18 +1157,15 @@ SB	R30, 9(SP)
 MOVZ	R30, R0, R0
 SB	R30, 10(SP)
 ADDIU	R3, SP, 8
-;Print.c,136 :: 		ctrl-x (reset Grbl)\r\n");
 LUI	R2, hi_addr(?lstr_50_Print+0)
 ORI	R2, R2, lo_addr(?lstr_50_Print+0)
 ADDIU	SP, SP, -8
 SW	R2, 4(SP)
-;Print.c,122 :: 		dma_printf("%s",
 SW	R3, 0(SP)
-;Print.c,136 :: 		ctrl-x (reset Grbl)\r\n");
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 8
-;Print.c,137 :: 		}
+;Print.c,136 :: 		}
 L_end_report_grbl_help:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -1177,10 +1174,10 @@ JR	RA
 NOP	
 ; end of _report_grbl_help
 _report_grbl_settings:
-;Print.c,141 :: 		void report_grbl_settings() {
-ADDIU	SP, SP, -1004
+;Print.c,140 :: 		void report_grbl_settings() {
+ADDIU	SP, SP, -684
 SW	RA, 0(SP)
-;Print.c,144 :: 		while(DMA_IsOn(1));
+;Print.c,143 :: 		while(DMA_IsOn(1));
 SW	R25, 4(SP)
 L_report_grbl_settings75:
 ORI	R25, R0, 1
@@ -1194,128 +1191,128 @@ L__report_grbl_settings289:
 J	L_report_grbl_settings75
 NOP	
 L_report_grbl_settings76:
-;Print.c,186 :: 		,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
+;Print.c,185 :: 		,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
 LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 16
 ANDI	R2, R2, 65535
 XORI	R8, R2, 0
 SLTU	R8, R0, R8
-;Print.c,185 :: 		,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
+;Print.c,184 :: 		,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
 LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 8
 ANDI	R2, R2, 65535
 XORI	R7, R2, 0
 SLTU	R7, R0, R7
-;Print.c,184 :: 		,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
+;Print.c,183 :: 		,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
 LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 4
 ANDI	R2, R2, 65535
 XORI	R6, R2, 0
 SLTU	R6, R0, R6
-;Print.c,183 :: 		,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
+;Print.c,182 :: 		,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
 LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 2
 ANDI	R2, R2, 65535
 XORI	R5, R2, 0
 SLTU	R5, R0, R5
-;Print.c,182 :: 		,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
+;Print.c,181 :: 		,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
 LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
 XORI	R4, R2, 0
 SLTU	R4, R0, R4
-;Print.c,168 :: 		$22=%f (homing pull-off, mm)\r\n"
+;Print.c,167 :: 		$22=%f (homing pull-off, mm)\r\n"
 ADDIU	R23, SP, 8
-ADDIU	R22, R23, 996
+ADDIU	R22, R23, 674
 LUI	R24, hi_addr(?ICS?lstr51_Print+0)
 ORI	R24, R24, lo_addr(?ICS?lstr51_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R3, SP, 8
-;Print.c,191 :: 		,settings.homing_pulloff);                            //22
+;Print.c,190 :: 		,settings.homing_pulloff);                            //22
 LW	R2, Offset(_settings+24)(GP)
 ADDIU	SP, SP, -96
 SW	R2, 92(SP)
-;Print.c,190 :: 		,settings.homing_debounce_delay                       //21
+;Print.c,189 :: 		,settings.homing_debounce_delay                       //21
 LHU	R2, Offset(_settings+46)(GP)
 SH	R2, 88(SP)
-;Print.c,189 :: 		,settings.homing_seek_rate                            //20
+;Print.c,188 :: 		,settings.homing_seek_rate                            //20
 LW	R2, Offset(_settings+20)(GP)
 SW	R2, 84(SP)
-;Print.c,188 :: 		,settings.homing_feed_rate                         //19
+;Print.c,187 :: 		,settings.homing_feed_rate                         //19
 LW	R2, Offset(_settings+16)(GP)
 SW	R2, 80(SP)
-;Print.c,187 :: 		,settings.homing_dir_mask                          //18
+;Print.c,186 :: 		,settings.homing_dir_mask                          //18
 LHU	R2, Offset(_settings+56)(GP)
 SH	R2, 76(SP)
-;Print.c,186 :: 		,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
+;Print.c,185 :: 		,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
 SW	R8, 72(SP)
-;Print.c,185 :: 		,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
+;Print.c,184 :: 		,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
 SW	R7, 68(SP)
-;Print.c,184 :: 		,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
+;Print.c,183 :: 		,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
 SW	R6, 64(SP)
-;Print.c,183 :: 		,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
+;Print.c,182 :: 		,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
 SW	R5, 60(SP)
-;Print.c,182 :: 		,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
+;Print.c,181 :: 		,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
 SW	R4, 56(SP)
-;Print.c,181 :: 		,settings.decimal_places            //12
+;Print.c,180 :: 		,settings.decimal_places            //12
 LHU	R2, Offset(_settings+54)(GP)
 SH	R2, 52(SP)
-;Print.c,180 :: 		,settings.n_arc_correction          //11
+;Print.c,179 :: 		,settings.n_arc_correction          //11
 LHU	R2, Offset(_settings+40)(GP)
 SH	R2, 48(SP)
-;Print.c,179 :: 		,settings.mm_per_arc_segment        //10
+;Print.c,178 :: 		,settings.mm_per_arc_segment        //10
 LW	R2, Offset(_settings+28)(GP)
 SW	R2, 44(SP)
-;Print.c,178 :: 		,settings.junction_deviation        //9
+;Print.c,177 :: 		,settings.junction_deviation        //9
 LW	R2, Offset(_settings+36)(GP)
 SW	R2, 40(SP)
-;Print.c,177 :: 		,settings.acceleration              //8
+;Print.c,176 :: 		,settings.acceleration              //8
 LW	R2, Offset(_settings+32)(GP)
 SW	R2, 36(SP)
-;Print.c,176 :: 		,settings.step_idle_delay           //7
+;Print.c,175 :: 		,settings.step_idle_delay           //7
 LHU	R2, Offset(_settings+44)(GP)
 SH	R2, 32(SP)
-;Print.c,175 :: 		,settings.invert_mask               //6
+;Print.c,174 :: 		,settings.invert_mask               //6
 LHU	R2, Offset(_settings+58)(GP)
 SH	R2, 28(SP)
-;Print.c,174 :: 		,settings.default_seek_rate         //5
+;Print.c,173 :: 		,settings.default_seek_rate         //5
 LW	R2, Offset(_settings+12)(GP)
 SW	R2, 24(SP)
-;Print.c,173 :: 		,settings.default_feed_rate         //4
+;Print.c,172 :: 		,settings.default_feed_rate         //4
 LW	R2, Offset(_settings+8)(GP)
 SW	R2, 20(SP)
-;Print.c,172 :: 		,settings.p_usec                    //3
+;Print.c,171 :: 		,settings.p_usec                    //3
 LHU	R2, Offset(_settings+52)(GP)
 SH	R2, 16(SP)
-;Print.c,171 :: 		,settings.steps_per_mm[Z]           //2
+;Print.c,170 :: 		,settings.steps_per_mm[Z]           //2
 LW	R2, Offset(_settings+8)(GP)
 SW	R2, 12(SP)
-;Print.c,170 :: 		,settings.steps_per_mm[Y]           //1
+;Print.c,169 :: 		,settings.steps_per_mm[Y]           //1
 LW	R2, Offset(_settings+4)(GP)
 SW	R2, 8(SP)
-;Print.c,169 :: 		,settings.steps_per_mm[X]           //0
+;Print.c,168 :: 		,settings.steps_per_mm[X]           //0
 LW	R2, Offset(_settings+0)(GP)
 SW	R2, 4(SP)
-;Print.c,168 :: 		$22=%f (homing pull-off, mm)\r\n"
+;Print.c,167 :: 		$22=%f (homing pull-off, mm)\r\n"
 SW	R3, 0(SP)
-;Print.c,191 :: 		,settings.homing_pulloff);                            //22
+;Print.c,190 :: 		,settings.homing_pulloff);                            //22
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 96
-;Print.c,192 :: 		}
+;Print.c,191 :: 		}
 L_end_report_grbl_settings:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 1004
+ADDIU	SP, SP, 684
 JR	RA
 NOP	
 ; end of _report_grbl_settings
 _report_startup_line:
-;Print.c,196 :: 		void report_startup_line(int n, char *line){
+;Print.c,195 :: 		void report_startup_line(int n, char *line){
 ADDIU	SP, SP, -20
 SW	RA, 0(SP)
-;Print.c,197 :: 		while(DMA_IsOn(1));
+;Print.c,196 :: 		while(DMA_IsOn(1));
 L_report_startup_line77:
 SW	R26, 4(SP)
 SH	R25, 8(SP)
@@ -1332,7 +1329,7 @@ L__report_startup_line297:
 J	L_report_startup_line77
 NOP	
 L_report_startup_line78:
-;Print.c,198 :: 		dma_printf("$N%d=%s\r\n",n,line);
+;Print.c,197 :: 		dma_printf("$N%d=%s\r\n",n,line);
 ADDIU	R23, SP, 10
 ADDIU	R22, R23, 10
 LUI	R24, hi_addr(?ICS?lstr52_Print+0)
@@ -1351,7 +1348,7 @@ NOP
 ADDIU	SP, SP, 12
 LH	R25, 8(SP)
 LW	R26, 4(SP)
-;Print.c,199 :: 		}
+;Print.c,198 :: 		}
 L_end_report_startup_line:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 20
@@ -1359,10 +1356,10 @@ JR	RA
 NOP	
 ; end of _report_startup_line
 _report_realtime_status:
-;Print.c,206 :: 		void report_realtime_status(){
+;Print.c,205 :: 		void report_realtime_status(){
 ADDIU	SP, SP, -76
 SW	RA, 0(SP)
-;Print.c,215 :: 		while(DMA_IsOn(1));
+;Print.c,214 :: 		while(DMA_IsOn(1));
 SW	R25, 4(SP)
 SW	R26, 8(SP)
 L_report_realtime_status79:
@@ -1377,10 +1374,10 @@ L__report_realtime_status300:
 J	L_report_realtime_status79
 NOP	
 L_report_realtime_status80:
-;Print.c,217 :: 		switch (sys.state) {
+;Print.c,216 :: 		switch (sys.state) {
 J	L_report_realtime_status81
 NOP	
-;Print.c,218 :: 		case STATE_IDLE:       dma_printf("%s","<Idle"); break;
+;Print.c,217 :: 		case STATE_IDLE:       dma_printf("%s","<Idle"); break;
 L_report_realtime_status83:
 ORI	R30, R0, 37
 SB	R30, 14(SP)
@@ -1399,7 +1396,7 @@ NOP
 ADDIU	SP, SP, 8
 J	L_report_realtime_status82
 NOP	
-;Print.c,220 :: 		case STATE_QUEUED:     dma_printf("%s","<Queue"); break;
+;Print.c,219 :: 		case STATE_QUEUED:     dma_printf("%s","<Queue"); break;
 L_report_realtime_status84:
 ORI	R30, R0, 37
 SB	R30, 17(SP)
@@ -1418,7 +1415,7 @@ NOP
 ADDIU	SP, SP, 8
 J	L_report_realtime_status82
 NOP	
-;Print.c,221 :: 		case STATE_CYCLE:      dma_printf("%s","<Run"); break;
+;Print.c,220 :: 		case STATE_CYCLE:      dma_printf("%s","<Run"); break;
 L_report_realtime_status85:
 ORI	R30, R0, 37
 SB	R30, 20(SP)
@@ -1437,7 +1434,7 @@ NOP
 ADDIU	SP, SP, 8
 J	L_report_realtime_status82
 NOP	
-;Print.c,222 :: 		case STATE_HOLD:       dma_printf("%s","<Hold"); break;
+;Print.c,221 :: 		case STATE_HOLD:       dma_printf("%s","<Hold"); break;
 L_report_realtime_status86:
 ORI	R30, R0, 37
 SB	R30, 23(SP)
@@ -1456,7 +1453,7 @@ NOP
 ADDIU	SP, SP, 8
 J	L_report_realtime_status82
 NOP	
-;Print.c,223 :: 		case STATE_HOMING:     dma_printf("%s","<Home"); break;
+;Print.c,222 :: 		case STATE_HOMING:     dma_printf("%s","<Home"); break;
 L_report_realtime_status87:
 ORI	R30, R0, 37
 SB	R30, 26(SP)
@@ -1475,7 +1472,7 @@ NOP
 ADDIU	SP, SP, 8
 J	L_report_realtime_status82
 NOP	
-;Print.c,224 :: 		case STATE_ALARM:      dma_printf("%s","<Alarm"); break;
+;Print.c,223 :: 		case STATE_ALARM:      dma_printf("%s","<Alarm"); break;
 L_report_realtime_status88:
 ORI	R30, R0, 37
 SB	R30, 29(SP)
@@ -1494,7 +1491,7 @@ NOP
 ADDIU	SP, SP, 8
 J	L_report_realtime_status82
 NOP	
-;Print.c,225 :: 		case STATE_CHECK_MODE: dma_printf("%s","<Check"); break;
+;Print.c,224 :: 		case STATE_CHECK_MODE: dma_printf("%s","<Check"); break;
 L_report_realtime_status89:
 ORI	R30, R0, 37
 SB	R30, 32(SP)
@@ -1513,7 +1510,7 @@ NOP
 ADDIU	SP, SP, 8
 J	L_report_realtime_status82
 NOP	
-;Print.c,226 :: 		}
+;Print.c,225 :: 		}
 L_report_realtime_status81:
 LH	R2, Offset(_sys+2)(GP)
 BNE	R2, R0, L__report_realtime_status302
@@ -1564,7 +1561,7 @@ J	L_report_realtime_status89
 NOP	
 L__report_realtime_status314:
 L_report_realtime_status82:
-;Print.c,229 :: 		for (i=0; i<= NoOfAxis; i++) {
+;Print.c,228 :: 		for (i=0; i<= NoOfAxis; i++) {
 ; i start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; i end address is: 16 (R4)
@@ -1577,7 +1574,7 @@ NOP
 J	L_report_realtime_status91
 NOP	
 L__report_realtime_status315:
-;Print.c,230 :: 		print_position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
+;Print.c,229 :: 		print_position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
 SEH	R2, R4
 SLL	R3, R2, 2
 LUI	R2, hi_addr(report_realtime_status_print_position_L0+0)
@@ -1601,7 +1598,7 @@ NOP
 LH	R4, 12(SP)
 LW	R2, 72(SP)
 SWC1	S0, 0(R2)
-;Print.c,231 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
+;Print.c,230 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
 LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
@@ -1622,15 +1619,15 @@ MTC1	R2, S0
 MUL.S 	S0, S1, S0
 SWC1	S0, 0(R3)
 L_report_realtime_status93:
-;Print.c,229 :: 		for (i=0; i<= NoOfAxis; i++) {
+;Print.c,228 :: 		for (i=0; i<= NoOfAxis; i++) {
 ADDIU	R2, R4, 1
 SEH	R4, R2
-;Print.c,232 :: 		}
+;Print.c,231 :: 		}
 ; i end address is: 16 (R4)
 J	L_report_realtime_status90
 NOP	
 L_report_realtime_status91:
-;Print.c,234 :: 		while(DMA_IsOn(1));
+;Print.c,233 :: 		while(DMA_IsOn(1));
 L_report_realtime_status94:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -1643,7 +1640,7 @@ L__report_realtime_status319:
 J	L_report_realtime_status94
 NOP	
 L_report_realtime_status95:
-;Print.c,235 :: 		dma_printf(",MPos: %f,%f,%f,"
+;Print.c,234 :: 		dma_printf(",MPos: %f,%f,%f,"
 ADDIU	R23, SP, 35
 ADDIU	R22, R23, 17
 LUI	R24, hi_addr(?ICS?lstr67_Print+0)
@@ -1651,23 +1648,23 @@ ORI	R24, R24, lo_addr(?ICS?lstr67_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R3, SP, 35
-;Print.c,238 :: 		,print_position[2]);
+;Print.c,237 :: 		,print_position[2]);
 LW	R2, Offset(report_realtime_status_print_position_L0+8)(GP)
 ADDIU	SP, SP, -16
 SW	R2, 12(SP)
-;Print.c,237 :: 		,print_position[1]
+;Print.c,236 :: 		,print_position[1]
 LW	R2, Offset(report_realtime_status_print_position_L0+4)(GP)
 SW	R2, 8(SP)
-;Print.c,236 :: 		,print_position[0]
+;Print.c,235 :: 		,print_position[0]
 LW	R2, Offset(report_realtime_status_print_position_L0+0)(GP)
 SW	R2, 4(SP)
-;Print.c,235 :: 		dma_printf(",MPos: %f,%f,%f,"
+;Print.c,234 :: 		dma_printf(",MPos: %f,%f,%f,"
 SW	R3, 0(SP)
-;Print.c,238 :: 		,print_position[2]);
+;Print.c,237 :: 		,print_position[2]);
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 16
-;Print.c,241 :: 		for (i=0; i<= 2; i++) {
+;Print.c,240 :: 		for (i=0; i<= 2; i++) {
 ; i start address is: 20 (R5)
 MOVZ	R5, R0, R0
 ; i end address is: 20 (R5)
@@ -1680,7 +1677,7 @@ NOP
 J	L_report_realtime_status97
 NOP	
 L__report_realtime_status320:
-;Print.c,242 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
+;Print.c,241 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
 LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
@@ -1689,7 +1686,7 @@ NOP
 J	L_report_realtime_status99
 NOP	
 L__report_realtime_status322:
-;Print.c,243 :: 		print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])*INCH_PER_MM;
+;Print.c,242 :: 		print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])*INCH_PER_MM;
 SEH	R2, R5
 SLL	R4, R2, 2
 LUI	R2, hi_addr(report_realtime_status_print_position_L0+0)
@@ -1711,11 +1708,11 @@ MUL.S 	S1, S1, S0
 LWC1	S0, 0(R3)
 SUB.S 	S0, S0, S1
 SWC1	S0, 0(R3)
-;Print.c,244 :: 		} else {
+;Print.c,243 :: 		} else {
 J	L_report_realtime_status100
 NOP	
 L_report_realtime_status99:
-;Print.c,245 :: 		print_position[i] -= gc.coord_system[i]+gc.coord_offset[i];
+;Print.c,244 :: 		print_position[i] -= gc.coord_system[i]+gc.coord_offset[i];
 SEH	R2, R5
 SLL	R4, R2, 2
 LUI	R2, hi_addr(report_realtime_status_print_position_L0+0)
@@ -1733,17 +1730,17 @@ ADD.S 	S1, S1, S0
 LWC1	S0, 0(R3)
 SUB.S 	S0, S0, S1
 SWC1	S0, 0(R3)
-;Print.c,246 :: 		}
+;Print.c,245 :: 		}
 L_report_realtime_status100:
-;Print.c,241 :: 		for (i=0; i<= 2; i++) {
+;Print.c,240 :: 		for (i=0; i<= 2; i++) {
 ADDIU	R2, R5, 1
 SEH	R5, R2
-;Print.c,247 :: 		}
+;Print.c,246 :: 		}
 ; i end address is: 20 (R5)
 J	L_report_realtime_status96
 NOP	
 L_report_realtime_status97:
-;Print.c,249 :: 		while(DMA_IsOn(1));
+;Print.c,248 :: 		while(DMA_IsOn(1));
 L_report_realtime_status101:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -1756,7 +1753,7 @@ L__report_realtime_status324:
 J	L_report_realtime_status101
 NOP	
 L_report_realtime_status102:
-;Print.c,250 :: 		dma_printf("WPos: %f,%f,%f>\r\n"
+;Print.c,249 :: 		dma_printf("WPos: %f,%f,%f>\r\n"
 ADDIU	R23, SP, 52
 ADDIU	R22, R23, 18
 LUI	R24, hi_addr(?ICS?lstr68_Print+0)
@@ -1764,23 +1761,23 @@ ORI	R24, R24, lo_addr(?ICS?lstr68_Print+0)
 JAL	___CC2DW+0
 NOP	
 ADDIU	R3, SP, 52
-;Print.c,253 :: 		,print_position[2]);
+;Print.c,252 :: 		,print_position[2]);
 LW	R2, Offset(report_realtime_status_print_position_L0+8)(GP)
 ADDIU	SP, SP, -16
 SW	R2, 12(SP)
-;Print.c,252 :: 		,print_position[1]
+;Print.c,251 :: 		,print_position[1]
 LW	R2, Offset(report_realtime_status_print_position_L0+4)(GP)
 SW	R2, 8(SP)
-;Print.c,251 :: 		,print_position[0]
+;Print.c,250 :: 		,print_position[0]
 LW	R2, Offset(report_realtime_status_print_position_L0+0)(GP)
 SW	R2, 4(SP)
-;Print.c,250 :: 		dma_printf("WPos: %f,%f,%f>\r\n"
+;Print.c,249 :: 		dma_printf("WPos: %f,%f,%f>\r\n"
 SW	R3, 0(SP)
-;Print.c,253 :: 		,print_position[2]);
+;Print.c,252 :: 		,print_position[2]);
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 16
-;Print.c,254 :: 		}
+;Print.c,253 :: 		}
 L_end_report_realtime_status:
 LW	R26, 8(SP)
 LW	R25, 4(SP)
@@ -1790,10 +1787,10 @@ JR	RA
 NOP	
 ; end of _report_realtime_status
 _report_gcode_parameters:
-;Print.c,259 :: 		void report_gcode_parameters(){
+;Print.c,258 :: 		void report_gcode_parameters(){
 ADDIU	SP, SP, -84
 SW	RA, 0(SP)
-;Print.c,263 :: 		if (!read_coord_data_indicator()){
+;Print.c,262 :: 		if (!read_coord_data_indicator()){
 SW	R25, 4(SP)
 JAL	_read_coord_data_indicator+0
 NOP	
@@ -1802,10 +1799,10 @@ NOP
 J	L_report_gcode_parameters103
 NOP	
 L__report_gcode_parameters326:
-;Print.c,264 :: 		settings_read_coord_data();
+;Print.c,263 :: 		settings_read_coord_data();
 JAL	_settings_read_coord_data+0
 NOP	
-;Print.c,265 :: 		if(!read_ram_loaded_indicator()){
+;Print.c,264 :: 		if(!read_ram_loaded_indicator()){
 JAL	_read_ram_loaded_indicator+0
 NOP	
 BEQ	R2, R0, L__report_gcode_parameters327
@@ -1813,18 +1810,18 @@ NOP
 J	L_report_gcode_parameters104
 NOP	
 L__report_gcode_parameters327:
-;Print.c,266 :: 		report_status_message(STATUS_SETTING_READ_FAIL);
+;Print.c,265 :: 		report_status_message(STATUS_SETTING_READ_FAIL);
 ORI	R25, R0, 10
 JAL	_report_status_message+0
 NOP	
-;Print.c,267 :: 		return;
+;Print.c,266 :: 		return;
 J	L_end_report_gcode_parameters
 NOP	
-;Print.c,268 :: 		}
+;Print.c,267 :: 		}
 L_report_gcode_parameters104:
-;Print.c,269 :: 		}
+;Print.c,268 :: 		}
 L_report_gcode_parameters103:
-;Print.c,271 :: 		for (coord_select = 1; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
+;Print.c,270 :: 		for (coord_select = 1; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
 ORI	R2, R0, 1
 SH	R2, 8(SP)
 L_report_gcode_parameters105:
@@ -1835,7 +1832,7 @@ NOP
 J	L_report_gcode_parameters106
 NOP	
 L__report_gcode_parameters328:
-;Print.c,272 :: 		while(DMA_IsOn(1));
+;Print.c,271 :: 		while(DMA_IsOn(1));
 L_report_gcode_parameters108:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -1848,7 +1845,7 @@ L__report_gcode_parameters330:
 J	L_report_gcode_parameters108
 NOP	
 L_report_gcode_parameters109:
-;Print.c,273 :: 		dma_printf("[G");
+;Print.c,272 :: 		dma_printf("[G");
 ORI	R30, R0, 91
 SB	R30, 12(SP)
 ORI	R30, R0, 71
@@ -1861,7 +1858,7 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
-;Print.c,274 :: 		while(DMA_IsOn(1));
+;Print.c,273 :: 		while(DMA_IsOn(1));
 L_report_gcode_parameters110:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -1874,10 +1871,10 @@ L__report_gcode_parameters332:
 J	L_report_gcode_parameters110
 NOP	
 L_report_gcode_parameters111:
-;Print.c,275 :: 		switch (coord_select) {
+;Print.c,274 :: 		switch (coord_select) {
 J	L_report_gcode_parameters112
 NOP	
-;Print.c,276 :: 		case 1: dma_printf("54:"); break;
+;Print.c,275 :: 		case 1: dma_printf("54:"); break;
 L_report_gcode_parameters114:
 ORI	R30, R0, 53
 SB	R30, 15(SP)
@@ -1895,7 +1892,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,277 :: 		case 2: dma_printf("55:"); break;
+;Print.c,276 :: 		case 2: dma_printf("55:"); break;
 L_report_gcode_parameters115:
 ORI	R30, R0, 53
 SB	R30, 19(SP)
@@ -1913,7 +1910,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,278 :: 		case 3: dma_printf("56:"); break;
+;Print.c,277 :: 		case 3: dma_printf("56:"); break;
 L_report_gcode_parameters116:
 ORI	R30, R0, 53
 SB	R30, 23(SP)
@@ -1931,7 +1928,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,279 :: 		case 4: dma_printf("57:"); break;
+;Print.c,278 :: 		case 4: dma_printf("57:"); break;
 L_report_gcode_parameters117:
 ORI	R30, R0, 53
 SB	R30, 27(SP)
@@ -1949,7 +1946,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,280 :: 		case 5: dma_printf("58:"); break;
+;Print.c,279 :: 		case 5: dma_printf("58:"); break;
 L_report_gcode_parameters118:
 ORI	R30, R0, 53
 SB	R30, 31(SP)
@@ -1967,7 +1964,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,281 :: 		case 6: dma_printf("59:"); break;
+;Print.c,280 :: 		case 6: dma_printf("59:"); break;
 L_report_gcode_parameters119:
 ORI	R30, R0, 53
 SB	R30, 35(SP)
@@ -1985,7 +1982,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,282 :: 		case 7: dma_printf("28:"); break;
+;Print.c,281 :: 		case 7: dma_printf("28:"); break;
 L_report_gcode_parameters120:
 ORI	R30, R0, 50
 SB	R30, 39(SP)
@@ -2003,7 +2000,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,283 :: 		case 8: dma_printf("30:"); break;
+;Print.c,282 :: 		case 8: dma_printf("30:"); break;
 L_report_gcode_parameters121:
 ORI	R30, R0, 51
 SB	R30, 43(SP)
@@ -2021,7 +2018,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_parameters113
 NOP	
-;Print.c,285 :: 		}
+;Print.c,284 :: 		}
 L_report_gcode_parameters112:
 LH	R3, 8(SP)
 ORI	R2, R0, 1
@@ -2080,7 +2077,7 @@ J	L_report_gcode_parameters121
 NOP	
 L__report_gcode_parameters348:
 L_report_gcode_parameters113:
-;Print.c,286 :: 		for (i=0; i<NoOfAxis; i++) {
+;Print.c,285 :: 		for (i=0; i<NoOfAxis; i++) {
 SH	R0, 10(SP)
 L_report_gcode_parameters122:
 LH	R2, 10(SP)
@@ -2090,7 +2087,7 @@ NOP
 J	L_report_gcode_parameters123
 NOP	
 L__report_gcode_parameters349:
-;Print.c,287 :: 		while(DMA_IsOn(1));
+;Print.c,286 :: 		while(DMA_IsOn(1));
 L_report_gcode_parameters125:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2103,7 +2100,7 @@ L__report_gcode_parameters351:
 J	L_report_gcode_parameters125
 NOP	
 L_report_gcode_parameters126:
-;Print.c,288 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
+;Print.c,287 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
 LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
@@ -2112,7 +2109,7 @@ NOP
 J	L_report_gcode_parameters127
 NOP	
 L__report_gcode_parameters353:
-;Print.c,289 :: 		dma_printf("%f ",coord_system[coord_select].coord[i]*INCH_PER_MM);
+;Print.c,288 :: 		dma_printf("%f ",coord_system[coord_select].coord[i]*INCH_PER_MM);
 LH	R2, 8(SP)
 SLL	R3, R2, 4
 LUI	R2, hi_addr(_coord_system+0)
@@ -2141,11 +2138,11 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 8
-;Print.c,290 :: 		}else {
+;Print.c,289 :: 		}else {
 J	L_report_gcode_parameters128
 NOP	
 L_report_gcode_parameters127:
-;Print.c,291 :: 		dma_printf("%f ",coord_system[coord_select].coord[i]);
+;Print.c,290 :: 		dma_printf("%f ",coord_system[coord_select].coord[i]);
 LH	R2, 8(SP)
 SLL	R3, R2, 4
 LUI	R2, hi_addr(_coord_system+0)
@@ -2170,9 +2167,9 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 8
-;Print.c,292 :: 		}
+;Print.c,291 :: 		}
 L_report_gcode_parameters128:
-;Print.c,293 :: 		while(DMA_IsOn(1));
+;Print.c,292 :: 		while(DMA_IsOn(1));
 L_report_gcode_parameters129:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2185,7 +2182,7 @@ L__report_gcode_parameters355:
 J	L_report_gcode_parameters129
 NOP	
 L_report_gcode_parameters130:
-;Print.c,294 :: 		if (i < (NoOfAxis-1)) {
+;Print.c,293 :: 		if (i < (NoOfAxis-1)) {
 LH	R2, 10(SP)
 SLTI	R2, R2, 1
 BNE	R2, R0, L__report_gcode_parameters356
@@ -2193,7 +2190,7 @@ NOP
 J	L_report_gcode_parameters131
 NOP	
 L__report_gcode_parameters356:
-;Print.c,295 :: 		dma_printf(",");
+;Print.c,294 :: 		dma_printf(",");
 ORI	R30, R0, 44
 SB	R30, 55(SP)
 MOVZ	R30, R0, R0
@@ -2204,11 +2201,11 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
-;Print.c,296 :: 		}else {
+;Print.c,295 :: 		}else {
 J	L_report_gcode_parameters132
 NOP	
 L_report_gcode_parameters131:
-;Print.c,297 :: 		dma_printf("]\r\n");
+;Print.c,296 :: 		dma_printf("]\r\n");
 ORI	R30, R0, 93
 SB	R30, 57(SP)
 ORI	R30, R0, 13
@@ -2223,25 +2220,25 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
-;Print.c,298 :: 		}
+;Print.c,297 :: 		}
 L_report_gcode_parameters132:
-;Print.c,286 :: 		for (i=0; i<NoOfAxis; i++) {
+;Print.c,285 :: 		for (i=0; i<NoOfAxis; i++) {
 LH	R2, 10(SP)
 ADDIU	R2, R2, 1
 SH	R2, 10(SP)
-;Print.c,299 :: 		}
+;Print.c,298 :: 		}
 J	L_report_gcode_parameters122
 NOP	
 L_report_gcode_parameters123:
-;Print.c,271 :: 		for (coord_select = 1; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
+;Print.c,270 :: 		for (coord_select = 1; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
 LH	R2, 8(SP)
 ADDIU	R2, R2, 1
 SH	R2, 8(SP)
-;Print.c,300 :: 		}
+;Print.c,299 :: 		}
 J	L_report_gcode_parameters105
 NOP	
 L_report_gcode_parameters106:
-;Print.c,301 :: 		while(DMA_IsOn(1));
+;Print.c,300 :: 		while(DMA_IsOn(1));
 L_report_gcode_parameters133:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2254,7 +2251,7 @@ L__report_gcode_parameters358:
 J	L_report_gcode_parameters133
 NOP	
 L_report_gcode_parameters134:
-;Print.c,302 :: 		dma_printf("[G92:"); // Print G92,G92.1 which are not persistent in memory
+;Print.c,301 :: 		dma_printf("[G92:"); // Print G92,G92.1 which are not persistent in memory
 ORI	R30, R0, 91
 SB	R30, 61(SP)
 ORI	R30, R0, 71
@@ -2273,7 +2270,7 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
-;Print.c,303 :: 		for (i=0; i<NoOfAxis; i++) {
+;Print.c,302 :: 		for (i=0; i<NoOfAxis; i++) {
 SH	R0, 10(SP)
 L_report_gcode_parameters135:
 LH	R2, 10(SP)
@@ -2283,7 +2280,7 @@ NOP
 J	L_report_gcode_parameters136
 NOP	
 L__report_gcode_parameters359:
-;Print.c,304 :: 		while(DMA_IsOn(1));
+;Print.c,303 :: 		while(DMA_IsOn(1));
 L_report_gcode_parameters138:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2296,7 +2293,7 @@ L__report_gcode_parameters361:
 J	L_report_gcode_parameters138
 NOP	
 L_report_gcode_parameters139:
-;Print.c,305 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)){
+;Print.c,304 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)){
 LHU	R2, Offset(_settings+42)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
@@ -2305,7 +2302,7 @@ NOP
 J	L_report_gcode_parameters140
 NOP	
 L__report_gcode_parameters363:
-;Print.c,306 :: 		dma_printf("%f ",gc.coord_offset[i]*INCH_PER_MM);
+;Print.c,305 :: 		dma_printf("%f ",gc.coord_offset[i]*INCH_PER_MM);
 LH	R2, 10(SP)
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_gc+44)
@@ -2331,11 +2328,11 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 8
-;Print.c,307 :: 		}else {
+;Print.c,306 :: 		}else {
 J	L_report_gcode_parameters141
 NOP	
 L_report_gcode_parameters140:
-;Print.c,308 :: 		dma_printf("%f ",gc.coord_offset[i]);
+;Print.c,307 :: 		dma_printf("%f ",gc.coord_offset[i]);
 LH	R2, 10(SP)
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_gc+44)
@@ -2357,9 +2354,9 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 8
-;Print.c,309 :: 		}
+;Print.c,308 :: 		}
 L_report_gcode_parameters141:
-;Print.c,310 :: 		while(DMA_IsOn(1));
+;Print.c,309 :: 		while(DMA_IsOn(1));
 L_report_gcode_parameters142:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2372,7 +2369,7 @@ L__report_gcode_parameters365:
 J	L_report_gcode_parameters142
 NOP	
 L_report_gcode_parameters143:
-;Print.c,311 :: 		if (i < (NoOfAxis-1)) {
+;Print.c,310 :: 		if (i < (NoOfAxis-1)) {
 LH	R2, 10(SP)
 SLTI	R2, R2, 1
 BNE	R2, R0, L__report_gcode_parameters366
@@ -2380,7 +2377,7 @@ NOP
 J	L_report_gcode_parameters144
 NOP	
 L__report_gcode_parameters366:
-;Print.c,312 :: 		dma_printf(",");
+;Print.c,311 :: 		dma_printf(",");
 ORI	R30, R0, 44
 SB	R30, 75(SP)
 MOVZ	R30, R0, R0
@@ -2391,11 +2388,11 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
-;Print.c,313 :: 		}else {
+;Print.c,312 :: 		}else {
 J	L_report_gcode_parameters145
 NOP	
 L_report_gcode_parameters144:
-;Print.c,314 :: 		dma_printf("]\r\n"); }
+;Print.c,313 :: 		dma_printf("]\r\n"); }
 ORI	R30, R0, 93
 SB	R30, 77(SP)
 ORI	R30, R0, 13
@@ -2411,15 +2408,15 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
 L_report_gcode_parameters145:
-;Print.c,303 :: 		for (i=0; i<NoOfAxis; i++) {
+;Print.c,302 :: 		for (i=0; i<NoOfAxis; i++) {
 LH	R2, 10(SP)
 ADDIU	R2, R2, 1
 SH	R2, 10(SP)
-;Print.c,315 :: 		}
+;Print.c,314 :: 		}
 J	L_report_gcode_parameters135
 NOP	
 L_report_gcode_parameters136:
-;Print.c,316 :: 		}
+;Print.c,315 :: 		}
 L_end_report_gcode_parameters:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -2428,10 +2425,10 @@ JR	RA
 NOP	
 ; end of _report_gcode_parameters
 _report_gcode_modes:
-;Print.c,319 :: 		void report_gcode_modes(){
+;Print.c,318 :: 		void report_gcode_modes(){
 ADDIU	SP, SP, -128
 SW	RA, 0(SP)
-;Print.c,320 :: 		while(DMA_IsOn(1));
+;Print.c,319 :: 		while(DMA_IsOn(1));
 SW	R25, 4(SP)
 L_report_gcode_modes146:
 ORI	R25, R0, 1
@@ -2445,10 +2442,10 @@ L__report_gcode_modes369:
 J	L_report_gcode_modes146
 NOP	
 L_report_gcode_modes147:
-;Print.c,321 :: 		switch (gc.motion_mode) {
+;Print.c,320 :: 		switch (gc.motion_mode) {
 J	L_report_gcode_modes148
 NOP	
-;Print.c,322 :: 		case MOTION_MODE_SEEK :    dma_printf("[G0"); break;
+;Print.c,321 :: 		case MOTION_MODE_SEEK :    dma_printf("[G0"); break;
 L_report_gcode_modes150:
 ORI	R30, R0, 91
 SB	R30, 8(SP)
@@ -2466,7 +2463,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes149
 NOP	
-;Print.c,323 :: 		case MOTION_MODE_LINEAR :  dma_printf("[G1"); break;
+;Print.c,322 :: 		case MOTION_MODE_LINEAR :  dma_printf("[G1"); break;
 L_report_gcode_modes151:
 ORI	R30, R0, 91
 SB	R30, 12(SP)
@@ -2484,7 +2481,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes149
 NOP	
-;Print.c,324 :: 		case MOTION_MODE_CW_ARC :  dma_printf("[G2"); break;
+;Print.c,323 :: 		case MOTION_MODE_CW_ARC :  dma_printf("[G2"); break;
 L_report_gcode_modes152:
 ORI	R30, R0, 91
 SB	R30, 16(SP)
@@ -2502,7 +2499,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes149
 NOP	
-;Print.c,325 :: 		case MOTION_MODE_CCW_ARC : dma_printf("[G3"); break;
+;Print.c,324 :: 		case MOTION_MODE_CCW_ARC : dma_printf("[G3"); break;
 L_report_gcode_modes153:
 ORI	R30, R0, 91
 SB	R30, 20(SP)
@@ -2520,7 +2517,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes149
 NOP	
-;Print.c,326 :: 		case MOTION_MODE_CANCEL :  dma_printf("[G80"); break;
+;Print.c,325 :: 		case MOTION_MODE_CANCEL :  dma_printf("[G80"); break;
 L_report_gcode_modes154:
 ORI	R30, R0, 91
 SB	R30, 24(SP)
@@ -2540,7 +2537,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes149
 NOP	
-;Print.c,327 :: 		}
+;Print.c,326 :: 		}
 L_report_gcode_modes148:
 LBU	R2, Offset(_gc+8)(GP)
 BNE	R2, R0, L__report_gcode_modes371
@@ -2577,7 +2574,7 @@ J	L_report_gcode_modes154
 NOP	
 L__report_gcode_modes379:
 L_report_gcode_modes149:
-;Print.c,328 :: 		while(DMA_IsOn(1));
+;Print.c,327 :: 		while(DMA_IsOn(1));
 L_report_gcode_modes155:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2590,7 +2587,7 @@ L__report_gcode_modes381:
 J	L_report_gcode_modes155
 NOP	
 L_report_gcode_modes156:
-;Print.c,329 :: 		dma_printf(" G%d",gc.coord_select+54);
+;Print.c,328 :: 		dma_printf(" G%d",gc.coord_select+54);
 LH	R2, Offset(_gc+14)(GP)
 ADDIU	R3, R2, 54
 ORI	R30, R0, 32
@@ -2610,7 +2607,7 @@ SW	R2, 0(SP)
 JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 8
-;Print.c,330 :: 		while(DMA_IsOn(1));
+;Print.c,329 :: 		while(DMA_IsOn(1));
 L_report_gcode_modes157:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2623,14 +2620,14 @@ L__report_gcode_modes383:
 J	L_report_gcode_modes157
 NOP	
 L_report_gcode_modes158:
-;Print.c,331 :: 		if (gc.plane_axis_0 == X) {
+;Print.c,330 :: 		if (gc.plane_axis_0 == X) {
 LBU	R2, Offset(_gc+11)(GP)
 BEQ	R2, R0, L__report_gcode_modes384
 NOP	
 J	L_report_gcode_modes159
 NOP	
 L__report_gcode_modes384:
-;Print.c,332 :: 		if (gc.plane_axis_1 == Y) { dma_printf(" G17"); }
+;Print.c,331 :: 		if (gc.plane_axis_1 == Y) { dma_printf(" G17"); }
 LBU	R3, Offset(_gc+12)(GP)
 ORI	R2, R0, 1
 BEQ	R3, R2, L__report_gcode_modes385
@@ -2657,7 +2654,7 @@ ADDIU	SP, SP, 4
 J	L_report_gcode_modes161
 NOP	
 L_report_gcode_modes160:
-;Print.c,333 :: 		else { dma_printf(" G18"); }
+;Print.c,332 :: 		else { dma_printf(" G18"); }
 ORI	R30, R0, 32
 SB	R30, 39(SP)
 ORI	R30, R0, 71
@@ -2675,7 +2672,7 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
 L_report_gcode_modes161:
-;Print.c,334 :: 		} else { dma_printf(" G19"); }
+;Print.c,333 :: 		} else { dma_printf(" G19"); }
 J	L_report_gcode_modes162
 NOP	
 L_report_gcode_modes159:
@@ -2696,7 +2693,7 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
 L_report_gcode_modes162:
-;Print.c,335 :: 		while(DMA_IsOn(1));
+;Print.c,334 :: 		while(DMA_IsOn(1));
 L_report_gcode_modes163:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2709,7 +2706,7 @@ L__report_gcode_modes387:
 J	L_report_gcode_modes163
 NOP	
 L_report_gcode_modes164:
-;Print.c,336 :: 		if (gc.inches_mode) { dma_printf(" G20"); }
+;Print.c,335 :: 		if (gc.inches_mode) { dma_printf(" G20"); }
 LBU	R2, Offset(_gc+3)(GP)
 BNE	R2, R0, L__report_gcode_modes389
 NOP	
@@ -2735,7 +2732,7 @@ ADDIU	SP, SP, 4
 J	L_report_gcode_modes166
 NOP	
 L_report_gcode_modes165:
-;Print.c,337 :: 		else { dma_printf(" G21"); }
+;Print.c,336 :: 		else { dma_printf(" G21"); }
 ORI	R30, R0, 32
 SB	R30, 54(SP)
 ORI	R30, R0, 71
@@ -2753,7 +2750,7 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
 L_report_gcode_modes166:
-;Print.c,338 :: 		while(DMA_IsOn(1));
+;Print.c,337 :: 		while(DMA_IsOn(1));
 L_report_gcode_modes167:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2766,7 +2763,7 @@ L__report_gcode_modes391:
 J	L_report_gcode_modes167
 NOP	
 L_report_gcode_modes168:
-;Print.c,339 :: 		if (gc.absolute_mode) { dma_printf(" G90"); }
+;Print.c,338 :: 		if (gc.absolute_mode) { dma_printf(" G90"); }
 LBU	R2, Offset(_gc+5)(GP)
 BNE	R2, R0, L__report_gcode_modes393
 NOP	
@@ -2792,7 +2789,7 @@ ADDIU	SP, SP, 4
 J	L_report_gcode_modes170
 NOP	
 L_report_gcode_modes169:
-;Print.c,340 :: 		else { dma_printf(" G91"); }
+;Print.c,339 :: 		else { dma_printf(" G91"); }
 ORI	R30, R0, 32
 SB	R30, 64(SP)
 ORI	R30, R0, 71
@@ -2810,7 +2807,7 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
 L_report_gcode_modes170:
-;Print.c,341 :: 		while(DMA_IsOn(1));
+;Print.c,340 :: 		while(DMA_IsOn(1));
 L_report_gcode_modes171:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2823,7 +2820,7 @@ L__report_gcode_modes395:
 J	L_report_gcode_modes171
 NOP	
 L_report_gcode_modes172:
-;Print.c,342 :: 		if (gc.inverse_feed_rate_mode) { dma_printf(" G93"); }
+;Print.c,341 :: 		if (gc.inverse_feed_rate_mode) { dma_printf(" G93"); }
 LBU	R2, Offset(_gc+2)(GP)
 BNE	R2, R0, L__report_gcode_modes397
 NOP	
@@ -2849,7 +2846,7 @@ ADDIU	SP, SP, 4
 J	L_report_gcode_modes174
 NOP	
 L_report_gcode_modes173:
-;Print.c,343 :: 		else { dma_printf(" G94"); }
+;Print.c,342 :: 		else { dma_printf(" G94"); }
 ORI	R30, R0, 32
 SB	R30, 74(SP)
 ORI	R30, R0, 71
@@ -2867,7 +2864,7 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 4
 L_report_gcode_modes174:
-;Print.c,345 :: 		while(DMA_IsOn(1));
+;Print.c,344 :: 		while(DMA_IsOn(1));
 L_report_gcode_modes175:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2880,10 +2877,10 @@ L__report_gcode_modes399:
 J	L_report_gcode_modes175
 NOP	
 L_report_gcode_modes176:
-;Print.c,346 :: 		switch (gc.program_flow) {
+;Print.c,345 :: 		switch (gc.program_flow) {
 J	L_report_gcode_modes177
 NOP	
-;Print.c,347 :: 		case PROGRAM_FLOW_RUNNING : dma_printf(" M0"); break;
+;Print.c,346 :: 		case PROGRAM_FLOW_RUNNING : dma_printf(" M0"); break;
 L_report_gcode_modes179:
 ORI	R30, R0, 32
 SB	R30, 79(SP)
@@ -2901,7 +2898,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes178
 NOP	
-;Print.c,348 :: 		case PROGRAM_FLOW_PAUSED :  dma_printf(" M1"); break;
+;Print.c,347 :: 		case PROGRAM_FLOW_PAUSED :  dma_printf(" M1"); break;
 L_report_gcode_modes180:
 ORI	R30, R0, 32
 SB	R30, 83(SP)
@@ -2919,7 +2916,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes178
 NOP	
-;Print.c,349 :: 		case PROGRAM_FLOW_COMPLETED : dma_printf(" M2"); break;
+;Print.c,348 :: 		case PROGRAM_FLOW_COMPLETED : dma_printf(" M2"); break;
 L_report_gcode_modes181:
 ORI	R30, R0, 32
 SB	R30, 87(SP)
@@ -2937,7 +2934,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes178
 NOP	
-;Print.c,350 :: 		}
+;Print.c,349 :: 		}
 L_report_gcode_modes177:
 LBU	R2, Offset(_gc+9)(GP)
 BNE	R2, R0, L__report_gcode_modes401
@@ -2960,7 +2957,7 @@ J	L_report_gcode_modes181
 NOP	
 L__report_gcode_modes405:
 L_report_gcode_modes178:
-;Print.c,351 :: 		while(DMA_IsOn(1));
+;Print.c,350 :: 		while(DMA_IsOn(1));
 L_report_gcode_modes182:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -2973,10 +2970,10 @@ L__report_gcode_modes407:
 J	L_report_gcode_modes182
 NOP	
 L_report_gcode_modes183:
-;Print.c,352 :: 		switch (gc.spindle_direction) {
+;Print.c,351 :: 		switch (gc.spindle_direction) {
 J	L_report_gcode_modes184
 NOP	
-;Print.c,353 :: 		case 1 : dma_printf(" M3"); break;
+;Print.c,352 :: 		case 1 : dma_printf(" M3"); break;
 L_report_gcode_modes186:
 ORI	R30, R0, 32
 SB	R30, 91(SP)
@@ -2994,7 +2991,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes185
 NOP	
-;Print.c,354 :: 		case -1 : dma_printf(" M4"); break;
+;Print.c,353 :: 		case -1 : dma_printf(" M4"); break;
 L_report_gcode_modes187:
 ORI	R30, R0, 32
 SB	R30, 95(SP)
@@ -3012,7 +3009,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes185
 NOP	
-;Print.c,355 :: 		case 0 : dma_printf(" M5"); break;
+;Print.c,354 :: 		case 0 : dma_printf(" M5"); break;
 L_report_gcode_modes188:
 ORI	R30, R0, 32
 SB	R30, 99(SP)
@@ -3030,7 +3027,7 @@ NOP
 ADDIU	SP, SP, 4
 J	L_report_gcode_modes185
 NOP	
-;Print.c,356 :: 		}
+;Print.c,355 :: 		}
 L_report_gcode_modes184:
 LBU	R3, Offset(_gc+6)(GP)
 ORI	R2, R0, 1
@@ -3054,7 +3051,7 @@ J	L_report_gcode_modes188
 NOP	
 L__report_gcode_modes413:
 L_report_gcode_modes185:
-;Print.c,357 :: 		while(DMA_IsOn(1));
+;Print.c,356 :: 		while(DMA_IsOn(1));
 L_report_gcode_modes189:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -3067,9 +3064,9 @@ L__report_gcode_modes415:
 J	L_report_gcode_modes189
 NOP	
 L_report_gcode_modes190:
-;Print.c,364 :: 		}
+;Print.c,363 :: 		}
 L_report_gcode_modes191:
-;Print.c,365 :: 		while(DMA_IsOn(1));
+;Print.c,364 :: 		while(DMA_IsOn(1));
 L_report_gcode_modes193:
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
@@ -3082,14 +3079,14 @@ L__report_gcode_modes417:
 J	L_report_gcode_modes193
 NOP	
 L_report_gcode_modes194:
-;Print.c,366 :: 		if (gc.inches_mode)
+;Print.c,365 :: 		if (gc.inches_mode)
 LBU	R2, Offset(_gc+3)(GP)
 BNE	R2, R0, L__report_gcode_modes419
 NOP	
 J	L_report_gcode_modes195
 NOP	
 L__report_gcode_modes419:
-;Print.c,367 :: 		dma_printf(" T %dF %f",gc.tool,gc.feed_rate*INCH_PER_MM);
+;Print.c,366 :: 		dma_printf(" T %dF %f",gc.tool,gc.feed_rate*INCH_PER_MM);
 LWC1	S1, Offset(_gc+24)(GP)
 LUI	R2, 15649
 ORI	R2, R2, 17035
@@ -3113,7 +3110,7 @@ ADDIU	SP, SP, 12
 J	L_report_gcode_modes196
 NOP	
 L_report_gcode_modes195:
-;Print.c,369 :: 		dma_printf(" T %dF %f]\r\n",gc.tool,gc.feed_rate);
+;Print.c,368 :: 		dma_printf(" T %dF %f]\r\n",gc.tool,gc.feed_rate);
 ADDIU	R23, SP, 113
 ADDIU	R22, R23, 13
 LUI	R24, hi_addr(?ICS?lstr109_Print+0)
@@ -3131,7 +3128,7 @@ JAL	_dma_printf+0
 NOP	
 ADDIU	SP, SP, 12
 L_report_gcode_modes196:
-;Print.c,372 :: 		}
+;Print.c,371 :: 		}
 L_end_report_gcode_modes:
 LW	R25, 4(SP)
 LW	RA, 0(SP)

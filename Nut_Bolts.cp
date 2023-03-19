@@ -776,7 +776,7 @@ void Rst_FN(int axis);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/print.h"
-#line 32 "c:/users/git/pic32mzcnc/print.h"
+#line 34 "c:/users/git/pic32mzcnc/print.h"
 void report_status_message(int status_code);
 
 void report_alarm_message(int alarm_code);
@@ -820,6 +820,16 @@ int Sample_Gocde_Line();
 
 static void Do_Startup_Msg(char *str,int _dif_);
 
+
+
+
+
+
+
+static int Check_Query_Type(char *str,int dif);
+
+
+static int Do_Gcode(char *str,int dif);
 
 
 int Sample_Ringbuffer();

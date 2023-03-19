@@ -751,18 +751,18 @@ NOP
 ; end of _DualAxisStep
 _mc_arc:
 ;Kinematics.c,238 :: 		, float radius, char isclockwise){
-ADDIU	SP, SP, -88
+ADDIU	SP, SP, -92
 SW	RA, 0(SP)
 ; axis_1 start address is: 24 (R6)
-LH	R6, 88(SP)
+LH	R6, 92(SP)
 ; axis_linear start address is: 28 (R7)
-LH	R7, 90(SP)
+LH	R7, 94(SP)
 ; feed_rate start address is: 44 (R11)
-LW	R11, 92(SP)
+LW	R11, 96(SP)
 ; invert_feed_rate start address is: 48 (R12)
-LBU	R12, 96(SP)
+LBU	R12, 100(SP)
 ; isclockwise start address is: 40 (R10)
-LBU	R10, 97(SP)
+LBU	R10, 101(SP)
 ;Kinematics.c,240 :: 		float center_axis0            = position[axis_0] + offset[axis_0];
 SEH	R2, R28
 SLL	R5, R2, 2
@@ -1170,8 +1170,7 @@ SW	R26, 4(SP)
 MOV.S 	S12, S0
 JAL	_cos+0
 NOP	
-; cos_Ti start address is: 88 (R22)
-MOV.S 	S11, S0
+SWC1	S0, 88(SP)
 ;Kinematics.c,333 :: 		sin_Ti = sin(i*theta_per_segment);
 MTC1	R7, S0
 CVT32.W 	S0, S0
@@ -1187,8 +1186,9 @@ ADDU	R2, R27, R2
 LWC1	S4, 0(R2)
 MOVZ	R2, R0, R0
 MTC1	R2, S1
-SUB.S 	S1, S1, S4
-MUL.S 	S3, S1, S11
+SUB.S 	S2, S1, S4
+LWC1	S1, 88(SP)
+MUL.S 	S3, S2, S1
 SEH	R2, R6
 SLL	R2, R2, 2
 ADDU	R2, R27, R2
@@ -1202,8 +1202,8 @@ MOVZ	R2, R0, R0
 MTC1	R2, S1
 SUB.S 	S1, S1, S4
 MUL.S 	S1, S1, S0
-MUL.S 	S0, S2, S11
-; cos_Ti end address is: 88 (R22)
+LWC1	S0, 88(SP)
+MUL.S 	S0, S2, S0
 SUB.S 	S0, S1, S0
 ; r_axis1 start address is: 48 (R12)
 MOV.S 	S6, S0
@@ -1546,7 +1546,7 @@ LH	R28, 4(SP)
 ;Kinematics.c,390 :: 		}
 L_end_mc_arc:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 88
+ADDIU	SP, SP, 92
 JR	RA
 NOP	
 ; end of _mc_arc

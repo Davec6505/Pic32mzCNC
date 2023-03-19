@@ -556,7 +556,7 @@ int F_Val,O_Val;
             gc.S = O_Val;
             gc.P = -1;
             break;
-      case 'L': 
+      case 'L':
             O_Val = *(int*)any;
             if(O_Val < 0){
                FAIL(STATUS_SPEED_ERROR);
@@ -576,5 +576,3 @@ int F_Val,O_Val;
   #endif
   return status_code;
 }
-
-
