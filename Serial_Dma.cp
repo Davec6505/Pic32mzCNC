@@ -870,7 +870,6 @@ void DMA0();
 char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();
-unsigned int DMA0_Abort();
 unsigned int DMA0_ReadDstPtr();
 void DMA0_RstDstPtr();
 
@@ -880,13 +879,13 @@ void DMA1();
 char DMA1_Flag();
 void DMA1_Enable();
 void DMA1_Disable();
-unsigned int DMA1_Abort();
+
 
 
 
 unsigned int DMA_IsOn(int channel);
 unsigned int DMA_CH_Busy(int channel);
-
+unsigned int DMA_Abort(int channel);
 
 
 void Reset_rxBuff(int dif);
@@ -997,15 +996,6 @@ void DMA0_Disable(){
 
 }
 
-
-
-unsigned int DMA0_Abort(){
- DCH0ECONSET= 1<<6;
- while(DMA_IsOn(1));
- DMA0_Enable();
-
- return (DCH0CON & 0x0040 ) >> 6;
-}
 
 
 
@@ -1120,7 +1110,7 @@ int dif;
 
  serial.tail += dif;
 }
-#line 253 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
+#line 244 "C:/Users/Git/Pic32mzCNC/Serial_Dma.c"
 void DMA1(){
 
 
@@ -1199,12 +1189,38 @@ void DMA1_Disable(){
 
 
 
-unsigned int DMA1_Abort(){
- DCH1CONSET= 1<<6;
- while(DMA_IsOn(1));
- DMA1_Enable();
+unsigned int DMA_Abort(int channel){
+ if(channel == 0){
 
- return (DCH1CON & 0x0040 ) >> 6;
+
+
+
+ DMA0_Disable();
+
+ while(DMA_IsOn(0));
+
+ DCH0DSA = KVA_TO_PA(0xA0002000);
+
+ DMA0_Enable();
+ while(!DMA_IsOn(0));
+
+ return (DCH0CON & 0x0080 ) >> 7;
+
+ }else if(channel == 1){
+
+
+ DMA1_Disable();
+
+ while(DMA_IsOn(1));
+
+ DCH1SSA = KVA_TO_PA(0xA0002200) ;
+ while(!DMA_IsOn(1));
+
+ DMA1_Enable();
+ return (DCH1CON & 0x0080 ) >> 7;
+ }
+
+ return 255;
 }
 
 

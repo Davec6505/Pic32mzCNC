@@ -180,9 +180,12 @@ main
 	Sample_Gocde_Line
 		Get_Difference
 		DMA0_ReadDstPtr
-		DMA0_Abort
+		DMA_Abort
+			DMA0_Disable
 			DMA_IsOn
 			DMA0_Enable
+			DMA1_Disable
+			DMA1_Enable
 		Str_clear
 			memset
 		Get_Line
@@ -193,6 +196,7 @@ main
 				dma_printf
 				__CC2DW
 		Check_Query_Type
+			__CC2DW
 			report_grbl_help
 				DMA_IsOn
 				dma_printf
@@ -246,8 +250,6 @@ main
 				strtod
 					isspace
 					isdigit
-			DMA_IsOn
-			dma_printf
 			settings_store_global_setting
 				read_ram_loaded_indicator
 				read_row_from_flash
@@ -260,10 +262,14 @@ main
 				floor
 				fabs
 				NVMWriteRow
+		Do_Gcode
+			strsplit2
+				Str_Initialize
+					memset
+				strlen
+			DMA_IsOn
+			dma_printf
 			__CC2DW
-		DMA_IsOn
-		dma_printf
-		__CC2DW
 	ResetSteppers
 		DisableStepper
 StepZ

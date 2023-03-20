@@ -113,15 +113,6 @@ void DMA0_Disable(){
    //DCH0CONbits.CHEN = 0;
 }
 
-////////////////////////////////////////
-//DMA0 Abort abort channel transfer
-unsigned int DMA0_Abort(){
-   DCH0ECONSET= 1<<6;
-   while(DMA_IsOn(1));
-   DMA0_Enable();
-
-   return (DCH0CON & 0x0040 ) >> 6;
-}
 
 ////////////////////////////////////////
 //DMA0 not at initial regester
@@ -328,12 +319,38 @@ void DMA1_Disable(){
 
 ////////////////////////////////////////
 //DMA1 Abort abort channel transfer
-unsigned int DMA1_Abort(){
-   DCH1CONSET= 1<<6;
-   while(DMA_IsOn(1));
-   DMA1_Enable();
+unsigned int DMA_Abort(int channel){
+  if(channel == 0){
+    //must investigate the effects of CABORT ??, it is not
+    //resettting the channel!!!
+    //DMA0 CABOART bit
+    // DCH0ECONSET |= 1<<6;
+     DMA0_Disable();
+     //wait for BMA to finnish
+     while(DMA_IsOn(0));
+     //force pointers to reset
+     DCH0DSA       = KVA_TO_PA(0xA0002000);    // virtual address:= IN RAM FOR RECIEVED DATA
+     //ReEnable DMA0
+     DMA0_Enable();
+     while(!DMA_IsOn(0));
+     //return enable bit
+     return (DCH0CON & 0x0080 ) >> 7;
    
-   return (DCH1CON & 0x0040 ) >> 6;
+   }else if(channel == 1){
+     //DMA1 CABOART bit
+     //DCH1ECONSET |= 1<<6;
+     DMA1_Disable();
+     //wait for DMA1 to finish
+     while(DMA_IsOn(1));
+     //force a reset of the pointers
+     DCH1SSA   = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
+     while(!DMA_IsOn(1));
+     //ReEnable DMA1
+     DMA1_Enable();
+     return (DCH1CON & 0x0080 ) >> 7;
+   }
+   
+   return 255;
 }
 
 ///////////////////////////////////////

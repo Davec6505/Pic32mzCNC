@@ -139,7 +139,8 @@ File5=Protocol.h
 File6=Print.c
 File7=Print.h
 File8=Serial_Dma.c
-Count=9
+File9=Serial_Dma.h
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

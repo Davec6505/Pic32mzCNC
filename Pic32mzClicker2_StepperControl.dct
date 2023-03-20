@@ -23633,6 +23633,7 @@ divswen_bit
 divswen_refo2con_bit
 divswen_refo3con_bit
 divswen_refo4con_bit
+dma_abort
 dma_busy
 dma_ch_busy
 dma_ch0_isr
@@ -23644,7 +23645,6 @@ dma_resume
 dma_suspend
 dma0
 dma0
-dma0_abort
 dma0_disable
 dma0_enable
 dma0_flag
@@ -23683,7 +23683,6 @@ dma0is1
 dma0is1_bit
 dma1
 dma1
-dma1_abort
 dma1_disable
 dma1_enable
 dma1_flag

@@ -322,7 +322,7 @@ void protocol_system_check(){
 //         NEW GCODE LINE INTERPRETER            //
 ///////////////////////////////////////////////////
 int Sample_Gocde_Line(){
-char *ptr,str[64],temp[9],xyz[6];
+char *ptr,str[64];
 static int str_len;
 int dif;
   //read head and tail pointer difference
@@ -345,11 +345,12 @@ int dif;
          while(DMA_IsOn(1));
          dma_printf("%c\n",*ptr);
          #endif
-         
-         DMA0_Abort();
+
          if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
                bit_true(sys.execute,EXEC_STATUS_REPORT);
-         //startup = 0;
+               
+         DMA_Abort(0);
+
        }
      }
   }else{
@@ -372,7 +373,7 @@ int dif;
        while(DMA_IsOn(1));
        dma_printf("msg-type:= %d\n",msg_type);
        #endif
-       // Do_Gcode(str,dif);
+       Do_Gcode(str,dif);
      }
      
     }
@@ -606,30 +607,34 @@ int status;
           report_status_message(status);
           
       return status;
-   }
-   return STATUS_GCODE;
+   }else
+      return STATUS_GCODE;
+      
+   return status;
 }
 
 
 static int Do_Gcode(char *str,int dif){
+char temp[9],xyz[6];
       //split up the line into string array using SPC seperator
    int num_of_strings = strsplit2(gcode,str,0x20);
 #if ProtoDebug == 23
 while(DMA_IsOn(1));
-dma_printf("noOfstrs:= %d\n\
-%s:=\t%d\n\
-%s:=\t%d\n\
-%s:=\t%d\n\
-%s:=\t%d\n\
-%s:=\t%d\n\
-%s:=\t%d\n"
+dma_printf("\
+noOfstrs:= %d\n\
+%s:=\n\
+%s:=\n\
+%s:=\n\
+%s:=\n\
+%s:=\n\
+%s:=\n"
 ,num_of_strings
-,gcode[0],str_len
-,gcode[1],str_len
-,gcode[2],str_len
-,gcode[3],str_len
-,gcode[4],str_len
-,gcode[5],str_len);
+,gcode[0]
+,gcode[1]
+,gcode[2]
+,gcode[3]
+,gcode[4]
+,gcode[5]);
 #endif
 }
 
@@ -674,7 +679,7 @@ int axis_to_run = 0;
          while(DMA_IsOn(1));
          dma_printf("%d\n",ptr);
          #endif
-         DMA0_Abort();
+         DMA_Abort(0);
          if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
                bit_true(sys.execute,EXEC_STATUS_REPORT);
          startup = 0;
