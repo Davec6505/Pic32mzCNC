@@ -9,17 +9,17 @@ warning: 155	1506	Implicit conversion of pointer to int	__Lib_MemManager.c
 warning: 174	1508	Implicit conversion of int to ptr	__Lib_MemManager.c
 diagnostics: 297	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	pins.h
-hint: 216	1163	Variable 'addr' has been declared, but not used	Main.c
-hint: 218	1163	Variable 'a_val' has been declared, but not used	Main.c
-diagnostics: 581	123	Compiled Successfully	Main.c
-hint: 70	1164	Variable 'dif' has been eliminated by optimizer	Main.c
-hint: 70	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
-hint: 71	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
-hint: 71	1164	Variable 'a' has been eliminated by optimizer	Main.c
+hint: 218	1163	Variable 'addr' has been declared, but not used	Main.c
+hint: 220	1163	Variable 'a_val' has been declared, but not used	Main.c
+diagnostics: 583	123	Compiled Successfully	Main.c
+hint: 72	1164	Variable 'dif' has been eliminated by optimizer	Main.c
+hint: 73	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
+hint: 73	1164	Variable 'a' has been eliminated by optimizer	Main.c
 hint: 68	1164	Variable 'error' has been eliminated by optimizer	Main.c
 hint: 69	1164	Variable 'has_flash' has been eliminated by optimizer	Main.c
-hint: 213	1164	Variable 'result' has been eliminated by optimizer	Main.c
-hint: 213	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
+hint: 71	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
+hint: 215	1164	Variable 'result' has been eliminated by optimizer	Main.c
+hint: 215	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (UART2 at 0x0092)	Config.c
 diagnostics: 391	123	Compiled Successfully	Config.c
@@ -62,10 +62,10 @@ diagnostics: 0	122	Compilation Started	stdlib.h
 hint: 0	1004	interrupt handler (DMA_CH0_ISR at 0x0086)	Serial_Dma.c
 warning: 229	1503	Result is not defined in function: 'Loopback'	Serial_Dma.c
 hint: 0	1004	interrupt handler (DMA_CH1_ISR at 0x0087)	Serial_Dma.c
-warning: 444	1503	Result is not defined in function: ''	Serial_Dma.c
-hint: 440	1163	Variable 'tmp_' has been declared, but not used	Serial_Dma.c
-hint: 537	1163	Variable 'temp' has been declared, but not used	Serial_Dma.c
-diagnostics: 555	123	Compiled Successfully	Serial_Dma.c
+warning: 446	1503	Result is not defined in function: ''	Serial_Dma.c
+hint: 442	1163	Variable 'tmp_' has been declared, but not used	Serial_Dma.c
+hint: 539	1163	Variable 'temp' has been declared, but not used	Serial_Dma.c
+diagnostics: 557	123	Compiled Successfully	Serial_Dma.c
 diagnostics: 0	122	Compilation Started	print.h
 hint: 259	1163	Variable 'coord_data' has been declared, but not used	Print.c
 diagnostics: 371	123	Compiled Successfully	Print.c
@@ -96,40 +96,40 @@ diagnostics: 232	123	Compiled Successfully	Limits.c
 hint: 16	1164	Variable 'i' has been eliminated by optimizer	Limits.c
 diagnostics: 0	122	Compilation Started	stdint.h
 warning: 115	1505	Suspicious pointer conversion	Protocol.c
-hint: 326	1163	Variable 'str_len' has been declared, but not used	Protocol.c
-hint: 618	1163	Variable 'temp' has been declared, but not used	Protocol.c
-hint: 618	1163	Variable 'xyz' has been declared, but not used	Protocol.c
-warning: 639	1503	Result is not defined in function: 'Do_Gcode'	Protocol.c
-warning: 1032	1505	Suspicious pointer conversion	Protocol.c
-warning: 1039	1505	Suspicious pointer conversion	Protocol.c
-warning: 1046	1505	Suspicious pointer conversion	Protocol.c
-warning: 1053	1505	Suspicious pointer conversion	Protocol.c
-warning: 1060	1505	Suspicious pointer conversion	Protocol.c
-warning: 1101	1505	Suspicious pointer conversion	Protocol.c
-warning: 1170	1505	Suspicious pointer conversion	Protocol.c
-warning: 1177	1505	Suspicious pointer conversion	Protocol.c
-warning: 1195	1505	Suspicious pointer conversion	Protocol.c
-warning: 1202	1505	Suspicious pointer conversion	Protocol.c
-warning: 1309	1505	Suspicious pointer conversion	Protocol.c
-warning: 1319	1505	Suspicious pointer conversion	Protocol.c
-hint: 649	1163	Variable 'j' has been declared, but not used	Protocol.c
-hint: 650	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
-hint: 650	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
-diagnostics: 1377	123	Compiled Successfully	Protocol.c
-warning: 1376	1512	variable 'status' might not have been initialized	Protocol.c
-hint: 368	1164	Variable 'msg_type' has been eliminated by optimizer	Protocol.c
-hint: 402	1164	Variable 'query' has been eliminated by optimizer	Protocol.c
-hint: 456	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
-hint: 544	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
-hint: 525	1164	Variable 'str_len' has been eliminated by optimizer	Protocol.c
-hint: 647	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
-hint: 649	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
-hint: 650	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
-hint: 815	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
-hint: 905	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
-hint: 655	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
-hint: 655	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
-hint: 656	1164	Variable 'axis_to_run' has been eliminated by optimizer	Protocol.c
+hint: 620	1163	Variable 'temp' has been declared, but not used	Protocol.c
+hint: 620	1163	Variable 'xyz' has been declared, but not used	Protocol.c
+warning: 641	1503	Result is not defined in function: 'Do_Gcode'	Protocol.c
+warning: 1034	1505	Suspicious pointer conversion	Protocol.c
+warning: 1041	1505	Suspicious pointer conversion	Protocol.c
+warning: 1048	1505	Suspicious pointer conversion	Protocol.c
+warning: 1055	1505	Suspicious pointer conversion	Protocol.c
+warning: 1062	1505	Suspicious pointer conversion	Protocol.c
+warning: 1103	1505	Suspicious pointer conversion	Protocol.c
+warning: 1172	1505	Suspicious pointer conversion	Protocol.c
+warning: 1179	1505	Suspicious pointer conversion	Protocol.c
+warning: 1197	1505	Suspicious pointer conversion	Protocol.c
+warning: 1204	1505	Suspicious pointer conversion	Protocol.c
+warning: 1311	1505	Suspicious pointer conversion	Protocol.c
+warning: 1321	1505	Suspicious pointer conversion	Protocol.c
+hint: 651	1163	Variable 'j' has been declared, but not used	Protocol.c
+hint: 652	1163	Variable 'S_Val' has been declared, but not used	Protocol.c
+hint: 652	1163	Variable 'P_Val' has been declared, but not used	Protocol.c
+diagnostics: 1379	123	Compiled Successfully	Protocol.c
+warning: 1378	1512	variable 'status' might not have been initialized	Protocol.c
+hint: 358	1164	Variable 'msg_type' has been eliminated by optimizer	Protocol.c
+hint: 413	1164	Variable 'query' has been eliminated by optimizer	Protocol.c
+hint: 467	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
+hint: 555	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
+hint: 536	1164	Variable 'str_len' has been eliminated by optimizer	Protocol.c
+hint: 622	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
+hint: 649	1164	Variable 'motion_mode' has been eliminated by optimizer	Protocol.c
+hint: 651	1164	Variable 'num_of_strings' has been eliminated by optimizer	Protocol.c
+hint: 652	1164	Variable 'M_Val' has been eliminated by optimizer	Protocol.c
+hint: 817	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
+hint: 907	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
+hint: 657	1164	Variable 'F_1_Once' has been eliminated by optimizer	Protocol.c
+hint: 657	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
+hint: 658	1164	Variable 'axis_to_run' has been eliminated by optimizer	Protocol.c
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 117	123	Compiled Successfully	Nut_Bolts.c
 hint: 111	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
@@ -148,13 +148,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 3469 ms	 
+diagnostics: 0	127	All files Compiled in 3641 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 5102   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5102   Dynamic RAM (bytes): 507381
+hint: 0	1144	Static RAM (bytes): 3822   Dynamic RAM (bytes): 507381	Static RAM (bytes): 3822   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 71499 (3%)  Free ROM (bytes): 2025653 (97%)	Used ROM (bytes): 71499 (3%)  Free ROM (bytes): 2025653 (97%)
+hint: 0	1144	Used ROM (bytes): 70582 (3%)  Free ROM (bytes): 2026570 (97%)	Used ROM (bytes): 70582 (3%)  Free ROM (bytes): 2026570 (97%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 953 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6531 ms	 
-diagnostics: 0	103	Finished successfully: 20 Mar 2023, 07:23:04	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 1172 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 7110 ms	 
+diagnostics: 0	103	Finished successfully: 21 Mar 2023, 07:16:23	Pic32mzClicker2_StepperControl.mcp32

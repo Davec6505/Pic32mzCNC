@@ -190,7 +190,7 @@ typedef struct {
   unsigned int invert_mask;
 //  uint8_t status_report_mask; // Mask to indicate desired report data.
 }  settings_t;
-extern volatile settings_t settings;
+extern settings_t settings;
 
 
 #endif

@@ -121,7 +121,7 @@ typedef struct {
  unsigned int invert_mask;
 
 } settings_t;
-extern volatile settings_t settings;
+extern settings_t settings;
 #line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
 #line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
@@ -494,16 +494,16 @@ typedef struct {
  int coord_select;
 
  int L;
- volatile long frequency;
- volatile float feed_rate;
+ long frequency;
+ float feed_rate;
 
- volatile float position[ 2 ];
- volatile float coord_system[ 2 ];
+ float position[ 2 ];
+ float coord_system[ 2 ];
 
- volatile float coord_offset[ 2 ];
+ float coord_offset[ 2 ];
 
- volatile float next_position[ 2 ];
- volatile float offset[3];
+ float next_position[ 2 ];
+ float offset[3];
  float R;
  float I;
  float J;
@@ -594,7 +594,7 @@ void DMA0_RstDstPtr();
 
 void DMA1();
 char DMA1_Flag();
-void DMA1_Enable();
+unsigned int DMA1_Enable();
 void DMA1_Disable();
 
 
@@ -711,7 +711,10 @@ void Str_clear(char *str,int len);
 int Sample_Gocde_Line();
 
 
-static void Do_Startup_Msg(char *str,int _dif_);
+static void Do_Startup_Msg(char *str_,int dif_);
+
+
+static void Do_Critical_Msg(char ch_);
 
 
 
@@ -719,10 +722,10 @@ static void Do_Startup_Msg(char *str,int _dif_);
 
 
 
-static int Check_Query_Type(char *str,int dif);
+static int Check_Query_Type(char *str_,int dif_);
 
 
-static int Do_Gcode(char *str,int dif);
+static int Do_Gcode(char *str_,int dif_);
 
 
 int Sample_Ringbuffer();

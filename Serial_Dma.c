@@ -306,8 +306,9 @@ char DMA1_Flag(){
 
 ////////////////////////////////////////
 //DMA1 on control
-void DMA1_Enable(){
+unsigned int DMA1_Enable(){
    DCH1CONSET = 1<<7;
+   return (DCH1CON & 0x80) >> 7;
 }
 
 ////////////////////////////////////////
@@ -324,26 +325,27 @@ unsigned int DMA_Abort(int channel){
     //must investigate the effects of CABORT ??, it is not
     //resettting the channel!!!
     //DMA0 CABOART bit
-    // DCH0ECONSET |= 1<<6;
-     DMA0_Disable();
+     DCH0ECONSET |= 1<<6;
+    // DMA0_Disable();
      //wait for BMA to finnish
      while(DMA_IsOn(0));
      //force pointers to reset
-     DCH0DSA       = KVA_TO_PA(0xA0002000);    // virtual address:= IN RAM FOR RECIEVED DATA
+    // DCH0DSA       = KVA_TO_PA(0xA0002000);    // virtual address:= IN RAM FOR RECIEVED DATA
      //ReEnable DMA0
      DMA0_Enable();
      while(!DMA_IsOn(0));
+
      //return enable bit
      return (DCH0CON & 0x0080 ) >> 7;
    
    }else if(channel == 1){
      //DMA1 CABOART bit
-     //DCH1ECONSET |= 1<<6;
-     DMA1_Disable();
+     DCH1ECONSET |= 1<<6;
+    // DMA1_Disable();
      //wait for DMA1 to finish
      while(DMA_IsOn(1));
      //force a reset of the pointers
-     DCH1SSA   = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
+   //  DCH1SSA   = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
      while(!DMA_IsOn(1));
      //ReEnable DMA1
      DMA1_Enable();
@@ -525,7 +527,7 @@ int dma_printf(const char* str,...){
  *(buff+j+1) = 0;
  strncpy(txBuf,buff,j+1);
  DCH1SSIZ    = j ;
- DMA1_Enable();
+ while(!DMA1_Enable());
  //DCH1ECONSET = 1<<7;
  return j;
 

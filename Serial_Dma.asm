@@ -162,11 +162,11 @@ SB	R2, Offset(_dma0int_flag+0)(GP)
 ;Serial_Dma.c,138 :: 		if( CHERIF_bit == 1){       // test error int flag
 _LX	
 EXT	R2, R2, BitPos(CHERIF_bit+0), 1
-BNE	R2, 1, L__DMA_CH0_ISR65
+BNE	R2, 1, L__DMA_CH0_ISR67
 NOP	
 J	L_DMA_CH0_ISR0
 NOP	
-L__DMA_CH0_ISR65:
+L__DMA_CH0_ISR67:
 ;Serial_Dma.c,140 :: 		strcpy(rxBuf,DMAx_err(dma0,cherie));
 ADDIU	R23, SP, 4
 ADDIU	R22, R23, 12
@@ -185,11 +185,11 @@ L_DMA_CH0_ISR0:
 ;Serial_Dma.c,151 :: 		if (DCH0INTbits.CHBCIF == 1){
 LBU	R2, Offset(DCH0INTbits+0)(GP)
 EXT	R2, R2, 3, 1
-BNE	R2, 1, L__DMA_CH0_ISR67
+BNE	R2, 1, L__DMA_CH0_ISR69
 NOP	
-J	L__DMA_CH0_ISR51
+J	L__DMA_CH0_ISR53
 NOP	
-L__DMA_CH0_ISR67:
+L__DMA_CH0_ISR69:
 ; i end address is: 24 (R6)
 ;Serial_Dma.c,152 :: 		i = strlen(rxBuf);
 LUI	R25, 40960
@@ -202,7 +202,7 @@ SEH	R6, R2
 ;Serial_Dma.c,153 :: 		}
 J	L_DMA_CH0_ISR1
 NOP	
-L__DMA_CH0_ISR51:
+L__DMA_CH0_ISR53:
 ;Serial_Dma.c,151 :: 		if (DCH0INTbits.CHBCIF == 1){
 ;Serial_Dma.c,153 :: 		}
 L_DMA_CH0_ISR1:
@@ -212,11 +212,11 @@ LH	R2, Offset(_serial+500)(GP)
 ADDU	R2, R2, R6
 SEH	R2, R2
 SLTI	R2, R2, 500
-BEQ	R2, R0, L__DMA_CH0_ISR68
+BEQ	R2, R0, L__DMA_CH0_ISR70
 NOP	
 J	L_DMA_CH0_ISR2
 NOP	
-L__DMA_CH0_ISR68:
+L__DMA_CH0_ISR70:
 ;Serial_Dma.c,158 :: 		serial.head = 0;
 SH	R0, Offset(_serial+500)(GP)
 L_DMA_CH0_ISR2:
@@ -315,11 +315,11 @@ _Get_Difference:
 LH	R3, Offset(_serial+502)(GP)
 LH	R2, Offset(_serial+500)(GP)
 SLT	R2, R3, R2
-BNE	R2, R0, L__Get_Difference73
+BNE	R2, R0, L__Get_Difference75
 NOP	
 J	L_Get_Difference3
 NOP	
-L__Get_Difference73:
+L__Get_Difference75:
 ;Serial_Dma.c,189 :: 		serial.diff = serial.head - serial.tail;
 LH	R3, Offset(_serial+502)(GP)
 LH	R2, Offset(_serial+500)(GP)
@@ -332,11 +332,11 @@ L_Get_Difference3:
 LH	R3, Offset(_serial+500)(GP)
 LH	R2, Offset(_serial+502)(GP)
 SLT	R2, R3, R2
-BNE	R2, R0, L__Get_Difference74
+BNE	R2, R0, L__Get_Difference76
 NOP	
 J	L_Get_Difference5
 NOP	
-L__Get_Difference74:
+L__Get_Difference76:
 ;Serial_Dma.c,191 :: 		serial.diff =  serial.head;
 LH	R2, Offset(_serial+500)(GP)
 SH	R2, Offset(_serial+504)(GP)
@@ -374,11 +374,11 @@ LH	R2, Offset(_serial+502)(GP)
 ADDU	R2, R2, R26
 SEH	R2, R2
 SLTI	R2, R2, 500
-BEQ	R2, R0, L__Get_Line77
+BEQ	R2, R0, L__Get_Line79
 NOP	
 J	L_Get_Line7
 NOP	
-L__Get_Line77:
+L__Get_Line79:
 ;Serial_Dma.c,206 :: 		serial.tail = 0;
 SH	R0, Offset(_serial+502)(GP)
 L_Get_Line7:
@@ -422,11 +422,11 @@ LH	R3, Offset(_serial+502)(GP)
 ADDU	R2, R3, R2
 SEH	R2, R2
 SLTI	R2, R2, 500
-BEQ	R2, R0, L__Loopback79
+BEQ	R2, R0, L__Loopback81
 NOP	
 J	L_Loopback8
 NOP	
-L__Loopback79:
+L__Loopback81:
 ;Serial_Dma.c,223 :: 		serial.tail = 0;
 SH	R0, Offset(_serial+502)(GP)
 L_Loopback8:
@@ -546,140 +546,140 @@ JR	RA
 NOP	
 ; end of _DMA1_Flag
 _DMA1_Enable:
-;Serial_Dma.c,309 :: 		void DMA1_Enable(){
+;Serial_Dma.c,309 :: 		unsigned int DMA1_Enable(){
 ;Serial_Dma.c,310 :: 		DCH1CONSET = 1<<7;
 ORI	R2, R0, 128
 SW	R2, Offset(DCH1CONSET+0)(GP)
-;Serial_Dma.c,311 :: 		}
+;Serial_Dma.c,311 :: 		return (DCH1CON & 0x80) >> 7;
+LW	R2, Offset(DCH1CON+0)(GP)
+ANDI	R2, R2, 128
+SRL	R2, R2, 7
+;Serial_Dma.c,312 :: 		}
 L_end_DMA1_Enable:
 JR	RA
 NOP	
 ; end of _DMA1_Enable
 _DMA1_Disable:
-;Serial_Dma.c,316 :: 		void DMA1_Disable(){
-;Serial_Dma.c,317 :: 		DCH1CONCLR = 1<<7;
+;Serial_Dma.c,317 :: 		void DMA1_Disable(){
+;Serial_Dma.c,318 :: 		DCH1CONCLR = 1<<7;
 ORI	R2, R0, 128
 SW	R2, Offset(DCH1CONCLR+0)(GP)
-;Serial_Dma.c,318 :: 		}
+;Serial_Dma.c,319 :: 		}
 L_end_DMA1_Disable:
 JR	RA
 NOP	
 ; end of _DMA1_Disable
 _DMA_Abort:
-;Serial_Dma.c,322 :: 		unsigned int DMA_Abort(int channel){
+;Serial_Dma.c,323 :: 		unsigned int DMA_Abort(int channel){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Serial_Dma.c,323 :: 		if(channel == 0){
+;Serial_Dma.c,324 :: 		if(channel == 0){
 SEH	R2, R25
-BEQ	R2, R0, L__DMA_Abort85
+BEQ	R2, R0, L__DMA_Abort87
 NOP	
 J	L_DMA_Abort9
 NOP	
-L__DMA_Abort85:
-;Serial_Dma.c,328 :: 		DMA0_Disable();
-JAL	_DMA0_Disable+0
-NOP	
-;Serial_Dma.c,330 :: 		while(DMA_IsOn(0));
+L__DMA_Abort87:
+;Serial_Dma.c,328 :: 		DCH0ECONSET |= 1<<6;
+LW	R2, Offset(DCH0ECONSET+0)(GP)
+ORI	R2, R2, 64
+SW	R2, Offset(DCH0ECONSET+0)(GP)
+;Serial_Dma.c,331 :: 		while(DMA_IsOn(0));
 L_DMA_Abort10:
 SH	R25, 4(SP)
 MOVZ	R25, R0, R0
 JAL	_DMA_IsOn+0
 NOP	
 LH	R25, 4(SP)
-BNE	R2, R0, L__DMA_Abort87
+BNE	R2, R0, L__DMA_Abort89
 NOP	
 J	L_DMA_Abort11
 NOP	
-L__DMA_Abort87:
+L__DMA_Abort89:
 J	L_DMA_Abort10
 NOP	
 L_DMA_Abort11:
-;Serial_Dma.c,332 :: 		DCH0DSA       = KVA_TO_PA(0xA0002000);    // virtual address:= IN RAM FOR RECIEVED DATA
-ORI	R2, R0, 8192
-SW	R2, Offset(DCH0DSA+0)(GP)
-;Serial_Dma.c,334 :: 		DMA0_Enable();
+;Serial_Dma.c,335 :: 		DMA0_Enable();
 JAL	_DMA0_Enable+0
 NOP	
-;Serial_Dma.c,335 :: 		while(!DMA_IsOn(0));
+;Serial_Dma.c,336 :: 		while(!DMA_IsOn(0));
 L_DMA_Abort12:
 SH	R25, 4(SP)
 MOVZ	R25, R0, R0
 JAL	_DMA_IsOn+0
 NOP	
 LH	R25, 4(SP)
-BEQ	R2, R0, L__DMA_Abort88
+BEQ	R2, R0, L__DMA_Abort90
 NOP	
 J	L_DMA_Abort13
 NOP	
-L__DMA_Abort88:
+L__DMA_Abort90:
 J	L_DMA_Abort12
 NOP	
 L_DMA_Abort13:
-;Serial_Dma.c,337 :: 		return (DCH0CON & 0x0080 ) >> 7;
+;Serial_Dma.c,339 :: 		return (DCH0CON & 0x0080 ) >> 7;
 LW	R2, Offset(DCH0CON+0)(GP)
 ANDI	R2, R2, 128
 SRL	R2, R2, 7
 J	L_end_DMA_Abort
 NOP	
-;Serial_Dma.c,339 :: 		}else if(channel == 1){
+;Serial_Dma.c,341 :: 		}else if(channel == 1){
 L_DMA_Abort9:
 SEH	R3, R25
 ORI	R2, R0, 1
-BEQ	R3, R2, L__DMA_Abort89
+BEQ	R3, R2, L__DMA_Abort91
 NOP	
 J	L_DMA_Abort15
 NOP	
-L__DMA_Abort89:
-;Serial_Dma.c,342 :: 		DMA1_Disable();
-JAL	_DMA1_Disable+0
-NOP	
-;Serial_Dma.c,344 :: 		while(DMA_IsOn(1));
+L__DMA_Abort91:
+;Serial_Dma.c,343 :: 		DCH1ECONSET |= 1<<6;
+LW	R2, Offset(DCH1ECONSET+0)(GP)
+ORI	R2, R2, 64
+SW	R2, Offset(DCH1ECONSET+0)(GP)
+;Serial_Dma.c,346 :: 		while(DMA_IsOn(1));
 L_DMA_Abort16:
 SH	R25, 4(SP)
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
 NOP	
 LH	R25, 4(SP)
-BNE	R2, R0, L__DMA_Abort91
+BNE	R2, R0, L__DMA_Abort93
 NOP	
 J	L_DMA_Abort17
 NOP	
-L__DMA_Abort91:
+L__DMA_Abort93:
 J	L_DMA_Abort16
 NOP	
 L_DMA_Abort17:
-;Serial_Dma.c,346 :: 		DCH1SSA   = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
-ORI	R2, R0, 8704
-SW	R2, Offset(DCH1SSA+0)(GP)
-;Serial_Dma.c,347 :: 		while(!DMA_IsOn(1));
+;Serial_Dma.c,349 :: 		while(!DMA_IsOn(1));
 L_DMA_Abort18:
 SH	R25, 4(SP)
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
 NOP	
 LH	R25, 4(SP)
-BEQ	R2, R0, L__DMA_Abort92
+BEQ	R2, R0, L__DMA_Abort94
 NOP	
 J	L_DMA_Abort19
 NOP	
-L__DMA_Abort92:
+L__DMA_Abort94:
 J	L_DMA_Abort18
 NOP	
 L_DMA_Abort19:
-;Serial_Dma.c,349 :: 		DMA1_Enable();
+;Serial_Dma.c,351 :: 		DMA1_Enable();
 JAL	_DMA1_Enable+0
 NOP	
-;Serial_Dma.c,350 :: 		return (DCH1CON & 0x0080 ) >> 7;
+;Serial_Dma.c,352 :: 		return (DCH1CON & 0x0080 ) >> 7;
 LW	R2, Offset(DCH1CON+0)(GP)
 ANDI	R2, R2, 128
 SRL	R2, R2, 7
 J	L_end_DMA_Abort
 NOP	
-;Serial_Dma.c,351 :: 		}
+;Serial_Dma.c,353 :: 		}
 L_DMA_Abort15:
-;Serial_Dma.c,353 :: 		return 255;
+;Serial_Dma.c,355 :: 		return 255;
 ORI	R2, R0, 255
-;Serial_Dma.c,354 :: 		}
+;Serial_Dma.c,356 :: 		}
 L_end_DMA_Abort:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -687,96 +687,96 @@ JR	RA
 NOP	
 ; end of _DMA_Abort
 _DMA_IsOn:
-;Serial_Dma.c,358 :: 		unsigned int DMA_IsOn(int channel){
-;Serial_Dma.c,359 :: 		if(channel == 0)
+;Serial_Dma.c,360 :: 		unsigned int DMA_IsOn(int channel){
+;Serial_Dma.c,361 :: 		if(channel == 0)
 SEH	R2, R25
-BEQ	R2, R0, L__DMA_IsOn94
+BEQ	R2, R0, L__DMA_IsOn96
 NOP	
 J	L_DMA_IsOn20
 NOP	
-L__DMA_IsOn94:
-;Serial_Dma.c,360 :: 		return (DCH0CON & 0x8000)>>15;
+L__DMA_IsOn96:
+;Serial_Dma.c,362 :: 		return (DCH0CON & 0x8000)>>15;
 LW	R2, Offset(DCH0CON+0)(GP)
 ANDI	R2, R2, 32768
 SRL	R2, R2, 15
 J	L_end_DMA_IsOn
 NOP	
 L_DMA_IsOn20:
-;Serial_Dma.c,362 :: 		return (DCH1CON & 0x8000)>>15;
+;Serial_Dma.c,364 :: 		return (DCH1CON & 0x8000)>>15;
 LW	R2, Offset(DCH1CON+0)(GP)
 ANDI	R2, R2, 32768
 SRL	R2, R2, 15
-;Serial_Dma.c,363 :: 		}
+;Serial_Dma.c,365 :: 		}
 L_end_DMA_IsOn:
 JR	RA
 NOP	
 ; end of _DMA_IsOn
 _DMA_CH_Busy:
-;Serial_Dma.c,370 :: 		unsigned int DMA_CH_Busy(int channel){
-;Serial_Dma.c,371 :: 		if(channel == 0)
+;Serial_Dma.c,372 :: 		unsigned int DMA_CH_Busy(int channel){
+;Serial_Dma.c,373 :: 		if(channel == 0)
 SEH	R2, R25
-BEQ	R2, R0, L__DMA_CH_Busy96
+BEQ	R2, R0, L__DMA_CH_Busy98
 NOP	
 J	L_DMA_CH_Busy22
 NOP	
-L__DMA_CH_Busy96:
-;Serial_Dma.c,372 :: 		return (DCH0CON & 0x8000)>>15;
+L__DMA_CH_Busy98:
+;Serial_Dma.c,374 :: 		return (DCH0CON & 0x8000)>>15;
 LW	R2, Offset(DCH0CON+0)(GP)
 ANDI	R2, R2, 32768
 SRL	R2, R2, 15
 J	L_end_DMA_CH_Busy
 NOP	
 L_DMA_CH_Busy22:
-;Serial_Dma.c,374 :: 		return (DCH1CON & 0x8000)>>15;
+;Serial_Dma.c,376 :: 		return (DCH1CON & 0x8000)>>15;
 LW	R2, Offset(DCH1CON+0)(GP)
 ANDI	R2, R2, 32768
 SRL	R2, R2, 15
-;Serial_Dma.c,375 :: 		}
+;Serial_Dma.c,377 :: 		}
 L_end_DMA_CH_Busy:
 JR	RA
 NOP	
 ; end of _DMA_CH_Busy
 _DMA_Suspend:
-;Serial_Dma.c,381 :: 		unsigned int DMA_Suspend(){
-;Serial_Dma.c,382 :: 		DMACONSET = (1 << 12);
+;Serial_Dma.c,383 :: 		unsigned int DMA_Suspend(){
+;Serial_Dma.c,384 :: 		DMACONSET = (1 << 12);
 ORI	R2, R0, 4096
 SW	R2, Offset(DMACONSET+0)(GP)
-;Serial_Dma.c,385 :: 		return ((DMACON & 0x1000)>>12);
+;Serial_Dma.c,387 :: 		return ((DMACON & 0x1000)>>12);
 LW	R2, Offset(DMACON+0)(GP)
 ANDI	R2, R2, 4096
 SRL	R2, R2, 12
-;Serial_Dma.c,386 :: 		}
+;Serial_Dma.c,388 :: 		}
 L_end_DMA_Suspend:
 JR	RA
 NOP	
 ; end of _DMA_Suspend
 _DMA_Resume:
-;Serial_Dma.c,391 :: 		unsigned int DMA_Resume(){
-;Serial_Dma.c,392 :: 		DMACONCLR = (1 << 12);
+;Serial_Dma.c,393 :: 		unsigned int DMA_Resume(){
+;Serial_Dma.c,394 :: 		DMACONCLR = (1 << 12);
 ORI	R2, R0, 4096
 SW	R2, Offset(DMACONCLR+0)(GP)
-;Serial_Dma.c,395 :: 		return (DMACON & 0x1000)>>12;
+;Serial_Dma.c,397 :: 		return (DMACON & 0x1000)>>12;
 LW	R2, Offset(DMACON+0)(GP)
 ANDI	R2, R2, 4096
 SRL	R2, R2, 12
-;Serial_Dma.c,396 :: 		}
+;Serial_Dma.c,398 :: 		}
 L_end_DMA_Resume:
 JR	RA
 NOP	
 ; end of _DMA_Resume
 _DMA_Busy:
-;Serial_Dma.c,401 :: 		unsigned int DMA_Busy(){
-;Serial_Dma.c,402 :: 		return ((DMACON & 0x800)>>11);
+;Serial_Dma.c,403 :: 		unsigned int DMA_Busy(){
+;Serial_Dma.c,404 :: 		return ((DMACON & 0x800)>>11);
 LW	R2, Offset(DMACON+0)(GP)
 ANDI	R2, R2, 2048
 SRL	R2, R2, 11
-;Serial_Dma.c,403 :: 		}
+;Serial_Dma.c,405 :: 		}
 L_end_DMA_Busy:
 JR	RA
 NOP	
 ; end of _DMA_Busy
 _DMA_CH1_ISR:
-;Serial_Dma.c,411 :: 		void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
+;Serial_Dma.c,413 :: 		void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
 RDPGPR	SP, SP
 ADDIU	SP, SP, -12
 MFC0	R30, 12, 2
@@ -788,41 +788,41 @@ SW	R30, 0(SP)
 INS	R30, R0, 1, 15
 ORI	R30, R0, 5120
 MTC0	R30, 12, 0
-;Serial_Dma.c,414 :: 		dma1int_flag = DCH1INT & 0x00FF;
+;Serial_Dma.c,416 :: 		dma1int_flag = DCH1INT & 0x00FF;
 LW	R2, Offset(DCH1INT+0)(GP)
 ANDI	R2, R2, 255
 SB	R2, Offset(_dma1int_flag+0)(GP)
-;Serial_Dma.c,416 :: 		if (DCH1INTbits.CHBCIF){
+;Serial_Dma.c,418 :: 		if (DCH1INTbits.CHBCIF){
 LBU	R2, Offset(DCH1INTbits+0)(GP)
 EXT	R2, R2, 3, 1
-BNE	R2, R0, L__DMA_CH1_ISR102
+BNE	R2, R0, L__DMA_CH1_ISR104
 NOP	
 J	L_DMA_CH1_ISR24
 NOP	
-L__DMA_CH1_ISR102:
-;Serial_Dma.c,418 :: 		}
+L__DMA_CH1_ISR104:
+;Serial_Dma.c,420 :: 		}
 L_DMA_CH1_ISR24:
-;Serial_Dma.c,420 :: 		if( CHERIF_DCH1INT_bit == 1){
+;Serial_Dma.c,422 :: 		if( CHERIF_DCH1INT_bit == 1){
 _LX	
 EXT	R2, R2, BitPos(CHERIF_DCH1INT_bit+0), 1
-BNE	R2, 1, L__DMA_CH1_ISR104
+BNE	R2, 1, L__DMA_CH1_ISR106
 NOP	
 J	L_DMA_CH1_ISR25
 NOP	
-L__DMA_CH1_ISR104:
-;Serial_Dma.c,421 :: 		CABORT_DCH1ECON_bit = 1;
+L__DMA_CH1_ISR106:
+;Serial_Dma.c,423 :: 		CABORT_DCH1ECON_bit = 1;
 LUI	R2, BitMask(CABORT_DCH1ECON_bit+0)
 ORI	R2, R2, BitMask(CABORT_DCH1ECON_bit+0)
 _SX	
-;Serial_Dma.c,422 :: 		}
+;Serial_Dma.c,424 :: 		}
 L_DMA_CH1_ISR25:
-;Serial_Dma.c,427 :: 		DCH1INTCLR  = 0x00FF;
+;Serial_Dma.c,429 :: 		DCH1INTCLR  = 0x00FF;
 ORI	R2, R0, 255
 SW	R2, Offset(DCH1INTCLR+0)(GP)
-;Serial_Dma.c,428 :: 		IFS4CLR     = 0x80;
+;Serial_Dma.c,430 :: 		IFS4CLR     = 0x80;
 ORI	R2, R0, 128
 SW	R2, Offset(IFS4CLR+0)(GP)
-;Serial_Dma.c,430 :: 		}
+;Serial_Dma.c,432 :: 		}
 L_end_DMA_CH1_ISR:
 DI	
 EHB	
@@ -837,59 +837,59 @@ WRPGPR	SP, SP
 ERET	
 ; end of _DMA_CH1_ISR
 _dma_printf:
-;Serial_Dma.c,435 :: 		int dma_printf(const char* str,...){
+;Serial_Dma.c,437 :: 		int dma_printf(const char* str,...){
 ADDIU	SP, SP, -1568
 SW	RA, 0(SP)
-;Serial_Dma.c,438 :: 		int i = 0, j = 0;
+;Serial_Dma.c,440 :: 		int i = 0, j = 0;
 SW	R25, 4(SP)
 SW	R26, 8(SP)
 SW	R27, 12(SP)
-;Serial_Dma.c,439 :: 		char buff[1500]={0},tmp[20],tmp1[20];
+;Serial_Dma.c,441 :: 		char buff[1500]={0},tmp[20],tmp1[20];
 ADDIU	R23, SP, 64
 ADDIU	R22, R23, 1500
 LUI	R24, hi_addr(?ICSdma_printf_buff_L0+0)
 ORI	R24, R24, lo_addr(?ICSdma_printf_buff_L0+0)
 JAL	___CC2DW+0
 NOP	
-;Serial_Dma.c,443 :: 		if(str == 0)
+;Serial_Dma.c,445 :: 		if(str == 0)
 LW	R2, 1568(SP)
-BEQ	R2, R0, L__dma_printf106
+BEQ	R2, R0, L__dma_printf108
 NOP	
 J	L_dma_printf26
 NOP	
-L__dma_printf106:
-;Serial_Dma.c,444 :: 		return;
+L__dma_printf108:
+;Serial_Dma.c,446 :: 		return;
 J	L_end_dma_printf
 NOP	
 L_dma_printf26:
-;Serial_Dma.c,449 :: 		if(DMA_CH_Busy(1)){
+;Serial_Dma.c,451 :: 		if(DMA_CH_Busy(1)){
 ORI	R25, R0, 1
 JAL	_DMA_CH_Busy+0
 NOP	
-BNE	R2, R0, L__dma_printf108
+BNE	R2, R0, L__dma_printf110
 NOP	
 J	L_dma_printf27
 NOP	
-L__dma_printf108:
-;Serial_Dma.c,450 :: 		return 0;
+L__dma_printf110:
+;Serial_Dma.c,452 :: 		return 0;
 MOVZ	R2, R0, R0
 J	L_end_dma_printf
 NOP	
-;Serial_Dma.c,451 :: 		}
+;Serial_Dma.c,453 :: 		}
 L_dma_printf27:
-;Serial_Dma.c,455 :: 		va_start(va,str);
+;Serial_Dma.c,457 :: 		va_start(va,str);
 ADDIU	R3, SP, 16
 ADDIU	R2, SP, 1568
 ADDIU	R2, R2, 4
 SW	R2, 0(R3)
-;Serial_Dma.c,457 :: 		i = j = 0;
+;Serial_Dma.c,459 :: 		i = j = 0;
 ; j start address is: 48 (R12)
 MOVZ	R12, R0, R0
 ; i start address is: 20 (R5)
 MOVZ	R5, R0, R0
 ; j end address is: 48 (R12)
 ; i end address is: 20 (R5)
-;Serial_Dma.c,458 :: 		while(*(str+i) != '\0'){
+;Serial_Dma.c,460 :: 		while(*(str+i) != '\0'){
 L_dma_printf28:
 ; i start address is: 20 (R5)
 ; j start address is: 48 (R12)
@@ -898,38 +898,38 @@ LW	R2, 1568(SP)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 ANDI	R2, R2, 255
-BNE	R2, R0, L__dma_printf110
+BNE	R2, R0, L__dma_printf112
 NOP	
 J	L_dma_printf29
 NOP	
-L__dma_printf110:
-;Serial_Dma.c,459 :: 		if(*(str+i) == '%'){
+L__dma_printf112:
+;Serial_Dma.c,461 :: 		if(*(str+i) == '%'){
 SEH	R3, R5
 LW	R2, 1568(SP)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 ANDI	R3, R2, 255
 ORI	R2, R0, 37
-BEQ	R3, R2, L__dma_printf111
+BEQ	R3, R2, L__dma_printf113
 NOP	
 J	L_dma_printf30
 NOP	
-L__dma_printf111:
-;Serial_Dma.c,460 :: 		i++;  //step over % char
+L__dma_printf113:
+;Serial_Dma.c,462 :: 		i++;  //step over % char
 ADDIU	R2, R5, 1
 ; i end address is: 20 (R5)
 ; i start address is: 44 (R11)
 SEH	R11, R2
-;Serial_Dma.c,461 :: 		switch(*(str+i)){
+;Serial_Dma.c,463 :: 		switch(*(str+i)){
 SEH	R3, R2
 LW	R2, 1568(SP)
 ADDU	R2, R2, R3
 SW	R2, 1564(SP)
 J	L_dma_printf31
 NOP	
-;Serial_Dma.c,462 :: 		case 'c':
+;Serial_Dma.c,464 :: 		case 'c':
 L_dma_printf33:
-;Serial_Dma.c,464 :: 		buff[j] = (char)va_arg(va,char);
+;Serial_Dma.c,466 :: 		buff[j] = (char)va_arg(va,char);
 ADDIU	R3, SP, 64
 SEH	R2, R12
 ADDU	R5, R3, R2
@@ -939,18 +939,18 @@ ADDIU	R2, R3, 4
 SW	R2, 0(R4)
 LBU	R2, 0(R3)
 SB	R2, 0(R5)
-;Serial_Dma.c,465 :: 		j++;
+;Serial_Dma.c,467 :: 		j++;
 ADDIU	R2, R12, 1
 ; j end address is: 48 (R12)
 ; j start address is: 8 (R2)
-;Serial_Dma.c,466 :: 		break;
+;Serial_Dma.c,468 :: 		break;
 SEH	R12, R2
 ; j end address is: 8 (R2)
 J	L_dma_printf32
 NOP	
-;Serial_Dma.c,467 :: 		case 'd':
+;Serial_Dma.c,469 :: 		case 'd':
 L_dma_printf34:
-;Serial_Dma.c,469 :: 		sprintf(tmp1,"%d",va_arg(va,int));
+;Serial_Dma.c,471 :: 		sprintf(tmp1,"%d",va_arg(va,int));
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
@@ -967,7 +967,7 @@ SW	R3, 0(SP)
 JAL	_sprintf+0
 NOP	
 ADDIU	SP, SP, 12
-;Serial_Dma.c,470 :: 		strcat(buff+j, tmp1);
+;Serial_Dma.c,472 :: 		strcat(buff+j, tmp1);
 ADDIU	R4, SP, 40
 ADDIU	R3, SP, 64
 SEH	R2, R12
@@ -976,7 +976,7 @@ MOVZ	R26, R4, R0
 MOVZ	R25, R2, R0
 JAL	_strcat+0
 NOP	
-;Serial_Dma.c,471 :: 		j += strlen(tmp1);
+;Serial_Dma.c,473 :: 		j += strlen(tmp1);
 ADDIU	R2, SP, 40
 MOVZ	R25, R2, R0
 JAL	_strlen+0
@@ -984,14 +984,14 @@ NOP
 ADDU	R2, R12, R2
 ; j end address is: 48 (R12)
 ; j start address is: 8 (R2)
-;Serial_Dma.c,472 :: 		break;
+;Serial_Dma.c,474 :: 		break;
 SEH	R12, R2
 ; j end address is: 8 (R2)
 J	L_dma_printf32
 NOP	
-;Serial_Dma.c,473 :: 		case 'u':
+;Serial_Dma.c,475 :: 		case 'u':
 L_dma_printf35:
-;Serial_Dma.c,475 :: 		sprintf(tmp1,"%u",va_arg(va,unsigned int));
+;Serial_Dma.c,477 :: 		sprintf(tmp1,"%u",va_arg(va,unsigned int));
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
@@ -1008,7 +1008,7 @@ SW	R3, 0(SP)
 JAL	_sprintf+0
 NOP	
 ADDIU	SP, SP, 12
-;Serial_Dma.c,476 :: 		strcat(buff+j, tmp1);
+;Serial_Dma.c,478 :: 		strcat(buff+j, tmp1);
 ADDIU	R4, SP, 40
 ADDIU	R3, SP, 64
 SEH	R2, R12
@@ -1017,7 +1017,7 @@ MOVZ	R26, R4, R0
 MOVZ	R25, R2, R0
 JAL	_strcat+0
 NOP	
-;Serial_Dma.c,477 :: 		j += strlen(tmp1);
+;Serial_Dma.c,479 :: 		j += strlen(tmp1);
 ADDIU	R2, SP, 40
 MOVZ	R25, R2, R0
 JAL	_strlen+0
@@ -1025,14 +1025,14 @@ NOP
 ADDU	R2, R12, R2
 SEH	R12, R2
 ; j end address is: 48 (R12)
-;Serial_Dma.c,478 :: 		case 'l':
+;Serial_Dma.c,480 :: 		case 'l':
 J	L_dma_printf36
 NOP	
-L__dma_printf52:
-;Serial_Dma.c,518 :: 		}
-;Serial_Dma.c,478 :: 		case 'l':
+L__dma_printf54:
+;Serial_Dma.c,520 :: 		}
+;Serial_Dma.c,480 :: 		case 'l':
 L_dma_printf36:
-;Serial_Dma.c,480 :: 		sprintf(tmp,"%ld",va_arg(va,long));
+;Serial_Dma.c,482 :: 		sprintf(tmp,"%ld",va_arg(va,long));
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
@@ -1049,7 +1049,7 @@ SW	R3, 0(SP)
 JAL	_sprintf+0
 NOP	
 ADDIU	SP, SP, 12
-;Serial_Dma.c,482 :: 		strcat(buff+j, tmp);
+;Serial_Dma.c,484 :: 		strcat(buff+j, tmp);
 ADDIU	R4, SP, 20
 ADDIU	R3, SP, 64
 SEH	R2, R12
@@ -1058,7 +1058,7 @@ MOVZ	R26, R4, R0
 MOVZ	R25, R2, R0
 JAL	_strcat+0
 NOP	
-;Serial_Dma.c,483 :: 		j += strlen(tmp);
+;Serial_Dma.c,485 :: 		j += strlen(tmp);
 ADDIU	R2, SP, 20
 MOVZ	R25, R2, R0
 JAL	_strlen+0
@@ -1066,14 +1066,14 @@ NOP
 ADDU	R2, R12, R2
 ; j end address is: 48 (R12)
 ; j start address is: 8 (R2)
-;Serial_Dma.c,484 :: 		break;
+;Serial_Dma.c,486 :: 		break;
 SEH	R12, R2
 ; j end address is: 8 (R2)
 J	L_dma_printf32
 NOP	
-;Serial_Dma.c,485 :: 		case 'X':
+;Serial_Dma.c,487 :: 		case 'X':
 L_dma_printf37:
-;Serial_Dma.c,487 :: 		sprintf(tmp,"%X",va_arg(va,int));
+;Serial_Dma.c,489 :: 		sprintf(tmp,"%X",va_arg(va,int));
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
@@ -1090,7 +1090,7 @@ SW	R3, 0(SP)
 JAL	_sprintf+0
 NOP	
 ADDIU	SP, SP, 12
-;Serial_Dma.c,488 :: 		strcat(buff+j, tmp);
+;Serial_Dma.c,490 :: 		strcat(buff+j, tmp);
 ADDIU	R4, SP, 20
 ADDIU	R3, SP, 64
 SEH	R2, R12
@@ -1099,7 +1099,7 @@ MOVZ	R26, R4, R0
 MOVZ	R25, R2, R0
 JAL	_strcat+0
 NOP	
-;Serial_Dma.c,489 :: 		j += strlen(tmp);
+;Serial_Dma.c,491 :: 		j += strlen(tmp);
 ADDIU	R2, SP, 20
 MOVZ	R25, R2, R0
 JAL	_strlen+0
@@ -1107,14 +1107,14 @@ NOP
 ADDU	R2, R12, R2
 ; j end address is: 48 (R12)
 ; j start address is: 8 (R2)
-;Serial_Dma.c,490 :: 		break;
+;Serial_Dma.c,492 :: 		break;
 SEH	R12, R2
 ; j end address is: 8 (R2)
 J	L_dma_printf32
 NOP	
-;Serial_Dma.c,491 :: 		case 'X':
+;Serial_Dma.c,493 :: 		case 'X':
 L_dma_printf38:
-;Serial_Dma.c,493 :: 		sprintf(tmp,"%lX",va_arg(va,long));
+;Serial_Dma.c,495 :: 		sprintf(tmp,"%lX",va_arg(va,long));
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
@@ -1131,7 +1131,7 @@ SW	R3, 0(SP)
 JAL	_sprintf+0
 NOP	
 ADDIU	SP, SP, 12
-;Serial_Dma.c,494 :: 		strcat(buff+j, tmp);
+;Serial_Dma.c,496 :: 		strcat(buff+j, tmp);
 ADDIU	R4, SP, 20
 ADDIU	R3, SP, 64
 SEH	R2, R12
@@ -1140,7 +1140,7 @@ MOVZ	R26, R4, R0
 MOVZ	R25, R2, R0
 JAL	_strcat+0
 NOP	
-;Serial_Dma.c,495 :: 		j += strlen(tmp);
+;Serial_Dma.c,497 :: 		j += strlen(tmp);
 ADDIU	R2, SP, 20
 MOVZ	R25, R2, R0
 JAL	_strlen+0
@@ -1148,14 +1148,14 @@ NOP
 ADDU	R2, R12, R2
 ; j end address is: 48 (R12)
 ; j start address is: 8 (R2)
-;Serial_Dma.c,496 :: 		break;
+;Serial_Dma.c,498 :: 		break;
 SEH	R12, R2
 ; j end address is: 8 (R2)
 J	L_dma_printf32
 NOP	
-;Serial_Dma.c,497 :: 		case 'f':
+;Serial_Dma.c,499 :: 		case 'f':
 L_dma_printf39:
-;Serial_Dma.c,498 :: 		sprintf(tmp,"%08.3f",va_arg(va,float));
+;Serial_Dma.c,500 :: 		sprintf(tmp,"%08.3f",va_arg(va,float));
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
@@ -1172,7 +1172,7 @@ SW	R3, 0(SP)
 JAL	_sprintf+0
 NOP	
 ADDIU	SP, SP, 12
-;Serial_Dma.c,499 :: 		strcat(buff+j, tmp);
+;Serial_Dma.c,501 :: 		strcat(buff+j, tmp);
 ADDIU	R4, SP, 20
 ADDIU	R3, SP, 64
 SEH	R2, R12
@@ -1181,7 +1181,7 @@ MOVZ	R26, R4, R0
 MOVZ	R25, R2, R0
 JAL	_strcat+0
 NOP	
-;Serial_Dma.c,500 :: 		j += strlen(tmp);
+;Serial_Dma.c,502 :: 		j += strlen(tmp);
 ADDIU	R2, SP, 20
 MOVZ	R25, R2, R0
 JAL	_strlen+0
@@ -1189,14 +1189,14 @@ NOP
 ADDU	R2, R12, R2
 ; j end address is: 48 (R12)
 ; j start address is: 8 (R2)
-;Serial_Dma.c,501 :: 		break;
+;Serial_Dma.c,503 :: 		break;
 SEH	R12, R2
 ; j end address is: 8 (R2)
 J	L_dma_printf32
 NOP	
-;Serial_Dma.c,502 :: 		case 'F':
+;Serial_Dma.c,504 :: 		case 'F':
 L_dma_printf40:
-;Serial_Dma.c,503 :: 		sprintf(tmp,"%E",va_arg(va,double));
+;Serial_Dma.c,505 :: 		sprintf(tmp,"%E",va_arg(va,double));
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
@@ -1213,7 +1213,7 @@ SW	R3, 0(SP)
 JAL	_sprintf+0
 NOP	
 ADDIU	SP, SP, 12
-;Serial_Dma.c,504 :: 		strcat(buff+j, tmp);
+;Serial_Dma.c,506 :: 		strcat(buff+j, tmp);
 ADDIU	R4, SP, 20
 ADDIU	R3, SP, 64
 SEH	R2, R12
@@ -1222,7 +1222,7 @@ MOVZ	R26, R4, R0
 MOVZ	R25, R2, R0
 JAL	_strcat+0
 NOP	
-;Serial_Dma.c,505 :: 		j += strlen(tmp);
+;Serial_Dma.c,507 :: 		j += strlen(tmp);
 ADDIU	R2, SP, 20
 MOVZ	R25, R2, R0
 JAL	_strlen+0
@@ -1230,14 +1230,14 @@ NOP
 ADDU	R2, R12, R2
 ; j end address is: 48 (R12)
 ; j start address is: 8 (R2)
-;Serial_Dma.c,506 :: 		break;
+;Serial_Dma.c,508 :: 		break;
 SEH	R12, R2
 ; j end address is: 8 (R2)
 J	L_dma_printf32
 NOP	
-;Serial_Dma.c,507 :: 		case 'p':
+;Serial_Dma.c,509 :: 		case 'p':
 L_dma_printf41:
-;Serial_Dma.c,508 :: 		sprintf(tmp,"%p",va_arg(va,void*));
+;Serial_Dma.c,510 :: 		sprintf(tmp,"%p",va_arg(va,void*));
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
@@ -1254,7 +1254,7 @@ SW	R3, 0(SP)
 JAL	_sprintf+0
 NOP	
 ADDIU	SP, SP, 12
-;Serial_Dma.c,509 :: 		strcat(buff+j, tmp);
+;Serial_Dma.c,511 :: 		strcat(buff+j, tmp);
 ADDIU	R4, SP, 20
 ADDIU	R3, SP, 64
 SEH	R2, R12
@@ -1263,7 +1263,7 @@ MOVZ	R26, R4, R0
 MOVZ	R25, R2, R0
 JAL	_strcat+0
 NOP	
-;Serial_Dma.c,510 :: 		j += strlen(tmp);
+;Serial_Dma.c,512 :: 		j += strlen(tmp);
 ADDIU	R2, SP, 20
 MOVZ	R25, R2, R0
 JAL	_strlen+0
@@ -1271,14 +1271,14 @@ NOP
 ADDU	R2, R12, R2
 ; j end address is: 48 (R12)
 ; j start address is: 8 (R2)
-;Serial_Dma.c,511 :: 		break;
+;Serial_Dma.c,513 :: 		break;
 SEH	R12, R2
 ; j end address is: 8 (R2)
 J	L_dma_printf32
 NOP	
-;Serial_Dma.c,512 :: 		case 's':
+;Serial_Dma.c,514 :: 		case 's':
 L_dma_printf42:
-;Serial_Dma.c,514 :: 		str_arg = va_arg( va, char* );
+;Serial_Dma.c,516 :: 		str_arg = va_arg( va, char* );
 ; j start address is: 48 (R12)
 ADDIU	R4, SP, 16
 LW	R3, 0(R4)
@@ -1286,7 +1286,7 @@ ADDIU	R2, R3, 4
 SW	R2, 0(R4)
 LW	R4, 0(R3)
 SW	R4, 60(SP)
-;Serial_Dma.c,515 :: 		strcat(buff+j, str_arg);
+;Serial_Dma.c,517 :: 		strcat(buff+j, str_arg);
 ADDIU	R3, SP, 64
 SEH	R2, R12
 ADDU	R2, R3, R2
@@ -1294,60 +1294,52 @@ MOVZ	R26, R4, R0
 MOVZ	R25, R2, R0
 JAL	_strcat+0
 NOP	
-;Serial_Dma.c,516 :: 		j += strlen(str_arg);
+;Serial_Dma.c,518 :: 		j += strlen(str_arg);
 LW	R25, 60(SP)
 JAL	_strlen+0
 NOP	
 ADDU	R2, R12, R2
 ; j end address is: 48 (R12)
 ; j start address is: 8 (R2)
-;Serial_Dma.c,517 :: 		break;
+;Serial_Dma.c,519 :: 		break;
 SEH	R12, R2
 ; j end address is: 8 (R2)
 J	L_dma_printf32
 NOP	
-;Serial_Dma.c,518 :: 		}
+;Serial_Dma.c,520 :: 		}
 L_dma_printf31:
 ; j start address is: 48 (R12)
 LW	R4, 1564(SP)
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 99
-BNE	R3, R2, L__dma_printf113
-NOP	
-J	L_dma_printf33
-NOP	
-L__dma_printf113:
-LBU	R2, 0(R4)
-ANDI	R3, R2, 255
-ORI	R2, R0, 100
 BNE	R3, R2, L__dma_printf115
 NOP	
-J	L_dma_printf34
+J	L_dma_printf33
 NOP	
 L__dma_printf115:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 117
+ORI	R2, R0, 100
 BNE	R3, R2, L__dma_printf117
 NOP	
-J	L_dma_printf35
+J	L_dma_printf34
 NOP	
 L__dma_printf117:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 108
+ORI	R2, R0, 117
 BNE	R3, R2, L__dma_printf119
 NOP	
-J	L__dma_printf52
+J	L_dma_printf35
 NOP	
 L__dma_printf119:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 88
+ORI	R2, R0, 108
 BNE	R3, R2, L__dma_printf121
 NOP	
-J	L_dma_printf37
+J	L__dma_printf54
 NOP	
 L__dma_printf121:
 LBU	R2, 0(R4)
@@ -1355,51 +1347,59 @@ ANDI	R3, R2, 255
 ORI	R2, R0, 88
 BNE	R3, R2, L__dma_printf123
 NOP	
-J	L_dma_printf38
+J	L_dma_printf37
 NOP	
 L__dma_printf123:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 102
+ORI	R2, R0, 88
 BNE	R3, R2, L__dma_printf125
 NOP	
-J	L_dma_printf39
+J	L_dma_printf38
 NOP	
 L__dma_printf125:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 70
+ORI	R2, R0, 102
 BNE	R3, R2, L__dma_printf127
 NOP	
-J	L_dma_printf40
+J	L_dma_printf39
 NOP	
 L__dma_printf127:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 112
+ORI	R2, R0, 70
 BNE	R3, R2, L__dma_printf129
 NOP	
-J	L_dma_printf41
+J	L_dma_printf40
 NOP	
 L__dma_printf129:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 115
+ORI	R2, R0, 112
 BNE	R3, R2, L__dma_printf131
+NOP	
+J	L_dma_printf41
+NOP	
+L__dma_printf131:
+LBU	R2, 0(R4)
+ANDI	R3, R2, 255
+ORI	R2, R0, 115
+BNE	R3, R2, L__dma_printf133
 NOP	
 J	L_dma_printf42
 NOP	
-L__dma_printf131:
+L__dma_printf133:
 ; j end address is: 48 (R12)
 L_dma_printf32:
-;Serial_Dma.c,519 :: 		}else{
+;Serial_Dma.c,521 :: 		}else{
 ; j start address is: 48 (R12)
 SEH	R3, R11
 ; i end address is: 44 (R11)
 J	L_dma_printf43
 NOP	
 L_dma_printf30:
-;Serial_Dma.c,520 :: 		*(buff+j) = *(str+i);
+;Serial_Dma.c,522 :: 		*(buff+j) = *(str+i);
 ; i start address is: 20 (R5)
 ADDIU	R3, SP, 64
 SEH	R2, R12
@@ -1409,33 +1409,33 @@ LW	R2, 1568(SP)
 ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 SB	R2, 0(R4)
-;Serial_Dma.c,521 :: 		j++;
+;Serial_Dma.c,523 :: 		j++;
 ADDIU	R2, R12, 1
 SEH	R12, R2
 ; j end address is: 48 (R12)
 ; i end address is: 20 (R5)
 SEH	R3, R5
-;Serial_Dma.c,522 :: 		}
+;Serial_Dma.c,524 :: 		}
 L_dma_printf43:
-;Serial_Dma.c,523 :: 		i++;
+;Serial_Dma.c,525 :: 		i++;
 ; j start address is: 48 (R12)
 ; i start address is: 12 (R3)
 ADDIU	R2, R3, 1
 ; i end address is: 12 (R3)
 ; i start address is: 20 (R5)
 SEH	R5, R2
-;Serial_Dma.c,524 :: 		}
+;Serial_Dma.c,526 :: 		}
 ; i end address is: 20 (R5)
 J	L_dma_printf28
 NOP	
 L_dma_printf29:
-;Serial_Dma.c,525 :: 		*(buff+j+1) = 0;
+;Serial_Dma.c,527 :: 		*(buff+j+1) = 0;
 ADDIU	R3, SP, 64
 SEH	R2, R12
 ADDU	R2, R3, R2
 ADDIU	R2, R2, 1
 SB	R0, 0(R2)
-;Serial_Dma.c,526 :: 		strncpy(txBuf,buff,j+1);
+;Serial_Dma.c,528 :: 		strncpy(txBuf,buff,j+1);
 ADDIU	R2, R12, 1
 SEH	R27, R2
 MOVZ	R26, R3, R0
@@ -1443,18 +1443,30 @@ LUI	R25, 40960
 ORI	R25, R25, 8704
 JAL	_strncpy+0
 NOP	
-;Serial_Dma.c,527 :: 		DCH1SSIZ    = j ;
+;Serial_Dma.c,529 :: 		DCH1SSIZ    = j ;
 SEH	R2, R12
 SW	R2, Offset(DCH1SSIZ+0)(GP)
-;Serial_Dma.c,528 :: 		DMA1_Enable();
+; j end address is: 48 (R12)
+SEH	R3, R12
+;Serial_Dma.c,530 :: 		while(!DMA1_Enable());
+L_dma_printf44:
+; j start address is: 12 (R3)
 JAL	_DMA1_Enable+0
 NOP	
-;Serial_Dma.c,530 :: 		return j;
-SEH	R2, R12
-; j end address is: 48 (R12)
-;Serial_Dma.c,532 :: 		}
-;Serial_Dma.c,530 :: 		return j;
-;Serial_Dma.c,532 :: 		}
+BEQ	R2, R0, L__dma_printf134
+NOP	
+J	L_dma_printf45
+NOP	
+L__dma_printf134:
+J	L_dma_printf44
+NOP	
+L_dma_printf45:
+;Serial_Dma.c,532 :: 		return j;
+SEH	R2, R3
+; j end address is: 12 (R3)
+;Serial_Dma.c,534 :: 		}
+;Serial_Dma.c,532 :: 		return j;
+;Serial_Dma.c,534 :: 		}
 L_end_dma_printf:
 LW	R27, 12(SP)
 LW	R26, 8(SP)
@@ -1465,16 +1477,16 @@ JR	RA
 NOP	
 ; end of _dma_printf
 _lTrim:
-;Serial_Dma.c,536 :: 		void lTrim(char *d,char* s){
+;Serial_Dma.c,538 :: 		void lTrim(char *d,char* s){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Serial_Dma.c,538 :: 		int i=0,j,k;
+;Serial_Dma.c,540 :: 		int i=0,j,k;
 ; i start address is: 20 (R5)
 MOVZ	R5, R0, R0
-;Serial_Dma.c,539 :: 		k = i;
+;Serial_Dma.c,541 :: 		k = i;
 ; k start address is: 24 (R6)
 SEH	R6, R5
-;Serial_Dma.c,540 :: 		j = strlen(s);
+;Serial_Dma.c,542 :: 		j = strlen(s);
 SW	R25, 4(SP)
 MOVZ	R25, R26, R0
 JAL	_strlen+0
@@ -1486,89 +1498,89 @@ SEH	R4, R2
 ; j end address is: 16 (R4)
 ; i end address is: 20 (R5)
 SEH	R3, R6
-;Serial_Dma.c,541 :: 		while(*s != '\0'){
-L_lTrim44:
+;Serial_Dma.c,543 :: 		while(*s != '\0'){
+L_lTrim46:
 ; j start address is: 16 (R4)
 ; k start address is: 12 (R3)
 ; i start address is: 20 (R5)
 LBU	R2, 0(R26)
 ANDI	R2, R2, 255
-BNE	R2, R0, L__lTrim134
+BNE	R2, R0, L__lTrim137
 NOP	
-J	L_lTrim45
+J	L_lTrim47
 NOP	
-L__lTrim134:
-;Serial_Dma.c,542 :: 		if((*s > 0x30)||(k>0)){
+L__lTrim137:
+;Serial_Dma.c,544 :: 		if((*s > 0x30)||(k>0)){
 LBU	R2, 0(R26)
 ANDI	R2, R2, 255
 SLTIU	R2, R2, 49
-BNE	R2, R0, L__lTrim135
+BNE	R2, R0, L__lTrim138
 NOP	
-J	L__lTrim55
+J	L__lTrim57
 NOP	
-L__lTrim135:
+L__lTrim138:
 SEH	R2, R3
 SLTI	R2, R2, 1
-BNE	R2, R0, L__lTrim136
+BNE	R2, R0, L__lTrim139
 NOP	
-J	L__lTrim54
+J	L__lTrim56
 NOP	
-L__lTrim136:
-J	L_lTrim48
+L__lTrim139:
+J	L_lTrim50
 NOP	
 ; k end address is: 12 (R3)
-L__lTrim55:
-L__lTrim54:
-;Serial_Dma.c,543 :: 		k = 1;
+L__lTrim57:
+L__lTrim56:
+;Serial_Dma.c,545 :: 		k = 1;
 ; k start address is: 12 (R3)
 ORI	R3, R0, 1
-;Serial_Dma.c,544 :: 		*d = *s;
+;Serial_Dma.c,546 :: 		*d = *s;
 LBU	R2, 0(R26)
 SB	R2, 0(R25)
-;Serial_Dma.c,545 :: 		d++;
+;Serial_Dma.c,547 :: 		d++;
 ADDIU	R2, R25, 1
 MOVZ	R25, R2, R0
-;Serial_Dma.c,546 :: 		}else
-J	L_lTrim49
+;Serial_Dma.c,548 :: 		}else
+J	L_lTrim51
 NOP	
-L_lTrim48:
-;Serial_Dma.c,547 :: 		i++;
+L_lTrim50:
+;Serial_Dma.c,549 :: 		i++;
 ADDIU	R2, R5, 1
 SEH	R5, R2
 ; k end address is: 12 (R3)
 ; i end address is: 20 (R5)
-L_lTrim49:
-;Serial_Dma.c,548 :: 		s++;
+L_lTrim51:
+;Serial_Dma.c,550 :: 		s++;
 ; k start address is: 12 (R3)
 ; i start address is: 20 (R5)
 ADDIU	R2, R26, 1
 MOVZ	R26, R2, R0
-;Serial_Dma.c,549 :: 		}
+;Serial_Dma.c,551 :: 		}
 ; k end address is: 12 (R3)
-J	L_lTrim44
+J	L_lTrim46
 NOP	
-L_lTrim45:
-;Serial_Dma.c,550 :: 		if(i == j){
+L_lTrim47:
+;Serial_Dma.c,552 :: 		if(i == j){
 SEH	R3, R5
 ; i end address is: 20 (R5)
 SEH	R2, R4
 ; j end address is: 16 (R4)
-BEQ	R3, R2, L__lTrim137
+BEQ	R3, R2, L__lTrim140
 NOP	
-J	L_lTrim50
+J	L_lTrim52
 NOP	
-L__lTrim137:
-;Serial_Dma.c,551 :: 		*d = '0';
+L__lTrim140:
+;Serial_Dma.c,553 :: 		*d = '0';
 ORI	R2, R0, 48
 SB	R2, 0(R25)
-;Serial_Dma.c,552 :: 		d++;
+;Serial_Dma.c,554 :: 		d++;
 ADDIU	R2, R25, 1
 MOVZ	R25, R2, R0
-;Serial_Dma.c,553 :: 		}
-L_lTrim50:
-;Serial_Dma.c,554 :: 		*d = 0;
-SB	R0, 0(R25)
 ;Serial_Dma.c,555 :: 		}
+L_lTrim52:
+;Serial_Dma.c,556 :: 		*d = 0;
+SB	R0, 0(R25)
+;Serial_Dma.c,557 :: 		}
 L_end_lTrim:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8

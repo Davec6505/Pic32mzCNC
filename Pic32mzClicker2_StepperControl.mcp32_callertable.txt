@@ -180,11 +180,11 @@ main
 	Sample_Gocde_Line
 		Get_Difference
 		DMA0_ReadDstPtr
+		Do_Critical_Msg
+			mc_reset
 		DMA_Abort
-			DMA0_Disable
 			DMA_IsOn
 			DMA0_Enable
-			DMA1_Disable
 			DMA1_Enable
 		Str_clear
 			memset
@@ -235,7 +235,6 @@ main
 			atoi
 				isdigit
 			strlen
-			strncpy
 			settings_store_startup_line
 				strlen
 				read_ram_loaded_indicator
@@ -244,6 +243,7 @@ main
 				NVMErasePage
 				memcpy
 				NVMWriteRow
+			strncpy
 			isdigit
 			memset
 			atof
@@ -262,14 +262,6 @@ main
 				floor
 				fabs
 				NVMWriteRow
-		Do_Gcode
-			strsplit2
-				Str_Initialize
-					memset
-				strlen
-			DMA_IsOn
-			dma_printf
-			__CC2DW
 	ResetSteppers
 		DisableStepper
 StepZ

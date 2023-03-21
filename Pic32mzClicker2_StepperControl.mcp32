@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Protocol.c
+Value=Settings.h
 =======
 =======
 >>>>>>> patch1
@@ -132,15 +132,18 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 File1=DEFINES.pld
-File2=GCODE.c
-File3=GCODE.h
-File4=Protocol.c
-File5=Protocol.h
-File6=Print.c
-File7=Print.h
-File8=Serial_Dma.c
-File9=Serial_Dma.h
-Count=10
+File2=Protocol.c
+File3=Protocol.h
+File4=Print.c
+File5=Print.h
+File6=GCODE.c
+File7=GCODE.h
+File8=Flash_R_W.c
+File9=Flash_R_W.h
+File10=Kinematics.h
+File11=Kinematics.c
+File12=Settings.h
+Count=13
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

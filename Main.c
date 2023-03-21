@@ -37,7 +37,7 @@
 //settings_t settings;
 //parser_state_t gc;
 system_t sys;
-volatile coord_sys coord_system[NUMBER_OF_DATUMS];
+coord_sys coord_system[NUMBER_OF_DATUMS];
 STP STPS[NoOfAxis];
 settings_t settings;
 
@@ -67,7 +67,9 @@ void Conditin_Externs(){
 void main() {
 int error = 0;
 int has_flash = 0;
-int dif,modal_group,modal_action,status_of_gcode;
+int modal_group = 0;
+int modal_action = 0;
+int dif,status_of_gcode;
 static int cntr = 0,a = 0;
 
  //setup
@@ -135,7 +137,7 @@ static int cntr = 0,a = 0;
         case 1024: //$H Home all axis
              //temp debug for steppers
              modal_action = Modal_Group_Actions1(ALL_AXIS);
-             #if HomeDebug == 11
+             #if HomeDebug == 10
              while(DMA_IsOn(1));
              dma_printf("modal_action:= %d\n",modal_action);
             #endif

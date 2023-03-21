@@ -131,7 +131,9 @@ LUI	R2, 16840
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+16)(GP)
 ;Globals.c,86 :: 		buffA[H_FEED_RATE_OFFSET]   = flt2ulong(settings.homing_feed_rate);
-LWC1	S12, Offset(_settings+16)(GP)
+LUI	R2, 16840
+ORI	R2, R2, 0
+MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612444)(GP)
@@ -140,7 +142,9 @@ LUI	R2, 17274
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+20)(GP)
 ;Globals.c,89 :: 		buffA[H_SEEK_RATE_OFFSET]   = flt2ulong(settings.homing_seek_rate);
-LWC1	S12, Offset(_settings+20)(GP)
+LUI	R2, 17274
+ORI	R2, R2, 0
+MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612440)(GP)
@@ -149,7 +153,9 @@ LUI	R2, 16256
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+24)(GP)
 ;Globals.c,92 :: 		buffA[H_PULL_OFF_OFFSET]    = flt2ulong(settings.homing_pulloff);
-LWC1	S12, Offset(_settings+24)(GP)
+LUI	R2, 16256
+ORI	R2, R2, 0
+MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612436)(GP)
@@ -158,7 +164,9 @@ LUI	R2, 15820
 ORI	R2, R2, 52429
 SW	R2, Offset(_settings+28)(GP)
 ;Globals.c,95 :: 		buffA[MM_ARC_SEG_OFFSET]    =  flt2ulong(settings.mm_per_arc_segment);
-LWC1	S12, Offset(_settings+28)(GP)
+LUI	R2, 15820
+ORI	R2, R2, 52429
+MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612432)(GP)
@@ -167,7 +175,9 @@ LUI	R2, 18188
 ORI	R2, R2, 40960
 SW	R2, Offset(_settings+32)(GP)
 ;Globals.c,98 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(settings.acceleration);
-LWC1	S12, Offset(_settings+32)(GP)
+LUI	R2, 18188
+ORI	R2, R2, 40960
+MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612428)(GP)
@@ -176,7 +186,9 @@ LUI	R2, 15692
 ORI	R2, R2, 52429
 SW	R2, Offset(_settings+36)(GP)
 ;Globals.c,101 :: 		buffA[JUNCTION_DEV_OFFSET]  = flt2ulong(settings.junction_deviation);
-LWC1	S12, Offset(_settings+36)(GP)
+LUI	R2, 15692
+ORI	R2, R2, 52429
+MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612424)(GP)
@@ -190,38 +202,37 @@ SW	R2, Offset(-1610612420)(GP)
 ORI	R2, R0, 25
 SH	R2, Offset(_settings+48)(GP)
 ;Globals.c,108 :: 		buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)settings.stepper_idle_lock_time;
-LHU	R2, Offset(_settings+48)(GP)
+ORI	R2, R0, 25
 SW	R2, Offset(-1610612404)(GP)
 ;Globals.c,110 :: 		settings.homing_debounce_delay = DEFAULT_HOMING_DEBOUNCE_DELAY;
 ORI	R2, R0, 100
 SH	R2, Offset(_settings+46)(GP)
 ;Globals.c,111 :: 		buffA[H_DEBNC_DLY_OFFSET]   = (unsigned long)settings.homing_debounce_delay;
-LHU	R2, Offset(_settings+46)(GP)
+ORI	R2, R0, 100
 SW	R2, Offset(-1610612408)(GP)
 ;Globals.c,113 :: 		settings.p_usec             = DEFAUT_P_USEC;
 ORI	R2, R0, 100
 SH	R2, Offset(_settings+52)(GP)
 ;Globals.c,114 :: 		buffA[P_USEC_OFFSET]        = (unsigned long)settings.p_usec;
-LHU	R2, Offset(_settings+52)(GP)
+ORI	R2, R0, 100
 SW	R2, Offset(-1610612456)(GP)
 ;Globals.c,116 :: 		settings.decimal_places     = DEFAULT_DECIMAL_PLACES;
 ORI	R2, R0, 3
 SH	R2, Offset(_settings+54)(GP)
 ;Globals.c,117 :: 		buffA[DEC_PLACES_OFFSET]    = (unsigned int)settings.decimal_places;
-LHU	R2, Offset(_settings+54)(GP)
-ANDI	R2, R2, 65535
+ORI	R2, R0, 3
 SW	R2, Offset(-1610612392)(GP)
 ;Globals.c,119 :: 		settings.homing_dir_mask    = DEFAULT_HOME_DIR_MASK;
 ORI	R2, R0, 15
 SH	R2, Offset(_settings+56)(GP)
 ;Globals.c,120 :: 		buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)settings.homing_dir_mask;
-LHU	R2, Offset(_settings+56)(GP)
+ORI	R2, R0, 15
 SW	R2, Offset(-1610612388)(GP)
 ;Globals.c,122 :: 		settings.invert_mask        = DEFAULT_INVERT_MASK;
 ORI	R2, R0, 15
 SH	R2, Offset(_settings+58)(GP)
 ;Globals.c,123 :: 		buffA[INVERT_MASK_OFFSET]   = (unsigned long)settings.invert_mask;
-LHU	R2, Offset(_settings+58)(GP)
+ORI	R2, R0, 15
 SW	R2, Offset(-1610612384)(GP)
 ;Globals.c,125 :: 		settings.flags  = 0;
 SH	R0, Offset(_settings+42)(GP)
@@ -232,19 +243,16 @@ LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 2
 SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,136 :: 		if (DEFAULT_INVERT_ST_ENABLE) { settings.flags |= (BITFLAG_INVERT_ST_ENABLE);}
-LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 4
 SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,141 :: 		if (DEFAULT_HARD_LIMIT_ENABLE){ settings.flags |= (BITFLAG_HARD_LIMIT_ENABLE);}
-LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 8
 SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,146 :: 		if (DEFAULT_HOMING_ENABLE)    { settings.flags |= (BITFLAG_HOMING_ENABLE);}
-LHU	R2, Offset(_settings+42)(GP)
 ORI	R2, R2, 16
 SH	R2, Offset(_settings+42)(GP)
 ;Globals.c,151 :: 		buffA[0x50] = ((unsigned long)settings.flags) & 0x1F;
-LHU	R2, Offset(_settings+42)(GP)
+ANDI	R2, R2, 65535
 ANDI	R2, R2, 31
 SW	R2, Offset(-1610612416)(GP)
 ;Globals.c,162 :: 		buffA[FLASH_LOADED_OFFSET] = 0x7FFFFFFF;

@@ -322,8 +322,6 @@ void protocol_system_check(){
 //         NEW GCODE LINE INTERPRETER            //
 ///////////////////////////////////////////////////
 int Sample_Gocde_Line(){
-char *ptr,str[64];
-static int str_len;
 int dif;
   //read head and tail pointer difference
   //if there is a difference then process line
@@ -338,23 +336,15 @@ int dif;
      //if the char '?' matches we condition the protocol report and
      //reset the DMA pointers back to the start indices
      if(DMA0_ReadDstPtr()){
-       ptr = (char*)RXBUFF;
+      char *ptr = (char*)RXBUFF;
        if(*ptr == '?'){
-       
-         #if ProtoDebug == 20
-         while(DMA_IsOn(1));
-         dma_printf("%c\n",*ptr);
-         #endif
-
-         if(bit_isfalse(sys.execute,EXEC_STATUS_REPORT))
-               bit_true(sys.execute,EXEC_STATUS_REPORT);
-               
+         Do_Critical_Msg(*ptr);
          DMA_Abort(0);
-
+         DCH0DAT  = (DCH0DAT == '?')? '\n':'\n';
        }
      }
   }else{
-  
+   char str[64];
     //reset the string to empty
     Str_clear(str,64);
     //get the line sent from PC
@@ -363,17 +353,18 @@ int dif;
     //test is startupmsg has been sent
     if(bit_isfalse(startup,bit(START_MSG))){
         Do_Startup_Msg(str,dif);
-    }else if(bit_istrue(startup,bit(START_MSG))){
+    }else {//if(bit_istrue(startup,bit(START_MSG))){
     //a// messages after firmware query '?'
      int msg_type = Check_Query_Type(str,dif);
 
+    #if ProtoDebug == 20
+    while(DMA_IsOn(1));
+    dma_printf("msg-type:= %d\n",msg_type);
+    #endif
+       
      //if msg_type == 20 then run gcode function
      if(msg_type == STATUS_GCODE){
-       #if ProtoDebug == 21
-       while(DMA_IsOn(1));
-       dma_printf("msg-type:= %d\n",msg_type);
-       #endif
-       Do_Gcode(str,dif);
+       //Do_Gcode(str,dif);
      }
      
     }
@@ -383,22 +374,42 @@ int dif;
 
 }
 
-
-//on startup look for a ? char to setup pattern match from ? to \n
-static void Do_Startup_Msg(char *str,int _dif_){
+////////////////////////////////////////////////////////
+//on startup look for a ? char to setup pattern match 
+//from ? to \n
+static void Do_Startup_Msg(char *str_,int dif_){
+char *temp_str = str_;//if more than 6 chars sent here ????
 int i;
  //find ? at startup if it exists set startup bit 0
- for(i = 0;i <= _dif_;i++){
-    if(str[i] == '?'){
+ for(i = 0;i <= dif_;i++){
+    if(temp_str[i] == '?'){
      bit_true(startup,bit(START_MSG));
      report_init_message();
      DCH0DAT = '\n';
+     break;
     }
  }
 }
 
+/////////////////////////////////////////////////////
+//critical execution messages
+static void Do_Critical_Msg(char ch_){
+  #if ProtoDebug == 21
+  while(DMA_IsOn(1));
+  dma_printf("%c\n",ch_);
+  #endif
+  switch(ch_){
+    case CMD_STATUS_REPORT: sys.execute |= EXEC_STATUS_REPORT; break; // Set as true
+    case CMD_CYCLE_START:   sys.execute |= EXEC_CYCLE_START; break; // Set as true
+    case CMD_FEED_HOLD:     sys.execute |= EXEC_FEED_HOLD; break; // Set as true
+    case CMD_RESET:         mc_reset(); break; // Call motion control reset routine.
+    default: break;
+  }
+}
+
+///////////////////////////////////////////////////
 //test string char 0 for instructions or gcode
-static int Check_Query_Type(char *str,int dif){
+static int Check_Query_Type(char *str_,int dif_){
 int query;
 int helper_var;
 int status;
@@ -406,8 +417,8 @@ int status;
     while(DMA_IsOn(1));
     dma_printf("dif:=%d\n%s\n",dif,str);
     #endif
-   if(str[0] == '$'){
-       switch(str[1]){
+   if(str_[0] == '$'){
+       switch(str_[1]){
          case '\r' :case '\n' : 
                report_grbl_help(); 
                status = STATUS_OK;
@@ -483,17 +494,17 @@ int status;
                SV.homed = true;
                break;
          case 'N' : // Startup lines. $N
-               if ( str[2] < 0x20 ) { // Print startup lines
+               if ( str_[2] < 0x20 ) { // Print startup lines
                   for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
-                    if ((settings_read_startup_line(helper_var, str))) {
+                    if ((settings_read_startup_line(helper_var, str_))) {
                       report_status_message(STATUS_SETTING_READ_FAIL);
                     } else {
-                      report_startup_line(helper_var,str);
+                      report_startup_line(helper_var,str_);
                       status = STATUS_OK;
                     }
                    #if ProtoDebug == 6
                    while(DMA_IsOn(1));
-                   dma_printf("str[%d]:= %s\n",helper_var,str);
+                   dma_printf("str[%d]:= %s\n",helper_var,str_);
                    #endif
                   }
                   break;
@@ -504,10 +515,10 @@ int status;
                   //extract the value from the string if = is at [2]
                   //[        $  n  =  *value-str ]
                   //[$n=val [0][1][2] *[3]      ]
-                   if ( str[2] >= '0'  &&  str[2] <= '9' ) {
+                   if ( str_[2] >= '0'  &&  str_[2] <= '9' ) {
                     char num[] = "0";
                       //extract num char into string
-                      num[0] = gcode[0][2];
+                      num[0] = str_[2];
                       N_Val = atoi(num);
 
                       #if ProtoDebug == 6
@@ -523,19 +534,19 @@ int status;
                    //has already been saved
                    if (helper_var) { // Store startup line
                      int str_len = 0;
-                       if(gcode[0][3] != '='){
+                       if(str_[3] != '='){
                          // Prepare sending gcode block back to gcode parser
                          // Set helper variable as counter to start of gcode block
-                         helper_var = strlen((gcode[0]));
-                         strncpy(str,(gcode[0]),helper_var);
+                         helper_var = strlen((str_));
+                         //strncpy(str_,(gcode[0]),helper_var);
                          #if ProtoDebug == 6
                           while(DMA_IsOn(1));
-                          dma_printf("%s\n",str);
+                          dma_printf("%s\n",str_);
                          #endif
                          //use length to determine if startup line exists
                          //becareful not to put loop here as $Nn will repeat
                          //forever!!!!!!
-                         str_len = strlen(str);
+                         str_len = strlen(str_);
                          //after extracting the start line execute it by
                          //returning to the beginning of this function
                          /*if(!strncmp(SL,str,2))
@@ -545,46 +556,37 @@ int status;
                         // debug to check string argument of startup line
                          #if ProtoDebug == 6
                           while(DMA_IsOn(1));
-                          dma_printf("%s\n",str);
+                          dma_printf("%s\n",str_);
                          #endif
 
                          // Prepare saving gcode block to line number 0 | 1
-                         settings_store_startup_line(N_Val,str+4);
+                         settings_store_startup_line(N_Val,str_+4);
                        }
 
                     }
                }
                status = STATUS_OK;
                break;
-         case '~': //*~ (cycle start)
-               sys.execute |= EXEC_CYCLE_START;
-               break;
-         case '!': //*! (feed hold)
-               sys.execute |= EXEC_FEED_HOLD;
-               break;
-         case 0x18: // *ctrl-x (reset Grbl)
-               mc_reset();
-               break;
          case '0': case '1': case '2': case'3':  case '4': case '5':
          case '6': case '7': case '8': case '9':
                //extract the value from the string if = is at [2]
                //[        $  n  =  *value-str ]
                //[$n=val [0][1][2] *[3]      ]
-               if((str[2] == '=')||(str[3] == '=')){
+               if((str_[2] == '=')||(str_[3] == '=')){
                  char str_val[9]={0};
                  int N_Val = 0;
                  float value = 0.00;
-                 if(str[2] == '='){
+                 if(str_[2] == '='){
                     //$n < 10
-                    strncpy(str_val,(str+1),1);
+                    strncpy(str_val,(str_+1),1);
                     if(isdigit(str_val[0])){N_Val = atoi(str_val);}
-                    strncpy(str_val,(str+3),strlen((str+3)));
-                 }else if(str[3] == '='){
+                    strncpy(str_val,(str_+3),strlen((str_+3)));
+                 }else if(str_[3] == '='){
                     //$n >= 10
-                    strncpy(str_val,(str+1),2);
+                    strncpy(str_val,(str_+1),2);
                     if(isdigit(str_val[0])){N_Val = atoi(str_val);}
                     memset(str_val,0,9);
-                    strncpy(str_val,(str+4),strlen((str+4)));
+                    strncpy(str_val,(str_+4),strlen((str_+4)));
                  }
                  //check if 1st char is a digit if not value extraction
                  //failed and result will be 0.0 !!! report status bad number
@@ -614,10 +616,10 @@ int status;
 }
 
 
-static int Do_Gcode(char *str,int dif){
+static int Do_Gcode(char *str_,int dif_){
 char temp[9],xyz[6];
       //split up the line into string array using SPC seperator
-   int num_of_strings = strsplit2(gcode,str,0x20);
+   int num_of_strings = strsplit2(gcode,str_,0x20);
 #if ProtoDebug == 23
 while(DMA_IsOn(1));
 dma_printf("\

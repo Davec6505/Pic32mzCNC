@@ -176,16 +176,16 @@ typedef struct {
   int  coord_select;                      // Active work coordinate system number. Default: 0=G54.
  // int spindle_speed;                    // RPM/100
   int L;                                  //L2 tells the G10 we’re setting standard work offsets
-  volatile long frequency;                // Speed expressed as Frequency of pulses
-  volatile float feed_rate;               // Millimeters/min
+  long frequency;                // Speed expressed as Frequency of pulses
+  float feed_rate;               // Millimeters/min
 //  float seek_rate;                      // Millimeters/min. Will be used in v0.9 when axis independence is installed
-  volatile float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
-  volatile float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine
+  float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
+  float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine
                                           // position in mm. Loaded from EEPROM when called.
-  volatile float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
+  float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
                                           // machine zero in mm. Non-persistent. Cleared upon reset and boot.
-  volatile float next_position[NoOfAxis]; // Target position instruction from gcode sender
-  volatile float offset[3];
+  float next_position[NoOfAxis]; // Target position instruction from gcode sender
+  float offset[3];
   float R;                                // I,J,K for arc
   float I;
   float J;

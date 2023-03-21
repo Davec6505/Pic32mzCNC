@@ -48,7 +48,7 @@ void DMA0_RstDstPtr();
 //DMA1 trmit functions
 void DMA1();
 char DMA1_Flag();
-void DMA1_Enable();
+unsigned int DMA1_Enable();
 void DMA1_Disable();
 
 
