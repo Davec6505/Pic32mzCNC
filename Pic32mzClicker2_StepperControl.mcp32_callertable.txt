@@ -262,6 +262,18 @@ main
 				floor
 				fabs
 				NVMWriteRow
+		Do_Gcode
+			strsplit2
+				Str_Initialize
+					memset
+				strlen
+			cpy_val_from_str
+			strlen
+			atoi
+			atof
+			DMA_IsOn
+			dma_printf
+			__CC2DW
 	ResetSteppers
 		DisableStepper
 StepZ

@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Settings.h
+Value=Protocol.c
 =======
 =======
 >>>>>>> patch1
@@ -138,12 +138,8 @@ File4=Print.c
 File5=Print.h
 File6=GCODE.c
 File7=GCODE.h
-File8=Flash_R_W.c
-File9=Flash_R_W.h
-File10=Kinematics.h
-File11=Kinematics.c
-File12=Settings.h
-Count=13
+File8=Settings.h
+Count=9
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
