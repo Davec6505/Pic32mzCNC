@@ -102,9 +102,7 @@ void protocol_execute_runtime();
 
 /////////////////////////////////////////////
 //puerly for debug purposes
-#if ProtoDebug == 1
-  static void PrintDebug(char c,char *strB,void *ptr);
-#elif ProtoDebug == 2
+#if ProtoDebug == 2
   static void PrintStatus(int state);
 #endif
 

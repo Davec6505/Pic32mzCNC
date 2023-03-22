@@ -577,38 +577,52 @@ int status;
 
 static int Do_Gcode(char str_[64],int dif_){
 char temp[9],xyz[6];
-int i,num_of_strings;
-      //split up the line into string array using SPC seperator
+float XYZ_Val = 0.0;
+int i,j,num_of_strings,mode,status;
+int  G_Val = 0;
+int axis_to_run = 0;
+int no_of_axis = 0;
+
+   //split up the line into string array using SPC seperator
    num_of_strings = strsplit2(gcode,str_,0x20);
 
    for(i=0; i < num_of_strings; i++){
-   
-              if (gcode[i][0]=='G'){
-               int  G_Val = 0;
-                 i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
-                 if(i < 3){ //G00 - G99
-                  G_Val = atoi(temp);
-                   //Compensation for G28,G30 & G92 have other codes with
-                   //decimal places, resulting in G280,G300 etc
-                   if(G_Val == 28 || G_Val == 30 || G_Val == 92)
-                      G_Val *= 10;
-                 }else{
-                  //G28.1,G30.1 & G92.1 resulting in G281,G301 etc
-                   G_Val = (int)(atof(temp)*10.0);
-                 }
+     switch(gcode[i][0]){
+        case 'G':case'g'://if (gcode[i][0]=='G'){
+           j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+           if(j < 3){ //G00 - G99
+            G_Val = atoi(temp);
+             //Compensation for G28,G30 & G92 have other codes with
+             //decimal places, resulting in G280,G300 etc
+             if(G_Val == 28 || G_Val == 30 || G_Val == 92)
+                G_Val *= 10;
+           }else{
+            //G28.1,G30.1 & G92.1 resulting in G281,G301 etc
+             G_Val = (int)(atof(temp)*10.0);
+           }
+          mode = G_Mode(G_Val);
+          #if ProtoDebug == 23
+          while(DMA_IsOn(1));
+          dma_printf("%d [%s][%d]\n",i,gcode[i],G_Val);
+          #endif
+           break;
+        case 'X':case 'x':case 'Y':case 'y':
+        case 'Z':case 'z':case 'A':case 'a':
+          no_of_axis++;
+        case 'I':case 'i':case 'J':case 'j':
+        case 'F':case 'f':
+          j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+          XYZ_Val = atof(temp);
+          status = Instruction_Values(gcode[i],&XYZ_Val);
+          #if ProtoDebug == 23
+          while(DMA_IsOn(1));
+          dma_printf("%d [%s][%f]\n",i,gcode[i],XYZ_Val);
+          #endif
+          break;
 
-               //  motion_mode = G_Mode(G_Val);
-                 //if movement is needed query = 20
-               //  query = (motion_mode == MOTION_MODE_NULL)? 1:20;
 
-                 #if ProtoDebug == -1
-                  PrintDebug(*(*(gcode)+0),temp,&G_Val);
-                 #endif
-               }
-    #if ProtoDebug == 23
-    while(DMA_IsOn(1));
-    dma_printf("%d [%s]\n",i,gcode[i]);
-    #endif
+      }
+      
    }
 
   //return num of strings split for sanity checking
@@ -617,41 +631,7 @@ int i,num_of_strings;
 
 
 
-#if ProtoDebug == 1
-static void PrintDebug(char c,char *strB,void *ptr){
-int G_Val;
-float XYZ_Val;
-
-      switch(c){
-         case 'G':case 'g':
-         case 'F':case 'f':
-         case 'M':case 'm':
-         case 'S':case 's':
-         case 'P':case 'p':
-         case 'L':case 'l':
-         case 'T':case 't':
-              G_Val = *(int*)ptr;
-              while(DMA_IsOn(1));
-              dma_printf("%c\t%s\t%d\n",c,strB,G_Val);
-              break;
-         case 'X':case 'x':
-         case 'Y':case 'y':
-         case 'Z':case 'z':
-         case 'A':case 'a':
-         case 'I':case 'i':
-         case 'J':case 'j':
-         case 'K':case 'k':
-         case 'R':case 'r':
-              XYZ_Val = *(float*)ptr;
-              while(DMA_IsOn(1));
-              dma_printf("%c\t%s\t%f\n",c,strB,XYZ_Val);
-              break;
-         default:break;
-      }
-  return;
-}
-
-#elif ProtoDebug == 2
+#if ProtoDebug == 2
 static void PrintStatus(int state){
   while(DMA_IsOn(1));
   dma_printf("status:= %d\n",state);

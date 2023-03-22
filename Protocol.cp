@@ -1382,16 +1382,20 @@ int status;
 
 static int Do_Gcode(char str_[64],int dif_){
 char temp[9],xyz[6];
-int i,num_of_strings;
+float XYZ_Val = 0.0;
+int i,j,num_of_strings,mode,status;
+int G_Val = 0;
+int axis_to_run = 0;
+int no_of_axis = 0;
+
 
  num_of_strings = strsplit2(gcode,str_,0x20);
 
  for(i=0; i < num_of_strings; i++){
-
- if (gcode[i][0]=='G'){
- int G_Val = 0;
- i = cpy_val_from_str(temp,(*(gcode+0)),1,strlen(*(gcode+0)));
- if(i < 3){
+ switch(gcode[i][0]){
+ case 'G':case'g':
+ j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+ if(j < 3){
  G_Val = atoi(temp);
 
 
@@ -1401,11 +1405,28 @@ int i,num_of_strings;
 
  G_Val = (int)(atof(temp)*10.0);
  }
-#line 607 "C:/Users/Git/Pic32mzCNC/Protocol.c"
- }
+ mode = G_Mode(G_Val);
 
  while(DMA_IsOn(1));
- dma_printf("%d [%s]\n",i,gcode[i]);
+ dma_printf("%d [%s][%d]\n",i,gcode[i],G_Val);
+
+ break;
+ case 'X':case 'x':case 'Y':case 'y':
+ case 'Z':case 'z':case 'A':case 'a':
+ no_of_axis++;
+ case 'I':case 'i':case 'J':case 'j':
+ case 'F':case 'f':
+ j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+ XYZ_Val = atof(temp);
+ status = Instruction_Values(gcode[i],&XYZ_Val);
+
+ while(DMA_IsOn(1));
+ dma_printf("%d [%s][%f]\n",i,gcode[i],XYZ_Val);
+
+ break;
+
+
+ }
 
  }
 

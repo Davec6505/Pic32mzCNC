@@ -139,9 +139,13 @@ int Rst_motionmode(){
 ///////////////////////////////////////////////////////////////
 //Gcodes {G 0,1,2,3,80}
 int G_Mode(int mode){
+#if GcodeDebug == 1
+ while(DMA_IsOn(1));
+ dma_printf("mode:= %d\n",mode);
+#endif
  group_number = Set_Modal_Groups(mode);
- motion_mode = Set_Motion_Mode(mode);
- return motion_mode;
+ motion_mode  = Set_Motion_Mode(mode);
+ return mode;//motion_mode;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -524,17 +528,17 @@ int F_Val,O_Val;
             gc.offset[K] = To_Millimeters(XYZ_Val);
             break;
       case 'F':
-            F_Val = *(int*)any;
-            if(F_Val < 0){
+            XYZ_Val = *(float*)any;
+            if(XYZ_Val < 0){
                FAIL(STATUS_SPEED_ERROR);
             }
-            /* still tobe implimented <need to understand how speed is sent?>
+            // still tobe implimented <need to understand how speed is sent?>
             if (gc.inverse_feed_rate_mode) {
               inverse_feed_rate = To_Millimeters(F_Val); // seconds per motion for this motion only
             } else {
               gc.feed_rate = To_Millimeters(F_Val); // millimeters per minute
-            } */
-            gc.frequency = (unsigned long)F_Val;
+            }
+            gc.frequency = (unsigned long)XYZ_Val;
               #if GcodeDebug == 1
               while(DMA_IsOn(1));
               dma_printf("gc.frequency:= %l\n",gc.frequency);

@@ -271,8 +271,22 @@ main
 			strlen
 			atoi
 			atof
+			G_Mode
+				DMA_IsOn
+				dma_printf
+				Set_Modal_Groups
+				Set_Motion_Mode
+					FAIL
+					Select_Plane
+				__CC2DW
 			DMA_IsOn
 			dma_printf
+			Instruction_Values
+				To_Millimeters
+				FAIL
+				DMA_IsOn
+				dma_printf
+				__CC2DW
 			__CC2DW
 	ResetSteppers
 		DisableStepper
