@@ -100,10 +100,5 @@ void protocol_system_check();
 void protocol_execute_runtime();
 
 
-/////////////////////////////////////////////
-//puerly for debug purposes
-#if ProtoDebug == 2
-  static void PrintStatus(int state);
-#endif
 
 #endif

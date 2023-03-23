@@ -420,13 +420,17 @@ int Rst_Axisword();
 int Get_motionmode();
 int Rst_motionmode();
 
+
 int G_Mode(int mode);
 
-void M_Instruction(int flow);
+int M_Mode(int flow);
+
+int Check_group_multiple_violations();
+
 
 static float To_Millimeters(float value);
 
-int Check_group_multiple_violations();
+
 int Motion_mode();
 
 int Instruction_Values(char *c,void *any);

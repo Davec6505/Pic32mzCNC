@@ -72,11 +72,11 @@ diagnostics: 371	123	Compiled Successfully	Print.c
 hint: 141	1164	Variable 'acc' has been eliminated by optimizer	Print.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 51	1354	argument may be out of range [axis_combo]	GCODE.c
-warning: 215	1503	Result is not defined in function: ''	GCODE.c
-hint: 185	1163	Variable 'i' has been declared, but not used	GCODE.c
-diagnostics: 582	123	Compiled Successfully	GCODE.c
-warning: 539	1512	variable 'F_Val' might not have been initialized	GCODE.c
-hint: 285	1164	Variable 'last_non_modal_action' has been eliminated by optimizer	GCODE.c
+warning: 216	1503	Result is not defined in function: ''	GCODE.c
+hint: 186	1163	Variable 'i' has been declared, but not used	GCODE.c
+diagnostics: 583	123	Compiled Successfully	GCODE.c
+warning: 540	1512	variable 'F_Val' might not have been initialized	GCODE.c
+hint: 286	1164	Variable 'last_non_modal_action' has been eliminated by optimizer	GCODE.c
 diagnostics: 0	122	Compilation Started	settings.h
 warning: 37	1508	Implicit conversion of int to ptr	Globals.c
 warning: 272	1508	Implicit conversion of int to ptr	Globals.c
@@ -96,18 +96,16 @@ diagnostics: 232	123	Compiled Successfully	Limits.c
 hint: 16	1164	Variable 'i' has been eliminated by optimizer	Limits.c
 diagnostics: 0	122	Compilation Started	stdint.h
 warning: 117	1505	Suspicious pointer conversion	Protocol.c
-hint: 579	1163	Variable 'xyz' has been declared, but not used	Protocol.c
-diagnostics: 630	123	Compiled Successfully	Protocol.c
-hint: 319	1164	Variable 'msg_type' has been eliminated by optimizer	Protocol.c
-hint: 372	1164	Variable 'query' has been eliminated by optimizer	Protocol.c
-hint: 426	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
-hint: 514	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
-hint: 495	1164	Variable 'str_len' has been eliminated by optimizer	Protocol.c
-hint: 581	1164	Variable 'j' has been eliminated by optimizer	Protocol.c
-hint: 581	1164	Variable 'mode' has been eliminated by optimizer	Protocol.c
-hint: 581	1164	Variable 'status' has been eliminated by optimizer	Protocol.c
-hint: 583	1164	Variable 'axis_to_run' has been eliminated by optimizer	Protocol.c
-hint: 584	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
+diagnostics: 640	123	Compiled Successfully	Protocol.c
+hint: 376	1164	Variable 'query' has been eliminated by optimizer	Protocol.c
+hint: 430	1164	Variable 'axis_to_home' has been eliminated by optimizer	Protocol.c
+hint: 518	1164	Variable 'str_length' has been eliminated by optimizer	Protocol.c
+hint: 499	1164	Variable 'str_len' has been eliminated by optimizer	Protocol.c
+hint: 585	1164	Variable 'j' has been eliminated by optimizer	Protocol.c
+hint: 585	1164	Variable 'mode' has been eliminated by optimizer	Protocol.c
+hint: 585	1164	Variable 'status' has been eliminated by optimizer	Protocol.c
+hint: 587	1164	Variable 'axis_to_run' has been eliminated by optimizer	Protocol.c
+hint: 588	1164	Variable 'no_of_axis' has been eliminated by optimizer	Protocol.c
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 117	123	Compiled Successfully	Nut_Bolts.c
 hint: 111	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
@@ -126,13 +124,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 3234 ms	 
+diagnostics: 0	127	All files Compiled in 3172 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
 hint: 0	1144	Static RAM (bytes): 5110   Dynamic RAM (bytes): 507381	Static RAM (bytes): 5110   Dynamic RAM (bytes): 507381
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 75982 (4%)  Free ROM (bytes): 2021170 (96%)	Used ROM (bytes): 75982 (4%)  Free ROM (bytes): 2021170 (96%)
+hint: 0	1144	Used ROM (bytes): 76754 (4%)  Free ROM (bytes): 2020398 (96%)	Used ROM (bytes): 76754 (4%)  Free ROM (bytes): 2020398 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 938 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6156 ms	 
-diagnostics: 0	103	Finished successfully: 22 Mar 2023, 23:00:07	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 1110 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6532 ms	 
+diagnostics: 0	103	Finished successfully: 23 Mar 2023, 07:15:29	Pic32mzClicker2_StepperControl.mcp32

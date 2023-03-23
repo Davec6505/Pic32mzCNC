@@ -802,13 +802,17 @@ int Rst_Axisword();
 int Get_motionmode();
 int Rst_motionmode();
 
+
 int G_Mode(int mode);
 
-void M_Instruction(int flow);
+int M_Mode(int flow);
+
+int Check_group_multiple_violations();
+
 
 static float To_Millimeters(float value);
 
-int Check_group_multiple_violations();
+
 int Motion_mode();
 
 int Instruction_Values(char *c,void *any);
@@ -1135,7 +1139,7 @@ int dif;
 
  dif = 0;
  dif = Get_Difference();
- if(!dif){
+ if(dif <= 0){
 
 
 
@@ -1163,15 +1167,23 @@ int dif;
  if( ((startup & (1 << 0 ) ) == 0) ){
  Do_Startup_Msg(str,dif);
  }else {
+ int msg_type= 0;
 
- int msg_type = Check_Query_Type(str,dif);
-#line 325 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ if(str[0] == '?')return  0 ;
+
+
+ msg_type = Check_Query_Type(str,dif);
+
+
+ while(DMA_IsOn(1));
+ dma_printf("msg_type:= %d\n",msg_type);
+
+
+
  if(msg_type ==  20 ){
  Do_Gcode(str,dif);
  }
-
  }
-
  }
  return  0 ;
 
@@ -1197,7 +1209,7 @@ int i;
 
 
 static void Do_Critical_Msg(char ch_){
-#line 360 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 364 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  switch(ch_){
  case  '?' : sys.execute |=  (1 << 0) ; break;
  case  '~' : sys.execute |=  (1 << 1) ; break;
@@ -1213,7 +1225,10 @@ static int Check_Query_Type(char *str_,int dif_){
 int query;
 int helper_var;
 int status;
-#line 379 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("dif:=%d\n%s\n",dif_,str_);
+
  if(str_[0] == '$'){
  switch(str_[1]){
  case '\r' :case '\n' :
@@ -1234,7 +1249,7 @@ int status;
  break;
  case 'C' :
  status =  0 ;
-#line 406 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 410 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  if ( sys.state ==  7  ) {
  mc_reset();
  report_feedback_message( 5 );
@@ -1293,7 +1308,7 @@ int status;
  report_startup_line(helper_var,str_);
  status =  0 ;
  }
-#line 468 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 472 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }
  break;
  }else {
@@ -1308,7 +1323,7 @@ int status;
 
  num[0] = str_[2];
  N_Val = atoi(num);
-#line 488 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 492 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }else {
  query = 2;
  break;
@@ -1321,12 +1336,12 @@ int status;
 
 
  helper_var = strlen((str_));
-#line 508 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 512 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  str_len = strlen(str_);
-#line 513 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 517 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  }else{
  int str_length = 0;
-#line 522 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 526 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  settings_store_startup_line(N_Val,str_+4);
  }
 
@@ -1361,7 +1376,7 @@ int status;
  status =  3 ;
  }
  value = atof(str_val);
-#line 560 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 564 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  settings_store_global_setting(N_Val,value);
  status =  0 ;
  }
@@ -1373,18 +1388,18 @@ int status;
  report_status_message(status);
 
  return status;
- }else
- return  20 ;
-
+ }else{
+ status =  20 ;
+ }
  return status;
 }
 
 
 static int Do_Gcode(char str_[64],int dif_){
-char temp[9],xyz[6];
+char temp[9];
 float XYZ_Val = 0.0;
 int i,j,num_of_strings,mode,status;
-int G_Val = 0;
+int Val = 0;
 int axis_to_run = 0;
 int no_of_axis = 0;
 
@@ -1396,19 +1411,19 @@ int no_of_axis = 0;
  case 'G':case'g':
  j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
  if(j < 3){
- G_Val = atoi(temp);
+ Val = atoi(temp);
 
 
- if(G_Val == 28 || G_Val == 30 || G_Val == 92)
- G_Val *= 10;
+ if(Val == 28 || Val == 30 || Val == 92)
+ Val *= 10;
  }else{
 
- G_Val = (int)(atof(temp)*10.0);
+ Val = (int)(atof(temp)*10.0);
  }
- mode = G_Mode(G_Val);
+ mode = G_Mode(Val);
 
  while(DMA_IsOn(1));
- dma_printf("%d [%s][%d]\n",i,gcode[i],G_Val);
+ dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
 
  break;
  case 'X':case 'x':case 'Y':case 'y':
@@ -1424,10 +1439,16 @@ int no_of_axis = 0;
  dma_printf("%d [%s][%f]\n",i,gcode[i],XYZ_Val);
 
  break;
+ case 'M':case'm':
+ j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+ Val = atoi(temp);
 
 
+ while(DMA_IsOn(1));
+ dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
+
+ break;
  }
-
  }
 
 

@@ -150,14 +150,15 @@ int G_Mode(int mode){
 
 ///////////////////////////////////////////////////////////////
 //MCodes
-void M_Instruction(int flow){
+int M_Mode(int flow){
 //gc.program_flow = flow;
  group_number = Set_M_Modal_Commands(flow);
  Set_M_Commands(flow);
 #if GcodeDebug == 1
  while(DMA_IsOn(1));
- dma_printf("gc.program_flow:= %d\n",flow);
+ dma_printf("flow:= %d\n",flow);
 #endif
+ return flow;
 }
 
 

@@ -287,7 +287,7 @@ int dif;
   //if there is a difference then process line
   dif = 0;
   dif = Get_Difference();
-  if(!dif){
+  if(dif <= 0){
      //check for '?' status reporting query DMA uses pattern match
      //at startup the pattern match is set to ? for startup msg
      //once startup msg has been sent pattern match changes to '\n'
@@ -315,20 +315,24 @@ int dif;
     if(bit_isfalse(startup,bit(START_MSG))){
         Do_Startup_Msg(str,dif);
     }else {//if(bit_istrue(startup,bit(START_MSG))){
-    //a// messages after firmware query '?'
-     int msg_type = Check_Query_Type(str,dif);
-      #if ProtoDebug == 24
-      while(DMA_IsOn(1));
-      dma_printf("msg_type:= %d\n",msg_type);
-      #endif
-     //if msg_type == 20 then run gcode function
-       if(msg_type == STATUS_GCODE){
-         Do_Gcode(str,dif);
-       }
+      int msg_type= 0;
+      //? cannot be used with '\n'
+      if(str[0] == '?')return STATUS_OK;
      
-    }
-    
-  }
+      //a messages after firmware query '?'
+      msg_type = Check_Query_Type(str,dif);
+      
+      #if ProtoDebug == 23
+        while(DMA_IsOn(1));
+        dma_printf("msg_type:= %d\n",msg_type);
+      #endif
+      
+      //if msg_type == 20 then run gcode function
+      if(msg_type == STATUS_GCODE){
+        Do_Gcode(str,dif);
+      }
+    }//else2
+  }//else1
   return STATUS_OK;
 
 }
@@ -372,9 +376,9 @@ static int Check_Query_Type(char *str_,int dif_){
 int query;
 int helper_var;
 int status;
-    #if ProtoDebug == 20
+    #if ProtoDebug == 23
     while(DMA_IsOn(1));
-    dma_printf("dif:=%d\n%s\n",dif,str);
+    dma_printf("dif:=%d\n%s\n",dif_,str_);
     #endif
    if(str_[0] == '$'){
        switch(str_[1]){
@@ -568,18 +572,18 @@ int status;
           report_status_message(status);
           
       return status;
-   }else
-      return STATUS_GCODE;
-      
+   }else{
+      status = STATUS_GCODE;
+   }
    return status;
 }
 
 
 static int Do_Gcode(char str_[64],int dif_){
-char temp[9],xyz[6];
+char temp[9];
 float XYZ_Val = 0.0;
 int i,j,num_of_strings,mode,status;
-int  G_Val = 0;
+int  Val = 0;
 int axis_to_run = 0;
 int no_of_axis = 0;
 
@@ -588,22 +592,22 @@ int no_of_axis = 0;
 
    for(i=0; i < num_of_strings; i++){
      switch(gcode[i][0]){
-        case 'G':case'g'://if (gcode[i][0]=='G'){
+        case 'G':case'g':
            j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
            if(j < 3){ //G00 - G99
-            G_Val = atoi(temp);
+            Val = atoi(temp);
              //Compensation for G28,G30 & G92 have other codes with
              //decimal places, resulting in G280,G300 etc
-             if(G_Val == 28 || G_Val == 30 || G_Val == 92)
-                G_Val *= 10;
+             if(Val == 28 || Val == 30 || Val == 92)
+                Val *= 10;
            }else{
             //G28.1,G30.1 & G92.1 resulting in G281,G301 etc
-             G_Val = (int)(atof(temp)*10.0);
+             Val = (int)(atof(temp)*10.0);
            }
-          mode = G_Mode(G_Val);
+          mode = G_Mode(Val);
           #if ProtoDebug == 23
           while(DMA_IsOn(1));
-          dma_printf("%d [%s][%d]\n",i,gcode[i],G_Val);
+          dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
           #endif
            break;
         case 'X':case 'x':case 'Y':case 'y':
@@ -619,11 +623,17 @@ int no_of_axis = 0;
           dma_printf("%d [%s][%f]\n",i,gcode[i],XYZ_Val);
           #endif
           break;
-
-
-      }
-      
-   }
+       case 'M':case'm':
+          j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+          Val = atoi(temp);
+          //mode = M_Mode(Val);
+          #if ProtoDebug == 23
+          while(DMA_IsOn(1));
+          dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
+          #endif
+          break;
+     }//switch
+   }//for
 
   //return num of strings split for sanity checking
   return num_of_strings;
@@ -631,14 +641,4 @@ int no_of_axis = 0;
 
 
 
-#if ProtoDebug == 2
-static void PrintStatus(int state){
-  while(DMA_IsOn(1));
-  dma_printf("status:= %d\n",state);
-}
-#endif
 
-///////////////////////////////////////////////////
-//         OLD GCODE LINE INTERPRETER            //
-///////////////////////////////////////////////////
-//sample the ring buffer to check for data

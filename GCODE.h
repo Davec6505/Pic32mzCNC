@@ -221,13 +221,17 @@ int Rst_Axisword();
 int Get_motionmode();
 int Rst_motionmode();
 
+//G codes
 int G_Mode(int mode);
-// m instructions
-void M_Instruction(int flow);
+// M codes
+int M_Mode(int flow);
+// check G / M commands for functionality
+int Check_group_multiple_violations();
+
 
 static float To_Millimeters(float value);
 
-int Check_group_multiple_violations();
+
 int Motion_mode();
 //all values passed from instruction
 int Instruction_Values(char *c,void *any);
