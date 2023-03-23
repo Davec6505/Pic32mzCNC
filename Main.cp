@@ -973,7 +973,15 @@ static int cntr = 0,a = 0;
  break;
  case 4:
  axis_to_run = Get_Axisword();
-#line 116 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+
+ while(DMA_IsOn(1));
+ dma_printf("%s %d\n","axis_to_run:=",axis_to_run);
+
+
+
+
  EnableSteppers( ((( 2 * 2 )*2)-1) );
  Modal_Group_Actions1(axis_to_run);
  axis_to_run = Rst_Axisword();
@@ -1011,7 +1019,20 @@ static int cntr = 0,a = 0;
 
  SV.Tog = 0;
  }
-#line 177 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+
+ if(!SV.Tog){
+ if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
+ while(DMA_IsOn(1));
+ dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
+ (STPS[X].run_state&0xff),STPS[X].step_count,
+ SV.dA,STPS[Y].step_count,STPS[X].step_delay,gc.frequency);
+ }
+ }
+
+
+
  protocol_system_check();
 
 
@@ -1237,7 +1258,10 @@ float a_val;
 
 
 static int Modal_Group_Actions1(int action){
-#line 449 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("action:= %d\tgc.frequency:= %l\n",action,gc.frequency);
+
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.frequency,X);

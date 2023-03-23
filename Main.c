@@ -108,7 +108,7 @@ static int cntr = 0,a = 0;
             //temp debug for steppers
            #if MainDebug == 10
            while(DMA_IsOn(1));
-           dma_printf("%s","axis_to_run:= %d\n");//,axis_to_run);
+           dma_printf("%s %d\n","axis_to_run:=",axis_to_run);//,axis_to_run);
            #endif
            
            //Execute this once only, once the axis are started the

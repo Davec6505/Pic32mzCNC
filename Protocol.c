@@ -28,8 +28,7 @@
 //local variables
 const code char SL[] = "$N";
 volatile char gcode[arr_size][str_size];
-static volatile unsigned short startup;
-
+char startup  absolute 0xA0002600 ;
 
 ////////////////////////////////////////////////////
 // Initialize alllocal statics
@@ -282,7 +281,7 @@ void protocol_system_check(){
 //         NEW GCODE LINE INTERPRETER            //
 ///////////////////////////////////////////////////
 int Sample_Gocde_Line(){
-int dif;
+int dif,state;
   //read head and tail pointer difference
   //if there is a difference then process line
   dif = 0;
@@ -305,35 +304,51 @@ int dif;
      }
   }else{
    char str[64];
+   int msg_type= 0;
+   int modal_response = 0;
+    state = STATUS_OK;
+    
     //reset the string to empty
     Str_clear(str,64);
     
     //get the line sent from PC
     Get_Line(str,dif);
-    
+    #if ProtoDebug == 24
+    while(DMA_IsOn(1));
+    dma_printf("[%d]",startup);
+    #endif
     //test is startupmsg has been sent
     if(bit_isfalse(startup,bit(START_MSG))){
+        #if ProtoDebug == 23
+        while(DMA_IsOn(1));
+        dma_printf("%s","ERROR\n");
+        #endif
         Do_Startup_Msg(str,dif);
-    }else {//if(bit_istrue(startup,bit(START_MSG))){
-      int msg_type= 0;
+        return STATUS_OK;
+    }//else if(bit_istrue(startup,bit(START_MSG))){
+
       //? cannot be used with '\n'
-      if(str[0] == '?')return STATUS_OK;
+      if(str[0] == '?')return state;
      
       //a messages after firmware query '?'
-      msg_type = Check_Query_Type(str,dif);
+      state = Check_Query_Type(str,dif);
       
       #if ProtoDebug == 23
         while(DMA_IsOn(1));
-        dma_printf("msg_type:= %d\n",msg_type);
+        dma_printf("state:= %d\n",state);
       #endif
       
       //if msg_type == 20 then run gcode function
-      if(msg_type == STATUS_GCODE){
-        Do_Gcode(str,dif);
+      if(state == STATUS_COMMAND_EXECUTE_MOTION){
+         state = Do_Gcode(str,dif);
+         modal_response = Check_group_multiple_violations();
+        #if ProtoDebug == 26
+        while(DMA_IsOn(1));
+        dma_printf("state:= %d\n",state);
+        #endif
       }
-    }//else2
-  }//else1
-  return STATUS_OK;
+  }
+  return state;
 
 }
 
@@ -376,7 +391,7 @@ static int Check_Query_Type(char *str_,int dif_){
 int query;
 int helper_var;
 int status;
-    #if ProtoDebug == 23
+    #if ProtoDebug == 24
     while(DMA_IsOn(1));
     dma_printf("dif:=%d\n%s\n",dif_,str_);
     #endif
@@ -573,7 +588,7 @@ int status;
           
       return status;
    }else{
-      status = STATUS_GCODE;
+      status = STATUS_COMMAND_EXECUTE_MOTION;
    }
    return status;
 }
@@ -582,18 +597,21 @@ int status;
 static int Do_Gcode(char str_[64],int dif_){
 char temp[9];
 float XYZ_Val = 0.0;
-int i,j,num_of_strings,mode,status;
+int i,j,num_of_strings,mode,flow,status;
 int  Val = 0;
-int axis_to_run = 0;
-int no_of_axis = 0;
+//int axis_to_run = 0;
 
    //split up the line into string array using SPC seperator
    num_of_strings = strsplit2(gcode,str_,0x20);
-
+   #if ProtoDebug == 25
+   while(DMA_IsOn(1));
+   dma_printf("no_of_strings:= %d\n",num_of_strings);
+   #endif
    for(i=0; i < num_of_strings; i++){
+     j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
      switch(gcode[i][0]){
         case 'G':case'g':
-           j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+          // j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
            if(j < 3){ //G00 - G99
             Val = atoi(temp);
              //Compensation for G28,G30 & G92 have other codes with
@@ -605,40 +623,38 @@ int no_of_axis = 0;
              Val = (int)(atof(temp)*10.0);
            }
           mode = G_Mode(Val);
-          #if ProtoDebug == 23
+          #if ProtoDebug == 25
           while(DMA_IsOn(1));
           dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
           #endif
+           status = STATUS_OK;
            break;
         case 'X':case 'x':case 'Y':case 'y':
         case 'Z':case 'z':case 'A':case 'a':
-          no_of_axis++;
         case 'I':case 'i':case 'J':case 'j':
         case 'F':case 'f':
-          j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+        //  j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
           XYZ_Val = atof(temp);
           status = Instruction_Values(gcode[i],&XYZ_Val);
-          #if ProtoDebug == 23
+          #if ProtoDebug == 25
           while(DMA_IsOn(1));
           dma_printf("%d [%s][%f]\n",i,gcode[i],XYZ_Val);
           #endif
+          status = STATUS_COMMAND_EXECUTE_MOTION;
           break;
        case 'M':case'm':
-          j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+         // j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
           Val = atoi(temp);
-          //mode = M_Mode(Val);
-          #if ProtoDebug == 23
+          flow = M_Mode(Val);
+          #if ProtoDebug == 25
           while(DMA_IsOn(1));
           dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
           #endif
+          status = STATUS_OK;
           break;
      }//switch
    }//for
 
   //return num of strings split for sanity checking
-  return num_of_strings;
+  return status;
 }
-
-
-
-

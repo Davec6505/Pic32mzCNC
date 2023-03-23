@@ -34,7 +34,7 @@ static volatile int non_modal_words;    // Bitflags to track non-modal actions
 static volatile int motion_mode;
 volatile int group_number;
 volatile int non_modal_action;
-
+volatile int m_flow;
 volatile int int_value;
 volatile float inverse_feed_rate;       // negative inverse_feed_rate means no inverse_feed_rate specified
 volatile float value;
@@ -62,6 +62,7 @@ void FAIL(int status){
 
 //init vals to defaults
 void G_Initialise(){
+  m_flow               = 0;
   group_number         = 0;
   axis_words           = 0;
   int_value            = 0;
@@ -151,9 +152,8 @@ int G_Mode(int mode){
 ///////////////////////////////////////////////////////////////
 //MCodes
 int M_Mode(int flow){
-//gc.program_flow = flow;
  group_number = Set_M_Modal_Commands(flow);
- Set_M_Commands(flow);
+ m_flow = Set_M_Commands(flow);
 #if GcodeDebug == 1
  while(DMA_IsOn(1));
  dma_printf("flow:= %d\n",flow);
@@ -245,13 +245,13 @@ int i,m_mode;
 //                      M COMMANDS                           //
 ///////////////////////////////////////////////////////////////
 static int Set_M_Modal_Commands(int flow){
-int gp_num;
+int m_num;
 // Set modal group values
    switch(flow) {
-     case 0: case 1: case 2: case 30: gp_num = MODAL_GROUP_4; break;
-     case 3: case 4: case 5: gp_num = MODAL_GROUP_7; break;
+     case 0: case 1: case 2: case 30: m_num = MODAL_GROUP_4; break;
+     case 3: case 4: case 5: m_num = MODAL_GROUP_7; break;
    }
-   return gp_num;
+   return m_num;
 }
 
 //M Commands
@@ -273,7 +273,7 @@ static int Set_M_Commands(int flow){
     case 9: gc.coolant_mode = COOLANT_DISABLE; break;
     default: FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
   }
-  return status_code;
+  return flow;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -535,9 +535,9 @@ int F_Val,O_Val;
             }
             // still tobe implimented <need to understand how speed is sent?>
             if (gc.inverse_feed_rate_mode) {
-              inverse_feed_rate = To_Millimeters(F_Val); // seconds per motion for this motion only
+              inverse_feed_rate = To_Millimeters(XYZ_Val); // seconds per motion for this motion only
             } else {
-              gc.feed_rate = To_Millimeters(F_Val); // millimeters per minute
+              gc.feed_rate = To_Millimeters(XYZ_Val); // millimeters per minute
             }
             gc.frequency = (unsigned long)XYZ_Val;
               #if GcodeDebug == 1
@@ -573,11 +573,11 @@ int F_Val,O_Val;
   #if GcodeDebug == 1
       while(DMA_IsOn(1));
       if(c[0] == 'X' || c[0] == 'Y' || c[0] == 'Z' || c[0] == 'R' || c[0] == 'I' || c[0] == 'J')
-         dma_printf("\t%c\t%f\n",c[0],XYZ_Val);
+         dma_printf("[%c\t%f]\n",c[0],XYZ_Val);
       else if(c[0] == 'F')
-         dma_printf("\t%c\t%d\n",c[0],F_Val);
+         dma_printf("[%c\t%d]\n",c[0],F_Val);
       else if(c[0] == 'S' ||  c[0] == 'P' || c[0] == 'L')
-         dma_printf("\t%c\t%d\n",c[0],O_Val);
+         dma_printf("[%c\t%d]\n",c[0],O_Val);
   #endif
   return status_code;
 }

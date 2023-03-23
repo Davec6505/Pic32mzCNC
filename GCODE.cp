@@ -921,7 +921,7 @@ static volatile int non_modal_words;
 static volatile int motion_mode;
 volatile int group_number;
 volatile int non_modal_action;
-
+volatile int m_flow;
 volatile int int_value;
 volatile float inverse_feed_rate;
 volatile float value;
@@ -949,6 +949,7 @@ void FAIL(int status){
 
 
 void G_Initialise(){
+ m_flow = 0;
  group_number = 0;
  axis_words = 0;
  int_value = 0;
@@ -997,7 +998,7 @@ int Rst_modalword(){
 void Set_Axisword(int value){
   (axis_words |= (1 << value) ) ;
 }
-#line 120 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 121 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 int Get_Axisword(){
  return axis_words & 0x0fff;
 }
@@ -1020,10 +1021,7 @@ int Rst_motionmode(){
 
 
 int G_Mode(int mode){
-
- while(DMA_IsOn(1));
- dma_printf("mode:= %d\n",mode);
-
+#line 147 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  group_number = Set_Modal_Groups(mode);
  motion_mode = Set_Motion_Mode(mode);
  return mode;
@@ -1032,13 +1030,9 @@ int G_Mode(int mode){
 
 
 int M_Mode(int flow){
-
  group_number = Set_M_Modal_Commands(flow);
- Set_M_Commands(flow);
-
- while(DMA_IsOn(1));
- dma_printf("flow:= %d\n",flow);
-
+ m_flow = Set_M_Commands(flow);
+#line 161 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return flow;
 }
 
@@ -1121,13 +1115,13 @@ int i,m_mode;
 
 
 static int Set_M_Modal_Commands(int flow){
-int gp_num;
+int m_num;
 
  switch(flow) {
- case 0: case 1: case 2: case 30: gp_num =  5 ; break;
- case 3: case 4: case 5: gp_num =  8 ; break;
+ case 0: case 1: case 2: case 30: m_num =  5 ; break;
+ case 3: case 4: case 5: m_num =  8 ; break;
  }
- return gp_num;
+ return m_num;
 }
 
 
@@ -1147,7 +1141,7 @@ static int Set_M_Commands(int flow){
  case 9: gc.coolant_mode =  0 ; break;
  default: FAIL( 3 );break;
  }
- return status_code;
+ return flow;
 }
 
 
@@ -1351,15 +1345,12 @@ int F_Val,O_Val;
  }
 
  if (gc.inverse_feed_rate_mode) {
- inverse_feed_rate = To_Millimeters(F_Val);
+ inverse_feed_rate = To_Millimeters(XYZ_Val);
  } else {
- gc.feed_rate = To_Millimeters(F_Val);
+ gc.feed_rate = To_Millimeters(XYZ_Val);
  }
  gc.frequency = (unsigned long)XYZ_Val;
-
- while(DMA_IsOn(1));
- dma_printf("gc.frequency:= %l\n",gc.frequency);
-
+#line 547 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
@@ -1386,14 +1377,6 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-
- while(DMA_IsOn(1));
- if(c[0] == 'X' || c[0] == 'Y' || c[0] == 'Z' || c[0] == 'R' || c[0] == 'I' || c[0] == 'J')
- dma_printf("\t%c\t%f\n",c[0],XYZ_Val);
- else if(c[0] == 'F')
- dma_printf("\t%c\t%d\n",c[0],F_Val);
- else if(c[0] == 'S' || c[0] == 'P' || c[0] == 'L')
- dma_printf("\t%c\t%d\n",c[0],O_Val);
-
+#line 582 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }

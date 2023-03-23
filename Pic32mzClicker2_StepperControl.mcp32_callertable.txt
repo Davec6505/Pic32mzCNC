@@ -1,6 +1,4 @@
 main
-	__CC2DW
-	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -53,7 +51,6 @@ main
 		Reset_Min_Debounce
 	Get_modalgroup
 	FAIL
-	Get_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
 			__CC2DW
@@ -79,6 +76,7 @@ main
 		GET_RunState
 		FAIL
 		memset
+	Get_modalword
 	Rst_modalgroup
 	report_status_message
 		DMA_IsOn
@@ -95,8 +93,12 @@ main
 			DMA1_Enable
 			__CC2DW
 	Get_Axisword
+	DMA_IsOn
+	dma_printf
 	EnableSteppers
 	Modal_Group_Actions1
+		DMA_IsOn
+		dma_printf
 		SingleAxisStep
 		DualAxisStep
 			belt_steps
@@ -155,6 +157,7 @@ main
 			DisableStepper
 			ResetHoming
 		Rst_Axisword
+		__CC2DW
 	Rst_Axisword
 	Modal_Group_Actions4
 		FAIL
@@ -196,8 +199,7 @@ main
 				dma_printf
 				__CC2DW
 		Check_Query_Type
-			DMA_IsOn
-			dma_printf
+			__CC2DW
 			report_grbl_help
 				DMA_IsOn
 				dma_printf
@@ -263,36 +265,37 @@ main
 				floor
 				fabs
 				NVMWriteRow
-			__CC2DW
-		DMA_IsOn
-		dma_printf
 		Do_Gcode
 			strsplit2
 				Str_Initialize
 					memset
 				strlen
-			cpy_val_from_str
 			strlen
+			cpy_val_from_str
 			atoi
 			atof
 			G_Mode
-				DMA_IsOn
-				dma_printf
 				Set_Modal_Groups
 				Set_Motion_Mode
 					FAIL
 					Select_Plane
-				__CC2DW
-			DMA_IsOn
-			dma_printf
 			Instruction_Values
 				To_Millimeters
 				FAIL
-				DMA_IsOn
-				dma_printf
-				__CC2DW
-			__CC2DW
+			M_Mode
+				Set_M_Modal_Commands
+				Set_M_Commands
+					FAIL
+		Check_group_multiple_violations
+			FAIL
+			Rst_modalgroup
+			Rst_modalword
+			Set_Axisword
+		DMA_IsOn
+		dma_printf
 		__CC2DW
+	__CC2DW
+	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepZ
