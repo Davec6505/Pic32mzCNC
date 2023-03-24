@@ -889,9 +889,6 @@ static int Modal_Group_Actions7(int action);
 
 
 static int Modal_Group_Actions12(int action);
-
-
-void protocol_execute_runtime();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 30 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 int read_float(char *line, char *char_counter, float *float_ptr);
@@ -904,6 +901,9 @@ float ulong2flt(unsigned long ui_);
 
 
 int round(double val);
+
+
+long lround(double val);
 #line 14 "C:/Users/Git/Pic32mzCNC/Nut_Bolts.c"
 int read_float(char *line, uint8_t *char_counter, float *float_ptr)
 {
@@ -1008,4 +1008,14 @@ double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
  dec = val - tempF;
  temp = (dec > 0.5)? tempC : tempF;
  return (int)temp;
+}
+
+
+long lround(double val){
+double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
+ tempC = ceil(val);
+ tempF = floor(val);
+ dec = val - tempF;
+ temp = (dec > 0.5)? tempC : tempF;
+ return (long)temp;
 }

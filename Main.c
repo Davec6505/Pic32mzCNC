@@ -266,7 +266,7 @@ float a_val;
                 return NVM_COORDINATE_WRITE_ERROR;
               }
               
-             // Update system coordinate system if currently active with G54 - G59
+              // Update system coordinate system if currently active with G54 - G59
               if (gc.coord_select > 0) {
                  memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
               }

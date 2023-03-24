@@ -339,19 +339,15 @@ int i = 0;
       #endif
       //motion_mode holds movement set in G_Mode()!!
        switch (motion_mode) {
-          case MOTION_MODE_CANCEL:
-            // No axis words allowed while active.
-            if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); }
-            break;
           case MOTION_MODE_SEEK:
-            if (axis_words == 0) {
-               FAIL(STATUS_INVALID_STATEMENT);
-            }else {
+           // if (axis_words == 0) {
+            //   FAIL(STATUS_INVALID_STATEMENT);
+            //}else {
                //single axis interpolate at max speed, can be multiple axis at the
                //same time
-                gc.frequency = settings.default_seek_rate;
+                gc.frequency = 100;//lround(settings.default_seek_rate);
                 FAIL(STATUS_OK);
-            }
+           // }
             break;
           case MOTION_MODE_LINEAR:
             // TODO: Inverse time requires F-word with each statement. Need to do a check. Also need
@@ -383,6 +379,10 @@ int i = 0;
               dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
               #endif
            // }
+            break;
+          case MOTION_MODE_CANCEL:
+            // No axis words allowed while active.
+            if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); }
             break;
        }
        //track current position
@@ -482,10 +482,14 @@ float XYZ_Val;
 int F_Val,O_Val;
 
    switch(c[0]){
-      case 'X':
+      case 'X':case 'x':
             XYZ_Val = *(float*)any;
             gc.next_position[X] = To_Millimeters(XYZ_Val);
             bit_true(axis_words,bit(X));
+            #if GcodeDebug == 1
+            while(DMA_IsOn(1));
+            dma_printf("XYX_Val:= %f\taxis_words:= %d\n",XYZ_Val,axis_words);
+            #endif
             break;
       case 'Y':
             XYZ_Val = *(float*)any;

@@ -116,3 +116,12 @@ double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
   return (int)temp;
 }
 
+//return the int val rounfed off to the nearest int
+long lround(double val){
+double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
+  tempC = ceil(val);
+  tempF = floor(val);
+  dec = val - tempF;
+  temp = (dec > 0.5)? tempC : tempF;
+  return (long)temp;
+}

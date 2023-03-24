@@ -335,6 +335,9 @@ float ulong2flt(unsigned long ui_);
 
 
 int round(double val);
+
+
+long lround(double val);
 #line 103 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
@@ -811,9 +814,6 @@ static int Modal_Group_Actions7(int action);
 
 
 static int Modal_Group_Actions12(int action);
-
-
-void protocol_execute_runtime();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
@@ -1180,7 +1180,14 @@ int i = 0;
 
  if(!gc.absolute_override)
   (non_modal_words |= (1 << non_modal_action) ) ;
-#line 323 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("group_number:= %d\tgc.absolute_override:= %d\n"
+ ,group_number,gc.absolute_override);
+
+
+
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -1193,21 +1200,22 @@ int i = 0;
 
  if(group_number ==  2 ){
  status_code =  0 ;
-#line 341 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("[group_number:= %d][motion_mode:= %d]\n"
+ ,group_number,motion_mode);
+
+
  switch (motion_mode) {
- case  4 :
-
- if (axis_words) { FAIL( 6 ); }
- break;
  case  0 :
- if (axis_words == 0) {
- FAIL( 6 );
- }else {
 
 
- gc.frequency = settings.default_seek_rate;
+
+
+
+ gc.frequency = 100;
  FAIL( 0 );
- }
+
  break;
  case  1 :
 
@@ -1222,10 +1230,20 @@ int i = 0;
  }
  break;
  case  2 : case  3 :
-#line 377 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 373 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  for(i=0;i<=3;i++)
  Set_Axisword(i);
-#line 386 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+
+ while(DMA_IsOn(1));
+ dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
+
+
+ break;
+ case  4 :
+
+ if (axis_words) { FAIL( 6 ); }
  break;
  }
 
@@ -1243,27 +1261,48 @@ int i = 0;
  }else{
  FAIL( 0 );
  }
-#line 410 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("axis_xyz:= %d\n",axis_xyz);
+
+
+
  return status_code;
  }
 
 
  if (group_number ==  4 ){
-#line 421 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.absolute_mode:= %d\n",gc.absolute_mode);
+
+
  FAIL( 0 );
  return status_code;
  }
 
 
  if (group_number ==  6 ){
-#line 433 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.inverse_feed_rate_mode:= %d\n",gc.inverse_feed_rate_mode);
+
+
  FAIL( 0 );
  return status_code;
  }
 
 
  if (group_number ==  7 ){
-#line 445 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.inches_mode:= %d\n",gc.inches_mode);
+
+
  FAIL( 0 );
  return status_code;
  }
@@ -1275,7 +1314,12 @@ int i = 0;
  FAIL( 1 );
  else
  FAIL( 0 );
-#line 462 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.coord_select:= %d\n",gc.coord_select);
+
+
  return status_code;
  }
  }
@@ -1292,10 +1336,11 @@ float XYZ_Val;
 int F_Val,O_Val;
 
  switch(c[0]){
- case 'X':
+ case 'X':case 'x':
  XYZ_Val = *(float*)any;
  gc.next_position[X] = To_Millimeters(XYZ_Val);
   (axis_words |= (1 << X) ) ;
+#line 493 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'Y':
  XYZ_Val = *(float*)any;
@@ -1350,7 +1395,7 @@ int F_Val,O_Val;
  gc.feed_rate = To_Millimeters(XYZ_Val);
  }
  gc.frequency = (unsigned long)XYZ_Val;
-#line 547 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 551 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
@@ -1377,6 +1422,6 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 582 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 586 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }

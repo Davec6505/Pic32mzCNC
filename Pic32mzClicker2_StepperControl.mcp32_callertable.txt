@@ -270,8 +270,10 @@ main
 				Str_Initialize
 					memset
 				strlen
-			strlen
+			DMA_IsOn
+			dma_printf
 			cpy_val_from_str
+			strlen
 			atoi
 			atof
 			G_Mode
@@ -286,14 +288,15 @@ main
 				Set_M_Modal_Commands
 				Set_M_Commands
 					FAIL
+			__CC2DW
 		Check_group_multiple_violations
 			FAIL
 			Rst_modalgroup
 			Rst_modalword
+			DMA_IsOn
+			dma_printf
 			Set_Axisword
-		DMA_IsOn
-		dma_printf
-		__CC2DW
+			__CC2DW
 	__CC2DW
 	__FillZeros
 	ResetSteppers

@@ -278,6 +278,9 @@ float ulong2flt(unsigned long ui_);
 
 
 int round(double val);
+
+
+long lround(double val);
 #line 103 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
@@ -901,9 +904,6 @@ static int Modal_Group_Actions7(int action);
 
 
 static int Modal_Group_Actions12(int action);
-
-
-void protocol_execute_runtime();
 #line 39 "C:/Users/Git/Pic32mzCNC/Main.c"
 system_t sys;
 coord_sys coord_system[ 9 ];

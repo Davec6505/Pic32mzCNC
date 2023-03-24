@@ -296,10 +296,10 @@ int dif,state;
      //reset the DMA pointers back to the start indices
      if(DMA0_ReadDstPtr()){
       char *ptr = (char*)RXBUFF;
-       if(*ptr == '?'){
+       if(*ptr == '?' || *ptr == '~' || *ptr == '!' || *ptr == 0x18){
          Do_Critical_Msg(*ptr);
          DMA_Abort(0);
-         DCH0DAT  = (DCH0DAT == '?')? '\n':'\n';
+         //DCH0DAT  = '\n'; //to ensure this is not changed??
        }
      }
   }else{
@@ -313,16 +313,9 @@ int dif,state;
     
     //get the line sent from PC
     Get_Line(str,dif);
-    #if ProtoDebug == 24
-    while(DMA_IsOn(1));
-    dma_printf("[%d]",startup);
-    #endif
+
     //test is startupmsg has been sent
     if(bit_isfalse(startup,bit(START_MSG))){
-        #if ProtoDebug == 23
-        while(DMA_IsOn(1));
-        dma_printf("%s","ERROR\n");
-        #endif
         Do_Startup_Msg(str,dif);
         return STATUS_OK;
     }//else if(bit_istrue(startup,bit(START_MSG))){
@@ -332,12 +325,7 @@ int dif,state;
      
       //a messages after firmware query '?'
       state = Check_Query_Type(str,dif);
-      
-      #if ProtoDebug == 23
-        while(DMA_IsOn(1));
-        dma_printf("state:= %d\n",state);
-      #endif
-      
+
       //if msg_type == 20 then run gcode function
       if(state == STATUS_COMMAND_EXECUTE_MOTION){
          state = Do_Gcode(str,dif);
@@ -363,10 +351,11 @@ int i;
     if(temp_str[i] == '?'){
      bit_true(startup,bit(START_MSG));
      report_init_message();
-     DCH0DAT = '\n';
      break;
     }
  }
+ DCH0DAT = '\n';
+ SV.homed = false; //release homed
 }
 
 /////////////////////////////////////////////////////
@@ -623,11 +612,12 @@ int  Val = 0;
              Val = (int)(atof(temp)*10.0);
            }
           mode = G_Mode(Val);
+          status = STATUS_OK;
           #if ProtoDebug == 25
           while(DMA_IsOn(1));
           dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
           #endif
-           status = STATUS_OK;
+
            break;
         case 'X':case 'x':case 'Y':case 'y':
         case 'Z':case 'z':case 'A':case 'a':
@@ -640,7 +630,10 @@ int  Val = 0;
           while(DMA_IsOn(1));
           dma_printf("%d [%s][%f]\n",i,gcode[i],XYZ_Val);
           #endif
-          status = STATUS_COMMAND_EXECUTE_MOTION;
+          if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
+            status = STATUS_OK;
+          else
+            status = STATUS_COMMAND_EXECUTE_MOTION;
           break;
        case 'M':case'm':
          // j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
