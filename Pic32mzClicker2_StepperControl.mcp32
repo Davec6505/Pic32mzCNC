@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=GCODE.c
+Value=Main.c
 =======
 =======
 >>>>>>> patch1
@@ -134,13 +134,9 @@ File0=Main.c
 File1=DEFINES.pld
 File2=Protocol.c
 File3=Protocol.h
-File4=Print.c
-File5=Print.h
-File6=GCODE.c
-File7=GCODE.h
-File8=Nut_Bolts.c
-File9=Nuts_Bolts.h
-Count=10
+File4=GCODE.c
+File5=GCODE.h
+Count=6
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

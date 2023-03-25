@@ -36,7 +36,7 @@ void Init_Protocol(){
    startup = 0;
 }
 ////////////////////////////////////////////////////
-//reset the string array to zero
+//reset the string array to zero                                               c
 void Str_Initialize(char arg[arr_size][str_size]){
 int i;
   for(i = 0; i <= arr_size;i++){
@@ -592,7 +592,7 @@ int  Val = 0;
 
    //split up the line into string array using SPC seperator
    num_of_strings = strsplit2(gcode,str_,0x20);
-   #if ProtoDebug == 25
+   #if ProtoDebug == 27
    while(DMA_IsOn(1));
    dma_printf("no_of_strings:= %d\n",num_of_strings);
    #endif
@@ -600,7 +600,6 @@ int  Val = 0;
      j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
      switch(gcode[i][0]){
         case 'G':case'g':
-          // j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
            if(j < 3){ //G00 - G99
             Val = atoi(temp);
              //Compensation for G28,G30 & G92 have other codes with
@@ -622,21 +621,26 @@ int  Val = 0;
         case 'X':case 'x':case 'Y':case 'y':
         case 'Z':case 'z':case 'A':case 'a':
         case 'I':case 'i':case 'J':case 'j':
-        case 'F':case 'f':
-        //  j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+        case 'K':case 'k':case 'F':case 'f':
           XYZ_Val = atof(temp);
           status = Instruction_Values(gcode[i],&XYZ_Val);
-          #if ProtoDebug == 25
-          while(DMA_IsOn(1));
-          dma_printf("%d [%s][%f]\n",i,gcode[i],XYZ_Val);
-          #endif
+
           if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
             status = STATUS_OK;
           else
             status = STATUS_COMMAND_EXECUTE_MOTION;
+            
+          #if ProtoDebug == 25
+          while(DMA_IsOn(1));
+          dma_printf("[%d][%s][%f][%d]\n",i,gcode[i],XYZ_Val,status);
+          #endif
+          break;
+        case 'P':case 'p':case 'L':case 'l':
+        case 'S':case 's':
+          Val = atoi(temp);
+          status = Instruction_Values(gcode[i],&Val);
           break;
        case 'M':case'm':
-         // j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
           Val = atoi(temp);
           flow = M_Mode(Val);
           #if ProtoDebug == 25

@@ -1,4 +1,6 @@
 main
+	__CC2DW
+	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -51,6 +53,7 @@ main
 		Reset_Min_Debounce
 	Get_modalgroup
 	FAIL
+	Get_non_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
 			__CC2DW
@@ -76,7 +79,6 @@ main
 		GET_RunState
 		FAIL
 		memset
-	Get_modalword
 	Rst_modalgroup
 	report_status_message
 		DMA_IsOn
@@ -93,12 +95,8 @@ main
 			DMA1_Enable
 			__CC2DW
 	Get_Axisword
-	DMA_IsOn
-	dma_printf
 	EnableSteppers
 	Modal_Group_Actions1
-		DMA_IsOn
-		dma_printf
 		SingleAxisStep
 		DualAxisStep
 			belt_steps
@@ -157,8 +155,9 @@ main
 			DisableStepper
 			ResetHoming
 		Rst_Axisword
-		__CC2DW
 	Rst_Axisword
+	GET_FAIL
+	SET_FAIL
 	Modal_Group_Actions4
 		FAIL
 	Modal_Group_Actions7
@@ -270,10 +269,8 @@ main
 				Str_Initialize
 					memset
 				strlen
-			DMA_IsOn
-			dma_printf
-			cpy_val_from_str
 			strlen
+			cpy_val_from_str
 			atoi
 			atof
 			G_Mode
@@ -288,17 +285,11 @@ main
 				Set_M_Modal_Commands
 				Set_M_Commands
 					FAIL
-			__CC2DW
 		Check_group_multiple_violations
 			FAIL
 			Rst_modalgroup
-			Rst_modalword
-			DMA_IsOn
-			dma_printf
+			Rst_non_modalword
 			Set_Axisword
-			__CC2DW
-	__CC2DW
-	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepZ

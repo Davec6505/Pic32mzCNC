@@ -1633,8 +1633,6 @@ NOP
 LW	R25, 20(SP)
 LH	R26, 18(SP)
 LH	R3, 16(SP)
-;Protocol.c,470 :: 		status = STATUS_OK;
-SH	R0, 24(SP)
 ;Protocol.c,471 :: 		}
 L_Protocol_Check_Query_Type103:
 ;Protocol.c,465 :: 		for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
@@ -1973,9 +1971,6 @@ J	L_Protocol_Check_Query_Type132
 NOP	
 L_Protocol_Check_Query_Type210:
 L_Protocol_Check_Query_Type209:
-;Protocol.c,561 :: 		status = STATUS_UNSUPPORTED_STATEMENT;
-ORI	R2, R0, 3
-SH	R2, 24(SP)
 ;Protocol.c,562 :: 		}
 L_Protocol_Check_Query_Type132:
 ;Protocol.c,563 :: 		value = atof(str_val);
@@ -2171,9 +2166,6 @@ J	L_end_Check_Query_Type
 NOP	
 ;Protocol.c,579 :: 		}else{
 L_Protocol_Check_Query_Type72:
-;Protocol.c,580 :: 		status = STATUS_COMMAND_EXECUTE_MOTION;
-ORI	R2, R0, 20
-SH	R2, 24(SP)
 ;Protocol.c,582 :: 		return status;
 ORI	R2, R0, 20
 ;Protocol.c,583 :: 		}
@@ -2190,7 +2182,7 @@ NOP
 ; end of Protocol_Check_Query_Type
 Protocol_Do_Gcode:
 ;Protocol.c,586 :: 		static int Do_Gcode(char str_[64],int dif_){
-ADDIU	SP, SP, -120
+ADDIU	SP, SP, -60
 SW	RA, 0(SP)
 ;Protocol.c,588 :: 		float XYZ_Val = 0.0;
 SW	R25, 4(SP)
@@ -2198,7 +2190,9 @@ SW	R26, 8(SP)
 SW	R27, 12(SP)
 SW	R28, 16(SP)
 MOVZ	R30, R0, R0
-SW	R30, 104(SP)
+SW	R30, 44(SP)
+MOVZ	R30, R0, R0
+SH	R30, 48(SP)
 ;Protocol.c,590 :: 		int  Val = 0;
 ;Protocol.c,594 :: 		num_of_strings = strsplit2(gcode,str_,0x20);
 ORI	R27, R0, 32
@@ -2208,53 +2202,17 @@ ORI	R25, R25, lo_addr(_gcode+0)
 JAL	Protocol_strsplit2+0
 NOP	
 SH	R2, 40(SP)
-;Protocol.c,596 :: 		while(DMA_IsOn(1));
-L_Protocol_Do_Gcode135:
-SH	R26, 20(SP)
-SW	R25, 24(SP)
-ORI	R25, R0, 1
-JAL	_DMA_IsOn+0
-NOP	
-LW	R25, 24(SP)
-LH	R26, 20(SP)
-BNE	R2, R0, L_Protocol_Do_Gcode394
-NOP	
-J	L_Protocol_Do_Gcode136
-NOP	
-L_Protocol_Do_Gcode394:
-J	L_Protocol_Do_Gcode135
-NOP	
-L_Protocol_Do_Gcode136:
-;Protocol.c,597 :: 		dma_printf("no_of_strings:= %d\n",num_of_strings);
-ADDIU	R23, SP, 44
-ADDIU	R22, R23, 20
-LUI	R24, hi_addr(?ICSProtocol_?lstr1_Protocol+0)
-ORI	R24, R24, lo_addr(?ICSProtocol_?lstr1_Protocol+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R3, SP, 44
-LH	R2, 40(SP)
-SH	R26, 20(SP)
-SW	R25, 24(SP)
-ADDIU	SP, SP, -8
-SH	R2, 4(SP)
-SW	R3, 0(SP)
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 8
-LW	R25, 24(SP)
-LH	R26, 20(SP)
 ;Protocol.c,599 :: 		for(i=0; i < num_of_strings; i++){
 SH	R0, 38(SP)
-L_Protocol_Do_Gcode137:
+L_Protocol_Do_Gcode135:
 LH	R3, 40(SP)
 LH	R2, 38(SP)
 SLT	R2, R2, R3
-BNE	R2, R0, L_Protocol_Do_Gcode395
+BNE	R2, R0, L_Protocol_Do_Gcode393
 NOP	
-J	L_Protocol_Do_Gcode138
+J	L_Protocol_Do_Gcode136
 NOP	
-L_Protocol_Do_Gcode395:
+L_Protocol_Do_Gcode393:
 ;Protocol.c,600 :: 		j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
 LH	R2, 38(SP)
 SLL	R3, R2, 6
@@ -2290,67 +2248,67 @@ SLL	R3, R2, 6
 LUI	R2, hi_addr(_gcode+0)
 ORI	R2, R2, lo_addr(_gcode+0)
 ADDU	R2, R2, R3
-SW	R2, 116(SP)
-J	L_Protocol_Do_Gcode140
+SW	R2, 56(SP)
+J	L_Protocol_Do_Gcode138
 NOP	
 ;Protocol.c,602 :: 		case 'G':case'g':
-L_Protocol_Do_Gcode142:
-L_Protocol_Do_Gcode143:
-;Protocol.c,604 :: 		if(j < 3){ //G00 - G99
+L_Protocol_Do_Gcode140:
+L_Protocol_Do_Gcode141:
+;Protocol.c,603 :: 		if(j < 3){ //G00 - G99
 SEH	R2, R5
 ; j end address is: 20 (R5)
 SLTI	R2, R2, 3
-BNE	R2, R0, L_Protocol_Do_Gcode396
+BNE	R2, R0, L_Protocol_Do_Gcode394
 NOP	
-J	L_Protocol_Do_Gcode144
+J	L_Protocol_Do_Gcode142
 NOP	
-L_Protocol_Do_Gcode396:
-;Protocol.c,605 :: 		Val = atoi(temp);
+L_Protocol_Do_Gcode394:
+;Protocol.c,604 :: 		Val = atoi(temp);
 ADDIU	R2, SP, 28
 SW	R25, 20(SP)
 MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
 LW	R25, 20(SP)
-SH	R2, 108(SP)
-;Protocol.c,608 :: 		if(Val == 28 || Val == 30 || Val == 92)
+SH	R2, 48(SP)
+;Protocol.c,607 :: 		if(Val == 28 || Val == 30 || Val == 92)
 SEH	R3, R2
 ORI	R2, R0, 28
-BNE	R3, R2, L_Protocol_Do_Gcode398
+BNE	R3, R2, L_Protocol_Do_Gcode396
 NOP	
 J	L_Protocol_Do_Gcode218
 NOP	
-L_Protocol_Do_Gcode398:
-LH	R3, 108(SP)
+L_Protocol_Do_Gcode396:
+LH	R3, 48(SP)
 ORI	R2, R0, 30
-BNE	R3, R2, L_Protocol_Do_Gcode400
+BNE	R3, R2, L_Protocol_Do_Gcode398
 NOP	
 J	L_Protocol_Do_Gcode217
 NOP	
-L_Protocol_Do_Gcode400:
-LH	R3, 108(SP)
+L_Protocol_Do_Gcode398:
+LH	R3, 48(SP)
 ORI	R2, R0, 92
-BNE	R3, R2, L_Protocol_Do_Gcode402
+BNE	R3, R2, L_Protocol_Do_Gcode400
 NOP	
 J	L_Protocol_Do_Gcode216
 NOP	
-L_Protocol_Do_Gcode402:
-J	L_Protocol_Do_Gcode147
+L_Protocol_Do_Gcode400:
+J	L_Protocol_Do_Gcode145
 NOP	
 L_Protocol_Do_Gcode218:
 L_Protocol_Do_Gcode217:
 L_Protocol_Do_Gcode216:
-;Protocol.c,609 :: 		Val *= 10;
-LH	R3, 108(SP)
+;Protocol.c,608 :: 		Val *= 10;
+LH	R3, 48(SP)
 ORI	R2, R0, 10
 MUL	R2, R3, R2
-SH	R2, 108(SP)
-L_Protocol_Do_Gcode147:
-;Protocol.c,610 :: 		}else{
-J	L_Protocol_Do_Gcode148
+SH	R2, 48(SP)
+L_Protocol_Do_Gcode145:
+;Protocol.c,609 :: 		}else{
+J	L_Protocol_Do_Gcode146
 NOP	
-L_Protocol_Do_Gcode144:
-;Protocol.c,612 :: 		Val = (int)(atof(temp)*10.0);
+L_Protocol_Do_Gcode142:
+;Protocol.c,611 :: 		Val = (int)(atof(temp)*10.0);
 ADDIU	R2, SP, 28
 SW	R25, 20(SP)
 MOVZ	R25, R2, R0
@@ -2363,94 +2321,52 @@ MTC1	R2, S1
 MUL.S 	S0, S0, S1
 CVT36.S 	S0, S0
 MFC1	R2, S0
-SH	R2, 108(SP)
-;Protocol.c,613 :: 		}
-L_Protocol_Do_Gcode148:
-;Protocol.c,614 :: 		mode = G_Mode(Val);
+SH	R2, 48(SP)
+;Protocol.c,612 :: 		}
+L_Protocol_Do_Gcode146:
+;Protocol.c,613 :: 		mode = G_Mode(Val);
 SH	R26, 20(SP)
 SW	R25, 24(SP)
-LH	R25, 108(SP)
+LH	R25, 48(SP)
 JAL	_G_Mode+0
 NOP	
 LW	R25, 24(SP)
 LH	R26, 20(SP)
-;Protocol.c,615 :: 		status = STATUS_OK;
+;Protocol.c,614 :: 		status = STATUS_OK;
 SH	R0, 42(SP)
-;Protocol.c,617 :: 		while(DMA_IsOn(1));
+;Protocol.c,620 :: 		break;
+J	L_Protocol_Do_Gcode139
+NOP	
+;Protocol.c,621 :: 		case 'X':case 'x':case 'Y':case 'y':
+L_Protocol_Do_Gcode147:
+L_Protocol_Do_Gcode148:
 L_Protocol_Do_Gcode149:
-SH	R26, 20(SP)
-SW	R25, 24(SP)
-ORI	R25, R0, 1
-JAL	_DMA_IsOn+0
-NOP	
-LW	R25, 24(SP)
-LH	R26, 20(SP)
-BNE	R2, R0, L_Protocol_Do_Gcode404
-NOP	
-J	L_Protocol_Do_Gcode150
-NOP	
-L_Protocol_Do_Gcode404:
-J	L_Protocol_Do_Gcode149
-NOP	
 L_Protocol_Do_Gcode150:
-;Protocol.c,618 :: 		dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
-LH	R2, 38(SP)
-SLL	R3, R2, 6
-LUI	R2, hi_addr(_gcode+0)
-ORI	R2, R2, lo_addr(_gcode+0)
-ADDU	R4, R2, R3
-ADDIU	R23, SP, 64
-ADDIU	R22, R23, 13
-LUI	R24, hi_addr(?ICSProtocol_?lstr2_Protocol+0)
-ORI	R24, R24, lo_addr(?ICSProtocol_?lstr2_Protocol+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R3, SP, 64
-LH	R2, 108(SP)
-SH	R26, 20(SP)
-SW	R25, 24(SP)
-ADDIU	SP, SP, -16
-SH	R2, 12(SP)
-SW	R4, 8(SP)
-LH	R2, 54(SP)
-SH	R2, 4(SP)
-SW	R3, 0(SP)
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 16
-LW	R25, 24(SP)
-LH	R26, 20(SP)
-;Protocol.c,621 :: 		break;
-J	L_Protocol_Do_Gcode141
-NOP	
-;Protocol.c,622 :: 		case 'X':case 'x':case 'Y':case 'y':
+;Protocol.c,622 :: 		case 'Z':case 'z':case 'A':case 'a':
 L_Protocol_Do_Gcode151:
 L_Protocol_Do_Gcode152:
 L_Protocol_Do_Gcode153:
 L_Protocol_Do_Gcode154:
-;Protocol.c,623 :: 		case 'Z':case 'z':case 'A':case 'a':
+;Protocol.c,623 :: 		case 'I':case 'i':case 'J':case 'j':
 L_Protocol_Do_Gcode155:
 L_Protocol_Do_Gcode156:
 L_Protocol_Do_Gcode157:
 L_Protocol_Do_Gcode158:
-;Protocol.c,624 :: 		case 'I':case 'i':case 'J':case 'j':
+;Protocol.c,624 :: 		case 'K':case 'k':case 'F':case 'f':
 L_Protocol_Do_Gcode159:
 L_Protocol_Do_Gcode160:
 L_Protocol_Do_Gcode161:
 L_Protocol_Do_Gcode162:
-;Protocol.c,625 :: 		case 'F':case 'f':
-L_Protocol_Do_Gcode163:
-L_Protocol_Do_Gcode164:
-;Protocol.c,627 :: 		XYZ_Val = atof(temp);
+;Protocol.c,625 :: 		XYZ_Val = atof(temp);
 ADDIU	R2, SP, 28
 SW	R25, 20(SP)
 MOVZ	R25, R2, R0
 JAL	_atof+0
 NOP	
 LW	R25, 20(SP)
-SWC1	S0, 104(SP)
-;Protocol.c,628 :: 		status = Instruction_Values(gcode[i],&XYZ_Val);
-ADDIU	R4, SP, 104
+SWC1	S0, 44(SP)
+;Protocol.c,626 :: 		status = Instruction_Values(gcode[i],&XYZ_Val);
+ADDIU	R4, SP, 44
 LH	R2, 38(SP)
 SLL	R3, R2, 6
 LUI	R2, hi_addr(_gcode+0)
@@ -2465,51 +2381,7 @@ NOP
 LW	R25, 24(SP)
 LH	R26, 20(SP)
 SH	R2, 42(SP)
-;Protocol.c,630 :: 		while(DMA_IsOn(1));
-L_Protocol_Do_Gcode165:
-SH	R26, 20(SP)
-SW	R25, 24(SP)
-ORI	R25, R0, 1
-JAL	_DMA_IsOn+0
-NOP	
-LW	R25, 24(SP)
-LH	R26, 20(SP)
-BNE	R2, R0, L_Protocol_Do_Gcode406
-NOP	
-J	L_Protocol_Do_Gcode166
-NOP	
-L_Protocol_Do_Gcode406:
-J	L_Protocol_Do_Gcode165
-NOP	
-L_Protocol_Do_Gcode166:
-;Protocol.c,631 :: 		dma_printf("%d [%s][%f]\n",i,gcode[i],XYZ_Val);
-LH	R2, 38(SP)
-SLL	R3, R2, 6
-LUI	R2, hi_addr(_gcode+0)
-ORI	R2, R2, lo_addr(_gcode+0)
-ADDU	R4, R2, R3
-ADDIU	R23, SP, 77
-ADDIU	R22, R23, 13
-LUI	R24, hi_addr(?ICSProtocol_?lstr3_Protocol+0)
-ORI	R24, R24, lo_addr(?ICSProtocol_?lstr3_Protocol+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R3, SP, 77
-LW	R2, 104(SP)
-SH	R26, 20(SP)
-SW	R25, 24(SP)
-ADDIU	SP, SP, -16
-SW	R2, 12(SP)
-SW	R4, 8(SP)
-LH	R2, 54(SP)
-SH	R2, 4(SP)
-SW	R3, 0(SP)
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 16
-LW	R25, 24(SP)
-LH	R26, 20(SP)
-;Protocol.c,633 :: 		if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
+;Protocol.c,628 :: 		if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
 LH	R2, 38(SP)
 SLL	R3, R2, 6
 LUI	R2, hi_addr(_gcode+0)
@@ -2518,11 +2390,11 @@ ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 ANDI	R3, R2, 255
 ORI	R2, R0, 70
-BNE	R3, R2, L_Protocol_Do_Gcode408
+BNE	R3, R2, L_Protocol_Do_Gcode402
 NOP	
 J	L_Protocol_Do_Gcode220
 NOP	
-L_Protocol_Do_Gcode408:
+L_Protocol_Do_Gcode402:
 LH	R2, 38(SP)
 SLL	R3, R2, 6
 LUI	R2, hi_addr(_gcode+0)
@@ -2531,28 +2403,33 @@ ADDU	R2, R2, R3
 LBU	R2, 0(R2)
 ANDI	R3, R2, 255
 ORI	R2, R0, 102
-BNE	R3, R2, L_Protocol_Do_Gcode410
+BNE	R3, R2, L_Protocol_Do_Gcode404
 NOP	
 J	L_Protocol_Do_Gcode219
 NOP	
-L_Protocol_Do_Gcode410:
-J	L_Protocol_Do_Gcode169
+L_Protocol_Do_Gcode404:
+J	L_Protocol_Do_Gcode165
 NOP	
 L_Protocol_Do_Gcode220:
 L_Protocol_Do_Gcode219:
-;Protocol.c,634 :: 		status = STATUS_OK;
+;Protocol.c,629 :: 		status = STATUS_OK;
 SH	R0, 42(SP)
-J	L_Protocol_Do_Gcode170
+J	L_Protocol_Do_Gcode166
 NOP	
-L_Protocol_Do_Gcode169:
-;Protocol.c,636 :: 		status = STATUS_COMMAND_EXECUTE_MOTION;
+L_Protocol_Do_Gcode165:
+;Protocol.c,631 :: 		status = STATUS_COMMAND_EXECUTE_MOTION;
 ORI	R2, R0, 20
 SH	R2, 42(SP)
-L_Protocol_Do_Gcode170:
+L_Protocol_Do_Gcode166:
 ;Protocol.c,637 :: 		break;
-J	L_Protocol_Do_Gcode141
+J	L_Protocol_Do_Gcode139
 NOP	
-;Protocol.c,638 :: 		case 'M':case'm':
+;Protocol.c,638 :: 		case 'P':case 'p':case 'L':case 'l':
+L_Protocol_Do_Gcode167:
+L_Protocol_Do_Gcode168:
+L_Protocol_Do_Gcode169:
+L_Protocol_Do_Gcode170:
+;Protocol.c,639 :: 		case 'S':case 's':
 L_Protocol_Do_Gcode171:
 L_Protocol_Do_Gcode172:
 ;Protocol.c,640 :: 		Val = atoi(temp);
@@ -2562,8 +2439,38 @@ MOVZ	R25, R2, R0
 JAL	_atoi+0
 NOP	
 LW	R25, 20(SP)
-SH	R2, 108(SP)
-;Protocol.c,641 :: 		flow = M_Mode(Val);
+SH	R2, 48(SP)
+;Protocol.c,641 :: 		status = Instruction_Values(gcode[i],&Val);
+ADDIU	R4, SP, 48
+LH	R2, 38(SP)
+SLL	R3, R2, 6
+LUI	R2, hi_addr(_gcode+0)
+ORI	R2, R2, lo_addr(_gcode+0)
+ADDU	R2, R2, R3
+SH	R26, 20(SP)
+SW	R25, 24(SP)
+MOVZ	R26, R4, R0
+MOVZ	R25, R2, R0
+JAL	_Instruction_Values+0
+NOP	
+LW	R25, 24(SP)
+LH	R26, 20(SP)
+SH	R2, 42(SP)
+;Protocol.c,642 :: 		break;
+J	L_Protocol_Do_Gcode139
+NOP	
+;Protocol.c,643 :: 		case 'M':case'm':
+L_Protocol_Do_Gcode173:
+L_Protocol_Do_Gcode174:
+;Protocol.c,644 :: 		Val = atoi(temp);
+ADDIU	R2, SP, 28
+SW	R25, 20(SP)
+MOVZ	R25, R2, R0
+JAL	_atoi+0
+NOP	
+LW	R25, 20(SP)
+SH	R2, 48(SP)
+;Protocol.c,645 :: 		flow = M_Mode(Val);
 SH	R26, 20(SP)
 SW	R25, 24(SP)
 SEH	R25, R2
@@ -2571,79 +2478,67 @@ JAL	_M_Mode+0
 NOP	
 LW	R25, 24(SP)
 LH	R26, 20(SP)
-;Protocol.c,643 :: 		while(DMA_IsOn(1));
-L_Protocol_Do_Gcode173:
-SH	R26, 20(SP)
-SW	R25, 24(SP)
-ORI	R25, R0, 1
-JAL	_DMA_IsOn+0
-NOP	
-LW	R25, 24(SP)
-LH	R26, 20(SP)
-BNE	R2, R0, L_Protocol_Do_Gcode412
-NOP	
-J	L_Protocol_Do_Gcode174
-NOP	
-L_Protocol_Do_Gcode412:
-J	L_Protocol_Do_Gcode173
-NOP	
-L_Protocol_Do_Gcode174:
-;Protocol.c,644 :: 		dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
-LH	R2, 38(SP)
-SLL	R3, R2, 6
-LUI	R2, hi_addr(_gcode+0)
-ORI	R2, R2, lo_addr(_gcode+0)
-ADDU	R4, R2, R3
-ADDIU	R23, SP, 90
-ADDIU	R22, R23, 13
-LUI	R24, hi_addr(?ICSProtocol_?lstr4_Protocol+0)
-ORI	R24, R24, lo_addr(?ICSProtocol_?lstr4_Protocol+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R3, SP, 90
-LH	R2, 108(SP)
-SH	R26, 20(SP)
-SW	R25, 24(SP)
-ADDIU	SP, SP, -16
-SH	R2, 12(SP)
-SW	R4, 8(SP)
-LH	R2, 54(SP)
-SH	R2, 4(SP)
-SW	R3, 0(SP)
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 16
-LW	R25, 24(SP)
-LH	R26, 20(SP)
-;Protocol.c,646 :: 		status = STATUS_OK;
+;Protocol.c,650 :: 		status = STATUS_OK;
 SH	R0, 42(SP)
-;Protocol.c,647 :: 		break;
-J	L_Protocol_Do_Gcode141
+;Protocol.c,651 :: 		break;
+J	L_Protocol_Do_Gcode139
 NOP	
-;Protocol.c,648 :: 		}//switch
-L_Protocol_Do_Gcode140:
+;Protocol.c,652 :: 		}//switch
+L_Protocol_Do_Gcode138:
 ; j start address is: 20 (R5)
-LW	R4, 116(SP)
+LW	R4, 56(SP)
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 71
-BNE	R3, R2, L_Protocol_Do_Gcode414
+BNE	R3, R2, L_Protocol_Do_Gcode406
 NOP	
-J	L_Protocol_Do_Gcode142
+J	L_Protocol_Do_Gcode140
 NOP	
-L_Protocol_Do_Gcode414:
+L_Protocol_Do_Gcode406:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 103
-BNE	R3, R2, L_Protocol_Do_Gcode416
+BNE	R3, R2, L_Protocol_Do_Gcode408
 NOP	
-J	L_Protocol_Do_Gcode143
+J	L_Protocol_Do_Gcode141
 NOP	
-L_Protocol_Do_Gcode416:
+L_Protocol_Do_Gcode408:
 ; j end address is: 20 (R5)
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 88
+BNE	R3, R2, L_Protocol_Do_Gcode410
+NOP	
+J	L_Protocol_Do_Gcode147
+NOP	
+L_Protocol_Do_Gcode410:
+LBU	R2, 0(R4)
+ANDI	R3, R2, 255
+ORI	R2, R0, 120
+BNE	R3, R2, L_Protocol_Do_Gcode412
+NOP	
+J	L_Protocol_Do_Gcode148
+NOP	
+L_Protocol_Do_Gcode412:
+LBU	R2, 0(R4)
+ANDI	R3, R2, 255
+ORI	R2, R0, 89
+BNE	R3, R2, L_Protocol_Do_Gcode414
+NOP	
+J	L_Protocol_Do_Gcode149
+NOP	
+L_Protocol_Do_Gcode414:
+LBU	R2, 0(R4)
+ANDI	R3, R2, 255
+ORI	R2, R0, 121
+BNE	R3, R2, L_Protocol_Do_Gcode416
+NOP	
+J	L_Protocol_Do_Gcode150
+NOP	
+L_Protocol_Do_Gcode416:
+LBU	R2, 0(R4)
+ANDI	R3, R2, 255
+ORI	R2, R0, 90
 BNE	R3, R2, L_Protocol_Do_Gcode418
 NOP	
 J	L_Protocol_Do_Gcode151
@@ -2651,7 +2546,7 @@ NOP
 L_Protocol_Do_Gcode418:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 120
+ORI	R2, R0, 122
 BNE	R3, R2, L_Protocol_Do_Gcode420
 NOP	
 J	L_Protocol_Do_Gcode152
@@ -2659,7 +2554,7 @@ NOP
 L_Protocol_Do_Gcode420:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 89
+ORI	R2, R0, 65
 BNE	R3, R2, L_Protocol_Do_Gcode422
 NOP	
 J	L_Protocol_Do_Gcode153
@@ -2667,7 +2562,7 @@ NOP
 L_Protocol_Do_Gcode422:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 121
+ORI	R2, R0, 97
 BNE	R3, R2, L_Protocol_Do_Gcode424
 NOP	
 J	L_Protocol_Do_Gcode154
@@ -2675,7 +2570,7 @@ NOP
 L_Protocol_Do_Gcode424:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 90
+ORI	R2, R0, 73
 BNE	R3, R2, L_Protocol_Do_Gcode426
 NOP	
 J	L_Protocol_Do_Gcode155
@@ -2683,7 +2578,7 @@ NOP
 L_Protocol_Do_Gcode426:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 122
+ORI	R2, R0, 105
 BNE	R3, R2, L_Protocol_Do_Gcode428
 NOP	
 J	L_Protocol_Do_Gcode156
@@ -2691,7 +2586,7 @@ NOP
 L_Protocol_Do_Gcode428:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 65
+ORI	R2, R0, 74
 BNE	R3, R2, L_Protocol_Do_Gcode430
 NOP	
 J	L_Protocol_Do_Gcode157
@@ -2699,7 +2594,7 @@ NOP
 L_Protocol_Do_Gcode430:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 97
+ORI	R2, R0, 106
 BNE	R3, R2, L_Protocol_Do_Gcode432
 NOP	
 J	L_Protocol_Do_Gcode158
@@ -2707,7 +2602,7 @@ NOP
 L_Protocol_Do_Gcode432:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 73
+ORI	R2, R0, 75
 BNE	R3, R2, L_Protocol_Do_Gcode434
 NOP	
 J	L_Protocol_Do_Gcode159
@@ -2715,7 +2610,7 @@ NOP
 L_Protocol_Do_Gcode434:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 105
+ORI	R2, R0, 107
 BNE	R3, R2, L_Protocol_Do_Gcode436
 NOP	
 J	L_Protocol_Do_Gcode160
@@ -2723,7 +2618,7 @@ NOP
 L_Protocol_Do_Gcode436:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 74
+ORI	R2, R0, 70
 BNE	R3, R2, L_Protocol_Do_Gcode438
 NOP	
 J	L_Protocol_Do_Gcode161
@@ -2731,7 +2626,7 @@ NOP
 L_Protocol_Do_Gcode438:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 106
+ORI	R2, R0, 102
 BNE	R3, R2, L_Protocol_Do_Gcode440
 NOP	
 J	L_Protocol_Do_Gcode162
@@ -2739,57 +2634,89 @@ NOP
 L_Protocol_Do_Gcode440:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 70
+ORI	R2, R0, 80
 BNE	R3, R2, L_Protocol_Do_Gcode442
 NOP	
-J	L_Protocol_Do_Gcode163
+J	L_Protocol_Do_Gcode167
 NOP	
 L_Protocol_Do_Gcode442:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 102
+ORI	R2, R0, 112
 BNE	R3, R2, L_Protocol_Do_Gcode444
 NOP	
-J	L_Protocol_Do_Gcode164
+J	L_Protocol_Do_Gcode168
 NOP	
 L_Protocol_Do_Gcode444:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 77
+ORI	R2, R0, 76
 BNE	R3, R2, L_Protocol_Do_Gcode446
 NOP	
-J	L_Protocol_Do_Gcode171
+J	L_Protocol_Do_Gcode169
 NOP	
 L_Protocol_Do_Gcode446:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
-ORI	R2, R0, 109
+ORI	R2, R0, 108
 BNE	R3, R2, L_Protocol_Do_Gcode448
+NOP	
+J	L_Protocol_Do_Gcode170
+NOP	
+L_Protocol_Do_Gcode448:
+LBU	R2, 0(R4)
+ANDI	R3, R2, 255
+ORI	R2, R0, 83
+BNE	R3, R2, L_Protocol_Do_Gcode450
+NOP	
+J	L_Protocol_Do_Gcode171
+NOP	
+L_Protocol_Do_Gcode450:
+LBU	R2, 0(R4)
+ANDI	R3, R2, 255
+ORI	R2, R0, 115
+BNE	R3, R2, L_Protocol_Do_Gcode452
 NOP	
 J	L_Protocol_Do_Gcode172
 NOP	
-L_Protocol_Do_Gcode448:
-L_Protocol_Do_Gcode141:
+L_Protocol_Do_Gcode452:
+LBU	R2, 0(R4)
+ANDI	R3, R2, 255
+ORI	R2, R0, 77
+BNE	R3, R2, L_Protocol_Do_Gcode454
+NOP	
+J	L_Protocol_Do_Gcode173
+NOP	
+L_Protocol_Do_Gcode454:
+LBU	R2, 0(R4)
+ANDI	R3, R2, 255
+ORI	R2, R0, 109
+BNE	R3, R2, L_Protocol_Do_Gcode456
+NOP	
+J	L_Protocol_Do_Gcode174
+NOP	
+L_Protocol_Do_Gcode456:
+L_Protocol_Do_Gcode139:
 ;Protocol.c,599 :: 		for(i=0; i < num_of_strings; i++){
 LH	R2, 38(SP)
 ADDIU	R2, R2, 1
 SH	R2, 38(SP)
-;Protocol.c,649 :: 		}//for
-J	L_Protocol_Do_Gcode137
+;Protocol.c,653 :: 		}//for
+J	L_Protocol_Do_Gcode135
 NOP	
-L_Protocol_Do_Gcode138:
-;Protocol.c,652 :: 		return status;
+L_Protocol_Do_Gcode136:
+;Protocol.c,656 :: 		return status;
 LH	R2, 42(SP)
-;Protocol.c,653 :: 		}
-;Protocol.c,652 :: 		return status;
-;Protocol.c,653 :: 		}
+;Protocol.c,657 :: 		}
+;Protocol.c,656 :: 		return status;
+;Protocol.c,657 :: 		}
 L_end_Do_Gcode:
 LW	R28, 16(SP)
 LW	R27, 12(SP)
 LW	R26, 8(SP)
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 120
+ADDIU	SP, SP, 60
 JR	RA
 NOP	
 ; end of Protocol_Do_Gcode

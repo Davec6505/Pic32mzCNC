@@ -5152,6 +5152,7 @@ autoset_usbe5csr0_bit
 autoset_usbe6csr0_bit
 autoset_usbe7csr0_bit
 axis_interpolate
+axis_words
 axis_xyz
 axisno
 axispulse
@@ -32531,12 +32532,13 @@ get_axis_enable_states
 get_axisstatus
 get_axisword
 get_difference
+get_fail
 get_fosc_khz
 get_head_value
 get_line
 get_modalgroup
-get_modalword
 get_motionmode
+get_non_modalword
 get_runstate
 get_tail_value
 getaxisdirection
@@ -39190,6 +39192,7 @@ mm_per_arc_segment
 mm_possiblyfragmented
 mm_totalfreememsize
 mm2in
+modal_group_words
 mode
 mode
 mode
@@ -39382,6 +39385,7 @@ month102_bit
 month103
 month103_alrmdate_bit
 month103_bit
+motion_mode
 motion_mode
 mpen
 mpen
@@ -40333,6 +40337,7 @@ nobkoff
 nobkoff_bit
 nobkoff_emacxcfg2_bit
 non_modal_action
+non_modal_words
 nopre
 nopre
 nopre
@@ -48612,8 +48617,8 @@ rst_axisword
 rst_fn
 rst_fp
 rst_modalgroup
-rst_modalword
 rst_motionmode
+rst_non_modalword
 rstbug
 rswrst
 rswrstbits
@@ -56496,9 +56501,10 @@ sessrqif
 sessrqif
 sessrqif_bit
 set_axisword
+set_fail
 set_min_limit
 set_modalgroup
-set_modalword
+set_non_modalword
 set_performance_mode
 setend
 setend

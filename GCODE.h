@@ -133,7 +133,7 @@ extern volatile int status_code;   // Status of instructions
 #define STATUS_SPEED_ERROR 13
 #define STATUS_EI_ERROR 14
 #define STATUS_COMMAND_EXECUTE_MOTION 20
-
+#define STATUS_NO_REPORT 99
 
 ////////////////////////////////////////////////////////
 // Define Grbl alarm codes. Less than zero to distinguish alarm error from status error.
@@ -203,16 +203,19 @@ enum IJK{I,J,K};
 ///////////////////////////////////////////////////////////////////////////////
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
-void FAIL(int status);
 void G_Initialise();
+
+void FAIL(int status);
+int  GET_FAIL();
+int  SET_FAIL(int val);
 
 void Set_modalgroup(int value);
 int Get_modalgroup();
 int Rst_modalgroup();
 
-void Set_modalword(int value);
-int Get_modalword();
-int Rst_modalword();
+void Set_non_modalword(int value);
+int Get_non_modalword();
+int Rst_non_modalword();
 
 void Set_Axisword(int value);
 int Get_Axisword();

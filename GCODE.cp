@@ -865,16 +865,19 @@ enum IJK{I,J,K};
 
 
 
-void FAIL(int status);
 void G_Initialise();
+
+void FAIL(int status);
+int GET_FAIL();
+int SET_FAIL(int val);
 
 void Set_modalgroup(int value);
 int Get_modalgroup();
 int Rst_modalgroup();
 
-void Set_modalword(int value);
-int Get_modalword();
-int Rst_modalword();
+void Set_non_modalword(int value);
+int Get_non_modalword();
+int Rst_non_modalword();
 
 void Set_Axisword(int value);
 int Get_Axisword();
@@ -912,16 +915,18 @@ parser_state_t gc;
 
 
 
-volatile int status_code;
 volatile float coord_data[ 2 ];
 
-static volatile int axis_words;
-static volatile int modal_group_words;
-static volatile int non_modal_words;
-static volatile int motion_mode;
-volatile int group_number;
-volatile int non_modal_action;
-volatile int m_flow;
+int axis_words absolute 0xA0002602 ;
+int modal_group_words absolute 0xA0002604 ;
+int non_modal_words absolute 0xA0002606 ;
+int m_flow absolute 0xA0002608 ;
+int non_modal_action absolute 0xA0002610 ;
+int motion_mode absolute 0xA0002612 ;
+int group_number absolute 0xA0002614 ;
+int status_code absolute 0xA0002616 ;
+
+
 volatile int int_value;
 volatile float inverse_feed_rate;
 volatile float value;
@@ -943,11 +948,6 @@ static void Select_Plane(int axis_combo){
 
 
 
-void FAIL(int status){
- status_code = status;
-}
-
-
 void G_Initialise(){
  m_flow = 0;
  group_number = 0;
@@ -957,6 +957,19 @@ void G_Initialise(){
  inverse_feed_rate =  0 ;
  gc.absolute_override =  0 ;
  gc.absolute_mode =  1 ;
+}
+
+
+void FAIL(int status){
+ status_code = status;
+}
+
+int GET_FAIL(){
+ return status_code;
+}
+
+int SET_FAIL(int val){
+ status_code = val;
 }
 
 
@@ -978,16 +991,16 @@ int Rst_modalgroup(){
 
 
 
-void Set_modalword(int value){
+void Set_non_modalword(int value){
   (non_modal_words |= (1 << value) ) ;
 }
 
 
-int Get_modalword(){
+int Get_non_modalword(){
  return non_modal_words;
 }
 
-int Rst_modalword(){
+int Rst_non_modalword(){
  non_modal_words = 0;
  return non_modal_words;
 }
@@ -998,7 +1011,7 @@ int Rst_modalword(){
 void Set_Axisword(int value){
   (axis_words |= (1 << value) ) ;
 }
-#line 121 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 131 "C:/Users/Git/Pic32mzCNC/GCODE.c"
 int Get_Axisword(){
  return axis_words & 0x0fff;
 }
@@ -1021,7 +1034,7 @@ int Rst_motionmode(){
 
 
 int G_Mode(int mode){
-#line 147 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 157 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  group_number = Set_Modal_Groups(mode);
  motion_mode = Set_Motion_Mode(mode);
  return mode;
@@ -1032,7 +1045,7 @@ int G_Mode(int mode){
 int M_Mode(int flow){
  group_number = Set_M_Modal_Commands(flow);
  m_flow = Set_M_Commands(flow);
-#line 161 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 171 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return flow;
 }
 
@@ -1107,7 +1120,7 @@ int i,m_mode;
  }
 
  }
-#line 241 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 251 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return m_mode;
 }
 
@@ -1136,7 +1149,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 272 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 282 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default: FAIL( 3 );break;
@@ -1176,18 +1189,11 @@ int i = 0;
  if (group_number ==  1 ){
 
 
- Rst_modalword();
+ Rst_non_modalword();
 
  if(!gc.absolute_override)
   (non_modal_words |= (1 << non_modal_action) ) ;
-
-
- while(DMA_IsOn(1));
- dma_printf("group_number:= %d\tgc.absolute_override:= %d\n"
- ,group_number,gc.absolute_override);
-
-
-
+#line 333 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  last_non_modal_action = non_modal_action;
  return status_code;
  }
@@ -1200,12 +1206,7 @@ int i = 0;
 
  if(group_number ==  2 ){
  status_code =  0 ;
-
- while(DMA_IsOn(1));
- dma_printf("[group_number:= %d][motion_mode:= %d]\n"
- ,group_number,motion_mode);
-
-
+#line 351 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  switch (motion_mode) {
  case  0 :
 
@@ -1230,16 +1231,10 @@ int i = 0;
  }
  break;
  case  2 : case  3 :
-#line 373 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 383 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  for(i=0;i<=3;i++)
  Set_Axisword(i);
-
-
-
- while(DMA_IsOn(1));
- dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
-
-
+#line 392 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case  4 :
 
@@ -1261,48 +1256,27 @@ int i = 0;
  }else{
  FAIL( 0 );
  }
-
-
- while(DMA_IsOn(1));
- dma_printf("axis_xyz:= %d\n",axis_xyz);
-
-
-
+#line 420 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
  }
 
 
  if (group_number ==  4 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.absolute_mode:= %d\n",gc.absolute_mode);
-
-
+#line 431 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  FAIL( 0 );
  return status_code;
  }
 
 
  if (group_number ==  6 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.inverse_feed_rate_mode:= %d\n",gc.inverse_feed_rate_mode);
-
-
+#line 443 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  FAIL( 0 );
  return status_code;
  }
 
 
  if (group_number ==  7 ){
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.inches_mode:= %d\n",gc.inches_mode);
-
-
+#line 455 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  FAIL( 0 );
  return status_code;
  }
@@ -1314,16 +1288,11 @@ int i = 0;
  FAIL( 1 );
  else
  FAIL( 0 );
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.coord_select:= %d\n",gc.coord_select);
-
-
+#line 472 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
  }
  }
-#line 473 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 483 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  FAIL( 0 );
  return status_code;
 }
@@ -1340,7 +1309,7 @@ int F_Val,O_Val;
  XYZ_Val = *(float*)any;
  gc.next_position[X] = To_Millimeters(XYZ_Val);
   (axis_words |= (1 << X) ) ;
-#line 493 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 503 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'Y':
  XYZ_Val = *(float*)any;
@@ -1395,7 +1364,7 @@ int F_Val,O_Val;
  gc.feed_rate = To_Millimeters(XYZ_Val);
  }
  gc.frequency = (unsigned long)XYZ_Val;
-#line 551 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 561 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
@@ -1422,6 +1391,6 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 586 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 596 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }

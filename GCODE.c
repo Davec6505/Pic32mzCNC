@@ -25,16 +25,18 @@ parser_state_t gc;
 //changing when required, either by gcodes or code!! MIKROC!!!! a need to
 //understand this compiler better!!!!!!
 
-volatile int status_code;  // Status of instructions
 volatile float coord_data[NoOfAxis];
 
-static volatile int axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
-static volatile int modal_group_words;  // Bitflag variable to track and check modal group words in block
-static volatile int non_modal_words;    // Bitflags to track non-modal actions
-static volatile int motion_mode;
-volatile int group_number;
-volatile int non_modal_action;
-volatile int m_flow;
+int axis_words             absolute 0xA0002602 ;  // Bitflag to track which XYZ(ABC) parameters exist in block
+int modal_group_words      absolute 0xA0002604 ;  // Bitflag variable to track and check modal group words in block
+int non_modal_words        absolute 0xA0002606 ;  // Bitflags to track non-modal actions
+int m_flow                 absolute 0xA0002608 ;
+int non_modal_action       absolute 0xA0002610 ;
+int motion_mode            absolute 0xA0002612 ;
+int group_number           absolute 0xA0002614 ;
+int status_code            absolute 0xA0002616 ;  // Status of instructions
+
+
 volatile int int_value;
 volatile float inverse_feed_rate;       // negative inverse_feed_rate means no inverse_feed_rate specified
 volatile float value;
@@ -55,11 +57,6 @@ static void Select_Plane(int axis_combo){
 //                GLOBAL SCOPE FUNCTIONS                   //
 /////////////////////////////////////////////////////////////
 
-//status code failures
-void FAIL(int status){
-  status_code = status;
-}
-
 //init vals to defaults
 void G_Initialise(){
   m_flow               = 0;
@@ -70,6 +67,19 @@ void G_Initialise(){
   inverse_feed_rate    = false;
   gc.absolute_override = false;
   gc.absolute_mode     = true;
+}
+
+//status code failures
+void FAIL(int status){
+  status_code = status;
+}
+
+int  GET_FAIL(){
+  return status_code;
+}
+
+int  SET_FAIL(int val){
+  status_code = val;
 }
 
 //Set Modal group manually.... typically for homing
@@ -91,16 +101,16 @@ int Rst_modalgroup(){
 
 //Set Modal group manually.... typically for homing
 //instruction in protocol $H etc...
-void Set_modalword(int value){
+void Set_non_modalword(int value){
   bit_true( non_modal_words,bit( value));
 }
 
 //modal modes within each group
-int Get_modalword(){
+int Get_non_modalword(){
   return non_modal_words;
 }
 
-int Rst_modalword(){
+int Rst_non_modalword(){
    non_modal_words = 0;
    return non_modal_words;
 }
@@ -231,7 +241,7 @@ int i,m_mode;
       FAIL(STATUS_INVALID_STATEMENT);
     }
 
- }
+  }
  
   #if GcodeDebug == 2
      while(DMA_IsOn(1));
@@ -308,7 +318,7 @@ int i = 0;
    if (group_number == MODAL_GROUP_0){
      //if the non modal action has changed reset its state
      ///if(non_modal_action != last_non_modal_action){
-     Rst_modalword();
+     Rst_non_modalword();
      
      if(!gc.absolute_override)
          bit_true( non_modal_words,bit( non_modal_action));

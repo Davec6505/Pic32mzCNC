@@ -784,16 +784,19 @@ enum IJK{I,J,K};
 
 
 
-void FAIL(int status);
 void G_Initialise();
+
+void FAIL(int status);
+int GET_FAIL();
+int SET_FAIL(int val);
 
 void Set_modalgroup(int value);
 int Get_modalgroup();
 int Rst_modalgroup();
 
-void Set_modalword(int value);
-int Get_modalword();
-int Rst_modalword();
+void Set_non_modalword(int value);
+int Get_non_modalword();
+int Rst_non_modalword();
 
 void Set_Axisword(int value);
 int Get_Axisword();
@@ -1402,15 +1405,11 @@ int Val = 0;
 
 
  num_of_strings = strsplit2(gcode,str_,0x20);
-
- while(DMA_IsOn(1));
- dma_printf("no_of_strings:= %d\n",num_of_strings);
-
+#line 599 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  for(i=0; i < num_of_strings; i++){
  j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
  switch(gcode[i][0]){
  case 'G':case'g':
-
  if(j < 3){
  Val = atoi(temp);
 
@@ -1423,36 +1422,30 @@ int Val = 0;
  }
  mode = G_Mode(Val);
  status =  0 ;
-
- while(DMA_IsOn(1));
- dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
-
-
+#line 620 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  case 'X':case 'x':case 'Y':case 'y':
  case 'Z':case 'z':case 'A':case 'a':
  case 'I':case 'i':case 'J':case 'j':
- case 'F':case 'f':
-
+ case 'K':case 'k':case 'F':case 'f':
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[i],&XYZ_Val);
-
- while(DMA_IsOn(1));
- dma_printf("%d [%s][%f]\n",i,gcode[i],XYZ_Val);
 
  if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
  status =  0 ;
  else
  status =  20 ;
+#line 637 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+ break;
+ case 'P':case 'p':case 'L':case 'l':
+ case 'S':case 's':
+ Val = atoi(temp);
+ status = Instruction_Values(gcode[i],&Val);
  break;
  case 'M':case'm':
-
  Val = atoi(temp);
  flow = M_Mode(Val);
-
- while(DMA_IsOn(1));
- dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
-
+#line 650 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  status =  0 ;
  break;
  }
