@@ -10,7 +10,7 @@ MOVZ	R5, R0, R0
 L_SetInitialSizes0:
 ; i start address is: 20 (R5)
 SEH	R2, R5
-SLTI	R2, R2, 2
+SLTI	R2, R2, 4
 BNE	R2, R0, L__SetInitialSizes74
 NOP	
 J	L_SetInitialSizes1
@@ -1995,7 +1995,7 @@ MOVZ	R4, R0, R0
 L_Kinematics_ResetHoming58:
 ; i start address is: 16 (R4)
 SEH	R2, R4
-SLTI	R2, R2, 2
+SLTI	R2, R2, 4
 BNE	R2, R0, L_Kinematics_ResetHoming131
 NOP	
 J	L_Kinematics_ResetHoming59
@@ -2034,7 +2034,7 @@ _mc_reset:
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
 ;Kinematics.c,588 :: 		if (bit_isfalse(sys.execute, EXEC_RESET)) {
-LH	R2, Offset(_sys+18)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ANDI	R2, R2, 16
 SEH	R2, R2
 BEQ	R2, R0, L__mc_reset133
@@ -2043,9 +2043,9 @@ J	L_mc_reset61
 NOP	
 L__mc_reset133:
 ;Kinematics.c,589 :: 		sys.execute |= EXEC_RESET;
-LH	R2, Offset(_sys+18)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 16
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ;Kinematics.c,599 :: 		switch (sys.state) {
 J	L_mc_reset62
 NOP	
@@ -2054,9 +2054,9 @@ L_mc_reset64:
 L_mc_reset65:
 L_mc_reset66:
 ;Kinematics.c,601 :: 		sys.execute |= EXEC_ALARM; // Execute alarm state.
-LH	R2, Offset(_sys+18)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 32
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ;Kinematics.c,602 :: 		disableOCx(); // Execute alarm force kills steppers. Position likely lost.
 JAL	_disableOCx+0
 NOP	

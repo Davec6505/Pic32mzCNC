@@ -690,7 +690,7 @@ ADDIU	SP, SP, -12
 SW	RA, 0(SP)
 ;Protocol.c,164 :: 		if (sys.execute) { // Enter only if any bit flag is true
 SW	R25, 4(SP)
-LH	R2, Offset(_sys+18)(GP)
+LH	R2, Offset(_sys+26)(GP)
 BNE	R2, R0, L__protocol_execute_runtime260
 NOP	
 J	L_protocol_execute_runtime32
@@ -698,9 +698,9 @@ NOP
 L__protocol_execute_runtime260:
 ;Protocol.c,165 :: 		int rt_exec = sys.execute; // Avoid calling volatile multiple times
 ; rt_exec start address is: 16 (R4)
-LH	R4, Offset(_sys+18)(GP)
+LH	R4, Offset(_sys+26)(GP)
 ;Protocol.c,170 :: 		if (rt_exec & (EXEC_ALARM | EXEC_CRIT_EVENT)) {
-LH	R2, Offset(_sys+18)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ANDI	R2, R2, 96
 BNE	R2, R0, L__protocol_execute_runtime262
 NOP	
@@ -728,10 +728,10 @@ JAL	_report_feedback_message+0
 NOP	
 LH	R4, 8(SP)
 ;Protocol.c,177 :: 		bit_false(sys.execute,EXEC_RESET); // Disable any existing reset
-LH	R3, Offset(_sys+18)(GP)
+LH	R3, Offset(_sys+26)(GP)
 ORI	R2, R0, 65519
 AND	R2, R3, R2
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ; rt_exec end address is: 16 (R4)
 SEH	R3, R4
 ;Protocol.c,178 :: 		do {
@@ -745,7 +745,7 @@ L_protocol_execute_runtime35:
 ; rt_exec start address is: 12 (R3)
 ; rt_exec start address is: 12 (R3)
 ; rt_exec end address is: 12 (R3)
-LH	R2, Offset(_sys+18)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ANDI	R2, R2, 16
 SEH	R2, R2
 BNE	R2, R0, L__protocol_execute_runtime266
@@ -773,10 +773,10 @@ LH	R4, 8(SP)
 L_protocol_execute_runtime38:
 ;Protocol.c,191 :: 		bit_false(sys.execute,(EXEC_ALARM | EXEC_CRIT_EVENT));
 ; rt_exec start address is: 16 (R4)
-LH	R3, Offset(_sys+18)(GP)
+LH	R3, Offset(_sys+26)(GP)
 ORI	R2, R0, 65439
 AND	R2, R3, R2
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ; rt_exec end address is: 16 (R4)
 ;Protocol.c,192 :: 		}
 J	L_protocol_execute_runtime33
@@ -816,10 +816,10 @@ JAL	_report_realtime_status+0
 NOP	
 LH	R4, 8(SP)
 ;Protocol.c,203 :: 		bit_false(sys.execute,EXEC_STATUS_REPORT);
-LH	R3, Offset(_sys+18)(GP)
+LH	R3, Offset(_sys+26)(GP)
 ORI	R2, R0, 65534
 AND	R2, R3, R2
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ;Protocol.c,204 :: 		}
 L_protocol_execute_runtime40:
 ;Protocol.c,207 :: 		if (rt_exec & EXEC_FEED_HOLD) {
@@ -830,10 +830,10 @@ J	L_protocol_execute_runtime41
 NOP	
 L__protocol_execute_runtime272:
 ;Protocol.c,209 :: 		bit_false(sys.execute,EXEC_FEED_HOLD);
-LH	R3, Offset(_sys+18)(GP)
+LH	R3, Offset(_sys+26)(GP)
 ORI	R2, R0, 65527
 AND	R2, R3, R2
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ;Protocol.c,210 :: 		}
 L_protocol_execute_runtime41:
 ;Protocol.c,214 :: 		if (rt_exec & EXEC_CYCLE_STOP) {
@@ -844,10 +844,10 @@ J	L_protocol_execute_runtime42
 NOP	
 L__protocol_execute_runtime274:
 ;Protocol.c,216 :: 		bit_false(sys.execute,EXEC_CYCLE_STOP);
-LH	R3, Offset(_sys+18)(GP)
+LH	R3, Offset(_sys+26)(GP)
 ORI	R2, R0, 65531
 AND	R2, R3, R2
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ;Protocol.c,217 :: 		}
 L_protocol_execute_runtime42:
 ;Protocol.c,219 :: 		if (rt_exec & EXEC_CYCLE_START) {
@@ -859,7 +859,7 @@ J	L_protocol_execute_runtime43
 NOP	
 L__protocol_execute_runtime276:
 ;Protocol.c,221 :: 		if (bit_istrue(settings.flags,FLAG_AUTO_START)) {
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 2
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__protocol_execute_runtime278
@@ -869,14 +869,14 @@ NOP
 L__protocol_execute_runtime278:
 ;Protocol.c,222 :: 		sys.auto_start = true; // Re-enable auto start after feed hold.
 ORI	R2, R0, 1
-SH	R2, Offset(_sys+16)(GP)
+SH	R2, Offset(_sys+24)(GP)
 ;Protocol.c,223 :: 		}
 L_protocol_execute_runtime44:
 ;Protocol.c,224 :: 		bit_false(sys.execute,EXEC_CYCLE_START);
-LH	R3, Offset(_sys+18)(GP)
+LH	R3, Offset(_sys+26)(GP)
 ORI	R2, R0, 65533
 AND	R2, R3, R2
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 ;Protocol.c,225 :: 		}
 L_protocol_execute_runtime43:
 ;Protocol.c,226 :: 		}
@@ -907,9 +907,9 @@ NOP
 ;Protocol.c,254 :: 		sys.abort = 0;
 SH	R0, Offset(_sys+0)(GP)
 ;Protocol.c,255 :: 		sys.execute = 0;
-SH	R0, Offset(_sys+18)(GP)
+SH	R0, Offset(_sys+26)(GP)
 ;Protocol.c,256 :: 		if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) { sys.auto_start = true; }
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 2
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__protocol_system_check283
@@ -918,7 +918,7 @@ J	L_protocol_system_check46
 NOP	
 L__protocol_system_check283:
 ORI	R2, R0, 1
-SH	R2, Offset(_sys+16)(GP)
+SH	R2, Offset(_sys+24)(GP)
 L_protocol_system_check46:
 ;Protocol.c,266 :: 		if (sys.state == STATE_INIT && bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) { sys.state = STATE_ALARM; }
 LH	R3, Offset(_sys+2)(GP)
@@ -928,7 +928,7 @@ NOP
 J	L__protocol_system_check198
 NOP	
 L__protocol_system_check284:
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 16
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__protocol_system_check286
@@ -1251,23 +1251,23 @@ J	L_Protocol_Do_Critical_Msg65
 NOP	
 ;Protocol.c,369 :: 		case CMD_STATUS_REPORT: sys.execute |= EXEC_STATUS_REPORT; break; // Set as true
 L_Protocol_Do_Critical_Msg67:
-LH	R2, Offset(_sys+18)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 1
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 J	L_Protocol_Do_Critical_Msg66
 NOP	
 ;Protocol.c,370 :: 		case CMD_CYCLE_START:   sys.execute |= EXEC_CYCLE_START; break; // Set as true
 L_Protocol_Do_Critical_Msg68:
-LH	R2, Offset(_sys+18)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 2
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 J	L_Protocol_Do_Critical_Msg66
 NOP	
 ;Protocol.c,371 :: 		case CMD_FEED_HOLD:     sys.execute |= EXEC_FEED_HOLD; break; // Set as true
 L_Protocol_Do_Critical_Msg69:
-LH	R2, Offset(_sys+18)(GP)
+LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 8
-SH	R2, Offset(_sys+18)(GP)
+SH	R2, Offset(_sys+26)(GP)
 J	L_Protocol_Do_Critical_Msg66
 NOP	
 ;Protocol.c,372 :: 		case CMD_RESET:         mc_reset(); break; // Call motion control reset routine.
@@ -1455,7 +1455,7 @@ L_Protocol_Check_Query_Type86:
 ;Protocol.c,432 :: 		status = STATUS_OK;
 SH	R0, 24(SP)
 ;Protocol.c,433 :: 		if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 16
 ANDI	R2, R2, 65535
 BNE	R2, R0, L_Protocol_Check_Query_Type322
@@ -1497,7 +1497,7 @@ MOVZ	R3, R0, R0
 L_Protocol_Check_Query_Type91:
 ; i start address is: 12 (R3)
 SEH	R2, R3
-SLTI	R2, R2, 3
+SLTI	R2, R2, 5
 BNE	R2, R0, L_Protocol_Check_Query_Type327
 NOP	
 J	L_Protocol_Check_Query_Type92
@@ -1633,6 +1633,8 @@ NOP
 LW	R25, 20(SP)
 LH	R26, 18(SP)
 LH	R3, 16(SP)
+;Protocol.c,470 :: 		status = STATUS_OK;
+SH	R0, 24(SP)
 ;Protocol.c,471 :: 		}
 L_Protocol_Check_Query_Type103:
 ;Protocol.c,465 :: 		for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
@@ -1971,6 +1973,9 @@ J	L_Protocol_Check_Query_Type132
 NOP	
 L_Protocol_Check_Query_Type210:
 L_Protocol_Check_Query_Type209:
+;Protocol.c,561 :: 		status = STATUS_UNSUPPORTED_STATEMENT;
+ORI	R2, R0, 3
+SH	R2, 24(SP)
 ;Protocol.c,562 :: 		}
 L_Protocol_Check_Query_Type132:
 ;Protocol.c,563 :: 		value = atof(str_val);
@@ -2166,6 +2171,9 @@ J	L_end_Check_Query_Type
 NOP	
 ;Protocol.c,579 :: 		}else{
 L_Protocol_Check_Query_Type72:
+;Protocol.c,580 :: 		status = STATUS_COMMAND_EXECUTE_MOTION;
+ORI	R2, R0, 20
+SH	R2, 24(SP)
 ;Protocol.c,582 :: 		return status;
 ORI	R2, R0, 20
 ;Protocol.c,583 :: 		}

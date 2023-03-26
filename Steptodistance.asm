@@ -1,8 +1,20 @@
 _leadscrew_steps:
-;Steptodistance.c,17 :: 		long leadscrew_steps(double move_distance){
+;Steptodistance.c,17 :: 		long leadscrew_steps(double move_distance,int axis){
 ;Steptodistance.c,18 :: 		double temp = 0.00;
+;Steptodistance.c,22 :: 		temp =  INVERSE_LEADSCREW_PITCH * INVERSE_M_STEP * settings.steps_per_mm[axis];
+SEH	R2, R25
+SLL	R3, R2, 2
+LUI	R2, hi_addr(_settings+0)
+ORI	R2, R2, lo_addr(_settings+0)
+ADDU	R2, R2, R3
+LWC1	S1, 0(R2)
+LUI	R2, 16889
+ORI	R2, R2, 65535
+MTC1	R2, S0
+MUL.S 	S0, S0, S1
 ;Steptodistance.c,24 :: 		return temp;
-ORI	R2, R0, 5874
+CVT36.S 	S0, S0
+MFC1	R2, S0
 ;Steptodistance.c,25 :: 		}
 L_end_leadscrew_steps:
 JR	RA
@@ -86,7 +98,7 @@ JR	RA
 NOP	
 ; end of _in2mm
 _calcSteps:
-;Steptodistance.c,68 :: 		long calcSteps(double mmsToMove,  double Dia){
+;Steptodistance.c,68 :: 		long calcSteps(double mmsToMove,  double Dia,int axis){
 ;Steptodistance.c,73 :: 		circ = Dia*Pi;
 LUI	R2, 16457
 ORI	R2, R2, 4060
@@ -94,8 +106,15 @@ MTC1	R2, S0
 MUL.S 	S0, S13, S0
 ;Steptodistance.c,77 :: 		cirDivision = mmsToMove / circ;
 DIV.S 	S1, S12, S0
-;Steptodistance.c,78 :: 		stepsToMove = cirDivision * SPRU;
-LUI	R2, 17852
+;Steptodistance.c,78 :: 		stepsToMove = cirDivision * settings.steps_per_mm[axis] * M_STEP;
+SEH	R2, R25
+SLL	R3, R2, 2
+LUI	R2, hi_addr(_settings+0)
+ORI	R2, R2, lo_addr(_settings+0)
+ADDU	R2, R2, R3
+LWC1	S0, 0(R2)
+MUL.S 	S1, S1, S0
+LUI	R2, 16896
 ORI	R2, R2, 0
 MTC1	R2, S0
 MUL.S 	S0, S1, S0

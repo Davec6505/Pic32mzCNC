@@ -559,7 +559,7 @@ NOP
 L_GCODE_Set_Motion_Mode36:
 ORI	R2, R0, 2
 SH	R2, 10(SP)
-SH	R0, Offset(_gc+92)(GP)
+SH	R0, Offset(_gc+124)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
 ;GCODE.c,203 :: 		case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW; break;
@@ -567,7 +567,7 @@ L_GCODE_Set_Motion_Mode37:
 ORI	R2, R0, 3
 SH	R2, 10(SP)
 ORI	R2, R0, 1
-SH	R2, Offset(_gc+92)(GP)
+SH	R2, Offset(_gc+124)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
 ;GCODE.c,204 :: 		case 4: non_modal_action  = NON_MODAL_DWELL;     break;
@@ -1492,7 +1492,7 @@ MOVZ	R5, R0, R0
 L_Check_group_multiple_violations116:
 ; i start address is: 20 (R5)
 SEH	R2, R5
-SLTI	R2, R2, 2
+SLTI	R2, R2, 4
 BNE	R2, R0, L__Check_group_multiple_violations372
 NOP	
 J	L_Check_group_multiple_violations117
@@ -1504,8 +1504,8 @@ SLL	R4, R2, 2
 LUI	R2, hi_addr(_gc+28)
 ORI	R2, R2, lo_addr(_gc+28)
 ADDU	R3, R2, R4
-LUI	R2, hi_addr(_gc+52)
-ORI	R2, R2, lo_addr(_gc+52)
+LUI	R2, hi_addr(_gc+76)
+ORI	R2, R2, lo_addr(_gc+76)
 ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
@@ -1692,7 +1692,7 @@ L_Instruction_Values133:
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
-SWC1	S0, Offset(_gc+52)(GP)
+SWC1	S0, Offset(_gc+76)(GP)
 ;GCODE.c,498 :: 		bit_true(axis_words,bit(X));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 1
@@ -1706,7 +1706,7 @@ L_Instruction_Values134:
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
-SWC1	S0, Offset(_gc+56)(GP)
+SWC1	S0, Offset(_gc+80)(GP)
 ;GCODE.c,507 :: 		bit_true(axis_words,bit(Y));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 2
@@ -1720,7 +1720,7 @@ L_Instruction_Values135:
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
-SWC1	S0, Offset(_gc+60)(GP)
+SWC1	S0, Offset(_gc+84)(GP)
 ;GCODE.c,512 :: 		bit_true(axis_words,bit(Z));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 4
@@ -1734,7 +1734,7 @@ L_Instruction_Values136:
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
-SWC1	S0, Offset(_gc+64)(GP)
+SWC1	S0, Offset(_gc+88)(GP)
 ;GCODE.c,517 :: 		bit_true(axis_words,bit(A));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 8
@@ -1748,7 +1748,7 @@ L_Instruction_Values137:
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
-SWC1	S0, Offset(_gc+68)(GP)
+SWC1	S0, Offset(_gc+92)(GP)
 ;GCODE.c,522 :: 		bit_true(axis_words,bit(B));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 16
@@ -1762,7 +1762,7 @@ L_Instruction_Values138:
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
-SWC1	S0, Offset(_gc+72)(GP)
+SWC1	S0, Offset(_gc+104)(GP)
 ;GCODE.c,527 :: 		break;
 J	L_Instruction_Values131
 NOP	
@@ -1774,16 +1774,16 @@ INS	R2, R0, 0, 1
 SB	R2, Offset(_gc+0)(GP)
 ;GCODE.c,530 :: 		gc.R = 0;
 MOVZ	R2, R0, R0
-SW	R2, Offset(_gc+72)(GP)
+SW	R2, Offset(_gc+104)(GP)
 ;GCODE.c,531 :: 		XYZ_Val = *(float*)any;
 LWC1	S0, 0(R26)
 ;GCODE.c,532 :: 		gc.I = XYZ_Val;
-SWC1	S0, Offset(_gc+76)(GP)
+SWC1	S0, Offset(_gc+108)(GP)
 ;GCODE.c,533 :: 		gc.offset[I] = To_Millimeters(XYZ_Val);
 MOV.S 	S12, S0
 JAL	GCODE_To_Millimeters+0
 NOP	
-SWC1	S0, Offset(_gc+60)(GP)
+SWC1	S0, Offset(_gc+92)(GP)
 ;GCODE.c,534 :: 		break;
 J	L_Instruction_Values131
 NOP	
@@ -1792,12 +1792,12 @@ L_Instruction_Values140:
 ;GCODE.c,536 :: 		XYZ_Val = *(float*)any;
 LWC1	S0, 0(R26)
 ;GCODE.c,537 :: 		gc.J = XYZ_Val;
-SWC1	S0, Offset(_gc+80)(GP)
+SWC1	S0, Offset(_gc+112)(GP)
 ;GCODE.c,538 :: 		gc.offset[J] = To_Millimeters(XYZ_Val);
 MOV.S 	S12, S0
 JAL	GCODE_To_Millimeters+0
 NOP	
-SWC1	S0, Offset(_gc+64)(GP)
+SWC1	S0, Offset(_gc+96)(GP)
 ;GCODE.c,539 :: 		break;
 J	L_Instruction_Values131
 NOP	
@@ -1806,12 +1806,12 @@ L_Instruction_Values141:
 ;GCODE.c,541 :: 		XYZ_Val = *(float*)any;
 LWC1	S0, 0(R26)
 ;GCODE.c,542 :: 		gc.K = XYZ_Val;
-SWC1	S0, Offset(_gc+84)(GP)
+SWC1	S0, Offset(_gc+116)(GP)
 ;GCODE.c,543 :: 		gc.offset[K] = To_Millimeters(XYZ_Val);
 MOV.S 	S12, S0
 JAL	GCODE_To_Millimeters+0
 NOP	
-SWC1	S0, Offset(_gc+68)(GP)
+SWC1	S0, Offset(_gc+100)(GP)
 ;GCODE.c,544 :: 		break;
 J	L_Instruction_Values131
 NOP	
@@ -1889,11 +1889,11 @@ NOP
 ;GCODE.c,566 :: 		}
 L_Instruction_Values147:
 ;GCODE.c,567 :: 		gc.P = O_Val;
-SH	R3, Offset(_gc+88)(GP)
+SH	R3, Offset(_gc+120)(GP)
 ; O_Val end address is: 12 (R3)
 ;GCODE.c,568 :: 		gc.S = -1;
 ORI	R2, R0, 65535
-SH	R2, Offset(_gc+90)(GP)
+SH	R2, Offset(_gc+122)(GP)
 ;GCODE.c,569 :: 		break;
 J	L_Instruction_Values131
 NOP	
@@ -1918,11 +1918,11 @@ NOP
 ;GCODE.c,574 :: 		}
 L_Instruction_Values149:
 ;GCODE.c,575 :: 		gc.S = O_Val;
-SH	R3, Offset(_gc+90)(GP)
+SH	R3, Offset(_gc+122)(GP)
 ; O_Val end address is: 12 (R3)
 ;GCODE.c,576 :: 		gc.P = -1;
 ORI	R2, R0, 65535
-SH	R2, Offset(_gc+88)(GP)
+SH	R2, Offset(_gc+120)(GP)
 ;GCODE.c,577 :: 		break;
 J	L_Instruction_Values131
 NOP	

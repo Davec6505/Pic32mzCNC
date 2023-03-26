@@ -58,9 +58,9 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 171 "c:/users/git/pic32mzcnc/settings.h"
+#line 173 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[ 2 ];
+ float steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -172,11 +172,11 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 29 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 41 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
-long leadscrew_sets(double move_distance);
+long leadscrew_sets(double move_distance,int axis);
 long belt_steps(double move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
@@ -304,7 +304,7 @@ typedef struct {
  int state;
  int homing;
  int homing_cnt;
- long position[ 2 ];
+ long position[ 4 ];
 
  int auto_start;
  int execute;
@@ -314,8 +314,8 @@ extern system_t sys;
 
 
 typedef struct{
- float coord[ 2 ];
- float coord_offset[ 2 ];
+ float coord[ 4 ];
+ float coord_offset[ 4 ];
 }coord_sys;
 extern volatile coord_sys coord_system[ 9 ];
 
@@ -390,12 +390,12 @@ typedef struct {
  long frequency;
  float feed_rate;
 
- float position[ 2 ];
- float coord_system[ 2 ];
+ float position[ 4 ];
+ float coord_system[ 4 ];
 
- float coord_offset[ 2 ];
+ float coord_offset[ 4 ];
 
- float next_position[ 2 ];
+ float next_position[ 4 ];
  float offset[3];
  float R;
  float I;
@@ -705,7 +705,7 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 52 "c:/users/git/pic32mzcnc/planner.h"
+#line 54 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  int Single_Dual;
  char running: 1;
@@ -873,7 +873,7 @@ typedef struct Steps{
 
  char master: 1;
 }STP;
-extern STP STPS[ 2 ];
+extern STP STPS[ 4 ];
 
 
 
@@ -933,7 +933,7 @@ static long d2;
 
 
 
-static homing_t homing[ 2 ];
+static homing_t homing[ 4 ];
 
 
 
@@ -942,7 +942,7 @@ int i = 0;
 
  gc.absolute_mode = 0;
 
- for (i = 0;i< 2 ;i++){
+ for (i = 0;i< 4 ;i++){
  axis[i].max_travel = max_sizes[i];
  }
 }
@@ -1349,7 +1349,7 @@ static void Home_Axis(double distance,long speed,int axis){
 
 static void ResetHoming(){
 int i = 0;
- for(i = 0;i<  2 ;i++){
+ for(i = 0;i<  4 ;i++){
  homing[i].home_state = 0;
  homing[i].home_cnt = 0;
  }

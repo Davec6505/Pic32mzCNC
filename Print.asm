@@ -1192,31 +1192,31 @@ J	L_report_grbl_settings75
 NOP	
 L_report_grbl_settings76:
 ;Print.c,185 :: 		,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 16
 ANDI	R2, R2, 65535
 XORI	R8, R2, 0
 SLTU	R8, R0, R8
 ;Print.c,184 :: 		,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 8
 ANDI	R2, R2, 65535
 XORI	R7, R2, 0
 SLTU	R7, R0, R7
 ;Print.c,183 :: 		,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 4
 ANDI	R2, R2, 65535
 XORI	R6, R2, 0
 SLTU	R6, R0, R6
 ;Print.c,182 :: 		,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 2
 ANDI	R2, R2, 65535
 XORI	R5, R2, 0
 SLTU	R5, R0, R5
 ;Print.c,181 :: 		,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
 XORI	R4, R2, 0
@@ -1230,20 +1230,20 @@ JAL	___CC2DW+0
 NOP	
 ADDIU	R3, SP, 8
 ;Print.c,190 :: 		,settings.homing_pulloff);                            //22
-LW	R2, Offset(_settings+24)(GP)
+LW	R2, Offset(_settings+32)(GP)
 ADDIU	SP, SP, -96
 SW	R2, 92(SP)
 ;Print.c,189 :: 		,settings.homing_debounce_delay                       //21
-LHU	R2, Offset(_settings+46)(GP)
+LHU	R2, Offset(_settings+54)(GP)
 SH	R2, 88(SP)
 ;Print.c,188 :: 		,settings.homing_seek_rate                            //20
-LW	R2, Offset(_settings+20)(GP)
+LW	R2, Offset(_settings+28)(GP)
 SW	R2, 84(SP)
 ;Print.c,187 :: 		,settings.homing_feed_rate                         //19
-LW	R2, Offset(_settings+16)(GP)
+LW	R2, Offset(_settings+24)(GP)
 SW	R2, 80(SP)
 ;Print.c,186 :: 		,settings.homing_dir_mask                          //18
-LHU	R2, Offset(_settings+56)(GP)
+LHU	R2, Offset(_settings+64)(GP)
 SH	R2, 76(SP)
 ;Print.c,185 :: 		,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
 SW	R8, 72(SP)
@@ -1256,34 +1256,34 @@ SW	R5, 60(SP)
 ;Print.c,181 :: 		,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
 SW	R4, 56(SP)
 ;Print.c,180 :: 		,settings.decimal_places            //12
-LHU	R2, Offset(_settings+54)(GP)
+LHU	R2, Offset(_settings+62)(GP)
 SH	R2, 52(SP)
 ;Print.c,179 :: 		,settings.n_arc_correction          //11
-LHU	R2, Offset(_settings+40)(GP)
+LHU	R2, Offset(_settings+48)(GP)
 SH	R2, 48(SP)
 ;Print.c,178 :: 		,settings.mm_per_arc_segment        //10
-LW	R2, Offset(_settings+28)(GP)
+LW	R2, Offset(_settings+36)(GP)
 SW	R2, 44(SP)
 ;Print.c,177 :: 		,settings.junction_deviation        //9
-LW	R2, Offset(_settings+36)(GP)
+LW	R2, Offset(_settings+44)(GP)
 SW	R2, 40(SP)
 ;Print.c,176 :: 		,settings.acceleration              //8
-LW	R2, Offset(_settings+32)(GP)
+LW	R2, Offset(_settings+40)(GP)
 SW	R2, 36(SP)
 ;Print.c,175 :: 		,settings.step_idle_delay           //7
-LHU	R2, Offset(_settings+44)(GP)
+LHU	R2, Offset(_settings+52)(GP)
 SH	R2, 32(SP)
 ;Print.c,174 :: 		,settings.invert_mask               //6
-LHU	R2, Offset(_settings+58)(GP)
+LHU	R2, Offset(_settings+66)(GP)
 SH	R2, 28(SP)
 ;Print.c,173 :: 		,settings.default_seek_rate         //5
-LW	R2, Offset(_settings+12)(GP)
+LW	R2, Offset(_settings+20)(GP)
 SW	R2, 24(SP)
 ;Print.c,172 :: 		,settings.default_feed_rate         //4
-LW	R2, Offset(_settings+8)(GP)
+LW	R2, Offset(_settings+16)(GP)
 SW	R2, 20(SP)
 ;Print.c,171 :: 		,settings.p_usec                    //3
-LHU	R2, Offset(_settings+52)(GP)
+LHU	R2, Offset(_settings+60)(GP)
 SH	R2, 16(SP)
 ;Print.c,170 :: 		,settings.steps_per_mm[Z]           //2
 LW	R2, Offset(_settings+8)(GP)
@@ -1568,7 +1568,7 @@ MOVZ	R4, R0, R0
 L_report_realtime_status90:
 ; i start address is: 16 (R4)
 SEH	R2, R4
-SLTI	R2, R2, 3
+SLTI	R2, R2, 5
 BNE	R2, R0, L__report_realtime_status315
 NOP	
 J	L_report_realtime_status91
@@ -1599,7 +1599,7 @@ LH	R4, 12(SP)
 LW	R2, 72(SP)
 SWC1	S0, 0(R2)
 ;Print.c,230 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__report_realtime_status317
@@ -1678,7 +1678,7 @@ J	L_report_realtime_status97
 NOP	
 L__report_realtime_status320:
 ;Print.c,241 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__report_realtime_status322
@@ -1692,12 +1692,12 @@ SLL	R4, R2, 2
 LUI	R2, hi_addr(report_realtime_status_print_position_L0+0)
 ORI	R2, R2, lo_addr(report_realtime_status_print_position_L0+0)
 ADDU	R3, R2, R4
-LUI	R2, hi_addr(_gc+36)
-ORI	R2, R2, lo_addr(_gc+36)
-ADDU	R2, R2, R4
-LWC1	S1, 0(R2)
 LUI	R2, hi_addr(_gc+44)
 ORI	R2, R2, lo_addr(_gc+44)
+ADDU	R2, R2, R4
+LWC1	S1, 0(R2)
+LUI	R2, hi_addr(_gc+60)
+ORI	R2, R2, lo_addr(_gc+60)
 ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 ADD.S 	S1, S1, S0
@@ -1718,12 +1718,12 @@ SLL	R4, R2, 2
 LUI	R2, hi_addr(report_realtime_status_print_position_L0+0)
 ORI	R2, R2, lo_addr(report_realtime_status_print_position_L0+0)
 ADDU	R3, R2, R4
-LUI	R2, hi_addr(_gc+36)
-ORI	R2, R2, lo_addr(_gc+36)
-ADDU	R2, R2, R4
-LWC1	S1, 0(R2)
 LUI	R2, hi_addr(_gc+44)
 ORI	R2, R2, lo_addr(_gc+44)
+ADDU	R2, R2, R4
+LWC1	S1, 0(R2)
+LUI	R2, hi_addr(_gc+60)
+ORI	R2, R2, lo_addr(_gc+60)
 ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 ADD.S 	S1, S1, S0
@@ -2081,7 +2081,7 @@ L_report_gcode_parameters113:
 SH	R0, 10(SP)
 L_report_gcode_parameters122:
 LH	R2, 10(SP)
-SLTI	R2, R2, 2
+SLTI	R2, R2, 4
 BNE	R2, R0, L__report_gcode_parameters349
 NOP	
 J	L_report_gcode_parameters123
@@ -2101,7 +2101,7 @@ J	L_report_gcode_parameters125
 NOP	
 L_report_gcode_parameters126:
 ;Print.c,287 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__report_gcode_parameters353
@@ -2111,7 +2111,7 @@ NOP
 L__report_gcode_parameters353:
 ;Print.c,288 :: 		dma_printf("%f ",coord_system[coord_select].coord[i]*INCH_PER_MM);
 LH	R2, 8(SP)
-SLL	R3, R2, 4
+SLL	R3, R2, 5
 LUI	R2, hi_addr(_coord_system+0)
 ORI	R2, R2, lo_addr(_coord_system+0)
 ADDU	R3, R2, R3
@@ -2144,7 +2144,7 @@ NOP
 L_report_gcode_parameters127:
 ;Print.c,290 :: 		dma_printf("%f ",coord_system[coord_select].coord[i]);
 LH	R2, 8(SP)
-SLL	R3, R2, 4
+SLL	R3, R2, 5
 LUI	R2, hi_addr(_coord_system+0)
 ORI	R2, R2, lo_addr(_coord_system+0)
 ADDU	R3, R2, R3
@@ -2184,7 +2184,7 @@ NOP
 L_report_gcode_parameters130:
 ;Print.c,293 :: 		if (i < (NoOfAxis-1)) {
 LH	R2, 10(SP)
-SLTI	R2, R2, 1
+SLTI	R2, R2, 3
 BNE	R2, R0, L__report_gcode_parameters356
 NOP	
 J	L_report_gcode_parameters131
@@ -2274,7 +2274,7 @@ ADDIU	SP, SP, 4
 SH	R0, 10(SP)
 L_report_gcode_parameters135:
 LH	R2, 10(SP)
-SLTI	R2, R2, 2
+SLTI	R2, R2, 4
 BNE	R2, R0, L__report_gcode_parameters359
 NOP	
 J	L_report_gcode_parameters136
@@ -2294,7 +2294,7 @@ J	L_report_gcode_parameters138
 NOP	
 L_report_gcode_parameters139:
 ;Print.c,304 :: 		if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)){
-LHU	R2, Offset(_settings+42)(GP)
+LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 1
 ANDI	R2, R2, 65535
 BNE	R2, R0, L__report_gcode_parameters363
@@ -2305,8 +2305,8 @@ L__report_gcode_parameters363:
 ;Print.c,305 :: 		dma_printf("%f ",gc.coord_offset[i]*INCH_PER_MM);
 LH	R2, 10(SP)
 SLL	R3, R2, 2
-LUI	R2, hi_addr(_gc+44)
-ORI	R2, R2, lo_addr(_gc+44)
+LUI	R2, hi_addr(_gc+60)
+ORI	R2, R2, lo_addr(_gc+60)
 ADDU	R2, R2, R3
 LWC1	S1, 0(R2)
 LUI	R2, 15649
@@ -2335,8 +2335,8 @@ L_report_gcode_parameters140:
 ;Print.c,307 :: 		dma_printf("%f ",gc.coord_offset[i]);
 LH	R2, 10(SP)
 SLL	R3, R2, 2
-LUI	R2, hi_addr(_gc+44)
-ORI	R2, R2, lo_addr(_gc+44)
+LUI	R2, hi_addr(_gc+60)
+ORI	R2, R2, lo_addr(_gc+60)
 ADDU	R2, R2, R3
 LWC1	S0, 0(R2)
 ORI	R30, R0, 37
@@ -2371,7 +2371,7 @@ NOP
 L_report_gcode_parameters143:
 ;Print.c,310 :: 		if (i < (NoOfAxis-1)) {
 LH	R2, 10(SP)
-SLTI	R2, R2, 1
+SLTI	R2, R2, 3
 BNE	R2, R0, L__report_gcode_parameters366
 NOP	
 J	L_report_gcode_parameters144

@@ -145,9 +145,9 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 171 "c:/users/git/pic32mzcnc/settings.h"
+#line 173 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
- float steps_per_mm[ 2 ];
+ float steps_per_mm[ 4 ];
  float default_feed_rate;
  float default_seek_rate;
  float homing_feed_rate;
@@ -293,7 +293,7 @@ typedef struct {
  int state;
  int homing;
  int homing_cnt;
- long position[ 2 ];
+ long position[ 4 ];
 
  int auto_start;
  int execute;
@@ -303,8 +303,8 @@ extern system_t sys;
 
 
 typedef struct{
- float coord[ 2 ];
- float coord_offset[ 2 ];
+ float coord[ 4 ];
+ float coord_offset[ 4 ];
 }coord_sys;
 extern volatile coord_sys coord_system[ 9 ];
 
@@ -379,12 +379,12 @@ typedef struct {
  long frequency;
  float feed_rate;
 
- float position[ 2 ];
- float coord_system[ 2 ];
+ float position[ 4 ];
+ float coord_system[ 4 ];
 
- float coord_offset[ 2 ];
+ float coord_offset[ 4 ];
 
- float next_position[ 2 ];
+ float next_position[ 4 ];
  float offset[3];
  float R;
  float I;
@@ -577,7 +577,7 @@ typedef struct Steps{
 
  char master: 1;
 }STP;
-extern STP STPS[ 2 ];
+extern STP STPS[ 4 ];
 
 
 
@@ -618,7 +618,7 @@ void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 52 "c:/users/git/pic32mzcnc/planner.h"
+#line 54 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  int Single_Dual;
  char running: 1;
@@ -732,11 +732,11 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 30 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 29 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 42 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 41 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps( double mmsToMove, double Dia);
-long leadscrew_sets(double move_distance);
+long leadscrew_sets(double move_distance,int axis);
 long belt_steps(double move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);
@@ -910,7 +910,7 @@ static int Modal_Group_Actions12(int action);
 #line 39 "C:/Users/Git/Pic32mzCNC/Main.c"
 system_t sys;
 coord_sys coord_system[ 9 ];
-STP STPS[ 2 ];
+STP STPS[ 4 ];
 settings_t settings;
 
 
@@ -979,7 +979,7 @@ static int cntr = 0,a = 0;
  if(axis_to_run){
 
 
- EnableSteppers( ((( 2 * 2 )*2)-1) );
+ EnableSteppers( ((( 4 * 4 )*2)-1) );
  Modal_Group_Actions1(axis_to_run);
  axis_to_run = Rst_Axisword();
  modal_group = Rst_modalgroup();
@@ -1015,7 +1015,7 @@ static int cntr = 0,a = 0;
  break;
  case 1024:
 
- modal_action = Modal_Group_Actions1( ((( 2 * 2 )*2)-1) );
+ modal_action = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
 #line 156 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(modal_action == 0)modal_group = Rst_modalgroup();
  break;
@@ -1029,7 +1029,20 @@ static int cntr = 0,a = 0;
 
  SV.Tog = 0;
  }
-#line 189 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+
+ if(!SV.Tog){
+ if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
+ while(DMA_IsOn(1));
+ dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
+ (STPS[X].run_state&0xff),STPS[X].step_count,
+ SV.dA,STPS[Y].step_count,STPS[X].step_delay,gc.frequency);
+ }
+ }
+
+
+
  protocol_system_check();
 
 
@@ -1062,7 +1075,7 @@ int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
 unsigned int home_select = 0;
 unsigned long _data;
 unsigned long _flash,*addr;
-float coord_data[ 2 ];
+float coord_data[ 4 ];
 float a_val;
 
 
@@ -1156,7 +1169,7 @@ float a_val;
 #line 353 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
- for (i=0; i< 2 ; i++){
+ for (i=0; i< 4 ; i++){
 
  if (  ((axis_words & (1 << i) ) != 0)  ) {
  if (gc.absolute_mode) {
@@ -1291,7 +1304,7 @@ static int Modal_Group_Actions1(int action){
  sys_sync_current_position();
  r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
  break;
- case  ((( 2 * 2 )*2)-1) :
+ case  ((( 4 * 4 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
 #line 503 "C:/Users/Git/Pic32mzCNC/Main.c"
@@ -1307,7 +1320,7 @@ static int Modal_Group_Actions1(int action){
  LED2 =  0 ;
  mc_reset();
  action = 0;
- for(l=0;l< 2 ;l++){
+ for(l=0;l< 4 ;l++){
 
 
  STPS[l].steps_abs_position = 0;

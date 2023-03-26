@@ -13,7 +13,6 @@
 //#define MM_PER_INCH (25.40)
 //#define INCH_PER_MM (0.0393701)
 
-
 #define temp_M_STEP 0.032
 #define INVERSE_M_STEP (1/temp_M_STEP)       // 1/Stepper micro steps setting
 #define SPRU (SPR*M_STEP)   // SPR * micro stepping of stepper drive
@@ -40,7 +39,7 @@ const float Dia;
 //function prototypes
 
 long calcSteps( double mmsToMove, double Dia);
-long leadscrew_sets(double move_distance);
+long leadscrew_sets(double move_distance,int axis);
 long belt_steps(double move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
 double mm2in(double mm);

@@ -14,12 +14,12 @@
 //Calculate the setp count to move for
 //a lead screw drivem axis
 // SPMM = 1/p * 1/uStep * SPR
-long leadscrew_steps(double move_distance){
+long leadscrew_steps(double move_distance,int axis){
 double temp = 0.00;
 #ifndef USE_LEADSCREW_PITCH
-   temp =  N * INVERSE_M_STEP * SPR;
+   temp =  N * INVERSE_M_STEP * settings.steps_per_mm[axis];
 #else
-   temp =  INVERSE_LEADSCREW_PITCH * INVERSE_M_STEP * SPR;
+   temp =  INVERSE_LEADSCREW_PITCH * INVERSE_M_STEP * settings.steps_per_mm[axis];
 #endif
   return temp;
 }
@@ -65,7 +65,7 @@ double in2mm(double inch){
 ///////////////////////////////////////////
 //Test system not to be used for future
 //production code
-long calcSteps(double mmsToMove,  double Dia){
+long calcSteps(double mmsToMove,  double Dia,int axis){
 double circ,cirDivision,stepsToMove;
 
 ///////////////////////////////////////////
@@ -75,7 +75,7 @@ double circ,cirDivision,stepsToMove;
 //////////////////////////////////////////
 //use the circumfrence and spr to get steps
   cirDivision = mmsToMove / circ;
-  stepsToMove = cirDivision * SPRU;
+  stepsToMove = cirDivision * settings.steps_per_mm[axis] * M_STEP;
 
 
   return (long)stepsToMove;

@@ -43,10 +43,12 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_HOMING_ENABLE          true
 
 //default values of words and flags
-#define DEFAULT_X_STEPS_PER_MM         200.00
-#define DEFAULT_Y_STEPS_PER_MM         200.00
-#define DEFAULT_Z_STEPS_PER_MM         200.00
-#define DEFAULT_A_STEPS_PER_MM         200.00
+#define DEFAULT_X_STEPS_PER_MM         187.00
+#define DEFAULT_Y_STEPS_PER_MM         187.00
+#define DEFAULT_Z_STEPS_PER_MM         187.00
+#define DEFAULT_A_STEPS_PER_MM         187.00
+#define DEFAULT_B_STEPS_PER_MM         187.00
+#define DEFAULT_C_STEPS_PER_MM         187.00
 #define DEFAUT_P_USEC                  100
 #define DEFAULT_MM_PER_ARC_SEGMENT     0.1
 #define DEFAULT_RAPID_FEEDRATE         500.0 // mm/min
@@ -81,7 +83,7 @@ typedef __attribute__((aligned (32))) float afloat;
 ////////////////////////////////////////////////////////////
 //              Stepper Motor Settings                    //
 ////////////////////////////////////////////////////////////
-#define NoOfAxis 2
+#define NoOfAxis 4
 #define  _X      0
 #define  _Y      1
 #define  _Z      2
@@ -94,7 +96,7 @@ typedef __attribute__((aligned (32))) float afloat;
 #define NO_OF_PLANES 4
 
 //! Number of (full)steps per round on stepper motor in use.
-#define SPR 188               // 200 Steps per rev
+#define SPR    200.0
 #define M_STEP 32.0               //Stepper drive micro steps setting
 
 /**************************************************

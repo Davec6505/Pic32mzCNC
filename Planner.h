@@ -35,10 +35,12 @@
 * Speed = (ALPHA * T1_FREQ) / Step  {T1_Freq = }
 * acc = ((2 * ALPHA * T1_FREQ)*(Step1 - Step2)) / (Step1*Step2)*(Step1+Step2)
 *************************************************************************/
+#define PIx2      (2*3.14139)
 #define ALPHA    (2*3.14159)/SPR
 #define A_T_x100 (long)((ALPHA*T1_FREQ)*100)      // (ALPHA / T_FREQ)*100
 #define T1_FREQ_148 (long)((T1_FREQ*0.676)/100)   // divided by 100 and scaled by 0.676
-#define A_SQ (long)(ALPHA*2*10000000000)          // ALPHA*2*10000000000
+#define SQ_MASK 10000000000
+#define A_SQ (long)(ALPHA*2*SQ_MASK)          // ALPHA*2*10000000000
 #define A_x20000 (long)(ALPHA*20000)              // ALPHA*20000
 
 
