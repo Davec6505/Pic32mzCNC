@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "Config_adv.h"
 #include "Settings.h"
+#include "Planner.h"
 #include "Stepper.h"
 #include  "Serial_Dma.h"
 #include "GCODE.h"
@@ -66,6 +67,7 @@ typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
+
 
 typedef struct Steps{
    //! micro sec  count value for clock pluse compare

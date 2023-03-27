@@ -622,6 +622,7 @@ int  Val = 0;
         case 'Z':case 'z':case 'A':case 'a':
         case 'I':case 'i':case 'J':case 'j':
         case 'K':case 'k':case 'F':case 'f':
+          status = STATUS_OK;
           XYZ_Val = atof(temp);
           status = Instruction_Values(gcode[i],&XYZ_Val);
 

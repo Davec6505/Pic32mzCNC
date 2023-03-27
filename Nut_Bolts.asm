@@ -520,7 +520,7 @@ JR	RA
 NOP	
 ; end of _ulong2flt
 _round:
-;Nut_Bolts.c,110 :: 		int round(double val){
+;Nut_Bolts.c,110 :: 		int round(float val){
 ADDIU	SP, SP, -12
 SW	RA, 0(SP)
 ;Nut_Bolts.c,111 :: 		double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
@@ -567,7 +567,7 @@ JR	RA
 NOP	
 ; end of _round
 _lround:
-;Nut_Bolts.c,120 :: 		long lround(double val){
+;Nut_Bolts.c,120 :: 		long lround(float val){
 ADDIU	SP, SP, -12
 SW	RA, 0(SP)
 ;Nut_Bolts.c,121 :: 		double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;

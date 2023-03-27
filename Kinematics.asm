@@ -876,7 +876,7 @@ NOP
 J	L_mc_arc29
 NOP	
 L__mc_arc99:
-;Kinematics.c,276 :: 		angular_travel -= 2*M_PI;
+;Kinematics.c,276 :: 		angular_travel -= PIx2;
 LUI	R2, 16585
 ORI	R2, R2, 4089
 MTC1	R2, S0
@@ -898,7 +898,7 @@ NOP
 J	L__mc_arc70
 NOP	
 L__mc_arc100:
-;Kinematics.c,279 :: 		angular_travel += 2*M_PI;
+;Kinematics.c,279 :: 		angular_travel += PIx2;
 LUI	R2, 16585
 ORI	R2, R2, 4089
 MTC1	R2, S0
@@ -913,7 +913,7 @@ NOP
 L__mc_arc70:
 ;Kinematics.c,278 :: 		if(angular_travel <= 0)
 MOV.S 	S0, S4
-;Kinematics.c,279 :: 		angular_travel += 2*M_PI;
+;Kinematics.c,279 :: 		angular_travel += PIx2;
 L_mc_arc31:
 ;Kinematics.c,280 :: 		}
 ; angular_travel start address is: 0 (R0)
@@ -1607,8 +1607,10 @@ NOP
 J	L_Home47
 NOP	
 L__Home116:
-;Kinematics.c,423 :: 		speed = 1000;//settings.homing_feed_rate;
-ORI	R2, R0, 1000
+;Kinematics.c,423 :: 		speed = settings.homing_seek_rate;
+LWC1	S0, Offset(_settings+28)(GP)
+CVT36.S 	S0, S0
+MFC1	R2, S0
 SW	R2, Offset(Home_speed_L0+0)(GP)
 ;Kinematics.c,426 :: 		Rst_FP(axis);Rst_FN(axis);
 SH	R25, 8(SP)
@@ -1715,8 +1717,10 @@ NOP
 L__Home120:
 ;Kinematics.c,475 :: 		HOMED:
 ___Home_HOMED:
-;Kinematics.c,476 :: 		speed = 100;//settings.homing_seek_rate;
-ORI	R2, R0, 100
+;Kinematics.c,476 :: 		speed = settings.homing_feed_rate;
+LWC1	S0, Offset(_settings+24)(GP)
+CVT36.S 	S0, S0
+MFC1	R2, S0
 SW	R2, Offset(Home_speed_L0+0)(GP)
 ;Kinematics.c,485 :: 		if(bit_isfalse(homing[axis].home_state,BIT_HOME_COMPLETE)){
 SEH	R2, R25

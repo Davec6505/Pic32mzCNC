@@ -36,8 +36,8 @@ unsigned long flt2ulong(float f_);
 float ulong2flt(unsigned long ui_);
 
 //returns the nearest integer value (rounded value) of the given float
-int round(double val);
+int round(float val);
 
 //returns the nearest long value (rounded value) of the given float
-long lround(double val);
+long lround(float val);
 #endif

@@ -39,7 +39,7 @@
 system_t sys;
 coord_sys coord_system[NUMBER_OF_DATUMS];
 STP STPS[NoOfAxis];
-settings_t settings;
+settings_t settings absolute 0xA0002800 ;
 
 //////////////////////////////////////////
 //DMA specific global decleration
@@ -54,7 +54,7 @@ static int send_status_once = 0;
 //condition externs
 void Conditin_Externs(){
   PinMode();
-  plan_init(15000,15000);
+  plan_init(settings.acceleration,settings.acceleration);
   Init_Protocol();
   disableOCx();
   DisableStepper();
@@ -173,17 +173,23 @@ static int cntr = 0,a = 0;
      SV.Tog = 0;
    }
    
-  //Debug for stepper report if not connected to unit
-  #if StepperDebug == 1
-  if(!SV.Tog){
-    if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
-     while(DMA_IsOn(1));
-     dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
-               (STPS[X].run_state&0xff),STPS[X].step_count,
-                SV.dA,STPS[Y].step_count,STPS[X].step_delay,gc.frequency);
-     }
-   }
-  #endif
+//Debug for stepper report if not connected to unit
+#if StepperDebug == 1
+if(!SV.Tog){
+if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
+while(DMA_IsOn(1));
+dma_printf("\
+run_state:= %d\t%l\t%l\t%d\t%l\t%l\t%l\n"
+,(STPS[X].run_state&0xff)
+,STPS[X].step_count
+,STPS[X].step_delay
+,(STPS[Y].run_state&0xff)
+,STPS[Y].step_count
+,STPS[Y].step_delay
+,gc.frequency);
+}
+}
+#endif
 
   //state check for resets
   protocol_system_check();

@@ -682,7 +682,7 @@ int val_temp = 0;
        buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)val_temp;
        break;
     case 8: // Convert to mm/min^2 for grbl internal use.
-       settings.acceleration = value*60.0*60.0;
+       settings.acceleration = value*secXsec ;
        buffA[ACCELERATION_OFFSET] = flt2ulong(value);
        break;
     case 9: settings.junction_deviation = fabs(value); 

@@ -27,7 +27,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Planner.c
+Value=Globals.c
 =======
 =======
 >>>>>>> patch1
@@ -132,19 +132,17 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 File1=DEFINES.pld
-File2=Settings.h
-File3=Globals.c
-File4=Globals.h
-File5=Print.c
-File6=Print.h
-File7=Steptodistance.c
-File8=Steptodistance.h
-File9=Kinematics.c
-File10=Kinematics.h
-File11=Planner.c
-File12=Planner.h
-File13=Nuts_Bolts.h
-Count=14
+File2=Stepper.c
+File3=Stepper.h
+File4=Kinematics.c
+File5=Kinematics.h
+File6=Planner.c
+File7=Planner.h
+File8=Settings.h
+File9=GCODE.c
+File10=Globals.c
+File11=Protocol.c
+Count=12
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

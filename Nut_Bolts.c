@@ -107,7 +107,7 @@ return f_;
 }
 
 //return the int val rounfed off to the nearest int
-int round(double val){
+int round(float val){
 double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
   tempC = ceil(val);
   tempF = floor(val);
@@ -117,7 +117,7 @@ double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
 }
 
 //return the int val rounfed off to the nearest int
-long lround(double val){
+long lround(float val){
 double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
   tempC = ceil(val);
   tempF = floor(val);

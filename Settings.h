@@ -43,9 +43,9 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_HOMING_ENABLE          true
 
 //default values of words and flags
-#define DEFAULT_X_STEPS_PER_MM         187.00
-#define DEFAULT_Y_STEPS_PER_MM         187.00
-#define DEFAULT_Z_STEPS_PER_MM         187.00
+#define DEFAULT_X_STEPS_PER_MM         186.875
+#define DEFAULT_Y_STEPS_PER_MM         186.875
+#define DEFAULT_Z_STEPS_PER_MM         186.875
 #define DEFAULT_A_STEPS_PER_MM         187.00
 #define DEFAULT_B_STEPS_PER_MM         187.00
 #define DEFAULT_C_STEPS_PER_MM         187.00
@@ -53,10 +53,10 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_MM_PER_ARC_SEGMENT     0.1
 #define DEFAULT_RAPID_FEEDRATE         500.0 // mm/min
 #define DEFAULT_FEEDRATE               250.0
-#define DEFAULT_ACCELERATION           (10.0*60.0*60.0) // 10 mm/min^2
+#define DEFAULT_ACCELERATION           (3.0*secXsec) // 10 mm/min^2
 #define DEFAULT_JUNCTION_DEVIATION     0.05 // mm
-#define DEFAULT_HOMING_RAPID_FEEDRATE  250.0 // mm/min
-#define DEFAULT_HOMING_FEEDRATE        25.0 // mm/min
+#define DEFAULT_HOMING_RAPID_FEEDRATE  100.0 // mm/min
+#define DEFAULT_HOMING_FEEDRATE        700.0 // mm/min
 #define DEFAULT_HOMING_DEBOUNCE_DELAY  100 // msec (0-65k)
 #define DEFAULT_HOMING_PULLOFF         1.0 // mm
 #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
@@ -192,6 +192,7 @@ typedef struct {
   unsigned int invert_mask;
 //  uint8_t status_report_mask; // Mask to indicate desired report data.
 }  settings_t;
+
 extern settings_t settings;
 
 

@@ -273,10 +273,10 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
   if(isclockwise) {
     // 2*Pi = 360deg in radians
     if (angular_travel >= 0) 
-         angular_travel -= 2*M_PI;
+         angular_travel -= PIx2;
     else {
       if(angular_travel <= 0)
-        angular_travel += 2*M_PI;
+        angular_travel += PIx2;
     }
   }
 
@@ -420,7 +420,7 @@ static long speed = 0;
 
   //idle homing can only take place once all alarms are cleared
  if(sys.state == STATE_IDLE){
-  speed = 1000;//settings.homing_feed_rate;
+  speed = settings.homing_seek_rate;
   
  //condition the triggers
   Rst_FP(axis);Rst_FN(axis);
@@ -473,7 +473,7 @@ static long speed = 0;
 #endif
 //label to force a reversal of axis
 HOMED:
-       speed = 100;//settings.homing_seek_rate;
+       speed = settings.homing_feed_rate;
        #if HomeDebug == 2
        while(DMA_IsOn(1));
        dma_printf("[%s][axis:= %d][cnt:= %d]\n"
