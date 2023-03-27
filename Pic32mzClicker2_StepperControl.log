@@ -9,9 +9,9 @@ warning: 155	1506	Implicit conversion of pointer to int	__Lib_MemManager.c
 warning: 174	1508	Implicit conversion of int to ptr	__Lib_MemManager.c
 diagnostics: 297	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	pins.h
-hint: 230	1163	Variable 'addr' has been declared, but not used	Main.c
-hint: 232	1163	Variable 'a_val' has been declared, but not used	Main.c
-diagnostics: 595	123	Compiled Successfully	Main.c
+hint: 236	1163	Variable 'addr' has been declared, but not used	Main.c
+hint: 238	1163	Variable 'a_val' has been declared, but not used	Main.c
+diagnostics: 601	123	Compiled Successfully	Main.c
 hint: 120	1164	Variable 'report' has been eliminated by optimizer	Main.c
 hint: 72	1164	Variable 'dif' has been eliminated by optimizer	Main.c
 hint: 73	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
@@ -19,8 +19,8 @@ hint: 73	1164	Variable 'a' has been eliminated by optimizer	Main.c
 hint: 68	1164	Variable 'error' has been eliminated by optimizer	Main.c
 hint: 69	1164	Variable 'has_flash' has been eliminated by optimizer	Main.c
 hint: 71	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
-hint: 227	1164	Variable 'result' has been eliminated by optimizer	Main.c
-hint: 227	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
+hint: 233	1164	Variable 'result' has been eliminated by optimizer	Main.c
+hint: 233	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (UART2 at 0x0092)	Config.c
 diagnostics: 391	123	Compiled Successfully	Config.c
@@ -76,8 +76,8 @@ hint: 53	1354	argument may be out of range [axis_combo]	GCODE.c
 warning: 83	1503	Result is not defined in function: 'SET_FAIL'	GCODE.c
 warning: 226	1503	Result is not defined in function: ''	GCODE.c
 hint: 196	1163	Variable 'i' has been declared, but not used	GCODE.c
-hint: 492	1163	Variable 'F_Val' has been declared, but not used	GCODE.c
-diagnostics: 597	123	Compiled Successfully	GCODE.c
+hint: 430	1163	Variable 'F_Val' has been declared, but not used	GCODE.c
+diagnostics: 535	123	Compiled Successfully	GCODE.c
 hint: 296	1164	Variable 'last_non_modal_action' has been eliminated by optimizer	GCODE.c
 diagnostics: 0	122	Compilation Started	settings.h
 warning: 37	1508	Implicit conversion of int to ptr	Globals.c
@@ -98,8 +98,8 @@ diagnostics: 232	123	Compiled Successfully	Limits.c
 hint: 16	1164	Variable 'i' has been eliminated by optimizer	Limits.c
 diagnostics: 0	122	Compilation Started	stdint.h
 warning: 116	1505	Suspicious pointer conversion	Protocol.c
-diagnostics: 657	123	Compiled Successfully	Protocol.c
-warning: 656	1512	variable 'status' might not have been initialized	Protocol.c
+diagnostics: 658	123	Compiled Successfully	Protocol.c
+warning: 657	1512	variable 'status' might not have been initialized	Protocol.c
 hint: 307	1164	Variable 'msg_type' has been eliminated by optimizer	Protocol.c
 hint: 308	1164	Variable 'modal_response' has been eliminated by optimizer	Protocol.c
 hint: 380	1164	Variable 'query' has been eliminated by optimizer	Protocol.c
@@ -115,11 +115,11 @@ hint: 111	1164	Variable 'dec' has been eliminated by optimizer	Nut_Bolts.c
 hint: 121	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
 hint: 121	1164	Variable 'dec' has been eliminated by optimizer	Nut_Bolts.c
 diagnostics: 0	122	Compilation Started	pins.h
-hint: 36	1163	Variable 'ii' has been declared, but not used	Planner.c
-diagnostics: 368	123	Compiled Successfully	Planner.c
-warning: 233	1512	variable 'axis_plane_a' might not have been initialized	Planner.c
-warning: 235	1512	variable 'axis_plane_b' might not have been initialized	Planner.c
-hint: 149	1164	Variable 'inverse_feed_rate' has been eliminated by optimizer	Planner.c
+hint: 62	1163	Variable 'ii' has been declared, but not used	Planner.c
+diagnostics: 391	123	Compiled Successfully	Planner.c
+warning: 256	1512	variable 'axis_plane_a' might not have been initialized	Planner.c
+warning: 258	1512	variable 'axis_plane_b' might not have been initialized	Planner.c
+hint: 172	1164	Variable 'inverse_feed_rate' has been eliminated by optimizer	Planner.c
 diagnostics: 0	122	Compilation Started	string.h
 hint: 219	1163	Variable 'padd' has been declared, but not used	Flash_R_W.c
 diagnostics: 311	123	Compiled Successfully	Flash_R_W.c
@@ -128,13 +128,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 3313 ms	 
+diagnostics: 0	127	All files Compiled in 3032 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 5546   Dynamic RAM (bytes): 506533	Static RAM (bytes): 5546   Dynamic RAM (bytes): 506533
+hint: 0	1144	Static RAM (bytes): 5594   Dynamic RAM (bytes): 505977	Static RAM (bytes): 5594   Dynamic RAM (bytes): 505977
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 77617 (4%)  Free ROM (bytes): 2019535 (96%)	Used ROM (bytes): 77617 (4%)  Free ROM (bytes): 2019535 (96%)
+hint: 0	1144	Used ROM (bytes): 78094 (4%)  Free ROM (bytes): 2019058 (96%)	Used ROM (bytes): 78094 (4%)  Free ROM (bytes): 2019058 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 953 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6391 ms	 
-diagnostics: 0	103	Finished successfully: 26 Mar 2023, 08:11:07	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 937 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 5844 ms	 
+diagnostics: 0	103	Finished successfully: 27 Mar 2023, 23:29:04	Pic32mzClicker2_StepperControl.mcp32

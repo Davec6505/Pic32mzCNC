@@ -13,15 +13,13 @@
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-
-
 /*! \Brief Frequency of timer1 in [Hz].
  * Newtimer 50000000
  * Modify this according to frequency used. Because of the prescaler setting,
  * the timer1 frequency is the clock frequency divided by 8.
  */
 // Timer/Counter 1 running on 3,686MHz / 8 = 460,75kHz (2,17uS). (T1-FREQ 460750)
-#define T1_FREQ   781250//=1.28us => timer pre-scaler at (1/64) * 50mhz pbclk3
+#define T1_FREQ   781250.0//=1.28us => timer pre-scaler at (1/64) * 50mhz pbclk3
 #define minSpeed  30210
 #define maxSpeed  10
 #define cirSpeed  100
@@ -35,15 +33,16 @@
 * Speed = (ALPHA * T1_FREQ) / Step  {T1_Freq = }
 * acc = ((2 * ALPHA * T1_FREQ)*(Step1 - Step2)) / (Step1*Step2)*(Step1+Step2)
 *************************************************************************/
-#define PIx2      (2*3.14139)
-#define ALPHA    (2*3.14159)/SPR
-#define A_T_x100 (long)((ALPHA*T1_FREQ)*100)      // (ALPHA / T_FREQ)*100
-#define T1_FREQ_148 (long)((T1_FREQ*0.676)/100)   // divided by 100 and scaled by 0.676
+#define PIx2      (2.0*M_Pi)
+#define ALPHA    (2.0*M_Pi)/SPR
+#define A_T_x100 (long)(ALPHA*T1_FREQ*100.0)      // (ALPHA / T_FREQ)*100
+#define T1_FREQ_148 ((T1_FREQ*0.676)/100.0)   // divided by 100 and scaled by 0.676
 #define SQ_MASK 10000000000
-#define A_SQ (long)(ALPHA*2*SQ_MASK)          // ALPHA*2*10000000000
-#define A_x20000 (long)(ALPHA*20000)              // ALPHA*20000
+#define A_SQ (long)(ALPHA*2.0*SQ_MASK)             // ALPHA*2*10000000000
+//#define A_x20000 (long)(ALPHA*20000)             // ALPHA*20000
 
-
+//mm/sec/sec for acceleration input
+#define secXsec (60.0*60.0)
 
 ////////////////////////////////////////////////////
 //structs enums and constants
@@ -80,17 +79,26 @@ extern sVars SV;
 
 
 // Initialize the motion plan subsystem
-void plan_init(long accel,long decel);
+void plan_init(float accel,float decel);
+
+//Set the values to init calculation constants
+void set_calculation_constants();
+
 //Acceleration, speed and Circ calcs
 void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+
 //sync the current position of axis
 void sys_sync_current_position();
+
 //set the current position to sys.position
 void plan_set_current_position();
+
 //after homing set abs osition to 0
 void plan_reset_absolute_position();
+
 //efficient sqrt interger calculation
 unsigned long sqrt_(unsigned long v);
+
 //calculation of vectors for radius
 void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
               float r, float i, float j, float k, int axis_A,int axis_B,int dir);

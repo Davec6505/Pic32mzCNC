@@ -1633,8 +1633,6 @@ NOP
 LW	R25, 20(SP)
 LH	R26, 18(SP)
 LH	R3, 16(SP)
-;Protocol.c,470 :: 		status = STATUS_OK;
-SH	R0, 24(SP)
 ;Protocol.c,471 :: 		}
 L_Protocol_Check_Query_Type103:
 ;Protocol.c,465 :: 		for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
@@ -1973,9 +1971,6 @@ J	L_Protocol_Check_Query_Type132
 NOP	
 L_Protocol_Check_Query_Type210:
 L_Protocol_Check_Query_Type209:
-;Protocol.c,561 :: 		status = STATUS_UNSUPPORTED_STATEMENT;
-ORI	R2, R0, 3
-SH	R2, 24(SP)
 ;Protocol.c,562 :: 		}
 L_Protocol_Check_Query_Type132:
 ;Protocol.c,563 :: 		value = atof(str_val);
@@ -2171,9 +2166,6 @@ J	L_end_Check_Query_Type
 NOP	
 ;Protocol.c,579 :: 		}else{
 L_Protocol_Check_Query_Type72:
-;Protocol.c,580 :: 		status = STATUS_COMMAND_EXECUTE_MOTION;
-ORI	R2, R0, 20
-SH	R2, 24(SP)
 ;Protocol.c,582 :: 		return status;
 ORI	R2, R0, 20
 ;Protocol.c,583 :: 		}
@@ -2365,7 +2357,9 @@ L_Protocol_Do_Gcode159:
 L_Protocol_Do_Gcode160:
 L_Protocol_Do_Gcode161:
 L_Protocol_Do_Gcode162:
-;Protocol.c,625 :: 		XYZ_Val = atof(temp);
+;Protocol.c,625 :: 		status = STATUS_OK;
+SH	R0, 42(SP)
+;Protocol.c,626 :: 		XYZ_Val = atof(temp);
 ADDIU	R2, SP, 28
 SW	R25, 20(SP)
 MOVZ	R25, R2, R0
@@ -2373,7 +2367,7 @@ JAL	_atof+0
 NOP	
 LW	R25, 20(SP)
 SWC1	S0, 44(SP)
-;Protocol.c,626 :: 		status = Instruction_Values(gcode[i],&XYZ_Val);
+;Protocol.c,627 :: 		status = Instruction_Values(gcode[i],&XYZ_Val);
 ADDIU	R4, SP, 44
 LH	R2, 38(SP)
 SLL	R3, R2, 6
@@ -2389,7 +2383,7 @@ NOP
 LW	R25, 24(SP)
 LH	R26, 20(SP)
 SH	R2, 42(SP)
-;Protocol.c,628 :: 		if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
+;Protocol.c,629 :: 		if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
 LH	R2, 38(SP)
 SLL	R3, R2, 6
 LUI	R2, hi_addr(_gcode+0)
@@ -2420,27 +2414,27 @@ J	L_Protocol_Do_Gcode165
 NOP	
 L_Protocol_Do_Gcode220:
 L_Protocol_Do_Gcode219:
-;Protocol.c,629 :: 		status = STATUS_OK;
+;Protocol.c,630 :: 		status = STATUS_OK;
 SH	R0, 42(SP)
 J	L_Protocol_Do_Gcode166
 NOP	
 L_Protocol_Do_Gcode165:
-;Protocol.c,631 :: 		status = STATUS_COMMAND_EXECUTE_MOTION;
+;Protocol.c,632 :: 		status = STATUS_COMMAND_EXECUTE_MOTION;
 ORI	R2, R0, 20
 SH	R2, 42(SP)
 L_Protocol_Do_Gcode166:
-;Protocol.c,637 :: 		break;
+;Protocol.c,638 :: 		break;
 J	L_Protocol_Do_Gcode139
 NOP	
-;Protocol.c,638 :: 		case 'P':case 'p':case 'L':case 'l':
+;Protocol.c,639 :: 		case 'P':case 'p':case 'L':case 'l':
 L_Protocol_Do_Gcode167:
 L_Protocol_Do_Gcode168:
 L_Protocol_Do_Gcode169:
 L_Protocol_Do_Gcode170:
-;Protocol.c,639 :: 		case 'S':case 's':
+;Protocol.c,640 :: 		case 'S':case 's':
 L_Protocol_Do_Gcode171:
 L_Protocol_Do_Gcode172:
-;Protocol.c,640 :: 		Val = atoi(temp);
+;Protocol.c,641 :: 		Val = atoi(temp);
 ADDIU	R2, SP, 28
 SW	R25, 20(SP)
 MOVZ	R25, R2, R0
@@ -2448,7 +2442,7 @@ JAL	_atoi+0
 NOP	
 LW	R25, 20(SP)
 SH	R2, 48(SP)
-;Protocol.c,641 :: 		status = Instruction_Values(gcode[i],&Val);
+;Protocol.c,642 :: 		status = Instruction_Values(gcode[i],&Val);
 ADDIU	R4, SP, 48
 LH	R2, 38(SP)
 SLL	R3, R2, 6
@@ -2464,13 +2458,13 @@ NOP
 LW	R25, 24(SP)
 LH	R26, 20(SP)
 SH	R2, 42(SP)
-;Protocol.c,642 :: 		break;
+;Protocol.c,643 :: 		break;
 J	L_Protocol_Do_Gcode139
 NOP	
-;Protocol.c,643 :: 		case 'M':case'm':
+;Protocol.c,644 :: 		case 'M':case'm':
 L_Protocol_Do_Gcode173:
 L_Protocol_Do_Gcode174:
-;Protocol.c,644 :: 		Val = atoi(temp);
+;Protocol.c,645 :: 		Val = atoi(temp);
 ADDIU	R2, SP, 28
 SW	R25, 20(SP)
 MOVZ	R25, R2, R0
@@ -2478,7 +2472,7 @@ JAL	_atoi+0
 NOP	
 LW	R25, 20(SP)
 SH	R2, 48(SP)
-;Protocol.c,645 :: 		flow = M_Mode(Val);
+;Protocol.c,646 :: 		flow = M_Mode(Val);
 SH	R26, 20(SP)
 SW	R25, 24(SP)
 SEH	R25, R2
@@ -2486,12 +2480,12 @@ JAL	_M_Mode+0
 NOP	
 LW	R25, 24(SP)
 LH	R26, 20(SP)
-;Protocol.c,650 :: 		status = STATUS_OK;
+;Protocol.c,651 :: 		status = STATUS_OK;
 SH	R0, 42(SP)
-;Protocol.c,651 :: 		break;
+;Protocol.c,652 :: 		break;
 J	L_Protocol_Do_Gcode139
 NOP	
-;Protocol.c,652 :: 		}//switch
+;Protocol.c,653 :: 		}//switch
 L_Protocol_Do_Gcode138:
 ; j start address is: 20 (R5)
 LW	R4, 56(SP)
@@ -2709,15 +2703,15 @@ L_Protocol_Do_Gcode139:
 LH	R2, 38(SP)
 ADDIU	R2, R2, 1
 SH	R2, 38(SP)
-;Protocol.c,653 :: 		}//for
+;Protocol.c,654 :: 		}//for
 J	L_Protocol_Do_Gcode135
 NOP	
 L_Protocol_Do_Gcode136:
-;Protocol.c,656 :: 		return status;
+;Protocol.c,657 :: 		return status;
 LH	R2, 42(SP)
-;Protocol.c,657 :: 		}
-;Protocol.c,656 :: 		return status;
-;Protocol.c,657 :: 		}
+;Protocol.c,658 :: 		}
+;Protocol.c,657 :: 		return status;
+;Protocol.c,658 :: 		}
 L_end_Do_Gcode:
 LW	R28, 16(SP)
 LW	R27, 12(SP)

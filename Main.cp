@@ -168,8 +168,40 @@ typedef struct {
  unsigned int invert_mask;
 
 } settings_t;
+
 extern settings_t settings;
+#line 1 "c:/users/git/pic32mzcnc/planner.h"
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/string.h"
+
+
+
+
+
+void * memchr(void *p, char n, unsigned int v);
+int memcmp(void *s1, void *s2, int n);
+void * memcpy(void * d1, void * s1, int n);
+void * memmove(void * to, void * from, int n);
+void * memset(void * p1, char character, int n);
+char * strcat(char * to, char * from);
+char * strchr(char * ptr, char chr);
+int strcmp(char * s1, char * s2);
+char * strcpy(char * to, char * from);
+int strlen(char * s);
+char * strncat(char * to, char * from, int size);
+char * strncpy(char * to, char * from, int size);
+int strspn(char * str1, char * str2);
+char strcspn(char * s1, char * s2);
+int strncmp(char * s1, char * s2, char len);
+char * strpbrk(char * s1, char * s2);
+char * strrchr(char *ptr, char chr);
+char * strstr(char * s1, char * s2);
+char * strtok(char * s1, char * s2);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
 
@@ -218,143 +250,6 @@ typedef void * va_list[1];
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/string.h"
-
-
-
-
-
-void * memchr(void *p, char n, unsigned int v);
-int memcmp(void *s1, void *s2, int n);
-void * memcpy(void * d1, void * s1, int n);
-void * memmove(void * to, void * from, int n);
-void * memset(void * p1, char character, int n);
-char * strcat(char * to, char * from);
-char * strchr(char * ptr, char chr);
-int strcmp(char * s1, char * s2);
-char * strcpy(char * to, char * from);
-int strlen(char * s);
-char * strncat(char * to, char * from, int size);
-char * strncpy(char * to, char * from, int size);
-int strspn(char * str1, char * str2);
-char strcspn(char * s1, char * s2);
-int strncmp(char * s1, char * s2, char len);
-char * strpbrk(char * s1, char * s2);
-char * strrchr(char *ptr, char chr);
-char * strstr(char * s1, char * s2);
-char * strtok(char * s1, char * s2);
-#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 151 "c:/users/git/pic32mzcnc/flash_r_w.h"
-unsigned int NVMWriteWord (const void *address, unsigned long _data);
-unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
-unsigned int NVMWriteRow (const void* address, void* _data);
-unsigned int NVMErasePage(const void* address);
-static unsigned int NVMUnlock(unsigned long nvmop);
-unsigned int NVM_ERROR_Rst();
-static void NVM_WR_Set();
-static unsigned int NVM_WR_Wait();
-static void NVM_WREN_Set();
-static void NVM_WREN_Rst();
-static unsigned int NVM_WREN_Wait();
-void NVM_PWPAGE_Lock();
-void NVMReadRow(unsigned long addr,unsigned long *buff);
-void NVMReadQuad(unsigned long addr,unsigned long *words);
-unsigned long NVMReadWord(void *addr);
-unsigned long Get_Address_Pval(int recipe);
-#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 30 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-int read_float(char *line, char *char_counter, float *float_ptr);
-
-
-unsigned long flt2ulong(float f_);
-
-
-float ulong2flt(unsigned long ui_);
-
-
-int round(double val);
-
-
-long lround(double val);
-#line 103 "c:/users/git/pic32mzcnc/globals.h"
-extern unsigned long volatile buffA[128];
-
-
-
-
-
-typedef struct {
- int abort;
- int state;
- int homing;
- int homing_cnt;
- long position[ 4 ];
-
- int auto_start;
- int execute;
-} system_t;
-extern system_t sys;
-
-
-
-typedef struct{
- float coord[ 4 ];
- float coord_offset[ 4 ];
-}coord_sys;
-extern volatile coord_sys coord_system[ 9 ];
-
-
-
-
-
-void settings_init(short reset_all);
-
-
-static int set_ram_loaded_indicator(int val);
-
-
-static void zero_ram_loaded_indicator();
-
-
-int read_ram_loaded_indicator();
-
-
-static void rst_single_coord_read_indicators(int flag);
-
-
-static void rst_coord_read_indicator();
-
-
-int read_coord_data_indicator();
-
-
-int read_row_from_flash(unsigned long addr);
-
-
-unsigned int settings_write_coord_data(int coord_select,float *coord);
-
-
-void settings_read_coord_data();
-
-
-unsigned int settings_write_one_coord(int coord_select,float *coord);
-
-
-int settings_read_startup_line(int n, char *line);
-
-
-int settings_store_startup_line(int n, char *line);
-
-
-void write_global_settings();
-
-
-int settings_store_global_setting(int parameter, float value);
 #line 49 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
 #line 161 "c:/users/git/pic32mzcnc/gcode.h"
@@ -503,9 +398,173 @@ void Reset_Ring();
 int Loopback();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
+#line 151 "c:/users/git/pic32mzcnc/flash_r_w.h"
+unsigned int NVMWriteWord (const void *address, unsigned long _data);
+unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
+unsigned int NVMWriteRow (const void* address, void* _data);
+unsigned int NVMErasePage(const void* address);
+static unsigned int NVMUnlock(unsigned long nvmop);
+unsigned int NVM_ERROR_Rst();
+static void NVM_WR_Set();
+static unsigned int NVM_WR_Wait();
+static void NVM_WREN_Set();
+static void NVM_WREN_Rst();
+static unsigned int NVM_WREN_Wait();
+void NVM_PWPAGE_Lock();
+void NVMReadRow(unsigned long addr,unsigned long *buff);
+void NVMReadQuad(unsigned long addr,unsigned long *words);
+unsigned long NVMReadWord(void *addr);
+unsigned long Get_Address_Pval(int recipe);
+#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 30 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+int read_float(char *line, char *char_counter, float *float_ptr);
+
+
+unsigned long flt2ulong(float f_);
+
+
+float ulong2flt(unsigned long ui_);
+
+
+int round(float val);
+
+
+long lround(float val);
+#line 103 "c:/users/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buffA[128];
+
+
+
+
+
+typedef struct {
+ int abort;
+ int state;
+ int homing;
+ int homing_cnt;
+ long position[ 4 ];
+
+ int auto_start;
+ int execute;
+} system_t;
+extern system_t sys;
+
+
+
+typedef struct{
+ float coord[ 4 ];
+ float coord_offset[ 4 ];
+}coord_sys;
+extern volatile coord_sys coord_system[ 9 ];
+
+
+
+
+
+void settings_init(short reset_all);
+
+
+static int set_ram_loaded_indicator(int val);
+
+
+static void zero_ram_loaded_indicator();
+
+
+int read_ram_loaded_indicator();
+
+
+static void rst_single_coord_read_indicators(int flag);
+
+
+static void rst_coord_read_indicator();
+
+
+int read_coord_data_indicator();
+
+
+int read_row_from_flash(unsigned long addr);
+
+
+unsigned int settings_write_coord_data(int coord_select,float *coord);
+
+
+void settings_read_coord_data();
+
+
+unsigned int settings_write_one_coord(int coord_select,float *coord);
+
+
+int settings_read_startup_line(int n, char *line);
+
+
+int settings_store_startup_line(int n, char *line);
+
+
+void write_global_settings();
+
+
+int settings_store_global_setting(int parameter, float value);
+#line 53 "c:/users/git/pic32mzcnc/planner.h"
+typedef struct genVars{
+ int Single_Dual;
+ char running: 1;
+ char startPulses: 1;
+ char homed: 1;
+ char run_circle: 1;
+ int Tog;
+ int AxisNo;
+
+ long dif;
+ long dA;
+ long dB;
+ long dC;
+ long prevA;
+ long prevB;
+ long prevC;
+ long over;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
+ char cir: 1;
+}sVars;
+extern sVars SV;
+
+
+
+void plan_init(float accel,float decel);
+
+
+void set_calculation_constants();
+
+
+void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+
+
+void sys_sync_current_position();
+
+
+void plan_set_current_position();
+
+
+void plan_reset_absolute_position();
+
+
+unsigned long sqrt_(unsigned long v);
+
+
+void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
+ float r, float i, float j, float k, int axis_A,int axis_B,int dir);
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 58 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 59 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -517,6 +576,7 @@ typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
+
 
 typedef struct Steps{
 
@@ -614,54 +674,6 @@ void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
-#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 54 "c:/users/git/pic32mzcnc/planner.h"
-typedef struct genVars{
- int Single_Dual;
- char running: 1;
- char startPulses: 1;
- char homed: 1;
- char run_circle: 1;
- int Tog;
- int AxisNo;
-
- long dif;
- long dA;
- long dB;
- long dC;
- long prevA;
- long prevB;
- long prevC;
- long over;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- char cir: 1;
-}sVars;
-extern sVars SV;
-
-
-
-void plan_init(long accel,long decel);
-
-void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
-
-void sys_sync_current_position();
-
-void plan_set_current_position();
-
-void plan_reset_absolute_position();
-
-unsigned long sqrt_(unsigned long v);
-
-void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
- float r, float i, float j, float k, int axis_A,int axis_B,int dir);
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
 #line 32 "c:/users/git/pic32mzcnc/stepper.h"
@@ -911,7 +923,7 @@ static int Modal_Group_Actions12(int action);
 system_t sys;
 coord_sys coord_system[ 9 ];
 STP STPS[ 4 ];
-settings_t settings;
+settings_t settings absolute 0xA0002800 ;
 
 
 
@@ -926,7 +938,7 @@ static int send_status_once = 0;
 
 void Conditin_Externs(){
  PinMode();
- plan_init(15000,15000);
+ plan_init(settings.acceleration,settings.acceleration);
  Init_Protocol();
  disableOCx();
  DisableStepper();
@@ -1032,14 +1044,20 @@ static int cntr = 0,a = 0;
 
 
 
- if(!SV.Tog){
- if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
- while(DMA_IsOn(1));
- dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
- (STPS[X].run_state&0xff),STPS[X].step_count,
- SV.dA,STPS[Y].step_count,STPS[X].step_delay,gc.frequency);
- }
- }
+if(!SV.Tog){
+if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
+while(DMA_IsOn(1));
+#line 182 "C:/Users/Git/Pic32mzCNC/Main.c"
+dma_printf("run_state:= %d\t%l\t%l\t%d\t%l\t%l\t%l\n"
+,(STPS[X].run_state&0xff)
+,STPS[X].step_count
+,STPS[X].step_delay
+,(STPS[Y].run_state&0xff)
+,STPS[Y].step_count
+,STPS[Y].step_delay
+,gc.frequency);
+}
+}
 
 
 
@@ -1050,7 +1068,7 @@ static int cntr = 0,a = 0;
 
 
  status_of_gcode = Sample_Gocde_Line();
-#line 207 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 213 "C:/Users/Git/Pic32mzCNC/Main.c"
  LED1 = TMR.clock >> 4;
 
 
@@ -1103,7 +1121,7 @@ float a_val;
  LED2 =  0 ;
  break;
  case 4:
-#line 271 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 277 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1144,12 +1162,12 @@ float a_val;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 318 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 324 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
 
 
  coord_data[i] = gc.next_position[i];
-#line 329 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 335 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1166,7 +1184,7 @@ float a_val;
 
 
  axis_words = Get_Axisword();
-#line 353 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 359 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1198,7 +1216,7 @@ float a_val;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 388 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 394 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1268,7 +1286,7 @@ float a_val;
 
 
 static int Modal_Group_Actions1(int action){
-#line 461 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 467 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.frequency,X);
@@ -1307,7 +1325,7 @@ static int Modal_Group_Actions1(int action){
  case  ((( 4 * 4 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
-#line 503 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 509 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(axis_to_home < 2){
 
 
@@ -1366,7 +1384,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 565 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 571 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
  FAIL( 6 );
@@ -1378,7 +1396,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 580 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 586 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
  FAIL( 6 );
 
@@ -1389,6 +1407,6 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 594 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 600 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }

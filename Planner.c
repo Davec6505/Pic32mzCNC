@@ -5,17 +5,43 @@
 
 #include "Planner.h"
 
-
 sVars SV;
+
+/////////////////////////////////////////////////////
+//      COMMON VARIABLES INITIALIZED AT STARTUP    //
+/////////////////////////////////////////////////////
+long a_t_x100[NoOfAxis]          absolute 0xA0002640 ;
+long a_sq[NoOfAxis]              absolute 0xA0002680 ;
+float alpha[NoOfAxis]            absolute 0xA0002720 ;
+
 
 /////////////////////////////////////////////////////
 //       SET THE ACC AND DEC CONSTANTS             //
 /////////////////////////////////////////////////////
-void plan_init(long accel,long decel){
+
+void plan_init(float accel,float decel){
 int i = 0;
  for(i = 0; i < NoOfAxis; i++){
-  STPS[i].acc = accel;
-  STPS[i].dec = decel;
+  STPS[i].acc = lround(accel);
+  STPS[i].dec = lround(decel);
+ }
+ set_calculation_constants();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//setup calculation constants this takes dependance away from #defnes in
+//order to use with setting
+void set_calculation_constants(){
+int i;
+//using settings instead of defines
+    //alpha 2 x Pi / SPR
+ for(i=0;i<NoOfAxis;i++){
+ //2*3.14159)/SPR
+  alpha[i] = (PIx2 / settings.steps_per_mm[i]);
+  //(long)((ALPHA*T1_FREQ)*100)
+  a_t_x100[i] = (lround)(alpha[i] * T1_FREQ * 100.00);
+  //(long)(ALPHA*2*SQ_MASK)
+  a_sq[i] = (lround)(alpha[i] * 2.00 * SQ_MASK);
  }
 }
 
@@ -34,15 +60,12 @@ int i = 0;
  ***********************************************************************/
 void speed_cntr_Move(signed long mmSteps, signed long speed, int axis_No){
 int ii;
-long a_t_x100;
-long a_sq;
 long temp_speed;
 static long last_speed;
 long abs_mmSteps = labs(mmSteps);
-//using settings instead of defines
-float alpha = (PIx2 / settings.steps_per_mm[axis_No]);
-      a_t_x100 = ((long)alpha * T1_FREQ * 100);
-      a_sq = (long)alpha * 2 * SQ_MASK;
+
+
+    
   // If moving only 1 step then set accel counter
   // and run state to decellerate -ve acc count value
   // is for addition to step couter.
@@ -66,16 +89,16 @@ float alpha = (PIx2 / settings.steps_per_mm[axis_No]);
     // Only move if number of steps to move is not zero.
     // Set max speed limit, by calc min_delay to use in timer.
     // min_delay = (ALPHA / T1_Freq)/ speed
-    STPS[axis_No].min_delay =  a_t_x100 / temp_speed;
+    STPS[axis_No].min_delay =  a_t_x100[axis_No] / temp_speed;
 
     // Set accelration by calc the first (c0) step delay .
     // step_delay = 1/T_Freq*sqrt(2*alpha/accel)
     // step_delay = ( T_Freq*0.676/100 ) * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-    STPS[axis_No].step_delay = labs(T1_FREQ_148 * ((sqrt_(a_sq / STPS[axis_No].acc))/100));
+    STPS[axis_No].step_delay = labs(T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
     STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
     // Find out after how many Steps before the speed hits the max speed limit.
-    STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(long)(2.0*alpha*(double)STPS[axis_No].acc*100.0);
+    STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(lround)(2.0*alpha[axis_No]*100.0*(double)STPS[axis_No].acc);
 
     //test calc using A_x20000 ???
     //STPS.max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
@@ -99,7 +122,7 @@ float alpha = (PIx2 / settings.steps_per_mm[axis_No]);
     if(STPS[axis_No].accel_lim < STPS[axis_No].max_step_lim){
          STPS[axis_No].decel_val = STPS[axis_No].accel_lim - mmSteps;//-(abs_mmSteps - STPS[axis_No].max_step_lim);
     }else{
-         STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim *STPS[axis_No].acc)/STPS[axis_No].dec);
+         STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim * STPS[axis_No].acc)/STPS[axis_No].dec);
     }
     //we must at least dec by 1 step
     if(STPS[axis_No].decel_val == 0)

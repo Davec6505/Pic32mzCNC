@@ -323,13 +323,6 @@ int i = 0;
      if(!gc.absolute_override)
          bit_true( non_modal_words,bit( non_modal_action));
        
-     #if GcodeDebug == 3
-       while(DMA_IsOn(1));
-       dma_printf("group_number:= %d\tgc.absolute_override:= %d\n"
-                   ,group_number,gc.absolute_override);
-     #endif
-     
-     
      last_non_modal_action = non_modal_action;
      return status_code;
    }
@@ -338,64 +331,45 @@ int i = 0;
    
    //////////////////////////////////////////////////////////////
    //MODAL ACTIONS
-   
    //check for cancel from group 1
    if(group_number == MODAL_GROUP_1){
-      status_code = STATUS_OK;
-      #if GcodeDebug == 3
-       while(DMA_IsOn(1));
-       dma_printf("[group_number:= %d][motion_mode:= %d]\n"
-                   ,group_number,motion_mode);
-      #endif
       //motion_mode holds movement set in G_Mode()!!
        switch (motion_mode) {
           case MOTION_MODE_SEEK:
-           // if (axis_words == 0) {
-            //   FAIL(STATUS_INVALID_STATEMENT);
-            //}else {
-               //single axis interpolate at max speed, can be multiple axis at the
-               //same time
-                gc.frequency = 100;//lround(settings.default_seek_rate);
-                FAIL(STATUS_OK);
-           // }
-            break;
+               gc.frequency = lround(settings.default_seek_rate);
           case MOTION_MODE_LINEAR:
-            // TODO: Inverse time requires F-word with each statement. Need to do a check. Also need
-            // to check for initial F-word upon startup. Maybe just set to zero upon initialization
-            // and after an inverse time move and then check for non-zero feed rate each time. This
-            // should be efficient and effective.
-            if (axis_words == 0) {
-               FAIL(STATUS_INVALID_STATEMENT);
-            }else {
-              //run the new line here , consider planner for future
-                FAIL(STATUS_OK);
-            }
+             FAIL(STATUS_OK);
             break;
           case MOTION_MODE_CW_ARC: case MOTION_MODE_CCW_ARC:
+            FAIL(STATUS_OK);
             // Check if at least one of the axes of the selected plane has been specified. If in center
             // format arc mode, also check for at least one of the IJK axes of the selected plane was sent.
-          /*  if ( !( bit_isfalse(axis_words,bit(gc.plane_axis_2)) ) ||
-                 ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
-              FAIL(STATUS_INVALID_STATEMENT);
-            } else {   */
-              //set axis_word to 15 this tells modal_function1(axis_words)
-              //to run arc interpolation
+            //set axis_word to 15 this tells modal_function1(axis_words)
+            //to run arc interpolation
               for(i=0;i<=3;i++)
                   Set_Axisword(i);
-                  
+              
+              /*  
+              if ( !( bit_isfalse(axis_words,bit(gc.plane_axis_2)) ) ||
+                 ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
+                         FAIL(STATUS_INVALID_STATEMENT);
+              }
+              */
               #if GcodeDebug == 3
               //test if axis_word will run arc
               while(DMA_IsOn(1));
               dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
               #endif
-           // }
+
             break;
           case MOTION_MODE_CANCEL:
+            FAIL(STATUS_OK);
             // No axis words allowed while active.
             if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); }
             break;
        }
-       //track current position
+       
+       //keep track of current position
        for(i=0;i<NoOfAxis;i++){
           gc.position[i] =  gc.next_position[i];
        }
@@ -403,84 +377,48 @@ int i = 0;
    
    //check that Plane select is not out of scope
    if (group_number == MODAL_GROUP_2){
-
+     FAIL(STATUS_OK);
+     
      if(axis_xyz > NO_OF_PLANES){
        status_code = STATUS_INVALID_STATEMENT;
        FAIL(STATUS_INVALID_STATEMENT);
-     }else{
-       FAIL(STATUS_OK);
      }
      
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("axis_xyz:= %d\n",axis_xyz);
-     #endif
-
-     //FAIL(STATUS_OK);
      return status_code;
    }
    
    //incrmental / absolute
    if (group_number == MODAL_GROUP_3){
-
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("gc.absolute_mode:= %d\n",gc.absolute_mode);
-     #endif
-     
      FAIL(STATUS_OK);
      return status_code;
    }
    
       //feedratemode - not yet implimented!! understanding needed
    if (group_number == MODAL_GROUP_5){
-
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("gc.inverse_feed_rate_mode:= %d\n",gc.inverse_feed_rate_mode);
-     #endif
-     
      FAIL(STATUS_OK);
      return status_code;
    }
    
    //UNITS mm / inches gc.inches_mode
    if (group_number == MODAL_GROUP_6){
-
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("gc.inches_mode:= %d\n",gc.inches_mode);
-     #endif
-
      FAIL(STATUS_OK);
      return status_code;
    }
    
    //G54.... Coordinate system selection
    if (group_number == MODAL_GROUP_12){
-
+     FAIL(STATUS_OK);
+     
      if(gc.coord_select < 0 || gc.coord_select > 7)
         FAIL(STATUS_BAD_NUMBER_FORMAT);
-     else
-        FAIL(STATUS_OK);
-        
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("gc.coord_select:= %d\n",gc.coord_select);
-     #endif
 
      return status_code;
    }
  }
-  //MODALEND
-  //////////////////////////////////////////////////////////////
-
-  #if GcodeDebug == 4
-  while(DMA_IsOn(1));
-  dma_printf("status_code:= %d\n",status_code);
-  #endif
+  //MODAL END
   
-  FAIL(STATUS_OK);
+  //////////////////////////////////////////////////////////////
+  //if you made it this far then somrthin is wrong
   return status_code;
 }
 

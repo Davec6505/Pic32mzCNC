@@ -61,34 +61,34 @@ JAL	_NVMErasePage+0
 NOP	
 SH	R2, Offset(_error+0)(GP)
 ;Globals.c,70 :: 		settings.steps_per_mm[X]   = DEFAULT_X_STEPS_PER_MM;
-LUI	R2, 17211
-ORI	R2, R2, 0
+LUI	R2, 17210
+ORI	R2, R2, 57344
 SW	R2, Offset(_settings+0)(GP)
 ;Globals.c,71 :: 		buffA[SPMMX_OFFSET]        = flt2ulong(settings.steps_per_mm[X]);
-LUI	R2, 17211
-ORI	R2, R2, 0
+LUI	R2, 17210
+ORI	R2, R2, 57344
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612480)(GP)
 ;Globals.c,72 :: 		settings.steps_per_mm[Y]   = DEFAULT_Y_STEPS_PER_MM;
-LUI	R2, 17211
-ORI	R2, R2, 0
+LUI	R2, 17210
+ORI	R2, R2, 57344
 SW	R2, Offset(_settings+4)(GP)
 ;Globals.c,73 :: 		buffA[SPMMY_OFFSET]        = flt2ulong(settings.steps_per_mm[Y]);
-LUI	R2, 17211
-ORI	R2, R2, 0
+LUI	R2, 17210
+ORI	R2, R2, 57344
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612476)(GP)
 ;Globals.c,74 :: 		settings.steps_per_mm[Z]   = DEFAULT_Z_STEPS_PER_MM;
-LUI	R2, 17211
-ORI	R2, R2, 0
+LUI	R2, 17210
+ORI	R2, R2, 57344
 SW	R2, Offset(_settings+8)(GP)
 ;Globals.c,75 :: 		buffA[SPMMZ_OFFSET]        = flt2ulong(settings.steps_per_mm[Z]);
-LUI	R2, 17211
-ORI	R2, R2, 0
+LUI	R2, 17210
+ORI	R2, R2, 57344
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
@@ -149,22 +149,22 @@ JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612448)(GP)
 ;Globals.c,89 :: 		settings.homing_feed_rate   = DEFAULT_HOMING_FEEDRATE;
-LUI	R2, 16840
+LUI	R2, 17455
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+24)(GP)
 ;Globals.c,90 :: 		buffA[H_FEED_RATE_OFFSET]   = flt2ulong(settings.homing_feed_rate);
-LUI	R2, 16840
+LUI	R2, 17455
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612444)(GP)
 ;Globals.c,92 :: 		settings.homing_seek_rate   = DEFAULT_HOMING_RAPID_FEEDRATE ;
-LUI	R2, 17274
+LUI	R2, 17096
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+28)(GP)
 ;Globals.c,93 :: 		buffA[H_SEEK_RATE_OFFSET]   = flt2ulong(settings.homing_seek_rate);
-LUI	R2, 17274
+LUI	R2, 17096
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0
@@ -193,12 +193,12 @@ JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612432)(GP)
 ;Globals.c,101 :: 		settings.acceleration      = DEFAULT_ACCELERATION;
-LUI	R2, 18188
-ORI	R2, R2, 40960
+LUI	R2, 17960
+ORI	R2, R2, 49152
 SW	R2, Offset(_settings+40)(GP)
 ;Globals.c,102 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(settings.acceleration);
-LUI	R2, 18188
-ORI	R2, R2, 40960
+LUI	R2, 17960
+ORI	R2, R2, 49152
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
@@ -1820,15 +1820,11 @@ J	L_settings_store_global_setting82
 NOP	
 ;Globals.c,684 :: 		case 8: // Convert to mm/min^2 for grbl internal use.
 L_settings_store_global_setting93:
-;Globals.c,685 :: 		settings.acceleration = value*60.0*60.0;
-LUI	R2, 17008
+;Globals.c,685 :: 		settings.acceleration = value*secXsec ;
+LUI	R2, 17761
 ORI	R2, R2, 0
 MTC1	R2, S0
-MUL.S 	S1, S12, S0
-LUI	R2, 17008
-ORI	R2, R2, 0
-MTC1	R2, S0
-MUL.S 	S0, S1, S0
+MUL.S 	S0, S12, S0
 SWC1	S0, Offset(_settings+40)(GP)
 ;Globals.c,686 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0

@@ -199,6 +199,8 @@ _uart_high_speed
 _uart_low_speed
 _uart_one_stopbit
 _uart_two_stopbits
+a_sq
+a_t_x100
 a10m
 a10m
 a10m
@@ -4105,6 +4107,7 @@ alp
 alp
 alp
 alp_bit
+alpha
 alrmdate
 alrmdatebits
 alrmdateclr
@@ -56501,6 +56504,7 @@ sessrqif
 sessrqif
 sessrqif_bit
 set_axisword
+set_calculation_constants
 set_fail
 set_min_limit
 set_modalgroup
