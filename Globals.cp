@@ -973,17 +973,17 @@ int retry_flash_write = 0;
 
 
 
- settings.steps_per_mm[X] =  186.875 ;
+ settings.steps_per_mm[X] =  186.570 ;
  buffA[ 0x40 ] = flt2ulong(settings.steps_per_mm[X]);
- settings.steps_per_mm[Y] =  186.875 ;
+ settings.steps_per_mm[Y] =  186.570 ;
  buffA[ 0x41 ] = flt2ulong(settings.steps_per_mm[Y]);
- settings.steps_per_mm[Z] =  186.875 ;
+ settings.steps_per_mm[Z] =  186.570 ;
  buffA[ 0x42 ] = flt2ulong(settings.steps_per_mm[Z]);
- settings.steps_per_mm[A] =  187.00 ;
+ settings.steps_per_mm[A] =  186.570 ;
  buffA[ 0x43 ] = flt2ulong(settings.steps_per_mm[A]);
- settings.steps_per_mm[B] =  187.00 ;
+ settings.steps_per_mm[B] =  186.570 ;
  buffA[ 0x42 ] = flt2ulong(settings.steps_per_mm[B]);
- settings.steps_per_mm[C] =  187.00 ;
+ settings.steps_per_mm[C] =  186.570 ;
  buffA[ 0x43 ] = flt2ulong(settings.steps_per_mm[C]);
 
  settings.default_feed_rate =  250.00 ;

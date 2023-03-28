@@ -43,12 +43,12 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_HOMING_ENABLE          true
 
 //default values of words and flags
-#define DEFAULT_X_STEPS_PER_MM         186.875
-#define DEFAULT_Y_STEPS_PER_MM         186.875
-#define DEFAULT_Z_STEPS_PER_MM         186.875
-#define DEFAULT_A_STEPS_PER_MM         187.00
-#define DEFAULT_B_STEPS_PER_MM         187.00
-#define DEFAULT_C_STEPS_PER_MM         187.00
+#define DEFAULT_X_STEPS_PER_MM         186.570
+#define DEFAULT_Y_STEPS_PER_MM         186.570
+#define DEFAULT_Z_STEPS_PER_MM         186.570
+#define DEFAULT_A_STEPS_PER_MM         186.570
+#define DEFAULT_B_STEPS_PER_MM         186.570
+#define DEFAULT_C_STEPS_PER_MM         186.570
 #define DEFAUT_P_USEC                  100
 #define DEFAULT_MM_PER_ARC_SEGMENT     0.10
 #define DEFAULT_RAPID_FEEDRATE         500.00 // mm/min

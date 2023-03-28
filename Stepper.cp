@@ -1348,16 +1348,18 @@ static int cnt;
  LED2=!LED2;
  cnt = 0;
  }
- if((STPS[axisA].step_count > SV.dA)||(STPS[axisB].step_count > SV.dB)){
+
+ if(SV.dA >= SV.dB){
+ if(STPS[axisA].step_count > SV.dA){
  StopAxis(axisA);
  StopAxis(axisB);
  return;
  }
 
- if(SV.dA >= SV.dB){
  Step_Cycle(axisA);
  if(!SV.cir)
  Pulse(axisA);
+
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dB)) ;
  }else{
@@ -1365,9 +1367,15 @@ static int cnt;
  Step_Cycle(axisB);
  }
  }else{
+ if(STPS[axisB].step_count > SV.dB){
+ StopAxis(axisA);
+ StopAxis(axisB);
+ return;
+ }
  Step_Cycle(axisB);
  if(!SV.cir)
  Pulse(axisB);
+
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dA)) ;
  }else{

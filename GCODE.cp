@@ -1087,10 +1087,10 @@ int i,m_mode;
  FAIL( 0 );
 
  switch(mode){
- case 0: m_mode =  0 ; break;
- case 1: m_mode =  1 ; break;
- case 2: m_mode =  2 ;gc.DIR =  0 ; break;
- case 3: m_mode =  3 ;gc.DIR =  1 ; break;
+ case 0: m_mode =  0 ;SV.cir = 0; break;
+ case 1: m_mode =  1 ;SV.cir = 0; break;
+ case 2: m_mode =  2 ;gc.DIR =  0 ;SV.cir = 1; break;
+ case 3: m_mode =  3 ;gc.DIR =  1 ;SV.cir = 1; break;
  case 4: non_modal_action =  1 ; break;
  case 10: non_modal_action =  2 ; break;
  case 17: Select_Plane(xy);m_mode =  6 ; break;

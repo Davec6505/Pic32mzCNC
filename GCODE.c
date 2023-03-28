@@ -197,10 +197,10 @@ int i,m_mode;
  FAIL(STATUS_OK);
  
   switch(mode){
-    case 0: m_mode    = MOTION_MODE_SEEK;    break;
-    case 1: m_mode    = MOTION_MODE_LINEAR;  break;
-    case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;  break;
-    case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW; break;
+    case 0: m_mode    = MOTION_MODE_SEEK;SV.cir = 0;    break;
+    case 1: m_mode    = MOTION_MODE_LINEAR;SV.cir = 0;  break;
+    case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;SV.cir = 1;  break;
+    case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW;SV.cir = 1; break;
     case 4: non_modal_action  = NON_MODAL_DWELL;     break;
     case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
     case 17: Select_Plane(xy);m_mode    = MOTION_MODE_NULL; break;

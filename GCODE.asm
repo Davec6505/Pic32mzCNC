@@ -544,30 +544,42 @@ LH	R25, 8(SP)
 ;GCODE.c,199 :: 		switch(mode){
 J	L_GCODE_Set_Motion_Mode32
 NOP	
-;GCODE.c,200 :: 		case 0: m_mode    = MOTION_MODE_SEEK;    break;
+;GCODE.c,200 :: 		case 0: m_mode    = MOTION_MODE_SEEK;SV.cir = 0;    break;
 L_GCODE_Set_Motion_Mode34:
 SH	R0, 10(SP)
+LBU	R2, Offset(_SV+2)(GP)
+INS	R2, R0, 4, 1
+SB	R2, Offset(_SV+2)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,201 :: 		case 1: m_mode    = MOTION_MODE_LINEAR;  break;
+;GCODE.c,201 :: 		case 1: m_mode    = MOTION_MODE_LINEAR;SV.cir = 0;  break;
 L_GCODE_Set_Motion_Mode35:
 ORI	R2, R0, 1
 SH	R2, 10(SP)
+LBU	R2, Offset(_SV+2)(GP)
+INS	R2, R0, 4, 1
+SB	R2, Offset(_SV+2)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,202 :: 		case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;  break;
+;GCODE.c,202 :: 		case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;SV.cir = 1;  break;
 L_GCODE_Set_Motion_Mode36:
 ORI	R2, R0, 2
 SH	R2, 10(SP)
 SH	R0, Offset(_gc+124)(GP)
+LBU	R2, Offset(_SV+2)(GP)
+ORI	R2, R2, 16
+SB	R2, Offset(_SV+2)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
-;GCODE.c,203 :: 		case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW; break;
+;GCODE.c,203 :: 		case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW;SV.cir = 1; break;
 L_GCODE_Set_Motion_Mode37:
 ORI	R2, R0, 3
 SH	R2, 10(SP)
 ORI	R2, R0, 1
 SH	R2, Offset(_gc+124)(GP)
+LBU	R2, Offset(_SV+2)(GP)
+ORI	R2, R2, 16
+SB	R2, Offset(_SV+2)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
 ;GCODE.c,204 :: 		case 4: non_modal_action  = NON_MODAL_DWELL;     break;

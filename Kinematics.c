@@ -122,10 +122,10 @@ int dirA,dirB;
 
     //if absolute mode ~ newxyz = new_position - current_position
    if(gc.absolute_mode == true){
-      //get current position
-    tempA = belt_steps(axis_a,axisA);
-    tempB = belt_steps(axis_b,axisB);
-      //subtract new from current
+     //get current position
+     tempA = belt_steps(axis_a,axisA);
+     tempB = belt_steps(axis_b,axisB);
+     //subtract new from current
      tempA = tempA - STPS[axisA].steps_abs_position;
      tempB = tempB - STPS[axisB].steps_abs_position;
    }else{
@@ -167,18 +167,25 @@ int dirA,dirB;
   SV.dA = labs(SV.dA);
   SV.dB = labs(SV.dB);
   
+  if(!DMA_IsOn(1));
+       dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
+  
   //Start values for Bresenhams
   if(SV.dA >= SV.dB){
-     if(!SV.cir)
+     if(!SV.cir){
         speed_cntr_Move(tempA,speed,axisA);
+        STPS[axisB].step_delay = STPS[axisA].step_delay;
+     }
 
      SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
      STPS[axisA].master = 1;
      STPS[axisB].master = 0;
   }
   else{
-     if(!SV.cir)
+     if(!SV.cir){
         speed_cntr_Move(tempB,speed,axisB);
+        STPS[axisA].step_delay = STPS[axisB].step_delay;
+     }
 
      SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
      STPS[axisA].master = 0;
@@ -192,11 +199,7 @@ int dirA,dirB;
    
    Axis_Interpolate(axisA,axisB);
    
-  //leave previous values at 0 for now this will
-  //be implimented at a later stage.
-  // SV.px = SV.dx;
-  // SV.py = SV.dy;
-  // SV.pz = SV.dz;
+
    
 
 }
@@ -352,7 +355,7 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
         STPS[axis_1].step_delay = feed_rate;
       }
 
-     SV.cir = 1;//to indicate DualAxisStep of circle!!!
+    // SV.cir = 1;//to indicate DualAxisStep of circle!!!
      DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);//,xy);
      
      while(1){
