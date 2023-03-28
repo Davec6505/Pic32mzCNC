@@ -72,7 +72,7 @@ static void Set_Axisdirection(long temp,int axis){
 ///////////////////////////////////////////////////////////
 //                SINGLE AXIS MOVEMENT                   //
 ///////////////////////////////////////////////////////////
-void SingleAxisStep(double newxyz,long speed,int axis_No){
+void SingleAxisStep(float newxyz,long speed,int axis_No){
 long  absxyz = 0;
 long  tempA  = 0;
 int   dir    = 0;
@@ -116,15 +116,15 @@ int   dir    = 0;
 //////////////////////////////////////////////////////////
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed){//,int xyza){
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed){
 long tempA,tempB,tempC;
 int dirA,dirB;
 
     //if absolute mode ~ newxyz = new_position - current_position
    if(gc.absolute_mode == true){
       //get current position
-    tempA = belt_steps(axis_a,axisA);//ulong2flt( STPS[axisA].steps_abs_position);
-    tempB = belt_steps(axis_b,axisB);//ulong2flt( STPS[axisB].steps_abs_position);
+    tempA = belt_steps(axis_a,axisA);
+    tempB = belt_steps(axis_b,axisB);
       //subtract new from current
      tempA = tempA - STPS[axisA].steps_abs_position;
      tempB = tempB - STPS[axisB].steps_abs_position;
@@ -147,9 +147,9 @@ int dirA,dirB;
      SV.prevB = 0;
      SV.prevC = 0;
    }else{
-     SV.prevA = 0;
-     SV.prevB = 0;
-     SV.prevC = 0;
+     SV.prevA = 0;//tempA;
+     SV.prevB = 0;//tempB;
+     SV.prevC = 0;//tempC;
    }
    
   //set the direction counter for absolute position

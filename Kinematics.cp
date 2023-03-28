@@ -899,8 +899,8 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(double newxyz,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(float newxyz,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -981,7 +981,7 @@ static void Set_Axisdirection(long temp,int axis){
  }
 }
 #line 75 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-void SingleAxisStep(double newxyz,long speed,int axis_No){
+void SingleAxisStep(float newxyz,long speed,int axis_No){
 long absxyz = 0;
 long tempA = 0;
 int dir = 0;
@@ -1015,7 +1015,7 @@ int dir = 0;
 
 
 
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed){
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed){
 long tempA,tempB,tempC;
 int dirA,dirB;
 
@@ -1140,10 +1140,10 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  if(isclockwise) {
 
  if (angular_travel >= 0)
- angular_travel -=  (2.0* 3.1416 ) ;
+ angular_travel -=  (2.00* 3.1416 ) ;
  else {
  if(angular_travel <= 0)
- angular_travel +=  (2.0* 3.1416 ) ;
+ angular_travel +=  (2.00* 3.1416 ) ;
  }
  }
 
@@ -1151,7 +1151,7 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
  if (mm_of_travel == 0.0) { return; }
 
- segments = (long)floor(mm_of_travel/ 0.1 );
+ segments = (long)floor(mm_of_travel/ 0.10 );
 
 
 

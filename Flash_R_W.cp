@@ -575,8 +575,8 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(double newxyz,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(float newxyz,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,

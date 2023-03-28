@@ -458,8 +458,8 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(double newxyz,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(float newxyz,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -952,9 +952,9 @@ int i;
 
  for(i=0;i< 4 ;i++){
 
- alpha[i] = ( (2.0* 3.1416 )  / settings.steps_per_mm[i]);
+ alpha[i] = ( (2.00* 3.1416 )  / settings.steps_per_mm[i]);
 
- a_t_x100[i] = (lround)(alpha[i] *  781250.0  * 100.00);
+ a_t_x100[i] = (lround)(alpha[i] *  781250.00  * 100.00);
 
  a_sq[i] = (lround)(alpha[i] * 2.00 *  10000000000 );
  }
@@ -996,7 +996,7 @@ long abs_mmSteps = labs(mmSteps);
 
 
 
- STPS[axis_No].step_delay = labs( (( 781250.0 *0.676)/100.0)  * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
+ STPS[axis_No].step_delay = labs( (( 781250.00 *0.676)/100.00)  * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
  STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
 

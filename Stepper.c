@@ -427,11 +427,11 @@ void SingleStepAxis(int axis){
 
 void Axis_Interpolate(int axisA,int axisB){
 static int cnt;
-      cnt++;
-      if(cnt > 5){
-        LED2=!LED2;
-        cnt = 0;
-      }
+   cnt++;
+   if(cnt > 5){
+      LED2=!LED2;
+      cnt = 0;
+   }
    if((STPS[axisA].step_count > SV.dA)||(STPS[axisB].step_count > SV.dB)){
         StopAxis(axisA);
         StopAxis(axisB);

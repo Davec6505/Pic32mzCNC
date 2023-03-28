@@ -193,12 +193,12 @@ JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612432)(GP)
 ;Globals.c,101 :: 		settings.acceleration      = DEFAULT_ACCELERATION;
-LUI	R2, 17960
-ORI	R2, R2, 49152
+LUI	R2, 17988
+ORI	R2, R2, 57344
 SW	R2, Offset(_settings+40)(GP)
 ;Globals.c,102 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(settings.acceleration);
-LUI	R2, 17960
-ORI	R2, R2, 49152
+LUI	R2, 17988
+ORI	R2, R2, 57344
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	

@@ -514,8 +514,8 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(double newxyz,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(float newxyz,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -949,7 +949,7 @@ double temp = 0.00;
 
 long belt_steps(double move_distance,int axis){
  double temp = 0;
- temp = (( 32.0  * settings.steps_per_mm[axis])/( 2.0  *  20.0 )) * move_distance;
+ temp = (( 32.00  * settings.steps_per_mm[axis])/( 2.00  *  20.00 )) * move_distance;
  return (long)temp;
 }
 
@@ -957,7 +957,7 @@ long belt_steps(double move_distance,int axis){
 
 
 float beltsteps2mm(long Steps,int axis){
- float temp = ( 2.0 * 20.0 *(float)Steps)/( 32.0  * settings.steps_per_mm[axis]);
+ float temp = ( 2.00 * 20.00 *(float)Steps)/( 32.00  * settings.steps_per_mm[axis]);
 #line 46 "C:/Users/Git/Pic32mzCNC/Steptodistance.c"
  return temp;
 }
@@ -991,7 +991,7 @@ double circ,cirDivision,stepsToMove;
 
 
  cirDivision = mmsToMove / circ;
- stepsToMove = cirDivision * settings.steps_per_mm[axis] *  32.0 ;
+ stepsToMove = cirDivision * settings.steps_per_mm[axis] *  32.00 ;
 
 
  return (long)stepsToMove;

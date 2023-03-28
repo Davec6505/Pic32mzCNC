@@ -483,8 +483,8 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(double newxyz,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(float newxyz,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -986,25 +986,25 @@ int retry_flash_write = 0;
  settings.steps_per_mm[C] =  187.00 ;
  buffA[ 0x43 ] = flt2ulong(settings.steps_per_mm[C]);
 
- settings.default_feed_rate =  250.0 ;
+ settings.default_feed_rate =  250.00 ;
  buffA[ 0x47 ] = flt2ulong(settings.default_feed_rate);
 
- settings.default_seek_rate =  500.0 ;
+ settings.default_seek_rate =  500.00 ;
  buffA[ 0x48 ] = flt2ulong(settings.default_seek_rate);
 
- settings.homing_feed_rate =  700.0 ;
+ settings.homing_feed_rate =  700.00 ;
  buffA[ 0x49 ] = flt2ulong(settings.homing_feed_rate);
 
- settings.homing_seek_rate =  100.0  ;
+ settings.homing_seek_rate =  100.00  ;
  buffA[ 0x4A ] = flt2ulong(settings.homing_seek_rate);
 
- settings.homing_pulloff =  1.0 ;
+ settings.homing_pulloff =  1.00 ;
  buffA[ 0x4B ] = flt2ulong(settings.homing_pulloff);
 
- settings.mm_per_arc_segment =  0.1 ;
+ settings.mm_per_arc_segment =  0.10 ;
  buffA[ 0x4C ] = flt2ulong(settings.mm_per_arc_segment);
 
- settings.acceleration =  (3.0* (60.0*60.0) ) ;
+ settings.acceleration =  (3.50* (60.00*60.00) ) ;
  buffA[ 0x4D ] = flt2ulong(settings.acceleration);
 
  settings.junction_deviation =  0.05 ;
@@ -1441,7 +1441,7 @@ int val_temp = 0;
  buffA[ 0x53 ] = (unsigned long)val_temp;
  break;
  case 8:
- settings.acceleration = value* (60.0*60.0)  ;
+ settings.acceleration = value* (60.00*60.00)  ;
  buffA[ 0x4D ] = flt2ulong(value);
  break;
  case 9: settings.junction_deviation = fabs(value);
