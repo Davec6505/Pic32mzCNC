@@ -8,8 +8,8 @@ _axis_ _axis;
 axis_combination axis_xyz;
 
 //unsigned int Toggle;
-long test;
- 
+//long test;
+static int axis_running;
 
 //////////////////////////////////
 //Set up pin outs
@@ -136,6 +136,9 @@ int Get_Axis_Enable_States(){
 //      ENABLE / DISABLE  SINGLE AXIS  CONTROL          //
 //////////////////////////////////////////////////////////
 void Single_Axis_Enable(_axis_ axis_){
+  //pre condition axis stop control for interpolate here??
+   axis_running =0;
+   
     switch(axis_){
        case X:
              OC5IE_bit = 1;OC5CONbits.ON = 1;
@@ -427,19 +430,24 @@ void SingleStepAxis(int axis){
 
 void Axis_Interpolate(int axisA,int axisB){
 static int cnt;
+
    cnt++;
    if(cnt > 5){
       LED2=!LED2;
       cnt = 0;
    }
-   
-   if(SV.dA >= SV.dB){
-     if(STPS[axisA].step_count > SV.dA){
-       StopAxis(axisA);
-       StopAxis(axisB);
-       return;
-     }
 
+   if(SV.dA >= SV.dB){
+      if(STPS[axisA].step_count > SV.dA){
+       StopAxis(axisA);
+       axis_running = 2;
+     }
+     if(STPS[axisB].step_count > SV.dB){
+       StopAxis(axisB);
+       axis_running = 1;
+     }
+     if(axis_running >= 2)return;
+   
       Step_Cycle(axisA);
       if(!SV.cir)
         Pulse(axisA);
@@ -452,10 +460,15 @@ static int cnt;
       }
    }else{
      if(STPS[axisB].step_count > SV.dB){
-       StopAxis(axisA);
        StopAxis(axisB);
-       return;
+       axis_running = 2;
      }
+     if(STPS[axisA].step_count > SV.dA){
+       StopAxis(axisA);
+       axis_running = 1;
+     }
+     if(axis_running >= 2)return;
+   
      Step_Cycle(axisB);
      if(!SV.cir)
        Pulse(axisB);
