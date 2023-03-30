@@ -61,6 +61,7 @@ static void Set_Axisdirection(long temp,int axis){
      }
 }
 
+
 /*single axis step rate may needs to be "doubled"?? in order
  *to compensate for the speed increase [due to no 2nd axis
  *interpolation], a possible solution is to use a dummy
@@ -72,7 +73,7 @@ static void Set_Axisdirection(long temp,int axis){
 ///////////////////////////////////////////////////////////
 //                SINGLE AXIS MOVEMENT                   //
 ///////////////////////////////////////////////////////////
-void SingleAxisStep(double newxyz,long speed,int axis_No){
+void SingleAxisStep(float newxyz,long speed,int axis_No){
 long  absxyz = 0;
 long  tempA  = 0;
 int   dir    = 0;
@@ -116,24 +117,24 @@ int   dir    = 0;
 //////////////////////////////////////////////////////////
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed){//,int xyza){
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed){
 long tempA,tempB,tempC;
 int dirA,dirB;
 
     //if absolute mode ~ newxyz = new_position - current_position
    if(gc.absolute_mode == true){
-      //get current position
-    tempA = belt_steps(axis_a,axisA);//ulong2flt( STPS[axisA].steps_abs_position);
-    tempB = belt_steps(axis_b,axisB);//ulong2flt( STPS[axisB].steps_abs_position);
-      //subtract new from current
+     //get current position
+     tempA = belt_steps(axis_a,axisA);
+     tempB = belt_steps(axis_b,axisB);
+     //subtract new from current
      tempA = tempA - STPS[axisA].steps_abs_position;
      tempB = tempB - STPS[axisB].steps_abs_position;
    }else{
       tempA = belt_steps(axis_a,axisA);
       tempB = belt_steps(axis_b,axisB);
    }
-   SV.over=0;
-   SV.dif = 0;
+   SV.over = 0;
+   SV.dif  = 0;
 
    //Enable the relevant axis in Stepper.c
    SV.Single_Dual = 1;
@@ -142,16 +143,16 @@ int dirA,dirB;
   // Multi_Axis_Enable(xyza);
   
   //if in abs mode prev must be cur pos
-   if (!gc.absolute_mode){
+/*   if (!gc.absolute_mode){
      SV.prevA = 0;
      SV.prevB = 0;
      SV.prevC = 0;
    }else{
-     SV.prevA = 0;
-     SV.prevB = 0;
-     SV.prevC = 0;
+     SV.prevA = 0;//tempA;
+     SV.prevB = 0;//tempB;
+     SV.prevC = 0;//tempC;
    }
-   
+*/
   //set the direction counter for absolute position
   Set_Axisdirection(tempA,axisA);
   STPS[axisA].axis_dir = Direction(tempA);
@@ -159,26 +160,35 @@ int dirA,dirB;
   STPS[axisB].axis_dir = Direction(tempB);
 
   //Delta distance to move
-  SV.dA   = tempA - SV.prevA;
-  SV.dB   = tempB - SV.prevB;
-  SV.dC   = tempC - SV.prevC;
+  SV.dA   = tempA;// - SV.prevA;
+  SV.dB   = tempB;// - SV.prevB;
+  SV.dC   = tempC;// - SV.prevC;
 
   //Remove -ve values
   SV.dA = labs(SV.dA);
   SV.dB = labs(SV.dB);
-  
+
+#if KineDebug == 4
+  if(!DMA_IsOn(1));
+       dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
+#endif
+
   //Start values for Bresenhams
   if(SV.dA >= SV.dB){
-     if(!SV.cir)
+     if(!SV.cir){
         speed_cntr_Move(tempA,speed,axisA);
+        STPS[axisB].step_delay = STPS[axisA].step_delay;
+     }
 
      SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
      STPS[axisA].master = 1;
      STPS[axisB].master = 0;
   }
   else{
-     if(!SV.cir)
+     if(!SV.cir){
         speed_cntr_Move(tempB,speed,axisB);
+        STPS[axisA].step_delay = STPS[axisB].step_delay;
+     }
 
      SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
      STPS[axisA].master = 0;
@@ -192,11 +202,7 @@ int dirA,dirB;
    
    Axis_Interpolate(axisA,axisB);
    
-  //leave previous values at 0 for now this will
-  //be implimented at a later stage.
-  // SV.px = SV.dx;
-  // SV.py = SV.dy;
-  // SV.pz = SV.dz;
+
    
 
 }
@@ -352,7 +358,7 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
         STPS[axis_1].step_delay = feed_rate;
       }
 
-     SV.cir = 1;//to indicate DualAxisStep of circle!!!
+    // SV.cir = 1;//to indicate DualAxisStep of circle!!!
      DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);//,xy);
      
      while(1){

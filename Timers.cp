@@ -555,7 +555,7 @@ void plan_set_current_position();
 void plan_reset_absolute_position();
 
 
-unsigned long sqrt_(unsigned long v);
+long sqrt_(long v);
 
 
 void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
@@ -580,7 +580,7 @@ unsigned int home_cnt;
 
 typedef struct Steps{
 
- signed long microSec;
+ char master: 1;
 
  unsigned short CheckStep: 1;
 
@@ -590,7 +590,11 @@ typedef struct Steps{
 
  unsigned short stopAxis: 1;
 
- unsigned int run_state ;
+ int axis_dir;
+
+ int run_state ;
+
+ long microSec;
 
  long step_delay;
 
@@ -623,7 +627,7 @@ typedef struct Steps{
 
  long StartUp_delay;
 
- signed long mmToTravel;
+ long mmToTravel;
 
  long steps_abs_position;
 
@@ -632,10 +636,6 @@ typedef struct Steps{
  float mm_home_position;
 
  float max_travel;
-
- int axis_dir;
-
- char master: 1;
 }STP;
 extern STP STPS[ 4 ];
 
@@ -651,8 +651,8 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(double newxyz,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(float newxyz,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -663,6 +663,7 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
+
 
 
 void ResetHoming();

@@ -8,8 +8,8 @@ _axis_ _axis;
 axis_combination axis_xyz;
 
 //unsigned int Toggle;
-long test;
- 
+//long test;
+static int axis_running;
 
 //////////////////////////////////
 //Set up pin outs
@@ -136,6 +136,9 @@ int Get_Axis_Enable_States(){
 //      ENABLE / DISABLE  SINGLE AXIS  CONTROL          //
 //////////////////////////////////////////////////////////
 void Single_Axis_Enable(_axis_ axis_){
+  //pre condition axis stop control for interpolate here??
+   axis_running =0;
+   
     switch(axis_){
        case X:
              OC5IE_bit = 1;OC5CONbits.ON = 1;
@@ -307,7 +310,7 @@ int Pulse(int axis_No){
         
         // Check for final step
         if(STPS[axis_No].accel_count > -1 ){
-         STPS[axis_No].run_state = STOP;
+          STPS[axis_No].run_state = STOP;
         }
         break;
       default:break;
@@ -427,21 +430,30 @@ void SingleStepAxis(int axis){
 
 void Axis_Interpolate(int axisA,int axisB){
 static int cnt;
-      cnt++;
-      if(cnt > 5){
-        LED2=!LED2;
-        cnt = 0;
-      }
-   if((STPS[axisA].step_count > SV.dA)||(STPS[axisB].step_count > SV.dB)){
-        StopAxis(axisA);
-        StopAxis(axisB);
-        return;
+
+   cnt++;
+   if(cnt > 5){
+      LED2=!LED2;
+      cnt = 0;
    }
 
    if(SV.dA >= SV.dB){
+     //if(STPS[axisA].step_count >= STPS[axisA].dist){
+     if(STPS[axisA].step_count > SV.dA){
+       StopAxis(axisA);
+       axis_running = 2;
+     }
+    // if(STPS[axisB].step_count >= STPS[axisB].dist){
+    if(STPS[axisB].step_count > SV.dB){
+       StopAxis(axisB);
+       axis_running = 1;
+     }
+     if(axis_running >= 2)return;
+   
       Step_Cycle(axisA);
       if(!SV.cir)
         Pulse(axisA);
+        
       if(SV.dif < 0){
           SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
       }else{
@@ -449,12 +461,25 @@ static int cnt;
           Step_Cycle(axisB);
       }
    }else{
-      Step_Cycle(axisB);
-      if(!SV.cir)
-         Pulse(axisB);
-      if(SV.dif < 0){
-         SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
-      }else{
+     //if(STPS[axisB].step_count >= STPS[axisB].dist){
+     if(STPS[axisB].step_count > SV.dB){
+       StopAxis(axisB);
+       axis_running = 2;
+     }
+     //if(STPS[axisA].step_count >= STPS[axisA].dist){
+     if(STPS[axisA].step_count > SV.dA){
+       StopAxis(axisA);
+       axis_running = 1;
+     }
+     if(axis_running >= 2)return;
+   
+     Step_Cycle(axisB);
+     if(!SV.cir)
+       Pulse(axisB);
+         
+     if(SV.dif < 0){
+       SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
+     }else{
          SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
          Step_Cycle(axisA);
        }

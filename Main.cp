@@ -555,7 +555,7 @@ void plan_set_current_position();
 void plan_reset_absolute_position();
 
 
-unsigned long sqrt_(unsigned long v);
+long sqrt_(long v);
 
 
 void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
@@ -580,7 +580,7 @@ unsigned int home_cnt;
 
 typedef struct Steps{
 
- signed long microSec;
+ char master: 1;
 
  unsigned short CheckStep: 1;
 
@@ -590,7 +590,11 @@ typedef struct Steps{
 
  unsigned short stopAxis: 1;
 
- unsigned int run_state ;
+ int axis_dir;
+
+ int run_state ;
+
+ long microSec;
 
  long step_delay;
 
@@ -623,7 +627,7 @@ typedef struct Steps{
 
  long StartUp_delay;
 
- signed long mmToTravel;
+ long mmToTravel;
 
  long steps_abs_position;
 
@@ -632,10 +636,6 @@ typedef struct Steps{
  float mm_home_position;
 
  float max_travel;
-
- int axis_dir;
-
- char master: 1;
 }STP;
 extern STP STPS[ 4 ];
 
@@ -651,8 +651,8 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(double newxyz,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
+void SingleAxisStep(float newxyz,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -663,6 +663,7 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
+
 
 
 void ResetHoming();
@@ -1048,14 +1049,13 @@ if(!SV.Tog){
 if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
 while(DMA_IsOn(1));
 #line 182 "C:/Users/Git/Pic32mzCNC/Main.c"
-dma_printf("run_state:= %d\t%l\t%l\t%d\t%l\t%l\t%l\n"
+dma_printf("run_state:= %d\t%l\t%l\t%d\t%l\t%l\n"
 ,(STPS[X].run_state&0xff)
 ,STPS[X].step_count
-,STPS[X].step_delay
+,STPS[X].dist
 ,(STPS[Y].run_state&0xff)
 ,STPS[Y].step_count
-,STPS[Y].step_delay
-,gc.frequency);
+,STPS[Y].dist);
 }
 }
 
@@ -1068,7 +1068,7 @@ dma_printf("run_state:= %d\t%l\t%l\t%d\t%l\t%l\t%l\n"
 
 
  status_of_gcode = Sample_Gocde_Line();
-#line 213 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 212 "C:/Users/Git/Pic32mzCNC/Main.c"
  LED1 = TMR.clock >> 4;
 
 
@@ -1121,7 +1121,7 @@ float a_val;
  LED2 =  0 ;
  break;
  case 4:
-#line 277 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 276 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1162,12 +1162,12 @@ float a_val;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 324 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 323 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
 
 
  coord_data[i] = gc.next_position[i];
-#line 335 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 334 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1184,7 +1184,7 @@ float a_val;
 
 
  axis_words = Get_Axisword();
-#line 359 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 358 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1216,7 +1216,7 @@ float a_val;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 394 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 393 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1286,7 +1286,7 @@ float a_val;
 
 
 static int Modal_Group_Actions1(int action){
-#line 467 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 466 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.frequency,X);
@@ -1325,7 +1325,7 @@ static int Modal_Group_Actions1(int action){
  case  ((( 4 * 4 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
-#line 509 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 508 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(axis_to_home < 2){
 
 
@@ -1384,7 +1384,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 571 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 570 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
  FAIL( 6 );
@@ -1396,7 +1396,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 586 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 585 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
  FAIL( 6 );
 
@@ -1407,6 +1407,6 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 600 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 599 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }

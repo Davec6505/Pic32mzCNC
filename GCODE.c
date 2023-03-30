@@ -197,10 +197,10 @@ int i,m_mode;
  FAIL(STATUS_OK);
  
   switch(mode){
-    case 0: m_mode    = MOTION_MODE_SEEK;    break;
-    case 1: m_mode    = MOTION_MODE_LINEAR;  break;
-    case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;  break;
-    case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW; break;
+    case 0: m_mode    = MOTION_MODE_SEEK;SV.cir = 0;    break;
+    case 1: m_mode    = MOTION_MODE_LINEAR;SV.cir = 0;  break;
+    case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;SV.cir = 1;  break;
+    case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW;SV.cir = 1; break;
     case 4: non_modal_action  = NON_MODAL_DWELL;     break;
     case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
     case 17: Select_Plane(xy);m_mode    = MOTION_MODE_NULL; break;
@@ -247,6 +247,11 @@ int i,m_mode;
      while(DMA_IsOn(1));
      dma_printf("report!\n[status_code:= %d]\n[mode:= %d]\n[motion_mode:= %d]\n[non_modal_action:= %d]\n"
                  ,status_code ,mode ,motion_mode ,non_modal_action);
+  #endif
+  #if GcodeDebug == 3
+  //test if axis_word will run arc
+  while(DMA_IsOn(1));
+  dma_printf("axis_words:= %d\n",axis_words&0x00ff);
   #endif
    return m_mode;
 }
@@ -530,6 +535,11 @@ int F_Val,O_Val;
          dma_printf("[%c\t%d]\n",c[0],F_Val);
       else if(c[0] == 'S' ||  c[0] == 'P' || c[0] == 'L')
          dma_printf("[%c\t%d]\n",c[0],O_Val);
+  #endif
+  #if GcodeDebug == 3
+  //test if axis_word will run arc
+  while(DMA_IsOn(1));
+  dma_printf("axis_words:= %d\n",axis_words&0x00ff);
   #endif
   return status_code;
 }

@@ -19,7 +19,7 @@
  * the timer1 frequency is the clock frequency divided by 8.
  */
 // Timer/Counter 1 running on 3,686MHz / 8 = 460,75kHz (2,17uS). (T1-FREQ 460750)
-#define T1_FREQ   781250.0//=1.28us => timer pre-scaler at (1/64) * 50mhz pbclk3
+#define T1_FREQ   781250//=1.28us => timer pre-scaler at (1/64) * 50mhz pbclk3
 #define minSpeed  30210
 #define maxSpeed  10
 #define cirSpeed  100
@@ -33,16 +33,16 @@
 * Speed = (ALPHA * T1_FREQ) / Step  {T1_Freq = }
 * acc = ((2 * ALPHA * T1_FREQ)*(Step1 - Step2)) / (Step1*Step2)*(Step1+Step2)
 *************************************************************************/
-#define PIx2      (2.0*M_Pi)
-#define ALPHA    (2.0*M_Pi)/SPR
-#define A_T_x100 (long)(ALPHA*T1_FREQ*100.0)      // (ALPHA / T_FREQ)*100
-#define T1_FREQ_148 ((T1_FREQ*0.676)/100.0)   // divided by 100 and scaled by 0.676
+#define PIx2      (2.00*M_Pi)
+#define ALPHA    (PIx2/SPR)
+#define A_T_x100 (long)(ALPHA*T1_FREQ*100.00)      // (ALPHA / T_FREQ)*100
+#define T1_FREQ_148 ((T1_FREQ*0.676)/100.00)   // divided by 100 and scaled by 0.676
 #define SQ_MASK 10000000000
-#define A_SQ (long)(ALPHA*2.0*SQ_MASK)             // ALPHA*2*10000000000
+#define A_SQ (long)(ALPHA*2.00*SQ_MASK)             // ALPHA*2*10000000000
 //#define A_x20000 (long)(ALPHA*20000)             // ALPHA*20000
 
 //mm/sec/sec for acceleration input
-#define secXsec (60.0*60.0)
+#define secXsec (60.00*60.00)
 
 ////////////////////////////////////////////////////
 //structs enums and constants
@@ -97,7 +97,7 @@ void plan_set_current_position();
 void plan_reset_absolute_position();
 
 //efficient sqrt interger calculation
-unsigned long sqrt_(unsigned long v);
+long sqrt_(long v);
 
 //calculation of vectors for radius
 void r_or_ijk(float xCur,float yCur,float xFin,float yFin,

@@ -43,26 +43,26 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_HOMING_ENABLE          true
 
 //default values of words and flags
-#define DEFAULT_X_STEPS_PER_MM         186.875
-#define DEFAULT_Y_STEPS_PER_MM         186.875
-#define DEFAULT_Z_STEPS_PER_MM         186.875
-#define DEFAULT_A_STEPS_PER_MM         187.00
-#define DEFAULT_B_STEPS_PER_MM         187.00
-#define DEFAULT_C_STEPS_PER_MM         187.00
+#define DEFAULT_X_STEPS_PER_MM         186.625
+#define DEFAULT_Y_STEPS_PER_MM         186.625
+#define DEFAULT_Z_STEPS_PER_MM         186.625
+#define DEFAULT_A_STEPS_PER_MM         186.570
+#define DEFAULT_B_STEPS_PER_MM         186.570
+#define DEFAULT_C_STEPS_PER_MM         186.570
 #define DEFAUT_P_USEC                  100
-#define DEFAULT_MM_PER_ARC_SEGMENT     0.1
-#define DEFAULT_RAPID_FEEDRATE         500.0 // mm/min
-#define DEFAULT_FEEDRATE               250.0
-#define DEFAULT_ACCELERATION           (3.0*secXsec) // 10 mm/min^2
+#define DEFAULT_MM_PER_ARC_SEGMENT     0.10
+#define DEFAULT_RAPID_FEEDRATE         500.00 // mm/min
+#define DEFAULT_FEEDRATE               250.00
+#define DEFAULT_ACCELERATION           (3.50*secXsec) // 10 mm/min^2
 #define DEFAULT_JUNCTION_DEVIATION     0.05 // mm
-#define DEFAULT_HOMING_RAPID_FEEDRATE  100.0 // mm/min
-#define DEFAULT_HOMING_FEEDRATE        700.0 // mm/min
+#define DEFAULT_HOMING_RAPID_FEEDRATE  100.00 // mm/min
+#define DEFAULT_HOMING_FEEDRATE        700.00 // mm/min
 #define DEFAULT_HOMING_DEBOUNCE_DELAY  100 // msec (0-65k)
-#define DEFAULT_HOMING_PULLOFF         1.0 // mm
+#define DEFAULT_HOMING_PULLOFF         1.00 // mm
 #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
 #define DEFAULT_DECIMAL_PLACES         3
 #define DEFAULT_N_ARC_CORRECTION       25
-#define DEFAULT_HOME_DIR_MASK        15 // move positive dir
+#define DEFAULT_HOME_DIR_MASK          15 // move positive dir
 #define DEFAULT_INVERT_MASK            15 // move positive dir
 
 
@@ -96,14 +96,14 @@ typedef __attribute__((aligned (32))) float afloat;
 #define NO_OF_PLANES 4
 
 //! Number of (full)steps per round on stepper motor in use.
-#define SPR    200.0
-#define M_STEP 32.0               //Stepper drive micro steps setting
+#define SPR    200.00
+#define M_STEP 32.00               //Stepper drive micro steps setting
 
 /**************************************************
 * ! Belt driven systems
 **************************************************/
-#define PULLEY_TOOTH_COUNT 20.0  //belt pully tooth count
-#define BELT_PITCH 2.0           // Belt tooth pitch
+#define PULLEY_TOOTH_COUNT 20.00  //belt pully tooth count
+#define BELT_PITCH 2.00           // Belt tooth pitch
 
 /**************************************************
 * uncomment USE_LEADSCREW_PITCH if using N instead of pitch
