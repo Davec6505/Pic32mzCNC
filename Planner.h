@@ -19,7 +19,7 @@
  * the timer1 frequency is the clock frequency divided by 8.
  */
 // Timer/Counter 1 running on 3,686MHz / 8 = 460,75kHz (2,17uS). (T1-FREQ 460750)
-#define T1_FREQ   781250.00//=1.28us => timer pre-scaler at (1/64) * 50mhz pbclk3
+#define T1_FREQ   781250//=1.28us => timer pre-scaler at (1/64) * 50mhz pbclk3
 #define minSpeed  30210
 #define maxSpeed  10
 #define cirSpeed  100
@@ -97,7 +97,7 @@ void plan_set_current_position();
 void plan_reset_absolute_position();
 
 //efficient sqrt interger calculation
-unsigned long sqrt_(unsigned long v);
+long sqrt_(long v);
 
 //calculation of vectors for radius
 void r_or_ijk(float xCur,float yCur,float xFin,float yFin,

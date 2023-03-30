@@ -70,8 +70,8 @@ unsigned int home_cnt;
 
 
 typedef struct Steps{
-   //! micro sec  count value for clock pluse compare
-  signed long microSec;
+ //! the master axis indicator
+ char master: 1;
   //! Step bit check
   unsigned short CheckStep: 1;
   //! Direction stepper motor should move.
@@ -80,8 +80,12 @@ typedef struct Steps{
   unsigned short StepBits:  1;
   //! axis to stop 1st
   unsigned short stopAxis: 1;
+  //! Track the direction of the axis for absolute value tracking
+  int  axis_dir;
   //! What part of the speed ramp we are in.
-  unsigned int run_state ;
+  int run_state ;
+   //! micro sec  count value for clock pluse compare
+  long microSec;
   //! Peroid of next timer delay. At start this value set the accelration rate.
   long step_delay;
   //! What step_pos to start decelaration
@@ -114,7 +118,7 @@ typedef struct Steps{
  // Generate a startup delay to accellerate from
  long StartUp_delay;
  //!  the mm to travel
- signed long mmToTravel;
+ long mmToTravel;
  //!  Real-time machine (aka home) abs position vector in steps.
  long steps_abs_position;
  //! Real-time machine positions in mm or inches
@@ -123,10 +127,6 @@ typedef struct Steps{
  float mm_home_position;
  //! Max axis size to travel from origin 0,0
  float max_travel;
-//! Track the direction of the axis for absolute value tracking
- int  axis_dir;
- //! the master axis indicator
- char master: 1;
 }STP;
 extern STP STPS[NoOfAxis];
 
@@ -154,6 +154,7 @@ float hypot(float angular_travel, float linear_travel);
 
 //Directional values
 int GetAxisDirection(long mm2move);
+
 
 //homing cycle
 void ResetHoming();

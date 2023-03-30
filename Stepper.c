@@ -438,11 +438,13 @@ static int cnt;
    }
 
    if(SV.dA >= SV.dB){
-      if(STPS[axisA].step_count > SV.dA){
+     //if(STPS[axisA].step_count >= STPS[axisA].dist){
+     if(STPS[axisA].step_count > SV.dA){
        StopAxis(axisA);
        axis_running = 2;
      }
-     if(STPS[axisB].step_count > SV.dB){
+    // if(STPS[axisB].step_count >= STPS[axisB].dist){
+    if(STPS[axisB].step_count > SV.dB){
        StopAxis(axisB);
        axis_running = 1;
      }
@@ -459,10 +461,12 @@ static int cnt;
           Step_Cycle(axisB);
       }
    }else{
+     //if(STPS[axisB].step_count >= STPS[axisB].dist){
      if(STPS[axisB].step_count > SV.dB){
        StopAxis(axisB);
        axis_running = 2;
      }
+     //if(STPS[axisA].step_count >= STPS[axisA].dist){
      if(STPS[axisA].step_count > SV.dA){
        StopAxis(axisA);
        axis_running = 1;

@@ -61,6 +61,7 @@ static void Set_Axisdirection(long temp,int axis){
      }
 }
 
+
 /*single axis step rate may needs to be "doubled"?? in order
  *to compensate for the speed increase [due to no 2nd axis
  *interpolation], a possible solution is to use a dummy
@@ -132,8 +133,8 @@ int dirA,dirB;
       tempA = belt_steps(axis_a,axisA);
       tempB = belt_steps(axis_b,axisB);
    }
-   SV.over=0;
-   SV.dif = 0;
+   SV.over = 0;
+   SV.dif  = 0;
 
    //Enable the relevant axis in Stepper.c
    SV.Single_Dual = 1;
@@ -142,7 +143,7 @@ int dirA,dirB;
   // Multi_Axis_Enable(xyza);
   
   //if in abs mode prev must be cur pos
-   if (!gc.absolute_mode){
+/*   if (!gc.absolute_mode){
      SV.prevA = 0;
      SV.prevB = 0;
      SV.prevC = 0;
@@ -151,7 +152,7 @@ int dirA,dirB;
      SV.prevB = 0;//tempB;
      SV.prevC = 0;//tempC;
    }
-   
+*/
   //set the direction counter for absolute position
   Set_Axisdirection(tempA,axisA);
   STPS[axisA].axis_dir = Direction(tempA);
@@ -159,17 +160,19 @@ int dirA,dirB;
   STPS[axisB].axis_dir = Direction(tempB);
 
   //Delta distance to move
-  SV.dA   = tempA - SV.prevA;
-  SV.dB   = tempB - SV.prevB;
-  SV.dC   = tempC - SV.prevC;
+  SV.dA   = tempA;// - SV.prevA;
+  SV.dB   = tempB;// - SV.prevB;
+  SV.dC   = tempC;// - SV.prevC;
 
   //Remove -ve values
   SV.dA = labs(SV.dA);
   SV.dB = labs(SV.dB);
-  
+
+#if KineDebug == 4
   if(!DMA_IsOn(1));
        dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
-  
+#endif
+
   //Start values for Bresenhams
   if(SV.dA >= SV.dB){
      if(!SV.cir){

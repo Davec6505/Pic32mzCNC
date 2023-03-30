@@ -462,7 +462,7 @@ void plan_set_current_position();
 void plan_reset_absolute_position();
 
 
-unsigned long sqrt_(unsigned long v);
+long sqrt_(long v);
 
 
 void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
@@ -487,7 +487,7 @@ unsigned int home_cnt;
 
 typedef struct Steps{
 
- signed long microSec;
+ char master: 1;
 
  unsigned short CheckStep: 1;
 
@@ -497,7 +497,11 @@ typedef struct Steps{
 
  unsigned short stopAxis: 1;
 
- unsigned int run_state ;
+ int axis_dir;
+
+ int run_state ;
+
+ long microSec;
 
  long step_delay;
 
@@ -530,7 +534,7 @@ typedef struct Steps{
 
  long StartUp_delay;
 
- signed long mmToTravel;
+ long mmToTravel;
 
  long steps_abs_position;
 
@@ -539,10 +543,6 @@ typedef struct Steps{
  float mm_home_position;
 
  float max_travel;
-
- int axis_dir;
-
- char master: 1;
 }STP;
 extern STP STPS[ 4 ];
 
@@ -570,6 +570,7 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
+
 
 
 void ResetHoming();
@@ -1132,7 +1133,10 @@ int i,m_mode;
  }
 
  }
-#line 251 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 253 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ while(DMA_IsOn(1));
+ dma_printf("axis_words:= %d\n",axis_words&0x00ff);
+
  return m_mode;
 }
 
@@ -1161,7 +1165,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 282 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 287 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default: FAIL( 3 );break;
@@ -1231,7 +1235,11 @@ int i = 0;
 
  for(i=0;i<=3;i++)
  Set_Axisword(i);
-#line 364 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 365 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ while(DMA_IsOn(1));
+ dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
+
+
  break;
  case  4 :
  FAIL( 0 );
@@ -1305,7 +1313,7 @@ int F_Val,O_Val;
  XYZ_Val = *(float*)any;
  gc.next_position[X] = To_Millimeters(XYZ_Val);
   (axis_words |= (1 << X) ) ;
-#line 441 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 446 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'Y':
  XYZ_Val = *(float*)any;
@@ -1360,7 +1368,7 @@ int F_Val,O_Val;
  gc.feed_rate = To_Millimeters(XYZ_Val);
  }
  gc.frequency = (unsigned long)XYZ_Val;
-#line 499 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 504 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
@@ -1387,6 +1395,9 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 534 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 541 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ while(DMA_IsOn(1));
+ dma_printf("axis_words:= %d\n",axis_words&0x00ff);
+
  return status_code;
 }

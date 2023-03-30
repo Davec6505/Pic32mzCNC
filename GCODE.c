@@ -248,6 +248,11 @@ int i,m_mode;
      dma_printf("report!\n[status_code:= %d]\n[mode:= %d]\n[motion_mode:= %d]\n[non_modal_action:= %d]\n"
                  ,status_code ,mode ,motion_mode ,non_modal_action);
   #endif
+  #if GcodeDebug == 3
+  //test if axis_word will run arc
+  while(DMA_IsOn(1));
+  dma_printf("axis_words:= %d\n",axis_words&0x00ff);
+  #endif
    return m_mode;
 }
 
@@ -530,6 +535,11 @@ int F_Val,O_Val;
          dma_printf("[%c\t%d]\n",c[0],F_Val);
       else if(c[0] == 'S' ||  c[0] == 'P' || c[0] == 'L')
          dma_printf("[%c\t%d]\n",c[0],O_Val);
+  #endif
+  #if GcodeDebug == 3
+  //test if axis_word will run arc
+  while(DMA_IsOn(1));
+  dma_printf("axis_words:= %d\n",axis_words&0x00ff);
   #endif
   return status_code;
 }

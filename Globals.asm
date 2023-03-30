@@ -62,33 +62,33 @@ NOP
 SH	R2, Offset(_error+0)(GP)
 ;Globals.c,70 :: 		settings.steps_per_mm[X]   = DEFAULT_X_STEPS_PER_MM;
 LUI	R2, 17210
-ORI	R2, R2, 37356
+ORI	R2, R2, 40960
 SW	R2, Offset(_settings+0)(GP)
 ;Globals.c,71 :: 		buffA[SPMMX_OFFSET]        = flt2ulong(settings.steps_per_mm[X]);
 LUI	R2, 17210
-ORI	R2, R2, 37356
+ORI	R2, R2, 40960
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612480)(GP)
 ;Globals.c,72 :: 		settings.steps_per_mm[Y]   = DEFAULT_Y_STEPS_PER_MM;
 LUI	R2, 17210
-ORI	R2, R2, 37356
+ORI	R2, R2, 40960
 SW	R2, Offset(_settings+4)(GP)
 ;Globals.c,73 :: 		buffA[SPMMY_OFFSET]        = flt2ulong(settings.steps_per_mm[Y]);
 LUI	R2, 17210
-ORI	R2, R2, 37356
+ORI	R2, R2, 40960
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612476)(GP)
 ;Globals.c,74 :: 		settings.steps_per_mm[Z]   = DEFAULT_Z_STEPS_PER_MM;
 LUI	R2, 17210
-ORI	R2, R2, 37356
+ORI	R2, R2, 40960
 SW	R2, Offset(_settings+8)(GP)
 ;Globals.c,75 :: 		buffA[SPMMZ_OFFSET]        = flt2ulong(settings.steps_per_mm[Z]);
 LUI	R2, 17210
-ORI	R2, R2, 37356
+ORI	R2, R2, 40960
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
