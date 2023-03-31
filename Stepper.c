@@ -257,7 +257,6 @@ void Step_Cycle(int axis_No){
      //keep track of absolute position
       STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
       toggleOCx(axis_No);
-
 }
 
 //reset the pulse
@@ -270,6 +269,7 @@ int Pulse(int axis_No){
     switch(STPS[axis_No].run_state) {
       case STOP:
            STPS[axis_No].run_state  = STOP;
+           StopAxis(axis_No);
            //SV.Tog = 1;
         break;
 
@@ -441,15 +441,10 @@ static int cnt;
      //if(STPS[axisA].step_count >= STPS[axisA].dist){
      if(STPS[axisA].step_count > SV.dA){
        StopAxis(axisA);
-       axis_running = 2;
-     }
-    // if(STPS[axisB].step_count >= STPS[axisB].dist){
-    if(STPS[axisB].step_count > SV.dB){
        StopAxis(axisB);
-       axis_running = 1;
+       return;
      }
-     if(axis_running >= 2)return;
-   
+
       Step_Cycle(axisA);
       if(!SV.cir)
         Pulse(axisA);
@@ -464,15 +459,11 @@ static int cnt;
      //if(STPS[axisB].step_count >= STPS[axisB].dist){
      if(STPS[axisB].step_count > SV.dB){
        StopAxis(axisB);
-       axis_running = 2;
-     }
-     //if(STPS[axisA].step_count >= STPS[axisA].dist){
-     if(STPS[axisA].step_count > SV.dA){
        StopAxis(axisA);
-       axis_running = 1;
+       return;
      }
-     if(axis_running >= 2)return;
-   
+
+
      Step_Cycle(axisB);
      if(!SV.cir)
        Pulse(axisB);

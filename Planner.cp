@@ -99,7 +99,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/git/pic32mzcnc/settings.h"
+#line 174 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -124,15 +124,16 @@ typedef struct {
 } settings_t;
 
 extern settings_t settings;
-#line 29 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 33 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 41 "c:/users/git/pic32mzcnc/steptodistance.h"
-long calcSteps( double mmsToMove, double Dia);
-long leadscrew_sets(double move_distance,int axis);
-long belt_steps(double move_distance,int axis);
+#line 45 "c:/users/git/pic32mzcnc/steptodistance.h"
+long calcSteps(float mmsToMove, float Dia);
+long leadscrew_sets(float move_distance,int axis);
+long belt_steps(float move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
-double mm2in(double mm);
-double in2mm(double inch);
+float mm2in(float mm);
+float in2mm(float inch);
+float fround(float var);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
 
@@ -438,9 +439,9 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- float mm_position;
 
- float mm_home_position;
+
+
 
  float max_travel;
 }STP;
@@ -460,6 +461,7 @@ static void Set_Axisdirection(long temp,int axis);
 
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(float newxyz,long speed,int axis_No);
+void SingleAxisStart(long dist,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -975,7 +977,7 @@ long abs_mmSteps = labs(mmSteps);
  if(mmSteps == 1){
  STPS[axis_No].accel_count = -1;
  STPS[axis_No].run_state =  2 ;
- STPS[axis_No].step_delay = 20000;
+ STPS[axis_No].step_delay = 10000;
  SV.running = 1;
 
  }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
@@ -1060,23 +1062,7 @@ long abs_mmSteps = labs(mmSteps);
  SV.Tog = 0;
  SV.running = 1;
  last_speed = speed;
-
-
-
-
-while(DMA_IsOn(1));
-#line 172 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("run_state[%d]:= %d\nstep_dir:= %d\nabs_mmSteps:= %l\nacc_lim:= %d\ndec_lim:= %l\ndec_start:= %l\nmin_dly:= %l\n"
-,axis_No
-,(STPS[axis_No].run_state&0xff)
-,STPS[axis_No].axis_dir
-,STPS[axis_No].dist
-,STPS[axis_No].accel_lim
-,STPS[axis_No].decel_val
-,STPS[axis_No].decel_start
-,STPS[axis_No].min_delay);
-
-
+#line 183 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 #line 195 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
@@ -1152,12 +1138,7 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-
-
-while(DMA_IsOn(1));
-dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
-
-
+#line 364 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 
 

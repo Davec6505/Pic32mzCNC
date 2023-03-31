@@ -26,6 +26,10 @@
 #define mmtostep(mm) ((step1mm) * (mm))
 #define steptomm(step) ((step) / (step1mm))
 
+#define EPSILON 0.001
+
+//#define FLOAT_EQ(x,v) (((v-EPSILON)<x)&&(x<(v+EPSILON)))
+
 const float Dia;
 
 
@@ -38,13 +42,13 @@ const float Dia;
 /////////////////////////////////////////////
 //function prototypes
 
-long calcSteps( double mmsToMove, double Dia);
-long leadscrew_sets(double move_distance,int axis);
-long belt_steps(double move_distance,int axis);
+long calcSteps(float mmsToMove, float Dia);
+long leadscrew_sets(float move_distance,int axis);
+long belt_steps(float move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
-double mm2in(double mm);
-double in2mm(double inch);
-
+float mm2in(float mm);
+float in2mm(float inch);
+float fround(float var);
 
 
 

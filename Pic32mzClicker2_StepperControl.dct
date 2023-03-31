@@ -30971,6 +30971,7 @@ frmtxokcnt8
 frmtxokcnt8_bit
 frmtxokcnt9
 frmtxokcnt9_bit
+fround
 frz
 fsdev
 fsdev
@@ -49105,6 +49106,7 @@ rtsmd_ughmode_bit
 rtsmd_ujkmode_bit
 rtsmd_ulmmode_bit
 run_circle
+run_mc_line
 rundiv
 rundiv
 rundiv
@@ -58265,6 +58267,7 @@ simreset_emacxcfg1_bit
 sin
 single_axis_enable
 single_dual
+singleaxisstart
 singleaxisstep
 singlestepaxis
 sinh
