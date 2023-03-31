@@ -122,9 +122,9 @@ typedef struct Steps{
  //!  Real-time machine (aka home) abs position vector in steps.
  long steps_abs_position;
  //! Real-time machine positions in mm or inches
- float mm_position;
+// float mm_position;
  //! Home positions saved if offsets are needed for limit switches
- float mm_home_position;
+// float mm_home_position;
  //! Max axis size to travel from origin 0,0
  float max_travel;
 }STP;
@@ -144,6 +144,7 @@ static void Set_Axisdirection(long temp,int axis);
 //Move inline
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);//,int xyza);
 void SingleAxisStep(float newxyz,long speed,int axis_No);
+void SingleAxisStart(long dist,long speed,int axis_No);
 
 //Circle move axis
 void mc_arc(float *position, float *target, float *offset, int axis_0,

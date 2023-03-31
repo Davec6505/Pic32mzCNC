@@ -96,22 +96,27 @@ int   dir    = 0;
     tempA = belt_steps(newxyz,axis_No);
   }
   
+  SingleAxisStart(tempA,speed,axis_No);
+  
+}
+
+void SingleAxisStart(long dist,long speed,int axis_No){
+
   Single_Axis_Enable(axis_No);
-  speed_cntr_Move(tempA , speed , axis_No);
-      
+  speed_cntr_Move(dist , speed , axis_No);
+
 //static long dist;
     /* if(STPS[axis].psingle != newxyz)
              STPS[axis].psingle = newxyz; */
-     Set_Axisdirection(tempA,axis_No);
-     STPS[axis_No].axis_dir = Direction(tempA);
-     SV.Single_Dual = 0;
-     STPS[axis_No].psingle  = 0;
-     STPS[axis_No].dist = labs(tempA) - STPS[axis_No].psingle;
-     STPS[axis_No].step_count = 0;
-     STPS[axis_No].mmToTravel = tempA;
-     //Start output compare module
-     Step_Cycle(axis_No);
-
+   Set_Axisdirection(dist,axis_No);
+   STPS[axis_No].axis_dir = Direction(dist);
+   SV.Single_Dual = 0;
+   STPS[axis_No].psingle  = 0;
+   STPS[axis_No].dist = labs(dist) - STPS[axis_No].psingle;
+   STPS[axis_No].step_count = 0;
+   STPS[axis_No].mmToTravel = dist;
+   //Start output compare module
+   Step_Cycle(axis_No);
 }
 
 //////////////////////////////////////////////////////////
@@ -121,6 +126,7 @@ void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed){
 long tempA,tempB,tempC;
 int dirA,dirB;
 
+
     //if absolute mode ~ newxyz = new_position - current_position
    if(gc.absolute_mode == true){
      //get current position
@@ -129,6 +135,20 @@ int dirA,dirB;
      //subtract new from current
      tempA = tempA - STPS[axisA].steps_abs_position;
      tempB = tempB - STPS[axisB].steps_abs_position;
+
+#if KineDebug == 4
+  while(DMA_IsOn(1));
+  dma_printf("tempA:= %l\ttempB:= %l\n",tempA,tempB);
+#endif
+ /*    if(tempA == 0){
+        SingleAxisStart(tempB,speed,axisB);
+        return;
+     }
+     else if (tempB == 0){
+        SingleAxisStart(tempA,speed,axisA);
+        return;
+     }
+ */
    }else{
       tempA = belt_steps(axis_a,axisA);
       tempB = belt_steps(axis_b,axisB);
@@ -169,8 +189,8 @@ int dirA,dirB;
   SV.dB = labs(SV.dB);
 
 #if KineDebug == 4
-  if(!DMA_IsOn(1));
-       dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
+  while(DMA_IsOn(1));
+  dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
 #endif
 
   //Start values for Bresenhams
@@ -207,7 +227,44 @@ int dirA,dirB;
 
 }
 
+///////////////////////////////////////////////////////////
+//        FUNCTION TO MAKE DESCISION ON AXIS             //
+///////////////////////////////////////////////////////////
+void run_mc_line(int action){
 
+  switch(action){
+      case 1: //b0000 0001
+             SingleAxisStep(gc.next_position[X],gc.frequency,X);
+             break;
+      case 2://b0000 0010
+             SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
+             break;
+       case 3://b0000 0011
+             DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+             break;
+      case 4://b0000 0100
+            SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
+             break;
+       case 5://b0000 0101
+             DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
+             break;
+       case 6://b0000 0110
+             DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
+             break;
+       case 8://b0000 1000
+            SingleAxisStep(gc.next_position[A],gc.frequency,A);
+             break;
+       case 9://b0000 1001
+            DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
+            break;
+       case 10://b0000 1010
+            DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
+            break;
+       case 12://b0000 1100
+            DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
+            break;
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //     Circular Interpolation taken from Grbl as it uses Rotation matrix     //

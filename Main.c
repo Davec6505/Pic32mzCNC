@@ -162,9 +162,12 @@ static int cntr = 0,a = 0;
      //debug STATUS_OK response after moves complete
      #if MainDebug == 12
      while(DMA_IsOn(1));
-     dma_printf("SV.Tog:= %d\tSV.homed:= %d\n"
+     dma_printf("SV.Tog:= %d\tX:= %l\tY:= %l\n"
                 ,SV.Tog&0xFF
-                ,SV.homed&0xFF);
+                ,STPS[X].steps_abs_position
+                ,STPS[Y].steps_abs_position);
+                /*,STPS[X].mm_position
+                ,STPS[Y].mm_position);*/
      #endif
      
      status_of_gcode == STATUS_OK;
@@ -176,7 +179,7 @@ static int cntr = 0,a = 0;
 //Debug for stepper report if not connected to unit
 #if StepperDebug == 1
 if(!SV.Tog){
-if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
+if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
 while(DMA_IsOn(1));
 dma_printf("\
 run_state:= %d\t%l\t%l\t%d\t%l\t%l\n"
