@@ -883,8 +883,8 @@ ADDIU	SP, SP, 4
 JR	RA
 NOP	
 ; end of _Step_Cycle
-_Pulse:
-;Stepper.c,264 :: 		int Pulse(int axis_No){
+Stepper_Pulse:
+;Stepper.c,264 :: 		static int Pulse(int axis_No){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
 ;Stepper.c,270 :: 		switch(STPS[axis_No].run_state) {
@@ -897,10 +897,10 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 4
 SW	R2, 4(SP)
-J	L_Pulse44
+J	L_Stepper_Pulse44
 NOP	
 ;Stepper.c,271 :: 		case STOP:
-L_Pulse46:
+L_Stepper_Pulse46:
 ;Stepper.c,272 :: 		STPS[axis_No].run_state  = STOP;
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -912,12 +912,12 @@ ADDU	R2, R2, R3
 ADDIU	R2, R2, 4
 SH	R0, 0(R2)
 ;Stepper.c,274 :: 		break;
-J	L_Pulse45
+J	L_Stepper_Pulse45
 NOP	
 ;Stepper.c,276 :: 		case ACCEL:
-L_Pulse47:
+L_Stepper_Pulse47:
 ;Stepper.c,278 :: 		AccDec(axis_No);
-JAL	_AccDec+0
+JAL	Stepper_AccDec+0
 NOP	
 ;Stepper.c,279 :: 		if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
 SEH	R3, R25
@@ -932,11 +932,11 @@ LW	R3, 0(R2)
 ADDIU	R2, R4, 24
 LW	R2, 0(R2)
 SLT	R2, R2, R3
-BEQ	R2, R0, L__Pulse175
+BEQ	R2, R0, L_Stepper_Pulse175
 NOP	
-J	L_Pulse48
+J	L_Stepper_Pulse48
 NOP	
-L__Pulse175:
+L_Stepper_Pulse175:
 ;Stepper.c,280 :: 		STPS[axis_No].step_delay = STPS[axis_No].min_delay;
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -950,7 +950,7 @@ ADDIU	R2, R2, 24
 LW	R2, 0(R2)
 SW	R2, 0(R3)
 ;Stepper.c,282 :: 		}
-L_Pulse48:
+L_Stepper_Pulse48:
 ;Stepper.c,283 :: 		if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -964,11 +964,11 @@ LW	R3, 0(R2)
 ADDIU	R2, R4, 68
 LW	R2, 0(R2)
 SLT	R2, R2, R3
-BNE	R2, R0, L__Pulse176
+BNE	R2, R0, L_Stepper_Pulse176
 NOP	
-J	L_Pulse49
+J	L_Stepper_Pulse49
 NOP	
-L__Pulse176:
+L_Stepper_Pulse176:
 ;Stepper.c,284 :: 		STPS[axis_No].run_state  = RUN;
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -981,7 +981,7 @@ ADDIU	R3, R2, 4
 ORI	R2, R0, 3
 SH	R2, 0(R3)
 ;Stepper.c,285 :: 		}
-L_Pulse49:
+L_Stepper_Pulse49:
 ;Stepper.c,288 :: 		if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -995,11 +995,11 @@ LW	R3, 0(R2)
 ADDIU	R2, R4, 16
 LW	R2, 0(R2)
 SLT	R2, R3, R2
-BEQ	R2, R0, L__Pulse177
+BEQ	R2, R0, L_Stepper_Pulse177
 NOP	
-J	L_Pulse50
+J	L_Stepper_Pulse50
 NOP	
-L__Pulse177:
+L_Stepper_Pulse177:
 ;Stepper.c,289 :: 		STPS[axis_No].accel_count = STPS[axis_No].decel_val;
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -1034,12 +1034,12 @@ ADDIU	R3, R2, 4
 ORI	R2, R0, 2
 SH	R2, 0(R3)
 ;Stepper.c,292 :: 		}
-L_Pulse50:
+L_Stepper_Pulse50:
 ;Stepper.c,293 :: 		break;
-J	L_Pulse45
+J	L_Stepper_Pulse45
 NOP	
 ;Stepper.c,295 :: 		case RUN:
-L_Pulse51:
+L_Stepper_Pulse51:
 ;Stepper.c,296 :: 		STPS[axis_No].step_delay = STPS[axis_No].min_delay;
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -1065,11 +1065,11 @@ LW	R3, 0(R2)
 ADDIU	R2, R4, 16
 LW	R2, 0(R2)
 SLT	R2, R3, R2
-BEQ	R2, R0, L__Pulse178
+BEQ	R2, R0, L_Stepper_Pulse178
 NOP	
-J	L_Pulse52
+J	L_Stepper_Pulse52
 NOP	
-L__Pulse178:
+L_Stepper_Pulse178:
 ;Stepper.c,301 :: 		STPS[axis_No].accel_count = STPS[axis_No].decel_val;
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -1104,14 +1104,14 @@ ADDIU	R3, R2, 4
 ORI	R2, R0, 2
 SH	R2, 0(R3)
 ;Stepper.c,304 :: 		}
-L_Pulse52:
+L_Stepper_Pulse52:
 ;Stepper.c,305 :: 		break;
-J	L_Pulse45
+J	L_Stepper_Pulse45
 NOP	
 ;Stepper.c,307 :: 		case DECEL:
-L_Pulse53:
+L_Stepper_Pulse53:
 ;Stepper.c,309 :: 		AccDec(axis_No);
-JAL	_AccDec+0
+JAL	Stepper_AccDec+0
 NOP	
 ;Stepper.c,312 :: 		if(STPS[axis_No].accel_count > -1 ){
 SEH	R3, R25
@@ -1124,11 +1124,11 @@ ADDU	R2, R2, R3
 ADDIU	R2, R2, 28
 LW	R2, 0(R2)
 SLTI	R2, R2, 0
-BEQ	R2, R0, L__Pulse179
+BEQ	R2, R0, L_Stepper_Pulse179
 NOP	
-J	L_Pulse54
+J	L_Stepper_Pulse54
 NOP	
-L__Pulse179:
+L_Stepper_Pulse179:
 ;Stepper.c,313 :: 		STPS[axis_No].run_state = STOP;
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -1140,51 +1140,51 @@ ADDU	R2, R2, R3
 ADDIU	R2, R2, 4
 SH	R0, 0(R2)
 ;Stepper.c,314 :: 		}
-L_Pulse54:
+L_Stepper_Pulse54:
 ;Stepper.c,315 :: 		break;
-J	L_Pulse45
+J	L_Stepper_Pulse45
 NOP	
 ;Stepper.c,316 :: 		default:break;
-L_Pulse55:
-J	L_Pulse45
+L_Stepper_Pulse55:
+J	L_Stepper_Pulse45
 NOP	
 ;Stepper.c,317 :: 		}
-L_Pulse44:
+L_Stepper_Pulse44:
 LW	R4, 4(SP)
 LH	R2, 0(R4)
 SEH	R2, R2
-BNE	R2, R0, L__Pulse181
+BNE	R2, R0, L_Stepper_Pulse181
 NOP	
-J	L_Pulse46
+J	L_Stepper_Pulse46
 NOP	
-L__Pulse181:
+L_Stepper_Pulse181:
 LH	R2, 0(R4)
 SEH	R3, R2
 ORI	R2, R0, 1
-BNE	R3, R2, L__Pulse183
+BNE	R3, R2, L_Stepper_Pulse183
 NOP	
-J	L_Pulse47
+J	L_Stepper_Pulse47
 NOP	
-L__Pulse183:
+L_Stepper_Pulse183:
 LH	R2, 0(R4)
 SEH	R3, R2
 ORI	R2, R0, 3
-BNE	R3, R2, L__Pulse185
+BNE	R3, R2, L_Stepper_Pulse185
 NOP	
-J	L_Pulse51
+J	L_Stepper_Pulse51
 NOP	
-L__Pulse185:
+L_Stepper_Pulse185:
 LH	R2, 0(R4)
 SEH	R3, R2
 ORI	R2, R0, 2
-BNE	R3, R2, L__Pulse187
+BNE	R3, R2, L_Stepper_Pulse187
 NOP	
-J	L_Pulse53
+J	L_Stepper_Pulse53
 NOP	
-L__Pulse187:
-J	L_Pulse55
+L_Stepper_Pulse187:
+J	L_Stepper_Pulse55
 NOP	
-L_Pulse45:
+L_Stepper_Pulse45:
 ;Stepper.c,318 :: 		return axis_No;
 SEH	R2, R25
 ;Stepper.c,319 :: 		}
@@ -1193,9 +1193,9 @@ LW	RA, 0(SP)
 ADDIU	SP, SP, 8
 JR	RA
 NOP	
-; end of _Pulse
-_AccDec:
-;Stepper.c,323 :: 		void AccDec(int axis_No){
+; end of Stepper_Pulse
+Stepper_AccDec:
+;Stepper.c,323 :: 		static void AccDec(int axis_No){
 ;Stepper.c,324 :: 		STPS[axis_No].accel_count++;
 SEH	R3, R25
 ORI	R2, R0, 100
@@ -1268,7 +1268,7 @@ SW	R2, 0(R3)
 L_end_AccDec:
 JR	RA
 NOP	
-; end of _AccDec
+; end of Stepper_AccDec
 _StepX:
 ;Stepper.c,336 :: 		void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
 RDPGPR	SP, SP
@@ -1753,7 +1753,7 @@ L_SingleStepAxis88:
 JAL	_Step_Cycle+0
 NOP	
 ;Stepper.c,422 :: 		Pulse(axis);
-JAL	_Pulse+0
+JAL	Stepper_Pulse+0
 NOP	
 ;Stepper.c,424 :: 		}
 L_end_SingleStepAxis:
@@ -1875,7 +1875,7 @@ J	L_Axis_Interpolate95
 NOP	
 L__Axis_Interpolate225:
 ;Stepper.c,455 :: 		Pulse(axisA);
-JAL	_Pulse+0
+JAL	Stepper_Pulse+0
 NOP	
 L_Axis_Interpolate95:
 ;Stepper.c,457 :: 		if(SV.dif < 0){
@@ -1995,7 +1995,7 @@ L__Axis_Interpolate230:
 ;Stepper.c,478 :: 		Pulse(axisB);
 SH	R25, 8(SP)
 SEH	R25, R26
-JAL	_Pulse+0
+JAL	Stepper_Pulse+0
 NOP	
 LH	R25, 8(SP)
 L_Axis_Interpolate102:

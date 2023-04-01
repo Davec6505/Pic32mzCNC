@@ -261,7 +261,7 @@ void Step_Cycle(int axis_No){
 }
 
 //reset the pulse
-int Pulse(int axis_No){
+static int Pulse(int axis_No){
 
 /*if(!STPS[axis_No].PLS_Step_ ){
       STPS[axis_No].PLS_Step_   = 1;
@@ -320,7 +320,7 @@ int Pulse(int axis_No){
 
 
 //Accel Decel calculation and test
-void AccDec(int axis_No){
+static void AccDec(int axis_No){
           STPS[axis_No].accel_count++;
           STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
           STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
@@ -335,7 +335,7 @@ void AccDec(int axis_No){
 // X AXIS ISR
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
      OC5IF_bit = 0;
-
+   //  STPS[X].mm_position += EPSILON;
      if(SV.Single_Dual == 0){
         SingleStepAxis(X);
      }else{

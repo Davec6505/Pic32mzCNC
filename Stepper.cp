@@ -291,6 +291,9 @@ unsigned long flt2ulong(float f_);
 float ulong2flt(unsigned long ui_);
 
 
+float fround(float val);
+
+
 int round(float val);
 
 
@@ -873,7 +876,7 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 32 "c:/users/git/pic32mzcnc/stepper.h"
+#line 33 "c:/users/git/pic32mzcnc/stepper.h"
 typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -909,10 +912,10 @@ void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 
-int Pulse(int axis_No);
+static int Pulse(int axis_No);
 void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
-void AccDec(int axis_No);
+static void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
 
@@ -1182,7 +1185,7 @@ void Step_Cycle(int axis_No){
 }
 
 
-int Pulse(int axis_No){
+static int Pulse(int axis_No){
 #line 270 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  switch(STPS[axis_No].run_state) {
  case  0 :
@@ -1237,7 +1240,7 @@ int Pulse(int axis_No){
 
 
 
-void AccDec(int axis_No){
+static void AccDec(int axis_No){
  STPS[axis_No].accel_count++;
  STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
  STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);

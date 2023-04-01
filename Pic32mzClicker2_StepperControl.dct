@@ -349,7 +349,6 @@ abort
 abs
 absolute_mode
 absolute_override
-accdec
 acceleration
 ackdt
 ackdt
@@ -30971,6 +30970,7 @@ frmtxokcnt8
 frmtxokcnt8_bit
 frmtxokcnt9
 frmtxokcnt9_bit
+fround
 frz
 fsdev
 fsdev
@@ -46109,7 +46109,6 @@ ptwren
 ptwren
 ptwren
 ptwren_bit
-pulse
 purepre
 purepre
 purepre

@@ -22,7 +22,8 @@ typedef unsigned short UInt8_t;
 #define DECEL 2
 #define RUN   3
 
-// Constants for accelleration
+//incrament value for axis floating point
+#define EPSILON 0.001
 
 //! Stop and Start toggle bit
 //extern  unsigned int Toggle;
@@ -64,10 +65,10 @@ void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 //Step control using Output compare module
-int Pulse(int axis_No);
+static int Pulse(int axis_No);
 void toggleOCx(int axis_No);
 void multiToggleOCx(int axis_No);
-void AccDec(int axis_No);
+static void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
 

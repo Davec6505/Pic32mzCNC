@@ -486,7 +486,7 @@ NOP
 ; end of _main
 Main_Modal_Group_Actions0:
 ;Main.c,230 :: 		static int Modal_Group_Actions0(int action){
-ADDIU	SP, SP, -48
+ADDIU	SP, SP, -44
 SW	RA, 0(SP)
 ;Main.c,233 :: 		unsigned int home_select = 0;
 SW	R26, 4(SP)
@@ -777,19 +777,21 @@ LUI	R2, hi_addr(_buffA+0)
 ORI	R2, R2, lo_addr(_buffA+0)
 ADDU	R2, R2, R3
 LW	R2, 0(R2)
-SW	R2, 24(SP)
+; _flash start address is: 32 (R8)
+MOVZ	R8, R2, R0
 ;Main.c,315 :: 		coord_data[i] = ulong2flt(_flash);
-ADDIU	R3, SP, 28
+ADDIU	R3, SP, 24
 SEH	R2, R6
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
-SW	R2, 44(SP)
+SW	R2, 40(SP)
 SH	R4, 12(SP)
+; _flash end address is: 32 (R8)
 SH	R7, 14(SP)
 SH	R5, 16(SP)
 SH	R6, 18(SP)
 SH	R25, 20(SP)
-LW	R25, 24(SP)
+MOVZ	R25, R8, R0
 JAL	_ulong2flt+0
 NOP	
 LH	R25, 20(SP)
@@ -797,7 +799,7 @@ LH	R6, 18(SP)
 LH	R5, 16(SP)
 LH	R7, 14(SP)
 LH	R4, 12(SP)
-LW	R2, 44(SP)
+LW	R2, 40(SP)
 SWC1	S0, 0(R2)
 ;Main.c,323 :: 		}else{
 SEH	R8, R4
@@ -807,7 +809,7 @@ NOP
 L_Main_Modal_Group_Actions057:
 ;Main.c,326 :: 		coord_data[i] = gc.next_position[i];
 ; axis_cnt start address is: 32 (R8)
-ADDIU	R3, SP, 28
+ADDIU	R3, SP, 24
 SEH	R2, R6
 SLL	R4, R2, 2
 ADDU	R3, R3, R4
@@ -835,14 +837,14 @@ J	L_Main_Modal_Group_Actions054
 NOP	
 L_Main_Modal_Group_Actions055:
 ;Main.c,338 :: 		result = settings_write_coord_data((int)gc.P,coord_data);
-ADDIU	R2, SP, 28
+ADDIU	R2, SP, 24
 SH	R25, 12(SP)
 MOVZ	R26, R2, R0
 LH	R25, Offset(_gc+120)(GP)
 JAL	_settings_write_coord_data+0
 NOP	
 ;Main.c,341 :: 		memcpy(gc.coord_system,coord_data,sizeof(coord_data));
-ADDIU	R2, SP, 28
+ADDIU	R2, SP, 24
 ORI	R27, R0, 16
 MOVZ	R26, R2, R0
 LUI	R25, hi_addr(_gc+44)
@@ -1077,7 +1079,7 @@ ADDU	R3, R2, R3
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R3, R2
-SW	R2, 44(SP)
+SW	R2, 40(SP)
 SH	R6, 12(SP)
 ; _data end address is: 28 (R7)
 SH	R4, 14(SP)
@@ -1090,7 +1092,7 @@ LH	R25, 18(SP)
 LH	R5, 16(SP)
 LH	R4, 14(SP)
 LH	R6, 12(SP)
-LW	R2, 44(SP)
+LW	R2, 40(SP)
 SWC1	S0, 0(R2)
 ;Main.c,393 :: 		i++;
 ADDIU	R2, R4, 1
@@ -1542,7 +1544,7 @@ L_end_Modal_Group_Actions0:
 LW	R27, 8(SP)
 LW	R26, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 48
+ADDIU	SP, SP, 44
 JR	RA
 NOP	
 ; end of Main_Modal_Group_Actions0

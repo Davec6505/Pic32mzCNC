@@ -106,6 +106,12 @@ float f_ = 0.0;
 return f_;
 }
 
+//returns the specific decimal value (rounded value) of the given float
+float fround(float val){
+float value = (long)(val * 100.00 + 0.5);
+  return (float)(value / 100.00);
+}
+
 //return the int val rounfed off to the nearest int
 int round(float val){
 double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;

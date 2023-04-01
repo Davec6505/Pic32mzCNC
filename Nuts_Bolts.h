@@ -35,6 +35,9 @@ unsigned long flt2ulong(float f_);
 //Conversion from unsigned long to float keeping byte order
 float ulong2flt(unsigned long ui_);
 
+//returns the specific decimal value (rounded value) of the given float
+float fround(float val);
+
 //returns the nearest integer value (rounded value) of the given float
 int round(float val);
 

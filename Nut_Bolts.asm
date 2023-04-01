@@ -519,32 +519,57 @@ ADDIU	SP, SP, 24
 JR	RA
 NOP	
 ; end of _ulong2flt
+_fround:
+;Nut_Bolts.c,110 :: 		float fround(float val){
+;Nut_Bolts.c,111 :: 		float value = (long)(val * 100.00 + 0.5);
+LUI	R2, 17096
+ORI	R2, R2, 0
+MTC1	R2, S0
+MUL.S 	S1, S12, S0
+LUI	R2, 16128
+ORI	R2, R2, 0
+MTC1	R2, S0
+ADD.S 	S0, S1, S0
+CVT36.S 	S0, S0
+MFC1	R2, S0
+MTC1	R2, S0
+CVT32.W 	S1, S0
+;Nut_Bolts.c,112 :: 		return (float)(value / 100.00);
+LUI	R2, 17096
+ORI	R2, R2, 0
+MTC1	R2, S0
+DIV.S 	S0, S1, S0
+;Nut_Bolts.c,113 :: 		}
+L_end_fround:
+JR	RA
+NOP	
+; end of _fround
 _round:
-;Nut_Bolts.c,110 :: 		int round(float val){
+;Nut_Bolts.c,116 :: 		int round(float val){
 ADDIU	SP, SP, -12
 SW	RA, 0(SP)
-;Nut_Bolts.c,111 :: 		double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
-;Nut_Bolts.c,112 :: 		tempC = ceil(val);
+;Nut_Bolts.c,117 :: 		double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
+;Nut_Bolts.c,118 :: 		tempC = ceil(val);
 JAL	_ceil+0
 NOP	
 SWC1	S0, 8(SP)
-;Nut_Bolts.c,113 :: 		tempF = floor(val);
+;Nut_Bolts.c,119 :: 		tempF = floor(val);
 JAL	_floor+0
 NOP	
 ; tempF start address is: 16 (R4)
 MOV.S 	S2, S0
-;Nut_Bolts.c,114 :: 		dec = val - tempF;
+;Nut_Bolts.c,120 :: 		dec = val - tempF;
 SUB.S 	S1, S12, S0
-;Nut_Bolts.c,115 :: 		temp = (dec > 0.5)? tempC : tempF;
+;Nut_Bolts.c,121 :: 		temp = (dec > 0.5)? tempC : tempF;
 LUI	R2, 16128
 ORI	R2, R2, 0
 MTC1	R2, S0
 C.LE.S 	0, S1, S0
-BC1F	0, L__round61
+BC1F	0, L__round62
 NOP	
 J	L_round27
 NOP	
-L__round61:
+L__round62:
 ; tempF end address is: 16 (R4)
 LWC1	S0, 8(SP)
 SWC1	S0, 4(SP)
@@ -555,11 +580,11 @@ L_round27:
 SWC1	S2, 4(SP)
 ; tempF end address is: 16 (R4)
 L_round28:
-;Nut_Bolts.c,116 :: 		return (int)temp;
+;Nut_Bolts.c,122 :: 		return (int)temp;
 LWC1	S0, 4(SP)
 CVT36.S 	S0, S0
 MFC1	R2, S0
-;Nut_Bolts.c,117 :: 		}
+;Nut_Bolts.c,123 :: 		}
 L_end_round:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 12
@@ -567,31 +592,31 @@ JR	RA
 NOP	
 ; end of _round
 _lround:
-;Nut_Bolts.c,120 :: 		long lround(float val){
+;Nut_Bolts.c,126 :: 		long lround(float val){
 ADDIU	SP, SP, -12
 SW	RA, 0(SP)
-;Nut_Bolts.c,121 :: 		double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
-;Nut_Bolts.c,122 :: 		tempC = ceil(val);
+;Nut_Bolts.c,127 :: 		double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
+;Nut_Bolts.c,128 :: 		tempC = ceil(val);
 JAL	_ceil+0
 NOP	
 SWC1	S0, 8(SP)
-;Nut_Bolts.c,123 :: 		tempF = floor(val);
+;Nut_Bolts.c,129 :: 		tempF = floor(val);
 JAL	_floor+0
 NOP	
 ; tempF start address is: 16 (R4)
 MOV.S 	S2, S0
-;Nut_Bolts.c,124 :: 		dec = val - tempF;
+;Nut_Bolts.c,130 :: 		dec = val - tempF;
 SUB.S 	S1, S12, S0
-;Nut_Bolts.c,125 :: 		temp = (dec > 0.5)? tempC : tempF;
+;Nut_Bolts.c,131 :: 		temp = (dec > 0.5)? tempC : tempF;
 LUI	R2, 16128
 ORI	R2, R2, 0
 MTC1	R2, S0
 C.LE.S 	0, S1, S0
-BC1F	0, L__lround63
+BC1F	0, L__lround64
 NOP	
 J	L_lround29
 NOP	
-L__lround63:
+L__lround64:
 ; tempF end address is: 16 (R4)
 LWC1	S0, 8(SP)
 SWC1	S0, 4(SP)
@@ -602,11 +627,11 @@ L_lround29:
 SWC1	S2, 4(SP)
 ; tempF end address is: 16 (R4)
 L_lround30:
-;Nut_Bolts.c,126 :: 		return (long)temp;
+;Nut_Bolts.c,132 :: 		return (long)temp;
 LWC1	S0, 4(SP)
 CVT36.S 	S0, S0
 MFC1	R2, S0
-;Nut_Bolts.c,127 :: 		}
+;Nut_Bolts.c,133 :: 		}
 L_end_lround:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 12
