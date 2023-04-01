@@ -147,7 +147,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/git/pic32mzcnc/settings.h"
+#line 174 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -541,9 +541,9 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- float mm_position;
 
- float mm_home_position;
+
+
 
  float max_travel;
 }STP;
@@ -563,6 +563,7 @@ static void Set_Axisdirection(long temp,int axis);
 
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(float newxyz,long speed,int axis_No);
+void SingleAxisStart(long dist,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -655,15 +656,16 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 29 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 33 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 41 "c:/users/git/pic32mzcnc/steptodistance.h"
-long calcSteps( double mmsToMove, double Dia);
-long leadscrew_sets(double move_distance,int axis);
-long belt_steps(double move_distance,int axis);
+#line 45 "c:/users/git/pic32mzcnc/steptodistance.h"
+long calcSteps(float mmsToMove, float Dia);
+long leadscrew_sets(float move_distance,int axis);
+long belt_steps(float move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
-double mm2in(double mm);
-double in2mm(double inch);
+float mm2in(float mm);
+float in2mm(float inch);
+float fround(float var);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -1136,10 +1138,7 @@ int i,m_mode;
  }
 
  }
-#line 253 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- while(DMA_IsOn(1));
- dma_printf("axis_words:= %d\n",axis_words&0x00ff);
-
+#line 256 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return m_mode;
 }
 
@@ -1238,11 +1237,7 @@ int i = 0;
 
  for(i=0;i<=3;i++)
  Set_Axisword(i);
-#line 365 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- while(DMA_IsOn(1));
- dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
-
-
+#line 369 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case  4 :
  FAIL( 0 );
@@ -1398,9 +1393,6 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 541 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- while(DMA_IsOn(1));
- dma_printf("axis_words:= %d\n",axis_words&0x00ff);
-
+#line 544 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }

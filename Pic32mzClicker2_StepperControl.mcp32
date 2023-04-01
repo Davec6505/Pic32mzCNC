@@ -27,7 +27,11 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Kinematics.c
+=======
+Value=Steptodistance.c
+>>>>>>> patch10
 =======
 =======
 >>>>>>> patch1
@@ -132,9 +136,10 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 File1=DEFINES.pld
-File2=Stepper.c
-File3=Stepper.h
+File2=Settings.h
+File3=Steptodistance.c
 File4=Kinematics.c
+<<<<<<< HEAD
 File5=Kinematics.h
 File6=Planner.c
 File7=Planner.h
@@ -143,6 +148,18 @@ File9=Nut_Bolts.c
 File10=Nuts_Bolts.h
 File11=GCODE.c
 Count=12
+=======
+File5=Steptodistance.h
+File6=Kinematics.h
+File7=Stepper.c
+File8=Stepper.h
+File9=Planner.c
+File10=Planner.h
+File11=GCODE.c
+File12=GCODE.h
+File13=Protocol.c
+Count=14
+>>>>>>> patch10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

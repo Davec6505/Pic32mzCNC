@@ -1582,7 +1582,7 @@ ORI	R2, R2, lo_addr(report_realtime_status_print_position_L0+0)
 ADDU	R2, R2, R3
 SW	R2, 72(SP)
 SEH	R3, R4
-ORI	R2, R0, 100
+ORI	R2, R0, 92
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)

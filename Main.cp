@@ -145,7 +145,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/git/pic32mzcnc/settings.h"
+#line 174 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -634,9 +634,9 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- float mm_position;
 
- float mm_home_position;
+
+
 
  float max_travel;
 }STP;
@@ -656,6 +656,7 @@ static void Set_Axisdirection(long temp,int axis);
 
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(float newxyz,long speed,int axis_No);
+void SingleAxisStart(long dist,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -748,15 +749,16 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 29 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 33 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 41 "c:/users/git/pic32mzcnc/steptodistance.h"
-long calcSteps( double mmsToMove, double Dia);
-long leadscrew_sets(double move_distance,int axis);
-long belt_steps(double move_distance,int axis);
+#line 45 "c:/users/git/pic32mzcnc/steptodistance.h"
+long calcSteps(float mmsToMove, float Dia);
+long leadscrew_sets(float move_distance,int axis);
+long belt_steps(float move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
-double mm2in(double mm);
-double in2mm(double inch);
+float mm2in(float mm);
+float in2mm(float inch);
+float fround(float var);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
@@ -1039,31 +1041,20 @@ static int cntr = 0,a = 0;
  }
 
  if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed){
-#line 170 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("SV.Tog:= %d\tX:= %l\tY:= %l\n"
+ ,SV.Tog&0xFF
+ ,STPS[X].steps_abs_position
+ ,STPS[Y].steps_abs_position);
+#line 173 "C:/Users/Git/Pic32mzCNC/Main.c"
  status_of_gcode ==  0 ;
  report_status_message(status_of_gcode);
 
  SV.Tog = 0;
  }
-
-
-
-if(!SV.Tog){
-if(STPS[X].run_state !=  0  || STPS[Y].run_state !=  0 ){
-while(DMA_IsOn(1));
-#line 182 "C:/Users/Git/Pic32mzCNC/Main.c"
-dma_printf("run_state:= %d\t%l\t%l\t%d\t%l\t%l\n"
-,(STPS[X].run_state&0xff)
-,STPS[X].step_count
-,STPS[X].dist
-,(STPS[Y].run_state&0xff)
-,STPS[Y].step_count
-,STPS[Y].dist);
-}
-}
-
-
-
+#line 197 "C:/Users/Git/Pic32mzCNC/Main.c"
  protocol_system_check();
 
 
@@ -1071,7 +1062,7 @@ dma_printf("run_state:= %d\t%l\t%l\t%d\t%l\t%l\n"
 
 
  status_of_gcode = Sample_Gocde_Line();
-#line 212 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 215 "C:/Users/Git/Pic32mzCNC/Main.c"
  LED1 = TMR.clock >> 4;
 
 
@@ -1124,7 +1115,7 @@ float a_val;
  LED2 =  0 ;
  break;
  case 4:
-#line 276 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 279 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1165,12 +1156,12 @@ float a_val;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 323 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 326 "C:/Users/Git/Pic32mzCNC/Main.c"
  }else{
 
 
  coord_data[i] = gc.next_position[i];
-#line 334 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 337 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1187,7 +1178,7 @@ float a_val;
 
 
  axis_words = Get_Axisword();
-#line 358 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 361 "C:/Users/Git/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1219,7 +1210,7 @@ float a_val;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 393 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 396 "C:/Users/Git/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1289,7 +1280,7 @@ float a_val;
 
 
 static int Modal_Group_Actions1(int action){
-#line 466 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 469 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.frequency,X);
@@ -1328,7 +1319,7 @@ static int Modal_Group_Actions1(int action){
  case  ((( 4 * 4 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
-#line 508 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 511 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(axis_to_home < 2){
 
 
@@ -1387,7 +1378,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 570 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 573 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
  FAIL( 6 );
@@ -1399,7 +1390,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 585 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 588 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
  FAIL( 6 );
 
@@ -1410,6 +1401,6 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 599 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 602 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }

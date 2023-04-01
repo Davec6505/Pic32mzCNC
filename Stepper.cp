@@ -97,7 +97,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/git/pic32mzcnc/settings.h"
+#line 174 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -122,15 +122,16 @@ typedef struct {
 } settings_t;
 
 extern settings_t settings;
-#line 29 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 33 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 41 "c:/users/git/pic32mzcnc/steptodistance.h"
-long calcSteps( double mmsToMove, double Dia);
-long leadscrew_sets(double move_distance,int axis);
-long belt_steps(double move_distance,int axis);
+#line 45 "c:/users/git/pic32mzcnc/steptodistance.h"
+long calcSteps(float mmsToMove, float Dia);
+long leadscrew_sets(float move_distance,int axis);
+long belt_steps(float move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
-double mm2in(double mm);
-double in2mm(double inch);
+float mm2in(float mm);
+float in2mm(float inch);
+float fround(float var);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
 
@@ -496,9 +497,9 @@ typedef struct Steps{
 
  long steps_abs_position;
 
- float mm_position;
 
- float mm_home_position;
+
+
 
  float max_travel;
 }STP;
@@ -518,6 +519,7 @@ static void Set_Axisdirection(long temp,int axis);
 
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(float newxyz,long speed,int axis_No);
+void SingleAxisStart(long dist,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -1184,11 +1186,17 @@ void Step_Cycle(int axis_No){
 }
 
 
+<<<<<<< HEAD
 static int Pulse(int axis_No){
 
+=======
+int Pulse(int axis_No){
+#line 269 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+>>>>>>> patch10
  switch(STPS[axis_No].run_state) {
  case  0 :
  STPS[axis_No].run_state =  0 ;
+ StopAxis(axis_No);
 
  break;
 
@@ -1360,14 +1368,9 @@ static int cnt;
 
  if(STPS[axisA].step_count > SV.dA){
  StopAxis(axisA);
- axis_running = 2;
- }
-
- if(STPS[axisB].step_count > SV.dB){
  StopAxis(axisB);
- axis_running = 1;
+ return;
  }
- if(axis_running >= 2)return;
 
  Step_Cycle(axisA);
  if(!SV.cir)
@@ -1383,14 +1386,10 @@ static int cnt;
 
  if(STPS[axisB].step_count > SV.dB){
  StopAxis(axisB);
- axis_running = 2;
+ StopAxis(axisA);
+ return;
  }
 
- if(STPS[axisA].step_count > SV.dA){
- StopAxis(axisA);
- axis_running = 1;
- }
- if(axis_running >= 2)return;
 
  Step_Cycle(axisB);
  if(!SV.cir)

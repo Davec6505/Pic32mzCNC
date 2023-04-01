@@ -72,7 +72,7 @@ long abs_mmSteps = labs(mmSteps);
   if(mmSteps == 1){
     STPS[axis_No].accel_count = -1;        // Move one step...
     STPS[axis_No].run_state = DECEL;       // ...in DECEL state.
-    STPS[axis_No].step_delay = 20000;      // Just a short delay so main() can act on 'running'.
+    STPS[axis_No].step_delay = 10000;      // Just a short delay so main() can act on 'running'.
     SV.running = 1;                        // start running
 
   }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
@@ -174,7 +174,7 @@ min_dly:= %l\n\n"
 ,(STPS[axis_No].run_state&0xff)
 ,STPS[axis_No].axis_dir
 ,STPS[axis_No].dist
-,STPS[axis_No].accel_lim
+,STPS[axis_No].max_step_lim
 ,STPS[axis_No].decel_val
 ,STPS[axis_No].decel_start
 ,STPS[axis_No].min_delay);
