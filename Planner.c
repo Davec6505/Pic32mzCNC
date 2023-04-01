@@ -101,7 +101,7 @@ long abs_mmSteps = labs(mmSteps);
        STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
     // Find out after how many Steps before the speed hits the max speed limit.
-    STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(lround)(2.0*alpha[axis_No]*100.0*(double)STPS[axis_No].acc);
+    STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(lround)(2.0*alpha[axis_No]*100.0*(float)STPS[axis_No].acc);
 
     //test calc using A_x20000 ???
     //STPS.max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
@@ -162,14 +162,14 @@ long abs_mmSteps = labs(mmSteps);
 #if PlanDebug == 1
 
 while(DMA_IsOn(1));
-dma_printf("\
+dma_printf("\n\
 run_state[%d]:= %d\n\
 step_dir:= %d\n\
 abs_mmSteps:= %l\n\
 acc_lim:= %d\n\
 dec_lim:= %l\n\
 dec_start:= %l\n\
-min_dly:= %l\n"
+min_dly:= %l\n\n"
 ,axis_No
 ,(STPS[axis_No].run_state&0xff)
 ,STPS[axis_No].axis_dir
@@ -332,8 +332,9 @@ int axis_plane_a,axis_plane_b;
   if (dir == CW) { isclockwise = true; }
 #if KineDebug == 3
 while(DMA_IsOn(1));
-dma_printf("[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f]\n\
-[tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n"
+dma_printf("\n\
+[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f]\n\
+[tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
 ,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
 #endif
         //  gc.plane_axis_2 =1;

@@ -1181,12 +1181,11 @@ void Step_Cycle(int axis_No){
 
  STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
  toggleOCx(axis_No);
-
 }
 
 
 static int Pulse(int axis_No){
-#line 270 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+
  switch(STPS[axis_No].run_state) {
  case  0 :
  STPS[axis_No].run_state =  0 ;

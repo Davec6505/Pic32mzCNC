@@ -257,15 +257,10 @@ void Step_Cycle(int axis_No){
      //keep track of absolute position
       STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
       toggleOCx(axis_No);
-
 }
 
 //reset the pulse
 static int Pulse(int axis_No){
-
-/*if(!STPS[axis_No].PLS_Step_ ){
-      STPS[axis_No].PLS_Step_   = 1;
-    }*/
 
     switch(STPS[axis_No].run_state) {
       case STOP:
@@ -335,7 +330,7 @@ static void AccDec(int axis_No){
 // X AXIS ISR
 void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
      OC5IF_bit = 0;
-   //  STPS[X].mm_position += EPSILON;
+     
      if(SV.Single_Dual == 0){
         SingleStepAxis(X);
      }else{

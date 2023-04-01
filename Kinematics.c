@@ -85,7 +85,7 @@ int   dir    = 0;
     //subtract new from current
     tempA = tempA - STPS[axis_No].steps_abs_position;
 
-    #if KineDebug == 1
+    #if KineDebug == 4
     while(DMA_IsOn(1));
     dma_printf("cur_pos:= %l\tabsxyz:= %f\tnewxyz:= %f\n"
               ,tempA
@@ -129,6 +129,13 @@ int dirA,dirB;
      //subtract new from current
      tempA = tempA - STPS[axisA].steps_abs_position;
      tempB = tempB - STPS[axisB].steps_abs_position;
+     
+#if KineDebug == 4
+while(DMA_IsOn(1));
+dma_printf("\
+tempA:= %l\ttempB:= %l\n"
+,tempA,tempB);
+#endif
    }else{
       tempA = belt_steps(axis_a,axisA);
       tempB = belt_steps(axis_b,axisB);
@@ -143,7 +150,7 @@ int dirA,dirB;
   // Multi_Axis_Enable(xyza);
   
   //if in abs mode prev must be cur pos
-/*   if (!gc.absolute_mode){
+   if (!gc.absolute_mode){
      SV.prevA = 0;
      SV.prevB = 0;
      SV.prevC = 0;
@@ -152,7 +159,7 @@ int dirA,dirB;
      SV.prevB = 0;//tempB;
      SV.prevC = 0;//tempC;
    }
-*/
+
   //set the direction counter for absolute position
   Set_Axisdirection(tempA,axisA);
   STPS[axisA].axis_dir = Direction(tempA);
@@ -169,8 +176,10 @@ int dirA,dirB;
   SV.dB = labs(SV.dB);
 
 #if KineDebug == 4
-  if(!DMA_IsOn(1));
-       dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
+while(DMA_IsOn(1));
+dma_printf("\
+SV.dA:= %l\tSV.dB:= %l\n"
+,SV.dA,SV.dB);
 #endif
 
   //Start values for Bresenhams

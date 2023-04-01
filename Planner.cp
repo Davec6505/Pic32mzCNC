@@ -1007,7 +1007,7 @@ long abs_mmSteps = labs(mmSteps);
  STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
 
- STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(lround)(2.0*alpha[axis_No]*100.0*(double)STPS[axis_No].acc);
+ STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(lround)(2.0*alpha[axis_No]*100.0*(float)STPS[axis_No].acc);
 
 
 
@@ -1069,7 +1069,7 @@ long abs_mmSteps = labs(mmSteps);
 
 while(DMA_IsOn(1));
 #line 172 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("run_state[%d]:= %d\nstep_dir:= %d\nabs_mmSteps:= %l\nacc_lim:= %d\ndec_lim:= %l\ndec_start:= %l\nmin_dly:= %l\n"
+dma_printf("\nrun_state[%d]:= %d\nstep_dir:= %d\nabs_mmSteps:= %l\nacc_lim:= %d\ndec_lim:= %l\ndec_start:= %l\nmin_dly:= %l\n\n"
 ,axis_No
 ,(STPS[axis_No].run_state&0xff)
 ,STPS[axis_No].axis_dir
@@ -1137,7 +1137,7 @@ int axis_plane_a,axis_plane_b;
 
  isclockwise =  0 ;
  if (dir ==  0 ) { isclockwise =  1 ; }
-#line 341 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 342 "C:/Users/Git/Pic32mzCNC/Planner.c"
  mc_arc(position, target, offset, axis_A, axis_B, Z,
  gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
 }
@@ -1169,7 +1169,7 @@ void plan_reset_absolute_position(){
  for(i=0;i< 4 ;i++)
  STPS[X].steps_abs_position = 0;
 }
-#line 388 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 389 "C:/Users/Git/Pic32mzCNC/Planner.c"
 long sqrt_(long x){
 
  volatile unsigned long xr;
