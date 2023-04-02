@@ -1232,9 +1232,9 @@ L_Protocol_Do_Startup_Msg62:
 ORI	R2, R0, 10
 SW	R2, Offset(DCH0DAT+0)(GP)
 ;Protocol.c,358 :: 		SV.homed = false; //release homed
-LBU	R2, Offset(_SV+2)(GP)
+LBU	R2, Offset(_SV+0)(GP)
 INS	R2, R0, 2, 1
-SB	R2, Offset(_SV+2)(GP)
+SB	R2, Offset(_SV+0)(GP)
 ;Protocol.c,359 :: 		}
 L_end_Do_Startup_Msg:
 LW	RA, 0(SP)
@@ -1561,9 +1561,9 @@ NOP
 ;Protocol.c,458 :: 		}
 L_Protocol_Check_Query_Type96:
 ;Protocol.c,461 :: 		SV.homed = true;
-LBU	R2, Offset(_SV+2)(GP)
+LBU	R2, Offset(_SV+0)(GP)
 ORI	R2, R2, 4
-SB	R2, Offset(_SV+2)(GP)
+SB	R2, Offset(_SV+0)(GP)
 ;Protocol.c,462 :: 		break;
 J	L_Protocol_Check_Query_Type74
 NOP	
@@ -1633,6 +1633,8 @@ NOP
 LW	R25, 20(SP)
 LH	R26, 18(SP)
 LH	R3, 16(SP)
+;Protocol.c,470 :: 		status = STATUS_OK;
+SH	R0, 24(SP)
 ;Protocol.c,471 :: 		}
 L_Protocol_Check_Query_Type103:
 ;Protocol.c,465 :: 		for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
@@ -1971,6 +1973,9 @@ J	L_Protocol_Check_Query_Type132
 NOP	
 L_Protocol_Check_Query_Type210:
 L_Protocol_Check_Query_Type209:
+;Protocol.c,561 :: 		status = STATUS_UNSUPPORTED_STATEMENT;
+ORI	R2, R0, 3
+SH	R2, 24(SP)
 ;Protocol.c,562 :: 		}
 L_Protocol_Check_Query_Type132:
 ;Protocol.c,563 :: 		value = atof(str_val);
@@ -2148,7 +2153,7 @@ NOP
 L_Protocol_Check_Query_Type390:
 L_Protocol_Check_Query_Type74:
 ;Protocol.c,575 :: 		if(!SV.homed)
-LBU	R2, Offset(_SV+2)(GP)
+LBU	R2, Offset(_SV+0)(GP)
 EXT	R2, R2, 2, 1
 BEQ	R2, R0, L_Protocol_Check_Query_Type391
 NOP	
@@ -2166,6 +2171,9 @@ J	L_end_Check_Query_Type
 NOP	
 ;Protocol.c,579 :: 		}else{
 L_Protocol_Check_Query_Type72:
+;Protocol.c,580 :: 		status = STATUS_COMMAND_EXECUTE_MOTION;
+ORI	R2, R0, 20
+SH	R2, 24(SP)
 ;Protocol.c,582 :: 		return status;
 ORI	R2, R0, 20
 ;Protocol.c,583 :: 		}

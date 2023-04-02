@@ -58264,6 +58264,7 @@ simreset_emacxcfg1_bit
 sin
 single_axis_enable
 single_dual
+singleaxisstart
 singleaxisstep
 singlestepaxis
 sinh

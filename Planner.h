@@ -51,13 +51,20 @@
 //  ****** INTERPOLATION SPECIFIC  ******         //
 ////////////////////////////////////////////////////
 typedef struct genVars{
-  int   Single_Dual;
   char  running: 1;        //running bit
   char  startPulses: 1;
   char  homed: 1;         //busy homing
   char  run_circle: 1;        //circle in motion indicator
+  char  cir: 1;
+  int   Single_Dual;
   int   Tog;
   int   AxisNo;
+  int   dirx;
+  int   diry;
+  int   dirz;
+  int   dira;
+  int   dirb;
+  int   dirc;
  // long  i;
   long  dif;
   long  dA;
@@ -67,13 +74,6 @@ typedef struct genVars{
   long  prevB;
   long  prevC;
   long  over;
-  int   dirx;
-  int   diry;
-  int   dirz;
-  int   dira;
-  int   dirb;
-  int   dirc;
-  char  cir: 1;
 }sVars;
 extern sVars SV;
 

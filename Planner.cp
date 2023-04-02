@@ -874,13 +874,20 @@ void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 53 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
- int Single_Dual;
  char running: 1;
  char startPulses: 1;
  char homed: 1;
  char run_circle: 1;
+ char cir: 1;
+ int Single_Dual;
  int Tog;
  int AxisNo;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
 
  long dif;
  long dA;
@@ -890,13 +897,6 @@ typedef struct genVars{
  long prevB;
  long prevC;
  long over;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- char cir: 1;
 }sVars;
 extern sVars SV;
 
@@ -1065,7 +1065,6 @@ long abs_mmSteps = labs(mmSteps);
  SV.Tog = 0;
  SV.running = 1;
  last_speed = speed;
-<<<<<<< HEAD
 
 
 
@@ -1077,15 +1076,12 @@ dma_printf("\nrun_state[%d]:= %d\nstep_dir:= %d\nabs_mmSteps:= %l\nacc_lim:= %d\
 ,(STPS[axis_No].run_state&0xff)
 ,STPS[axis_No].axis_dir
 ,STPS[axis_No].dist
-,STPS[axis_No].accel_lim
+,STPS[axis_No].max_step_lim
 ,STPS[axis_No].decel_val
 ,STPS[axis_No].decel_start
 ,STPS[axis_No].min_delay);
 
 
-=======
-#line 183 "C:/Users/Git/Pic32mzCNC/Planner.c"
->>>>>>> patch10
 }
 #line 195 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
@@ -1161,7 +1157,12 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-#line 364 "C:/Users/Git/Pic32mzCNC/Planner.c"
+
+
+while(DMA_IsOn(1));
+dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
+
+
 }
 
 

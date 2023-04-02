@@ -18,7 +18,7 @@
 *******************************************************************************/
 #include "GCODE.h"
 
-parser_state_t gc;
+
 
 //the use of volatile here is as a result of the compiler continously
 //optomising out these variables cousing the code to fail or values not
@@ -66,7 +66,7 @@ void G_Initialise(){
   value                = 0;
   inverse_feed_rate    = false;
   gc.absolute_override = false;
-  gc.absolute_mode     = true;
+  gc.absolute_mode     = 1;
 }
 
 //status code failures
@@ -150,10 +150,6 @@ int Rst_motionmode(){
 ///////////////////////////////////////////////////////////////
 //Gcodes {G 0,1,2,3,80}
 int G_Mode(int mode){
-#if GcodeDebug == 1
- while(DMA_IsOn(1));
- dma_printf("mode:= %d\n",mode);
-#endif
  group_number = Set_Modal_Groups(mode);
  motion_mode  = Set_Motion_Mode(mode);
  return mode;//motion_mode;
@@ -213,8 +209,8 @@ int i,m_mode;
              gc.coord_select = (mode - 53);//G54-53 == 1...;
              m_mode = MOTION_MODE_NULL;break;
     case 80: motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
-    case 90: gc.absolute_mode = true; m_mode    = MOTION_MODE_NULL; break;
-    case 91: gc.absolute_mode = false; m_mode   = MOTION_MODE_NULL; break;
+    case 90: gc.absolute_mode = 1; m_mode    = MOTION_MODE_NULL; break;
+    case 91: gc.absolute_mode = 0; m_mode   = MOTION_MODE_NULL; break;
     case 93: gc.inverse_feed_rate_mode = true;m_mode  = MOTION_MODE_NULL; break;
     case 94: gc.inverse_feed_rate_mode = false;m_mode = MOTION_MODE_NULL; break;
     case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
@@ -243,10 +239,16 @@ int i,m_mode;
 
   }
  
-  #if GcodeDebug == 2
-     while(DMA_IsOn(1));
-     dma_printf("report!\n[status_code:= %d]\n[mode:= %d]\n[motion_mode:= %d]\n[non_modal_action:= %d]\n"
-                 ,status_code ,mode ,motion_mode ,non_modal_action);
+#if GcodeDebug == 2
+while(DMA_IsOn(1));
+dma_printf("\
+<report!\n\
+[status_code:= %d]\n\
+[mode:= %d]\n\
+[motion_mode:= %d]\n\
+[non_modal_action:= %d]\n\
+[gc.absolute_mode:= %d]\n"
+,status_code ,mode ,motion_mode ,non_modal_action,(int)gc.absolute_mode);
   #endif
   #if GcodeDebug == 3
   //test if axis_word will run arc
@@ -439,10 +441,6 @@ int F_Val,O_Val;
             XYZ_Val = *(float*)any;
             gc.next_position[X] = To_Millimeters(XYZ_Val);
             bit_true(axis_words,bit(X));
-            #if GcodeDebug == 1
-            while(DMA_IsOn(1));
-            dma_printf("XYX_Val:= %f\taxis_words:= %d\n",XYZ_Val,axis_words);
-            #endif
             break;
       case 'Y':
             XYZ_Val = *(float*)any;

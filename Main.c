@@ -34,13 +34,11 @@
 //////////////////////////////////////////
 //external scope variables
 
-//settings_t settings;
-//parser_state_t gc;
-system_t sys;
-coord_sys coord_system[NUMBER_OF_DATUMS];
-STP STPS[NoOfAxis];
 settings_t settings absolute 0xA0002800 ;
-
+parser_state_t gc   absolute 0xA0002900;
+STP STPS[NoOfAxis]  absolute 0xA0003100;
+system_t sys        absolute 0xA0003500;
+coord_sys coord_system[NUMBER_OF_DATUMS] absolute 0xA0003600;
 //////////////////////////////////////////
 //DMA specific global decleration
 unsigned long rowbuff[128]={0};
@@ -56,6 +54,7 @@ void Conditin_Externs(){
   PinMode();
   plan_init(settings.acceleration,settings.acceleration);
   Init_Protocol();
+  G_Initialise();
   disableOCx();
   DisableStepper();
   //stepper timeout counter
@@ -159,6 +158,7 @@ static int cntr = 0,a = 0;
    }
    
    if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed){
+     LED2 = false;
      //debug STATUS_OK response after moves complete
      #if MainDebug == 12
      while(DMA_IsOn(1));

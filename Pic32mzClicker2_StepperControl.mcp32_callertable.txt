@@ -48,6 +48,7 @@ main
 			set_calculation_constants
 				lround
 		Init_Protocol
+		G_Initialise
 		disableOCx
 		DisableStepper
 	Debounce_Limits
@@ -70,34 +71,6 @@ main
 		ulong2flt
 		SingleAxisStep
 			belt_steps
-<<<<<<< HEAD
-			DMA_IsOn
-			dma_printf
-				DMA_CH_Busy
-				sprintf
-					_doprntf
-						isdigit
-						scale
-						fround
-				strcat
-				strlen
-				strncpy
-				DMA1_Enable
-				__CC2DW
-			Single_Axis_Enable
-			speed_cntr_Move
-				labs
-				sqrt_
-				lround
-				DMA_IsOn
-				dma_printf
-				__CC2DW
-			Set_Axisdirection
-			labs
-			Step_Cycle
-				toggleOCx
-			__CC2DW
-=======
 				lround
 			SingleAxisStart
 				Single_Axis_Enable
@@ -105,11 +78,24 @@ main
 					labs
 					sqrt_
 					lround
+					DMA_IsOn
+					dma_printf
+						DMA_CH_Busy
+						sprintf
+							_doprntf
+								isdigit
+								scale
+								fround
+						strcat
+						strlen
+						strncpy
+						DMA1_Enable
+						__CC2DW
+					__CC2DW
 				Set_Axisdirection
 				labs
 				Step_Cycle
 					toggleOCx
->>>>>>> patch10
 		GET_RunState
 		FAIL
 		memset
@@ -118,40 +104,28 @@ main
 	report_status_message
 		DMA_IsOn
 		dma_printf
-			DMA_CH_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
 	Get_Axisword
 	EnableSteppers
 	Modal_Group_Actions1
 		SingleAxisStep
 		DualAxisStep
 			belt_steps
-			DMA_IsOn
-			dma_printf
 			Single_Axis_Enable
 			Set_Axisdirection
 			labs
 			speed_cntr_Move
 			Axis_Interpolate
-				StopAxis
 				Step_Cycle
 				Pulse
 					StopAxis
 					AccDec
-			__CC2DW
 		sys_sync_current_position
 			plan_set_current_position
 				beltsteps2mm
 					fround
+				DMA_IsOn
+				dma_printf
+				__CC2DW
 		r_or_ijk
 			__CC2DW
 			sqrt
@@ -339,7 +313,6 @@ main
 		DisableStepper
 StepZ
 	SingleStepAxis
-		StopAxis
 		Step_Cycle
 		Pulse
 	Axis_Interpolate

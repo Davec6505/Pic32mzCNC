@@ -375,13 +375,20 @@ void write_global_settings();
 int settings_store_global_setting(int parameter, float value);
 #line 53 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
- int Single_Dual;
  char running: 1;
  char startPulses: 1;
  char homed: 1;
  char run_circle: 1;
+ char cir: 1;
+ int Single_Dual;
  int Tog;
  int AxisNo;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
 
  long dif;
  long dA;
@@ -391,13 +398,6 @@ typedef struct genVars{
  long prevB;
  long prevC;
  long over;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- char cir: 1;
 }sVars;
 extern sVars SV;
 
@@ -1178,28 +1178,22 @@ void toggleOCx(int axis_No){
 
 
 void Step_Cycle(int axis_No){
+ toggleOCx(axis_No);
 
  STPS[axis_No].step_count++;
 
  STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
- toggleOCx(axis_No);
+
 }
 
 
-<<<<<<< HEAD
 static int Pulse(int axis_No){
 
-=======
-int Pulse(int axis_No){
-#line 269 "C:/Users/Git/Pic32mzCNC/Stepper.c"
->>>>>>> patch10
  switch(STPS[axis_No].run_state) {
  case  0 :
  STPS[axis_No].run_state =  0 ;
  StopAxis(axis_No);
-
  break;
-
  case  1 :
 
  AccDec(axis_No);
@@ -1218,10 +1212,8 @@ int Pulse(int axis_No){
  STPS[axis_No].run_state =  2 ;
  }
  break;
-
  case  3 :
  STPS[axis_No].step_delay = STPS[axis_No].min_delay;
-
 
 
  if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
@@ -1230,13 +1222,11 @@ int Pulse(int axis_No){
  STPS[axis_No].run_state =  2 ;
  }
  break;
-
  case  2 :
 
  AccDec(axis_No);
 
-
- if(STPS[axis_No].accel_count > -1 ){
+ if(STPS[axis_No].accel_count >= -1 ){
  STPS[axis_No].run_state =  0 ;
  }
  break;
@@ -1340,14 +1330,10 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 
 void SingleStepAxis(int axis){
- if(STPS[axis].step_count >= STPS[axis].dist){
- StopAxis(axis);
- return;
- }
- else{
+#line 412 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  Step_Cycle(axis);
  Pulse(axis);
- }
+
 }
 
 
@@ -1365,13 +1351,7 @@ static int cnt;
  }
 
  if(SV.dA >= SV.dB){
-
- if(STPS[axisA].step_count > SV.dA){
- StopAxis(axisA);
- StopAxis(axisB);
- return;
- }
-
+ if(STPS[axisA].step_count < STPS[axisA].dist)
  Step_Cycle(axisA);
  if(!SV.cir)
  Pulse(axisA);
@@ -1379,18 +1359,11 @@ static int cnt;
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dB)) ;
  }else{
- SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
  Step_Cycle(axisB);
+ SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
  }
  }else{
-
- if(STPS[axisB].step_count > SV.dB){
- StopAxis(axisB);
- StopAxis(axisA);
- return;
- }
-
-
+ if(STPS[axisB].step_count < STPS[axisB].dist)
  Step_Cycle(axisB);
  if(!SV.cir)
  Pulse(axisB);
@@ -1398,8 +1371,8 @@ static int cnt;
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dA)) ;
  }else{
- SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
  Step_Cycle(axisA);
+ SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
  }
  }
 }

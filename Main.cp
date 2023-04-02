@@ -512,13 +512,20 @@ void write_global_settings();
 int settings_store_global_setting(int parameter, float value);
 #line 53 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
- int Single_Dual;
  char running: 1;
  char startPulses: 1;
  char homed: 1;
  char run_circle: 1;
+ char cir: 1;
+ int Single_Dual;
  int Tog;
  int AxisNo;
+ int dirx;
+ int diry;
+ int dirz;
+ int dira;
+ int dirb;
+ int dirc;
 
  long dif;
  long dA;
@@ -528,13 +535,6 @@ typedef struct genVars{
  long prevB;
  long prevC;
  long over;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- char cir: 1;
 }sVars;
 extern sVars SV;
 
@@ -925,12 +925,12 @@ static int Modal_Group_Actions7(int action);
 
 
 static int Modal_Group_Actions12(int action);
-#line 39 "C:/Users/Git/Pic32mzCNC/Main.c"
-system_t sys;
-coord_sys coord_system[ 9 ];
-STP STPS[ 4 ];
+#line 37 "C:/Users/Git/Pic32mzCNC/Main.c"
 settings_t settings absolute 0xA0002800 ;
-
+parser_state_t gc absolute 0xA0002900;
+STP STPS[ 4 ] absolute 0xA0003100;
+system_t sys absolute 0xA0003500;
+coord_sys coord_system[ 9 ] absolute 0xA0003600;
 
 
 unsigned long rowbuff[128]={0};
@@ -946,6 +946,7 @@ void Conditin_Externs(){
  PinMode();
  plan_init(settings.acceleration,settings.acceleration);
  Init_Protocol();
+ G_Initialise();
  disableOCx();
  DisableStepper();
 
@@ -983,7 +984,7 @@ static int cntr = 0,a = 0;
  int axis_to_run = 0;
 
  modal_group = Get_modalgroup();
-#line 102 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 101 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(modal_group){
  case 0:FAIL( 0 );break;
  case 2:
@@ -1034,13 +1035,14 @@ static int cntr = 0,a = 0;
  case 1024:
 
  modal_action = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
-#line 156 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 155 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(modal_action == 0)modal_group = Rst_modalgroup();
  break;
  }
  }
 
  if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed){
+ LED2 =  0 ;
 
 
  while(DMA_IsOn(1));

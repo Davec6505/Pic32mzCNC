@@ -77,6 +77,13 @@ void SingleAxisStep(float newxyz,long speed,int axis_No){
 long  absxyz = 0;
 long  tempA  = 0;
 int   dir    = 0;
+
+#if KineDebug == 4
+while(DMA_IsOn(1));
+dma_printf("cur_pos:= %l\tabsxyz:= %f\tnewxyz:= %f\tG90:= %d\n"
+          ,tempA,beltsteps2mm(STPS[axis_No].steps_abs_position,axis_No)
+          ,newxyz,(int)gc.absolute_mode);
+#endif
       //if absolute mode ~ newxyz = new_position - current_position
   if(gc.absolute_mode == true){
     //get current position
@@ -85,13 +92,6 @@ int   dir    = 0;
     //subtract new from current
     tempA = tempA - STPS[axis_No].steps_abs_position;
 
-    #if KineDebug == 4
-    while(DMA_IsOn(1));
-    dma_printf("cur_pos:= %l\tabsxyz:= %f\tnewxyz:= %f\n"
-              ,tempA
-              ,absxyz
-              ,newxyz);
-    #endif
   }else{
     tempA = belt_steps(newxyz,axis_No);
   }
@@ -135,15 +135,6 @@ int dirA,dirB;
      //subtract new from current
      tempA = tempA - STPS[axisA].steps_abs_position;
      tempB = tempB - STPS[axisB].steps_abs_position;
-<<<<<<< HEAD
-     
-#if KineDebug == 4
-while(DMA_IsOn(1));
-dma_printf("\
-tempA:= %l\ttempB:= %l\n"
-,tempA,tempB);
-#endif
-=======
 
 #if KineDebug == 4
   while(DMA_IsOn(1));
@@ -158,7 +149,6 @@ tempA:= %l\ttempB:= %l\n"
         return;
      }
  */
->>>>>>> patch10
    }else{
       tempA = belt_steps(axis_a,axisA);
       tempB = belt_steps(axis_b,axisB);
@@ -199,15 +189,8 @@ tempA:= %l\ttempB:= %l\n"
   SV.dB = labs(SV.dB);
 
 #if KineDebug == 4
-<<<<<<< HEAD
 while(DMA_IsOn(1));
-dma_printf("\
-SV.dA:= %l\tSV.dB:= %l\n"
-,SV.dA,SV.dB);
-=======
-  while(DMA_IsOn(1));
-  dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
->>>>>>> patch10
+dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
 #endif
 
   //Start values for Bresenhams
@@ -239,49 +222,9 @@ SV.dA:= %l\tSV.dB:= %l\n"
    
    Axis_Interpolate(axisA,axisB);
    
-
-   
-
 }
 
-///////////////////////////////////////////////////////////
-//        FUNCTION TO MAKE DESCISION ON AXIS             //
-///////////////////////////////////////////////////////////
-void run_mc_line(int action){
 
-  switch(action){
-      case 1: //b0000 0001
-             SingleAxisStep(gc.next_position[X],gc.frequency,X);
-             break;
-      case 2://b0000 0010
-             SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
-             break;
-       case 3://b0000 0011
-             DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
-             break;
-      case 4://b0000 0100
-            SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
-             break;
-       case 5://b0000 0101
-             DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
-             break;
-       case 6://b0000 0110
-             DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
-             break;
-       case 8://b0000 1000
-            SingleAxisStep(gc.next_position[A],gc.frequency,A);
-             break;
-       case 9://b0000 1001
-            DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
-            break;
-       case 10://b0000 1010
-            DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
-            break;
-       case 12://b0000 1100
-            DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
-            break;
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //     Circular Interpolation taken from Grbl as it uses Rotation matrix     //
