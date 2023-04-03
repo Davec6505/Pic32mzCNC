@@ -464,7 +464,7 @@ static void Set_Axisdirection(long temp,int axis);
 
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(float newxyz,long speed,int axis_No);
-void SingleAxisStart(long dist,long speed,int axis_No);
+static void SingleAxisStart(long dist,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -1065,23 +1065,7 @@ long abs_mmSteps = labs(mmSteps);
  SV.Tog = 0;
  SV.running = 1;
  last_speed = speed;
-
-
-
-
-while(DMA_IsOn(1));
-#line 172 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("\nrun_state[%d]:= %d\nstep_dir:= %d\nabs_mmSteps:= %l\nacc_lim:= %d\ndec_lim:= %l\ndec_start:= %l\nmin_dly:= %l\n\n"
-,axis_No
-,(STPS[axis_No].run_state&0xff)
-,STPS[axis_No].axis_dir
-,STPS[axis_No].dist
-,STPS[axis_No].max_step_lim
-,STPS[axis_No].decel_val
-,STPS[axis_No].decel_start
-,STPS[axis_No].min_delay);
-
-
+#line 183 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 #line 195 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
@@ -1157,12 +1141,7 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-
-
-while(DMA_IsOn(1));
-dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
-
-
+#line 365 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 
 

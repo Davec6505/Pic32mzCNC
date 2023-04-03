@@ -100,7 +100,7 @@ dma_printf("cur_pos:= %l\tabsxyz:= %f\tnewxyz:= %f\tG90:= %d\n"
   
 }
 
-void SingleAxisStart(long dist,long speed,int axis_No){
+static void SingleAxisStart(long dist,long speed,int axis_No){
 
   Single_Axis_Enable(axis_No);
   speed_cntr_Move(dist , speed , axis_No);
@@ -128,50 +128,50 @@ int dirA,dirB;
 
 
     //if absolute mode ~ newxyz = new_position - current_position
-   if(gc.absolute_mode == true){
+ if(gc.absolute_mode == true){
      //get current position
-     tempA = belt_steps(axis_a,axisA);
-     tempB = belt_steps(axis_b,axisB);
-     //subtract new from current
-     tempA = tempA - STPS[axisA].steps_abs_position;
-     tempB = tempB - STPS[axisB].steps_abs_position;
-
+   tempA = belt_steps(axis_a,axisA);
+   tempB = belt_steps(axis_b,axisB);
 #if KineDebug == 4
-  while(DMA_IsOn(1));
-  dma_printf("tempA:= %l\ttempB:= %l\n",tempA,tempB);
+while(DMA_IsOn(1));
+dma_printf("\
+tempA:= %l\tabsA:= %l\n\
+tempB:= %l\tabsB:= %l\n"
+,tempA,STPS[axisA].steps_abs_position
+,tempB,STPS[axisB].steps_abs_position);
 #endif
- /*    if(tempA == 0){
-        SingleAxisStart(tempB,speed,axisB);
-        return;
-     }
-     else if (tempB == 0){
-        SingleAxisStart(tempA,speed,axisA);
-        return;
-     }
- */
-   }else{
-      tempA = belt_steps(axis_a,axisA);
-      tempB = belt_steps(axis_b,axisB);
-   }
-   SV.over = 0;
-   SV.dif  = 0;
+  //subtract new from current
+  tempA = tempA - STPS[axisA].steps_abs_position;
+  tempB = tempB - STPS[axisB].steps_abs_position;
+#if KineDebug == 4
+while(DMA_IsOn(1));
+dma_printf("tempAa:= %l\ttempBb:= %l\n"
+,tempA,tempB);
+#endif
 
-   //Enable the relevant axis in Stepper.c
-   SV.Single_Dual = 1;
-   Single_Axis_Enable(axisA);
-   Single_Axis_Enable(axisB);
-  // Multi_Axis_Enable(xyza);
+ }else{
+   tempA = belt_steps(axis_a,axisA);
+   tempB = belt_steps(axis_b,axisB);
+ }
+ SV.over = 0;
+ SV.dif  = 0;
+
+//Enable the relevant axis in Stepper.c
+ SV.Single_Dual = 1;
+ Single_Axis_Enable(axisA);
+ Single_Axis_Enable(axisB);
+ // Multi_Axis_Enable(xyza);
   
-  //if in abs mode prev must be cur pos
-   if (!gc.absolute_mode){
+ //if in abs mode prev must be cur pos
+ if (!gc.absolute_mode){
      SV.prevA = 0;
      SV.prevB = 0;
      SV.prevC = 0;
-   }else{
+ }else{
      SV.prevA = 0;//tempA;
      SV.prevB = 0;//tempB;
      SV.prevC = 0;//tempC;
-   }
+ }
 
   //set the direction counter for absolute position
   Set_Axisdirection(tempA,axisA);
@@ -197,17 +197,20 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
   if(SV.dA >= SV.dB){
      if(!SV.cir){
         speed_cntr_Move(tempA,speed,axisA);
+        //speed_cntr_Move(tempB,speed,axisB);
         STPS[axisB].step_delay = STPS[axisA].step_delay;
+        STPS[axisB].accel_count = STPS[axisA].accel_count;
      }
 
      SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
      STPS[axisA].master = 1;
      STPS[axisB].master = 0;
-  }
-  else{
+  }else{
      if(!SV.cir){
         speed_cntr_Move(tempB,speed,axisB);
+        //speed_cntr_Move(tempA,speed,axisA);
         STPS[axisA].step_delay = STPS[axisB].step_delay;
+        STPS[axisA].accel_count = STPS[axisB].accel_count;
      }
 
      SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
@@ -219,9 +222,9 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
    STPS[axisB].step_count = 0;
    STPS[axisA].mmToTravel = tempA;
    STPS[axisB].mmToTravel = tempB;
-   
+
    Axis_Interpolate(axisA,axisB);
-   
+
 }
 
 

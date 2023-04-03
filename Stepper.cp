@@ -519,7 +519,7 @@ static void Set_Axisdirection(long temp,int axis);
 
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
 void SingleAxisStep(float newxyz,long speed,int axis_No);
-void SingleAxisStart(long dist,long speed,int axis_No);
+static void SingleAxisStart(long dist,long speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
@@ -1193,6 +1193,7 @@ static int Pulse(int axis_No){
  case  0 :
  STPS[axis_No].run_state =  0 ;
  StopAxis(axis_No);
+ SV.Tog = 1;
  break;
  case  1 :
 
@@ -1330,7 +1331,7 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 
 void SingleStepAxis(int axis){
-#line 412 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 413 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  Step_Cycle(axis);
  Pulse(axis);
 
@@ -1351,8 +1352,12 @@ static int cnt;
  }
 
  if(SV.dA >= SV.dB){
+ STPS[axisB].step_delay = STPS[axisA].step_delay;
+ STPS[axisB].accel_count = STPS[axisA].accel_count;
+
  if(STPS[axisA].step_count < STPS[axisA].dist)
  Step_Cycle(axisA);
+
  if(!SV.cir)
  Pulse(axisA);
 
@@ -1362,11 +1367,20 @@ static int cnt;
  Step_Cycle(axisB);
  SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
  }
+
+ if(STPS[axisA].run_state ==  0 )
+ StopAxis(axisB);
+
  }else{
+ STPS[axisA].step_delay = STPS[axisB].step_delay;
+ STPS[axisA].accel_count = STPS[axisB].accel_count;
+
  if(STPS[axisB].step_count < STPS[axisB].dist)
  Step_Cycle(axisB);
+
  if(!SV.cir)
  Pulse(axisB);
+
 
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dA)) ;
@@ -1374,5 +1388,8 @@ static int cnt;
  Step_Cycle(axisA);
  SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
  }
+
+ if(STPS[axisB].run_state ==  0 )
+ StopAxis(axisA);
  }
 }

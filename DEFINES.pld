@@ -10,4 +10,4 @@ HomeDebug=-10
 LimitDebug=-1
 KineDebug=-4
 CalcsDebug=-1
-PlanDebug=1
+PlanDebug=-1

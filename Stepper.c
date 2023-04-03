@@ -265,8 +265,9 @@ static int Pulse(int axis_No){
 
   switch(STPS[axis_No].run_state) {
     case STOP:
-      STPS[axis_No].run_state  = STOP;
-      StopAxis(axis_No);
+        STPS[axis_No].run_state  = STOP;
+        StopAxis(axis_No);
+        SV.Tog = 1;
       break;
     case ACCEL:
       //taylor series calculation for acc
@@ -429,28 +430,44 @@ static int cnt;
    }
 
    if(SV.dA >= SV.dB){
-      if(STPS[axisA].step_count < STPS[axisA].dist)
+     STPS[axisB].step_delay  = STPS[axisA].step_delay;
+     STPS[axisB].accel_count = STPS[axisA].accel_count;
+     
+     if(STPS[axisA].step_count < STPS[axisA].dist)
         Step_Cycle(axisA);
-      if(!SV.cir)
-        Pulse(axisA);
         
+     if(!SV.cir)
+        Pulse(axisA);
+
       if(SV.dif < 0){
           SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
       }else{
           Step_Cycle(axisB);
           SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
       }
+      
+      if(STPS[axisA].run_state == STOP)
+        StopAxis(axisB);
+        
    }else{
+     STPS[axisA].step_delay  = STPS[axisB].step_delay;
+     STPS[axisA].accel_count = STPS[axisB].accel_count;
+     
      if(STPS[axisB].step_count < STPS[axisB].dist)
        Step_Cycle(axisB);
+       
      if(!SV.cir)
        Pulse(axisB);
+       
          
      if(SV.dif < 0){
        SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
      }else{
          Step_Cycle(axisA);
          SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
-       }
+     }
+     
+     if(STPS[axisB].run_state == STOP)
+        StopAxis(axisA);
    }
 }

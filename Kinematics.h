@@ -144,7 +144,7 @@ static void Set_Axisdirection(long temp,int axis);
 //Move inline
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);//,int xyza);
 void SingleAxisStep(float newxyz,long speed,int axis_No);
-void SingleAxisStart(long dist,long speed,int axis_No);
+static void SingleAxisStart(long dist,long speed,int axis_No);
 
 //Circle move axis
 void mc_arc(float *position, float *target, float *offset, int axis_0,
