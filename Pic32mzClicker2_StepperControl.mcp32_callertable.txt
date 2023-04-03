@@ -70,21 +70,6 @@ main
 		Get_Axisword
 		ulong2flt
 		SingleAxisStep
-			DMA_IsOn
-			dma_printf
-				DMA_CH_Busy
-				sprintf
-					_doprntf
-						isdigit
-						scale
-						fround
-				strcat
-				strlen
-				strncpy
-				DMA1_Enable
-				__CC2DW
-			beltsteps2mm
-				fround
 			belt_steps
 				lround
 			SingleAxisStart
@@ -97,7 +82,6 @@ main
 				labs
 				Step_Cycle
 					toggleOCx
-			__CC2DW
 		GET_RunState
 		FAIL
 		memset
@@ -106,14 +90,23 @@ main
 	report_status_message
 		DMA_IsOn
 		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 	Get_Axisword
 	EnableSteppers
 	Modal_Group_Actions1
 		SingleAxisStep
 		DualAxisStep
 			belt_steps
-			DMA_IsOn
-			dma_printf
 			Single_Axis_Enable
 			Set_Axisdirection
 			labs
@@ -123,10 +116,11 @@ main
 				Pulse
 					StopAxis
 					AccDec
-			__CC2DW
+				StopAxis
 		sys_sync_current_position
 			plan_set_current_position
 				beltsteps2mm
+					fround
 		r_or_ijk
 			__CC2DW
 			sqrt

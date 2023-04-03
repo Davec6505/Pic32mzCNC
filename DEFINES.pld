@@ -8,6 +8,6 @@ LoopBackDebug=-1
 GlobalsDebug=-22
 HomeDebug=-10
 LimitDebug=-1
-KineDebug=4
+KineDebug=-4
 CalcsDebug=-1
 PlanDebug=-1

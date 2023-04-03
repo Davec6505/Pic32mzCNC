@@ -1193,6 +1193,7 @@ static int Pulse(int axis_No){
  case  0 :
  STPS[axis_No].run_state =  0 ;
  StopAxis(axis_No);
+ SV.Tog = 1;
  break;
  case  1 :
 
@@ -1330,7 +1331,7 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 
 void SingleStepAxis(int axis){
-#line 412 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 413 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  Step_Cycle(axis);
  Pulse(axis);
 
@@ -1366,6 +1367,10 @@ static int cnt;
  Step_Cycle(axisB);
  SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
  }
+
+ if(STPS[axisA].run_state ==  0 )
+ StopAxis(axisB);
+
  }else{
  STPS[axisA].step_delay = STPS[axisB].step_delay;
  STPS[axisA].accel_count = STPS[axisB].accel_count;
@@ -1376,11 +1381,15 @@ static int cnt;
  if(!SV.cir)
  Pulse(axisB);
 
+
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dA)) ;
  }else{
  Step_Cycle(axisA);
  SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
  }
+
+ if(STPS[axisB].run_state ==  0 )
+ StopAxis(axisA);
  }
 }

@@ -194,9 +194,10 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
 #endif
 
   //Start values for Bresenhams
-  if(SV.dA > SV.dB){
+  if(SV.dA >= SV.dB){
      if(!SV.cir){
         speed_cntr_Move(tempA,speed,axisA);
+        //speed_cntr_Move(tempB,speed,axisB);
         STPS[axisB].step_delay = STPS[axisA].step_delay;
         STPS[axisB].accel_count = STPS[axisA].accel_count;
      }
@@ -207,6 +208,7 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
   }else{
      if(!SV.cir){
         speed_cntr_Move(tempB,speed,axisB);
+        //speed_cntr_Move(tempA,speed,axisA);
         STPS[axisA].step_delay = STPS[axisB].step_delay;
         STPS[axisA].accel_count = STPS[axisB].accel_count;
      }
