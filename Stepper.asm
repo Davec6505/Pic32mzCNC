@@ -1776,7 +1776,45 @@ NOP
 J	L_Axis_Interpolate89
 NOP	
 L__Axis_Interpolate214:
-;Stepper.c,432 :: 		if(STPS[axisA].step_count < STPS[axisA].dist)
+;Stepper.c,432 :: 		STPS[axisB].step_delay  = STPS[axisA].step_delay;
+SEH	R3, R26
+ORI	R2, R0, 92
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R4, R2, 12
+SEH	R3, R25
+ORI	R2, R0, 92
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R2, R2, 12
+LW	R2, 0(R2)
+SW	R2, 0(R4)
+;Stepper.c,433 :: 		STPS[axisB].accel_count = STPS[axisA].accel_count;
+SEH	R3, R26
+ORI	R2, R0, 92
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R4, R2, 28
+SEH	R3, R25
+ORI	R2, R0, 92
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R2, R2, 28
+LW	R2, 0(R2)
+SW	R2, 0(R4)
+;Stepper.c,435 :: 		if(STPS[axisA].step_count < STPS[axisA].dist)
 SEH	R3, R25
 ORI	R2, R0, 92
 MULTU	R2, R3
@@ -1794,11 +1832,11 @@ NOP
 J	L_Axis_Interpolate90
 NOP	
 L__Axis_Interpolate215:
-;Stepper.c,433 :: 		Step_Cycle(axisA);
+;Stepper.c,436 :: 		Step_Cycle(axisA);
 JAL	_Step_Cycle+0
 NOP	
 L_Axis_Interpolate90:
-;Stepper.c,434 :: 		if(!SV.cir)
+;Stepper.c,438 :: 		if(!SV.cir)
 LBU	R2, Offset(_SV+0)(GP)
 EXT	R2, R2, 4, 1
 BEQ	R2, R0, L__Axis_Interpolate216
@@ -1806,11 +1844,11 @@ NOP
 J	L_Axis_Interpolate91
 NOP	
 L__Axis_Interpolate216:
-;Stepper.c,435 :: 		Pulse(axisA);
+;Stepper.c,439 :: 		Pulse(axisA);
 JAL	Stepper_Pulse+0
 NOP	
 L_Axis_Interpolate91:
-;Stepper.c,437 :: 		if(SV.dif < 0){
+;Stepper.c,441 :: 		if(SV.dif < 0){
 LW	R2, Offset(_SV+20)(GP)
 SLTI	R2, R2, 0
 BNE	R2, R0, L__Axis_Interpolate217
@@ -1818,21 +1856,21 @@ NOP
 J	L_Axis_Interpolate92
 NOP	
 L__Axis_Interpolate217:
-;Stepper.c,438 :: 		SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
+;Stepper.c,442 :: 		SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
 LW	R2, Offset(_SV+28)(GP)
 SLL	R3, R2, 1
 LW	R2, Offset(_SV+20)(GP)
 ADDU	R2, R2, R3
 SW	R2, Offset(_SV+20)(GP)
-;Stepper.c,439 :: 		}else{
+;Stepper.c,443 :: 		}else{
 J	L_Axis_Interpolate93
 NOP	
 L_Axis_Interpolate92:
-;Stepper.c,440 :: 		Step_Cycle(axisB);
+;Stepper.c,444 :: 		Step_Cycle(axisB);
 SEH	R25, R26
 JAL	_Step_Cycle+0
 NOP	
-;Stepper.c,441 :: 		SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
+;Stepper.c,445 :: 		SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
 LW	R3, Offset(_SV+24)(GP)
 LW	R2, Offset(_SV+28)(GP)
 SUBU	R2, R2, R3
@@ -1840,13 +1878,51 @@ SLL	R3, R2, 1
 LW	R2, Offset(_SV+20)(GP)
 ADDU	R2, R2, R3
 SW	R2, Offset(_SV+20)(GP)
-;Stepper.c,442 :: 		}
+;Stepper.c,446 :: 		}
 L_Axis_Interpolate93:
-;Stepper.c,443 :: 		}else{
+;Stepper.c,447 :: 		}else{
 J	L_Axis_Interpolate94
 NOP	
 L_Axis_Interpolate89:
-;Stepper.c,444 :: 		if(STPS[axisB].step_count < STPS[axisB].dist)
+;Stepper.c,448 :: 		STPS[axisA].step_delay  = STPS[axisB].step_delay;
+SEH	R3, R25
+ORI	R2, R0, 92
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R4, R2, 12
+SEH	R3, R26
+ORI	R2, R0, 92
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R2, R2, 12
+LW	R2, 0(R2)
+SW	R2, 0(R4)
+;Stepper.c,449 :: 		STPS[axisA].accel_count = STPS[axisB].accel_count;
+SEH	R3, R25
+ORI	R2, R0, 92
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R4, R2, 28
+SEH	R3, R26
+ORI	R2, R0, 92
+MULTU	R2, R3
+MFLO	R3
+LUI	R2, hi_addr(_STPS+0)
+ORI	R2, R2, lo_addr(_STPS+0)
+ADDU	R2, R2, R3
+ADDIU	R2, R2, 28
+LW	R2, 0(R2)
+SW	R2, 0(R4)
+;Stepper.c,451 :: 		if(STPS[axisB].step_count < STPS[axisB].dist)
 SEH	R3, R26
 ORI	R2, R0, 92
 MULTU	R2, R3
@@ -1864,14 +1940,14 @@ NOP
 J	L_Axis_Interpolate95
 NOP	
 L__Axis_Interpolate218:
-;Stepper.c,445 :: 		Step_Cycle(axisB);
+;Stepper.c,452 :: 		Step_Cycle(axisB);
 SH	R25, 8(SP)
 SEH	R25, R26
 JAL	_Step_Cycle+0
 NOP	
 LH	R25, 8(SP)
 L_Axis_Interpolate95:
-;Stepper.c,446 :: 		if(!SV.cir)
+;Stepper.c,454 :: 		if(!SV.cir)
 LBU	R2, Offset(_SV+0)(GP)
 EXT	R2, R2, 4, 1
 BEQ	R2, R0, L__Axis_Interpolate219
@@ -1879,14 +1955,14 @@ NOP
 J	L_Axis_Interpolate96
 NOP	
 L__Axis_Interpolate219:
-;Stepper.c,447 :: 		Pulse(axisB);
+;Stepper.c,455 :: 		Pulse(axisB);
 SH	R25, 8(SP)
 SEH	R25, R26
 JAL	Stepper_Pulse+0
 NOP	
 LH	R25, 8(SP)
 L_Axis_Interpolate96:
-;Stepper.c,449 :: 		if(SV.dif < 0){
+;Stepper.c,457 :: 		if(SV.dif < 0){
 LW	R2, Offset(_SV+20)(GP)
 SLTI	R2, R2, 0
 BNE	R2, R0, L__Axis_Interpolate220
@@ -1894,20 +1970,20 @@ NOP
 J	L_Axis_Interpolate97
 NOP	
 L__Axis_Interpolate220:
-;Stepper.c,450 :: 		SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
+;Stepper.c,458 :: 		SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
 LW	R2, Offset(_SV+24)(GP)
 SLL	R3, R2, 1
 LW	R2, Offset(_SV+20)(GP)
 ADDU	R2, R2, R3
 SW	R2, Offset(_SV+20)(GP)
-;Stepper.c,451 :: 		}else{
+;Stepper.c,459 :: 		}else{
 J	L_Axis_Interpolate98
 NOP	
 L_Axis_Interpolate97:
-;Stepper.c,452 :: 		Step_Cycle(axisA);
+;Stepper.c,460 :: 		Step_Cycle(axisA);
 JAL	_Step_Cycle+0
 NOP	
-;Stepper.c,453 :: 		SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
+;Stepper.c,461 :: 		SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
 LW	R3, Offset(_SV+28)(GP)
 LW	R2, Offset(_SV+24)(GP)
 SUBU	R2, R2, R3
@@ -1915,11 +1991,11 @@ SLL	R3, R2, 1
 LW	R2, Offset(_SV+20)(GP)
 ADDU	R2, R2, R3
 SW	R2, Offset(_SV+20)(GP)
-;Stepper.c,454 :: 		}
+;Stepper.c,462 :: 		}
 L_Axis_Interpolate98:
-;Stepper.c,455 :: 		}
+;Stepper.c,463 :: 		}
 L_Axis_Interpolate94:
-;Stepper.c,456 :: 		}
+;Stepper.c,464 :: 		}
 L_end_Axis_Interpolate:
 LW	R25, 4(SP)
 LW	RA, 0(SP)

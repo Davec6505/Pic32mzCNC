@@ -182,13 +182,13 @@ if(!SV.Tog){
 if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
 while(DMA_IsOn(1));
 dma_printf("\
-run_state:= %d\t%l\t%l\t%d\t%l\t%l\n"
-,(STPS[X].run_state&0xff)
+dif:= %l\t%l\t%l\t%d\t%l\t%l\n"
+,SV.dif
 ,STPS[X].step_count
-,STPS[X].dist
+,STPS[X].accel_count
 ,(STPS[Y].run_state&0xff)
 ,STPS[Y].step_count
-,STPS[Y].dist);
+,STPS[Y].accel_count);
 }
 }
 #endif
