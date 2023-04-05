@@ -29,9 +29,13 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Protocol.h
 =======
 Value=Kinematics.c
+>>>>>>> patch12
+=======
+Value=Stepper.c
 >>>>>>> patch12
 =======
 Value=Steptodistance.c
@@ -143,6 +147,7 @@ File1=DEFINES.pld
 File2=Kinematics.c
 File3=Kinematics.h
 <<<<<<< HEAD
+<<<<<<< HEAD
 File4=Stepper.c
 File5=Stepper.h
 File6=GCODE.c
@@ -156,6 +161,11 @@ File5=Planner.h
 File6=Stepper.c
 File7=Stepper.h
 Count=8
+>>>>>>> patch12
+=======
+File4=Stepper.c
+File5=Stepper.h
+Count=6
 >>>>>>> patch12
 [EEPROM]
 Count=0

@@ -124,7 +124,7 @@ static void SingleAxisStart(long dist,long speed,int axis_No){
 //////////////////////////////////////////////////////////
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed){
 long tempA,tempB,tempC;
-int dirA,dirB;
+//int dirA,dirB;
 
 
     //if absolute mode ~ newxyz = new_position - current_position
@@ -132,7 +132,7 @@ int dirA,dirB;
      //get current position
    tempA = belt_steps(axis_a,axisA);
    tempB = belt_steps(axis_b,axisB);
-#if KineDebug == 4
+#if KineDebug == 3
 while(DMA_IsOn(1));
 dma_printf("\
 tempA:= %l\tabsA:= %l\n\
@@ -143,7 +143,7 @@ tempB:= %l\tabsB:= %l\n"
   //subtract new from current
   tempA = tempA - STPS[axisA].steps_abs_position;
   tempB = tempB - STPS[axisB].steps_abs_position;
-#if KineDebug == 4
+#if KineDebug == 3
 while(DMA_IsOn(1));
 dma_printf("tempAa:= %l\ttempBb:= %l\n"
 ,tempA,tempB);
@@ -188,30 +188,30 @@ dma_printf("tempAa:= %l\ttempBb:= %l\n"
   SV.dA = labs(SV.dA);
   SV.dB = labs(SV.dB);
 
-#if KineDebug == 4
+#if KineDebug == 3
 while(DMA_IsOn(1));
 dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
 #endif
 
   //Start values for Bresenhams
   if(SV.dA >= SV.dB){
-     if(!SV.cir){
+     //if(!SV.cir){
         speed_cntr_Move(tempA,speed,axisA);
         //speed_cntr_Move(tempB,speed,axisB);
         STPS[axisB].step_delay = STPS[axisA].step_delay;
         STPS[axisB].accel_count = STPS[axisA].accel_count;
-     }
+     //}
 
      SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
      STPS[axisA].master = 1;
      STPS[axisB].master = 0;
   }else{
-     if(!SV.cir){
+     //if(!SV.cir){
         speed_cntr_Move(tempB,speed,axisB);
         //speed_cntr_Move(tempA,speed,axisA);
         STPS[axisA].step_delay = STPS[axisB].step_delay;
         STPS[axisA].accel_count = STPS[axisB].accel_count;
-     }
+    // }
 
      SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
      STPS[axisA].master = 0;
@@ -337,11 +337,13 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
   
 #if KineDebug == 3
 while(DMA_IsOn(1));
-dma_printf("[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%l]\r\n\
+dma_printf("\
+[cos_T:=%f : sin_T:=%f]\n\
+[radius:=%f : segments:=%l]\n\
 [angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n\
 [LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
 cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
-,linear_travel,linear_per_segment,theta_per_segment,gc.frequency);
+,linear_travel,linear_per_segment,theta_per_segment,feed_rate);
 #endif
 
   while(i < segments) { // Increment (segments-1)
@@ -373,43 +375,43 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
       nPy += position[axis_1];// += nPy;//arc_target[axis_1];
 
      //if absolute mode use current position + nP...
-      if(gc.absolute_mode){
-        STPS[axis_0].step_delay = feed_rate;
-        STPS[axis_1].step_delay = feed_rate;
-      }
+  // if(gc.absolute_mode){
+     STPS[axis_0].step_delay = feed_rate;
+     STPS[axis_1].step_delay = feed_rate;
+  // }
 
-    // SV.cir = 1;//to indicate DualAxisStep of circle!!!
-     DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);//,xy);
-     
-     while(1){
-     
-    /*  if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
+
+    DualAxisStep(nPx,nPy,axis_0,axis_1,gc.frequency);//,xy);
+
+   while(1){
+     /*
+     if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
          disableOCx();
          limit_error = 1;
-      }*/
-
-        if(!OC5IE_bit && !OC2IE_bit)
-            break;
      }
+     */
+     if(!OC5IE_bit && !OC2IE_bit)
+       break;
+  }
 
     // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
     // if (sys.abort) { return; }
-    if(limit_error)
-       break;
+   /*if(limit_error)
+      break; */
    i++;
 #if KineDebug == 3
-if(!DMA_IsOn(1)){
-dma_printf("[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ]\
-[ position[axis_0]:= %f\tposition[axis_1]:= %f ][feed_rate:= %l]\r\n"
+while(DMA_IsOn(1));
+dma_printf("\
+[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ][ position[axis_0]:= %f\tposition[axis_1]:= %f ][feed_rate:= %l]\r\n"
 ,i,segments,nPx,nPy,position[axis_0],position[axis_1],feed_rate);
-}
+
 #endif
 
   }
   report_status_message(STATUS_OK);
-  //SV.Tog = 1;
-#if DMADebug == 1
-   while(DMA_Busy(1));
+  SV.Tog = 1;
+#if KineDebug == 3
+   while(DMA_IsOn(1));
    dma_printf("\n%s","Arc Finnished");
 #endif
 
