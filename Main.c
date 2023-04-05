@@ -498,6 +498,7 @@ static int Modal_Group_Actions1(int action){
             DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
             break;
        case 15://Circle interpolation
+            SV.cir = 1;//to indicate DualAxisStep of circle!!!
             sys_sync_current_position();
             r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
             break;

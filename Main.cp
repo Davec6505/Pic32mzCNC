@@ -1043,13 +1043,6 @@ static int cntr = 0,a = 0;
 
  if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed){
  LED2 =  0 ;
-
-
- while(DMA_IsOn(1));
- dma_printf("SV.Tog:= %d\tX:= %l\tY:= %l\n"
- ,SV.Tog&0xFF
- ,STPS[X].steps_abs_position
- ,STPS[Y].steps_abs_position);
 #line 173 "C:/Users/Git/Pic32mzCNC/Main.c"
  status_of_gcode ==  0 ;
  report_status_message(status_of_gcode);
@@ -1315,13 +1308,14 @@ static int Modal_Group_Actions1(int action){
  DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
  break;
  case 15:
+ SV.cir = 1;
  sys_sync_current_position();
  r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
  break;
  case  ((( 4 * 4 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
-#line 511 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 512 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(axis_to_home < 2){
 
 
@@ -1380,7 +1374,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 573 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 574 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
  FAIL( 6 );
@@ -1392,7 +1386,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 588 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 589 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
  FAIL( 6 );
 
@@ -1403,6 +1397,6 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 602 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 603 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }

@@ -435,9 +435,14 @@ static int cnt;
      
      if(STPS[axisA].step_count < STPS[axisA].dist)
         Step_Cycle(axisA);
+     else{
+       if(SV.cir)
+          StopAxis(axisA);
+     }
         
      if(!SV.cir)
         Pulse(axisA);
+
 
       if(SV.dif < 0){
           SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
@@ -445,9 +450,12 @@ static int cnt;
           Step_Cycle(axisB);
           SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
       }
-      
-      if(STPS[axisA].run_state == STOP)
+      //axisA is used here to stop axisB otherwise axisB will over step its mark
+      if(STPS[axisA].run_state == STOP | STPS[axisA].step_count >= STPS[axisA].dist){
         StopAxis(axisB);
+        STPS[axisA].run_state = STOP;
+        STPS[axisB].run_state = STOP;
+      }
         
    }else{
      STPS[axisA].step_delay  = STPS[axisB].step_delay;
@@ -455,7 +463,11 @@ static int cnt;
      
      if(STPS[axisB].step_count < STPS[axisB].dist)
        Step_Cycle(axisB);
-       
+     else{
+       if(SV.cir)
+         StopAxis(axisB);
+     }
+     
      if(!SV.cir)
        Pulse(axisB);
        
@@ -466,8 +478,11 @@ static int cnt;
          Step_Cycle(axisA);
          SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
      }
-     
-     if(STPS[axisB].run_state == STOP)
+     //axisB is used here to stop axisA otherwise axisA will over step its mark
+     if(STPS[axisB].run_state == STOP | STPS[axisB].step_count >= STPS[axisB].dist){
         StopAxis(axisA);
+        STPS[axisA].run_state = STOP;
+        STPS[axisB].run_state = STOP;
+     }
    }
 }
