@@ -109,11 +109,11 @@ main
 		SingleAxisStep
 		DualAxisStep
 			belt_steps
-			DMA_IsOn
-			dma_printf
 			Single_Axis_Enable
 			Set_Axisdirection
 			labs
+			DMA_IsOn
+			dma_printf
 			speed_cntr_Move
 			Axis_Interpolate
 				Step_Cycle
@@ -182,7 +182,6 @@ main
 	Modal_Group_Actions7
 		FAIL
 	Modal_Group_Actions12
-	Get_Axis_Enable_States
 	protocol_system_check
 		sys_sync_current_position
 		report_feedback_message
@@ -198,6 +197,7 @@ main
 			dma_printf
 			beltsteps2mm
 			__CC2DW
+	Get_Axis_Enable_States
 	Sample_Gocde_Line
 		Get_Difference
 		DMA0_ReadDstPtr

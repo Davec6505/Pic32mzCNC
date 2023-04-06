@@ -30,7 +30,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Protocol.h
+Value=Planner.c
 =======
 Value=Kinematics.c
 >>>>>>> patch12
@@ -146,27 +146,12 @@ File0=Main.c
 File1=DEFINES.pld
 File2=Kinematics.c
 File3=Kinematics.h
-<<<<<<< HEAD
-<<<<<<< HEAD
 File4=Stepper.c
 File5=Stepper.h
-File6=GCODE.c
-File7=GCODE.h
-File8=Protocol.c
-File9=Protocol.h
-Count=10
-=======
-File4=Planner.c
-File5=Planner.h
-File6=Stepper.c
-File7=Stepper.h
-Count=8
->>>>>>> patch12
-=======
-File4=Stepper.c
-File5=Stepper.h
-Count=6
->>>>>>> patch12
+File6=Settings.h
+File7=Planner.h
+File8=Planner.c
+Count=9
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

@@ -102,7 +102,7 @@ static int cntr = 0,a = 0;
         case 0:FAIL(STATUS_OK);break;
         case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
              modal_action = Modal_Group_Actions0(Get_non_modalword());
-             modal_group = Rst_modalgroup();
+             modal_action = modal_group = Rst_modalgroup();
              report_status_message(STATUS_OK);
              break;
         case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
@@ -157,25 +157,6 @@ static int cntr = 0,a = 0;
      }
    }
    
-   if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed){
-     LED2 = false;
-     //debug STATUS_OK response after moves complete
-     #if MainDebug == 12
-     while(DMA_IsOn(1));
-     dma_printf("SV.Tog:= %d\tX:= %l\tY:= %l\n"
-                ,SV.Tog&0xFF
-                ,STPS[X].steps_abs_position
-                ,STPS[Y].steps_abs_position);
-                /*,STPS[X].mm_position
-                ,STPS[Y].mm_position);*/
-     #endif
-     
-     status_of_gcode == STATUS_OK;
-     report_status_message(status_of_gcode);
-     //reset SV.Tog if an error has occured prior to move finishing
-     SV.Tog = 0;
-   }
-   
 //Debug for stepper report if not connected to unit
 #if StepperDebug == 1
 if(!SV.Tog){
@@ -198,17 +179,20 @@ dif:= %l\t%l\t%l\t%d\t%l\t%l\n"
    
   //run at end of every scan
   protocol_execute_runtime();
-   
+
+  //respond ok if movement is finished
+  if(!Get_Axis_Enable_States() && SV.Tog > 0 && !SV.homed){
+     LED2 = false;
+     //debug STATUS_OK response after moves complete
+     status_of_gcode == STATUS_OK;
+     report_status_message(status_of_gcode);
+     //reset SV.Tog if an error has occured prior to move finishing
+     SV.Tog = 0;
+  }
+
   //check ring buffer for data transfer
   status_of_gcode = Sample_Gocde_Line();
   //status_of_gcode = Sample_Ringbuffer();
-  
-  #if MainDebug == 11
-  if(status_of_gcode > 0){
-   while(DMA_IsOn(1));
-   dma_printf("status_of_gcode:= %d\n",status_of_gcode);
-  }
-  #endif
 
   //code execution confirmation led on clicker2 board
   #ifdef LED_STATUS
@@ -261,6 +245,7 @@ float a_val;
               i++;
              }
            }
+          // SV.Tog = 1;
            LED2 = false;
           break;
      case 4:  //NON_MODAL_SET_COORDINATE_DATA
@@ -541,6 +526,7 @@ static int Modal_Group_Actions1(int action){
               
               //return the number of axis completed
               sys.state = STATE_IDLE;
+              SV.Tog = 1;
               SV.homed = false;
             }
             break;

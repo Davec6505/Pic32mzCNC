@@ -56,8 +56,8 @@ typedef struct genVars{
   char  homed: 1;         //busy homing
   char  run_circle: 1;        //circle in motion indicator
   char  cir: 1;
+  char  Tog;
   int   Single_Dual;
-  int   Tog;
   int   AxisNo;
   int   dirx;
   int   diry;

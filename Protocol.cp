@@ -425,8 +425,8 @@ typedef struct genVars{
  char homed: 1;
  char run_circle: 1;
  char cir: 1;
+ char Tog;
  int Single_Dual;
- int Tog;
  int AxisNo;
  int dirx;
  int diry;

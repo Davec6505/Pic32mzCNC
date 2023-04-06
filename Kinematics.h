@@ -164,4 +164,7 @@ static void Home_Axis(double distance,long speed,int axis);
 static void Inv_Home_Axis(double distance,long speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
+
+
+
 #endif

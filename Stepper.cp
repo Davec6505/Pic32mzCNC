@@ -380,8 +380,8 @@ typedef struct genVars{
  char homed: 1;
  char run_circle: 1;
  char cir: 1;
+ char Tog;
  int Single_Dual;
- int Tog;
  int AxisNo;
  int dirx;
  int diry;
@@ -1110,7 +1110,6 @@ void StopAxis(int axis){
  default : break;
  }
  STPS[axis].stopAxis = 1;
- SV.Tog = 1;
 }
 
 
@@ -1193,7 +1192,7 @@ static int Pulse(int axis_No){
  case  0 :
  STPS[axis_No].run_state =  0 ;
  StopAxis(axis_No);
- SV.Tog = 1;
+  (SV.Tog |= (1 << axis_No) ) ;
  break;
  case  1 :
 
@@ -1331,7 +1330,7 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 
 void SingleStepAxis(int axis){
-#line 413 "C:/Users/Git/Pic32mzCNC/Stepper.c"
+#line 412 "C:/Users/Git/Pic32mzCNC/Stepper.c"
  Step_Cycle(axis);
  Pulse(axis);
 
@@ -1377,6 +1376,7 @@ static int cnt;
  StopAxis(axisB);
  STPS[axisA].run_state =  0 ;
  STPS[axisB].run_state =  0 ;
+
  }
 
  }else{
@@ -1405,6 +1405,7 @@ static int cnt;
  StopAxis(axisA);
  STPS[axisA].run_state =  0 ;
  STPS[axisB].run_state =  0 ;
+
  }
  }
 }

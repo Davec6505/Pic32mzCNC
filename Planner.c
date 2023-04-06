@@ -333,8 +333,7 @@ int axis_plane_a,axis_plane_b;
 #if KineDebug == 3
 while(DMA_IsOn(1));
 dma_printf("\n\
-[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f]\n\
-[tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
+[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
 ,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
 #endif
         //  gc.plane_axis_2 =1;

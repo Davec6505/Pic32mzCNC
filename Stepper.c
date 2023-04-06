@@ -184,7 +184,6 @@ void StopAxis(int axis){
    default : break;
   }
   STPS[axis].stopAxis = 1;
-  SV.Tog = 1;
 }
 
 
@@ -267,7 +266,7 @@ static int Pulse(int axis_No){
     case STOP:
         STPS[axis_No].run_state  = STOP;
         StopAxis(axis_No);
-        SV.Tog = 1;
+        bit_true(SV.Tog,bit(axis_No));
       break;
     case ACCEL:
       //taylor series calculation for acc
@@ -405,14 +404,14 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 ////////////////////////////////////////////////////////
 
 void SingleStepAxis(int axis){
-  /*  if(STPS[axis].step_count >= STPS[axis].dist){
+   /* if(STPS[axis].step_count >= STPS[axis].dist){
       StopAxis(axis);
+      SV.Tog = 1;
       return;
     } */
-  //  else{
       Step_Cycle(axis);
       Pulse(axis);
-  //  }
+
 }
 
 ////////////////////////////////////////////////////////
@@ -455,6 +454,7 @@ static int cnt;
         StopAxis(axisB);
         STPS[axisA].run_state = STOP;
         STPS[axisB].run_state = STOP;
+        //bit_true(SV.Tog,bit(axisB));
       }
         
    }else{
@@ -483,6 +483,7 @@ static int cnt;
         StopAxis(axisA);
         STPS[axisA].run_state = STOP;
         STPS[axisB].run_state = STOP;
+        //bit_true(SV.Tog,bit(axisA));
      }
    }
 }

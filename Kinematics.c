@@ -91,7 +91,10 @@ dma_printf("cur_pos:= %l\tabsxyz:= %f\tnewxyz:= %f\tG90:= %d\n"
     
     //subtract new from current
     tempA = tempA - STPS[axis_No].steps_abs_position;
-
+    if(tempA== 0){
+       SV.Tog = 1;
+       return;
+    }
   }else{
     tempA = belt_steps(newxyz,axis_No);
   }
@@ -132,7 +135,8 @@ long tempA,tempB,tempC;
      //get current position
    tempA = belt_steps(axis_a,axisA);
    tempB = belt_steps(axis_b,axisB);
-#if KineDebug == 3
+   
+#if KineDebug == 4
 while(DMA_IsOn(1));
 dma_printf("\
 tempA:= %l\tabsA:= %l\n\
@@ -143,7 +147,7 @@ tempB:= %l\tabsB:= %l\n"
   //subtract new from current
   tempA = tempA - STPS[axisA].steps_abs_position;
   tempB = tempB - STPS[axisB].steps_abs_position;
-#if KineDebug == 3
+#if KineDebug == 4
 while(DMA_IsOn(1));
 dma_printf("tempAa:= %l\ttempBb:= %l\n"
 ,tempA,tempB);
@@ -194,6 +198,11 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
 #endif
 
   //Start values for Bresenhams
+  if(SV.dA == 0 && SV.dB == 0){
+    SV.Tog = 1; //set this to respond with ok
+    return;
+  }
+  
   if(SV.dA >= SV.dB){
      //if(!SV.cir){
         speed_cntr_Move(tempA,speed,axisA);
@@ -262,7 +271,7 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
 void mc_arc(float *position, float *target, float *offset, int axis_0
            , int axis_1,int axis_linear, long feed_rate, char invert_feed_rate
            , float radius, char isclockwise){
- long tempA,tempB;
+ float arc_target[3] = {0};
  float center_axis0            = position[axis_0] + offset[axis_0];
  float center_axis1            = position[axis_1] + offset[axis_1];
  float linear_travel           = target[axis_linear] - position[axis_linear];
@@ -275,20 +284,23 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  float angular_travel          = 0.00;
  float mm_of_travel            = 0.00;
  float rads                    = 0.00;
- long  segments                = 0;
+ float segments                = 0.00;
  float cos_T                   = 0.00;
  float sin_T                   = 0.00;
- float arc_target[3];
- float sin_Ti;
- float cos_Ti;
- float r_axisi;
- float nPx,nPy;
- long i                         = 0;
- int count = 0;
- char n_arc_correction = 3; //to be sorted int global struct???
- char limit_error = 0;
+ float sin_Ti                  = 0.00;
+ float cos_Ti                  = 0.00;
+ float r_axisi                 = 0.00;
+ float nPx                     = 0.00;
+ float nPy                     = 0.00;
+ float i                       = 0.00;
+ int count                     = 0;
+ char n_arc_correction         = 3; //to be sorted into global struct???
+ char limit_error              = 0;
 
+  //axis_linear should be Z for cutting spirals or screw threads
   arc_target[axis_linear] = position[axis_linear];
+  
+  //deg * (Pi/180) ??
   rads = radius * deg2rad;
   
   // CCW angle between position and target from circle center. Only one atan2() trig computation required.
@@ -310,7 +322,7 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
   mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
   if (mm_of_travel == 0.0) { return; }
   
-  segments = (long)floor(mm_of_travel/DEFAULT_MM_PER_ARC_SEGMENT);
+  segments = floor(mm_of_travel/DEFAULT_MM_PER_ARC_SEGMENT);
   
   // Multiply inverse feed_rate to compensate for the fact that this movement is approximated
   // by a number of discrete segments. The inverse feed_rate should be correct for the sum of
@@ -319,27 +331,28 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
       feed_rate *= segments;
       
   // angular_travel = angular_travel * rad2deg;
-   theta_per_segment = angular_travel/(float)segments;
+   theta_per_segment = angular_travel/segments;
    
    //linear_per_segmentis the down feed of the 3 axis
    //In most cases this will be 0 for 2D plane unless
    //spiral pocket cutting is needed
-   linear_per_segment = linear_travel/(float)segments;
+   linear_per_segment = linear_travel/segments;
    
   // Vector rotation matrix values
    cos_T = 1-0.5*theta_per_segment*theta_per_segment; // Small angle approximation
    sin_T = theta_per_segment;
-  // Initialize the linear axis
+   
+  // Initialize the linear axis to current posxition
   nPx = arc_target[axis_0] = position[axis_0];
   nPy = arc_target[axis_1] = position[axis_1];
   OC5IE_bit = OC2IE_bit = 0;
-  i = 0;
+  i = 0.0;
   
 #if KineDebug == 3
 while(DMA_IsOn(1));
 dma_printf("\
 [cos_T:=%f : sin_T:=%f]\n\
-[radius:=%f : segments:=%l]\n\
+[radius:=%f : segments:=%f]\n\
 [angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n\
 [LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
 cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
@@ -371,9 +384,10 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
       nPx =  arc_target[axis_0] - position[axis_0];
       nPy =  arc_target[axis_1] - position[axis_1];
       
-      nPx += position[axis_0];// += nPx;//arc_target[axis_0];
-      nPy += position[axis_1];// += nPy;//arc_target[axis_1];
-
+      if(gc.absolute_mode){
+        nPx += position[axis_0];// += nPx;//arc_target[axis_0];
+        nPy += position[axis_1];// += nPy;//arc_target[axis_1];
+      }
      //if absolute mode use current position + nP...
   // if(gc.absolute_mode){
      STPS[axis_0].step_delay = feed_rate;
@@ -398,7 +412,7 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
     // if (sys.abort) { return; }
    /*if(limit_error)
       break; */
-   i++;
+   i+=1.00;
 #if KineDebug == 3
 while(DMA_IsOn(1));
 dma_printf("\
@@ -633,3 +647,6 @@ void mc_reset(){
     }
   }
 }
+
+
+

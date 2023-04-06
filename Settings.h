@@ -55,8 +55,8 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_FEEDRATE               250.00
 #define DEFAULT_ACCELERATION           (3.50*secXsec) // 10 mm/min^2
 #define DEFAULT_JUNCTION_DEVIATION     0.05 // mm
-#define DEFAULT_HOMING_RAPID_FEEDRATE  100.00 // mm/min
-#define DEFAULT_HOMING_FEEDRATE        700.00 // mm/min
+#define DEFAULT_HOMING_RAPID_FEEDRATE  1000.00 // mm/min
+#define DEFAULT_HOMING_FEEDRATE        500.00 // mm/min
 #define DEFAULT_HOMING_DEBOUNCE_DELAY  100 // msec (0-65k)
 #define DEFAULT_HOMING_PULLOFF         1.00 // mm
 #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)

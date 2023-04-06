@@ -251,8 +251,8 @@ typedef struct genVars{
  char homed: 1;
  char run_circle: 1;
  char cir: 1;
+ char Tog;
  int Single_Dual;
- int Tog;
  int AxisNo;
  int dirx;
  int diry;
@@ -998,10 +998,10 @@ int retry_flash_write = 0;
  settings.default_seek_rate =  500.00 ;
  buffA[ 0x48 ] = flt2ulong(settings.default_seek_rate);
 
- settings.homing_feed_rate =  700.00 ;
+ settings.homing_feed_rate =  500.00 ;
  buffA[ 0x49 ] = flt2ulong(settings.homing_feed_rate);
 
- settings.homing_seek_rate =  100.00  ;
+ settings.homing_seek_rate =  1000.00  ;
  buffA[ 0x4A ] = flt2ulong(settings.homing_seek_rate);
 
  settings.homing_pulloff =  1.00 ;

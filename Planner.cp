@@ -879,8 +879,8 @@ typedef struct genVars{
  char homed: 1;
  char run_circle: 1;
  char cir: 1;
+ char Tog;
  int Single_Dual;
- int Tog;
  int AxisNo;
  int dirx;
  int diry;
@@ -1125,8 +1125,8 @@ int axis_plane_a,axis_plane_b;
  if (dir ==  0 ) { isclockwise =  1 ; }
 
 while(DMA_IsOn(1));
-#line 337 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("\n[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f]\n[tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
+#line 336 "C:/Users/Git/Pic32mzCNC/Planner.c"
+dma_printf("\n[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
 ,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
 
 
@@ -1148,7 +1148,7 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-#line 365 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 364 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 
 
@@ -1157,7 +1157,7 @@ void plan_reset_absolute_position(){
  for(i=0;i< 4 ;i++)
  STPS[X].steps_abs_position = 0;
 }
-#line 389 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 388 "C:/Users/Git/Pic32mzCNC/Planner.c"
 long sqrt_(long x){
 
  volatile unsigned long xr;
