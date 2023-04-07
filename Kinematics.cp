@@ -1132,11 +1132,11 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  float arc_target[3] = {0};
  float center_axis0 = position[axis_0] + offset[axis_0];
  float center_axis1 = position[axis_1] + offset[axis_1];
- float linear_travel = target[axis_linear] - position[axis_linear];
  float r_axis0 = -offset[axis_0];
  float r_axis1 = -offset[axis_1];
  float rt_axis0 = target[axis_0] - center_axis0;
  float rt_axis1 = target[axis_1] - center_axis1;
+ float linear_travel = target[axis_linear] - position[axis_linear];
  float theta_per_segment = 0.00;
  float linear_per_segment = 0.00;
  float angular_travel = 0.00;
@@ -1152,14 +1152,21 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  float nPy = 0.00;
  float i = 0.00;
  int count = 0;
- char n_arc_correction = 3;
  char limit_error = 0;
 
 
  arc_target[axis_linear] = position[axis_linear];
 
 
- rads = radius *  ( 3.1416 /180.00) ;
+
+
+ while(DMA_IsOn(1));
+#line 311 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ dma_printf("[posx:=%f : posy:=%f]\n[tarx:=%f : tary:=%f]\n[offx:= %f : offy:= %f]\r\n[r_axis0:= %f : r_axis1:= %f]\r\n[rt_axis0:= %f : rt_axis1:= %f]\r\n\n",
+ position[axis_0],position[axis_1]
+ ,target[axis_0],target[axis_1]
+ ,offset[axis_0],offset[axis_1]
+ ,r_axis0,r_axis1,rt_axis0,rt_axis1);
 
 
 
@@ -1169,18 +1176,18 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  if(isclockwise) {
 
  if (angular_travel >= 0)
- angular_travel -=  (2.00* 3.1416 ) ;
- else {
+ angular_travel -=  (2.00* 3.141592653589793238462643 ) ;
+ }else {
  if(angular_travel <= 0)
- angular_travel +=  (2.00* 3.1416 ) ;
+ angular_travel +=  (2.00* 3.141592653589793238462643 ) ;
  }
- }
+
 
 
  mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
  if (mm_of_travel == 0.0) { return; }
 
- segments = floor(mm_of_travel/ 0.10 );
+ segments = floor(mm_of_travel/settings.mm_per_arc_segment);
 
 
 
@@ -1207,16 +1214,17 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
  i = 0.0;
 
 
-while(DMA_IsOn(1));
-#line 357 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-dma_printf("[cos_T:=%f : sin_T:=%f]\n[radius:=%f : segments:=%f]\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n[LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
-cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
-,linear_travel,linear_per_segment,theta_per_segment,feed_rate);
+ while(DMA_IsOn(1));
+#line 368 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ dma_printf("[cos_T:=%f : sin_T:=%f]\n[radius:=%f : segments:=%f]\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n[LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
+ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
+ ,linear_travel,linear_per_segment,theta_per_segment,feed_rate);
 
 
- while(i < segments) {
+ for (i = 1; i<segments; i+=1.00) {
 
- if (count < n_arc_correction) {
+
+ if (count < settings.n_arc_correction) {
 
  r_axisi = r_axis0*sin_T + r_axis1*cos_T;
  r_axis0 = r_axis0*cos_T - r_axis1*sin_T;
@@ -1253,23 +1261,16 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
  DualAxisStep(nPx,nPy,axis_0,axis_1,gc.frequency);
 
  while(1){
-#line 407 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 419 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(!OC5IE_bit && !OC2IE_bit)
  break;
  }
-#line 415 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
- i+=1.00;
-
-while(DMA_IsOn(1));
-#line 419 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-dma_printf("[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ][ position[axis_0]:= %f\tposition[axis_1]:= %f ][feed_rate:= %l]\r\n"
-,i,segments,nPx,nPy,position[axis_0],position[axis_1],feed_rate);
-
-
-
+#line 437 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
- report_status_message( 0 );
- SV.Tog = 1;
+ SV.cir = 0;
+
+
+
 
  while(DMA_IsOn(1));
  dma_printf("\n%s","Arc Finnished");
@@ -1279,8 +1280,8 @@ dma_printf("[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ][ position[axis_0]:= %f\tp
 
 
 
-float hypot(float angular_travel, float linear_travel){
- return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
+float hypot(float x, float y){
+ return(sqrt((x*x) + (y*y)));
 }
 
 
@@ -1292,7 +1293,7 @@ float hypot(float angular_travel, float linear_travel){
 int GetAxisDirection(long mm2move){
  return(mm2move < 0)?  -1 : 1  ;
 }
-#line 460 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 475 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 int Home(int axis){
 static long speed = 0;
 
@@ -1329,7 +1330,7 @@ static long speed = 0;
 
 
  Home_Axis(-500.0,speed,axis);
-#line 504 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 519 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  return axis;
  }
 
@@ -1345,7 +1346,7 @@ static long speed = 0;
 
 HOMED:
  speed = settings.homing_feed_rate;
-#line 527 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 542 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
 
  if( ((homing[axis].home_state & (1 << 3) ) == 0) ){
@@ -1369,11 +1370,11 @@ HOMED:
 
 
  homing[axis].home_cnt = 0;
-#line 561 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 576 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  return axis;
  }
  }
-#line 568 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 583 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
 
@@ -1390,7 +1391,7 @@ HOMED:
   (homing[axis].home_state &= ~ (1 << 3 ) ) ;
  Home_Axis(-290.00,50,axis);
  }
-#line 592 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 607 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
  return axis;
@@ -1401,7 +1402,7 @@ static void Home_Axis(double distance,long speed,int axis){
 
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
-#line 611 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 626 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis].mmToTravel = belt_steps(distance,axis);
  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }

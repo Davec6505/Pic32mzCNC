@@ -182,11 +182,11 @@ JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612436)(GP)
 ;Globals.c,98 :: 		settings.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
-LUI	R2, 15820
+LUI	R2, 15948
 ORI	R2, R2, 52429
 SW	R2, Offset(_settings+36)(GP)
 ;Globals.c,99 :: 		buffA[MM_ARC_SEG_OFFSET]    =  flt2ulong(settings.mm_per_arc_segment);
-LUI	R2, 15820
+LUI	R2, 15948
 ORI	R2, R2, 52429
 MTC1	R2, S12
 JAL	_flt2ulong+0

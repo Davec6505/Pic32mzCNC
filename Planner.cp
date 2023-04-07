@@ -958,7 +958,7 @@ int i;
 
  for(i=0;i< 4 ;i++){
 
- alpha[i] = ( (2.00* 3.1416 )  / settings.steps_per_mm[i]);
+ alpha[i] = ( (2.00* 3.141592653589793238462643 )  / settings.steps_per_mm[i]);
 
  a_t_x100[i] = lround(alpha[i] *  781250  * 100.00);
 

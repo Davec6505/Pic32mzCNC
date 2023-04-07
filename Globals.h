@@ -36,8 +36,8 @@
 #define INCH_PER_MM (0.0393701)
 
 //Circle defines and consts
-#define  Pi         3.141593
-#define  M_Pi       3.1416
+#define  Pi         3.1415926535897932384626433832795
+#define  M_Pi       3.141592653589793238462643
 #define  rad2deg    (180.00/M_Pi)
 #define  deg2rad    (M_Pi/180.00)
 

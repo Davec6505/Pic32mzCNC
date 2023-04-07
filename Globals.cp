@@ -1007,7 +1007,7 @@ int retry_flash_write = 0;
  settings.homing_pulloff =  1.00 ;
  buffA[ 0x4B ] = flt2ulong(settings.homing_pulloff);
 
- settings.mm_per_arc_segment =  0.10 ;
+ settings.mm_per_arc_segment =  0.20 ;
  buffA[ 0x4C ] = flt2ulong(settings.mm_per_arc_segment);
 
  settings.acceleration =  (3.50* (60.00*60.00) ) ;

@@ -114,7 +114,7 @@ _calcSteps:
 ;Steptodistance.c,68 :: 		long calcSteps(double mmsToMove,  double Dia,int axis){
 ;Steptodistance.c,73 :: 		circ = Dia*Pi;
 LUI	R2, 16457
-ORI	R2, R2, 4060
+ORI	R2, R2, 4059
 MTC1	R2, S0
 MUL.S 	S0, S13, S0
 ;Steptodistance.c,77 :: 		cirDivision = mmsToMove / circ;

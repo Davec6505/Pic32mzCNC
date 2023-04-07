@@ -30,7 +30,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Planner.c
+Value=Main.c
 =======
 Value=Kinematics.c
 >>>>>>> patch12
@@ -151,7 +151,9 @@ File5=Stepper.h
 File6=Settings.h
 File7=Planner.h
 File8=Planner.c
-Count=9
+File9=Globals.c
+File10=Globals.h
+Count=11
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -219,9 +221,8 @@ File7=Sprintl
 File8=Conversions
 File9=C_Math
 File10=FFT
-File11=TwiddleFactors
-File12=MemManager
-Count=13
+File11=MemManager
+Count=12
 [INTERRUPT_DEFS]
 EBASE=9FC01000
 VECTOR_SPACEING=512

@@ -993,7 +993,7 @@ double circ,cirDivision,stepsToMove;
 
 
 
- circ = Dia* 3.141593 ;
+ circ = Dia* 3.1415926535897932384626433832795 ;
 
 
 

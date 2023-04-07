@@ -50,7 +50,7 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_B_STEPS_PER_MM         186.750
 #define DEFAULT_C_STEPS_PER_MM         186.750
 #define DEFAUT_P_USEC                  100
-#define DEFAULT_MM_PER_ARC_SEGMENT     0.10
+#define DEFAULT_MM_PER_ARC_SEGMENT     0.20
 #define DEFAULT_RAPID_FEEDRATE         500.00 // mm/min
 #define DEFAULT_FEEDRATE               250.00
 #define DEFAULT_ACCELERATION           (3.50*secXsec) // 10 mm/min^2
