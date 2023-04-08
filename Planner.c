@@ -328,8 +328,8 @@ int axis_plane_a,axis_plane_b;
        r = hypot(i, j); // Compute arc radius for mc_arc
    }
   // Set clockwise/counter-clockwise sign for mc_arc computations
-  isclockwise = false;
-  if (dir == CW) { isclockwise = true; }
+  isclockwise = 0;
+  if (dir == CW) { isclockwise = 1; }
 #if KineDebug == 3
 while(DMA_IsOn(1));
 dma_printf("\n\

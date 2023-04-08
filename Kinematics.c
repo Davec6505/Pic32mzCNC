@@ -192,7 +192,7 @@ long tempA,tempB,tempC;
   SV.dA = labs(SV.dA);
   SV.dB = labs(SV.dB);
 
-#if KineDebug == 3
+#if KineDebug == 4
 while(DMA_IsOn(1));
 dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
 #endif
@@ -271,63 +271,64 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
 void mc_arc(float *position, float *target, float *offset, int axis_0
            , int axis_1,int axis_linear, long feed_rate, char invert_feed_rate
            , float radius, char isclockwise){
- float arc_target[3] = {0};
- float center_axis0            = position[axis_0] + offset[axis_0];
- float center_axis1            = position[axis_1] + offset[axis_1];
- float r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
- float r_axis1                 = -offset[axis_1];
- float rt_axis0                = target[axis_0] - center_axis0;
- float rt_axis1                = target[axis_1] - center_axis1;
- float linear_travel           = target[axis_linear] - position[axis_linear];
- float theta_per_segment       = 0.00;
- float linear_per_segment      = 0.00;
- float angular_travel          = 0.00;
- float mm_of_travel            = 0.00;
- float rads                    = 0.00;
- float segments                = 0.00;
- float cos_T                   = 0.00;
- float sin_T                   = 0.00;
- float sin_Ti                  = 0.00;
- float cos_Ti                  = 0.00;
- float r_axisi                 = 0.00;
- float nPx                     = 0.00;
- float nPy                     = 0.00;
- float i                       = 0.00;
- int count                     = 0;
- char limit_error              = 0;
+float arc_target[3] = {0};
+float center_axis0,center_axis1, r_axis0 , r_axis1 , rt_axis0 , rt_axis1 , linear_travel;
+float theta_per_segment, linear_per_segment , angular_travel , mm_of_travel , segments;
+float cos_T,sin_T,sin_Ti,cos_Ti;
+float r_axisi,nPx,nPy,i,x,y;
+int count = 0;
+char limit_error = 0;
 
+ center_axis0            = position[axis_0] + offset[axis_0];
+ center_axis1            = position[axis_1] + offset[axis_1];
+ r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
+ r_axis1                 = -offset[axis_1];
+ rt_axis0                = target[axis_0] - center_axis0;
+ rt_axis1                = target[axis_1] - center_axis1;
+ linear_travel           = target[axis_linear] - position[axis_linear];
   //axis_linear should be Z for cutting spirals or screw threads
-  arc_target[axis_linear] = position[axis_linear];
+ arc_target[axis_linear] = position[axis_linear];
   
   //deg * (Pi/180) ??
  // rads = radius * deg2rad;
-  #if KineDebug == 3
-  while(DMA_IsOn(1));
-  dma_printf("\
-[posx:=%f : posy:=%f]\n\
-[tarx:=%f : tary:=%f]\n\
-[offx:= %f : offy:= %f]\r\n\
-[r_axis0:= %f : r_axis1:= %f]\r\n\
-[rt_axis0:= %f : rt_axis1:= %f]\r\n\n",
-  position[axis_0],position[axis_1]
-  ,target[axis_0],target[axis_1]
-  ,offset[axis_0],offset[axis_1]
-  ,r_axis0,r_axis1,rt_axis0,rt_axis1);
-  #endif
+
   // CCW angle between position and target from circle center. Only one atan2() trig computation required.
   // atan2((I*-J' - I'*J ),(I*J + I'-J'))   ~ arctan Vector opp/Vector adj
-  angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0, r_axis0*rt_axis0+r_axis1*rt_axis1);
+  x = r_axis0*rt_axis1-r_axis1*rt_axis0;
+  y = r_axis0*rt_axis0+r_axis1*rt_axis1;
+  //MikroC atan2 is not as library describes it?? ansic states
+  //y/x  mikroc states x/y. avr example as below does not work in MikroC
+  //needed to invert this commented out atan2 ??? MikroC forum said
+  //it would be fixed!! Ha! ha! ha!!!! typical MikroC.
+  /*angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0,
+                         r_axis0*rt_axis0+r_axis1*rt_axis1);*/
+  //atan2 as ansic states but not as grbl code would have it!!
+  angular_travel = atan2(y,x);
   
   // Correct atan2 output per direction
-  if(isclockwise) {
-    // 2*Pi = 360deg in radians
+  if(isclockwise > 0) {
     if (angular_travel >= 0) 
          angular_travel -= PIx2;
   }else {
     if(angular_travel <= 0)
         angular_travel += PIx2;
   }
-
+  
+#if KineDebug == 3
+while(DMA_IsOn(1));
+dma_printf("\
+[posx:=%f : posy:=%f]\n\
+[tarx:=%f : tary:=%f]\n\
+[offx:= %f : offy:= %f]\r\n\
+[cenx:= %f : ceny:= %f]\r\n\
+[r_axis0:= %f : r_axis1:= %f]\r\n\
+[rt_axis0:= %f : rt_axis1:= %f]\r\n\n",
+  position[axis_0],position[axis_1]
+  ,target[axis_0],target[axis_1]
+  ,offset[axis_0],offset[axis_1]
+  ,center_axis0,center_axis1
+  ,r_axis0,r_axis1,rt_axis0,rt_axis1);
+#endif
 
   // Check this with calculator
   mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
@@ -406,9 +407,27 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
      STPS[axis_1].step_delay = feed_rate;
   // }
 
-
+    //to ensure the axis does not over step during an
+    //arc, there is a correction interpolation after
+    //arc incrament to get axis into target position,
+    // if axis is ahead then it would have to reversr
+    //this prevents the reversal of wither axis.
+    if(position[axis_0] > target[axis_0]){
+      if(nPx <= target[axis_0]){nPx = target[axis_0];}
+    }else{
+      if(nPx >= target[axis_0]){nPx = target[axis_0];}
+    }
+    
+    if(position[axis_1] > target[axis_1]){
+      if(nPy <= target[axis_1]){nPy = target[axis_1];}
+    }else {
+      if(nPy >= target[axis_1]){nPy = target[axis_1];}
+    }
+    //interpolate the difference
     DualAxisStep(nPx,nPy,axis_0,axis_1,gc.frequency);//,xy);
-
+   //wait here while axis completes its move can posibly
+   //check limits and estops as well as send out status report
+   // will want ot unblockthis nce we have a complete working model
    while(1){
      /*
      if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
@@ -418,30 +437,31 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
      */
      if(!OC5IE_bit && !OC2IE_bit)
        break;
-  }
+   }
 
     // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
     // if (sys.abort) { return; }
    /*if(limit_error)
       break; */
-    #if KineDebug == 4
-    while(DMA_IsOn(1));
-    dma_printf("\
+#if KineDebug == 3
+while(DMA_IsOn(1));
+dma_printf("\
 [ i:= %d\tseg:= %d ]\n\
 [ nPx:= %f\tnPy:= %f ]\n\
-[ tar[axis_0]:= %f\ttar[axis_1]:= %f\tfeed_rate:= %l]\r\n"
-    ,i,segments,nPx,nPy,target[axis_0],target[axis_1],feed_rate);
-
-    #endif
+[ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n"
+,i,segments,nPx,nPy,target[axis_0],target[axis_1]);
+#endif
 
   }
-  SV.cir = 0; //end of arc get to correct target
-
+  //end of arc get to correct target
+  SV.cir = 0;
+  //ensure axis are in position when arc is complete
+  DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,gc.frequency);
   //report_status_message(STATUS_OK);
-  //SV.Tog = 1;
+ // SV.Tog = 1;
   #if KineDebug == 3
      while(DMA_IsOn(1));
-     dma_printf("\n%s","Arc Finnished");
+     dma_printf("\n%s\n","Arc Finnished");
   #endif
 
 }

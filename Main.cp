@@ -1316,12 +1316,11 @@ static int Modal_Group_Actions1(int action){
  SV.cir = 1;
  sys_sync_current_position();
  r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
- DualAxisStep(gc.next_position[X],gc.next_position[Y],X,Y,gc.frequency);
  break;
  case  ((( 4 * 4 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
-#line 498 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 497 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(axis_to_home < 2){
 
 
@@ -1381,7 +1380,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 561 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 560 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
  FAIL( 6 );
@@ -1393,7 +1392,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 576 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 575 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
  FAIL( 6 );
 
@@ -1404,6 +1403,6 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 590 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 589 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }

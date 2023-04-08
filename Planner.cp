@@ -1121,16 +1121,9 @@ int axis_plane_a,axis_plane_b;
  r = hypot(i, j);
  }
 
- isclockwise =  0 ;
- if (dir ==  0 ) { isclockwise =  1 ; }
-
-while(DMA_IsOn(1));
-#line 336 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("\n[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
-,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
-
-
-
+ isclockwise = 0;
+ if (dir ==  0 ) { isclockwise = 1; }
+#line 341 "C:/Users/Git/Pic32mzCNC/Planner.c"
  mc_arc(position, target, offset, axis_A, axis_B, Z,
  gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
 }

@@ -112,8 +112,6 @@ main
 			Single_Axis_Enable
 			Set_Axisdirection
 			labs
-			DMA_IsOn
-			dma_printf
 			speed_cntr_Move
 			Axis_Interpolate
 				Step_Cycle
@@ -121,30 +119,27 @@ main
 				Pulse
 					StopAxis
 					AccDec
-			__CC2DW
 		sys_sync_current_position
 			plan_set_current_position
 				beltsteps2mm
 					fround
 		r_or_ijk
+			__CC2DW
 			sqrt
 				frexp
 				ldexp
 			hypot
 				sqrt
 			Get_motionmode
-			DMA_IsOn
-			dma_printf
 			mc_arc
-				DMA_IsOn
-				dma_printf
+				__CC2DW
 				atan2
 					fabs
 					atan
 						fabs
 						eval_poly
-				hypot
 				fabs
+				hypot
 				floor
 				cos
 					sin
@@ -152,8 +147,6 @@ main
 						eval_poly
 				sin
 				DualAxisStep
-				__CC2DW
-			__CC2DW
 		Home
 			Rst_FP
 			Rst_FN

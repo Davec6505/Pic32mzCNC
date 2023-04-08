@@ -30,7 +30,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Main.c
+Value=GCODE.c
 =======
 Value=Kinematics.c
 >>>>>>> patch12
@@ -148,12 +148,10 @@ File2=Kinematics.c
 File3=Kinematics.h
 File4=Stepper.c
 File5=Stepper.h
-File6=Settings.h
-File7=Planner.h
-File8=Planner.c
-File9=Globals.c
-File10=Globals.h
-Count=11
+File6=Planner.h
+File7=Planner.c
+File8=GCODE.c
+Count=9
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -220,9 +218,8 @@ File6=Sprinti
 File7=Sprintl
 File8=Conversions
 File9=C_Math
-File10=FFT
-File11=MemManager
-Count=12
+File10=MemManager
+Count=11
 [INTERRUPT_DEFS]
 EBASE=9FC01000
 VECTOR_SPACEING=512
