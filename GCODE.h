@@ -178,7 +178,7 @@ typedef struct {
   int L;                                  //L2 tells the G10 we’re setting standard work offsets
   long frequency;                // Speed expressed as Frequency of pulses
   float feed_rate;               // Millimeters/min
-//  float seek_rate;                      // Millimeters/min. Will be used in v0.9 when axis independence is installed
+  float inverse_feedrate;        //
   float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
   float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine
                                           // position in mm. Loaded from EEPROM when called.

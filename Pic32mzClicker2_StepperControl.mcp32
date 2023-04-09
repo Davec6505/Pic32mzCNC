@@ -30,7 +30,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=GCODE.c
+Value=Planner.h
 =======
 Value=Kinematics.c
 >>>>>>> patch12
@@ -144,14 +144,17 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 File1=DEFINES.pld
-File2=Kinematics.c
-File3=Kinematics.h
-File4=Stepper.c
-File5=Stepper.h
-File6=Planner.h
-File7=Planner.c
-File8=GCODE.c
-Count=9
+File2=Stepper.c
+File3=Stepper.h
+File4=Planner.h
+File5=Planner.c
+File6=GCODE.c
+File7=GCODE.h
+File8=Protocol.c
+File9=Protocol.h
+File10=Kinematics.c
+File11=Kinematics.h
+Count=12
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

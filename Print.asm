@@ -1692,12 +1692,12 @@ SLL	R4, R2, 2
 LUI	R2, hi_addr(report_realtime_status_print_position_L0+0)
 ORI	R2, R2, lo_addr(report_realtime_status_print_position_L0+0)
 ADDU	R3, R2, R4
-LUI	R2, hi_addr(_gc+44)
-ORI	R2, R2, lo_addr(_gc+44)
+LUI	R2, hi_addr(_gc+48)
+ORI	R2, R2, lo_addr(_gc+48)
 ADDU	R2, R2, R4
 LWC1	S1, 0(R2)
-LUI	R2, hi_addr(_gc+60)
-ORI	R2, R2, lo_addr(_gc+60)
+LUI	R2, hi_addr(_gc+64)
+ORI	R2, R2, lo_addr(_gc+64)
 ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 ADD.S 	S1, S1, S0
@@ -1718,12 +1718,12 @@ SLL	R4, R2, 2
 LUI	R2, hi_addr(report_realtime_status_print_position_L0+0)
 ORI	R2, R2, lo_addr(report_realtime_status_print_position_L0+0)
 ADDU	R3, R2, R4
-LUI	R2, hi_addr(_gc+44)
-ORI	R2, R2, lo_addr(_gc+44)
+LUI	R2, hi_addr(_gc+48)
+ORI	R2, R2, lo_addr(_gc+48)
 ADDU	R2, R2, R4
 LWC1	S1, 0(R2)
-LUI	R2, hi_addr(_gc+60)
-ORI	R2, R2, lo_addr(_gc+60)
+LUI	R2, hi_addr(_gc+64)
+ORI	R2, R2, lo_addr(_gc+64)
 ADDU	R2, R2, R4
 LWC1	S0, 0(R2)
 ADD.S 	S1, S1, S0
@@ -2305,8 +2305,8 @@ L__report_gcode_parameters363:
 ;Print.c,305 :: 		dma_printf("%f ",gc.coord_offset[i]*INCH_PER_MM);
 LH	R2, 10(SP)
 SLL	R3, R2, 2
-LUI	R2, hi_addr(_gc+60)
-ORI	R2, R2, lo_addr(_gc+60)
+LUI	R2, hi_addr(_gc+64)
+ORI	R2, R2, lo_addr(_gc+64)
 ADDU	R2, R2, R3
 LWC1	S1, 0(R2)
 LUI	R2, 15649
@@ -2335,8 +2335,8 @@ L_report_gcode_parameters140:
 ;Print.c,307 :: 		dma_printf("%f ",gc.coord_offset[i]);
 LH	R2, 10(SP)
 SLL	R3, R2, 2
-LUI	R2, hi_addr(_gc+60)
-ORI	R2, R2, lo_addr(_gc+60)
+LUI	R2, hi_addr(_gc+64)
+ORI	R2, R2, lo_addr(_gc+64)
 ADDU	R2, R2, R3
 LWC1	S0, 0(R2)
 ORI	R30, R0, 37

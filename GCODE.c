@@ -64,7 +64,7 @@ void G_Initialise(){
   axis_words           = 0;
   int_value            = 0;
   value                = 0;
-  inverse_feed_rate    = false;
+  gc.inverse_feed_rate_mode = false;
   gc.absolute_override = false;
   gc.absolute_mode     = 1;
 }
@@ -209,9 +209,9 @@ int i,m_mode;
              gc.coord_select = (mode - 53);//G54-53 == 1...;
              m_mode = MOTION_MODE_NULL;break;
     case 80: motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
-    case 90: gc.absolute_mode = 1; m_mode    = MOTION_MODE_NULL; break;
-    case 91: gc.absolute_mode = 0; m_mode   = MOTION_MODE_NULL; break;
-    case 93: gc.inverse_feed_rate_mode = true;m_mode  = MOTION_MODE_NULL; break;
+    case 90: gc.absolute_mode = 1; m_mode = MOTION_MODE_NULL; break;
+    case 91: gc.absolute_mode = 0; m_mode = MOTION_MODE_NULL; break;
+    case 93: gc.inverse_feed_rate_mode = true; m_mode = MOTION_MODE_NULL; break;
     case 94: gc.inverse_feed_rate_mode = false;m_mode = MOTION_MODE_NULL; break;
     case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
     case 281: non_modal_action = NON_MODAL_SET_HOME_0; break;
@@ -485,20 +485,20 @@ int F_Val,O_Val;
             break;
       case 'F':
             XYZ_Val = *(float*)any;
-            if(XYZ_Val < 0){
-               FAIL(STATUS_SPEED_ERROR);
-            }
-            // still tobe implimented <need to understand how speed is sent?>
+            if(XYZ_Val < 0){FAIL(STATUS_SPEED_ERROR);break;}
+            // still to be implimented <need to understand how speed is sent?>
             if (gc.inverse_feed_rate_mode) {
               inverse_feed_rate = To_Millimeters(XYZ_Val); // seconds per motion for this motion only
+              gc.frequency = (long)(gc.feed_rate*INV_SPEED);
             } else {
-              gc.feed_rate = To_Millimeters(XYZ_Val); // millimeters per minute
+              gc.feed_rate = To_Millimeters(XYZ_Val);     // millimeters per minute
+              gc.frequency = (long)(gc.feed_rate/MM_SPEED);
             }
-            gc.frequency = (unsigned long)XYZ_Val;
-              #if GcodeDebug == 1
-              while(DMA_IsOn(1));
-              dma_printf("gc.frequency:= %l\n",gc.frequency);
-              #endif
+
+            #if GcodeDebug == 10
+            while(DMA_IsOn(1));
+            dma_printf("gc.frequency:= %l\n",gc.frequency);
+            #endif
             break;
       case 'P':
             O_Val = *(int*)any;

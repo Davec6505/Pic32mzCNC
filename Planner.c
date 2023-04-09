@@ -154,7 +154,7 @@ long abs_mmSteps = labs(mmSteps);
   STPS[axis_No].step_count  = 0;
   STPS[axis_No].rest        = 0;
   STPS[axis_No].accel_count = 1;
-  SV.Tog                    = 0;
+  SV.mode_complete          = 0;
   SV.running                = 1;
   last_speed                = speed;
   

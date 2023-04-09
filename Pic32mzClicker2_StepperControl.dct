@@ -37056,6 +37056,7 @@ inttostr
 inttostrwithzeros
 inverse_feed_rate
 inverse_feed_rate_mode
+inverse_feedrate
 invert_mask
 invert_min_limit
 ioancpen
@@ -39210,6 +39211,7 @@ mode
 mode
 mode
 mode_bit
+mode_complete
 mode_usbe1csr0_bit
 mode_usbe2csr0_bit
 mode_usbe3csr0_bit
@@ -63249,7 +63251,6 @@ tmr9inv
 tmr9invbits
 tmr9set
 tmr9setbits
-tog
 toggleocx
 tolower
 ton

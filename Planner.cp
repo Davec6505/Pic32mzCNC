@@ -509,7 +509,7 @@ typedef struct {
  int L;
  long frequency;
  float feed_rate;
-
+ float inverse_feedrate;
  float position[ 4 ];
  float coord_system[ 4 ];
 
@@ -872,15 +872,15 @@ void Test_CycleZ();
 void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 53 "c:/users/git/pic32mzcnc/planner.h"
+#line 55 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
  char homed: 1;
  char run_circle: 1;
  char cir: 1;
- char Tog;
- int Single_Dual;
+ char Single_Dual: 1;
+ char mode_complete: 2;
  int AxisNo;
  int dirx;
  int diry;
@@ -888,7 +888,6 @@ typedef struct genVars{
  int dira;
  int dirb;
  int dirc;
-
  long dif;
  long dA;
  long dB;
@@ -1062,7 +1061,7 @@ long abs_mmSteps = labs(mmSteps);
  STPS[axis_No].step_count = 0;
  STPS[axis_No].rest = 0;
  STPS[axis_No].accel_count = 1;
- SV.Tog = 0;
+ SV.mode_complete = 0;
  SV.running = 1;
  last_speed = speed;
 #line 183 "C:/Users/Git/Pic32mzCNC/Planner.c"
@@ -1123,7 +1122,14 @@ int axis_plane_a,axis_plane_b;
 
  isclockwise = 0;
  if (dir ==  0 ) { isclockwise = 1; }
-#line 341 "C:/Users/Git/Pic32mzCNC/Planner.c"
+
+while(DMA_IsOn(1));
+#line 336 "C:/Users/Git/Pic32mzCNC/Planner.c"
+dma_printf("\n[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
+,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
+
+
+
  mc_arc(position, target, offset, axis_A, axis_B, Z,
  gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
 }

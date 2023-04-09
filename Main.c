@@ -159,7 +159,7 @@ static int cntr = 0,a = 0;
    
 //Debug for stepper report if not connected to unit
 #if StepperDebug == 1
-if(!SV.Tog){
+if(!SV.mode_complete){
 if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
 while(DMA_IsOn(1));
 dma_printf("\
@@ -181,13 +181,13 @@ dif:= %l\t%l\t%l\t%d\t%l\t%l\n"
   protocol_execute_runtime();
 
   //respond ok if movement is finished
-  if(!Get_Axis_Enable_States() && SV.Tog > 0 && !SV.homed){
+  if(!Get_Axis_Enable_States() && SV.mode_complete > 0 && !SV.homed){
      LED2 = false;
      //debug STATUS_OK response after moves complete
      status_of_gcode == STATUS_OK;
      report_status_message(status_of_gcode);
-     //reset SV.Tog if an error has occured prior to move finishing
-     SV.Tog = 0;
+     //reset SV.mode_complete if an error has occured prior to move finishing
+     SV.mode_complete = 0;
   }
 
   //check ring buffer for data transfer
@@ -245,7 +245,7 @@ float a_val;
               i++;
              }
            }
-          // SV.Tog = 1;
+          // SV.mode_complete = 1;
            LED2 = false;
           break;
      case 4:  //NON_MODAL_SET_COORDINATE_DATA
@@ -526,7 +526,7 @@ static int Modal_Group_Actions1(int action){
               
               //return the number of axis completed
               sys.state = STATE_IDLE;
-              SV.Tog = 1;
+              SV.mode_complete = 1;
               SV.homed = false;
             }
             break;
@@ -560,7 +560,7 @@ static int Modal_Group_Actions4(int action){
       if(gc.program_flow < PROGRAM_FLOW_RUNNING  || 
          gc.program_flow > PROGRAM_FLOW_COMPLETED)
            FAIL(STATUS_INVALID_STATEMENT);
-           
+    SV.mode_complete = 1;
     return action;
 }
 
@@ -574,7 +574,7 @@ static int Modal_Group_Actions7(int action){
     #endif
       if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
            FAIL(STATUS_INVALID_STATEMENT);
-           
+    SV.mode_complete = 1;
     return action;
 }
 

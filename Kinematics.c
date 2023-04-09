@@ -92,7 +92,7 @@ int   dir    = 0;
     //subtract new from current
     tempA = tempA - STPS[axis_No].steps_abs_position;
     if(tempA== 0){
-       SV.Tog = 1;
+       SV.mode_complete = 1;
        return;
     }
   }else{
@@ -199,7 +199,7 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
 
   //Start values for Bresenhams
   if(SV.dA == 0 && SV.dB == 0){
-    SV.Tog = 1; //set this to respond with ok
+    SV.mode_complete = 1; //set this to respond with ok
     return;
   }
   
@@ -413,14 +413,14 @@ dma_printf("\
     // if axis is ahead then it would have to reversr
     //this prevents the reversal of wither axis.
     if(position[axis_0] > target[axis_0]){
-      if(nPx <= target[axis_0]){nPx = target[axis_0];}
-    }else{
-      if(nPx >= target[axis_0]){nPx = target[axis_0];}
+      if(nPx < target[axis_0]){nPx = target[axis_0];}
+    }else if(position[axis_0] < target[axis_0]){
+      if(nPx > target[axis_0]){nPx = target[axis_0];}
     }
     
     if(position[axis_1] > target[axis_1]){
       if(nPy <= target[axis_1]){nPy = target[axis_1];}
-    }else {
+    }else if(position[axis_1] < target[axis_1]){
       if(nPy >= target[axis_1]){nPy = target[axis_1];}
     }
     //interpolate the difference
@@ -458,7 +458,7 @@ dma_printf("\
   //ensure axis are in position when arc is complete
   DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,gc.frequency);
   //report_status_message(STATUS_OK);
- // SV.Tog = 1;
+ // SV.mode_complete = 1;
   #if KineDebug == 3
      while(DMA_IsOn(1));
      dma_printf("\n%s\n","Arc Finnished");

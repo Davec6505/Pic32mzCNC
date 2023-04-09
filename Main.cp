@@ -273,7 +273,7 @@ typedef struct {
  int L;
  long frequency;
  float feed_rate;
-
+ float inverse_feedrate;
  float position[ 4 ];
  float coord_system[ 4 ];
 
@@ -510,15 +510,15 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 53 "c:/users/git/pic32mzcnc/planner.h"
+#line 55 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
  char homed: 1;
  char run_circle: 1;
  char cir: 1;
- char Tog;
- int Single_Dual;
+ char Single_Dual: 1;
+ char mode_complete: 2;
  int AxisNo;
  int dirx;
  int diry;
@@ -526,7 +526,6 @@ typedef struct genVars{
  int dira;
  int dirb;
  int dirc;
-
  long dif;
  long dA;
  long dB;
@@ -1047,13 +1046,13 @@ static int cntr = 0,a = 0;
  protocol_execute_runtime();
 
 
- if(!Get_Axis_Enable_States() && SV.Tog > 0 && !SV.homed){
+ if(!Get_Axis_Enable_States() && SV.mode_complete > 0 && !SV.homed){
  LED2 =  0 ;
 
  status_of_gcode ==  0 ;
  report_status_message(status_of_gcode);
 
- SV.Tog = 0;
+ SV.mode_complete = 0;
  }
 
 
@@ -1353,7 +1352,7 @@ static int Modal_Group_Actions1(int action){
 
 
  sys.state =  0 ;
- SV.Tog = 1;
+ SV.mode_complete = 1;
  SV.homed =  0 ;
  }
  break;
@@ -1384,7 +1383,7 @@ static int Modal_Group_Actions4(int action){
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
  FAIL( 6 );
-
+ SV.mode_complete = 1;
  return action;
 }
 
@@ -1395,7 +1394,7 @@ static int Modal_Group_Actions7(int action){
 #line 575 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
  FAIL( 6 );
-
+ SV.mode_complete = 1;
  return action;
 }
 

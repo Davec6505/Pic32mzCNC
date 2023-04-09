@@ -273,7 +273,7 @@ typedef struct {
  int L;
  long frequency;
  float feed_rate;
-
+ float inverse_feedrate;
  float position[ 4 ];
  float coord_system[ 4 ];
 
@@ -510,15 +510,15 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 53 "c:/users/git/pic32mzcnc/planner.h"
+#line 55 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
  char homed: 1;
  char run_circle: 1;
  char cir: 1;
- char Tog;
- int Single_Dual;
+ char Single_Dual: 1;
+ char mode_complete: 2;
  int AxisNo;
  int dirx;
  int diry;
@@ -526,7 +526,6 @@ typedef struct genVars{
  int dira;
  int dirb;
  int dirc;
-
  long dif;
  long dA;
  long dB;

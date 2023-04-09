@@ -417,15 +417,15 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 53 "c:/users/git/pic32mzcnc/planner.h"
+#line 55 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
  char homed: 1;
  char run_circle: 1;
  char cir: 1;
- char Tog;
- int Single_Dual;
+ char Single_Dual: 1;
+ char mode_complete: 2;
  int AxisNo;
  int dirx;
  int diry;
@@ -433,7 +433,6 @@ typedef struct genVars{
  int dira;
  int dirb;
  int dirc;
-
  long dif;
  long dA;
  long dB;
@@ -858,7 +857,7 @@ typedef struct {
  int L;
  long frequency;
  float feed_rate;
-
+ float inverse_feedrate;
  float position[ 4 ];
  float coord_system[ 4 ];
 
@@ -965,7 +964,7 @@ void G_Initialise(){
  axis_words = 0;
  int_value = 0;
  value = 0;
- inverse_feed_rate =  0 ;
+ gc.inverse_feed_rate_mode =  0 ;
  gc.absolute_override =  0 ;
  gc.absolute_mode = 1;
 }
@@ -1103,7 +1102,7 @@ int i,m_mode;
  case 80: motion_mode =  4 ; break;
  case 90: gc.absolute_mode = 1; m_mode =  6 ; break;
  case 91: gc.absolute_mode = 0; m_mode =  6 ; break;
- case 93: gc.inverse_feed_rate_mode =  1 ;m_mode =  6 ; break;
+ case 93: gc.inverse_feed_rate_mode =  1 ; m_mode =  6 ; break;
  case 94: gc.inverse_feed_rate_mode =  0 ;m_mode =  6 ; break;
  case 280: non_modal_action =  3 ; break;
  case 281: non_modal_action =  4 ; break;
@@ -1347,17 +1346,20 @@ int F_Val,O_Val;
  break;
  case 'F':
  XYZ_Val = *(float*)any;
- if(XYZ_Val < 0){
- FAIL( 13 );
- }
+ if(XYZ_Val < 0){FAIL( 13 );break;}
 
  if (gc.inverse_feed_rate_mode) {
  inverse_feed_rate = To_Millimeters(XYZ_Val);
+ gc.frequency = (long)(gc.feed_rate* ( ( (2.00* 3.141592653589793238462643 ) / 200.00 )  * 781250 ) / 200.00 );
  } else {
  gc.feed_rate = To_Millimeters(XYZ_Val);
+ gc.frequency = (long)(gc.feed_rate/ 1.0/(float) ( ( (2.00* 3.141592653589793238462643 ) / 200.00 )  * 781250 ) / 200.00 );
  }
- gc.frequency = (unsigned long)XYZ_Val;
-#line 502 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("gc.frequency:= %l\n",gc.frequency);
+
  break;
  case 'P':
  O_Val = *(int*)any;

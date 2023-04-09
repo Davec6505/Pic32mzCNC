@@ -19,7 +19,8 @@
  * the timer1 frequency is the clock frequency divided by 8.
  */
 // Timer/Counter 1 running on 3,686MHz / 8 = 460,75kHz (2,17uS). (T1-FREQ 460750)
-#define T1_FREQ   781250//=1.28us => timer pre-scaler at (1/64) * 50mhz pbclk3
+// 1.28us/tick => timer pre-scaler at (1/64) * 50mhz pbclk3
+#define T1_FREQ   781250
 #define minSpeed  30210
 #define maxSpeed  10
 #define cirSpeed  100
@@ -33,16 +34,17 @@
 * Speed = (ALPHA * T1_FREQ) / Step  {T1_Freq = }
 * acc = ((2 * ALPHA * T1_FREQ)*(Step1 - Step2)) / (Step1*Step2)*(Step1+Step2)
 *************************************************************************/
-#define PIx2      (2.00*M_Pi)
-#define ALPHA    (PIx2/SPR)
-#define A_T_x100 (long)(ALPHA*T1_FREQ*100.00)      // (ALPHA / T_FREQ)*100
-#define T1_FREQ_148 ((T1_FREQ*0.676)/100.00)   // divided by 100 and scaled by 0.676
-#define SQ_MASK 10000000000
-#define A_SQ (long)(ALPHA*2.00*SQ_MASK)             // ALPHA*2*10000000000
-//#define A_x20000 (long)(ALPHA*20000)             // ALPHA*20000
+#define PIx2        (2.00*M_Pi)
+#define ALPHA       (PIx2/SPR)
+#define A_T_x100    (long)(ALPHA*T1_FREQ*100.00)  // (ALPHA / T_FREQ)*100
+#define T1_FREQ_148 ((T1_FREQ*0.676)/100.00)      // divided by 100 and scaled by 0.676
+#define SQ_MASK     10000000000
+#define A_SQ        (long)(ALPHA*2.00*SQ_MASK)    // ALPHA*2*10000000000
 
 //mm/sec/sec for acceleration input
-#define secXsec (60.00*60.00)
+#define INV_SPEED   (ALPHA * T1_FREQ) / SPR       // sec/min to freq
+#define MM_SPEED    1.0/(float)INV_SPEED                   // mm/min to freq
+#define secXsec     (60.00*60.00)                 // acc multiplier
 
 ////////////////////////////////////////////////////
 //structs enums and constants
@@ -56,8 +58,8 @@ typedef struct genVars{
   char  homed: 1;         //busy homing
   char  run_circle: 1;        //circle in motion indicator
   char  cir: 1;
-  char  Tog;
-  int   Single_Dual;
+  char  Single_Dual: 1;
+  char  mode_complete: 2;
   int   AxisNo;
   int   dirx;
   int   diry;
@@ -65,7 +67,6 @@ typedef struct genVars{
   int   dira;
   int   dirb;
   int   dirc;
- // long  i;
   long  dif;
   long  dA;
   long  dB;
