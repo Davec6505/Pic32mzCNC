@@ -462,13 +462,13 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(float newxyz,long speed,int axis_No);
-static void SingleAxisStart(long dist,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);
+void SingleAxisStep(float newxyz,float speed,int axis_No);
+static void SingleAxisStart(long dist,float speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
- int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
+ int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
  float radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
@@ -480,8 +480,8 @@ int GetAxisDirection(long mm2move);
 
 void ResetHoming();
 int Home(int axis);
-static void Home_Axis(double distance,long speed,int axis);
-static void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,float speed,int axis);
+static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -872,7 +872,7 @@ void Test_CycleZ();
 void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 55 "c:/users/git/pic32mzcnc/planner.h"
+#line 62 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
@@ -959,7 +959,7 @@ int i;
 
  alpha[i] = ( (2.00* 3.141592653589793238462643 )  / settings.steps_per_mm[i]);
 
- a_t_x100[i] = lround(alpha[i] *  781250  * 100.00);
+ a_t_x100[i] = lround(alpha[i] *  6250000  * 100.00);
 
  a_sq[i] = lround(alpha[i] * 2 *  10000000000 );
  }
@@ -1001,7 +1001,7 @@ long abs_mmSteps = labs(mmSteps);
 
 
 
- STPS[axis_No].step_delay = labs((long) (( 781250 *0.676)/100.00)  * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
+ STPS[axis_No].step_delay = labs((long) (( 6250000 *0.676)/100.00)  * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
  if(STPS[axis_No].step_delay >  30210 )
  STPS[axis_No].StartUp_delay =  30210 ;
  else
@@ -1131,7 +1131,7 @@ dma_printf("\n[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\t
 
 
  mc_arc(position, target, offset, axis_A, axis_B, Z,
- gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
+ gc.feed_rate, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
 

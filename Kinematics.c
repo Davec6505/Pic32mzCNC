@@ -73,7 +73,7 @@ static void Set_Axisdirection(long temp,int axis){
 ///////////////////////////////////////////////////////////
 //                SINGLE AXIS MOVEMENT                   //
 ///////////////////////////////////////////////////////////
-void SingleAxisStep(float newxyz,long speed,int axis_No){
+void SingleAxisStep(float newxyz,float speed,int axis_No){
 long  absxyz = 0;
 long  tempA  = 0;
 int   dir    = 0;
@@ -103,7 +103,7 @@ int   dir    = 0;
   
 }
 
-static void SingleAxisStart(long dist,long speed,int axis_No){
+static void SingleAxisStart(long dist,float speed,int axis_No){
 
   Single_Axis_Enable(axis_No);
   speed_cntr_Move(dist , speed , axis_No);
@@ -125,7 +125,7 @@ static void SingleAxisStart(long dist,long speed,int axis_No){
 //////////////////////////////////////////////////////////
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
-void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed){
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 long tempA,tempB,tempC;
 //int dirA,dirB;
 
@@ -269,7 +269,7 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
   */
 
 void mc_arc(float *position, float *target, float *offset, int axis_0
-           , int axis_1,int axis_linear, long feed_rate, char invert_feed_rate
+           , int axis_1,int axis_linear, float feed_rate, char invert_feed_rate
            , float radius, char isclockwise){
 float arc_target[3] = {0};
 float center_axis0,center_axis1, r_axis0 , r_axis1 , rt_axis0 , rt_axis1 , linear_travel;
@@ -570,7 +570,7 @@ HOMED:
                bit_false(homing[axis].home_state,bit(HOME));
                //distance here is any value to move off the limit
                //movement will stop on falling edge of limit
-               Home_Axis(12.0,100, axis);
+               Home_Axis(12.0,100.0, axis);
 
            }else if(homing[axis].home_cnt > 1){//2nd hit of limit
            
@@ -614,7 +614,7 @@ HOMED:
        homing[axis].home_cnt++;
        if(bit_istrue(homing[axis].home_state,BIT_HOME_REV)){
           bit_false(homing[axis].home_state,bit(HOME_REV));
-          Home_Axis(-290.00,50,axis);
+          Home_Axis(-290.00,50.0,axis);
        }
        #if HomeDebug == 2
        while(DMA_IsOn(1));
@@ -630,7 +630,7 @@ HOMED:
 }
 
 //Home single axis
-static void Home_Axis(double distance,long speed,int axis){
+static void Home_Axis(double distance,float speed,int axis){
   //force a stop of the axis
   StopAxis(axis);
   STPS[axis].run_state = STOP ;
@@ -640,7 +640,7 @@ static void Home_Axis(double distance,long speed,int axis){
 
   #if HomeDebug == 2
    while(DMA_IsOn(1));
-   dma_printf("HomeAxis(%f,%l,%d);\n",distance,speed,axis);
+   dma_printf("HomeAxis(%f,%f,%d);\n",distance,speed,axis);
   #endif
   //calculate the distance in Steps and send to stepper control
   STPS[axis].mmToTravel = belt_steps(distance,axis);

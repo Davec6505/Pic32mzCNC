@@ -1835,45 +1835,20 @@ MOV.S 	S12, S2
 JAL	GCODE_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_inverse_feed_rate+0)(GP)
-;GCODE.c,492 :: 		gc.frequency = (long)(gc.feed_rate*INV_SPEED);
-LWC1	S1, Offset(_gc+24)(GP)
-LUI	R2, 18111
-ORI	R2, R2, 48995
-MTC1	R2, S0
-MUL.S 	S1, S1, S0
-LUI	R2, 17224
-ORI	R2, R2, 0
-MTC1	R2, S0
-DIV.S 	S0, S1, S0
-CVT36.S 	S0, S0
-MFC1	R2, S0
-SW	R2, Offset(_gc+20)(GP)
-;GCODE.c,493 :: 		} else {
+;GCODE.c,492 :: 		} else {
 J	L_Instruction_Values141
 NOP	
 L_Instruction_Values140:
-;GCODE.c,494 :: 		gc.feed_rate = To_Millimeters(XYZ_Val);     // millimeters per minute
+;GCODE.c,493 :: 		gc.feed_rate = To_Millimeters(XYZ_Val);     // millimeters per minut
 ; XYZ_Val start address is: 16 (R4)
 MOV.S 	S12, S2
 ; XYZ_Val end address is: 16 (R4)
 JAL	GCODE_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+24)(GP)
-;GCODE.c,495 :: 		gc.frequency = (long)(gc.feed_rate/MM_SPEED);
-LUI	R2, 18111
-ORI	R2, R2, 48995
-MTC1	R2, S1
-DIV.S 	S1, S0, S1
-LUI	R2, 17224
-ORI	R2, R2, 0
-MTC1	R2, S0
-DIV.S 	S0, S1, S0
-CVT36.S 	S0, S0
-MFC1	R2, S0
-SW	R2, Offset(_gc+20)(GP)
-;GCODE.c,496 :: 		}
+;GCODE.c,494 :: 		}
 L_Instruction_Values141:
-;GCODE.c,499 :: 		while(DMA_IsOn(1));
+;GCODE.c,497 :: 		while(DMA_IsOn(1));
 L_Instruction_Values142:
 SW	R26, 8(SP)
 SW	R25, 12(SP)
@@ -1890,7 +1865,7 @@ L__Instruction_Values383:
 J	L_Instruction_Values142
 NOP	
 L_Instruction_Values143:
-;GCODE.c,500 :: 		dma_printf("gc.frequency:= %l\n",gc.frequency);
+;GCODE.c,498 :: 		dma_printf("gc.frequency:= %l\n",gc.frequency);
 ADDIU	R23, SP, 16
 ADDIU	R22, R23, 19
 LUI	R24, hi_addr(?ICS?lstr1_GCODE+0)
@@ -1909,16 +1884,16 @@ NOP
 ADDIU	SP, SP, 8
 LW	R25, 12(SP)
 LW	R26, 8(SP)
-;GCODE.c,502 :: 		break;
+;GCODE.c,500 :: 		break;
 J	L_Instruction_Values127
 NOP	
-;GCODE.c,503 :: 		case 'P':
+;GCODE.c,501 :: 		case 'P':
 L_Instruction_Values144:
-;GCODE.c,504 :: 		O_Val = *(int*)any;
+;GCODE.c,502 :: 		O_Val = *(int*)any;
 LH	R2, 0(R26)
 ; O_Val start address is: 12 (R3)
 SEH	R3, R2
-;GCODE.c,505 :: 		if(O_Val < 0){
+;GCODE.c,503 :: 		if(O_Val < 0){
 SEH	R2, R2
 SLTI	R2, R2, 0
 BNE	R2, R0, L__Instruction_Values384
@@ -1926,28 +1901,28 @@ NOP
 J	L_Instruction_Values145
 NOP	
 L__Instruction_Values384:
-;GCODE.c,506 :: 		FAIL(STATUS_SPEED_ERROR);
+;GCODE.c,504 :: 		FAIL(STATUS_SPEED_ERROR);
 ORI	R25, R0, 13
 JAL	_FAIL+0
 NOP	
-;GCODE.c,507 :: 		}
+;GCODE.c,505 :: 		}
 L_Instruction_Values145:
-;GCODE.c,508 :: 		gc.P = O_Val;
+;GCODE.c,506 :: 		gc.P = O_Val;
 SH	R3, Offset(_gc+124)(GP)
 ; O_Val end address is: 12 (R3)
-;GCODE.c,509 :: 		gc.S = -1;
+;GCODE.c,507 :: 		gc.S = -1;
 ORI	R2, R0, 65535
 SH	R2, Offset(_gc+126)(GP)
-;GCODE.c,510 :: 		break;
+;GCODE.c,508 :: 		break;
 J	L_Instruction_Values127
 NOP	
-;GCODE.c,511 :: 		case 'S':
+;GCODE.c,509 :: 		case 'S':
 L_Instruction_Values146:
-;GCODE.c,512 :: 		O_Val = *(int*)any;
+;GCODE.c,510 :: 		O_Val = *(int*)any;
 LH	R2, 0(R26)
 ; O_Val start address is: 12 (R3)
 SEH	R3, R2
-;GCODE.c,513 :: 		if(O_Val < 0){
+;GCODE.c,511 :: 		if(O_Val < 0){
 SEH	R2, R2
 SLTI	R2, R2, 0
 BNE	R2, R0, L__Instruction_Values385
@@ -1955,28 +1930,28 @@ NOP
 J	L_Instruction_Values147
 NOP	
 L__Instruction_Values385:
-;GCODE.c,514 :: 		FAIL(STATUS_SPEED_ERROR);
+;GCODE.c,512 :: 		FAIL(STATUS_SPEED_ERROR);
 ORI	R25, R0, 13
 JAL	_FAIL+0
 NOP	
-;GCODE.c,515 :: 		}
+;GCODE.c,513 :: 		}
 L_Instruction_Values147:
-;GCODE.c,516 :: 		gc.S = O_Val;
+;GCODE.c,514 :: 		gc.S = O_Val;
 SH	R3, Offset(_gc+126)(GP)
 ; O_Val end address is: 12 (R3)
-;GCODE.c,517 :: 		gc.P = -1;
+;GCODE.c,515 :: 		gc.P = -1;
 ORI	R2, R0, 65535
 SH	R2, Offset(_gc+124)(GP)
-;GCODE.c,518 :: 		break;
+;GCODE.c,516 :: 		break;
 J	L_Instruction_Values127
 NOP	
-;GCODE.c,519 :: 		case 'L':
+;GCODE.c,517 :: 		case 'L':
 L_Instruction_Values148:
-;GCODE.c,520 :: 		O_Val = *(int*)any;
+;GCODE.c,518 :: 		O_Val = *(int*)any;
 LH	R2, 0(R26)
 ; O_Val start address is: 12 (R3)
 SEH	R3, R2
-;GCODE.c,521 :: 		if(O_Val < 0){
+;GCODE.c,519 :: 		if(O_Val < 0){
 SEH	R2, R2
 SLTI	R2, R2, 0
 BNE	R2, R0, L__Instruction_Values386
@@ -1984,26 +1959,26 @@ NOP
 J	L_Instruction_Values149
 NOP	
 L__Instruction_Values386:
-;GCODE.c,522 :: 		FAIL(STATUS_SPEED_ERROR);
+;GCODE.c,520 :: 		FAIL(STATUS_SPEED_ERROR);
 ORI	R25, R0, 13
 JAL	_FAIL+0
 NOP	
-;GCODE.c,523 :: 		}
+;GCODE.c,521 :: 		}
 L_Instruction_Values149:
-;GCODE.c,524 :: 		gc.L = O_Val;
+;GCODE.c,522 :: 		gc.L = O_Val;
 SH	R3, Offset(_gc+16)(GP)
 ; O_Val end address is: 12 (R3)
-;GCODE.c,525 :: 		break; //L2 tells the G10 we’re setting standard work offsets
+;GCODE.c,523 :: 		break; //L2 tells the G10 we’re setting standard work offsets
 J	L_Instruction_Values127
 NOP	
-;GCODE.c,526 :: 		default:FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
+;GCODE.c,524 :: 		default:FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
 L_Instruction_Values150:
 ORI	R25, R0, 3
 JAL	_FAIL+0
 NOP	
 J	L_Instruction_Values127
 NOP	
-;GCODE.c,527 :: 		}
+;GCODE.c,525 :: 		}
 L_Instruction_Values126:
 LW	R4, 36(SP)
 LBU	R2, 0(R4)
@@ -2121,11 +2096,11 @@ L__Instruction_Values414:
 J	L_Instruction_Values150
 NOP	
 L_Instruction_Values127:
-;GCODE.c,542 :: 		return status_code;
+;GCODE.c,540 :: 		return status_code;
 LH	R2, Offset(-1610602986)(GP)
-;GCODE.c,543 :: 		}
-;GCODE.c,542 :: 		return status_code;
-;GCODE.c,543 :: 		}
+;GCODE.c,541 :: 		}
+;GCODE.c,540 :: 		return status_code;
+;GCODE.c,541 :: 		}
 L_end_Instruction_Values:
 LW	R25, 4(SP)
 LW	RA, 0(SP)

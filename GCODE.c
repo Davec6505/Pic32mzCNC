@@ -489,10 +489,8 @@ int F_Val,O_Val;
             // still to be implimented <need to understand how speed is sent?>
             if (gc.inverse_feed_rate_mode) {
               inverse_feed_rate = To_Millimeters(XYZ_Val); // seconds per motion for this motion only
-              gc.frequency = (long)(gc.feed_rate*INV_SPEED);
             } else {
-              gc.feed_rate = To_Millimeters(XYZ_Val);     // millimeters per minute
-              gc.frequency = (long)(gc.feed_rate/MM_SPEED);
+              gc.feed_rate = To_Millimeters(XYZ_Val);     // millimeters per minut
             }
 
             #if GcodeDebug == 10

@@ -20,7 +20,16 @@
  */
 // Timer/Counter 1 running on 3,686MHz / 8 = 460,75kHz (2,17uS). (T1-FREQ 460750)
 // 1.28us/tick => timer pre-scaler at (1/64) * 50mhz pbclk3
-#define T1_FREQ   781250
+//#define ONE_64
+#define ONE_8
+
+#ifdef ONE_64
+ #define T1_FREQ   781250
+#endif
+#ifdef ONE_8
+ #define T1_FREQ   6250000
+#endif
+
 #define minSpeed  30210
 #define maxSpeed  10
 #define cirSpeed  100
@@ -42,8 +51,6 @@
 #define A_SQ        (long)(ALPHA*2.00*SQ_MASK)    // ALPHA*2*10000000000
 
 //mm/sec/sec for acceleration input
-#define INV_SPEED   (ALPHA * T1_FREQ) / SPR       // sec/min to freq
-#define MM_SPEED    1.0/(float)INV_SPEED                   // mm/min to freq
 #define secXsec     (60.00*60.00)                 // acc multiplier
 
 ////////////////////////////////////////////////////

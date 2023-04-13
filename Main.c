@@ -453,34 +453,34 @@ static int Modal_Group_Actions1(int action){
     #endif
     switch(action){
       case 1: //b0000 0001
-             SingleAxisStep(gc.next_position[X],gc.frequency,X);
+             SingleAxisStep(gc.next_position[X],gc.feed_rate,X);
              break;
       case 2://b0000 0010
-             SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
+             SingleAxisStep(gc.next_position[Y],gc.feed_rate,Y);
              break;
        case 3://b0000 0011
-             DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+             DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.feed_rate);
              break;
       case 4://b0000 0100
-            SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
+            SingleAxisStep(gc.next_position[Z],gc.feed_rate,Z);
              break;
        case 5://b0000 0101
-             DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
+             DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.feed_rate);
              break;
        case 6://b0000 0110
-             DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
+             DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.feed_rate);
              break;
        case 8://b0000 1000
-            SingleAxisStep(gc.next_position[A],gc.frequency,A);
+            SingleAxisStep(gc.next_position[A],gc.feed_rate,A);
              break;
        case 9://b0000 1001
-            DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
+            DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.feed_rate);
             break;
        case 10://b0000 1010
-            DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
+            DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.feed_rate);
             break;
        case 12://b0000 1100
-            DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
+            DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.feed_rate);
             break;
        case 15://Circle interpolation
             SV.cir = 1;//to indicate DualAxisStep of circle!!!

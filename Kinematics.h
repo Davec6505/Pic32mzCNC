@@ -142,13 +142,13 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 //Move inline
-void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);//,int xyza);
-void SingleAxisStep(float newxyz,long speed,int axis_No);
-static void SingleAxisStart(long dist,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);//,int xyza);
+void SingleAxisStep(float newxyz,float speed,int axis_No);
+static void SingleAxisStart(long dist,float speed,int axis_No);
 
 //Circle move axis
 void mc_arc(float *position, float *target, float *offset, int axis_0,
-            int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
+            int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
             float radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
@@ -160,8 +160,8 @@ int GetAxisDirection(long mm2move);
 //homing cycle
 void ResetHoming();
 int Home(int axis);
-static void Home_Axis(double distance,long speed,int axis);
-static void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,float speed,int axis);
+static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 

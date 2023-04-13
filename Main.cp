@@ -510,7 +510,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 55 "c:/users/git/pic32mzcnc/planner.h"
+#line 62 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
@@ -653,13 +653,13 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(float newxyz,long speed,int axis_No);
-static void SingleAxisStart(long dist,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);
+void SingleAxisStep(float newxyz,float speed,int axis_No);
+static void SingleAxisStart(long dist,float speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
- int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
+ int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
  float radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
@@ -671,8 +671,8 @@ int GetAxisDirection(long mm2move);
 
 void ResetHoming();
 int Home(int axis);
-static void Home_Axis(double distance,long speed,int axis);
-static void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,float speed,int axis);
+static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
@@ -1039,7 +1039,25 @@ static int cntr = 0,a = 0;
  break;
  }
  }
-#line 178 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+
+if(!SV.mode_complete){
+if(STPS[X].run_state !=  0  | STPS[Y].run_state !=  0 ){
+while(DMA_IsOn(1));
+#line 166 "C:/Users/Git/Pic32mzCNC/Main.c"
+dma_printf("dif:= %l\t%l\t%l\t%d\t%l\t%l\n"
+,SV.dif
+,STPS[X].step_count
+,STPS[X].accel_count
+,(STPS[Y].run_state&0xff)
+,STPS[Y].step_count
+,STPS[Y].accel_count);
+}
+}
+
+
+
  protocol_system_check();
 
 
@@ -1282,34 +1300,34 @@ static int Modal_Group_Actions1(int action){
 #line 454 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
- SingleAxisStep(gc.next_position[X],gc.frequency,X);
+ SingleAxisStep(gc.next_position[X],gc.feed_rate,X);
  break;
  case 2:
- SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
+ SingleAxisStep(gc.next_position[Y],gc.feed_rate,Y);
  break;
  case 3:
- DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+ DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.feed_rate);
  break;
  case 4:
- SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
+ SingleAxisStep(gc.next_position[Z],gc.feed_rate,Z);
  break;
  case 5:
- DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
+ DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.feed_rate);
  break;
  case 6:
- DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
+ DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.feed_rate);
  break;
  case 8:
- SingleAxisStep(gc.next_position[A],gc.frequency,A);
+ SingleAxisStep(gc.next_position[A],gc.feed_rate,A);
  break;
  case 9:
- DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
+ DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.feed_rate);
  break;
  case 10:
- DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
+ DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.feed_rate);
  break;
  case 12:
- DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
+ DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.feed_rate);
  break;
  case 15:
  SV.cir = 1;

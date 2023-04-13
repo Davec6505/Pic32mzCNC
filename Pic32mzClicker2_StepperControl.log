@@ -75,7 +75,7 @@ warning: 83	1503	Result is not defined in function: 'SET_FAIL'	GCODE.c
 warning: 222	1503	Result is not defined in function: ''	GCODE.c
 hint: 192	1163	Variable 'i' has been declared, but not used	GCODE.c
 hint: 437	1163	Variable 'F_Val' has been declared, but not used	GCODE.c
-diagnostics: 543	123	Compiled Successfully	GCODE.c
+diagnostics: 541	123	Compiled Successfully	GCODE.c
 hint: 303	1164	Variable 'last_non_modal_action' has been eliminated by optimizer	GCODE.c
 diagnostics: 0	122	Compilation Started	settings.h
 warning: 37	1508	Implicit conversion of int to ptr	Globals.c
@@ -127,13 +127,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 3219 ms	 
+diagnostics: 0	127	All files Compiled in 3672 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
 hint: 0	1144	Static RAM (bytes): 5570   Dynamic RAM (bytes): 502173	Static RAM (bytes): 5570   Dynamic RAM (bytes): 502173
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 81709 (4%)  Free ROM (bytes): 2015443 (96%)	Used ROM (bytes): 81709 (4%)  Free ROM (bytes): 2015443 (96%)
+hint: 0	1144	Used ROM (bytes): 81696 (4%)  Free ROM (bytes): 2015456 (96%)	Used ROM (bytes): 81696 (4%)  Free ROM (bytes): 2015456 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)	Used BOOTROM (bytes): 808 (1%)  Free BOOTROM (bytes): 146203 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 985 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6094 ms	 
-diagnostics: 0	103	Finished successfully: 09 Apr 2023, 09:13:18	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 1125 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 7281 ms	 
+diagnostics: 0	103	Finished successfully: 13 Apr 2023, 23:19:44	Pic32mzClicker2_StepperControl.mcp32

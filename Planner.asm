@@ -112,7 +112,7 @@ LUI	R2, 40960
 ORI	R2, R2, 10016
 ADDU	R2, R2, R3
 LWC1	S1, 0(R2)
-LUI	R2, 18750
+LUI	R2, 19134
 ORI	R2, R2, 48160
 MTC1	R2, S0
 MUL.S 	S1, S1, S0
@@ -327,7 +327,7 @@ NOP
 ORI	R3, R0, 100
 DIV	R2, R3
 MFLO	R3
-ORI	R2, R0, 5281
+ORI	R2, R0, 42250
 MUL	R2, R2, R3
 MOVZ	R25, R2, R0
 JAL	_labs+0
@@ -1080,33 +1080,32 @@ LH	R26, 10(SP)
 ADDIU	R4, SP, 132
 ADDIU	R3, SP, 116
 ADDIU	R2, SP, 100
-;Planner.c,342 :: 		gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
+;Planner.c,342 :: 		gc.feed_rate, gc.inverse_feed_rate_mode,r, isclockwise);
 SH	R26, 10(SP)
 SH	R25, 12(SP)
 LBU	R5, 148(SP)
-ADDIU	SP, SP, -12
-SB	R5, 9(SP)
+ADDIU	SP, SP, -8
+SB	R5, 5(SP)
 LBU	R5, Offset(_gc+2)(GP)
-SB	R5, 8(SP)
-LW	R5, Offset(_gc+20)(GP)
-SW	R5, 4(SP)
+SB	R5, 4(SP)
 ;Planner.c,341 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
 ORI	R5, R0, 2
 SH	R5, 2(SP)
 SH	R26, 0(SP)
-;Planner.c,342 :: 		gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
-LWC1	S12, 180(SP)
+;Planner.c,342 :: 		gc.feed_rate, gc.inverse_feed_rate_mode,r, isclockwise);
+LWC1	S12, Offset(_gc+24)(GP)
 ;Planner.c,341 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
 SEH	R28, R25
 MOVZ	R27, R4, R0
 MOVZ	R25, R2, R0
-;Planner.c,342 :: 		gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
+;Planner.c,342 :: 		gc.feed_rate, gc.inverse_feed_rate_mode,r, isclockwise);
+LWC1	S13, 176(SP)
 ;Planner.c,341 :: 		mc_arc(position, target, offset, axis_A, axis_B, Z,
 MOVZ	R26, R3, R0
-;Planner.c,342 :: 		gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
+;Planner.c,342 :: 		gc.feed_rate, gc.inverse_feed_rate_mode,r, isclockwise);
 JAL	_mc_arc+0
 NOP	
-ADDIU	SP, SP, 12
+ADDIU	SP, SP, 8
 LH	R25, 12(SP)
 LH	R26, 10(SP)
 LH	R27, 8(SP)

@@ -759,7 +759,7 @@ void Test_CycleZ();
 void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 55 "c:/users/git/pic32mzcnc/planner.h"
+#line 62 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
@@ -902,13 +902,13 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 
-void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed);
-void SingleAxisStep(float newxyz,long speed,int axis_No);
-static void SingleAxisStart(long dist,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);
+void SingleAxisStep(float newxyz,float speed,int axis_No);
+static void SingleAxisStart(long dist,float speed,int axis_No);
 
 
 void mc_arc(float *position, float *target, float *offset, int axis_0,
- int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
+ int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
  float radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
@@ -920,8 +920,8 @@ int GetAxisDirection(long mm2move);
 
 void ResetHoming();
 int Home(int axis);
-static void Home_Axis(double distance,long speed,int axis);
-static void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,float speed,int axis);
+static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #line 3 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
@@ -986,7 +986,7 @@ static void Set_Axisdirection(long temp,int axis){
  }
 }
 #line 76 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-void SingleAxisStep(float newxyz,long speed,int axis_No){
+void SingleAxisStep(float newxyz,float speed,int axis_No){
 long absxyz = 0;
 long tempA = 0;
 int dir = 0;
@@ -1009,7 +1009,7 @@ int dir = 0;
 
 }
 
-static void SingleAxisStart(long dist,long speed,int axis_No){
+static void SingleAxisStart(long dist,float speed,int axis_No){
 
  Single_Axis_Enable(axis_No);
  speed_cntr_Move(dist , speed , axis_No);
@@ -1028,7 +1028,7 @@ static void SingleAxisStart(long dist,long speed,int axis_No){
 
 
 
-void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,long speed){
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 long tempA,tempB,tempC;
 
 
@@ -1120,7 +1120,7 @@ long tempA,tempB,tempC;
 }
 #line 271 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void mc_arc(float *position, float *target, float *offset, int axis_0
- , int axis_1,int axis_linear, long feed_rate, char invert_feed_rate
+ , int axis_1,int axis_linear, float feed_rate, char invert_feed_rate
  , float radius, char isclockwise){
 float arc_target[3] = {0};
 float center_axis0,center_axis1, r_axis0 , r_axis1 , rt_axis0 , rt_axis1 , linear_travel;
@@ -1371,7 +1371,7 @@ HOMED:
   (homing[axis].home_state &= ~ (1 << 2 ) ) ;
 
 
- Home_Axis(12.0,100, axis);
+ Home_Axis(12.0,100.0, axis);
 
  }else if(homing[axis].home_cnt > 1){
 
@@ -1402,7 +1402,7 @@ HOMED:
  homing[axis].home_cnt++;
  if( ((homing[axis].home_state & (1 << 3) ) != 0) ){
   (homing[axis].home_state &= ~ (1 << 3 ) ) ;
- Home_Axis(-290.00,50,axis);
+ Home_Axis(-290.00,50.0,axis);
  }
 #line 627 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
@@ -1411,7 +1411,7 @@ HOMED:
 }
 
 
-static void Home_Axis(double distance,long speed,int axis){
+static void Home_Axis(double distance,float speed,int axis){
 
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
