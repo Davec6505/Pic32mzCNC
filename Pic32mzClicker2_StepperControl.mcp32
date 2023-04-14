@@ -30,7 +30,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Kinematics.c
+Value=Planner.h
 =======
 Value=Kinematics.c
 >>>>>>> patch12
@@ -151,7 +151,10 @@ File5=Planner.c
 File6=Kinematics.c
 File7=Kinematics.h
 File8=GCODE.c
-Count=9
+File9=Steptodistance.c
+File10=Steptodistance.h
+File11=Settings.h
+Count=12
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

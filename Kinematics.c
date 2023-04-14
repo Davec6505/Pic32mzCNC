@@ -78,6 +78,9 @@ long  absxyz = 0;
 long  tempA  = 0;
 int   dir    = 0;
 
+  //get rpm from mm/min
+  speed = RPM_FROM_MMPMIN(speed);
+  
   #if KineDebug == 4
   while(DMA_IsOn(1));
   dma_printf("cur_pos:= %l\tabsxyz:= %f\tnewxyz:= %f\tG90:= %d\n"
@@ -104,9 +107,11 @@ int   dir    = 0;
 }
 
 static void SingleAxisStart(long dist,float speed,int axis_No){
+long speed_ = 0;
 
+  
   Single_Axis_Enable(axis_No);
-  speed_cntr_Move(dist , speed , axis_No);
+  speed_cntr_Move(dist , speed, axis_No);
 
 //static long dist;
     /* if(STPS[axis].psingle != newxyz)
@@ -129,10 +134,12 @@ void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 long tempA,tempB,tempC;
 //int dirA,dirB;
 
-
-    //if absolute mode ~ newxyz = new_position - current_position
+ //get rpm from mm/min
+ speed = RPM_FROM_MMPMIN(speed);
+ 
+ //if absolute mode ~ newxyz = new_position - current_position
  if(gc.absolute_mode == true){
-     //get current position
+   //get current position
    tempA = belt_steps(axis_a,axisA);
    tempB = belt_steps(axis_b,axisB);
    

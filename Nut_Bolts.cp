@@ -527,7 +527,7 @@ void plan_init(float accel,float decel);
 void set_calculation_constants();
 
 
-void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 
 
 void sys_sync_current_position();
@@ -730,9 +730,9 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 33 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 52 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 45 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 64 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps(float mmsToMove, float Dia);
 long leadscrew_sets(float move_distance,int axis);
 long belt_steps(float move_distance,int axis);
@@ -740,6 +740,8 @@ float beltsteps2mm(long Steps,int axis);
 float mm2in(float mm);
 float in2mm(float inch);
 float fround(float var);
+float torpm(float mm_per_min);
+float toradians(float rev_per_min);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"

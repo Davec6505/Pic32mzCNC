@@ -44,11 +44,11 @@
 * acc = ((2 * ALPHA * T1_FREQ)*(Step1 - Step2)) / (Step1*Step2)*(Step1+Step2)
 *************************************************************************/
 #define PIx2        (2.00*M_Pi)
-#define ALPHA       (PIx2/SPR)
-#define A_T_x100    (long)(ALPHA*T1_FREQ*100.00)  // (ALPHA / T_FREQ)*100
+//#define ALPHA       (PIx2/SPR)
+//#define A_T_x100    (long)(ALPHA*T1_FREQ*100.00)  // (ALPHA / T_FREQ)*100
 #define T1_FREQ_148 ((T1_FREQ*0.676)/100.00)      // divided by 100 and scaled by 0.676
 #define SQ_MASK     10000000000
-#define A_SQ        (long)(ALPHA*2.00*SQ_MASK)    // ALPHA*2*10000000000
+//#define A_SQ        (long)(ALPHA*2.00*SQ_MASK)    // ALPHA*2*10000000000
 
 //mm/sec/sec for acceleration input
 #define secXsec     (60.00*60.00)                 // acc multiplier
@@ -93,7 +93,7 @@ void plan_init(float accel,float decel);
 void set_calculation_constants();
 
 //Acceleration, speed and Circ calcs
-void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 
 //sync the current position of axis
 void sys_sync_current_position();

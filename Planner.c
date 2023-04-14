@@ -10,8 +10,8 @@ sVars SV;
 /////////////////////////////////////////////////////
 //      COMMON VARIABLES INITIALIZED AT STARTUP    //
 /////////////////////////////////////////////////////
-long a_t_x100[NoOfAxis]          absolute 0xA0002640 ;
-long a_sq[NoOfAxis]     absolute 0xA0002680 ;
+float a_t_x100[NoOfAxis]         absolute 0xA0002640 ;
+long a_sq[NoOfAxis]              absolute 0xA0002680 ;
 float alpha[NoOfAxis]            absolute 0xA0002720 ;
 
 
@@ -37,9 +37,9 @@ int i;
     //alpha 2 x Pi / SPR
  for(i=0;i<NoOfAxis;i++){
  //2*3.14159)/SPR
-  alpha[i] = (PIx2 / settings.steps_per_mm[i]);
+  alpha[i] = (PIx2 / (settings.steps_per_mm[i]*M_STEP));
   //(long)((ALPHA*T1_FREQ)*100)
-  a_t_x100[i] = lround(alpha[i] * T1_FREQ * 100.00);
+  a_t_x100[i] = lround(alpha[i] * T1_FREQ);// * 100.00);
   //(long)(ALPHA*2*SQ_MASK)
   a_sq[i] = lround(alpha[i] * 2 * SQ_MASK);
  }
@@ -58,10 +58,10 @@ int i;
  *  \param speed  Max speed, in 0.01*rad/sec.
  *
  ***********************************************************************/
-void speed_cntr_Move(long mmSteps, long speed, int axis_No){
+void speed_cntr_Move(long mmSteps, float speed, int axis_No){
 int ii;
-long temp_speed;
-static long last_speed;
+float temp_speed;
+static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
   STPS[axis_No].dist =  abs_mmSteps;
@@ -89,19 +89,21 @@ long abs_mmSteps = labs(mmSteps);
     // Only move if number of steps to move is not zero.
     // Set max speed limit, by calc min_delay to use in timer.
     // min_delay = (ALPHA / T1_Freq)/ speed
-    STPS[axis_No].min_delay =  a_t_x100[axis_No] / temp_speed;
+    STPS[axis_No].min_delay =  lround(a_t_x100[axis_No] / temp_speed);
 
+    
     // Set accelration by calc the first (c0) step delay .
     // step_delay = 1/T_Freq*sqrt(2*alpha/accel)
     // step_delay = ( T_Freq*0.676/100 ) * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
     STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
+    
     if(STPS[axis_No].step_delay > minSpeed)
        STPS[axis_No].StartUp_delay = minSpeed;
     else
        STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
     // Find out after how many Steps before the speed hits the max speed limit.
-    STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(lround)(2.0*alpha[axis_No]*100.0*(float)STPS[axis_No].acc);
+    STPS[axis_No].max_step_lim =(long)(temp_speed*temp_speed)/(2.0*alpha[axis_No]*100.0*(float)STPS[axis_No].acc);
 
     //test calc using A_x20000 ???
     //STPS.max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
@@ -109,7 +111,7 @@ long abs_mmSteps = labs(mmSteps);
     // If we hit max speed limit before 0,5 step it will round to 0.
     // But in practice we need to move atleast 1 step to get any speed at all.
     if(STPS[axis_No].max_step_lim == 0){
-      STPS[axis_No].max_step_lim = 1;
+       STPS[axis_No].max_step_lim = 1;
     }
 
     // Find out after how many Steps before we must start deceleration.
@@ -163,18 +165,28 @@ long abs_mmSteps = labs(mmSteps);
 
 while(DMA_IsOn(1));
 dma_printf("\n\
-run_state[%d]:= %d\n\
-step_dir:= %d\n\
+speed:= %f\n\
+a_sq[%d]:= %l\n\
+alpha[%d]:= %f\n\
+a_t_x100[%d]:= %f\n\
+STPS[axis_No].max_step_lim:= %l\n\
+STPS[].dec:= %l\n\
 abs_mmSteps:= %l\n\
-acc_lim:= %d\n\
+acc_lim:= %l\n\
 dec_lim:= %l\n\
 dec_start:= %l\n\
 min_dly:= %l\n\n"
+,speed
 ,axis_No
-,(STPS[axis_No].run_state&0xff)
-,STPS[axis_No].axis_dir
-,STPS[axis_No].dist
+,a_sq[axis_No]
+,axis_No
+,alpha[axis_No]
+,axis_No
+,a_t_x100[axis_No]
 ,STPS[axis_No].max_step_lim
+,STPS[axis_No].dec
+,abs_mmSteps
+,STPS[axis_No].accel_lim
 ,STPS[axis_No].decel_val
 ,STPS[axis_No].decel_start
 ,STPS[axis_No].min_delay);

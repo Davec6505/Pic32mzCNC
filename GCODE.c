@@ -486,16 +486,12 @@ int F_Val,O_Val;
       case 'F':
             XYZ_Val = *(float*)any;
             if(XYZ_Val < 0){FAIL(STATUS_SPEED_ERROR);break;}
-            // still to be implimented <need to understand how speed is sent?>
-            if (gc.inverse_feed_rate_mode) {
-              inverse_feed_rate = To_Millimeters(XYZ_Val); // seconds per motion for this motion only
-            } else {
-              gc.feed_rate = To_Millimeters(XYZ_Val);     // millimeters per minut
-            }
+            //inches or mm decision
+            gc.feed_rate = To_Millimeters(XYZ_Val);
 
             #if GcodeDebug == 10
             while(DMA_IsOn(1));
-            dma_printf("gc.frequency:= %l\n",gc.frequency);
+            dma_printf("gc.feed_rate:= %f\n",gc.feed_rate);
             #endif
             break;
       case 'P':

@@ -96,7 +96,7 @@ typedef __attribute__((aligned (32))) float afloat;
 #define NO_OF_PLANES 4
 
 //! Number of (full)steps per round on stepper motor in use.
-#define SPR    200.00
+//#define SPR    200.00
 #define M_STEP 32.00               //Stepper drive micro steps setting
 
 /**************************************************

@@ -124,9 +124,9 @@ typedef struct {
 } settings_t;
 
 extern settings_t settings;
-#line 33 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 52 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 45 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 64 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps(float mmsToMove, float Dia);
 long leadscrew_sets(float move_distance,int axis);
 long belt_steps(float move_distance,int axis);
@@ -134,6 +134,8 @@ float beltsteps2mm(long Steps,int axis);
 float mm2in(float mm);
 float in2mm(float inch);
 float fround(float var);
+float torpm(float mm_per_min);
+float toradians(float rev_per_min);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
 
@@ -907,7 +909,7 @@ void plan_init(float accel,float decel);
 void set_calculation_constants();
 
 
-void speed_cntr_Move(long mmSteps, long speed, int axis_combo);
+void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 
 
 void sys_sync_current_position();
@@ -930,7 +932,7 @@ sVars SV;
 
 
 
-long a_t_x100[ 4 ] absolute 0xA0002640 ;
+float a_t_x100[ 4 ] absolute 0xA0002640 ;
 long a_sq[ 4 ] absolute 0xA0002680 ;
 float alpha[ 4 ] absolute 0xA0002720 ;
 
@@ -957,18 +959,18 @@ int i;
 
  for(i=0;i< 4 ;i++){
 
- alpha[i] = ( (2.00* 3.141592653589793238462643 )  / settings.steps_per_mm[i]);
+ alpha[i] = ( (2.00* 3.141592653589793238462643 )  / (settings.steps_per_mm[i]* 32.00 ));
 
- a_t_x100[i] = lround(alpha[i] *  6250000  * 100.00);
+ a_t_x100[i] = lround(alpha[i] *  6250000 );
 
  a_sq[i] = lround(alpha[i] * 2 *  10000000000 );
  }
 }
 #line 61 "C:/Users/Git/Pic32mzCNC/Planner.c"
-void speed_cntr_Move(long mmSteps, long speed, int axis_No){
+void speed_cntr_Move(long mmSteps, float speed, int axis_No){
 int ii;
-long temp_speed;
-static long last_speed;
+float temp_speed;
+static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
  STPS[axis_No].dist = abs_mmSteps;
@@ -996,19 +998,21 @@ long abs_mmSteps = labs(mmSteps);
 
 
 
- STPS[axis_No].min_delay = a_t_x100[axis_No] / temp_speed;
+ STPS[axis_No].min_delay = lround(a_t_x100[axis_No] / temp_speed);
+
 
 
 
 
  STPS[axis_No].step_delay = labs((long) (( 6250000 *0.676)/100.00)  * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
+
  if(STPS[axis_No].step_delay >  30210 )
  STPS[axis_No].StartUp_delay =  30210 ;
  else
  STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
 
- STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(lround)(2.0*alpha[axis_No]*100.0*(float)STPS[axis_No].acc);
+ STPS[axis_No].max_step_lim =(long)(temp_speed*temp_speed)/(2.0*alpha[axis_No]*100.0*(float)STPS[axis_No].acc);
 
 
 
@@ -1064,9 +1068,31 @@ long abs_mmSteps = labs(mmSteps);
  SV.mode_complete = 0;
  SV.running = 1;
  last_speed = speed;
-#line 183 "C:/Users/Git/Pic32mzCNC/Planner.c"
+
+
+
+
+while(DMA_IsOn(1));
+#line 178 "C:/Users/Git/Pic32mzCNC/Planner.c"
+dma_printf("\nspeed:= %f\na_sq[%d]:= %l\nalpha[%d]:= %f\na_t_x100[%d]:= %f\nSTPS[axis_No].max_step_lim:= %l\nSTPS[].dec:= %l\nabs_mmSteps:= %l\nacc_lim:= %l\ndec_lim:= %l\ndec_start:= %l\nmin_dly:= %l\n\n"
+,speed
+,axis_No
+,a_sq[axis_No]
+,axis_No
+,alpha[axis_No]
+,axis_No
+,a_t_x100[axis_No]
+,STPS[axis_No].max_step_lim
+,STPS[axis_No].dec
+,abs_mmSteps
+,STPS[axis_No].accel_lim
+,STPS[axis_No].decel_val
+,STPS[axis_No].decel_start
+,STPS[axis_No].min_delay);
+
+
 }
-#line 195 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 207 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
  float r, float i, float j, float k, int axis_A,int axis_B,int dir){
 char isclockwise = 0;
@@ -1091,7 +1117,7 @@ int axis_plane_a,axis_plane_b;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 282 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 294 "C:/Users/Git/Pic32mzCNC/Planner.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -1104,7 +1130,7 @@ int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (Get_motionmode() ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 316 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 328 "C:/Users/Git/Pic32mzCNC/Planner.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -1124,7 +1150,7 @@ int axis_plane_a,axis_plane_b;
  if (dir ==  0 ) { isclockwise = 1; }
 
 while(DMA_IsOn(1));
-#line 336 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 348 "C:/Users/Git/Pic32mzCNC/Planner.c"
 dma_printf("\n[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
 ,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
 
@@ -1147,7 +1173,12 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-#line 364 "C:/Users/Git/Pic32mzCNC/Planner.c"
+
+
+while(DMA_IsOn(1));
+dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
+
+
 }
 
 
@@ -1156,7 +1187,7 @@ void plan_reset_absolute_position(){
  for(i=0;i< 4 ;i++)
  STPS[X].steps_abs_position = 0;
 }
-#line 388 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 400 "C:/Users/Git/Pic32mzCNC/Planner.c"
 long sqrt_(long x){
 
  volatile unsigned long xr;
