@@ -58,7 +58,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 174 "c:/users/git/pic32mzcnc/settings.h"
+#line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -175,9 +175,9 @@ extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 52 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 58 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 64 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 70 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps(float mmsToMove, float Dia);
 long leadscrew_sets(float move_distance,int axis);
 long belt_steps(float move_distance,int axis);
@@ -994,7 +994,7 @@ long tempA = 0;
 int dir = 0;
 
 
- speed =  ((speed)/( (( 20.00 )*( 2.00 )) )) ;
+ speed =  (( ((speed)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
 #line 91 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(gc.absolute_mode ==  1 ){
 

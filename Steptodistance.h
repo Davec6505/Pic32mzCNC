@@ -21,8 +21,10 @@
 */
 #define RPM_TO_RAD  9.5492968
 #define RAD_TO_RPM  0.1047198
-
+#define SECPMIN     60.00
 #define temp_M_STEP 0.032
+
+
  // 1/mm_rev
 #define INVERSE_LEADSCREW_PITCH (1/LEADSCREW_PITCH)
 // 1/Stepper micro steps setting
@@ -39,6 +41,10 @@
 #define SPRU(spr) ((spr)*(M_STEP))
 // rpm = mm/min / (pitch * pulley tooth count) e.g 300/40 = 7.5rpm
 #define RPM_FROM_MMPMIN(mm_min) ((mm_min)/(PITCHXTOOTH()))
+// rps = rpm/60.0 revs per sec
+#define RPS_FROM_MMPMIN(mm_min) ((RPM_FROM_MMPMIN(mm_min))/(SECPMIN))
+// PPS = RPM * 60.0  e.g 300mm/min = [7.5rpm / 60.0 = 0.125  ]
+#define PPS(rpm) ((rpm)/(60.0))
 // 1rad = 9.549rpm  e.g. 7.5rpm / 9.549 = 0.785rad/sec [speed in radians]
 #define RADIANS_FROM_RPM(mm_rev) ((RPM_TO_RAD)/(mm_rev))
 // Steps/mm  SPRU / PITCHXTOOTH e.g. (200*32)/40 = 160ppmm

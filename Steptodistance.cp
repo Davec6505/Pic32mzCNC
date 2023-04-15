@@ -98,7 +98,7 @@ extern sfr sbit Y_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 174 "c:/users/git/pic32mzcnc/settings.h"
+#line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -123,9 +123,9 @@ typedef struct {
 } settings_t;
 
 extern settings_t settings;
-#line 52 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 58 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 64 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 70 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps(float mmsToMove, float Dia);
 long leadscrew_sets(float move_distance,int axis);
 long belt_steps(float move_distance,int axis);
@@ -929,9 +929,9 @@ void Test_CycleZ();
 void Test_CycleA();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 52 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 58 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 64 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 70 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps(float mmsToMove, float Dia);
 long leadscrew_sets(float move_distance,int axis);
 long belt_steps(float move_distance,int axis);
@@ -946,10 +946,8 @@ float toradians(float rev_per_min);
 long leadscrew_steps(double move_distance,int axis){
 double temp = 0.00;
 
-
-
- temp =  (1/ 1 )  *  (1/ 0.032 )  * settings.steps_per_mm[axis];
-
+ temp =  1  *  (1/ 0.032 )  * settings.steps_per_mm[axis];
+#line 24 "C:/Users/Git/Pic32mzCNC/Steptodistance.c"
  return temp;
 }
 

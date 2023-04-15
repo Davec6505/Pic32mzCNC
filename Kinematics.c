@@ -78,8 +78,8 @@ long  absxyz = 0;
 long  tempA  = 0;
 int   dir    = 0;
 
-  //get rpm from mm/min
-  speed = RPM_FROM_MMPMIN(speed);
+  //get rps from mm/min
+  speed = RPS_FROM_MMPMIN(speed);
   
   #if KineDebug == 4
   while(DMA_IsOn(1));

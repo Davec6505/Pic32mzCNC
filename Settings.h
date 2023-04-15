@@ -53,7 +53,7 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_MM_PER_ARC_SEGMENT     0.20
 #define DEFAULT_RAPID_FEEDRATE         500.00 // mm/min
 #define DEFAULT_FEEDRATE               250.00
-#define DEFAULT_ACCELERATION           (3.50*secXsec) // 10 mm/min^2
+#define DEFAULT_ACCELERATION           5000.00//(3.50*secXsec) // 10 mm/min^2
 #define DEFAULT_JUNCTION_DEVIATION     0.05 // mm
 #define DEFAULT_HOMING_RAPID_FEEDRATE  1000.00 // mm/min
 #define DEFAULT_HOMING_FEEDRATE        500.00 // mm/min
@@ -84,21 +84,16 @@ typedef __attribute__((aligned (32))) float afloat;
 //              Stepper Motor Settings                    //
 ////////////////////////////////////////////////////////////
 #define NoOfAxis 4
-#define  _X      0
-#define  _Y      1
-#define  _Z      2
-#define  _A      3
-#define  _B      4
-#define  _C      5
 
 //Number of planes must be adjusted acording to NoOfAxis
-//4 axis has 4 planes XY XZ YZ [XA YA
+//4 axis has 4 planes XY XZ YZ [XA YA ZA]
 #define NO_OF_PLANES 4
 
-//! Number of (full)steps per round on stepper motor in use.
-//#define SPR    200.00
-#define M_STEP 32.00               //Stepper drive micro steps setting
+//! Stepper drive micro steps setting.
+#define M_STEP   32.00
 
+//! Maximun mm/min needed for calculation
+#define MAX_SPEED 300,00 //In mm/min
 /**************************************************
 * ! Belt driven systems
 **************************************************/
@@ -109,7 +104,7 @@ typedef __attribute__((aligned (32))) float afloat;
 /**************************************************
 * uncomment USE_LEADSCREW_PITCH if using N instead of pitch
 **************************************************/
-#define USE_LEADSCREW_PITCH
+//#define USE_LEADSCREW_PITCH
 //! Lead screw driven systems
 #define N 1                    // Screw pitch tpmm
 #define LEADSCREW_PITCH 1      //leadscrewm pitch
@@ -120,7 +115,7 @@ typedef __attribute__((aligned (32))) float afloat;
 ///////////////////////////////////////////////////////////
 
 /***************************************************
-* Set the Limit Debounce  counter max count
+* Set the Limit switch Debounce counter [max count]
 ***************************************************/
 #define DEBOUNCE_COUNT 5
 

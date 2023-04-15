@@ -9,7 +9,7 @@
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 174 "c:/users/git/pic32mzcnc/settings.h"
+#line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -577,9 +577,9 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 52 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 58 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 64 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 70 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps(float mmsToMove, float Dia);
 long leadscrew_sets(float move_distance,int axis);
 long belt_steps(float move_distance,int axis);
@@ -1011,7 +1011,7 @@ int retry_flash_write = 0;
  settings.mm_per_arc_segment =  0.20 ;
  buffA[ 0x4C ] = flt2ulong(settings.mm_per_arc_segment);
 
- settings.acceleration =  (3.50* (60.00*60.00) ) ;
+ settings.acceleration =  5000.00 ;
  buffA[ 0x4D ] = flt2ulong(settings.acceleration);
 
  settings.junction_deviation =  0.05 ;

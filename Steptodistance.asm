@@ -1,7 +1,7 @@
 _leadscrew_steps:
 ;Steptodistance.c,17 :: 		long leadscrew_steps(double move_distance,int axis){
 ;Steptodistance.c,18 :: 		double temp = 0.00;
-;Steptodistance.c,22 :: 		temp =  INVERSE_LEADSCREW_PITCH * INVERSE_M_STEP * settings.steps_per_mm[axis];
+;Steptodistance.c,20 :: 		temp =  N * INVERSE_M_STEP * settings.steps_per_mm[axis];
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_settings+0)

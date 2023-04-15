@@ -145,7 +145,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 174 "c:/users/git/pic32mzcnc/settings.h"
+#line 169 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -748,9 +748,9 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 52 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 58 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 64 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 70 "c:/users/git/pic32mzcnc/steptodistance.h"
 long calcSteps(float mmsToMove, float Dia);
 long leadscrew_sets(float move_distance,int axis);
 long belt_steps(float move_distance,int axis);
@@ -945,7 +945,7 @@ static int send_status_once = 0;
 
 void Conditin_Externs(){
  PinMode();
- plan_init(1800.00,1800.00);
+ plan_init(1500.00,1500.00);
  Init_Protocol();
  G_Initialise();
  disableOCx();
@@ -1041,7 +1041,25 @@ static int cntr = 0,a = 0;
  break;
  }
  }
-#line 178 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+
+if(!SV.mode_complete){
+if(STPS[X].run_state !=  0  | STPS[Y].run_state !=  0 ){
+while(DMA_IsOn(1));
+#line 166 "C:/Users/Git/Pic32mzCNC/Main.c"
+dma_printf("dif:= %l\t%l\t%l\t%d\t%l\t%l\n"
+,SV.dif
+,STPS[X].step_count
+,STPS[X].accel_count
+,(STPS[Y].run_state&0xff)
+,STPS[Y].step_count
+,STPS[Y].accel_count);
+}
+}
+
+
+
  protocol_system_check();
 
 

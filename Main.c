@@ -52,7 +52,7 @@ static int send_status_once = 0;
 //condition externs
 void Conditin_Externs(){
   PinMode();
-  plan_init(1800.00,1800.00);
+  plan_init(1500.00,1500.00);//settings.acceleration,settings.acceleration);
   Init_Protocol();
   G_Initialise();
   disableOCx();

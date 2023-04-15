@@ -60360,6 +60360,7 @@ spllconinv
 spllconinvbits
 spllconset
 spllconsetbits
+spr_x_mstep
 sprintf
 sprinti
 sprintl

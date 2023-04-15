@@ -30,7 +30,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Planner.h
+Value=Settings.h
 =======
 Value=Kinematics.c
 >>>>>>> patch12
@@ -147,14 +147,15 @@ File1=DEFINES.pld
 File2=Stepper.c
 File3=Stepper.h
 File4=Planner.h
-File5=Planner.c
-File6=Kinematics.c
-File7=Kinematics.h
-File8=GCODE.c
-File9=Steptodistance.c
-File10=Steptodistance.h
-File11=Settings.h
-Count=12
+File5=Kinematics.c
+File6=Kinematics.h
+File7=GCODE.c
+File8=Steptodistance.c
+File9=Steptodistance.h
+File10=Settings.h
+File11=Planner.c
+File12=Globals.c
+Count=13
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
