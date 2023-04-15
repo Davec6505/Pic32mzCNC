@@ -961,7 +961,7 @@ int i;
 
  alpha[i] = ( (2.00* 3.141592653589793238462643 )  / (settings.steps_per_mm[i]* 32.00 ));
 
- a_t_x100[i] = (alpha[i] *  6250000 );
+ a_t_x100[i] = (alpha[i] *  6250000  * 100.00);
 
  a_sq[i] = lround(alpha[i] * 2 *  10000000000 );
 
@@ -1009,7 +1009,7 @@ long abs_mmSteps = labs(mmSteps);
 
 
 
- STPS[axis_No].step_delay = labs((long) (( 6250000 *0.676)/100.00)  * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))));
+ STPS[axis_No].step_delay = labs((long) (( 6250000 *0.676)/100.00)  * (((float)sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100.00));
 
  if(STPS[axis_No].step_delay >  30210 )
  STPS[axis_No].StartUp_delay =  30210 ;
@@ -1017,7 +1017,7 @@ long abs_mmSteps = labs(mmSteps);
  STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
 
- STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*(float)STPS[axis_No].acc));
+ STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*10000.00*(float)STPS[axis_No].acc));
 
 
 
@@ -1156,14 +1156,7 @@ int axis_plane_a,axis_plane_b;
 
  isclockwise = 0;
  if (dir ==  0 ) { isclockwise = 1; }
-
-while(DMA_IsOn(1));
-#line 357 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("\n[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
-,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
-
-
-
+#line 362 "C:/Users/Git/Pic32mzCNC/Planner.c"
  mc_arc(position, target, offset, axis_A, axis_B, Z,
  gc.feed_rate, gc.inverse_feed_rate_mode,r, isclockwise);
 }

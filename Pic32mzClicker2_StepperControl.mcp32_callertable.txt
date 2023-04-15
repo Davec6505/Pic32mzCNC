@@ -128,24 +128,22 @@ main
 				dma_printf
 				__CC2DW
 		r_or_ijk
+			__CC2DW
 			sqrt
 				frexp
 				ldexp
 			hypot
 				sqrt
 			Get_motionmode
-			DMA_IsOn
-			dma_printf
 			mc_arc
+				__CC2DW
 				atan2
 					fabs
 					atan
 						fabs
 						eval_poly
-				DMA_IsOn
-				dma_printf
-				hypot
 				fabs
+				hypot
 				floor
 				cos
 					sin
@@ -153,8 +151,6 @@ main
 						eval_poly
 				sin
 				DualAxisStep
-				__CC2DW
-			__CC2DW
 		Home
 			Rst_FP
 			Rst_FN
@@ -302,9 +298,6 @@ main
 			Instruction_Values
 				To_Millimeters
 				FAIL
-				DMA_IsOn
-				dma_printf
-				__CC2DW
 			M_Mode
 				Set_M_Modal_Commands
 				Set_M_Commands

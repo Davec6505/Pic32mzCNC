@@ -39,7 +39,7 @@ int i;
  //2*3.14159)/SPR
   alpha[i] = (PIx2 / (settings.steps_per_mm[i]*M_STEP));
   //(long)((ALPHA*T1_FREQ)*100)
-  a_t_x100[i] = (alpha[i] * T1_FREQ);// * 100.00);
+  a_t_x100[i] = (alpha[i] * T1_FREQ * 100.00);
   //(long)(ALPHA*2*SQ_MASK)
   a_sq[i] = lround(alpha[i] * 2 * SQ_MASK);
   //base_pps = a_t_x100 * T1_Freq
@@ -100,7 +100,7 @@ long abs_mmSteps = labs(mmSteps);
     // Set accelration by calc the first (c0) step delay .
     // step_delay = 1/T_Freq*sqrt(2*alpha/accel)
     // step_delay = ( T_Freq*0.676/100 ) * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-    STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))));
+    STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * (((float)sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100.00));
     
     if(STPS[axis_No].step_delay > minSpeed)
        STPS[axis_No].StartUp_delay = minSpeed;
@@ -108,7 +108,7 @@ long abs_mmSteps = labs(mmSteps);
        STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
     // Find out after how many Steps before the speed hits the max speed limit.
-    STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*(float)STPS[axis_No].acc));
+    STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*10000.00*(float)STPS[axis_No].acc));
 
     //test calc using A_x20000 ???
     //STPS.max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);

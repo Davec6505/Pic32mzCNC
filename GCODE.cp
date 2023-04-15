@@ -1351,11 +1351,7 @@ int F_Val,O_Val;
  if(XYZ_Val < 0){FAIL( 13 );break;}
 
  gc.feed_rate = To_Millimeters(XYZ_Val);
-
-
- while(DMA_IsOn(1));
- dma_printf("gc.feed_rate:= %f\n",gc.feed_rate);
-
+#line 496 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
