@@ -435,7 +435,7 @@ int i = 0;
 int Instruction_Values(char *c,void *any){
 float XYZ_Val;
 int F_Val,O_Val;
-
+   FAIL(STATUS_OK);
    switch(c[0]){
       case 'X':case 'x':
             XYZ_Val = *(float*)any;

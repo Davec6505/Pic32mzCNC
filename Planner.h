@@ -91,6 +91,9 @@ void plan_init(float accel,float decel);
 //Set the values to init calculation constants
 void set_calculation_constants();
 
+//Speed in steprate for timers
+float Get_Step_Rate(float speed,int axis);
+
 //Acceleration, speed and Circ calcs
 void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 

@@ -47,6 +47,15 @@ int i;
  }
 }
 
+//////////////////////////////////////////////////////////////////////////
+//calculate speed indipendantly from speed_cntr_Move
+float Get_Step_Rate(float speed,int axis){
+// speed is in rpm ~ need to convert tp pps / steprate
+// speed /= 60.0; //base_pps[axis_No]/speed;
+  speed *= spr_x_mstep[axis];
+  return speed;
+}
+
 /************************************************************************
  *  Makes the stepper motor move the given number of steps.
  *  It accelrate with given accelration up to maximum speed and decelerate
@@ -69,8 +78,9 @@ long abs_mmSteps = labs(mmSteps);
   STPS[axis_No].dist =  abs_mmSteps;
   
   // speed is in rpm ~ need to convert tp pps / steprate
- // speed /= 60.0; //base_pps[axis_No]/speed;
-  speed *= spr_x_mstep[axis_No];
+  // speed /= 60.0; //base_pps[axis_No]/speed;
+  speed = Get_Step_Rate(speed,axis_No);//*= spr_x_mstep[axis_No];
+ 
   // If moving only 1 step then set accel counter
   // and run state to decellerate -ve acc count value
   // is for addition to step couter.
@@ -358,13 +368,15 @@ dma_printf("\n\
 [pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
 ,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
 #endif
+
   //get rps from mm/min
   speed = RPS_FROM_MMPMIN(gc.feed_rate);
-  
-        //  gc.plane_axis_2 =1;
-        // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
-          mc_arc(position, target, offset, axis_A, axis_B, Z,
-                 speed, gc.inverse_feed_rate_mode,r, isclockwise);
+  //rps to step rate
+  speed = Get_Step_Rate(speed,axis_A);
+
+  // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
+  mc_arc(position, target, offset, axis_A, axis_B, Z,
+         speed, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
 

@@ -72,6 +72,8 @@ NOP
 L__main140:
 L__main139:
 ;Main.c,92 :: 		int axis_to_run = 0;
+MOVZ	R30, R0, R0
+SH	R30, 2(SP)
 ;Main.c,94 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
@@ -81,11 +83,8 @@ SEH	R4, R2
 J	L_main5
 NOP	
 ; modal_group end address is: 16 (R4)
-;Main.c,102 :: 		case 0:FAIL(STATUS_OK);break;
+;Main.c,102 :: 		case 0:break;
 L_main7:
-MOVZ	R25, R0, R0
-JAL	_FAIL+0
-NOP	
 J	L_main6
 NOP	
 ;Main.c,103 :: 		case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
@@ -129,6 +128,7 @@ NOP
 ;Main.c,116 :: 		axis_to_run = Rst_Axisword();
 JAL	_Rst_Axisword+0
 NOP	
+SH	R2, 2(SP)
 ;Main.c,117 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	

@@ -32542,6 +32542,7 @@ get_modalgroup
 get_motionmode
 get_non_modalword
 get_runstate
+get_step_rate
 get_tail_value
 getaxisdirection
 glswtrg

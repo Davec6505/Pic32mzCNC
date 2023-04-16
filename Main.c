@@ -99,7 +99,7 @@ static int cntr = 0,a = 0;
      //could impliment a minimal state m/c for modal group control rather
      //than this switch statement
      switch(modal_group){
-        case 0:FAIL(STATUS_OK);break;
+        case 0:break;
         case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
              modal_action = Modal_Group_Actions0(Get_non_modalword());
              modal_action = modal_group = Rst_modalgroup();

@@ -404,9 +404,9 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 ////////////////////////////////////////////////////////
 
 void SingleStepAxis(int axis){
+  if(bit_istrue(SV.mode_complete,axis))return;
   Step_Cycle(axis);
   Pulse(axis);
-
 }
 
 ////////////////////////////////////////////////////////
@@ -437,19 +437,18 @@ static int cnt;
      if(!SV.cir)
         Pulse(axisA);
 
-
       if(SV.dif < 0){
           SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
       }else{
           Step_Cycle(axisB);
           SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
       }
+      
       //axisA is used here to stop axisB otherwise axisB will over step its mark
       if(STPS[axisA].run_state == STOP | STPS[axisA].step_count >= STPS[axisA].dist){
         StopAxis(axisB);
         STPS[axisA].run_state = STOP;
         STPS[axisB].run_state = STOP;
-        //bit_true(SV.mode_complete,bit(axisB));
       }
         
    }else{
@@ -478,7 +477,6 @@ static int cnt;
         StopAxis(axisA);
         STPS[axisA].run_state = STOP;
         STPS[axisB].run_state = STOP;
-        //bit_true(SV.mode_complete,bit(axisA));
      }
    }
 }

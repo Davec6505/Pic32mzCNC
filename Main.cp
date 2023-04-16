@@ -545,6 +545,9 @@ void plan_init(float accel,float decel);
 void set_calculation_constants();
 
 
+float Get_Step_Rate(float speed,int axis);
+
+
 void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 
 
@@ -987,7 +990,7 @@ static int cntr = 0,a = 0;
  modal_group = Get_modalgroup();
 #line 101 "C:/Users/Git/Pic32mzCNC/Main.c"
  switch(modal_group){
- case 0:FAIL( 0 );break;
+ case 0:break;
  case 2:
  modal_action = Modal_Group_Actions0(Get_non_modalword());
  modal_action = modal_group = Rst_modalgroup();

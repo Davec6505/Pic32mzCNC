@@ -1661,12 +1661,18 @@ NOP
 ; end of _Check_group_multiple_violations
 _Instruction_Values:
 ;GCODE.c,435 :: 		int Instruction_Values(char *c,void *any){
-ADDIU	SP, SP, -12
+ADDIU	SP, SP, -16
 SW	RA, 0(SP)
-;GCODE.c,439 :: 		switch(c[0]){
+;GCODE.c,438 :: 		FAIL(STATUS_OK);
 SW	R25, 4(SP)
+SW	R25, 8(SP)
+MOVZ	R25, R0, R0
+JAL	_FAIL+0
+NOP	
+LW	R25, 8(SP)
+;GCODE.c,439 :: 		switch(c[0]){
 MOVZ	R2, R25, R0
-SW	R2, 8(SP)
+SW	R2, 12(SP)
 J	L_Instruction_Values126
 NOP	
 ;GCODE.c,440 :: 		case 'X':case 'x':
@@ -1924,7 +1930,7 @@ J	L_Instruction_Values127
 NOP	
 ;GCODE.c,521 :: 		}
 L_Instruction_Values126:
-LW	R4, 8(SP)
+LW	R4, 12(SP)
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 88
@@ -2048,7 +2054,7 @@ LH	R2, Offset(-1610602986)(GP)
 L_end_Instruction_Values:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 12
+ADDIU	SP, SP, 16
 JR	RA
 NOP	
 ; end of _Instruction_Values

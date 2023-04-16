@@ -211,18 +211,18 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
   }
   
   if(SV.dA >= SV.dB){
-     //if(!SV.cir){
+    // if(!SV.cir){
         speed_cntr_Move(tempA,speed,axisA);
         //speed_cntr_Move(tempB,speed,axisB);
         STPS[axisB].step_delay = STPS[axisA].step_delay;
         STPS[axisB].accel_count = STPS[axisA].accel_count;
-     //}
+    // }
 
      SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
      STPS[axisA].master = 1;
      STPS[axisB].master = 0;
   }else{
-     //if(!SV.cir){
+    // if(!SV.cir){
         speed_cntr_Move(tempB,speed,axisB);
         //speed_cntr_Move(tempA,speed,axisA);
         STPS[axisA].step_delay = STPS[axisB].step_delay;
@@ -430,8 +430,9 @@ dma_printf("\
     }else if(position[axis_1] < target[axis_1]){
       if(nPy >= target[axis_1]){nPy = target[axis_1];}
     }
+
     //interpolate the difference
-    DualAxisStep(nPx,nPy,axis_0,axis_1,gc.frequency);//,xy);
+    DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);//,xy);
    //wait here while axis completes its move can posibly
    //check limits and estops as well as send out status report
    // will want ot unblockthis nce we have a complete working model
@@ -463,7 +464,7 @@ dma_printf("\
   //end of arc get to correct target
   SV.cir = 0;
   //ensure axis are in position when arc is complete
-  DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,gc.frequency);
+  DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,feed_rate);
   //report_status_message(STATUS_OK);
  // SV.mode_complete = 1;
   #if KineDebug == 3
@@ -628,7 +629,9 @@ HOMED:
        homing[axis].home_cnt++;
        if(bit_istrue(homing[axis].home_state,BIT_HOME_REV)){
           bit_false(homing[axis].home_state,bit(HOME_REV));
-          Home_Axis(-290.00,50.0,axis);
+          //distance here is any value to move onto the limit
+          //movement will stop on edge of limit
+          Home_Axis(-290.00,settings.homing_feed_rate,axis);
        }
        #if HomeDebug == 2
        while(DMA_IsOn(1));
@@ -658,6 +661,10 @@ static void Home_Axis(double distance,float speed,int axis){
   #endif
   //calculate the distance in Steps and send to stepper control
   STPS[axis].mmToTravel = belt_steps(distance,axis);
+  //get rps from mm/min
+  speed = RPS_FROM_MMPMIN(speed);
+  //get pps from rps
+  speed = Get_Step_Rate(speed,axis);
   SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 

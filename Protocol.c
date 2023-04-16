@@ -318,23 +318,23 @@ int dif,state;
     if(bit_isfalse(startup,bit(START_MSG))){
         Do_Startup_Msg(str,dif);
         return STATUS_OK;
-    }//else if(bit_istrue(startup,bit(START_MSG))){
+    }
 
-      //? cannot be used with '\n'
-      if(str[0] == '?')return state;
+    //? cannot be used with '\n'
+    if(str[0] == '?')return state;
      
-      //a messages after firmware query '?'
-      state = Check_Query_Type(str,dif);
+    //a messages after firmware query '?'
+    state = Check_Query_Type(str,dif);
 
-      //if msg_type == 20 then run gcode function
-      if(state == STATUS_COMMAND_EXECUTE_MOTION){
-         state = Do_Gcode(str,dif);
-         modal_response = Check_group_multiple_violations();
-        #if ProtoDebug == 26
-        while(DMA_IsOn(1));
-        dma_printf("state:= %d\n",state);
-        #endif
-      }
+    //if msg_type == 20 then run gcode function
+    if(state == STATUS_COMMAND_EXECUTE_MOTION){
+      state = Do_Gcode(str,dif);
+      modal_response = Check_group_multiple_violations();
+      #if ProtoDebug == 26
+      while(DMA_IsOn(1));
+      dma_printf("state:= %d\n",state);
+      #endif
+    }
   }
   return state;
 

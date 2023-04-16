@@ -399,6 +399,9 @@ void plan_init(float accel,float decel);
 void set_calculation_constants();
 
 
+float Get_Step_Rate(float speed,int axis);
+
+
 void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 
 

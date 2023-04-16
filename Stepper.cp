@@ -410,6 +410,9 @@ void plan_init(float accel,float decel);
 void set_calculation_constants();
 
 
+float Get_Step_Rate(float speed,int axis);
+
+
 void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 
 
@@ -1331,9 +1334,9 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 
 void SingleStepAxis(int axis){
+ if( ((SV.mode_complete & axis) != 0) )return;
  Step_Cycle(axis);
  Pulse(axis);
-
 }
 
 
@@ -1364,7 +1367,6 @@ static int cnt;
  if(!SV.cir)
  Pulse(axisA);
 
-
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dB)) ;
  }else{
@@ -1372,11 +1374,11 @@ static int cnt;
  SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
  }
 
+
  if(STPS[axisA].run_state ==  0  | STPS[axisA].step_count >= STPS[axisA].dist){
  StopAxis(axisB);
  STPS[axisA].run_state =  0 ;
  STPS[axisB].run_state =  0 ;
-
  }
 
  }else{
@@ -1405,7 +1407,6 @@ static int cnt;
  StopAxis(axisA);
  STPS[axisA].run_state =  0 ;
  STPS[axisB].run_state =  0 ;
-
  }
  }
 }

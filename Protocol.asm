@@ -1103,7 +1103,7 @@ NOP
 MOVZ	R2, R0, R0
 J	L_end_Sample_Gocde_Line
 NOP	
-;Protocol.c,321 :: 		}//else if(bit_istrue(startup,bit(START_MSG))){
+;Protocol.c,321 :: 		}
 L_Sample_Gocde_Line58:
 ;Protocol.c,324 :: 		if(str[0] == '?')return state;
 ; dif start address is: 16 (R4)
