@@ -396,16 +396,11 @@ typedef struct {
  int coord_select;
 
  int L;
-<<<<<<< HEAD
- volatile long frequency;
- volatile float feed_rate;
-=======
  long frequency;
  float feed_rate;
  float inverse_feedrate;
  float position[ 4 ];
  float coord_system[ 4 ];
->>>>>>> patch10
 
  float coord_offset[ 4 ];
 
@@ -1172,7 +1167,19 @@ char limit_error = 0;
  if(angular_travel <= 0)
  angular_travel +=  (2.00* 3.141592653589793238462643 ) ;
  }
-#line 341 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+while(DMA_IsOn(1));
+#line 332 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+dma_printf("[posx:=%f : posy:=%f]\n[tarx:=%f : tary:=%f]\n[offx:= %f : offy:= %f]\r\n[cenx:= %f : ceny:= %f]\r\n[r_axis0:= %f : r_axis1:= %f]\r\n[rt_axis0:= %f : rt_axis1:= %f]\r\n\n",
+ position[axis_0],position[axis_1]
+ ,target[axis_0],target[axis_1]
+ ,offset[axis_0],offset[axis_1]
+ ,center_axis0,center_axis1
+ ,r_axis0,r_axis1,rt_axis0,rt_axis1);
+
+
+
  mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
  if (mm_of_travel == 0.0) { return; }
 
@@ -1200,23 +1207,17 @@ char limit_error = 0;
  nPx = arc_target[axis_0] = position[axis_0];
  nPy = arc_target[axis_1] = position[axis_1];
  OC5IE_bit = OC2IE_bit = 0;
-<<<<<<< HEAD
- i = 0;
-
-
-while(DMA_IsOn(1));
-#line 316 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-dma_printf("[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%l]\r\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n[LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
-cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
-,linear_travel,linear_per_segment,theta_per_segment,gc.frequency);
-
-
- while(i < segments) {
-=======
  i = 0.0;
-#line 381 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+ while(DMA_IsOn(1));
+#line 376 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ dma_printf("[cos_T:=%f : sin_T:=%f]\n[radius:=%f : segments:=%f]\n[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n[LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
+ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
+ ,linear_travel,linear_per_segment,theta_per_segment,feed_rate);
+
+
  for (i = 1; i<segments; i+=1.00) {
->>>>>>> patch10
 
 
  if (count < settings.n_arc_correction) {
@@ -1278,30 +1279,25 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
  if(!OC5IE_bit && !OC2IE_bit)
  break;
  }
-<<<<<<< HEAD
+#line 454 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+while(DMA_IsOn(1));
+#line 458 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+dma_printf("[ i:= %d\tseg:= %d ]\n[ nPx:= %f\tnPy:= %f ]\n[ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n"
+,i,segments,nPx,nPy,target[axis_0],target[axis_1]);
 
 
-
- if(limit_error)
- break;
- i++;
-
-if(!DMA_IsOn(1)){
-#line 377 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-dma_printf("[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ][ position[axis_0]:= %f\tposition[axis_1]:= %f ][feed_rate:= %l]\r\n"
-,i,segments,nPx,nPy,position[axis_0],position[axis_1],feed_rate);
-}
-
-
-=======
-#line 462 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
->>>>>>> patch10
  }
 
  SV.cir = 0;
 
  DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,gc.frequency);
-#line 474 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+
+ while(DMA_IsOn(1));
+ dma_printf("\n%s\n","Arc Finnished");
+
+
 }
 
 

@@ -28,7 +28,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=DEFINES.pld
+Value=Main.c
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -147,19 +147,7 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=DEFINES.pld
-File2=Planner.h
-File3=Kinematics.c
-File4=Kinematics.h
-File5=Steptodistance.c
-File6=Steptodistance.h
-File7=Settings.h
-File8=Planner.c
-File9=Globals.c
-File10=Protocol.c
-File11=Globals.h
-File12=Config.c
-Count=13
+Count=1
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

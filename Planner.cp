@@ -509,16 +509,11 @@ typedef struct {
  int coord_select;
 
  int L;
-<<<<<<< HEAD
- volatile long frequency;
- volatile float feed_rate;
-=======
  long frequency;
  float feed_rate;
  float inverse_feedrate;
  float position[ 4 ];
  float coord_system[ 4 ];
->>>>>>> patch10
 
  float coord_offset[ 4 ];
 
@@ -1137,20 +1132,16 @@ int axis_plane_a,axis_plane_b;
  r = hypot(i, j);
  }
 
-<<<<<<< HEAD
- isclockwise =  0 ;
- if (dir ==  0 ) { isclockwise =  1 ; }
-
-while(DMA_IsOn(1));
-#line 283 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f]\n[tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n"
-,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
-=======
  isclockwise = 0;
  if (dir ==  0 ) { isclockwise = 1; }
-#line 362 "C:/Users/Git/Pic32mzCNC/Planner.c"
+
+while(DMA_IsOn(1));
+#line 358 "C:/Users/Git/Pic32mzCNC/Planner.c"
+dma_printf("\n[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
+,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
+
+
  speed =  (( ((gc.feed_rate)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
->>>>>>> patch10
 
 
 

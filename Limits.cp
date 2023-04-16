@@ -512,51 +512,6 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-<<<<<<< HEAD
-#line 49 "c:/users/git/pic32mzcnc/gcode.h"
-extern volatile int status_code;
-#line 161 "c:/users/git/pic32mzcnc/gcode.h"
-typedef struct {
- char r: 1;
- char no_axis_interpolate;
- char inverse_feed_rate_mode;
- char inches_mode;
- char absolute_override;
- char absolute_mode;
- char spindle_direction;
- char coolant_mode;
- char motion_mode;
- char program_flow;
- char tool;
- char plane_axis_0,
- plane_axis_1,
- plane_axis_2;
- int coord_select;
-
- int L;
- volatile long frequency;
- volatile float feed_rate;
-
- volatile float position[ 2 ];
- volatile float coord_system[ 2 ];
-
- volatile float coord_offset[ 2 ];
-
- volatile float next_position[ 2 ];
- volatile float offset[3];
- float R;
- float I;
- float J;
- float K;
- int P;
- int S;
- int DIR;
-} parser_state_t;
-extern parser_state_t gc;
-
-
-enum IJK{I,J,K};
-=======
 #line 61 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
@@ -583,7 +538,6 @@ typedef struct genVars{
  long over;
 }sVars;
 extern sVars SV;
->>>>>>> patch10
 
 
 

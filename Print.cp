@@ -445,16 +445,11 @@ typedef struct {
  int coord_select;
 
  int L;
-<<<<<<< HEAD
- volatile long frequency;
- volatile float feed_rate;
-=======
  long frequency;
  float feed_rate;
  float inverse_feedrate;
  float position[ 4 ];
  float coord_system[ 4 ];
->>>>>>> patch10
 
  float coord_offset[ 4 ];
 
