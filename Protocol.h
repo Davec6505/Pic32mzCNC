@@ -20,6 +20,11 @@
 #define arr_size 20
 #define str_size 64
 
+// Startup string from UGS is always ? and there after the ? is asking
+// for the current positions of the head
+#define START_MSG 0
+#define DRO_MSG   1
+
 // Number of blocks Grbl executes upon startup. These blocks are stored in EEPROM, where the size
 // and addresses are defined in settings.h. With the current settings, up to 5 startup blocks may
 // be stored and executed in order. These startup blocks would typically be used to set the g-code
@@ -43,11 +48,34 @@
 
 /////////////////////////////////////////////
 //function prototypes
+//init protocol variables and functions
+void Init_Protocol();
+
 //init the array of stringto empty strings
 void Str_Initialize(char arg[arr_size][str_size]);
 
 //clear the string buffer prepare for new string
 void Str_clear(char *str,int len);
+
+//New gcode string interpreter
+int Sample_Gocde_Line();
+
+//startup message for ugs is ? = Grbl 0.8c ['$' for help]
+static void Do_Startup_Msg(char *str_,int dif_);
+
+//~ ! ? ctrl+x [0x18]
+static void Do_Critical_Msg(char ch_);
+
+//after firmware has been sent ugs sends $$ - $G - to get settings
+//from controller and its G code functionality this will be tested
+//here and if these are questions asked then responses must be sent
+//immediately otherwise return a value indicating that the string
+//must be split up into its relative commands, this saves time not
+//splitting unnecessary strings
+static int Check_Query_Type(char *str_,int dif_);
+
+//after checking for gcode run the gcode instructions
+static int Do_Gcode(char *str_,int dif_);
 
 //Get the instruction from the ring buffer
 int Sample_Ringbuffer();
@@ -72,12 +100,5 @@ void protocol_system_check();
 void protocol_execute_runtime();
 
 
-/////////////////////////////////////////////
-//puerly for debug purposes
-#if ProtoDebug == 1
-  static void PrintDebug(char c,char *strB,void *ptr);
-#elif ProtoDebug == 2
-  static void PrintStatus(int state);
-#endif
 
 #endif

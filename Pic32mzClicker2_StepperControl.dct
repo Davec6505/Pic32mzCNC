@@ -199,6 +199,8 @@ _uart_high_speed
 _uart_low_speed
 _uart_one_stopbit
 _uart_two_stopbits
+a_sq
+a_t_x100
 a10m
 a10m
 a10m
@@ -347,7 +349,6 @@ abort
 abs
 absolute_mode
 absolute_override
-accdec
 acceleration
 ackdt
 ackdt
@@ -4105,6 +4106,7 @@ alp
 alp
 alp
 alp_bit
+alpha
 alrmdate
 alrmdatebits
 alrmdateclr
@@ -5152,6 +5154,7 @@ autoset_usbe5csr0_bit
 autoset_usbe6csr0_bit
 autoset_usbe7csr0_bit
 axis_interpolate
+axis_words
 axis_xyz
 axisno
 axispulse
@@ -23633,6 +23636,7 @@ divswen_bit
 divswen_refo2con_bit
 divswen_refo3con_bit
 divswen_refo4con_bit
+dma_abort
 dma_busy
 dma_ch_busy
 dma_ch0_isr
@@ -23644,7 +23648,6 @@ dma_resume
 dma_suspend
 dma0
 dma0
-dma0_abort
 dma0_disable
 dma0_enable
 dma0_flag
@@ -23683,7 +23686,6 @@ dma0is1
 dma0is1_bit
 dma1
 dma1
-dma1_abort
 dma1_disable
 dma1_enable
 dma1_flag
@@ -29051,7 +29053,6 @@ fethio_bf1devcfg3_bit
 fethio_bf2devcfg3_bit
 fethio_bit
 fethio_ubadevcfg3_bit
-fft
 fien
 fien
 fien_bit
@@ -30968,6 +30969,7 @@ frmtxokcnt8
 frmtxokcnt8_bit
 frmtxokcnt9
 frmtxokcnt9_bit
+fround
 frz
 fsdev
 fsdev
@@ -32532,12 +32534,13 @@ get_axis_enable_states
 get_axisstatus
 get_axisword
 get_difference
+get_fail
 get_fosc_khz
 get_head_value
 get_line
 get_modalgroup
-get_modalword
 get_motionmode
+get_non_modalword
 get_runstate
 get_tail_value
 getaxisdirection
@@ -36541,6 +36544,7 @@ incomptx_usbe6csr0_bit
 incomptx_usbe6csr1_bit
 incomptx_usbe7csr0_bit
 incomptx_usbe7csr1_bit
+init_protocol
 init1cmd1
 init1cmd10
 init1cmd10_bit
@@ -37052,6 +37056,7 @@ inttostr
 inttostrwithzeros
 inverse_feed_rate
 inverse_feed_rate_mode
+inverse_feedrate
 invert_mask
 invert_min_limit
 ioancpen
@@ -38798,6 +38803,7 @@ lprcrdy
 lprcrdy
 lprcrdy
 lprcrdy_bit
+lround
 lsbf
 lsbf
 lsbf_bit
@@ -38890,7 +38896,8 @@ lvl8_bit
 lvl9
 lvl9
 lvl9_bit
-m_instruction
+m_flow
+m_mode
 macmaxf
 macmaxf
 macmaxf
@@ -39188,6 +39195,7 @@ mm_per_arc_segment
 mm_possiblyfragmented
 mm_totalfreememsize
 mm2in
+modal_group_words
 mode
 mode
 mode
@@ -39203,6 +39211,7 @@ mode
 mode
 mode
 mode_bit
+mode_complete
 mode_usbe1csr0_bit
 mode_usbe2csr0_bit
 mode_usbe3csr0_bit
@@ -39380,6 +39389,7 @@ month102_bit
 month103
 month103_alrmdate_bit
 month103_bit
+motion_mode
 motion_mode
 mpen
 mpen
@@ -40331,6 +40341,7 @@ nobkoff
 nobkoff_bit
 nobkoff_emacxcfg2_bit
 non_modal_action
+non_modal_words
 nopre
 nopre
 nopre
@@ -46099,7 +46110,6 @@ ptwren
 ptwren
 ptwren
 ptwren_bit
-pulse
 purepre
 purepre
 purepre
@@ -48610,8 +48620,8 @@ rst_axisword
 rst_fn
 rst_fp
 rst_modalgroup
-rst_modalword
 rst_motionmode
+rst_non_modalword
 rstbug
 rswrst
 rswrstbits
@@ -55530,7 +55540,7 @@ samc9_bit
 samp
 samp
 samp_bit
-sample_ringbuffer
+sample_gocde_line
 sbcde
 sbcde
 sbcde
@@ -56494,9 +56504,11 @@ sessrqif
 sessrqif
 sessrqif_bit
 set_axisword
+set_calculation_constants
+set_fail
 set_min_limit
 set_modalgroup
-set_modalword
+set_non_modalword
 set_performance_mode
 setend
 setend
@@ -60348,6 +60360,7 @@ spllconinv
 spllconinvbits
 spllconset
 spllconsetbits
+spr_x_mstep
 sprintf
 sprinti
 sprintl
@@ -61010,6 +61023,7 @@ start
 start
 start_bit
 startpulses
+startup
 statbytes
 statbytes0
 statbytes0_bit
@@ -62970,7 +62984,6 @@ terrcnt6_c2trec_bit
 terrcnt7
 terrcnt7_bit
 terrcnt7_c2trec_bit
-test
 test_min
 test_port_pins
 testbp
@@ -63239,7 +63252,6 @@ tmr9inv
 tmr9invbits
 tmr9set
 tmr9setbits
-tog
 toggleocx
 tolower
 ton
@@ -64687,10 +64699,6 @@ twdis
 twdis
 twdis
 twdis_bit
-twiddlecoeff_128
-twiddlecoeff_256
-twiddlecoeff_512
-twiddlecoeff_64
 twip
 twip
 twip

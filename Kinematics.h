@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "Config_adv.h"
 #include "Settings.h"
+#include "Planner.h"
 #include "Stepper.h"
 #include  "Serial_Dma.h"
 #include "GCODE.h"
@@ -67,9 +68,10 @@ unsigned int home_state;
 unsigned int home_cnt;
 }homing_t;
 
+
 typedef struct Steps{
-   //! micro sec  count value for clock pluse compare
-  signed long microSec;
+ //! the master axis indicator
+ char master: 1;
   //! Step bit check
   unsigned short CheckStep: 1;
   //! Direction stepper motor should move.
@@ -78,8 +80,12 @@ typedef struct Steps{
   unsigned short StepBits:  1;
   //! axis to stop 1st
   unsigned short stopAxis: 1;
+  //! Track the direction of the axis for absolute value tracking
+  int  axis_dir;
   //! What part of the speed ramp we are in.
-  unsigned int run_state ;
+  int run_state ;
+   //! micro sec  count value for clock pluse compare
+  long microSec;
   //! Peroid of next timer delay. At start this value set the accelration rate.
   long step_delay;
   //! What step_pos to start decelaration
@@ -112,19 +118,15 @@ typedef struct Steps{
  // Generate a startup delay to accellerate from
  long StartUp_delay;
  //!  the mm to travel
- signed long mmToTravel;
+ long mmToTravel;
  //!  Real-time machine (aka home) abs position vector in steps.
  long steps_abs_position;
  //! Real-time machine positions in mm or inches
- float mm_position;
+// float mm_position;
  //! Home positions saved if offsets are needed for limit switches
- float mm_home_position;
+// float mm_home_position;
  //! Max axis size to travel from origin 0,0
  float max_travel;
-//! Track the direction of the axis for absolute value tracking
- int  axis_dir;
- //! the master axis indicator
- char master: 1;
 }STP;
 extern STP STPS[NoOfAxis];
 
@@ -140,12 +142,13 @@ void SetInitialSizes(STP axis[6]);
 static void Set_Axisdirection(long temp,int axis);
 
 //Move inline
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed);//,int xyza);
-void SingleAxisStep(double newxyz,long speed,int axis_No);
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);//,int xyza);
+void SingleAxisStep(float newxyz,float speed,int axis_No);
+static void SingleAxisStart(long dist,float speed,int axis_No);
 
 //Circle move axis
 void mc_arc(float *position, float *target, float *offset, int axis_0,
-            int axis_1,int axis_linear, long feed_rate,char invert_feed_rate,
+            int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
             float radius, char isclockwise);
 
 float hypot(float angular_travel, float linear_travel);
@@ -153,11 +156,15 @@ float hypot(float angular_travel, float linear_travel);
 //Directional values
 int GetAxisDirection(long mm2move);
 
+
 //homing cycle
 void ResetHoming();
 int Home(int axis);
-static void Home_Axis(double distance,long speed,int axis);
-static void Inv_Home_Axis(double distance,long speed,int axis);
+static void Home_Axis(double distance,float speed,int axis);
+static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
+
+
+
 #endif

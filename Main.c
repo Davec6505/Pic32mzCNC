@@ -34,13 +34,11 @@
 //////////////////////////////////////////
 //external scope variables
 
-//settings_t settings;
-//parser_state_t gc;
-system_t sys;
-volatile coord_sys coord_system[NUMBER_OF_DATUMS];
-STP STPS[NoOfAxis];
-settings_t settings;
-
+settings_t settings absolute 0xA0002800 ;
+parser_state_t gc   absolute 0xA0002900;
+STP STPS[NoOfAxis]  absolute 0xA0003100;
+system_t sys        absolute 0xA0003500;
+coord_sys coord_system[NUMBER_OF_DATUMS] absolute 0xA0003600;
 //////////////////////////////////////////
 //DMA specific global decleration
 unsigned long rowbuff[128]={0};
@@ -49,12 +47,14 @@ unsigned long rowbuff[128]={0};
 //file scope vars
 static unsigned int disable_steps;//stepper timeout
 static int axis_to_home = 0;
-
+static int send_status_once = 0;
 /////////////////////////////////////////
 //condition externs
 void Conditin_Externs(){
   PinMode();
-  plan_init(15000,15000);
+  plan_init(settings.acceleration,settings.acceleration);
+  Init_Protocol();
+  G_Initialise();
   disableOCx();
   DisableStepper();
   //stepper timeout counter
@@ -66,7 +66,9 @@ void Conditin_Externs(){
 void main() {
 int error = 0;
 int has_flash = 0;
-int dif,modal_group,modal_action,status_of_gcode;
+int modal_group = 0;
+int modal_action = 0;
+int dif,status_of_gcode;
 static int cntr = 0,a = 0;
 
  //setup
@@ -90,39 +92,51 @@ static int cntr = 0,a = 0;
     int axis_to_run = 0;
     //get the modal_group
      modal_group = Get_modalgroup();
+     #if MainDebug == 10
+     while(DMA_IsOn(1));
+     dma_printf("modal_group:= %d\n",modal_group);
+     #endif
      //could impliment a minimal state m/c for modal group control rather
      //than this switch statement
      switch(modal_group){
         case 0:FAIL(STATUS_OK);break;
         case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
-             modal_action = Modal_Group_Actions0(Get_modalword());
-             modal_group = Rst_modalgroup();
+             modal_action = Modal_Group_Actions0(Get_non_modalword());
+             modal_action = modal_group = Rst_modalgroup();
              report_status_message(STATUS_OK);
              break;
         case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
             axis_to_run = Get_Axisword();
-            
-            //temp debug for steppers
-           #if MainDebug == 10
-           while(DMA_IsOn(1));
-           dma_printf("%s","axis_to_run:= %d\n");//,axis_to_run);
-           #endif
-           
-           //Execute this once only, once the axis are started the
-           //OCx interrupts take control of the axis
-              EnableSteppers(ALL_AXIS);
-              Modal_Group_Actions1(axis_to_run);
-              axis_to_run = Rst_Axisword();
-              modal_group = Rst_modalgroup();
+
+            if(axis_to_run){
+                //Execute this once only, once the axis are started the
+                //OCx interrupts take control of the axis
+                EnableSteppers(ALL_AXIS);
+                Modal_Group_Actions1(axis_to_run);
+                axis_to_run = Rst_Axisword();
+                modal_group = Rst_modalgroup();
+             }else{
+               int report = GET_FAIL();
+                if(!report){
+                   report_status_message(STATUS_OK);
+                   SET_FAIL(STATUS_NO_REPORT);
+                }
+             }
              break;
-        //case 8:break;// [G17,G18,G19] Plane selection  [not conditioned here]
-        //case 16:break;// [G90,G91] Distance mode  [not conditioned here]
+        case 8: // [G17,G18,G19] Plane selection [report status set in GCODE]
+        case 16:// [G90,G91] Distance mode  [not conditioned here]
+             report_status_message(GET_FAIL());
+             modal_group = Rst_modalgroup();
+             break;
         case 32://MODAL_GROUP_4 [M0,M1,M2,M30] Stopping
              Modal_Group_Actions4(1);//implimentation needed
              modal_group = Rst_modalgroup();
              break;
-        //case 64:break;// [G93,G94] Feed rate mode [not conditioned here]
-        //case 128:break;// [G20,G21] Units [not conditioned here]
+        case 64:// [G93,G94] Feed rate mode [not conditioned here]
+        case 128:// [G20,G21] Units [not conditioned here]
+             report_status_message(GET_FAIL());
+             modal_group = Rst_modalgroup();
+             break;
         case 256://MODAL_GROUP_7 [M3,M4,M5] Spindle turning
              Modal_Group_Actions7(1);//implimentation needed
              modal_group = Rst_modalgroup();
@@ -134,7 +148,7 @@ static int cntr = 0,a = 0;
         case 1024: //$H Home all axis
              //temp debug for steppers
              modal_action = Modal_Group_Actions1(ALL_AXIS);
-             #if HomeDebug == 11
+             #if HomeDebug == 10
              while(DMA_IsOn(1));
              dma_printf("modal_action:= %d\n",modal_action);
             #endif
@@ -143,48 +157,43 @@ static int cntr = 0,a = 0;
      }
    }
    
-   if(!Get_Axis_Enable_States() && SV.Tog && !SV.homed){
-     //debug STATUS_OK response after moves complete
-     #if MainDebug == 12
-     while(DMA_IsOn(1));
-     dma_printf("SV.Tog:= %d\tSV.homed:= %d\n"
-                ,SV.Tog&0xFF
-                ,SV.homed&0xFF);
-     #endif
-     
-     status_of_gcode == STATUS_OK;
-     report_status_message(status_of_gcode);
-     //reset SV.Tog if an error has occured prior to move finishing
-     SV.Tog = 0;
-   }
-   
-  //Debug for stepper report if not connected to unit
-  #if StepperDebug == 1
-  if(!SV.Tog){
-    if(STPS[X].run_state != STOP || STPS[Y].run_state != STOP){
-     while(DMA_IsOn(1));
-     dma_printf("run_state:= %d\t%l\t%l\t%l\t%d\t%l\n",
-               (STPS[X].run_state&0xff),STPS[X].step_count,
-                SV.dA,STPS[Y].step_count,STPS[X].step_delay,gc.frequency);
-     }
-   }
-  #endif
+//Debug for stepper report if not connected to unit
+#if StepperDebug == 1
+if(!SV.mode_complete){
+if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
+while(DMA_IsOn(1));
+dma_printf("\
+dif:= %l\t%l\t%l\t%l\t%d\t%l\t%l\n"
+,SV.dif
+,STPS[X].step_count
+,STPS[X].accel_count
+,STPS[X].step_delay
+,(STPS[Y].run_state&0xff)
+,STPS[Y].step_count
+,STPS[Y].accel_count);
+}
+}
+#endif
 
   //state check for resets
   protocol_system_check();
    
   //run at end of every scan
   protocol_execute_runtime();
-   
-  //check ring buffer for data transfer
-  status_of_gcode = Sample_Ringbuffer();
-  
-  #if MainDebug == 11
-  if(status_of_gcode > 0){
-   while(DMA_IsOn(1));
-   dma_printf("status_of_gcode:= %d\n",status_of_gcode);
+
+  //respond ok if movement is finished
+  if(!Get_Axis_Enable_States() && SV.mode_complete > 0 && !SV.homed){
+     LED2 = false;
+     //debug STATUS_OK response after moves complete
+     status_of_gcode == STATUS_OK;
+     report_status_message(status_of_gcode);
+     //reset SV.mode_complete if an error has occured prior to move finishing
+     SV.mode_complete = 0;
   }
-  #endif
+
+  //check ring buffer for data transfer
+  status_of_gcode = Sample_Gocde_Line();
+  //status_of_gcode = Sample_Ringbuffer();
 
   //code execution confirmation led on clicker2 board
   #ifdef LED_STATUS
@@ -237,6 +246,7 @@ float a_val;
               i++;
              }
            }
+          // SV.mode_complete = 1;
            LED2 = false;
           break;
      case 4:  //NON_MODAL_SET_COORDINATE_DATA
@@ -262,7 +272,7 @@ float a_val;
                 return NVM_COORDINATE_WRITE_ERROR;
               }
               
-             // Update system coordinate system if currently active with G54 - G59
+              // Update system coordinate system if currently active with G54 - G59
               if (gc.coord_select > 0) {
                  memcpy(gc.coord_system,gc.next_position,sizeof(gc.next_position));
               }
@@ -444,36 +454,37 @@ static int Modal_Group_Actions1(int action){
     #endif
     switch(action){
       case 1: //b0000 0001
-             SingleAxisStep(gc.next_position[X],gc.frequency,X);
+             SingleAxisStep(gc.next_position[X],gc.feed_rate,X);
              break;
       case 2://b0000 0010
-             SingleAxisStep(gc.next_position[Y],gc.frequency,Y);
+             SingleAxisStep(gc.next_position[Y],gc.feed_rate,Y);
              break;
        case 3://b0000 0011
-             DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.frequency);
+             DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,gc.feed_rate);
              break;
       case 4://b0000 0100
-            SingleAxisStep(gc.next_position[Z],gc.frequency,Z);
+            SingleAxisStep(gc.next_position[Z],gc.feed_rate,Z);
              break;
        case 5://b0000 0101
-             DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.frequency);
+             DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,gc.feed_rate);
              break;
        case 6://b0000 0110
-             DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.frequency);
+             DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,gc.feed_rate);
              break;
        case 8://b0000 1000
-            SingleAxisStep(gc.next_position[A],gc.frequency,A);
+            SingleAxisStep(gc.next_position[A],gc.feed_rate,A);
              break;
        case 9://b0000 1001
-            DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.frequency);
+            DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,gc.feed_rate);
             break;
        case 10://b0000 1010
-            DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.frequency);
+            DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,gc.feed_rate);
             break;
        case 12://b0000 1100
-            DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.frequency);
+            DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.feed_rate);
             break;
        case 15://Circle interpolation
+            SV.cir = 1;//to indicate DualAxisStep of circle!!!
             sys_sync_current_position();
             r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
             break;
@@ -506,7 +517,7 @@ static int Modal_Group_Actions1(int action){
                 if(STPS[l].run_state != STOP)
                     STPS[l].run_state = STOP;
               }
-//              
+
               //sync the homing position to zero
               sys_sync_current_position();
               
@@ -516,6 +527,7 @@ static int Modal_Group_Actions1(int action){
               
               //return the number of axis completed
               sys.state = STATE_IDLE;
+              SV.mode_complete = 1;
               SV.homed = false;
             }
             break;
@@ -549,7 +561,7 @@ static int Modal_Group_Actions4(int action){
       if(gc.program_flow < PROGRAM_FLOW_RUNNING  || 
          gc.program_flow > PROGRAM_FLOW_COMPLETED)
            FAIL(STATUS_INVALID_STATEMENT);
-           
+    SV.mode_complete = 1;
     return action;
 }
 
@@ -563,7 +575,7 @@ static int Modal_Group_Actions7(int action){
     #endif
       if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
            FAIL(STATUS_INVALID_STATEMENT);
-           
+    SV.mode_complete = 1;
     return action;
 }
 

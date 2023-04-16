@@ -133,7 +133,7 @@ extern volatile int status_code;   // Status of instructions
 #define STATUS_SPEED_ERROR 13
 #define STATUS_EI_ERROR 14
 #define STATUS_COMMAND_EXECUTE_MOTION 20
-
+#define STATUS_NO_REPORT 99
 
 ////////////////////////////////////////////////////////
 // Define Grbl alarm codes. Less than zero to distinguish alarm error from status error.
@@ -176,16 +176,16 @@ typedef struct {
   int  coord_select;                      // Active work coordinate system number. Default: 0=G54.
  // int spindle_speed;                    // RPM/100
   int L;                                  //L2 tells the G10 we’re setting standard work offsets
-  volatile long frequency;                // Speed expressed as Frequency of pulses
-  volatile float feed_rate;               // Millimeters/min
-//  float seek_rate;                      // Millimeters/min. Will be used in v0.9 when axis independence is installed
-  volatile float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
-  volatile float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine
+  long frequency;                // Speed expressed as Frequency of pulses
+  float feed_rate;               // Millimeters/min
+  float inverse_feedrate;        //
+  float position[NoOfAxis];      // Where the interpreter considers the tool to be at this point in the code
+  float coord_system[NoOfAxis];  // Current work coordinate system (G54+). Stores offset from absolute machine
                                           // position in mm. Loaded from EEPROM when called.
-  volatile float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
+  float coord_offset[NoOfAxis];  // Retains the G92 coordinate offset (work coordinates) relative to
                                           // machine zero in mm. Non-persistent. Cleared upon reset and boot.
-  volatile float next_position[NoOfAxis]; // Target position instruction from gcode sender
-  volatile float offset[3];
+  float next_position[NoOfAxis]; // Target position instruction from gcode sender
+  float offset[3];
   float R;                                // I,J,K for arc
   float I;
   float J;
@@ -203,16 +203,19 @@ enum IJK{I,J,K};
 ///////////////////////////////////////////////////////////////////////////////
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
-void FAIL(int status);
 void G_Initialise();
+
+void FAIL(int status);
+int  GET_FAIL();
+int  SET_FAIL(int val);
 
 void Set_modalgroup(int value);
 int Get_modalgroup();
 int Rst_modalgroup();
 
-void Set_modalword(int value);
-int Get_modalword();
-int Rst_modalword();
+void Set_non_modalword(int value);
+int Get_non_modalword();
+int Rst_non_modalword();
 
 void Set_Axisword(int value);
 int Get_Axisword();
@@ -221,13 +224,17 @@ int Rst_Axisword();
 int Get_motionmode();
 int Rst_motionmode();
 
+//G codes
 int G_Mode(int mode);
-// m instructions
-void M_Instruction(int flow);
+// M codes
+int M_Mode(int flow);
+// check G / M commands for functionality
+int Check_group_multiple_violations();
+
 
 static float To_Millimeters(float value);
 
-int Check_group_multiple_violations();
+
 int Motion_mode();
 //all values passed from instruction
 int Instruction_Values(char *c,void *any);

@@ -5,18 +5,45 @@
 
 #include "Planner.h"
 
-
 sVars SV;
+
+/////////////////////////////////////////////////////
+//      COMMON VARIABLES INITIALIZED AT STARTUP    //
+/////////////////////////////////////////////////////
+float a_t_x100[NoOfAxis]         absolute 0xA0002640 ;
+long a_sq[NoOfAxis]              absolute 0xA0002680 ;
+float alpha[NoOfAxis]            absolute 0xA0002720 ;
+float spr_x_mstep[NoOfAxis]      absolute 0xA0002760 ;
 
 /////////////////////////////////////////////////////
 //       SET THE ACC AND DEC CONSTANTS             //
 /////////////////////////////////////////////////////
-void plan_init(long accel,long decel)
-{
+
+void plan_init(float accel,float decel){
 int i = 0;
  for(i = 0; i < NoOfAxis; i++){
-  STPS[i].acc = accel;
-  STPS[i].dec = decel;
+  STPS[i].acc = lround(accel);
+  STPS[i].dec = lround(decel);
+ }
+ set_calculation_constants();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//setup calculation constants this takes dependance away from #defnes in
+//order to use with setting
+void set_calculation_constants(){
+int i;
+//using settings instead of defines
+    //alpha 2 x Pi / SPR
+ for(i=0;i<NoOfAxis;i++){
+ //2*3.14159)/SPR
+  alpha[i] = (PIx2 / (settings.steps_per_mm[i]*M_STEP));
+  //(long)((ALPHA*T1_FREQ)*100)
+  a_t_x100[i] = (alpha[i] * T1_FREQ * 100.00);
+  //(long)(ALPHA*2*SQ_MASK)
+  a_sq[i] = lround(alpha[i] * 2 * SQ_MASK);
+  //base_pps = a_t_x100 * T1_Freq
+  spr_x_mstep[i] = SPRU(settings.steps_per_mm[i]);
  }
 }
 
@@ -33,19 +60,24 @@ int i = 0;
  *  \param speed  Max speed, in 0.01*rad/sec.
  *
  ***********************************************************************/
-void speed_cntr_Move(signed long mmSteps, signed long speed, int axis_No){
+void speed_cntr_Move(long mmSteps, float speed, int axis_No){
 int ii;
-long temp_speed;
-static long last_speed;
+float temp_speed;
+static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
+  STPS[axis_No].dist =  abs_mmSteps;
+  
+  // speed is in rpm ~ need to convert tp pps / steprate
+ // speed /= 60.0; //base_pps[axis_No]/speed;
+  speed *= spr_x_mstep[axis_No];
   // If moving only 1 step then set accel counter
   // and run state to decellerate -ve acc count value
   // is for addition to step couter.
   if(mmSteps == 1){
     STPS[axis_No].accel_count = -1;        // Move one step...
     STPS[axis_No].run_state = DECEL;       // ...in DECEL state.
-    STPS[axis_No].step_delay = 20000;      // Just a short delay so main() can act on 'running'.
+    STPS[axis_No].step_delay = 10000;      // Just a short delay so main() can act on 'running'.
     SV.running = 1;                        // start running
 
   }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
@@ -62,16 +94,21 @@ long abs_mmSteps = labs(mmSteps);
     // Only move if number of steps to move is not zero.
     // Set max speed limit, by calc min_delay to use in timer.
     // min_delay = (ALPHA / T1_Freq)/ speed
-    STPS[axis_No].min_delay =  A_T_x100 / temp_speed;
+    STPS[axis_No].min_delay =  lround(a_t_x100[axis_No] / temp_speed);
 
+    
     // Set accelration by calc the first (c0) step delay .
     // step_delay = 1/T_Freq*sqrt(2*alpha/accel)
     // step_delay = ( T_Freq*0.676/100 ) * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-    STPS[axis_No].step_delay = labs(T1_FREQ_148 * ((sqrt_(A_SQ / STPS[axis_No].acc))/100));
-    STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
+    STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
+    
+    if(STPS[axis_No].step_delay > minSpeed)
+       STPS[axis_No].StartUp_delay = minSpeed;
+    else
+       STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
     // Find out after how many Steps before the speed hits the max speed limit.
-    STPS[axis_No].max_step_lim =(temp_speed*temp_speed)/(long)(2.0*ALPHA*(double)STPS[axis_No].acc*100.0);
+    STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*10000.00*(float)STPS[axis_No].acc));
 
     //test calc using A_x20000 ???
     //STPS.max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
@@ -79,13 +116,15 @@ long abs_mmSteps = labs(mmSteps);
     // If we hit max speed limit before 0,5 step it will round to 0.
     // But in practice we need to move atleast 1 step to get any speed at all.
     if(STPS[axis_No].max_step_lim == 0){
-      STPS[axis_No].max_step_lim = 1;
+       STPS[axis_No].max_step_lim = 1;
     }
 
     // Find out after how many Steps before we must start deceleration.
     // n1 = (n1+n2)decel / (accel + decel) which is 50%
      STPS[axis_No].accel_lim = (abs_mmSteps * STPS[axis_No].dec) / (STPS[axis_No].acc + STPS[axis_No].dec);
-     
+    if(STPS[axis_No].accel_lim > STPS[axis_No].max_step_lim)
+        STPS[axis_No].accel_lim = STPS[axis_No].max_step_lim;
+        
     // We must accelrate at least 1 step before we can start deceleration.
     if(STPS[axis_No].accel_lim == 0){
        STPS[axis_No].accel_lim = 1;
@@ -95,7 +134,7 @@ long abs_mmSteps = labs(mmSteps);
     if(STPS[axis_No].accel_lim < STPS[axis_No].max_step_lim){
          STPS[axis_No].decel_val = STPS[axis_No].accel_lim - mmSteps;//-(abs_mmSteps - STPS[axis_No].max_step_lim);
     }else{
-         STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim *STPS[axis_No].acc)/STPS[axis_No].dec);
+         STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim * STPS[axis_No].acc)/STPS[axis_No].dec);
     }
     //we must at least dec by 1 step
     if(STPS[axis_No].decel_val == 0)
@@ -112,7 +151,7 @@ long abs_mmSteps = labs(mmSteps);
     //find the position at which to start decelerating from
     // If the maximum speed is so low that we won't need to go via accelration state.
     if(STPS[axis_No].StartUp_delay <= STPS[axis_No].min_delay){
-      STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+      STPS[axis_No].step_delay = labs(STPS[axis_No].min_delay);
       STPS[axis_No].run_state = RUN;
     }else{
        STPS[axis_No].step_delay = labs(STPS[axis_No].StartUp_delay);
@@ -124,9 +163,44 @@ long abs_mmSteps = labs(mmSteps);
   STPS[axis_No].step_count  = 0;
   STPS[axis_No].rest        = 0;
   STPS[axis_No].accel_count = 1;
-  SV.Tog                    = 0;
+  SV.mode_complete          = 0;
   SV.running                = 1;
   last_speed                = speed;
+  
+//Debug for stepper report if not connected to unit
+#if PlanDebug == 1
+
+while(DMA_IsOn(1));
+dma_printf("\n\
+speed:= %f\n\
+a_sq[%d]:= %l\n\
+alpha[%d]:= %f\n\
+a_t_x100[%d]:= %f\n\
+STPS[axis_No].max_step_lim:= %l\n\
+STPS[].dec:= %l\n\
+abs_mmSteps:= %l\n\
+acc_lim:= %l\n\
+dec_lim:= %l\n\
+dec_start:= %l\n\
+step_delay:= %l\n\
+min_dly:= %l\n\n"
+,speed
+,axis_No
+,a_sq[axis_No]
+,axis_No
+,alpha[axis_No]
+,axis_No
+,a_t_x100[axis_No]
+,STPS[axis_No].max_step_lim
+,STPS[axis_No].dec
+,abs_mmSteps
+,STPS[axis_No].accel_lim
+,STPS[axis_No].decel_val
+,STPS[axis_No].decel_start
+,STPS[axis_No].step_delay
+,STPS[axis_No].min_delay);
+
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -142,13 +216,14 @@ long abs_mmSteps = labs(mmSteps);
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
               float r, float i, float j, float k, int axis_A,int axis_B,int dir){
 char isclockwise = 0;
-float inverse_feed_rate = -1; // negative inverse_feed_rate means no inverse_feed_rate specified
+//float inverse_feed_rate = -1; // negative inverse_feed_rate means no inverse_feed_rate specified
 float position[NoOfAxis]={0.0};
 float target[NoOfAxis]={0.0};
 float offset[NoOfAxis]={0.0};
 float x = 0.00;
 float y = 0.00;
 float h_x2_div_d = 0.00;
+float speed = 0.00;
 int axis_plane_a,axis_plane_b;
 
 
@@ -275,18 +350,21 @@ int axis_plane_a,axis_plane_b;
        r = hypot(i, j); // Compute arc radius for mc_arc
    }
   // Set clockwise/counter-clockwise sign for mc_arc computations
-  isclockwise = false;
-  if (dir == CW) { isclockwise = true; }
+  isclockwise = 0;
+  if (dir == CW) { isclockwise = 1; }
 #if KineDebug == 3
 while(DMA_IsOn(1));
-dma_printf("[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f]\n\
-[tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n"
+dma_printf("\n\
+[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
 ,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
 #endif
+  //get rps from mm/min
+  speed = RPS_FROM_MMPMIN(gc.feed_rate);
+  
         //  gc.plane_axis_2 =1;
         // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
           mc_arc(position, target, offset, axis_A, axis_B, Z,
-                 gc.frequency, gc.inverse_feed_rate_mode,r, isclockwise);
+                 speed, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
 
@@ -332,11 +410,11 @@ void plan_reset_absolute_position(){
  *    param x  Value to find square root of.
  *    return  Square root of x.
  */
-unsigned long sqrt_(unsigned long x){
+long sqrt_(long x){
 
-  register unsigned long xr;  // result register
-  register unsigned long q2;  // scan-bit register
-  register unsigned char f;   // flag (one bit)
+ volatile unsigned long xr;  // result register
+ volatile unsigned long q2;  // scan-bit register
+ volatile unsigned char f;   // flag (one bit)
 
   xr = 0;                     // clear result
   q2 = 0x40000000L;           // higest possible result bit

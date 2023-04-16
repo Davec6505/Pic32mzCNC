@@ -18,22 +18,24 @@
 *******************************************************************************/
 #include "GCODE.h"
 
-parser_state_t gc;
+
 
 //the use of volatile here is as a result of the compiler continously
 //optomising out these variables cousing the code to fail or values not
 //changing when required, either by gcodes or code!! MIKROC!!!! a need to
 //understand this compiler better!!!!!!
 
-volatile int status_code;  // Status of instructions
 volatile float coord_data[NoOfAxis];
 
-static volatile int axis_words;        // Bitflag to track which XYZ(ABC) parameters exist in block
-static volatile int modal_group_words;  // Bitflag variable to track and check modal group words in block
-static volatile int non_modal_words;    // Bitflags to track non-modal actions
-static volatile int motion_mode;
-volatile int group_number;
-volatile int non_modal_action;
+int axis_words             absolute 0xA0002602 ;  // Bitflag to track which XYZ(ABC) parameters exist in block
+int modal_group_words      absolute 0xA0002604 ;  // Bitflag variable to track and check modal group words in block
+int non_modal_words        absolute 0xA0002606 ;  // Bitflags to track non-modal actions
+int m_flow                 absolute 0xA0002608 ;
+int non_modal_action       absolute 0xA0002610 ;
+int motion_mode            absolute 0xA0002612 ;
+int group_number           absolute 0xA0002614 ;
+int status_code            absolute 0xA0002616 ;  // Status of instructions
+
 
 volatile int int_value;
 volatile float inverse_feed_rate;       // negative inverse_feed_rate means no inverse_feed_rate specified
@@ -55,20 +57,29 @@ static void Select_Plane(int axis_combo){
 //                GLOBAL SCOPE FUNCTIONS                   //
 /////////////////////////////////////////////////////////////
 
+//init vals to defaults
+void G_Initialise(){
+  m_flow               = 0;
+  group_number         = 0;
+  axis_words           = 0;
+  int_value            = 0;
+  value                = 0;
+  gc.inverse_feed_rate_mode = false;
+  gc.absolute_override = false;
+  gc.absolute_mode     = 1;
+}
+
 //status code failures
 void FAIL(int status){
   status_code = status;
 }
 
-//init vals to defaults
-void G_Initialise(){
-  group_number         = 0;
-  axis_words           = 0;
-  int_value            = 0;
-  value                = 0;
-  inverse_feed_rate    = false;
-  gc.absolute_override = false;
-  gc.absolute_mode     = true;
+int  GET_FAIL(){
+  return status_code;
+}
+
+int  SET_FAIL(int val){
+  status_code = val;
 }
 
 //Set Modal group manually.... typically for homing
@@ -90,16 +101,16 @@ int Rst_modalgroup(){
 
 //Set Modal group manually.... typically for homing
 //instruction in protocol $H etc...
-void Set_modalword(int value){
+void Set_non_modalword(int value){
   bit_true( non_modal_words,bit( value));
 }
 
 //modal modes within each group
-int Get_modalword(){
+int Get_non_modalword(){
   return non_modal_words;
 }
 
-int Rst_modalword(){
+int Rst_non_modalword(){
    non_modal_words = 0;
    return non_modal_words;
 }
@@ -140,20 +151,20 @@ int Rst_motionmode(){
 //Gcodes {G 0,1,2,3,80}
 int G_Mode(int mode){
  group_number = Set_Modal_Groups(mode);
- motion_mode = Set_Motion_Mode(mode);
- return motion_mode;
+ motion_mode  = Set_Motion_Mode(mode);
+ return mode;//motion_mode;
 }
 
 ///////////////////////////////////////////////////////////////
 //MCodes
-void M_Instruction(int flow){
-//gc.program_flow = flow;
+int M_Mode(int flow){
  group_number = Set_M_Modal_Commands(flow);
- Set_M_Commands(flow);
+ m_flow = Set_M_Commands(flow);
 #if GcodeDebug == 1
  while(DMA_IsOn(1));
- dma_printf("gc.program_flow:= %d\n",flow);
+ dma_printf("flow:= %d\n",flow);
 #endif
+ return flow;
 }
 
 
@@ -182,10 +193,10 @@ int i,m_mode;
  FAIL(STATUS_OK);
  
   switch(mode){
-    case 0: m_mode    = MOTION_MODE_SEEK;    break;
-    case 1: m_mode    = MOTION_MODE_LINEAR;  break;
-    case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;  break;
-    case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW; break;
+    case 0: m_mode    = MOTION_MODE_SEEK;SV.cir = 0;    break;
+    case 1: m_mode    = MOTION_MODE_LINEAR;SV.cir = 0;  break;
+    case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;SV.cir = 1;  break;
+    case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW;SV.cir = 1; break;
     case 4: non_modal_action  = NON_MODAL_DWELL;     break;
     case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
     case 17: Select_Plane(xy);m_mode    = MOTION_MODE_NULL; break;
@@ -198,9 +209,9 @@ int i,m_mode;
              gc.coord_select = (mode - 53);//G54-53 == 1...;
              m_mode = MOTION_MODE_NULL;break;
     case 80: motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
-    case 90: gc.absolute_mode = true; m_mode    = MOTION_MODE_NULL; break;
-    case 91: gc.absolute_mode = false; m_mode   = MOTION_MODE_NULL; break;
-    case 93: gc.inverse_feed_rate_mode = true;m_mode  = MOTION_MODE_NULL; break;
+    case 90: gc.absolute_mode = 1; m_mode = MOTION_MODE_NULL; break;
+    case 91: gc.absolute_mode = 0; m_mode = MOTION_MODE_NULL; break;
+    case 93: gc.inverse_feed_rate_mode = true; m_mode = MOTION_MODE_NULL; break;
     case 94: gc.inverse_feed_rate_mode = false;m_mode = MOTION_MODE_NULL; break;
     case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
     case 281: non_modal_action = NON_MODAL_SET_HOME_0; break;
@@ -226,12 +237,23 @@ int i,m_mode;
       FAIL(STATUS_INVALID_STATEMENT);
     }
 
- }
+  }
  
-  #if GcodeDebug == 2
-     while(DMA_IsOn(1));
-     dma_printf("report!\n[status_code:= %d]\n[mode:= %d]\n[motion_mode:= %d]\n[non_modal_action:= %d]\n"
-                 ,status_code ,mode ,motion_mode ,non_modal_action);
+#if GcodeDebug == 2
+while(DMA_IsOn(1));
+dma_printf("\
+<report!\n\
+[status_code:= %d]\n\
+[mode:= %d]\n\
+[motion_mode:= %d]\n\
+[non_modal_action:= %d]\n\
+[gc.absolute_mode:= %d]\n"
+,status_code ,mode ,motion_mode ,non_modal_action,(int)gc.absolute_mode);
+  #endif
+  #if GcodeDebug == 3
+  //test if axis_word will run arc
+  while(DMA_IsOn(1));
+  dma_printf("axis_words:= %d\n",axis_words&0x00ff);
   #endif
    return m_mode;
 }
@@ -240,13 +262,13 @@ int i,m_mode;
 //                      M COMMANDS                           //
 ///////////////////////////////////////////////////////////////
 static int Set_M_Modal_Commands(int flow){
-int gp_num;
+int m_num;
 // Set modal group values
    switch(flow) {
-     case 0: case 1: case 2: case 30: gp_num = MODAL_GROUP_4; break;
-     case 3: case 4: case 5: gp_num = MODAL_GROUP_7; break;
+     case 0: case 1: case 2: case 30: m_num = MODAL_GROUP_4; break;
+     case 3: case 4: case 5: m_num = MODAL_GROUP_7; break;
    }
-   return gp_num;
+   return m_num;
 }
 
 //M Commands
@@ -268,7 +290,7 @@ static int Set_M_Commands(int flow){
     case 9: gc.coolant_mode = COOLANT_DISABLE; break;
     default: FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
   }
-  return status_code;
+  return flow;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -303,18 +325,11 @@ int i = 0;
    if (group_number == MODAL_GROUP_0){
      //if the non modal action has changed reset its state
      ///if(non_modal_action != last_non_modal_action){
-     Rst_modalword();
+     Rst_non_modalword();
      
      if(!gc.absolute_override)
          bit_true( non_modal_words,bit( non_modal_action));
        
-     #if GcodeDebug == 3
-       while(DMA_IsOn(1));
-       dma_printf("group_number:= %d\tgc.absolute_override:= %d\n"
-                   ,group_number,gc.absolute_override);
-     #endif
-     
-     
      last_non_modal_action = non_modal_action;
      return status_code;
    }
@@ -323,64 +338,45 @@ int i = 0;
    
    //////////////////////////////////////////////////////////////
    //MODAL ACTIONS
-   
    //check for cancel from group 1
    if(group_number == MODAL_GROUP_1){
-      status_code = STATUS_OK;
-      #if GcodeDebug == 3
-       while(DMA_IsOn(1));
-       dma_printf("[group_number:= %d][motion_mode:= %d]\n"
-                   ,group_number,motion_mode);
-      #endif
       //motion_mode holds movement set in G_Mode()!!
        switch (motion_mode) {
-          case MOTION_MODE_CANCEL:
-            // No axis words allowed while active.
-            if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); }
-            break;
           case MOTION_MODE_SEEK:
-            if (axis_words == 0) {
-               FAIL(STATUS_INVALID_STATEMENT);
-            }else {
-               //single axis interpolate at max speed, can be multiple axis at the
-               //same time
-                gc.frequency = settings.default_seek_rate;
-                FAIL(STATUS_OK);
-            }
-            break;
+               gc.frequency = lround(settings.default_seek_rate);
           case MOTION_MODE_LINEAR:
-            // TODO: Inverse time requires F-word with each statement. Need to do a check. Also need
-            // to check for initial F-word upon startup. Maybe just set to zero upon initialization
-            // and after an inverse time move and then check for non-zero feed rate each time. This
-            // should be efficient and effective.
-            if (axis_words == 0) {
-               FAIL(STATUS_INVALID_STATEMENT);
-            }else {
-              //run the new line here , consider planner for future
-                FAIL(STATUS_OK);
-            }
+             FAIL(STATUS_OK);
             break;
           case MOTION_MODE_CW_ARC: case MOTION_MODE_CCW_ARC:
+            FAIL(STATUS_OK);
             // Check if at least one of the axes of the selected plane has been specified. If in center
             // format arc mode, also check for at least one of the IJK axes of the selected plane was sent.
-          /*  if ( !( bit_isfalse(axis_words,bit(gc.plane_axis_2)) ) ||
-                 ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
-              FAIL(STATUS_INVALID_STATEMENT);
-            } else {   */
-              //set axis_word to 15 this tells modal_function1(axis_words)
-              //to run arc interpolation
+            //set axis_word to 15 this tells modal_function1(axis_words)
+            //to run arc interpolation
               for(i=0;i<=3;i++)
                   Set_Axisword(i);
-                  
+              
+              /*  
+              if ( !( bit_isfalse(axis_words,bit(gc.plane_axis_2)) ) ||
+                 ( !gc.r && gc.offset[gc.plane_axis_0] == 0.0 && gc.offset[gc.plane_axis_1] == 0.0 )){
+                         FAIL(STATUS_INVALID_STATEMENT);
+              }
+              */
               #if GcodeDebug == 3
               //test if axis_word will run arc
               while(DMA_IsOn(1));
               dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
               #endif
-           // }
+
+            break;
+          case MOTION_MODE_CANCEL:
+            FAIL(STATUS_OK);
+            // No axis words allowed while active.
+            if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); }
             break;
        }
-       //track current position
+       
+       //keep track of current position
        for(i=0;i<NoOfAxis;i++){
           gc.position[i] =  gc.next_position[i];
        }
@@ -388,84 +384,48 @@ int i = 0;
    
    //check that Plane select is not out of scope
    if (group_number == MODAL_GROUP_2){
-
+     FAIL(STATUS_OK);
+     
      if(axis_xyz > NO_OF_PLANES){
        status_code = STATUS_INVALID_STATEMENT;
        FAIL(STATUS_INVALID_STATEMENT);
-     }else{
-       FAIL(STATUS_OK);
      }
      
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("axis_xyz:= %d\n",axis_xyz);
-     #endif
-
-     //FAIL(STATUS_OK);
      return status_code;
    }
    
    //incrmental / absolute
    if (group_number == MODAL_GROUP_3){
-
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("gc.absolute_mode:= %d\n",gc.absolute_mode);
-     #endif
-     
      FAIL(STATUS_OK);
      return status_code;
    }
    
       //feedratemode - not yet implimented!! understanding needed
    if (group_number == MODAL_GROUP_5){
-
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("gc.inverse_feed_rate_mode:= %d\n",gc.inverse_feed_rate_mode);
-     #endif
-     
      FAIL(STATUS_OK);
      return status_code;
    }
    
    //UNITS mm / inches gc.inches_mode
    if (group_number == MODAL_GROUP_6){
-
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("gc.inches_mode:= %d\n",gc.inches_mode);
-     #endif
-
      FAIL(STATUS_OK);
      return status_code;
    }
    
    //G54.... Coordinate system selection
    if (group_number == MODAL_GROUP_12){
-
+     FAIL(STATUS_OK);
+     
      if(gc.coord_select < 0 || gc.coord_select > 7)
         FAIL(STATUS_BAD_NUMBER_FORMAT);
-     else
-        FAIL(STATUS_OK);
-        
-     #if GcodeDebug == 3
-     while(DMA_IsOn(1));
-     dma_printf("gc.coord_select:= %d\n",gc.coord_select);
-     #endif
 
      return status_code;
    }
  }
-  //MODALEND
-  //////////////////////////////////////////////////////////////
-
-  #if GcodeDebug == 4
-  while(DMA_IsOn(1));
-  dma_printf("status_code:= %d\n",status_code);
-  #endif
+  //MODAL END
   
-  FAIL(STATUS_OK);
+  //////////////////////////////////////////////////////////////
+  //if you made it this far then somrthin is wrong
   return status_code;
 }
 
@@ -477,7 +437,7 @@ float XYZ_Val;
 int F_Val,O_Val;
 
    switch(c[0]){
-      case 'X':
+      case 'X':case 'x':
             XYZ_Val = *(float*)any;
             gc.next_position[X] = To_Millimeters(XYZ_Val);
             bit_true(axis_words,bit(X));
@@ -524,21 +484,15 @@ int F_Val,O_Val;
             gc.offset[K] = To_Millimeters(XYZ_Val);
             break;
       case 'F':
-            F_Val = *(int*)any;
-            if(F_Val < 0){
-               FAIL(STATUS_SPEED_ERROR);
-            }
-            /* still tobe implimented <need to understand how speed is sent?>
-            if (gc.inverse_feed_rate_mode) {
-              inverse_feed_rate = To_Millimeters(F_Val); // seconds per motion for this motion only
-            } else {
-              gc.feed_rate = To_Millimeters(F_Val); // millimeters per minute
-            } */
-            gc.frequency = (unsigned long)F_Val;
-              #if GcodeDebug == 1
-              while(DMA_IsOn(1));
-              dma_printf("gc.frequency:= %l\n",gc.frequency);
-              #endif
+            XYZ_Val = *(float*)any;
+            if(XYZ_Val < 0){FAIL(STATUS_SPEED_ERROR);break;}
+            //inches or mm decision
+            gc.feed_rate = To_Millimeters(XYZ_Val);
+
+            #if GcodeDebug == 10
+            while(DMA_IsOn(1));
+            dma_printf("gc.feed_rate:= %f\n",gc.feed_rate);
+            #endif
             break;
       case 'P':
             O_Val = *(int*)any;
@@ -556,7 +510,7 @@ int F_Val,O_Val;
             gc.S = O_Val;
             gc.P = -1;
             break;
-      case 'L': 
+      case 'L':
             O_Val = *(int*)any;
             if(O_Val < 0){
                FAIL(STATUS_SPEED_ERROR);
@@ -568,13 +522,16 @@ int F_Val,O_Val;
   #if GcodeDebug == 1
       while(DMA_IsOn(1));
       if(c[0] == 'X' || c[0] == 'Y' || c[0] == 'Z' || c[0] == 'R' || c[0] == 'I' || c[0] == 'J')
-         dma_printf("\t%c\t%f\n",c[0],XYZ_Val);
+         dma_printf("[%c\t%f]\n",c[0],XYZ_Val);
       else if(c[0] == 'F')
-         dma_printf("\t%c\t%d\n",c[0],F_Val);
+         dma_printf("[%c\t%d]\n",c[0],F_Val);
       else if(c[0] == 'S' ||  c[0] == 'P' || c[0] == 'L')
-         dma_printf("\t%c\t%d\n",c[0],O_Val);
+         dma_printf("[%c\t%d]\n",c[0],O_Val);
+  #endif
+  #if GcodeDebug == 3
+  //test if axis_word will run arc
+  while(DMA_IsOn(1));
+  dma_printf("axis_words:= %d\n",axis_words&0x00ff);
   #endif
   return status_code;
 }
-
-

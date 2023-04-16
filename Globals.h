@@ -25,6 +25,9 @@
 //do not make this vale to large it will reduce the life of flash row
 #define FLASH_RETRY_COUNT 2
 
+//flash loaded with data indicator
+#define FLASH_LOADED -1//0x7FFFFFFF
+
 //global usage defines
 #define true 1
 #define TRUE 1
@@ -36,10 +39,10 @@
 #define INCH_PER_MM (0.0393701)
 
 //Circle defines and consts
-#define  Pi         3.141593
-#define  M_PI       3.1416
-#define  rad2deg    (180.00/Pi)
-#define  deg2rad    (Pi/180.00)
+#define  Pi         3.1415926535897932384626433832795
+#define  M_Pi       3.141592653589793238462643
+#define  rad2deg    (180.00/M_Pi)
+#define  deg2rad    (M_Pi/180.00)
 
 
  //basis macros

@@ -52,7 +52,7 @@ int retry_flash_write = 0;
    dma_printf("has_data:= %l\n",has_data);
    #endif
 #endif
-   if(has_data == -1){
+   if(has_data == FLASH_LOADED){
       //An Erase of the page has to be performed on startup prior
       //to an attempt to write flash memory with default values,
       //if the flash_loaded_indicator has a value 0x7FFFFFFF then
@@ -75,18 +75,22 @@ int retry_flash_write = 0;
       buffA[SPMMZ_OFFSET]        = flt2ulong(settings.steps_per_mm[Z]);
       settings.steps_per_mm[A]   = DEFAULT_A_STEPS_PER_MM;
       buffA[SPMMA_OFFSET]        = flt2ulong(settings.steps_per_mm[A]);
+      settings.steps_per_mm[B]   = DEFAULT_B_STEPS_PER_MM;
+      buffA[SPMMZ_OFFSET]        = flt2ulong(settings.steps_per_mm[B]);
+      settings.steps_per_mm[C]   = DEFAULT_C_STEPS_PER_MM;
+      buffA[SPMMA_OFFSET]        = flt2ulong(settings.steps_per_mm[C]);
       
       settings.default_feed_rate = DEFAULT_FEEDRATE;
       buffA[D_FEED_RATE_OFFSET]  = flt2ulong(settings.default_feed_rate);
 
       settings.default_seek_rate = DEFAULT_RAPID_FEEDRATE;
       buffA[D_SEEK_RATE_OFFSET]  = flt2ulong(settings.default_seek_rate);
- 
-      settings.homing_feed_rate   = DEFAULT_HOMING_FEEDRATE;
-      buffA[H_FEED_RATE_OFFSET]   = flt2ulong(settings.homing_feed_rate);
 
       settings.homing_seek_rate   = DEFAULT_HOMING_RAPID_FEEDRATE ;
       buffA[H_SEEK_RATE_OFFSET]   = flt2ulong(settings.homing_seek_rate);
+      
+      settings.homing_feed_rate   = DEFAULT_HOMING_FEEDRATE;
+      buffA[H_FEED_RATE_OFFSET]   = flt2ulong(settings.homing_feed_rate);
  
       settings.homing_pulloff     = DEFAULT_HOMING_PULLOFF;
       buffA[H_PULL_OFF_OFFSET]    = flt2ulong(settings.homing_pulloff);
@@ -94,7 +98,7 @@ int retry_flash_write = 0;
       settings.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
       buffA[MM_ARC_SEG_OFFSET]    =  flt2ulong(settings.mm_per_arc_segment);
       
-      settings.acceleration      = DEFAULT_ACCELERATION;
+      settings.acceleration      = DEFAULT_ACCELERATION();
       buffA[ACCELERATION_OFFSET] = flt2ulong(settings.acceleration);
       
       settings.junction_deviation = DEFAULT_JUNCTION_DEVIATION;
@@ -159,7 +163,7 @@ int retry_flash_write = 0;
   #ifdef PREPARE_DEFAULT_FLASH
   
       //set the ram loaded indicator for startup
-      buffA[FLASH_LOADED_OFFSET] = 0x7FFFFFFF;
+      buffA[FLASH_LOADED_OFFSET] = FLASH_LOADED;
       
       //prepare has_data as returned from flash write should be 0!!!
       //this indicates no error while writing to flash
@@ -187,14 +191,16 @@ int retry_flash_write = 0;
     settings.steps_per_mm[X]        = ulong2flt(buffA[SPMMX_OFFSET]);
     settings.steps_per_mm[Y]        = ulong2flt(buffA[SPMMY_OFFSET]);
     settings.steps_per_mm[Z]        = ulong2flt(buffA[SPMMZ_OFFSET]);
-    //settings.steps_per_mm[A]        = ulong2flt(buffA[SPMMA_OFFSET]); //temp disabled for now
+    settings.steps_per_mm[A]        = ulong2flt(buffA[SPMMA_OFFSET]); //temp disabled for now
+    settings.steps_per_mm[B]        = ulong2flt(buffA[SPMMB_OFFSET]);
+    settings.steps_per_mm[C]        = ulong2flt(buffA[SPMMC_OFFSET]);
     settings.default_feed_rate      = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
     settings.default_seek_rate      = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
     settings.homing_feed_rate       = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
     settings.homing_seek_rate       = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
     settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
     settings.mm_per_arc_segment     = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
-    settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET]);
+    settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET])*sec_sec;
     settings.junction_deviation     = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
     settings.n_arc_correction       = (unsigned int)buffA[N_ARC_CORREC_OFFSET];
     settings.flags                  = ((unsigned int)buffA[0x50]);//FLAGS_OFFSET]);
@@ -676,7 +682,7 @@ int val_temp = 0;
        buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)val_temp;
        break;
     case 8: // Convert to mm/min^2 for grbl internal use.
-       settings.acceleration = value*60.0*60.0;
+       settings.acceleration = value*sec_sec ;
        buffA[ACCELERATION_OFFSET] = flt2ulong(value);
        break;
     case 9: settings.junction_deviation = fabs(value); 

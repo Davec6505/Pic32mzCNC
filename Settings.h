@@ -42,26 +42,32 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_HARD_LIMIT_ENABLE      true
 #define DEFAULT_HOMING_ENABLE          true
 
+//default acc/dec value for DEFAULT ACC
+#define acceleraton 1.3889
+#define sec_sec 3600
+
 //default values of words and flags
-#define DEFAULT_X_STEPS_PER_MM         200.00
-#define DEFAULT_Y_STEPS_PER_MM         200.00
-#define DEFAULT_Z_STEPS_PER_MM         200.00
-#define DEFAULT_A_STEPS_PER_MM         200.00
+#define DEFAULT_X_STEPS_PER_MM         186.750
+#define DEFAULT_Y_STEPS_PER_MM         186.750
+#define DEFAULT_Z_STEPS_PER_MM         186.750
+#define DEFAULT_A_STEPS_PER_MM         186.750
+#define DEFAULT_B_STEPS_PER_MM         186.750
+#define DEFAULT_C_STEPS_PER_MM         186.750
 #define DEFAUT_P_USEC                  100
-#define DEFAULT_MM_PER_ARC_SEGMENT     0.1
-#define DEFAULT_RAPID_FEEDRATE         500.0 // mm/min
-#define DEFAULT_FEEDRATE               250.0
-#define DEFAULT_ACCELERATION           (10.0*60.0*60.0) // 10 mm/min^2
-#define DEFAULT_JUNCTION_DEVIATION     0.05 // mm
-#define DEFAULT_HOMING_RAPID_FEEDRATE  250.0 // mm/min
-#define DEFAULT_HOMING_FEEDRATE        25.0 // mm/min
-#define DEFAULT_HOMING_DEBOUNCE_DELAY  100 // msec (0-65k)
-#define DEFAULT_HOMING_PULLOFF         1.0 // mm
-#define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
+#define DEFAULT_MM_PER_ARC_SEGMENT     0.20
+#define DEFAULT_RAPID_FEEDRATE         300.00  // mm/min
+#define DEFAULT_FEEDRATE               80.00
+#define DEFAULT_ACCELERATION()         ((acceleraton)*(sec_sec)) // 10 mm/min^2
+#define DEFAULT_JUNCTION_DEVIATION     0.05    // mm
+#define DEFAULT_HOMING_RAPID_FEEDRATE  100.00 // mm/min
+#define DEFAULT_HOMING_FEEDRATE        12.00  // mm/min
+#define DEFAULT_HOMING_DEBOUNCE_DELAY  100     // msec (0-65k)
+#define DEFAULT_HOMING_PULLOFF         1.00    // mm
+#define DEFAULT_STEPPER_IDLE_LOCK_TIME 25      // msec (0-255)
 #define DEFAULT_DECIMAL_PLACES         3
 #define DEFAULT_N_ARC_CORRECTION       25
-#define DEFAULT_HOME_DIR_MASK        15 // move positive dir
-#define DEFAULT_INVERT_MASK            15 // move positive dir
+#define DEFAULT_HOME_DIR_MASK          15      // move positive dir
+#define DEFAULT_INVERT_MASK            15      // move positive dir
 
 
 
@@ -81,32 +87,28 @@ typedef __attribute__((aligned (32))) float afloat;
 ////////////////////////////////////////////////////////////
 //              Stepper Motor Settings                    //
 ////////////////////////////////////////////////////////////
-#define NoOfAxis 2
-#define  _X      0
-#define  _Y      1
-#define  _Z      2
-#define  _A      3
-#define  _B      4
-#define  _C      5
+#define NoOfAxis 4
 
 //Number of planes must be adjusted acording to NoOfAxis
-//4 axis has 4 planes XY XZ YZ [XA YA
+//4 axis has 4 planes XY XZ YZ [XA YA ZA]
 #define NO_OF_PLANES 4
 
-//! Number of (full)steps per round on stepper motor in use.
-#define SPR 188               // 200 Steps per rev
-#define M_STEP 32.0               //Stepper drive micro steps setting
+//! Stepper drive micro steps setting.
+#define M_STEP   32.00
 
+//! Maximun mm/min needed for calculation
+#define MAX_SPEED 800,00 //In mm/min
 /**************************************************
 * ! Belt driven systems
 **************************************************/
-#define PULLEY_TOOTH_COUNT 20.0  //belt pully tooth count
-#define BELT_PITCH 2.0           // Belt tooth pitch
+#define PULLEY_TOOTH_COUNT 20.00  //belt pully tooth count
+#define BELT_PITCH 2.00           // Belt tooth pitch
+
 
 /**************************************************
 * uncomment USE_LEADSCREW_PITCH if using N instead of pitch
 **************************************************/
-#define USE_LEADSCREW_PITCH
+//#define USE_LEADSCREW_PITCH
 //! Lead screw driven systems
 #define N 1                    // Screw pitch tpmm
 #define LEADSCREW_PITCH 1      //leadscrewm pitch
@@ -117,7 +119,7 @@ typedef __attribute__((aligned (32))) float afloat;
 ///////////////////////////////////////////////////////////
 
 /***************************************************
-* Set the Limit Debounce  counter max count
+* Set the Limit switch Debounce counter [max count]
 ***************************************************/
 #define DEBOUNCE_COUNT 5
 
@@ -190,7 +192,8 @@ typedef struct {
   unsigned int invert_mask;
 //  uint8_t status_report_mask; // Mask to indicate desired report data.
 }  settings_t;
-extern volatile settings_t settings;
+
+extern settings_t settings;
 
 
 #endif

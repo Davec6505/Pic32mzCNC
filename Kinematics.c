@@ -61,6 +61,7 @@ static void Set_Axisdirection(long temp,int axis){
      }
 }
 
+
 /*single axis step rate may needs to be "doubled"?? in order
  *to compensate for the speed increase [due to no 2nd axis
  *interpolation], a possible solution is to use a dummy
@@ -72,10 +73,20 @@ static void Set_Axisdirection(long temp,int axis){
 ///////////////////////////////////////////////////////////
 //                SINGLE AXIS MOVEMENT                   //
 ///////////////////////////////////////////////////////////
-void SingleAxisStep(double newxyz,long speed,int axis_No){
+void SingleAxisStep(float newxyz,float speed,int axis_No){
 long  absxyz = 0;
 long  tempA  = 0;
 int   dir    = 0;
+
+  //get rps from mm/min
+  speed = RPS_FROM_MMPMIN(speed);
+  
+  #if KineDebug == 4
+  while(DMA_IsOn(1));
+  dma_printf("cur_pos:= %l\tabsxyz:= %f\tnewxyz:= %f\tG90:= %d\n"
+            ,tempA,beltsteps2mm(STPS[axis_No].steps_abs_position,axis_No)
+            ,newxyz,(int)gc.absolute_mode);
+  #endif
       //if absolute mode ~ newxyz = new_position - current_position
   if(gc.absolute_mode == true){
     //get current position
@@ -83,75 +94,96 @@ int   dir    = 0;
     
     //subtract new from current
     tempA = tempA - STPS[axis_No].steps_abs_position;
-
-    #if KineDebug == 1
-    while(DMA_IsOn(1));
-    dma_printf("cur_pos:= %l\tabsxyz:= %f\tnewxyz:= %f\n"
-              ,tempA
-              ,absxyz
-              ,newxyz);
-    #endif
+    if(tempA== 0){
+       SV.mode_complete = 1;
+       return;
+    }
   }else{
     tempA = belt_steps(newxyz,axis_No);
   }
   
+  SingleAxisStart(tempA,speed,axis_No);
+  
+}
+
+static void SingleAxisStart(long dist,float speed,int axis_No){
+long speed_ = 0;
+
+  
   Single_Axis_Enable(axis_No);
-  speed_cntr_Move(tempA , speed , axis_No);
-      
+  speed_cntr_Move(dist , speed, axis_No);
+
 //static long dist;
     /* if(STPS[axis].psingle != newxyz)
              STPS[axis].psingle = newxyz; */
-     Set_Axisdirection(tempA,axis_No);
-     STPS[axis_No].axis_dir = Direction(tempA);
-     SV.Single_Dual = 0;
-     STPS[axis_No].psingle  = 0;
-     STPS[axis_No].dist = labs(tempA) - STPS[axis_No].psingle;
-     STPS[axis_No].step_count = 0;
-     STPS[axis_No].mmToTravel = tempA;
-     //Start output compare module
-     Step_Cycle(axis_No);
-
+   Set_Axisdirection(dist,axis_No);
+   STPS[axis_No].axis_dir = Direction(dist);
+   SV.Single_Dual = 0;
+   STPS[axis_No].psingle  = 0;
+   STPS[axis_No].dist = labs(dist) - STPS[axis_No].psingle;
+   STPS[axis_No].step_count = 0;
+   STPS[axis_No].mmToTravel = dist;
+   //Start output compare module
+   Step_Cycle(axis_No);
 }
 
 //////////////////////////////////////////////////////////
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
-void DualAxisStep(double axis_a,double axis_b,int axisA,int axisB,long speed){//,int xyza){
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 long tempA,tempB,tempC;
-int dirA,dirB;
+//int dirA,dirB;
 
-    //if absolute mode ~ newxyz = new_position - current_position
-   if(gc.absolute_mode == true){
-      //get current position
-    tempA = belt_steps(axis_a,axisA);//ulong2flt( STPS[axisA].steps_abs_position);
-    tempB = belt_steps(axis_b,axisB);//ulong2flt( STPS[axisB].steps_abs_position);
-      //subtract new from current
-     tempA = tempA - STPS[axisA].steps_abs_position;
-     tempB = tempB - STPS[axisB].steps_abs_position;
-   }else{
-      tempA = belt_steps(axis_a,axisA);
-      tempB = belt_steps(axis_b,axisB);
-   }
-   SV.over=0;
-   SV.dif = 0;
-
-   //Enable the relevant axis in Stepper.c
-   SV.Single_Dual = 1;
-   Single_Axis_Enable(axisA);
-   Single_Axis_Enable(axisB);
-  // Multi_Axis_Enable(xyza);
-  
-  //if in abs mode prev must be cur pos
-   if (!gc.absolute_mode){
-     SV.prevA = 0;
-     SV.prevB = 0;
-     SV.prevC = 0;
-   }else{
-     SV.prevA = 0;
-     SV.prevB = 0;
-     SV.prevC = 0;
-   }
+ //get rpm from mm/min
+ speed = RPM_FROM_MMPMIN(speed);
+ 
+ //if absolute mode ~ newxyz = new_position - current_position
+ if(gc.absolute_mode == true){
+   //get current position
+   tempA = belt_steps(axis_a,axisA);
+   tempB = belt_steps(axis_b,axisB);
    
+  #if KineDebug == 4
+  while(DMA_IsOn(1));
+  dma_printf("\
+  tempA:= %l\tabsA:= %l\n\
+  tempB:= %l\tabsB:= %l\n"
+  ,tempA,STPS[axisA].steps_abs_position
+  ,tempB,STPS[axisB].steps_abs_position);
+  #endif
+  //subtract new from current
+  tempA = tempA - STPS[axisA].steps_abs_position;
+  tempB = tempB - STPS[axisB].steps_abs_position;
+  #if KineDebug == 4
+  while(DMA_IsOn(1));
+  dma_printf("tempAa:= %l\ttempBb:= %l\n"
+  ,tempA,tempB);
+  #endif
+
+ }else{
+   tempA = belt_steps(axis_a,axisA);
+   tempB = belt_steps(axis_b,axisB);
+ }
+ SV.over = 0;
+ SV.dif  = 0;
+
+//Enable the relevant axis in Stepper.c
+ SV.Single_Dual = 1;
+ Single_Axis_Enable(axisA);
+ Single_Axis_Enable(axisB);
+ // Multi_Axis_Enable(xyza);
+  
+ //if in abs mode prev must be cur pos
+ if (!gc.absolute_mode){
+     SV.prevA = 0;
+     SV.prevB = 0;
+     SV.prevC = 0;
+ }else{
+     SV.prevA = 0;//tempA;
+     SV.prevB = 0;//tempB;
+     SV.prevC = 0;//tempC;
+ }
+
   //set the direction counter for absolute position
   Set_Axisdirection(tempA,axisA);
   STPS[axisA].axis_dir = Direction(tempA);
@@ -159,26 +191,43 @@ int dirA,dirB;
   STPS[axisB].axis_dir = Direction(tempB);
 
   //Delta distance to move
-  SV.dA   = tempA - SV.prevA;
-  SV.dB   = tempB - SV.prevB;
-  SV.dC   = tempC - SV.prevC;
+  SV.dA   = tempA;// - SV.prevA;
+  SV.dB   = tempB;// - SV.prevB;
+  SV.dC   = tempC;// - SV.prevC;
 
   //Remove -ve values
   SV.dA = labs(SV.dA);
   SV.dB = labs(SV.dB);
-  
+
+#if KineDebug == 4
+while(DMA_IsOn(1));
+dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
+#endif
+
   //Start values for Bresenhams
+  if(SV.dA == 0 && SV.dB == 0){
+    SV.mode_complete = 1; //set this to respond with ok
+    return;
+  }
+  
   if(SV.dA >= SV.dB){
-     if(!SV.cir)
+     //if(!SV.cir){
         speed_cntr_Move(tempA,speed,axisA);
+        //speed_cntr_Move(tempB,speed,axisB);
+        STPS[axisB].step_delay = STPS[axisA].step_delay;
+        STPS[axisB].accel_count = STPS[axisA].accel_count;
+     //}
 
      SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
      STPS[axisA].master = 1;
      STPS[axisB].master = 0;
-  }
-  else{
-     if(!SV.cir)
+  }else{
+     //if(!SV.cir){
         speed_cntr_Move(tempB,speed,axisB);
+        //speed_cntr_Move(tempA,speed,axisA);
+        STPS[axisA].step_delay = STPS[axisB].step_delay;
+        STPS[axisA].accel_count = STPS[axisB].accel_count;
+    // }
 
      SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
      STPS[axisA].master = 0;
@@ -189,15 +238,8 @@ int dirA,dirB;
    STPS[axisB].step_count = 0;
    STPS[axisA].mmToTravel = tempA;
    STPS[axisB].mmToTravel = tempB;
-   
+
    Axis_Interpolate(axisA,axisB);
-   
-  //leave previous values at 0 for now this will
-  //be implimented at a later stage.
-  // SV.px = SV.dx;
-  // SV.py = SV.dy;
-  // SV.pz = SV.dz;
-   
 
 }
 
@@ -234,57 +276,72 @@ int dirA,dirB;
   */
 
 void mc_arc(float *position, float *target, float *offset, int axis_0
-           , int axis_1,int axis_linear, long feed_rate, char invert_feed_rate
+           , int axis_1,int axis_linear, float feed_rate, char invert_feed_rate
            , float radius, char isclockwise){
- long tempA,tempB;
- float center_axis0            = position[axis_0] + offset[axis_0];
- float center_axis1            = position[axis_1] + offset[axis_1];
- float linear_travel           = target[axis_linear] - position[axis_linear];
- float r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
- float r_axis1                 = -offset[axis_1];
- float rt_axis0                = target[axis_0] - center_axis0;
- float rt_axis1                = target[axis_1] - center_axis1;
- float theta_per_segment       = 0.00;
- float linear_per_segment      = 0.00;
- float angular_travel          = 0.00;
- float mm_of_travel            = 0.00;
- float rads                    = 0.00;
- long  segments                = 0;
- float cos_T                   = 0.00;
- float sin_T                   = 0.00;
- float arc_target[3];
- float sin_Ti;
- float cos_Ti;
- float r_axisi;
- float nPx,nPy;
- long i                         = 0;
- int count = 0;
- char n_arc_correction = 3; //to be sorted int global struct???
- char limit_error = 0;
+float arc_target[3] = {0};
+float center_axis0,center_axis1, r_axis0 , r_axis1 , rt_axis0 , rt_axis1 , linear_travel;
+float theta_per_segment, linear_per_segment , angular_travel , mm_of_travel , segments;
+float cos_T,sin_T,sin_Ti,cos_Ti;
+float r_axisi,nPx,nPy,i,x,y;
+int count = 0;
+char limit_error = 0;
 
-  arc_target[axis_linear] = position[axis_linear];
-  rads = radius * deg2rad;
+ center_axis0            = position[axis_0] + offset[axis_0];
+ center_axis1            = position[axis_1] + offset[axis_1];
+ r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
+ r_axis1                 = -offset[axis_1];
+ rt_axis0                = target[axis_0] - center_axis0;
+ rt_axis1                = target[axis_1] - center_axis1;
+ linear_travel           = target[axis_linear] - position[axis_linear];
+  //axis_linear should be Z for cutting spirals or screw threads
+ arc_target[axis_linear] = position[axis_linear];
   
+  //deg * (Pi/180) ??
+ // rads = radius * deg2rad;
+
   // CCW angle between position and target from circle center. Only one atan2() trig computation required.
   // atan2((I*-J' - I'*J ),(I*J + I'-J'))   ~ arctan Vector opp/Vector adj
-  angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0, r_axis0*rt_axis0+r_axis1*rt_axis1);
+  x = r_axis0*rt_axis1-r_axis1*rt_axis0;
+  y = r_axis0*rt_axis0+r_axis1*rt_axis1;
+  //MikroC atan2 is not as library describes it?? ansic states
+  //y/x  mikroc states x/y. avr example as below does not work in MikroC
+  //needed to invert this commented out atan2 ??? MikroC forum said
+  //it would be fixed!! Ha! ha! ha!!!! typical MikroC.
+  /*angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0,
+                         r_axis0*rt_axis0+r_axis1*rt_axis1);*/
+  //atan2 as ansic states but not as grbl code would have it!!
+  angular_travel = atan2(y,x);
   
   // Correct atan2 output per direction
-  if(isclockwise) {
-    // 2*Pi = 360deg in radians
+  if(isclockwise > 0) {
     if (angular_travel >= 0) 
-         angular_travel -= 2*M_PI;
-    else {
-      if(angular_travel <= 0)
-        angular_travel += 2*M_PI;
-    }
+         angular_travel -= PIx2;
+  }else {
+    if(angular_travel <= 0)
+        angular_travel += PIx2;
   }
+  
+#if KineDebug == 3
+while(DMA_IsOn(1));
+dma_printf("\
+[posx:=%f : posy:=%f]\n\
+[tarx:=%f : tary:=%f]\n\
+[offx:= %f : offy:= %f]\r\n\
+[cenx:= %f : ceny:= %f]\r\n\
+[r_axis0:= %f : r_axis1:= %f]\r\n\
+[rt_axis0:= %f : rt_axis1:= %f]\r\n\n",
+  position[axis_0],position[axis_1]
+  ,target[axis_0],target[axis_1]
+  ,offset[axis_0],offset[axis_1]
+  ,center_axis0,center_axis1
+  ,r_axis0,r_axis1,rt_axis0,rt_axis1);
+#endif
 
   // Check this with calculator
   mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
   if (mm_of_travel == 0.0) { return; }
   
-  segments = (long)floor(mm_of_travel/DEFAULT_MM_PER_ARC_SEGMENT);
+  segments = floor(mm_of_travel/settings.mm_per_arc_segment);
   
   // Multiply inverse feed_rate to compensate for the fact that this movement is approximated
   // by a number of discrete segments. The inverse feed_rate should be correct for the sum of
@@ -293,34 +350,38 @@ void mc_arc(float *position, float *target, float *offset, int axis_0
       feed_rate *= segments;
       
   // angular_travel = angular_travel * rad2deg;
-   theta_per_segment = angular_travel/(float)segments;
+   theta_per_segment = angular_travel/segments;
    
    //linear_per_segmentis the down feed of the 3 axis
    //In most cases this will be 0 for 2D plane unless
    //spiral pocket cutting is needed
-   linear_per_segment = linear_travel/(float)segments;
+   linear_per_segment = linear_travel/segments;
    
   // Vector rotation matrix values
    cos_T = 1-0.5*theta_per_segment*theta_per_segment; // Small angle approximation
    sin_T = theta_per_segment;
-  // Initialize the linear axis
+   
+  // Initialize the linear axis to current posxition
   nPx = arc_target[axis_0] = position[axis_0];
   nPy = arc_target[axis_1] = position[axis_1];
   OC5IE_bit = OC2IE_bit = 0;
-  i = 0;
+  i = 0.0;
   
-#if KineDebug == 3
-while(DMA_IsOn(1));
-dma_printf("[cos_T:=%f : sin_T:=%f][radius:=%f : segments:=%l]\r\n\
+  #if KineDebug == 3
+  while(DMA_IsOn(1));
+  dma_printf("\
+[cos_T:=%f : sin_T:=%f]\n\
+[radius:=%f : segments:=%f]\n\
 [angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n\
 [LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
-cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
-,linear_travel,linear_per_segment,theta_per_segment,gc.frequency);
-#endif
+  cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
+  ,linear_travel,linear_per_segment,theta_per_segment,feed_rate);
+  #endif
+  
+  for (i = 1; i<segments; i+=1.00) { // Increment (segments-1)
+  //while(i < segments) { // Increment (segments-1)
 
-  while(i < segments) { // Increment (segments-1)
-
-      if (count < n_arc_correction) {
+      if (count < settings.n_arc_correction) {
         // Apply vector rotation matrix
         r_axisi = r_axis0*sin_T + r_axis1*cos_T;
         r_axis0 = r_axis0*cos_T - r_axis1*sin_T;
@@ -343,56 +404,79 @@ cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
       nPx =  arc_target[axis_0] - position[axis_0];
       nPy =  arc_target[axis_1] - position[axis_1];
       
-      nPx += position[axis_0];// += nPx;//arc_target[axis_0];
-      nPy += position[axis_1];// += nPy;//arc_target[axis_1];
-
-     //if absolute mode use current position + nP...
       if(gc.absolute_mode){
-        STPS[axis_0].step_delay = feed_rate;
-        STPS[axis_1].step_delay = feed_rate;
+        nPx += position[axis_0];// += nPx;//arc_target[axis_0];
+        nPy += position[axis_1];// += nPy;//arc_target[axis_1];
       }
+     //if absolute mode use current position + nP...
+  // if(gc.absolute_mode){
+     STPS[axis_0].step_delay = feed_rate;
+     STPS[axis_1].step_delay = feed_rate;
+  // }
 
-     SV.cir = 1;//to indicate DualAxisStep of circle!!!
-     DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);//,xy);
-     
-     while(1){
-     
-    /*  if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
+    //to ensure the axis does not over step during an
+    //arc, there is a correction interpolation after
+    //arc incrament to get axis into target position,
+    // if axis is ahead then it would have to reversr
+    //this prevents the reversal of wither axis.
+    if(position[axis_0] > target[axis_0]){
+      if(nPx < target[axis_0]){nPx = target[axis_0];}
+    }else if(position[axis_0] < target[axis_0]){
+      if(nPx > target[axis_0]){nPx = target[axis_0];}
+    }
+    
+    if(position[axis_1] > target[axis_1]){
+      if(nPy <= target[axis_1]){nPy = target[axis_1];}
+    }else if(position[axis_1] < target[axis_1]){
+      if(nPy >= target[axis_1]){nPy = target[axis_1];}
+    }
+    //interpolate the difference
+    DualAxisStep(nPx,nPy,axis_0,axis_1,gc.frequency);//,xy);
+   //wait here while axis completes its move can posibly
+   //check limits and estops as well as send out status report
+   // will want ot unblockthis nce we have a complete working model
+   while(1){
+     /*
+     if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
          disableOCx();
          limit_error = 1;
-      }*/
-
-        if(!OC5IE_bit && !OC2IE_bit)
-            break;
      }
+     */
+     if(!OC5IE_bit && !OC2IE_bit)
+       break;
+   }
 
     // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
     // if (sys.abort) { return; }
-    if(limit_error)
-       break;
-   i++;
+   /*if(limit_error)
+      break; */
 #if KineDebug == 3
-if(!DMA_IsOn(1)){
-dma_printf("[ i:= %d\tseg:= %d ][ nPx:= %f\tnPy:= %f ]\
-[ position[axis_0]:= %f\tposition[axis_1]:= %f ][feed_rate:= %l]\r\n"
-,i,segments,nPx,nPy,position[axis_0],position[axis_1],feed_rate);
-}
+while(DMA_IsOn(1));
+dma_printf("\
+[ i:= %d\tseg:= %d ]\n\
+[ nPx:= %f\tnPy:= %f ]\n\
+[ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n"
+,i,segments,nPx,nPy,target[axis_0],target[axis_1]);
 #endif
 
   }
-  report_status_message(STATUS_OK);
-  //SV.Tog = 1;
-#if DMADebug == 1
-   while(DMA_Busy(1));
-   dma_printf("\n%s","Arc Finnished");
-#endif
+  //end of arc get to correct target
+  SV.cir = 0;
+  //ensure axis are in position when arc is complete
+  DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,gc.frequency);
+  //report_status_message(STATUS_OK);
+ // SV.mode_complete = 1;
+  #if KineDebug == 3
+     while(DMA_IsOn(1));
+     dma_printf("\n%s\n","Arc Finnished");
+  #endif
 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //returns hypotinuse of a triangle
-float hypot(float angular_travel, float linear_travel){
-      return(sqrt((angular_travel*angular_travel) + (linear_travel*linear_travel)));
+float hypot(float x, float y){
+      return(sqrt((x*x) + (y*y)));
 }
 
 
@@ -420,7 +504,7 @@ static long speed = 0;
 
   //idle homing can only take place once all alarms are cleared
  if(sys.state == STATE_IDLE){
-  speed = 1000;//settings.homing_feed_rate;
+  speed = settings.homing_seek_rate;
   
  //condition the triggers
   Rst_FP(axis);Rst_FN(axis);
@@ -449,8 +533,8 @@ static long speed = 0;
   }
     
   //start the movement
-  //(max_sizes[axis]+10.0)
-  Home_Axis(-500.0,speed,axis);
+  //(max_sizes[axis]+100.0)to ensure axis gets to limit
+  Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
 
    #if HomeDebug == 2
    while(DMA_IsOn(1));
@@ -459,6 +543,7 @@ static long speed = 0;
                 ,homing[axis].home_state
                 ,homing[axis].home_cnt);
    #endif
+   
    return axis;
  }
 
@@ -473,7 +558,7 @@ static long speed = 0;
 #endif
 //label to force a reversal of axis
 HOMED:
-       speed = 100;//settings.homing_seek_rate;
+       speed = settings.homing_feed_rate;
        #if HomeDebug == 2
        while(DMA_IsOn(1));
        dma_printf("[%s][axis:= %d][cnt:= %d]\n"
@@ -491,9 +576,13 @@ HOMED:
            
                bit_true(homing[axis].home_state,bit(HOME_REV));
                bit_false(homing[axis].home_state,bit(HOME));
+               
+               //pause prior to reentering limit switch
+               VDelay_ms((unsigned long)settings.homing_debounce_delay);
+               
                //distance here is any value to move off the limit
                //movement will stop on falling edge of limit
-               Home_Axis(12.0,100, axis);
+               Home_Axis(12.0,settings.homing_feed_rate, axis);
 
            }else if(homing[axis].home_cnt > 1){//2nd hit of limit
            
@@ -515,6 +604,8 @@ HOMED:
                           ,homing[axis].home_cnt);
                #endif
                
+               //move off axis limit by default value to stop limit false trigger
+               Home_Axis(settings.homing_pulloff,settings.homing_feed_rate, axis);
                //return the next axis to be homed
                return axis;
            }
@@ -537,7 +628,7 @@ HOMED:
        homing[axis].home_cnt++;
        if(bit_istrue(homing[axis].home_state,BIT_HOME_REV)){
           bit_false(homing[axis].home_state,bit(HOME_REV));
-          Home_Axis(-290.00,50,axis);
+          Home_Axis(-290.00,50.0,axis);
        }
        #if HomeDebug == 2
        while(DMA_IsOn(1));
@@ -553,7 +644,7 @@ HOMED:
 }
 
 //Home single axis
-static void Home_Axis(double distance,long speed,int axis){
+static void Home_Axis(double distance,float speed,int axis){
   //force a stop of the axis
   StopAxis(axis);
   STPS[axis].run_state = STOP ;
@@ -563,7 +654,7 @@ static void Home_Axis(double distance,long speed,int axis){
 
   #if HomeDebug == 2
    while(DMA_IsOn(1));
-   dma_printf("HomeAxis(%f,%l,%d);\n",distance,speed,axis);
+   dma_printf("HomeAxis(%f,%f,%d);\n",distance,speed,axis);
   #endif
   //calculate the distance in Steps and send to stepper control
   STPS[axis].mmToTravel = belt_steps(distance,axis);

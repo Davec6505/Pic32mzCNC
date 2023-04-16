@@ -119,21 +119,20 @@ void report_init_message(){
 // Grbl help message
 void report_grbl_help() {
   while(DMA_IsOn(1));
-  dma_printf("%s",
-              "\
-              $$ (view Grbl settings)\r\n\
-              $# (view # parameters)\r\n\
-              $G (view parser state)\r\n\
-              $N (view startup blocks)\r\n\
-              $x=value (save Grbl setting)\r\n\
-              $Nx=line (save startup block)\r\n\
-              $C (check gcode mode)\r\n\
-              $X (kill alarm lock)\r\n\
-              $H (run homing cycle)\r\n\
-              ~ (cycle start)\r\n\
-              ! (feed hold)\r\n\
-              ? (current status)\r\n\
-              ctrl-x (reset Grbl)\r\n");
+  dma_printf("%s","\
+$$ (view Grbl settings)\r\n\
+$# (view # parameters)\r\n\
+$G (view parser state)\r\n\
+$N (view startup blocks)\r\n\
+$x=value (save Grbl setting)\r\n\
+$Nx=line (save startup block)\r\n\
+$C (check gcode mode)\r\n\
+$X (kill alarm lock)\r\n\
+$H (run homing cycle)\r\n\
+~ (cycle start)\r\n\
+! (feed hold)\r\n\
+? (current status)\r\n\
+ctrl-x (reset Grbl)\r\n");
 }
 
 // Grbl global settings print out.
@@ -143,52 +142,52 @@ float acc = settings.acceleration;
   acc /=(60*60);
   while(DMA_IsOn(1));
   dma_printf("\r\n\
-              $0=%f (x, step/mm)\r\n\
-              $1=%f (y, step/mm)\r\n\
-              $2=%f (z, step/mm)\r\n\
-              $3=%d (step pulse, usec)\r\n\
-              $4=%f (default feed, mm/min)\r\n\
-              $5=%f (default seek, mm/min)\r\n\
-              $6=%d (step port invert mask, int)\r\n\
-              $7=%d (step idle delay, msec)\r\n\
-              $8=%f (acceleration, mm/sec^2)\r\n\
-              $9=%f (junction deviation, mm)\r\n\
-              $10=%f (arc, mm/segment)\r\n\
-              $11=%d (n-arc correction, int)\r\n\
-              $12=%d (n-decimals, int)\r\n\
-              $13=%d (report inches, bool)\r\n\
-              $14=%d (auto start, bool)\r\n\
-              $15=%d (invert step enable, bool)\r\n\
-              $16=%d (hard limits, bool)\r\n\
-              $17=%d (homing cycle, bool)\r\n\
-              $18=%d (homing dir invert mask, int:)\r\n\
-              $19=%f (homing feed, mm/min)\r\n\
-              $20=%f (homing seek, mm/min)\r\n\
-              $21=%d (homing debounce, msec)\r\n\
-              $22=%f (homing pull-off, mm)\r\n"
-              ,settings.steps_per_mm[X]           //0
-              ,settings.steps_per_mm[Y]           //1
-              ,settings.steps_per_mm[Z]           //2
-              ,settings.p_usec                    //3
-              ,settings.default_feed_rate         //4
-              ,settings.default_seek_rate         //5
-              ,settings.invert_mask               //6
-              ,settings.step_idle_delay           //7
-              ,settings.acceleration              //8
-              ,settings.junction_deviation        //9
-              ,settings.mm_per_arc_segment        //10
-              ,settings.n_arc_correction          //11
-              ,settings.decimal_places            //12
-              ,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
-              ,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
-              ,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
-              ,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
-              ,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
-              ,settings.homing_dir_mask                          //18
-              ,settings.homing_feed_rate                         //19
-              ,settings.homing_seek_rate                            //20
-              ,settings.homing_debounce_delay                       //21
-              ,settings.homing_pulloff);                            //22
+$0=%f (x, step/mm)\r\n\
+$1=%f (y, step/mm)\r\n\
+$2=%f (z, step/mm)\r\n\
+$3=%d (step pulse, usec)\r\n\
+$4=%f (default feed, mm/min)\r\n\
+$5=%f (default seek, mm/min)\r\n\
+$6=%d (step port invert mask, int)\r\n\
+$7=%d (step idle delay, msec)\r\n\
+$8=%f (acceleration, mm/sec^2)\r\n\
+$9=%f (junction deviation, mm)\r\n\
+$10=%f (arc, mm/segment)\r\n\
+$11=%d (n-arc correction, int)\r\n\
+$12=%d (n-decimals, int)\r\n\
+$13=%d (report inches, bool)\r\n\
+$14=%d (auto start, bool)\r\n\
+$15=%d (invert step enable, bool)\r\n\
+$16=%d (hard limits, bool)\r\n\
+$17=%d (homing cycle, bool)\r\n\
+$18=%d (homing dir invert mask, int:)\r\n\
+$19=%f (homing feed, mm/min)\r\n\
+$20=%f (homing seek, mm/min)\r\n\
+$21=%d (homing debounce, msec)\r\n\
+$22=%f (homing pull-off, mm)\r\n"
+,settings.steps_per_mm[X]           //0
+,settings.steps_per_mm[Y]           //1
+,settings.steps_per_mm[Z]           //2
+,settings.p_usec                    //3
+,settings.default_feed_rate         //4
+,settings.default_seek_rate         //5
+,settings.invert_mask               //6
+,settings.step_idle_delay           //7
+,settings.acceleration              //8
+,settings.junction_deviation        //9
+,settings.mm_per_arc_segment        //10
+,settings.n_arc_correction          //11
+,settings.decimal_places            //12
+,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
+,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
+,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
+,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
+,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
+,settings.homing_dir_mask                          //18
+,settings.homing_feed_rate                         //19
+,settings.homing_seek_rate                            //20
+,settings.homing_debounce_delay                       //21
+,settings.homing_pulloff);                            //22
 }
 
 

@@ -54,8 +54,7 @@ static int Modal_Group_Actions7(int action);
 //[G54...] Coordinate system selection
 static int Modal_Group_Actions12(int action);
 
-//Runtime checking of status states
-void protocol_execute_runtime();
+
 
 
 #endif

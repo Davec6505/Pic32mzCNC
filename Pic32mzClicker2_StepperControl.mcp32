@@ -27,7 +27,23 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=DEFINES.pld
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+Value=Globals.c
+=======
+Value=Kinematics.c
+>>>>>>> patch12
+=======
+Value=Stepper.c
+>>>>>>> patch12
+=======
+Value=Steptodistance.c
+>>>>>>> patch10
+>>>>>>> patch10
 =======
 =======
 >>>>>>> patch1
@@ -131,13 +147,19 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Kinematics.c
-File2=Kinematics.h
-File3=Planner.c
-File4=Planner.h
-File5=DEFINES.pld
-File6=GCODE.c
-Count=7
+File1=DEFINES.pld
+File2=Planner.h
+File3=Kinematics.c
+File4=Kinematics.h
+File5=Steptodistance.c
+File6=Steptodistance.h
+File7=Settings.h
+File8=Planner.c
+File9=Globals.c
+File10=Protocol.c
+File11=Globals.h
+File12=Config.c
+Count=13
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -204,13 +226,11 @@ File6=Sprinti
 File7=Sprintl
 File8=Conversions
 File9=C_Math
-File10=FFT
-File11=TwiddleFactors
-File12=MemManager
-Count=13
+File10=MemManager
+Count=11
 [INTERRUPT_DEFS]
 EBASE=9FC01000
-VECTOR_SPACEING=32
+VECTOR_SPACEING=512
 VECTOR_MODE=1
 USE_SRS=7
 [EXPANDED_NODES]
