@@ -45,7 +45,7 @@ JAL	_NVMReadWord+0
 NOP	
 ; has_data start address is: 12 (R3)
 MOVZ	R3, R2, R0
-;Globals.c,55 :: 		if(has_data == -1){
+;Globals.c,55 :: 		if(has_data == FLASH_LOADED){
 LUI	R2, 65535
 ORI	R2, R2, 65535
 BEQ	R3, R2, L__settings_init127
@@ -127,49 +127,49 @@ JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612468)(GP)
 ;Globals.c,83 :: 		settings.default_feed_rate = DEFAULT_FEEDRATE;
-LUI	R2, 17274
+LUI	R2, 17056
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+16)(GP)
 ;Globals.c,84 :: 		buffA[D_FEED_RATE_OFFSET]  = flt2ulong(settings.default_feed_rate);
-LUI	R2, 17274
+LUI	R2, 17056
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612452)(GP)
 ;Globals.c,86 :: 		settings.default_seek_rate = DEFAULT_RAPID_FEEDRATE;
-LUI	R2, 17402
+LUI	R2, 17302
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+20)(GP)
 ;Globals.c,87 :: 		buffA[D_SEEK_RATE_OFFSET]  = flt2ulong(settings.default_seek_rate);
-LUI	R2, 17402
+LUI	R2, 17302
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612448)(GP)
-;Globals.c,89 :: 		settings.homing_feed_rate   = DEFAULT_HOMING_FEEDRATE;
-LUI	R2, 17402
-ORI	R2, R2, 0
-SW	R2, Offset(_settings+24)(GP)
-;Globals.c,90 :: 		buffA[H_FEED_RATE_OFFSET]   = flt2ulong(settings.homing_feed_rate);
-LUI	R2, 17402
-ORI	R2, R2, 0
-MTC1	R2, S12
-JAL	_flt2ulong+0
-NOP	
-SW	R2, Offset(-1610612444)(GP)
-;Globals.c,92 :: 		settings.homing_seek_rate   = DEFAULT_HOMING_RAPID_FEEDRATE ;
-LUI	R2, 17530
+;Globals.c,89 :: 		settings.homing_seek_rate   = DEFAULT_HOMING_RAPID_FEEDRATE ;
+LUI	R2, 17096
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+28)(GP)
-;Globals.c,93 :: 		buffA[H_SEEK_RATE_OFFSET]   = flt2ulong(settings.homing_seek_rate);
-LUI	R2, 17530
+;Globals.c,90 :: 		buffA[H_SEEK_RATE_OFFSET]   = flt2ulong(settings.homing_seek_rate);
+LUI	R2, 17096
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612440)(GP)
+;Globals.c,92 :: 		settings.homing_feed_rate   = DEFAULT_HOMING_FEEDRATE;
+LUI	R2, 16704
+ORI	R2, R2, 0
+SW	R2, Offset(_settings+24)(GP)
+;Globals.c,93 :: 		buffA[H_FEED_RATE_OFFSET]   = flt2ulong(settings.homing_feed_rate);
+LUI	R2, 16704
+ORI	R2, R2, 0
+MTC1	R2, S12
+JAL	_flt2ulong+0
+NOP	
+SW	R2, Offset(-1610612444)(GP)
 ;Globals.c,95 :: 		settings.homing_pulloff     = DEFAULT_HOMING_PULLOFF;
 LUI	R2, 16256
 ORI	R2, R2, 0
@@ -192,13 +192,13 @@ MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612432)(GP)
-;Globals.c,101 :: 		settings.acceleration      = DEFAULT_ACCELERATION;
+;Globals.c,101 :: 		settings.acceleration      = DEFAULT_ACCELERATION();
 LUI	R2, 17820
-ORI	R2, R2, 16384
+ORI	R2, R2, 16466
 SW	R2, Offset(_settings+40)(GP)
 ;Globals.c,102 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(settings.acceleration);
 LUI	R2, 17820
-ORI	R2, R2, 16384
+ORI	R2, R2, 16466
 MTC1	R2, S12
 JAL	_flt2ulong+0
 NOP	
@@ -277,8 +277,8 @@ SH	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 65535
 ANDI	R2, R2, 31
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,166 :: 		buffA[FLASH_LOADED_OFFSET] = 0x7FFFFFFF;
-LUI	R2, 32767
+;Globals.c,166 :: 		buffA[FLASH_LOADED_OFFSET] = FLASH_LOADED;
+LUI	R2, 65535
 ORI	R2, R2, 65535
 SW	R2, Offset(-1610611216)(GP)
 ;Globals.c,170 :: 		has_data = 1;
@@ -337,7 +337,7 @@ L_settings_init9:
 J	L_settings_init2
 NOP	
 L__settings_init123:
-;Globals.c,55 :: 		if(has_data == -1){
+;Globals.c,55 :: 		if(has_data == FLASH_LOADED){
 MOVZ	R2, R3, R0
 ;Globals.c,186 :: 		}
 L_settings_init2:
@@ -418,10 +418,14 @@ LW	R25, Offset(-1610612432)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+36)(GP)
-;Globals.c,203 :: 		settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET]);
+;Globals.c,203 :: 		settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET])*sec_sec;
 LW	R25, Offset(-1610612428)(GP)
 JAL	_ulong2flt+0
 NOP	
+LUI	R2, 17761
+ORI	R2, R2, 0
+MTC1	R2, S1
+MUL.S 	S0, S0, S1
 SWC1	S0, Offset(_settings+40)(GP)
 ;Globals.c,204 :: 		settings.junction_deviation     = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
 LW	R25, Offset(-1610612424)(GP)
@@ -1820,7 +1824,7 @@ J	L_settings_store_global_setting82
 NOP	
 ;Globals.c,684 :: 		case 8: // Convert to mm/min^2 for grbl internal use.
 L_settings_store_global_setting93:
-;Globals.c,685 :: 		settings.acceleration = value*secXsec ;
+;Globals.c,685 :: 		settings.acceleration = value*sec_sec ;
 LUI	R2, 17761
 ORI	R2, R2, 0
 MTC1	R2, S0

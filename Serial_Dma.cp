@@ -186,7 +186,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 169 "c:/users/git/pic32mzcnc/settings.h"
+#line 173 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -282,7 +282,7 @@ int round(float val);
 
 
 long lround(float val);
-#line 103 "c:/users/git/pic32mzcnc/globals.h"
+#line 106 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -356,7 +356,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 62 "c:/users/git/pic32mzcnc/planner.h"
+#line 61 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;

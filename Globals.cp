@@ -9,7 +9,7 @@
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 169 "c:/users/git/pic32mzcnc/settings.h"
+#line 173 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -244,7 +244,7 @@ typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 62 "c:/users/git/pic32mzcnc/planner.h"
+#line 61 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
@@ -852,7 +852,7 @@ void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-#line 103 "c:/users/git/pic32mzcnc/globals.h"
+#line 106 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -965,7 +965,7 @@ int retry_flash_write = 0;
  }else{
  has_data = NVMReadWord(ptr);
 #line 55 "C:/Users/Git/Pic32mzCNC/Globals.c"
- if(has_data == -1){
+ if(has_data ==  -1 ){
 
 
 
@@ -993,17 +993,17 @@ int retry_flash_write = 0;
  settings.steps_per_mm[C] =  186.750 ;
  buffA[ 0x43 ] = flt2ulong(settings.steps_per_mm[C]);
 
- settings.default_feed_rate =  250.00 ;
+ settings.default_feed_rate =  80.00 ;
  buffA[ 0x47 ] = flt2ulong(settings.default_feed_rate);
 
- settings.default_seek_rate =  500.00 ;
+ settings.default_seek_rate =  300.00 ;
  buffA[ 0x48 ] = flt2ulong(settings.default_seek_rate);
 
- settings.homing_feed_rate =  500.00 ;
- buffA[ 0x49 ] = flt2ulong(settings.homing_feed_rate);
-
- settings.homing_seek_rate =  1000.00  ;
+ settings.homing_seek_rate =  100.00  ;
  buffA[ 0x4A ] = flt2ulong(settings.homing_seek_rate);
+
+ settings.homing_feed_rate =  12.00 ;
+ buffA[ 0x49 ] = flt2ulong(settings.homing_feed_rate);
 
  settings.homing_pulloff =  1.00 ;
  buffA[ 0x4B ] = flt2ulong(settings.homing_pulloff);
@@ -1011,7 +1011,7 @@ int retry_flash_write = 0;
  settings.mm_per_arc_segment =  0.20 ;
  buffA[ 0x4C ] = flt2ulong(settings.mm_per_arc_segment);
 
- settings.acceleration =  5000.00 ;
+ settings.acceleration =  (( 1.3889 )*( 3600 )) ;
  buffA[ 0x4D ] = flt2ulong(settings.acceleration);
 
  settings.junction_deviation =  0.05 ;
@@ -1052,7 +1052,7 @@ int retry_flash_write = 0;
 #line 155 "C:/Users/Git/Pic32mzCNC/Globals.c"
  buffA[0x50] = ((unsigned long)settings.flags) & 0x1F;
 #line 166 "C:/Users/Git/Pic32mzCNC/Globals.c"
- buffA[ 0x17C ] = 0x7FFFFFFF;
+ buffA[ 0x17C ] =  -1 ;
 
 
 
@@ -1084,7 +1084,7 @@ int retry_flash_write = 0;
  settings.homing_seek_rate = ulong2flt(buffA[ 0x4A ]);
  settings.homing_pulloff = ulong2flt(buffA[ 0x4B ]);
  settings.mm_per_arc_segment = ulong2flt(buffA[ 0x4C ]);
- settings.acceleration = ulong2flt(buffA[ 0x4D ]);
+ settings.acceleration = ulong2flt(buffA[ 0x4D ])* 3600 ;
  settings.junction_deviation = ulong2flt(buffA[ 0x4E ]);
  settings.n_arc_correction = (unsigned int)buffA[ 0x4F ];
  settings.flags = ((unsigned int)buffA[0x50]);
@@ -1448,7 +1448,7 @@ int val_temp = 0;
  buffA[ 0x53 ] = (unsigned long)val_temp;
  break;
  case 8:
- settings.acceleration = value* (60.00*60.00)  ;
+ settings.acceleration = value* 3600  ;
  buffA[ 0x4D ] = flt2ulong(value);
  break;
  case 9: settings.junction_deviation = fabs(value);

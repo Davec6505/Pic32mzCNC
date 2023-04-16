@@ -100,7 +100,7 @@ long abs_mmSteps = labs(mmSteps);
     // Set accelration by calc the first (c0) step delay .
     // step_delay = 1/T_Freq*sqrt(2*alpha/accel)
     // step_delay = ( T_Freq*0.676/100 ) * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-    STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * (((float)sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100.00));
+    STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
     
     if(STPS[axis_No].step_delay > minSpeed)
        STPS[axis_No].StartUp_delay = minSpeed;
@@ -216,13 +216,14 @@ min_dly:= %l\n\n"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
               float r, float i, float j, float k, int axis_A,int axis_B,int dir){
 char isclockwise = 0;
-float inverse_feed_rate = -1; // negative inverse_feed_rate means no inverse_feed_rate specified
+//float inverse_feed_rate = -1; // negative inverse_feed_rate means no inverse_feed_rate specified
 float position[NoOfAxis]={0.0};
 float target[NoOfAxis]={0.0};
 float offset[NoOfAxis]={0.0};
 float x = 0.00;
 float y = 0.00;
 float h_x2_div_d = 0.00;
+float speed = 0.00;
 int axis_plane_a,axis_plane_b;
 
 
@@ -357,10 +358,13 @@ dma_printf("\n\
 [pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
 ,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
 #endif
+  //get rps from mm/min
+  speed = RPS_FROM_MMPMIN(gc.feed_rate);
+  
         //  gc.plane_axis_2 =1;
         // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
           mc_arc(position, target, offset, axis_A, axis_B, Z,
-                 gc.feed_rate, gc.inverse_feed_rate_mode,r, isclockwise);
+                 speed, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
 

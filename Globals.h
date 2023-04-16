@@ -25,6 +25,9 @@
 //do not make this vale to large it will reduce the life of flash row
 #define FLASH_RETRY_COUNT 2
 
+//flash loaded with data indicator
+#define FLASH_LOADED -1//0x7FFFFFFF
+
 //global usage defines
 #define true 1
 #define TRUE 1

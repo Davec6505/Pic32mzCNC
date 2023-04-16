@@ -42,6 +42,10 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_HARD_LIMIT_ENABLE      true
 #define DEFAULT_HOMING_ENABLE          true
 
+//default acc/dec value for DEFAULT ACC
+#define acceleraton 1.3889
+#define sec_sec 3600
+
 //default values of words and flags
 #define DEFAULT_X_STEPS_PER_MM         186.750
 #define DEFAULT_Y_STEPS_PER_MM         186.750
@@ -51,19 +55,19 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_C_STEPS_PER_MM         186.750
 #define DEFAUT_P_USEC                  100
 #define DEFAULT_MM_PER_ARC_SEGMENT     0.20
-#define DEFAULT_RAPID_FEEDRATE         500.00 // mm/min
-#define DEFAULT_FEEDRATE               250.00
-#define DEFAULT_ACCELERATION           5000.00//(3.50*secXsec) // 10 mm/min^2
-#define DEFAULT_JUNCTION_DEVIATION     0.05 // mm
-#define DEFAULT_HOMING_RAPID_FEEDRATE  1000.00 // mm/min
-#define DEFAULT_HOMING_FEEDRATE        500.00 // mm/min
-#define DEFAULT_HOMING_DEBOUNCE_DELAY  100 // msec (0-65k)
-#define DEFAULT_HOMING_PULLOFF         1.00 // mm
-#define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
+#define DEFAULT_RAPID_FEEDRATE         300.00  // mm/min
+#define DEFAULT_FEEDRATE               80.00
+#define DEFAULT_ACCELERATION()         ((acceleraton)*(sec_sec)) // 10 mm/min^2
+#define DEFAULT_JUNCTION_DEVIATION     0.05    // mm
+#define DEFAULT_HOMING_RAPID_FEEDRATE  100.00 // mm/min
+#define DEFAULT_HOMING_FEEDRATE        12.00  // mm/min
+#define DEFAULT_HOMING_DEBOUNCE_DELAY  100     // msec (0-65k)
+#define DEFAULT_HOMING_PULLOFF         1.00    // mm
+#define DEFAULT_STEPPER_IDLE_LOCK_TIME 25      // msec (0-255)
 #define DEFAULT_DECIMAL_PLACES         3
 #define DEFAULT_N_ARC_CORRECTION       25
-#define DEFAULT_HOME_DIR_MASK          15 // move positive dir
-#define DEFAULT_INVERT_MASK            15 // move positive dir
+#define DEFAULT_HOME_DIR_MASK          15      // move positive dir
+#define DEFAULT_INVERT_MASK            15      // move positive dir
 
 
 
@@ -93,7 +97,7 @@ typedef __attribute__((aligned (32))) float afloat;
 #define M_STEP   32.00
 
 //! Maximun mm/min needed for calculation
-#define MAX_SPEED 300,00 //In mm/min
+#define MAX_SPEED 800,00 //In mm/min
 /**************************************************
 * ! Belt driven systems
 **************************************************/

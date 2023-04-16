@@ -50,8 +50,7 @@
 #define SQ_MASK     10000000000
 //#define A_SQ        (long)(ALPHA*2.00*SQ_MASK)    // ALPHA*2*10000000000
 
-//mm/sec/sec for acceleration input
-#define secXsec     (60.00*60.00)                 // acc multiplier
+
 
 ////////////////////////////////////////////////////
 //structs enums and constants

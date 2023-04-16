@@ -1,4 +1,6 @@
 main
+	__CC2DW
+	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -57,6 +59,7 @@ main
 		Reset_Min_Debounce
 	Get_modalgroup
 	FAIL
+	Get_non_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
 			__CC2DW
@@ -78,20 +81,6 @@ main
 					labs
 					lround
 					sqrt_
-					DMA_IsOn
-					dma_printf
-						DMA_CH_Busy
-						sprintf
-							_doprntf
-								isdigit
-								scale
-								fround
-						strcat
-						strlen
-						strncpy
-						DMA1_Enable
-						__CC2DW
-					__CC2DW
 				Set_Axisdirection
 				labs
 				Step_Cycle
@@ -99,11 +88,21 @@ main
 		GET_RunState
 		FAIL
 		memset
-	Get_non_modalword
 	Rst_modalgroup
 	report_status_message
 		DMA_IsOn
 		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 	Get_Axisword
 	EnableSteppers
 	Modal_Group_Actions1
@@ -124,9 +123,6 @@ main
 			plan_set_current_position
 				beltsteps2mm
 					fround
-				DMA_IsOn
-				dma_printf
-				__CC2DW
 		r_or_ijk
 			__CC2DW
 			sqrt
@@ -162,6 +158,7 @@ main
 				SingleAxisStep
 			FN
 				Test_Min
+			VDelay_ms
 			StopAxis
 			FP
 				Test_Min
@@ -178,8 +175,6 @@ main
 	Modal_Group_Actions7
 		FAIL
 	Modal_Group_Actions12
-	DMA_IsOn
-	dma_printf
 	protocol_system_check
 		sys_sync_current_position
 		report_feedback_message
@@ -308,8 +303,6 @@ main
 			Rst_non_modalword
 			lround
 			Set_Axisword
-	__CC2DW
-	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepZ

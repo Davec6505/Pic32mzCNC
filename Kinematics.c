@@ -533,8 +533,8 @@ static long speed = 0;
   }
     
   //start the movement
-  //(max_sizes[axis]+10.0)
-  Home_Axis(-500.0,speed,axis);
+  //(max_sizes[axis]+100.0)to ensure axis gets to limit
+  Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
 
    #if HomeDebug == 2
    while(DMA_IsOn(1));
@@ -543,6 +543,7 @@ static long speed = 0;
                 ,homing[axis].home_state
                 ,homing[axis].home_cnt);
    #endif
+   
    return axis;
  }
 
@@ -575,9 +576,13 @@ HOMED:
            
                bit_true(homing[axis].home_state,bit(HOME_REV));
                bit_false(homing[axis].home_state,bit(HOME));
+               
+               //pause prior to reentering limit switch
+               VDelay_ms((unsigned long)settings.homing_debounce_delay);
+               
                //distance here is any value to move off the limit
                //movement will stop on falling edge of limit
-               Home_Axis(12.0,100.0, axis);
+               Home_Axis(12.0,settings.homing_feed_rate, axis);
 
            }else if(homing[axis].home_cnt > 1){//2nd hit of limit
            
@@ -599,6 +604,8 @@ HOMED:
                           ,homing[axis].home_cnt);
                #endif
                
+               //move off axis limit by default value to stop limit false trigger
+               Home_Axis(settings.homing_pulloff,settings.homing_feed_rate, axis);
                //return the next axis to be homed
                return axis;
            }

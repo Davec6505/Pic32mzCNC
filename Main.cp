@@ -145,7 +145,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 169 "c:/users/git/pic32mzcnc/settings.h"
+#line 173 "c:/users/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -436,7 +436,7 @@ int round(float val);
 
 
 long lround(float val);
-#line 103 "c:/users/git/pic32mzcnc/globals.h"
+#line 106 "c:/users/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -510,7 +510,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 62 "c:/users/git/pic32mzcnc/planner.h"
+#line 61 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
@@ -945,7 +945,7 @@ static int send_status_once = 0;
 
 void Conditin_Externs(){
  PinMode();
- plan_init(1500.00,1500.00);
+ plan_init(settings.acceleration,settings.acceleration);
  Init_Protocol();
  G_Initialise();
  disableOCx();
@@ -1041,26 +1041,7 @@ static int cntr = 0,a = 0;
  break;
  }
  }
-
-
-
-if(!SV.mode_complete){
-if(STPS[X].run_state !=  0  | STPS[Y].run_state !=  0 ){
-while(DMA_IsOn(1));
-#line 166 "C:/Users/Git/Pic32mzCNC/Main.c"
-dma_printf("dif:= %l\t%l\t%l\t%l\t%d\t%l\t%l\n"
-,SV.dif
-,STPS[X].step_count
-,STPS[X].accel_count
-,STPS[X].step_delay
-,(STPS[Y].run_state&0xff)
-,STPS[Y].step_count
-,STPS[Y].accel_count);
-}
-}
-
-
-
+#line 179 "C:/Users/Git/Pic32mzCNC/Main.c"
  protocol_system_check();
 
 

@@ -52,7 +52,7 @@ static int send_status_once = 0;
 //condition externs
 void Conditin_Externs(){
   PinMode();
-  plan_init(1500.00,1500.00);//settings.acceleration,settings.acceleration);
+  plan_init(settings.acceleration,settings.acceleration);
   Init_Protocol();
   G_Initialise();
   disableOCx();
@@ -517,7 +517,7 @@ static int Modal_Group_Actions1(int action){
                 if(STPS[l].run_state != STOP)
                     STPS[l].run_state = STOP;
               }
-//              
+
               //sync the homing position to zero
               sys_sync_current_position();
               
