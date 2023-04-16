@@ -72,8 +72,6 @@ NOP
 L__main140:
 L__main139:
 ;Main.c,92 :: 		int axis_to_run = 0;
-MOVZ	R30, R0, R0
-SH	R30, 2(SP)
 ;Main.c,94 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
@@ -131,7 +129,6 @@ NOP
 ;Main.c,116 :: 		axis_to_run = Rst_Axisword();
 JAL	_Rst_Axisword+0
 NOP	
-SH	R2, 2(SP)
 ;Main.c,117 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	

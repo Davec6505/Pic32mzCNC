@@ -134,8 +134,8 @@ void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 long tempA,tempB,tempC;
 //int dirA,dirB;
 
- //get rpm from mm/min
- speed = RPM_FROM_MMPMIN(speed);
+  //get rps from mm/min
+  speed = RPS_FROM_MMPMIN(speed);
  
  //if absolute mode ~ newxyz = new_position - current_position
  if(gc.absolute_mode == true){

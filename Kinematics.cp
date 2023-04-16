@@ -1040,7 +1040,7 @@ long tempA,tempB,tempC;
 
 
 
- speed =  ((speed)/( (( 20.00 )*( 2.00 )) )) ;
+ speed =  (( ((speed)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
 
 
  if(gc.absolute_mode ==  1 ){

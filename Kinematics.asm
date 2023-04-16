@@ -390,11 +390,15 @@ _DualAxisStep:
 ;Kinematics.c,133 :: 		void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 ADDIU	SP, SP, -24
 SW	RA, 0(SP)
-;Kinematics.c,138 :: 		speed = RPM_FROM_MMPMIN(speed);
+;Kinematics.c,138 :: 		speed = RPS_FROM_MMPMIN(speed);
 LUI	R2, 16928
 ORI	R2, R2, 0
 MTC1	R2, S0
-DIV.S 	S0, S14, S0
+DIV.S 	S1, S14, S0
+LUI	R2, 17008
+ORI	R2, R2, 0
+MTC1	R2, S0
+DIV.S 	S0, S1, S0
 MOV.S 	S14, S0
 ;Kinematics.c,141 :: 		if(gc.absolute_mode == true){
 LBU	R3, Offset(_gc+5)(GP)
@@ -578,19 +582,19 @@ NOP
 J	L_DualAxisStep21
 NOP	
 L__DualAxisStep113:
-; ?FLOC___DualAxisStep?T112 start address is: 16 (R4)
+; ?FLOC___DualAxisStep?T113 start address is: 16 (R4)
 ORI	R4, R0, 255
-; ?FLOC___DualAxisStep?T112 end address is: 16 (R4)
+; ?FLOC___DualAxisStep?T113 end address is: 16 (R4)
 J	L_DualAxisStep22
 NOP	
 L_DualAxisStep21:
-; ?FLOC___DualAxisStep?T112 start address is: 16 (R4)
+; ?FLOC___DualAxisStep?T113 start address is: 16 (R4)
 ORI	R4, R0, 1
-; ?FLOC___DualAxisStep?T112 end address is: 16 (R4)
+; ?FLOC___DualAxisStep?T113 end address is: 16 (R4)
 L_DualAxisStep22:
-; ?FLOC___DualAxisStep?T112 start address is: 16 (R4)
+; ?FLOC___DualAxisStep?T113 start address is: 16 (R4)
 SEB	R2, R4
-; ?FLOC___DualAxisStep?T112 end address is: 16 (R4)
+; ?FLOC___DualAxisStep?T113 end address is: 16 (R4)
 SH	R2, 0(R3)
 ;Kinematics.c,190 :: 		Set_Axisdirection(tempB,axisB);
 SH	R25, 4(SP)
@@ -613,19 +617,19 @@ NOP
 J	L_DualAxisStep23
 NOP	
 L__DualAxisStep114:
-; ?FLOC___DualAxisStep?T120 start address is: 16 (R4)
+; ?FLOC___DualAxisStep?T121 start address is: 16 (R4)
 ORI	R4, R0, 255
-; ?FLOC___DualAxisStep?T120 end address is: 16 (R4)
+; ?FLOC___DualAxisStep?T121 end address is: 16 (R4)
 J	L_DualAxisStep24
 NOP	
 L_DualAxisStep23:
-; ?FLOC___DualAxisStep?T120 start address is: 16 (R4)
+; ?FLOC___DualAxisStep?T121 start address is: 16 (R4)
 ORI	R4, R0, 1
-; ?FLOC___DualAxisStep?T120 end address is: 16 (R4)
+; ?FLOC___DualAxisStep?T121 end address is: 16 (R4)
 L_DualAxisStep24:
-; ?FLOC___DualAxisStep?T120 start address is: 16 (R4)
+; ?FLOC___DualAxisStep?T121 start address is: 16 (R4)
 SEB	R2, R4
-; ?FLOC___DualAxisStep?T120 end address is: 16 (R4)
+; ?FLOC___DualAxisStep?T121 end address is: 16 (R4)
 SH	R2, 0(R3)
 ;Kinematics.c,194 :: 		SV.dA   = tempA;// - SV.prevA;
 SW	R6, Offset(_SV+20)(GP)
@@ -1882,19 +1886,19 @@ NOP
 J	L_GetAxisDirection65
 NOP	
 L__GetAxisDirection149:
-; ?FLOC___GetAxisDirection?T491 start address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T492 start address is: 8 (R2)
 ORI	R2, R0, 255
-; ?FLOC___GetAxisDirection?T491 end address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T492 end address is: 8 (R2)
 J	L_GetAxisDirection66
 NOP	
 L_GetAxisDirection65:
-; ?FLOC___GetAxisDirection?T491 start address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T492 start address is: 8 (R2)
 ORI	R2, R0, 1
-; ?FLOC___GetAxisDirection?T491 end address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T492 end address is: 8 (R2)
 L_GetAxisDirection66:
-; ?FLOC___GetAxisDirection?T491 start address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T492 start address is: 8 (R2)
 SEB	R2, R2
-; ?FLOC___GetAxisDirection?T491 end address is: 8 (R2)
+; ?FLOC___GetAxisDirection?T492 end address is: 8 (R2)
 ;Kinematics.c,490 :: 		}
 L_end_GetAxisDirection:
 JR	RA
