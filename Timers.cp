@@ -510,7 +510,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 61 "c:/users/git/pic32mzcnc/planner.h"
+#line 62 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;

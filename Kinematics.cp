@@ -761,7 +761,7 @@ void Test_CycleZ();
 void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 61 "c:/users/git/pic32mzcnc/planner.h"
+#line 62 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;

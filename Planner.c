@@ -40,7 +40,7 @@ int i;
   alpha[i] = (PIx2 / (settings.steps_per_mm[i]*M_STEP));
   //(long)((ALPHA*T1_FREQ)*100)
   a_t_x100[i] = (alpha[i] * T1_FREQ * 100.00);
-  //(long)(ALPHA*2*SQ_MASK)
+  //(long)(ALPHA*2*SQ_MASK) [ ALPHA*2*10000000000 ]
   a_sq[i] = lround(alpha[i] * 2 * SQ_MASK);
   //base_pps = a_t_x100 * T1_Freq
   spr_x_mstep[i] = SPRU(settings.steps_per_mm[i]);
@@ -71,7 +71,7 @@ float Get_Step_Rate(float speed,int axis){
  ***********************************************************************/
 void speed_cntr_Move(long mmSteps, float speed, int axis_No){
 int ii;
-float temp_speed;
+float temp_speed,max_s_limit;
 static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
@@ -96,7 +96,7 @@ long abs_mmSteps = labs(mmSteps);
     //to finnishing a move before starting a next!!!!
     
     //dly = (Vlast - Vcur) / (2 . a)
-    if(STPS[axis_No].run_state != STOP)
+   if(STPS[axis_No].run_state != STOP)
         temp_speed = last_speed - speed;
     else
         temp_speed = speed;
@@ -117,11 +117,11 @@ long abs_mmSteps = labs(mmSteps);
     else
        STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
-    // Find out after how many Steps before the speed hits the max speed limit.
-    STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*10000.00*(float)STPS[axis_No].acc));
-
-    //test calc using A_x20000 ???
-    //STPS.max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
+    // max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
+    // Find the number of Steps before the speed hits the max speed limit.
+    //A_x20000 (int)(ALPHA*20000)
+    //STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*10000.00*(float)STPS[axis_No].acc));
+    STPS[axis_No].max_step_lim = (long)((temp_speed*temp_speed)/((alpha[axis_No]*x20000*(float)STPS[axis_No].acc)/100.00));
     
     // If we hit max speed limit before 0,5 step it will round to 0.
     // But in practice we need to move atleast 1 step to get any speed at all.
@@ -190,11 +190,11 @@ STPS[axis_No].max_step_lim:= %l\n\
 STPS[].dec:= %l\n\
 abs_mmSteps:= %l\n\
 acc_lim:= %l\n\
-dec_lim:= %l\n\
+dec_val:= %l\n\
 dec_start:= %l\n\
 step_delay:= %l\n\
 min_dly:= %l\n\n"
-,speed
+,temp_speed
 ,axis_No
 ,a_sq[axis_No]
 ,axis_No

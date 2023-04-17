@@ -874,7 +874,7 @@ void Test_CycleZ();
 void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 61 "c:/users/git/pic32mzcnc/planner.h"
+#line 62 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
@@ -983,7 +983,7 @@ float Get_Step_Rate(float speed,int axis){
 #line 72 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void speed_cntr_Move(long mmSteps, float speed, int axis_No){
 int ii;
-float temp_speed;
+float temp_speed,max_s_limit;
 static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
@@ -1030,10 +1030,10 @@ long abs_mmSteps = labs(mmSteps);
  STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
 
- STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*10000.00*(float)STPS[axis_No].acc));
 
 
 
+ STPS[axis_No].max_step_lim = (long)((temp_speed*temp_speed)/((alpha[axis_No]* 20000.00 *(float)STPS[axis_No].acc)/100.00));
 
 
 
@@ -1094,8 +1094,8 @@ long abs_mmSteps = labs(mmSteps);
 
 while(DMA_IsOn(1));
 #line 196 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("\nspeed:= %f\na_sq[%d]:= %l\nalpha[%d]:= %f\na_t_x100[%d]:= %f\nSTPS[axis_No].max_step_lim:= %l\nSTPS[].dec:= %l\nabs_mmSteps:= %l\nacc_lim:= %l\ndec_lim:= %l\ndec_start:= %l\nstep_delay:= %l\nmin_dly:= %l\n\n"
-,speed
+dma_printf("\nspeed:= %f\na_sq[%d]:= %l\nalpha[%d]:= %f\na_t_x100[%d]:= %f\nSTPS[axis_No].max_step_lim:= %l\nSTPS[].dec:= %l\nabs_mmSteps:= %l\nacc_lim:= %l\ndec_val:= %l\ndec_start:= %l\nstep_delay:= %l\nmin_dly:= %l\n\n"
+,temp_speed
 ,axis_No
 ,a_sq[axis_No]
 ,axis_No

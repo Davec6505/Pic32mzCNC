@@ -45,10 +45,11 @@
 *************************************************************************/
 #define PIx2        (2.00*M_Pi)
 //#define ALPHA       (PIx2/SPR)
-//#define A_T_x100    (long)(ALPHA*T1_FREQ*100.00)  // (ALPHA / T_FREQ)*100
-#define T1_FREQ_148 ((T1_FREQ*0.676)/100.00)      // divided by 100 and scaled by 0.676
+//#define A_T_x100    (long)(ALPHA*T1_FREQ*100.00) // (ALPHA / T_FREQ)*100
+#define T1_FREQ_148 ((T1_FREQ*0.676)/100.00)       // divided by 100 and scaled by 0.676
 #define SQ_MASK     10000000000
-//#define A_SQ        (long)(ALPHA*2.00*SQ_MASK)    // ALPHA*2*10000000000
+#define x20000      20000.00
+//#define A_SQ        (long)(ALPHA*2.00*SQ_MASK)   // ALPHA*2*10000000000
 
 
 

@@ -306,19 +306,14 @@ L__speed_cntr_Move68:
 ;Planner.c,100 :: 		temp_speed = last_speed - speed;
 LWC1	S0, Offset(speed_cntr_Move_last_speed_L0+0)(GP)
 SUB.S 	S0, S0, S12
-; temp_speed start address is: 128 (R32)
-MOV.S 	S16, S0
-; temp_speed end address is: 128 (R32)
+SWC1	S0, 24(SP)
 J	L_speed_cntr_Move12
 NOP	
 L_speed_cntr_Move11:
 ;Planner.c,102 :: 		temp_speed = speed;
-; temp_speed start address is: 128 (R32)
-MOV.S 	S16, S12
-; temp_speed end address is: 128 (R32)
+SWC1	S12, 24(SP)
 L_speed_cntr_Move12:
 ;Planner.c,107 :: 		STPS[axis_No].min_delay =  lround(a_t_x100[axis_No] / temp_speed);
-; temp_speed start address is: 128 (R32)
 SEH	R3, R26
 ORI	R2, R0, 92
 MULTU	R2, R3
@@ -333,21 +328,20 @@ SLL	R3, R2, 2
 LUI	R2, 40960
 ORI	R2, R2, 9792
 ADDU	R2, R2, R3
-LWC1	S0, 0(R2)
-DIV.S 	S0, S0, S16
-SWC1	S16, 8(SP)
-SW	R7, 12(SP)
-SH	R26, 16(SP)
-SW	R25, 20(SP)
-SWC1	S12, 24(SP)
+LWC1	S1, 0(R2)
+LWC1	S0, 24(SP)
+DIV.S 	S0, S1, S0
+SW	R7, 8(SP)
+SH	R26, 12(SP)
+SW	R25, 16(SP)
+SWC1	S12, 20(SP)
 MOV.S 	S12, S0
 JAL	_lround+0
 NOP	
-LWC1	S12, 24(SP)
-LW	R25, 20(SP)
-LH	R26, 16(SP)
-LW	R7, 12(SP)
-LWC1	S16, 8(SP)
+LWC1	S12, 20(SP)
+LW	R25, 16(SP)
+LH	R26, 12(SP)
+LW	R7, 8(SP)
 LW	R3, 224(SP)
 SW	R2, 0(R3)
 ;Planner.c,113 :: 		STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
@@ -428,7 +422,7 @@ ADDIU	R2, R2, 12
 LW	R2, 0(R2)
 SW	R2, 0(R3)
 L_speed_cntr_Move14:
-;Planner.c,121 :: 		STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*10000.00*(float)STPS[axis_No].acc));
+;Planner.c,124 :: 		STPS[axis_No].max_step_lim = (long)((temp_speed*temp_speed)/((alpha[axis_No]*x20000*(float)STPS[axis_No].acc)/100.00));
 SEH	R3, R26
 ORI	R2, R0, 92
 MULTU	R2, R3
@@ -437,19 +431,16 @@ LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R5, R2, R3
 ADDIU	R4, R5, 68
-MUL.S 	S2, S16, S16
-; temp_speed end address is: 128 (R32)
+LWC1	S1, 24(SP)
+LWC1	S0, 24(SP)
+MUL.S 	S2, S0, S1
 SEH	R2, R26
 SLL	R3, R2, 2
 LUI	R2, 40960
 ORI	R2, R2, 10016
 ADDU	R2, R2, R3
 LWC1	S1, 0(R2)
-LUI	R2, 16384
-ORI	R2, R2, 0
-MTC1	R2, S0
-MUL.S 	S1, S0, S1
-LUI	R2, 17948
+LUI	R2, 18076
 ORI	R2, R2, 16384
 MTC1	R2, S0
 MUL.S 	S1, S1, S0
@@ -457,7 +448,11 @@ ADDIU	R2, R5, 36
 LW	R2, 0(R2)
 MTC1	R2, S0
 CVT32.W 	S0, S0
-MUL.S 	S0, S1, S0
+MUL.S 	S1, S1, S0
+LUI	R2, 17096
+ORI	R2, R2, 0
+MTC1	R2, S0
+DIV.S 	S0, S1, S0
 DIV.S 	S0, S2, S0
 CVT36.S 	S0, S0
 MFC1	R2, S0
@@ -826,11 +821,9 @@ L_speed_cntr_Move25:
 SW	R11, 8(SP)
 SH	R26, 12(SP)
 SW	R25, 16(SP)
-SWC1	S12, 20(SP)
 ORI	R25, R0, 1
 JAL	_DMA_IsOn+0
 NOP	
-LWC1	S12, 20(SP)
 LW	R25, 16(SP)
 LH	R26, 12(SP)
 LW	R11, 8(SP)
@@ -886,7 +879,7 @@ LWC1	S0, 0(R2)
 LUI	R2, 40960
 ORI	R2, R2, 9856
 ADDU	R2, R2, R3
-LW	R3, 0(R2)
+LW	R2, 0(R2)
 ;Planner.c,196 :: 		min_dly:= %l\n\n"
 ADDIU	R23, SP, 28
 ADDIU	R22, R23, 196
@@ -894,7 +887,7 @@ LUI	R24, hi_addr(?ICS?lstr1_Planner+0)
 ORI	R24, R24, lo_addr(?ICS?lstr1_Planner+0)
 JAL	___CC2DW+0
 NOP	
-ADDIU	R2, SP, 28
+ADDIU	R3, SP, 28
 ;Planner.c,211 :: 		,STPS[axis_No].min_delay);
 SH	R26, 8(SP)
 SW	R25, 12(SP)
@@ -924,13 +917,14 @@ SWC1	S0, 20(SP)
 ;Planner.c,200 :: 		,axis_No
 SH	R26, 16(SP)
 ;Planner.c,199 :: 		,a_sq[axis_No]
-SW	R3, 12(SP)
+SW	R2, 12(SP)
 ;Planner.c,198 :: 		,axis_No
 SH	R26, 8(SP)
-;Planner.c,197 :: 		,speed
-SWC1	S12, 4(SP)
+;Planner.c,197 :: 		,temp_speed
+LW	R2, 88(SP)
+SW	R2, 4(SP)
 ;Planner.c,196 :: 		min_dly:= %l\n\n"
-SW	R2, 0(SP)
+SW	R3, 0(SP)
 ;Planner.c,211 :: 		,STPS[axis_No].min_delay);
 JAL	_dma_printf+0
 NOP	
