@@ -593,6 +593,7 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
+
  long acc;
  long dec;
 
@@ -1043,10 +1044,12 @@ double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
 
 
 long lround(float val){
-double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
+long tempL = 0;
+float temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
  tempC = ceil(val);
  tempF = floor(val);
  dec = val - tempF;
  temp = (dec > 0.5)? tempC : tempF;
- return (long)temp;
+ tempL = (long)temp;
+ return tempL;
 }

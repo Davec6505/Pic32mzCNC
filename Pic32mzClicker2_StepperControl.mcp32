@@ -28,7 +28,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Planner.c
+Value=Main.c
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -154,7 +154,9 @@ File4=Kinematics.h
 File5=Stepper.c
 File6=Stepper.h
 File7=DEFINES.pld
-Count=8
+File8=Globals.c
+File9=GCODE.h
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

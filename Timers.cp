@@ -611,6 +611,7 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
+
  long acc;
  long dec;
 

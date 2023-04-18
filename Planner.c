@@ -20,7 +20,7 @@ float spr_x_mstep[NoOfAxis]      absolute 0xA0002760 ;
 /////////////////////////////////////////////////////
 
 void plan_init(float accel,float decel){
-int i = 0;
+long i = 0;
  for(i = 0; i < NoOfAxis; i++){
   STPS[i].acc = lround(accel);
   STPS[i].dec = lround(decel);
@@ -182,18 +182,21 @@ long abs_mmSteps = labs(mmSteps);
 
 while(DMA_IsOn(1));
 dma_printf("\n\
+STPS[].acc %l\n\
+STPS[].dec %l\n\
 speed:= %f\n\
 a_sq[%d]:= %l\n\
 alpha[%d]:= %f\n\
 a_t_x100[%d]:= %f\n\
 STPS[axis_No].max_step_lim:= %l\n\
-STPS[].dec:= %l\n\
 abs_mmSteps:= %l\n\
 acc_lim:= %l\n\
 dec_val:= %l\n\
 dec_start:= %l\n\
 step_delay:= %l\n\
 min_dly:= %l\n\n"
+,STPS[axis_No].acc
+,STPS[axis_No].dec
 ,temp_speed
 ,axis_No
 ,a_sq[axis_No]
@@ -202,7 +205,6 @@ min_dly:= %l\n\n"
 ,axis_No
 ,a_t_x100[axis_No]
 ,STPS[axis_No].max_step_lim
-,STPS[axis_No].dec
 ,abs_mmSteps
 ,STPS[axis_No].accel_lim
 ,STPS[axis_No].decel_val
