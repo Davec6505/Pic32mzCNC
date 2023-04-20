@@ -33,7 +33,8 @@
 
 //////////////////////////////////////////
 //external scope variables
-
+_axis_ _axis;
+axis_combination axis_xyz;
 settings_t settings absolute 0xA0002800 ;
 parser_state_t gc   absolute 0xA0002900;
 STP STPS[NoOfAxis]  absolute 0xA0003100;
@@ -163,14 +164,13 @@ if(!SV.mode_complete){
 if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
 while(DMA_IsOn(1));
 dma_printf("\
-dif:= %l\t%l\t%l\t%l\t%d\t%l\t%l\n"
-,SV.dif
+dif:= %l\t%l\t%l\t%l\t%l\t%l\n"
 ,STPS[X].step_count
 ,STPS[X].accel_count
 ,STPS[X].step_delay
-,(STPS[Y].run_state&0xff)
 ,STPS[Y].step_count
-,STPS[Y].accel_count);
+,STPS[Y].accel_count
+,STPS[Y].step_delay);
 }
 }
 #endif
@@ -182,7 +182,7 @@ dif:= %l\t%l\t%l\t%l\t%d\t%l\t%l\n"
   protocol_execute_runtime();
 
   //respond ok if movement is finished
-  if(!Get_Axis_Enable_States() && SV.mode_complete > 0 && !SV.homed){
+  if(!Get_Axis_IEnable_States() && SV.mode_complete > 0 && !SV.homed){
      LED2 = false;
      //debug STATUS_OK response after moves complete
      status_of_gcode == STATUS_OK;

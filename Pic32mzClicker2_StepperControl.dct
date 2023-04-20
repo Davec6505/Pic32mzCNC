@@ -349,6 +349,7 @@ abort
 abs
 absolute_mode
 absolute_override
+acc
 acceleration
 ackdt
 ackdt
@@ -5153,7 +5154,6 @@ autoset_usbe4csr0_bit
 autoset_usbe5csr0_bit
 autoset_usbe6csr0_bit
 autoset_usbe7csr0_bit
-axis_interpolate
 axis_words
 axis_xyz
 axisno
@@ -23146,6 +23146,7 @@ debug1_bf1devcfg0_bit
 debug1_bf2devcfg0_bit
 debug1_bit
 debug1_ubadevcfg0_bit
+dec
 dec2bcd
 dec2bcd16
 decimal_places
@@ -23510,6 +23511,7 @@ dirz
 disable_cnt
 disableocx
 disablestepper
+disablestepperinterrupt
 disablethreads
 disconie
 disconie
@@ -32530,7 +32532,7 @@ gcstat_i2c3stat_bit
 gcstat_i2c4stat_bit
 gcstat_i2c5stat_bit
 get_address_pval
-get_axis_enable_states
+get_axis_ienable_states
 get_axisstatus
 get_axisword
 get_difference
@@ -58267,7 +58269,6 @@ sin
 single_axis_enable
 single_dual
 singleaxisstep
-singlestepaxis
 sinh
 sirq
 sirq
@@ -61023,6 +61024,7 @@ stalled_bit
 start
 start
 start_bit
+start_interpolation
 startpulses
 startup
 statbytes
@@ -63253,7 +63255,6 @@ tmr9inv
 tmr9invbits
 tmr9set
 tmr9setbits
-toggleocx
 tolower
 ton
 ton

@@ -85,7 +85,6 @@ typedef struct genVars{
 }sVars;
 extern sVars SV;
 
-
 // Initialize the motion plan subsystem
 void plan_init(float accel,float decel);
 

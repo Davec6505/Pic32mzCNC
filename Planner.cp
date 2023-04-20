@@ -2,8 +2,133 @@
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
 #line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+
+
+
+
+typedef signed char int8_t;
+typedef signed int int16_t;
+typedef signed long int int32_t;
+typedef signed long long int64_t;
+
+
+typedef unsigned char uint8_t;
+typedef unsigned int uint16_t;
+typedef unsigned long int uint32_t;
+typedef unsigned long long uint64_t;
+
+
+typedef signed char int_least8_t;
+typedef signed int int_least16_t;
+typedef signed long int int_least32_t;
+typedef signed long long int_least64_t;
+
+
+typedef unsigned char uint_least8_t;
+typedef unsigned int uint_least16_t;
+typedef unsigned long int uint_least32_t;
+typedef unsigned long long uint_least64_t;
+
+
+
+typedef signed long int int_fast8_t;
+typedef signed long int int_fast16_t;
+typedef signed long int int_fast32_t;
+typedef signed long long int_fast64_t;
+
+
+typedef unsigned long int uint_fast8_t;
+typedef unsigned long int uint_fast16_t;
+typedef unsigned long int uint_fast32_t;
+typedef unsigned long long uint_fast64_t;
+
+
+typedef signed long int intptr_t;
+typedef unsigned long int uintptr_t;
+
+
+typedef signed long long intmax_t;
+typedef unsigned long long uintmax_t;
+#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
+#line 1 "c:/users/git/pic32mzcnc/settings.h"
+
+
+
+
+
+
+
+typedef __attribute__((aligned (32))) float afloat;
+#line 173 "c:/users/git/pic32mzcnc/settings.h"
+typedef struct {
+ float steps_per_mm[ 4 ];
+ float default_feed_rate;
+ float default_seek_rate;
+ float homing_feed_rate;
+ float homing_seek_rate;
+ float homing_pulloff;
+ float mm_per_arc_segment;
+ float acceleration;
+ float junction_deviation;
+ unsigned int n_arc_correction;
+ unsigned int flags;
+ unsigned int step_idle_delay;
+ unsigned int homing_debounce_delay;
+ unsigned int stepper_idle_lock_time;
+ unsigned int microsteps;
+ unsigned int p_usec;
+ unsigned int decimal_places;
+ unsigned int homing_dir_mask;
+ unsigned int invert_mask;
+
+} settings_t;
+
+extern settings_t settings;
+#line 1 "c:/users/git/pic32mzcnc/planner.h"
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
+
+
+
+
+
+
+
+ typedef struct divstruct {
+ int quot;
+ int rem;
+ } div_t;
+
+ typedef struct ldivstruct {
+ long quot;
+ long rem;
+ } ldiv_t;
+
+ typedef struct uldivstruct {
+ unsigned long quot;
+ unsigned long rem;
+ } uldiv_t;
+
+int abs(int a);
+float atof(char * s);
+int atoi(char * s);
+long atol(char * s);
+div_t div(int number, int denom);
+ldiv_t ldiv(long number, long denom);
+uldiv_t uldiv(unsigned long number, unsigned long denom);
+long labs(long x);
+long max(long a, long int b);
+long min(long a, long int b);
+void srand(unsigned x);
+int rand();
+int xtoi(char * s);
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdarg.h"
+
+
+typedef void * va_list[1];
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 
@@ -85,45 +210,30 @@ extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
+#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 11 "c:/users/git/pic32mzcnc/timers.h"
+struct Timer{
+char clock;
+char P1: 1;
+char P2: 1;
+unsigned int disable_cnt;
+unsigned int (*Reset)(unsigned int time,unsigned int last_sec);
+};
+extern struct Timer TMR;
+
+
+void InitTimer1();
+void InitTimer8();
+static void ClockPulse();
+unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/git/pic32mzcnc/steptodistance.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-
-
-
-
-
-
-
-typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/git/pic32mzcnc/settings.h"
-typedef struct {
- float steps_per_mm[ 4 ];
- float default_feed_rate;
- float default_seek_rate;
- float homing_feed_rate;
- float homing_seek_rate;
- float homing_pulloff;
- float mm_per_arc_segment;
- float acceleration;
- float junction_deviation;
- unsigned int n_arc_correction;
- unsigned int flags;
- unsigned int step_idle_delay;
- unsigned int homing_debounce_delay;
- unsigned int stepper_idle_lock_time;
- unsigned int microsteps;
- unsigned int p_usec;
- unsigned int decimal_places;
- unsigned int homing_dir_mask;
- unsigned int invert_mask;
-
-} settings_t;
-
-extern settings_t settings;
 #line 58 "c:/users/git/pic32mzcnc/steptodistance.h"
 const float Dia;
 #line 70 "c:/users/git/pic32mzcnc/steptodistance.h"
@@ -137,105 +247,12 @@ float fround(float var);
 float torpm(float mm_per_min);
 float toradians(float rev_per_min);
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
-
-
-
-
-
-
-
- typedef struct divstruct {
- int quot;
- int rem;
- } div_t;
-
- typedef struct ldivstruct {
- long quot;
- long rem;
- } ldiv_t;
-
- typedef struct uldivstruct {
- unsigned long quot;
- unsigned long rem;
- } uldiv_t;
-
-int abs(int a);
-float atof(char * s);
-int atoi(char * s);
-long atol(char * s);
-div_t div(int number, int denom);
-ldiv_t ldiv(long number, long denom);
-uldiv_t uldiv(unsigned long number, unsigned long denom);
-long labs(long x);
-long max(long a, long int b);
-long min(long a, long int b);
-void srand(unsigned x);
-int rand();
-int xtoi(char * s);
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdarg.h"
-
-
-typedef void * va_list[1];
-#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-
-
-
-
-typedef signed char int8_t;
-typedef signed int int16_t;
-typedef signed long int int32_t;
-typedef signed long long int64_t;
-
-
-typedef unsigned char uint8_t;
-typedef unsigned int uint16_t;
-typedef unsigned long int uint32_t;
-typedef unsigned long long uint64_t;
-
-
-typedef signed char int_least8_t;
-typedef signed int int_least16_t;
-typedef signed long int int_least32_t;
-typedef signed long long int_least64_t;
-
-
-typedef unsigned char uint_least8_t;
-typedef unsigned int uint_least16_t;
-typedef unsigned long int uint_least32_t;
-typedef unsigned long long uint_least64_t;
-
-
-
-typedef signed long int int_fast8_t;
-typedef signed long int int_fast16_t;
-typedef signed long int int_fast32_t;
-typedef signed long long int_fast64_t;
-
-
-typedef unsigned long int uint_fast8_t;
-typedef unsigned long int uint_fast16_t;
-typedef unsigned long int uint_fast32_t;
-typedef unsigned long long uint_fast64_t;
-
-
-typedef signed long int intptr_t;
-typedef unsigned long int uintptr_t;
-
-
-typedef signed long long intmax_t;
-typedef unsigned long long uintmax_t;
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 1 "c:/users/git/pic32mzcnc/planner.h"
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
@@ -377,117 +394,6 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 59 "c:/users/git/pic32mzcnc/kinematics.h"
-extern char stepper_state;
-extern sfr stp_stopped;
-extern sfr stp_run;
-extern sfr stp_pause;
-
-
-
-typedef struct {
-unsigned int home_state;
-unsigned int home_cnt;
-}homing_t;
-
-
-typedef struct Steps{
-
- char master: 1;
-
- unsigned short CheckStep: 1;
-
- unsigned short PLS_Step_ : 1;
-
- unsigned short StepBits: 1;
-
- unsigned short stopAxis: 1;
-
- int axis_dir;
-
- int run_state ;
-
- long microSec;
-
- long step_delay;
-
- long decel_start;
-
- long decel_val;
-
- long min_delay;
-
- long accel_count;
- long deccl_count;
- long acc;
- long dec;
-
- long step_count;
-
- long dist;
-
- long psingle;
-
- long new_step_delay;
-
- long last_accel_delay;
-
- long accel_lim;
-
- long max_step_lim;
-
- long rest;
-
- long StartUp_delay;
-
- long mmToTravel;
-
- long steps_abs_position;
-
-
-
-
-
- float max_travel;
-}STP;
-extern STP STPS[ 4 ];
-
-
-
-
-
-
-
-void SetInitialSizes(STP axis[6]);
-
-
-static void Set_Axisdirection(long temp,int axis);
-
-
-void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);
-void SingleAxisStep(float newxyz,float speed,int axis_No);
-static void SingleAxisStart(long dist,float speed,int axis_No);
-
-
-void mc_arc(float *position, float *target, float *offset, int axis_0,
- int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
- float radius, char isclockwise);
-
-float hypot(float angular_travel, float linear_travel);
-
-
-int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
-int Home(int axis);
-static void Home_Axis(double distance,float speed,int axis);
-static void Inv_Home_Axis(double distance,float speed,int axis);
-void mc_dwell(float sec);
-void mc_reset();
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 49 "c:/users/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
 #line 161 "c:/users/git/pic32mzcnc/gcode.h"
@@ -578,66 +484,6 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
-#line 14 "c:/users/git/pic32mzcnc/serial_dma.h"
-extern char txt[];
-extern char rxBuf[];
-extern char txBuf[];
-
-typedef struct{
- char temp_buffer[500];
- int head;
- int tail;
- int diff;
- char has_data: 1;
-}Serial;
-
-extern Serial serial;
-
-
-
-
-
-
-void DMA_global();
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
-
-
-
-void DMA0();
-char DMA0_Flag();
-void DMA0_Enable();
-void DMA0_Disable();
-unsigned int DMA0_ReadDstPtr();
-void DMA0_RstDstPtr();
-
-
-
-void DMA1();
-char DMA1_Flag();
-unsigned int DMA1_Enable();
-void DMA1_Disable();
-
-
-
-
-unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Abort(int channel);
-
-
-void Reset_rxBuff(int dif);
-int Get_Head_Value();
-int Get_Tail_Value();
-int Get_Difference();
-void Get_Line(char *str,int dif);
-void Reset_Ring();
-int Loopback();
-int dma_printf(char* str,...);
-void lTrim(char* d,char* s);
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/limits.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
@@ -801,32 +647,175 @@ static int Modal_Group_Actions7(int action);
 
 
 static int Modal_Group_Actions12(int action);
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
+#line 14 "c:/users/git/pic32mzcnc/serial_dma.h"
+extern char txt[];
+extern char rxBuf[];
+extern char txBuf[];
+
+typedef struct{
+ char temp_buffer[500];
+ int head;
+ int tail;
+ int diff;
+ char has_data: 1;
+}Serial;
+
+extern Serial serial;
+
+
+
+
+
+
+void DMA_global();
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
+
+
+
+void DMA0();
+char DMA0_Flag();
+void DMA0_Enable();
+void DMA0_Disable();
+unsigned int DMA0_ReadDstPtr();
+void DMA0_RstDstPtr();
+
+
+
+void DMA1();
+char DMA1_Flag();
+unsigned int DMA1_Enable();
+void DMA1_Disable();
+
+
+
+
+unsigned int DMA_IsOn(int channel);
+unsigned int DMA_CH_Busy(int channel);
+unsigned int DMA_Abort(int channel);
+
+
+void Reset_rxBuff(int dif);
+int Get_Head_Value();
+int Get_Tail_Value();
+int Get_Difference();
+void Get_Line(char *str,int dif);
+void Reset_Ring();
+int Loopback();
+int dma_printf(char* str,...);
+void lTrim(char* d,char* s);
+#line 1 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/git/pic32mzcnc/globals.h"
+#line 59 "c:/users/git/pic32mzcnc/kinematics.h"
+extern char stepper_state;
+extern sfr stp_stopped;
+extern sfr stp_run;
+extern sfr stp_pause;
+
+
+
+
+typedef struct {
+unsigned int home_state;
+unsigned int home_cnt;
+}homing_t;
+
+
+typedef struct Steps{
+
+ char master: 1;
+
+ unsigned short PLS_Step_ : 1;
+
+ unsigned short stopAxis: 1;
+
+ int axis_dir;
+
+ int run_state ;
+
+ long step_delay;
+
+ long decel_start;
+
+ long decel_val;
+
+ long min_delay;
+
+ long accel_count;
+ long deccl_count;
+
+ long step_count;
+
+ long dist;
+
+ long psingle;
+
+ long new_step_delay;
+
+ long last_accel_delay;
+
+ long accel_lim;
+
+ long max_step_lim;
+
+ long rest;
+
+ long StartUp_delay;
+
+ long mmToTravel;
+
+ long steps_abs_position;
+
+ float max_travel;
+}STP;
+extern STP STPS[ 4 ];
+
+
+
+
+
+
+
+void SetInitialSizes(STP axis[6]);
+
+
+static void Set_Axisdirection(long temp,int axis);
+
+
+void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);
+void SingleAxisStep(float newxyz,float speed,int axis_No);
+static void SingleAxisStart(long dist,float speed,int axis_No);
+
+
+void mc_arc(float *position, float *target, float *offset, int axis_0,
+ int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
+ float radius, char isclockwise);
+
+float hypot(float angular_travel, float linear_travel);
+
+
+int GetAxisDirection(long mm2move);
+
+
+
+void ResetHoming();
+int Home(int axis);
+static void Home_Axis(double distance,float speed,int axis);
+static void Inv_Home_Axis(double distance,float speed,int axis);
+void mc_dwell(float sec);
+void mc_reset();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 11 "c:/users/git/pic32mzcnc/timers.h"
-struct Timer{
-char clock;
-char P1: 1;
-char P2: 1;
-unsigned int disable_cnt;
-unsigned int (*Reset)(unsigned int time,unsigned int last_sec);
-};
-extern struct Timer TMR;
-
-
-void InitTimer1();
-void InitTimer8();
-static void ClockPulse();
-unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
 #line 33 "c:/users/git/pic32mzcnc/stepper.h"
-typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
+typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
@@ -845,6 +834,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
 void DisableStepper();
@@ -853,25 +843,21 @@ void disableOCx();
 
 int GET_RunState(int axis_No);
 int Get_AxisStatus(int stepper);
-int Get_Axis_Enable_States();
+int Get_Axis_IEnable_States();
 
 
-void SingleStepAxis(int axis);
-void Axis_Interpolate(int axisA,int axisB);
+static void SingleStepAxis(int axis);
+void Start_Interpolation(int axisA,int axisB);
+static void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 
 static int Pulse(int axis_No);
-void toggleOCx(int axis_No);
-void multiToggleOCx(int axis_No);
-static void AccDec(int axis_No);
+static void toggleOCx(int axis_No);
+
+static static void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
-
-void Test_CycleX();
-void Test_CycleY();
-void Test_CycleZ();
-void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 62 "c:/users/git/pic32mzcnc/planner.h"
@@ -900,7 +886,6 @@ typedef struct genVars{
  long over;
 }sVars;
 extern sVars SV;
-
 
 
 void plan_init(float accel,float decel);
@@ -940,16 +925,18 @@ long a_sq[ 4 ] absolute 0xA0002680 ;
 float alpha[ 4 ] absolute 0xA0002720 ;
 float spr_x_mstep[ 4 ] absolute 0xA0002760 ;
 
+long acc absolute 0xA0003900 ;
+long dec absolute 0xA0003904 ;
+
 
 
 
 
 void plan_init(float accel,float decel){
 int i = 0;
- for(i = 0; i <  4 ; i++){
- STPS[i].acc = lround(accel);
- STPS[i].dec = lround(decel);
- }
+#line 31 "C:/Users/Git/Pic32mzCNC/Planner.c"
+ acc = lround(accel);
+ dec = lround(decel);
  set_calculation_constants();
 }
 
@@ -980,7 +967,7 @@ float Get_Step_Rate(float speed,int axis){
  speed *= spr_x_mstep[axis];
  return speed;
 }
-#line 72 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 77 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void speed_cntr_Move(long mmSteps, float speed, int axis_No){
 int ii;
 float temp_speed,max_s_limit;
@@ -1022,7 +1009,7 @@ long abs_mmSteps = labs(mmSteps);
 
 
 
- STPS[axis_No].step_delay = labs((long) (( 6250000 *0.676)/100.00)  * ((sqrt_(a_sq[axis_No] / STPS[axis_No].acc))/100));
+ STPS[axis_No].step_delay = labs((long) (( 6250000 *0.676)/100.00)  * ((sqrt_(a_sq[axis_No] / acc))/100));
 
  if(STPS[axis_No].step_delay >  30210 )
  STPS[axis_No].StartUp_delay =  30210 ;
@@ -1033,7 +1020,7 @@ long abs_mmSteps = labs(mmSteps);
 
 
 
- STPS[axis_No].max_step_lim = (long)((temp_speed*temp_speed)/((alpha[axis_No]* 20000.00 *(float)STPS[axis_No].acc)/100.00));
+ STPS[axis_No].max_step_lim = (long)((temp_speed*temp_speed)/((alpha[axis_No]* 20000.00 *(float)acc)/100.00));
 
 
 
@@ -1043,7 +1030,7 @@ long abs_mmSteps = labs(mmSteps);
 
 
 
- STPS[axis_No].accel_lim = (abs_mmSteps * STPS[axis_No].dec) / (STPS[axis_No].acc + STPS[axis_No].dec);
+ STPS[axis_No].accel_lim = (abs_mmSteps * dec) / (acc + dec);
  if(STPS[axis_No].accel_lim > STPS[axis_No].max_step_lim)
  STPS[axis_No].accel_lim = STPS[axis_No].max_step_lim;
 
@@ -1056,7 +1043,7 @@ long abs_mmSteps = labs(mmSteps);
  if(STPS[axis_No].accel_lim < STPS[axis_No].max_step_lim){
  STPS[axis_No].decel_val = STPS[axis_No].accel_lim - mmSteps;
  }else{
- STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim * STPS[axis_No].acc)/STPS[axis_No].dec);
+ STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim * acc)/dec);
  }
 
  if(STPS[axis_No].decel_val == 0)
@@ -1093,9 +1080,12 @@ long abs_mmSteps = labs(mmSteps);
 
 
 while(DMA_IsOn(1));
-#line 196 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("\nspeed:= %f\na_sq[%d]:= %l\nalpha[%d]:= %f\na_t_x100[%d]:= %f\nSTPS[axis_No].max_step_lim:= %l\nSTPS[].dec:= %l\nabs_mmSteps:= %l\nacc_lim:= %l\ndec_val:= %l\ndec_start:= %l\nstep_delay:= %l\nmin_dly:= %l\n\n"
+#line 202 "C:/Users/Git/Pic32mzCNC/Planner.c"
+dma_printf("\nacc:= %l\ndec:= %l\nspeed:= %f\nabs_mmSteps:= %l\na_sq[%d]:= %l\nalpha[%d]:= %f\na_t_x100[%d]:= %f\nSTPS[axis_No].max_step_lim:= %l\nacc_lim:= %l\ndec_val:= %l\ndec_start:= %l\nstep_delay:= %l\nmin_dly:= %l\n\n"
+,acc
+,dec
 ,temp_speed
+,abs_mmSteps
 ,axis_No
 ,a_sq[axis_No]
 ,axis_No
@@ -1103,8 +1093,6 @@ dma_printf("\nspeed:= %f\na_sq[%d]:= %l\nalpha[%d]:= %f\na_t_x100[%d]:= %f\nSTPS
 ,axis_No
 ,a_t_x100[axis_No]
 ,STPS[axis_No].max_step_lim
-,STPS[axis_No].dec
-,abs_mmSteps
 ,STPS[axis_No].accel_lim
 ,STPS[axis_No].decel_val
 ,STPS[axis_No].decel_start
@@ -1113,7 +1101,7 @@ dma_printf("\nspeed:= %f\na_sq[%d]:= %l\nalpha[%d]:= %f\na_t_x100[%d]:= %f\nSTPS
 
 
 }
-#line 226 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 233 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
  float r, float i, float j, float k, int axis_A,int axis_B,int dir){
 char isclockwise = 0;
@@ -1139,7 +1127,7 @@ int axis_plane_a,axis_plane_b;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 314 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 321 "C:/Users/Git/Pic32mzCNC/Planner.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -1152,7 +1140,7 @@ int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (Get_motionmode() ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 348 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 355 "C:/Users/Git/Pic32mzCNC/Planner.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -1170,7 +1158,7 @@ int axis_plane_a,axis_plane_b;
 
  isclockwise = 0;
  if (dir ==  0 ) { isclockwise = 1; }
-#line 373 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 380 "C:/Users/Git/Pic32mzCNC/Planner.c"
  speed =  (( ((gc.feed_rate)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
 
  speed = Get_Step_Rate(speed,axis_A);
@@ -1207,7 +1195,7 @@ void plan_reset_absolute_position(){
  for(i=0;i< 4 ;i++)
  STPS[X].steps_abs_position = 0;
 }
-#line 425 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 432 "C:/Users/Git/Pic32mzCNC/Planner.c"
 long sqrt_(long x){
 
  volatile unsigned long xr;

@@ -1,6 +1,4 @@
 main
-	__CC2DW
-	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -58,7 +56,6 @@ main
 		Reset_Min_Limit
 		Reset_Min_Debounce
 	Get_modalgroup
-	Get_non_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
 			__CC2DW
@@ -102,6 +99,7 @@ main
 		GET_RunState
 		FAIL
 		memset
+	Get_non_modalword
 	Rst_modalgroup
 	report_status_message
 		DMA_IsOn
@@ -116,12 +114,13 @@ main
 			Set_Axisdirection
 			labs
 			speed_cntr_Move
-			Axis_Interpolate
-				Step_Cycle
-				StopAxis
-				Pulse
+			Start_Interpolation
+				Axis_Interpolate
+					Step_Cycle
 					StopAxis
-					AccDec
+					Pulse
+						StopAxis
+						AccDec
 		sys_sync_current_position
 			plan_set_current_position
 				beltsteps2mm
@@ -148,12 +147,14 @@ main
 				fabs
 				hypot
 				floor
+				DisableStepperInterrupt
 				cos
 					sin
 						floor
 						eval_poly
 				sin
 				DualAxisStep
+				Get_Axis_IEnable_States
 		Home
 			Rst_FP
 			Rst_FN
@@ -183,6 +184,8 @@ main
 	Modal_Group_Actions7
 		FAIL
 	Modal_Group_Actions12
+	DMA_IsOn
+	dma_printf
 	protocol_system_check
 		sys_sync_current_position
 		report_feedback_message
@@ -198,7 +201,7 @@ main
 			dma_printf
 			beltsteps2mm
 			__CC2DW
-	Get_Axis_Enable_States
+	Get_Axis_IEnable_States
 	Sample_Gocde_Line
 		Get_Difference
 		DMA0_ReadDstPtr
@@ -311,6 +314,8 @@ main
 			Rst_non_modalword
 			lround
 			Set_Axisword
+	__CC2DW
+	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepZ

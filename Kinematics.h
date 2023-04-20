@@ -63,6 +63,7 @@ extern sfr stp_pause;
 
 /////////////////////////////////////////////////////////
 //Structs enums consts etc
+
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -70,22 +71,16 @@ unsigned int home_cnt;
 
 
 typedef struct Steps{
- //! the master axis indicator
- char master: 1;
-  //! Step bit check
-  unsigned short CheckStep: 1;
+  //! the master axis indicator
+  char master: 1;
   //! Direction stepper motor should move.
   unsigned short PLS_Step_ : 1;
-  //!
-  unsigned short StepBits:  1;
   //! axis to stop 1st
   unsigned short stopAxis: 1;
   //! Track the direction of the axis for absolute value tracking
   int  axis_dir;
   //! What part of the speed ramp we are in.
   int run_state ;
-   //! micro sec  count value for clock pluse compare
-  long microSec;
   //! Peroid of next timer delay. At start this value set the accelration rate.
   long step_delay;
   //! What step_pos to start decelaration
@@ -97,8 +92,6 @@ typedef struct Steps{
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long accel_count;
   long deccl_count;
-  long acc;
-  long dec;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long step_count;
   //! Distance calculated to travel
@@ -121,10 +114,6 @@ typedef struct Steps{
  long mmToTravel;
  //!  Real-time machine (aka home) abs position vector in steps.
  long steps_abs_position;
- //! Real-time machine positions in mm or inches
-// float mm_position;
- //! Home positions saved if offsets are needed for limit switches
-// float mm_home_position;
  //! Max axis size to travel from origin 0,0
  float max_travel;
 }STP;
