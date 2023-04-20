@@ -1171,7 +1171,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 60
 SW	R0, 0(R2)
-;Stepper.c,303 :: 		STPS[axis_No].run_state   =  DECEL;
+;Stepper.c,303 :: 		STPS[axis_No].run_state =  DECEL;
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -1883,44 +1883,6 @@ NOP
 J	L_Stepper_Axis_Interpolate96
 NOP	
 L_Stepper_Axis_Interpolate239:
-;Stepper.c,438 :: 		STPS[axisB].step_delay  = STPS[axisA].step_delay;
-SEH	R3, R26
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R4, R2, 8
-SEH	R3, R25
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 8
-LW	R2, 0(R2)
-SW	R2, 0(R4)
-;Stepper.c,439 :: 		STPS[axisB].accel_count = STPS[axisA].accel_count;
-SEH	R3, R26
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R4, R2, 24
-SEH	R3, R25
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 24
-LW	R2, 0(R2)
-SW	R2, 0(R4)
 ;Stepper.c,441 :: 		if(STPS[axisA].step_count < STPS[axisA].dist)
 SEH	R3, R25
 ORI	R2, R0, 80
@@ -2062,44 +2024,6 @@ L_Stepper_Axis_Interpolate103:
 J	L_Stepper_Axis_Interpolate104
 NOP	
 L_Stepper_Axis_Interpolate96:
-;Stepper.c,466 :: 		STPS[axisA].step_delay  = STPS[axisB].step_delay;
-SEH	R3, R25
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R4, R2, 8
-SEH	R3, R26
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 8
-LW	R2, 0(R2)
-SW	R2, 0(R4)
-;Stepper.c,467 :: 		STPS[axisA].accel_count = STPS[axisB].accel_count;
-SEH	R3, R25
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R4, R2, 24
-SEH	R3, R26
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 24
-LW	R2, 0(R2)
-SW	R2, 0(R4)
 ;Stepper.c,469 :: 		if(STPS[axisB].step_count < STPS[axisB].dist)
 SEH	R3, R26
 ORI	R2, R0, 80

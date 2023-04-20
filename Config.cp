@@ -79,6 +79,8 @@ extern sfr sbit X_Min_Limit;
 extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
+extern sfr sbit Z_Min_Limit;
+extern sfr sbit Z_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
@@ -785,7 +787,7 @@ void Limit_Initialize();
 static void X_Min_Limit_Setup();
 static void Y_Min_Limit_Setup();
 static void Z_Min_Limit_Setup();
-void A_Min_Limit_Setup();
+static void A_Min_Limit_Setup();
 
 void Set_Min_Limit(int axis);
 char Test_Port_Pins(int axis);
@@ -989,6 +991,7 @@ void PinMode(){
 
  PPS_Mapping_NoLock(_RPF3, _INPUT, _INT1);
  PPS_Mapping_NoLock(_RPB15, _INPUT, _INT2);
+ PPS_Mapping_NoLock(_RPB1, _INPUT, _INT4);
  Lock_IOLOCK();
 
 
@@ -1044,7 +1047,7 @@ void UartConfig(){
  UART2_Init_Advanced(115200, 200000 , _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
  UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle);
  Delay_ms(10);
-#line 147 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 148 "C:/Users/Git/Pic32mzCNC/Config.c"
 }
 
 
@@ -1055,7 +1058,7 @@ void UartConfig(){
 
 
 void Uart2InterruptSetup(){
-#line 163 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 164 "C:/Users/Git/Pic32mzCNC/Config.c"
  URXISEL0_bit = 0;
  URXISEL1_bit = 0;
 
@@ -1146,7 +1149,7 @@ unsigned long cp0;
 
 
 void OutPutPulseXYZ(){
-#line 258 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 259 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5CON = 0x0000;
  OC2CON = 0x0000;
  OC7CON = 0X0000;
@@ -1184,7 +1187,7 @@ void OutPutPulseXYZ(){
  OC3CON = 0x000C;
  OC6CON = 0x000C;
  OC8CON = 0x000C;
-#line 302 "C:/Users/Git/Pic32mzCNC/Config.c"
+#line 303 "C:/Users/Git/Pic32mzCNC/Config.c"
  OC5R = 0x5;
  OC5RS = 0x234;
  OC2R = 0x5;

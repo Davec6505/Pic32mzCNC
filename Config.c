@@ -76,6 +76,7 @@ void PinMode(){
      //lIMIT SWITCHES
      PPS_Mapping_NoLock(_RPF3, _INPUT, _INT1);     //X_Min_Limit
      PPS_Mapping_NoLock(_RPB15, _INPUT, _INT2);    //Y_Min_Limit
+     PPS_Mapping_NoLock(_RPB1, _INPUT, _INT4);    //Z_Min_Limit
     Lock_IOLOCK();
     
 //////////////////////////////////////////////////

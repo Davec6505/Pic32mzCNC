@@ -79,6 +79,8 @@ extern sfr sbit X_Min_Limit;
 extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
+extern sfr sbit Z_Min_Limit;
+extern sfr sbit Z_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
@@ -899,7 +901,7 @@ void Limit_Initialize();
 static void X_Min_Limit_Setup();
 static void Y_Min_Limit_Setup();
 static void Z_Min_Limit_Setup();
-void A_Min_Limit_Setup();
+static void A_Min_Limit_Setup();
 
 void Set_Min_Limit(int axis);
 char Test_Port_Pins(int axis);
@@ -929,10 +931,11 @@ void Limit_Initialize(){
 
  X_Min_Limit_Dir = 1;
  Y_Min_Limit_Dir = 1;
-
+ Z_Min_Limit_Dir = 1;
 
  Limit[X].Limit_Min = 0;
  Limit[Y].Limit_Min = 0;
+ Limit[Z].Limit_Min = 0;
 
 
  IEC0CLR = 0x21 << 8;
@@ -940,7 +943,8 @@ void Limit_Initialize(){
 
  X_Min_Limit_Setup();
  Y_Min_Limit_Setup();
-#line 37 "C:/Users/Git/Pic32mzCNC/Limits.c"
+ Z_Min_Limit_Setup();
+#line 39 "C:/Users/Git/Pic32mzCNC/Limits.c"
 }
 
 
@@ -980,6 +984,24 @@ static void Y_Min_Limit_Setup(){
 
 
 
+static void Z_Min_Limit_Setup(){
+
+
+
+
+
+
+
+ IPC4SET = 11 << 8;
+
+
+ IEC0SET = 1 << 23;
+
+ IFS0CLR = (1 << 23);
+}
+
+
+
 
 
 
@@ -994,6 +1016,13 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  INT2IF_bit = 0;
  Set_Min_Limit(Y);
+}
+
+
+
+void Z_Min_Limit() iv IVT_EXTERNAL_4 ilevel 4 ics ICS_AUTO {
+ INT4IF_bit = 0;
+ Set_Min_Limit(Z);
 }
 
 
@@ -1053,7 +1082,7 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 153 "C:/Users/Git/Pic32mzCNC/Limits.c"
+#line 180 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }

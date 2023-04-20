@@ -18,18 +18,20 @@ void Limit_Initialize(){
 
    X_Min_Limit_Dir = 1;
    Y_Min_Limit_Dir = 1;
-
+   Z_Min_Limit_Dir = 1;
    //set initial limit values
    Limit[X].Limit_Min = 0;
    Limit[Y].Limit_Min = 0;
-
+   Limit[Z].Limit_Min = 0;
+   
    //disable external interrupts 1 and 2
    IEC0CLR  = 0x21 << 8;
 
    
    X_Min_Limit_Setup();
    Y_Min_Limit_Setup();
- 
+   Z_Min_Limit_Setup();
+   
    //pre condition last know Limit luesva
   /* for(i = 0;i < NoOfAxis;i++){
      Limit[i].old_Fval = Limit[i].old_Pval = Test_Min(i) & 0x0001;
@@ -71,6 +73,24 @@ static void Y_Min_Limit_Setup(){
  IFS0CLR = (1 << 13);
 }
 
+////////////////////////////////////////////////////////
+//Z_Limit SETUP   INT4
+static void Z_Min_Limit_Setup(){
+//IFS0<13>
+//IEC0<13>
+//IPC3<12:10>
+//IPC3<9:8>
+
+ //Set Priority level to 3 & sub 1
+ //limits should seldom hit at the sametime [same sub prior]
+ IPC4SET = 11 << 8;
+
+ // enable INT0
+ IEC0SET = 1 << 23;
+ // clear the interrupt flag
+ IFS0CLR = (1 << 23);
+}
+
 /////////////////////////////////////////////////////////////
 //                        LIMITS IRQ'S                     //
 /////////////////////////////////////////////////////////////
@@ -87,6 +107,13 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
    INT2IF_bit = 0;
    Set_Min_Limit(Y);
+}
+
+///////////////////////////////////////////////////////////
+//Y Min Limit interrupt
+void Z_Min_Limit() iv IVT_EXTERNAL_4 ilevel 4 ics ICS_AUTO {
+   INT4IF_bit = 0;
+   Set_Min_Limit(Z);
 }
 
 

@@ -80,7 +80,7 @@ float temp_speed,max_s_limit;
 static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
-  STPS[axis_No].dist =  abs_mmSteps;
+ // STPS[axis_No].dist =  abs_mmSteps;  //done prior to getting here
   
   // speed is in rpm ~ need to convert tp pps / steprate
   // speed /= 60.0; //base_pps[axis_No]/speed;

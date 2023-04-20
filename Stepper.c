@@ -297,11 +297,11 @@ static int Pulse(int axis_No){
       STPS[axis_No].step_delay = STPS[axis_No].min_delay;
       // Check for decelration start position.
       // Start decelration with same delay as accel ended with.
-      if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
-         STPS[axis_No].accel_count = STPS[axis_No].decel_val;
-         STPS[axis_No].rest        = 0;
-         STPS[axis_No].run_state   =  DECEL;
-      }
+       if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+           STPS[axis_No].accel_count = STPS[axis_No].decel_val;
+           STPS[axis_No].rest        = 0;
+           STPS[axis_No].run_state =  DECEL;
+        }
       break;
     case DECEL:
       //taylor series calculation for dec
@@ -435,8 +435,8 @@ static int cnt;
    }
 
    if(SV.dA >= SV.dB){
-     STPS[axisB].step_delay  = STPS[axisA].step_delay;
-     STPS[axisB].accel_count = STPS[axisA].accel_count;
+     //STPS[axisB].step_delay  = STPS[axisA].step_delay;
+     //STPS[axisB].accel_count = STPS[axisA].accel_count;
      
      if(STPS[axisA].step_count < STPS[axisA].dist)
         Step_Cycle(axisA);
@@ -463,8 +463,8 @@ static int cnt;
       }
         
    }else{
-     STPS[axisA].step_delay  = STPS[axisB].step_delay;
-     STPS[axisA].accel_count = STPS[axisB].accel_count;
+     //STPS[axisA].step_delay  = STPS[axisB].step_delay;
+     //STPS[axisA].accel_count = STPS[axisB].accel_count;
      
      if(STPS[axisB].step_count < STPS[axisB].dist)
        Step_Cycle(axisB);

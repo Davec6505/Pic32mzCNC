@@ -79,6 +79,8 @@ extern sfr sbit X_Min_Limit;
 extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
+extern sfr sbit Z_Min_Limit;
+extern sfr sbit Z_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
@@ -785,7 +787,7 @@ void Limit_Initialize();
 static void X_Min_Limit_Setup();
 static void Y_Min_Limit_Setup();
 static void Z_Min_Limit_Setup();
-void A_Min_Limit_Setup();
+static void A_Min_Limit_Setup();
 
 void Set_Min_Limit(int axis);
 char Test_Port_Pins(int axis);
@@ -935,7 +937,7 @@ static int send_status_once = 0;
 
 void Conditin_Externs(){
  PinMode();
- plan_init(settings.acceleration,settings.acceleration);
+ plan_init(5000.0,5000.0);
  Init_Protocol();
  G_Initialise();
  disableOCx();
@@ -1031,25 +1033,7 @@ static int cntr = 0,a = 0;
  break;
  }
  }
-
-
-
-if(!SV.mode_complete){
-if(STPS[X].run_state !=  0  | STPS[Y].run_state !=  0 ){
-while(DMA_IsOn(1));
-#line 167 "C:/Users/Git/Pic32mzCNC/Main.c"
-dma_printf("dif:= %l\t%l\t%l\t%l\t%l\t%l\n"
-,STPS[X].step_count
-,STPS[X].accel_count
-,STPS[X].step_delay
-,STPS[Y].step_count
-,STPS[Y].accel_count
-,STPS[Y].step_delay);
-}
-}
-
-
-
+#line 179 "C:/Users/Git/Pic32mzCNC/Main.c"
  protocol_system_check();
 
 
@@ -1322,14 +1306,13 @@ static int Modal_Group_Actions1(int action){
  DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.feed_rate);
  break;
  case 15:
- SV.cir = 1;
  sys_sync_current_position();
  r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
  break;
  case  ((( 4 * 4 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
-#line 498 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 497 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(axis_to_home < 2){
 
 
@@ -1389,7 +1372,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 561 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 560 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
  FAIL( 6 );
@@ -1401,7 +1384,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 576 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 575 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
  FAIL( 6 );
  SV.mode_complete = 1;
@@ -1412,6 +1395,6 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 590 "C:/Users/Git/Pic32mzCNC/Main.c"
+#line 589 "C:/Users/Git/Pic32mzCNC/Main.c"
  return action;
 }

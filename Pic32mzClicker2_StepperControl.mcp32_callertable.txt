@@ -1,4 +1,6 @@
 main
+	__CC2DW
+	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -13,6 +15,7 @@ main
 			Limit_Initialize
 				X_Min_Limit_Setup
 				Y_Min_Limit_Setup
+				Z_Min_Limit_Setup
 			OutPutPulseXYZ
 			SetPinMode
 			SetInitialSizes
@@ -56,6 +59,7 @@ main
 		Reset_Min_Limit
 		Reset_Min_Debounce
 	Get_modalgroup
+	Get_non_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
 			__CC2DW
@@ -72,38 +76,34 @@ main
 			belt_steps
 				lround
 			SingleAxisStart
+				labs
 				Single_Axis_Enable
 				speed_cntr_Move
 					labs
 					Get_Step_Rate
 					lround
 					sqrt_
-					DMA_IsOn
-					dma_printf
-						DMA_CH_Busy
-						sprintf
-							_doprntf
-								isdigit
-								scale
-								fround
-						strcat
-						strlen
-						strncpy
-						DMA1_Enable
-						__CC2DW
-					__CC2DW
 				Set_Axisdirection
-				labs
 				Step_Cycle
 					toggleOCx
 		GET_RunState
 		FAIL
 		memset
-	Get_non_modalword
 	Rst_modalgroup
 	report_status_message
 		DMA_IsOn
 		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 	Get_Axisword
 	EnableSteppers
 	Modal_Group_Actions1
@@ -125,9 +125,6 @@ main
 			plan_set_current_position
 				beltsteps2mm
 					fround
-				DMA_IsOn
-				dma_printf
-				__CC2DW
 		r_or_ijk
 			__CC2DW
 			sqrt
@@ -184,8 +181,6 @@ main
 	Modal_Group_Actions7
 		FAIL
 	Modal_Group_Actions12
-	DMA_IsOn
-	dma_printf
 	protocol_system_check
 		sys_sync_current_position
 		report_feedback_message
@@ -314,8 +309,6 @@ main
 			Rst_non_modalword
 			lround
 			Set_Axisword
-	__CC2DW
-	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepZ
@@ -336,6 +329,8 @@ StepY
 X_Min_Limit
 	Set_Min_Limit
 Y_Min_Limit
+	Set_Min_Limit
+Z_Min_Limit
 	Set_Min_Limit
 DMA_CH1_ISR
 UART2

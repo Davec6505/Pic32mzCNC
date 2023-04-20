@@ -53,7 +53,7 @@ static int send_status_once = 0;
 //condition externs
 void Conditin_Externs(){
   PinMode();
-  plan_init(settings.acceleration,settings.acceleration);
+  plan_init(5000.0,5000.0);//settings.acceleration,settings.acceleration);
   Init_Protocol();
   G_Initialise();
   disableOCx();
@@ -484,7 +484,6 @@ static int Modal_Group_Actions1(int action){
             DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.feed_rate);
             break;
        case 15://Circle interpolation
-            SV.cir = 1;//to indicate DualAxisStep of circle!!!
             sys_sync_current_position();
             r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
             break;

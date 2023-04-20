@@ -209,6 +209,8 @@ extern sfr sbit X_Min_Limit;
 extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
+extern sfr sbit Z_Min_Limit;
+extern sfr sbit Z_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
@@ -518,7 +520,7 @@ void Limit_Initialize();
 static void X_Min_Limit_Setup();
 static void Y_Min_Limit_Setup();
 static void Z_Min_Limit_Setup();
-void A_Min_Limit_Setup();
+static void A_Min_Limit_Setup();
 
 void Set_Min_Limit(int axis);
 char Test_Port_Pins(int axis);
@@ -974,7 +976,7 @@ float temp_speed,max_s_limit;
 static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
- STPS[axis_No].dist = abs_mmSteps;
+
 
 
 
@@ -1075,31 +1077,7 @@ long abs_mmSteps = labs(mmSteps);
  SV.mode_complete = 0;
  SV.running = 1;
  last_speed = speed;
-
-
-
-
-while(DMA_IsOn(1));
-#line 202 "C:/Users/Git/Pic32mzCNC/Planner.c"
-dma_printf("\nacc:= %l\ndec:= %l\nspeed:= %f\nabs_mmSteps:= %l\na_sq[%d]:= %l\nalpha[%d]:= %f\na_t_x100[%d]:= %f\nSTPS[axis_No].max_step_lim:= %l\nacc_lim:= %l\ndec_val:= %l\ndec_start:= %l\nstep_delay:= %l\nmin_dly:= %l\n\n"
-,acc
-,dec
-,temp_speed
-,abs_mmSteps
-,axis_No
-,a_sq[axis_No]
-,axis_No
-,alpha[axis_No]
-,axis_No
-,a_t_x100[axis_No]
-,STPS[axis_No].max_step_lim
-,STPS[axis_No].accel_lim
-,STPS[axis_No].decel_val
-,STPS[axis_No].decel_start
-,STPS[axis_No].step_delay
-,STPS[axis_No].min_delay);
-
-
+#line 221 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 #line 233 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
@@ -1181,12 +1159,7 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-
-
-while(DMA_IsOn(1));
-dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
-
-
+#line 408 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 
 

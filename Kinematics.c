@@ -110,7 +110,7 @@ int   dir    = 0;
 static void SingleAxisStart(long dist,float speed,int axis_No){
 long speed_ = 0;
 
-  
+  STPS[axis_No].dist =labs(dist);
   Single_Axis_Enable(axis_No);
   speed_cntr_Move(dist , speed, axis_No);
 
@@ -212,11 +212,16 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
     SV.mode_complete = 1; //set this to respond with ok
     return;
   }
+  
+  //the distance need in Steps to completee move
+  STPS[axisA].dist =labs(tempA);
+  STPS[axisB].dist =labs(tempB);
+  
   //don'tcalculate acc if arc is runnin use last min speed
-  if(!SV.cir){
+  //if(!SV.cir){
     speed_cntr_Move(tempA,speed,axisA);
     speed_cntr_Move(tempB,speed,axisB);
-  }
+  //}
   if(SV.dA >= SV.dB){
    //disabled this for trial purposes
    // STPS[axisB].step_delay = STPS[axisA].step_delay;
