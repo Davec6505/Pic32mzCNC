@@ -2,10 +2,6 @@
 
 char txt_A[9];
 
-/////////////////////////////////
-//enum varibles
-_axis_ _axis;
-axis_combination axis_xyz;
 
 //unsigned int Toggle;
 //long test;
@@ -101,6 +97,17 @@ void DisableStepper(){
    EN_StepA      = 1;
 }
 
+void DisableStepperInterrupt(int stepper){
+   switch(stepper){
+     case X:OC5IE_bit = 0; break;
+     case Y:OC2IE_bit = 0; break;
+     case Z:OC7IE_bit = 0; break;
+     case A:OC3IE_bit = 0; break;
+     //case B:EN_StepB = 0; break;
+     //case C:EN_StepC = 0; break;
+  }
+}
+
 //////////////////////////////////////////////////////////
 //            POL THE AXIS BITS                      //
 //////////////////////////////////////////////////////////
@@ -123,12 +130,12 @@ int state = 0;
 
 //////////////////////////////////////////////////////////
 //returns the output state of the axis
-int Get_Axis_Enable_States(){
+int Get_Axis_IEnable_States(){
  int temp = 0;
  temp |= OC3IE_bit << 3;
  temp |= OC7IE_bit << 2;
  temp |= OC2IE_bit << 1;
- temp |= OC3IE_bit << 0;
+ temp |= OC5IE_bit << 0;
  return temp;
 }
 
@@ -199,7 +206,7 @@ void disableOCx(){
 
 
 //toggle the OCxCON regs
-void toggleOCx(int axis_No){
+static void toggleOCx(int axis_No){
   switch(axis_No){
     case X:
          OC5IF_bit = 0;
@@ -290,11 +297,11 @@ static int Pulse(int axis_No){
       STPS[axis_No].step_delay = STPS[axis_No].min_delay;
       // Check for decelration start position.
       // Start decelration with same delay as accel ended with.
-      if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
-         STPS[axis_No].accel_count = STPS[axis_No].decel_val;
-         STPS[axis_No].rest        = 0;
-         STPS[axis_No].run_state   =  DECEL;
-      }
+       if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+           STPS[axis_No].accel_count = STPS[axis_No].decel_val;
+           STPS[axis_No].rest        = 0;
+           STPS[axis_No].run_state =  DECEL;
+        }
       break;
     case DECEL:
       //taylor series calculation for dec
@@ -403,7 +410,7 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 //        SINGLE AXIS STEP FUNCTIONALITY              //
 ////////////////////////////////////////////////////////
 
-void SingleStepAxis(int axis){
+static void SingleStepAxis(int axis){
   if(bit_istrue(SV.mode_complete,axis))return;
   Step_Cycle(axis);
   Pulse(axis);
@@ -413,8 +420,12 @@ void SingleStepAxis(int axis){
 //   INTERPOLATE MULTI AXIS USING BRESENHAMS ALGO     //
 //       MASTER AXIS CONTROLS THE ACCELERATION        //
 ////////////////////////////////////////////////////////
+//keep Axis_interpolation scope local
+void Start_Interpolation(int axisA,int axisB){
+   Axis_Interpolate(axisA,axisB);
+}
 
-void Axis_Interpolate(int axisA,int axisB){
+static void Axis_Interpolate(int axisA,int axisB){
 static int cnt;
 
    cnt++;
@@ -424,8 +435,8 @@ static int cnt;
    }
 
    if(SV.dA >= SV.dB){
-     STPS[axisB].step_delay  = STPS[axisA].step_delay;
-     STPS[axisB].accel_count = STPS[axisA].accel_count;
+     //STPS[axisB].step_delay  = STPS[axisA].step_delay;
+     //STPS[axisB].accel_count = STPS[axisA].accel_count;
      
      if(STPS[axisA].step_count < STPS[axisA].dist)
         Step_Cycle(axisA);
@@ -452,8 +463,8 @@ static int cnt;
       }
         
    }else{
-     STPS[axisA].step_delay  = STPS[axisB].step_delay;
-     STPS[axisA].accel_count = STPS[axisB].accel_count;
+     //STPS[axisA].step_delay  = STPS[axisB].step_delay;
+     //STPS[axisA].accel_count = STPS[axisB].accel_count;
      
      if(STPS[axisB].step_count < STPS[axisB].dist)
        Step_Cycle(axisB);

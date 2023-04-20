@@ -33,7 +33,8 @@
 
 //////////////////////////////////////////
 //external scope variables
-
+_axis_ _axis;
+axis_combination axis_xyz;
 settings_t settings absolute 0xA0002800 ;
 parser_state_t gc   absolute 0xA0002900;
 STP STPS[NoOfAxis]  absolute 0xA0003100;
@@ -52,7 +53,7 @@ static int send_status_once = 0;
 //condition externs
 void Conditin_Externs(){
   PinMode();
-  plan_init(settings.acceleration,settings.acceleration);
+  plan_init(5000.0,5000.0);//settings.acceleration,settings.acceleration);
   Init_Protocol();
   G_Initialise();
   disableOCx();
@@ -163,14 +164,13 @@ if(!SV.mode_complete){
 if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
 while(DMA_IsOn(1));
 dma_printf("\
-dif:= %l\t%l\t%l\t%l\t%d\t%l\t%l\n"
-,SV.dif
+dif:= %l\t%l\t%l\t%l\t%l\t%l\n"
 ,STPS[X].step_count
 ,STPS[X].accel_count
 ,STPS[X].step_delay
-,(STPS[Y].run_state&0xff)
 ,STPS[Y].step_count
-,STPS[Y].accel_count);
+,STPS[Y].accel_count
+,STPS[Y].step_delay);
 }
 }
 #endif
@@ -182,7 +182,7 @@ dif:= %l\t%l\t%l\t%l\t%d\t%l\t%l\n"
   protocol_execute_runtime();
 
   //respond ok if movement is finished
-  if(!Get_Axis_Enable_States() && SV.mode_complete > 0 && !SV.homed){
+  if(!Get_Axis_IEnable_States() && SV.mode_complete > 0 && !SV.homed){
      LED2 = false;
      //debug STATUS_OK response after moves complete
      status_of_gcode == STATUS_OK;
@@ -484,7 +484,6 @@ static int Modal_Group_Actions1(int action){
             DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,gc.feed_rate);
             break;
        case 15://Circle interpolation
-            SV.cir = 1;//to indicate DualAxisStep of circle!!!
             sys_sync_current_position();
             r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
             break;

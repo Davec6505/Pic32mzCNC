@@ -28,7 +28,11 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Main.c
+=======
+Value=Limits.c
+>>>>>>> patch2
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -154,9 +158,17 @@ File4=Kinematics.h
 File5=Stepper.c
 File6=Stepper.h
 File7=DEFINES.pld
+<<<<<<< HEAD
 File8=Globals.c
 File9=GCODE.h
 Count=10
+=======
+File8=Limits.c
+File9=Limits.h
+File10=Pins.c
+File11=Config.c
+Count=12
+>>>>>>> patch2
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

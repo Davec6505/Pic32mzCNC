@@ -3,6 +3,7 @@
 const code double max_sizes[]={X_MAX_SIZE,Y_MAX_SIZE,Z_MAX_SIZE,A_MAX_SIZE,B_MAX_SIZE,C_MAX_SIZE};
 
 
+
 //////////////////////////////////
 //FUNCTION POINTERS
 volatile void (*AxisPulse[3])();
@@ -109,7 +110,7 @@ int   dir    = 0;
 static void SingleAxisStart(long dist,float speed,int axis_No){
 long speed_ = 0;
 
-  
+  STPS[axis_No].dist =labs(dist);
   Single_Axis_Enable(axis_No);
   speed_cntr_Move(dist , speed, axis_No);
 
@@ -151,9 +152,11 @@ long tempA,tempB,tempC;
   ,tempA,STPS[axisA].steps_abs_position
   ,tempB,STPS[axisB].steps_abs_position);
   #endif
+  
   //subtract new from current
   tempA = tempA - STPS[axisA].steps_abs_position;
   tempB = tempB - STPS[axisB].steps_abs_position;
+  
   #if KineDebug == 4
   while(DMA_IsOn(1));
   dma_printf("tempAa:= %l\ttempBb:= %l\n"
@@ -210,28 +213,28 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
     return;
   }
   
+  //the distance need in Steps to completee move
+  STPS[axisA].dist =labs(tempA);
+  STPS[axisB].dist =labs(tempB);
+  
+  //don'tcalculate acc if arc is runnin use last min speed
+  //if(!SV.cir){
+    speed_cntr_Move(tempA,speed,axisA);
+    speed_cntr_Move(tempB,speed,axisB);
+  //}
   if(SV.dA >= SV.dB){
-    // if(!SV.cir){
-        speed_cntr_Move(tempA,speed,axisA);
-        //speed_cntr_Move(tempB,speed,axisB);
-        STPS[axisB].step_delay = STPS[axisA].step_delay;
-        STPS[axisB].accel_count = STPS[axisA].accel_count;
-    // }
-
-     SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
-     STPS[axisA].master = 1;
-     STPS[axisB].master = 0;
+   //disabled this for trial purposes
+   // STPS[axisB].step_delay = STPS[axisA].step_delay;
+   // STPS[axisB].accel_count = STPS[axisA].accel_count;
+    SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
+    STPS[axisA].master = 1;
+    STPS[axisB].master = 0;
   }else{
-    // if(!SV.cir){
-        speed_cntr_Move(tempB,speed,axisB);
-        //speed_cntr_Move(tempA,speed,axisA);
-        STPS[axisA].step_delay = STPS[axisB].step_delay;
-        STPS[axisA].accel_count = STPS[axisB].accel_count;
-    // }
-
-     SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
-     STPS[axisA].master = 0;
-     STPS[axisB].master = 1;
+  //  STPS[axisA].step_delay = STPS[axisB].step_delay;
+  //  STPS[axisA].accel_count = STPS[axisB].accel_count;
+    SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
+    STPS[axisA].master = 0;
+    STPS[axisB].master = 1;
   }
   
    STPS[axisA].step_count = 0;
@@ -239,8 +242,7 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
    STPS[axisA].mmToTravel = tempA;
    STPS[axisB].mmToTravel = tempB;
 
-   Axis_Interpolate(axisA,axisB);
-
+   Start_Interpolation(axisA,axisB);
 }
 
 
@@ -364,7 +366,8 @@ dma_printf("\
   // Initialize the linear axis to current posxition
   nPx = arc_target[axis_0] = position[axis_0];
   nPy = arc_target[axis_1] = position[axis_1];
-  OC5IE_bit = OC2IE_bit = 0;
+  DisableStepperInterrupt(X);
+  DisableStepperInterrupt(Y);
   i = 0.0;
   
   #if KineDebug == 3
@@ -443,7 +446,7 @@ dma_printf("\
          limit_error = 1;
      }
      */
-     if(!OC5IE_bit && !OC2IE_bit)
+     if(!Get_Axis_IEnable_States())
        break;
    }
 

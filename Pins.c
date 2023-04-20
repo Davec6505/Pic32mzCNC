@@ -74,3 +74,5 @@ sbit X_Min_Limit at RF3_bit;//RB0_bit;//
 sbit X_Min_Limit_Dir at TRISF3_bit; //TRISB0_bit;//
 sbit Y_Min_Limit at RB15_bit;
 sbit Y_Min_Limit_Dir at TRISB15_bit;
+sbit Z_Min_Limit at RB1_bit;
+sbit Z_Min_Limit_Dir at TRISB1_bit;

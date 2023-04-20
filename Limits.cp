@@ -79,15 +79,14 @@ extern sfr sbit X_Min_Limit;
 extern sfr sbit X_Min_Limit_Dir;
 extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
+extern sfr sbit Z_Min_Limit;
+extern sfr sbit Z_Min_Limit_Dir;
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
-#line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 
@@ -540,7 +539,6 @@ typedef struct genVars{
 extern sVars SV;
 
 
-
 void plan_init(float accel,float decel);
 
 
@@ -579,6 +577,7 @@ extern sfr stp_pause;
 
 
 
+
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -589,19 +588,13 @@ typedef struct Steps{
 
  char master: 1;
 
- unsigned short CheckStep: 1;
-
  unsigned short PLS_Step_ : 1;
-
- unsigned short StepBits: 1;
 
  unsigned short stopAxis: 1;
 
  int axis_dir;
 
  int run_state ;
-
- long microSec;
 
  long step_delay;
 
@@ -613,9 +606,12 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
+<<<<<<< HEAD
 
  long acc;
  long dec;
+=======
+>>>>>>> patch2
 
  long step_count;
 
@@ -638,10 +634,6 @@ typedef struct Steps{
  long mmToTravel;
 
  long steps_abs_position;
-
-
-
-
 
  float max_travel;
 }STP;
@@ -681,13 +673,16 @@ static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
+#line 1 "c:/users/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
 #line 16 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
 #line 33 "c:/users/git/pic32mzcnc/stepper.h"
-typedef enum xyz{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
+typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
 extern _axis_ _axis;
@@ -706,6 +701,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
 void DisableStepper();
@@ -714,25 +710,21 @@ void disableOCx();
 
 int GET_RunState(int axis_No);
 int Get_AxisStatus(int stepper);
-int Get_Axis_Enable_States();
+int Get_Axis_IEnable_States();
 
 
-void SingleStepAxis(int axis);
-void Axis_Interpolate(int axisA,int axisB);
+static void SingleStepAxis(int axis);
+void Start_Interpolation(int axisA,int axisB);
+static void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 
 static int Pulse(int axis_No);
-void toggleOCx(int axis_No);
-void multiToggleOCx(int axis_No);
-static void AccDec(int axis_No);
+static void toggleOCx(int axis_No);
+
+static static void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
-
-void Test_CycleX();
-void Test_CycleY();
-void Test_CycleZ();
-void Test_CycleA();
 #line 1 "c:/users/git/pic32mzcnc/steptodistance.h"
 #line 1 "c:/users/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
@@ -915,7 +907,7 @@ void Limit_Initialize();
 static void X_Min_Limit_Setup();
 static void Y_Min_Limit_Setup();
 static void Z_Min_Limit_Setup();
-void A_Min_Limit_Setup();
+static void A_Min_Limit_Setup();
 
 void Set_Min_Limit(int axis);
 char Test_Port_Pins(int axis);
@@ -945,10 +937,11 @@ void Limit_Initialize(){
 
  X_Min_Limit_Dir = 1;
  Y_Min_Limit_Dir = 1;
-
+ Z_Min_Limit_Dir = 1;
 
  Limit[X].Limit_Min = 0;
  Limit[Y].Limit_Min = 0;
+ Limit[Z].Limit_Min = 0;
 
 
  IEC0CLR = 0x21 << 8;
@@ -956,7 +949,8 @@ void Limit_Initialize(){
 
  X_Min_Limit_Setup();
  Y_Min_Limit_Setup();
-#line 37 "C:/Users/Git/Pic32mzCNC/Limits.c"
+ Z_Min_Limit_Setup();
+#line 39 "C:/Users/Git/Pic32mzCNC/Limits.c"
 }
 
 
@@ -996,6 +990,24 @@ static void Y_Min_Limit_Setup(){
 
 
 
+static void Z_Min_Limit_Setup(){
+
+
+
+
+
+
+
+ IPC4SET = 11 << 8;
+
+
+ IEC0SET = 1 << 23;
+
+ IFS0CLR = (1 << 23);
+}
+
+
+
 
 
 
@@ -1010,6 +1022,13 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
  INT2IF_bit = 0;
  Set_Min_Limit(Y);
+}
+
+
+
+void Z_Min_Limit() iv IVT_EXTERNAL_4 ilevel 4 ics ICS_AUTO {
+ INT4IF_bit = 0;
+ Set_Min_Limit(Z);
 }
 
 
@@ -1069,7 +1088,7 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 153 "C:/Users/Git/Pic32mzCNC/Limits.c"
+#line 180 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }

@@ -15,6 +15,7 @@ main
 			Limit_Initialize
 				X_Min_Limit_Setup
 				Y_Min_Limit_Setup
+				Z_Min_Limit_Setup
 			OutPutPulseXYZ
 			SetPinMode
 			SetInitialSizes
@@ -75,6 +76,7 @@ main
 			belt_steps
 				lround
 			SingleAxisStart
+				labs
 				Single_Axis_Enable
 				speed_cntr_Move
 					labs
@@ -82,7 +84,6 @@ main
 					lround
 					sqrt_
 				Set_Axisdirection
-				labs
 				Step_Cycle
 					toggleOCx
 		GET_RunState
@@ -113,12 +114,13 @@ main
 			Set_Axisdirection
 			labs
 			speed_cntr_Move
-			Axis_Interpolate
-				Step_Cycle
-				StopAxis
-				Pulse
+			Start_Interpolation
+				Axis_Interpolate
+					Step_Cycle
 					StopAxis
-					AccDec
+					Pulse
+						StopAxis
+						AccDec
 		sys_sync_current_position
 			plan_set_current_position
 				beltsteps2mm
@@ -142,12 +144,14 @@ main
 				fabs
 				hypot
 				floor
+				DisableStepperInterrupt
 				cos
 					sin
 						floor
 						eval_poly
 				sin
 				DualAxisStep
+				Get_Axis_IEnable_States
 		Home
 			Rst_FP
 			Rst_FN
@@ -192,7 +196,7 @@ main
 			dma_printf
 			beltsteps2mm
 			__CC2DW
-	Get_Axis_Enable_States
+	Get_Axis_IEnable_States
 	Sample_Gocde_Line
 		Get_Difference
 		DMA0_ReadDstPtr
@@ -325,6 +329,8 @@ StepY
 X_Min_Limit
 	Set_Min_Limit
 Y_Min_Limit
+	Set_Min_Limit
+Z_Min_Limit
 	Set_Min_Limit
 DMA_CH1_ISR
 UART2
