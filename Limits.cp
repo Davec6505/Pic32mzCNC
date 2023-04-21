@@ -944,7 +944,7 @@ void Limit_Initialize(){
  Limit[Z].Limit_Min = 0;
 
 
- IEC0CLR = 0x21 << 8;
+ IEC0CLR = 0x8021 << 8;
 
 
  X_Min_Limit_Setup();
@@ -998,7 +998,7 @@ static void Z_Min_Limit_Setup(){
 
 
 
- IPC4SET = 11 << 8;
+ IPC5SET = 11 << 24;
 
 
  IEC0SET = 1 << 23;
@@ -1088,7 +1088,10 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 180 "C:/Users/Git/Pic32mzCNC/Limits.c"
+
+ dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
+
+
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }
@@ -1159,7 +1162,7 @@ char tmp = 0;
  tmp = Y_Min_Limit & 0x0001;
  break;
  case Z:
-
+ tmp = Z_Min_Limit & 0x0001;
  break;
  case A:
 

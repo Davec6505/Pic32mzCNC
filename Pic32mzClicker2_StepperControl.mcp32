@@ -29,9 +29,13 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Main.c
 =======
 Value=Limits.c
+>>>>>>> patch2
+=======
+Value=Main.c
 >>>>>>> patch2
 =======
 <<<<<<< HEAD
@@ -167,7 +171,12 @@ File8=Limits.c
 File9=Limits.h
 File10=Pins.c
 File11=Config.c
+<<<<<<< HEAD
 Count=12
+>>>>>>> patch2
+=======
+File12=Pins.h
+Count=13
 >>>>>>> patch2
 [EEPROM]
 Count=0
