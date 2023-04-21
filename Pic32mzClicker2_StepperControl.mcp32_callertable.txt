@@ -56,8 +56,21 @@ main
 		DisableStepper
 	Debounce_Limits
 		Test_Port_Pins
+		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 		Reset_Min_Limit
 		Reset_Min_Debounce
+		__CC2DW
 	Get_modalgroup
 	Get_non_modalword
 	Modal_Group_Actions0
@@ -93,17 +106,6 @@ main
 	report_status_message
 		DMA_IsOn
 		dma_printf
-			DMA_CH_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
 	Get_Axisword
 	EnableSteppers
 	Modal_Group_Actions1

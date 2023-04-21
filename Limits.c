@@ -25,7 +25,7 @@ void Limit_Initialize(){
    Limit[Z].Limit_Min = 0;
    
    //disable external interrupts 1 and 2
-   IEC0CLR  = 0x21 << 8;
+   IEC0CLR  = 0x8021 << 8;
 
    
    X_Min_Limit_Setup();
@@ -63,7 +63,7 @@ static void Y_Min_Limit_Setup(){
 //IPC3<12:10>
 //IPC3<9:8>
 
- //Set Priority level to 3 & sub 1
+ //Set Priority level to 4 & sub 1
  //limits should seldom hit at the sametime [same sub prior]
  IPC3SET = 11 << 8;
 
@@ -81,9 +81,9 @@ static void Z_Min_Limit_Setup(){
 //IPC3<12:10>
 //IPC3<9:8>
 
- //Set Priority level to 3 & sub 1
+ //Set Priority level to 4 & sub 1
  //limits should seldom hit at the sametime [same sub prior]
- IPC4SET = 11 << 8;
+ IPC5SET = 11 << 24;
 
  // enable INT0
  IEC0SET = 1 << 23;
@@ -247,7 +247,7 @@ char tmp = 0;
              tmp = Y_Min_Limit & 0x0001;
              break;
         case Z:
-            // tmp = Z_Min_Limit & 0x0001;
+             tmp = Z_Min_Limit & 0x0001;
              break;
         case A:
           //   tmp = A_Min_Limit & 0x0001;

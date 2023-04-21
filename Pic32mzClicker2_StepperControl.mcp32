@@ -28,7 +28,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Limits.c
+Value=Main.c
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -158,7 +158,8 @@ File8=Limits.c
 File9=Limits.h
 File10=Pins.c
 File11=Config.c
-Count=12
+File12=Pins.h
+Count=13
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

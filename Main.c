@@ -82,7 +82,9 @@ static int cntr = 0,a = 0;
    //continously test the limits
    Debounce_Limits(X);
    Debounce_Limits(Y);
-
+   Debounce_Limits(Z);
+   
+   
    //continously check the communication channel
    //if STATUS_OK because some modal functions here keep their value for 
    //-> functionality like homing, therefor we continously need to pol
@@ -494,7 +496,7 @@ static int Modal_Group_Actions1(int action){
             while(DMA_IsOn(1));
             dma_printf("axis_to_home:= %d\n",axis_to_home);
             #endif
-            if(axis_to_home < 2){
+            if(axis_to_home < 3){
 
               //will need to test for abort!!!
               if (sys.abort) {

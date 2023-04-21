@@ -9,18 +9,18 @@ warning: 155	1506	Implicit conversion of pointer to int	__Lib_MemManager.c
 warning: 174	1508	Implicit conversion of int to ptr	__Lib_MemManager.c
 diagnostics: 297	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	pins.h
-hint: 223	1163	Variable 'addr' has been declared, but not used	Main.c
-hint: 225	1163	Variable 'a_val' has been declared, but not used	Main.c
-diagnostics: 590	123	Compiled Successfully	Main.c
-hint: 120	1164	Variable 'report' has been eliminated by optimizer	Main.c
+hint: 225	1163	Variable 'addr' has been declared, but not used	Main.c
+hint: 227	1163	Variable 'a_val' has been declared, but not used	Main.c
+diagnostics: 592	123	Compiled Successfully	Main.c
+hint: 122	1164	Variable 'report' has been eliminated by optimizer	Main.c
 hint: 72	1164	Variable 'dif' has been eliminated by optimizer	Main.c
 hint: 73	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
 hint: 73	1164	Variable 'a' has been eliminated by optimizer	Main.c
 hint: 68	1164	Variable 'error' has been eliminated by optimizer	Main.c
 hint: 69	1164	Variable 'has_flash' has been eliminated by optimizer	Main.c
 hint: 71	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
-hint: 220	1164	Variable 'result' has been eliminated by optimizer	Main.c
-hint: 220	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
+hint: 222	1164	Variable 'result' has been eliminated by optimizer	Main.c
+hint: 222	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (UART2 at 0x0092)	Config.c
 diagnostics: 392	123	Compiled Successfully	Config.c
@@ -131,13 +131,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 2265 ms	 
+diagnostics: 0	127	All files Compiled in 3250 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
 hint: 0	1144	Static RAM (bytes): 5546   Dynamic RAM (bytes): 501685	Static RAM (bytes): 5546   Dynamic RAM (bytes): 501685
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 80404 (4%)  Free ROM (bytes): 2016748 (96%)	Used ROM (bytes): 80404 (4%)  Free ROM (bytes): 2016748 (96%)
+hint: 0	1144	Used ROM (bytes): 80565 (4%)  Free ROM (bytes): 2016587 (96%)	Used ROM (bytes): 80565 (4%)  Free ROM (bytes): 2016587 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 816 (1%)  Free BOOTROM (bytes): 146195 (99%)	Used BOOTROM (bytes): 816 (1%)  Free BOOTROM (bytes): 146195 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 719 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4594 ms	 
-diagnostics: 0	103	Finished successfully: 20 Apr 2023, 23:04:33	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 1078 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6515 ms	 
+diagnostics: 0	103	Finished successfully: 21 Apr 2023, 07:21:15	Pic32mzClicker2_StepperControl.mcp32
