@@ -424,7 +424,7 @@ typedef struct genVars{
  char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
- char mode_complete: 2;
+ char mode_complete;
  int AxisNo;
  int dirx;
  int diry;
@@ -606,6 +606,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+
 void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
@@ -1214,7 +1215,7 @@ int i = 0;
 
  switch (motion_mode) {
  case  0 :
- gc.frequency = lround(settings.default_seek_rate);
+ gc.feed_rate = settings.default_seek_rate;
  case  1 :
  FAIL( 0 );
  break;

@@ -1374,11 +1374,9 @@ J	L_Check_group_multiple_violations103
 NOP	
 ;GCODE.c,345 :: 		case MOTION_MODE_SEEK:
 L_Check_group_multiple_violations105:
-;GCODE.c,346 :: 		gc.frequency = lround(settings.default_seek_rate);
-LWC1	S12, Offset(_settings+20)(GP)
-JAL	_lround+0
-NOP	
-SW	R2, Offset(_gc+20)(GP)
+;GCODE.c,346 :: 		gc.feed_rate = settings.default_seek_rate;
+LWC1	S0, Offset(_settings+20)(GP)
+SWC1	S0, Offset(_gc+24)(GP)
 ;GCODE.c,347 :: 		case MOTION_MODE_LINEAR:
 L_Check_group_multiple_violations106:
 ;GCODE.c,348 :: 		FAIL(STATUS_OK);

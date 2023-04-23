@@ -95,14 +95,13 @@ int   dir    = 0;
     
     //subtract new from current
     tempA = tempA - STPS[axis_No].steps_abs_position;
+    //no move if result is zero
     if(tempA== 0){
-       SV.mode_complete = 1;
        return;
     }
   }else{
     tempA = belt_steps(newxyz,axis_No);
   }
-  
   SingleAxisStart(tempA,speed,axis_No);
   
 }

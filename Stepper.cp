@@ -716,7 +716,7 @@ typedef struct genVars{
  char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
- char mode_complete: 2;
+ char mode_complete;
  int AxisNo;
  int dirx;
  int diry;
@@ -898,6 +898,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+
 void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
@@ -991,6 +992,7 @@ void EnStepperA(){
 
  EN_StepA = 0;
 }
+
 
 void EnableSteppers(int steppers){
 int i;
@@ -1196,7 +1198,9 @@ static int Pulse(int axis_No){
  case  0 :
  STPS[axis_No].run_state =  0 ;
  StopAxis(axis_No);
-  (SV.mode_complete |= (1 << axis_No) ) ;
+
+
+  (SV.mode_complete &= ~ (1 << axis_No) ) ;
  break;
  case  1 :
 
@@ -1334,7 +1338,6 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 
 
 static void SingleStepAxis(int axis){
- if( ((SV.mode_complete & axis) != 0) )return;
  Step_Cycle(axis);
  Pulse(axis);
 }
@@ -1383,6 +1386,7 @@ static int cnt;
  StopAxis(axisB);
  STPS[axisA].run_state =  0 ;
  STPS[axisB].run_state =  0 ;
+ SV.mode_complete = 0;
  }
 
  }else{
@@ -1411,6 +1415,7 @@ static int cnt;
  StopAxis(axisA);
  STPS[axisA].run_state =  0 ;
  STPS[axisB].run_state =  0 ;
+ SV.mode_complete = 0;
  }
  }
 }

@@ -30,7 +30,11 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Value=Main.c
+=======
+Value=DEFINES.pld
+>>>>>>> patch2
 =======
 Value=Limits.c
 >>>>>>> patch2
@@ -155,10 +159,11 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Planner.c
-File2=Planner.h
-File3=Kinematics.c
+File1=Kinematics.c
+File2=Stepper.c
+File3=Stepper.h
 File4=Kinematics.h
+<<<<<<< HEAD
 File5=Stepper.c
 File6=Stepper.h
 File7=DEFINES.pld
@@ -177,6 +182,16 @@ Count=12
 =======
 File12=Pins.h
 Count=13
+>>>>>>> patch2
+=======
+File5=GCODE.c
+File6=GCODE.h
+File7=Planner.h
+File8=Planner.c
+File9=DEFINES.pld
+File10=Protocol.c
+File11=Protocol.h
+Count=12
 >>>>>>> patch2
 [EEPROM]
 Count=0

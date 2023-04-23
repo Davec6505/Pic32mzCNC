@@ -9,18 +9,18 @@ warning: 155	1506	Implicit conversion of pointer to int	__Lib_MemManager.c
 warning: 174	1508	Implicit conversion of int to ptr	__Lib_MemManager.c
 diagnostics: 297	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	pins.h
-hint: 225	1163	Variable 'addr' has been declared, but not used	Main.c
-hint: 227	1163	Variable 'a_val' has been declared, but not used	Main.c
-diagnostics: 592	123	Compiled Successfully	Main.c
-hint: 122	1164	Variable 'report' has been eliminated by optimizer	Main.c
-hint: 72	1164	Variable 'dif' has been eliminated by optimizer	Main.c
-hint: 73	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
-hint: 73	1164	Variable 'a' has been eliminated by optimizer	Main.c
-hint: 68	1164	Variable 'error' has been eliminated by optimizer	Main.c
-hint: 69	1164	Variable 'has_flash' has been eliminated by optimizer	Main.c
-hint: 71	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
-hint: 222	1164	Variable 'result' has been eliminated by optimizer	Main.c
-hint: 222	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
+hint: 235	1163	Variable 'addr' has been declared, but not used	Main.c
+hint: 237	1163	Variable 'a_val' has been declared, but not used	Main.c
+diagnostics: 601	123	Compiled Successfully	Main.c
+hint: 125	1164	Variable 'report' has been eliminated by optimizer	Main.c
+hint: 75	1164	Variable 'dif' has been eliminated by optimizer	Main.c
+hint: 76	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
+hint: 76	1164	Variable 'a' has been eliminated by optimizer	Main.c
+hint: 71	1164	Variable 'error' has been eliminated by optimizer	Main.c
+hint: 72	1164	Variable 'has_flash' has been eliminated by optimizer	Main.c
+hint: 74	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
+hint: 232	1164	Variable 'result' has been eliminated by optimizer	Main.c
+hint: 232	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (UART2 at 0x0092)	Config.c
 diagnostics: 392	123	Compiled Successfully	Config.c
@@ -29,7 +29,7 @@ hint: 0	1004	interrupt handler (StepX at 0x001B)	Stepper.c
 hint: 0	1004	interrupt handler (StepY at 0x000C)	Stepper.c
 hint: 0	1004	interrupt handler (StepZ at 0x0023)	Stepper.c
 hint: 0	1004	interrupt handler (StepA at 0x0011)	Stepper.c
-diagnostics: 493	123	Compiled Successfully	Stepper.c
+diagnostics: 497	123	Compiled Successfully	Stepper.c
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 82	123	Compiled Successfully	Steptodistance.c
 hint: 18	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
@@ -43,19 +43,19 @@ hint: 0	1004	interrupt handler (Timer1Interrupt at 0x0004)	Timers.c
 hint: 0	1004	interrupt handler (Timer8Interrupt at 0x0024)	Timers.c
 diagnostics: 110	123	Compiled Successfully	Timers.c
 diagnostics: 0	122	Compilation Started	stdint.h
-hint: 114	1354	argument may be out of range [axis_No]	Kinematics.c
-hint: 175	1354	argument may be out of range [axisA]	Kinematics.c
-hint: 176	1354	argument may be out of range [axisB]	Kinematics.c
-diagnostics: 708	123	Compiled Successfully	Kinematics.c
-warning: 199	1512	variable 'tempC' might not have been initialized	Kinematics.c
+hint: 113	1354	argument may be out of range [axis_No]	Kinematics.c
+hint: 174	1354	argument may be out of range [axisA]	Kinematics.c
+hint: 175	1354	argument may be out of range [axisB]	Kinematics.c
+diagnostics: 707	123	Compiled Successfully	Kinematics.c
+warning: 198	1512	variable 'tempC' might not have been initialized	Kinematics.c
 hint: 78	1164	Variable 'absxyz' has been eliminated by optimizer	Kinematics.c
 hint: 80	1164	Variable 'dir' has been eliminated by optimizer	Kinematics.c
-hint: 111	1164	Variable 'speed_' has been eliminated by optimizer	Kinematics.c
-hint: 286	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
-hint: 287	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
-hint: 287	1164	Variable 'x' has been eliminated by optimizer	Kinematics.c
-hint: 287	1164	Variable 'y' has been eliminated by optimizer	Kinematics.c
-hint: 289	1164	Variable 'limit_error' has been eliminated by optimizer	Kinematics.c
+hint: 110	1164	Variable 'speed_' has been eliminated by optimizer	Kinematics.c
+hint: 285	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
+hint: 286	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
+hint: 286	1164	Variable 'x' has been eliminated by optimizer	Kinematics.c
+hint: 286	1164	Variable 'y' has been eliminated by optimizer	Kinematics.c
+hint: 288	1164	Variable 'limit_error' has been eliminated by optimizer	Kinematics.c
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 78	123	Compiled Successfully	Pins.c
 diagnostics: 0	122	Compilation Started	stdlib.h
@@ -130,11 +130,15 @@ hint: 127	1164	Variable 'dec' has been eliminated by optimizer	Nut_Bolts.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 78	1163	Variable 'ii' has been declared, but not used	Planner.c
 hint: 79	1163	Variable 'max_s_limit' has been declared, but not used	Planner.c
-diagnostics: 461	123	Compiled Successfully	Planner.c
-warning: 321	1512	variable 'axis_plane_a' might not have been initialized	Planner.c
-warning: 323	1512	variable 'axis_plane_b' might not have been initialized	Planner.c
+diagnostics: 464	123	Compiled Successfully	Planner.c
+warning: 324	1512	variable 'axis_plane_a' might not have been initialized	Planner.c
+warning: 326	1512	variable 'axis_plane_b' might not have been initialized	Planner.c
 hint: 26	1164	Variable 'i' has been eliminated by optimizer	Planner.c
+<<<<<<< HEAD
 hint: 243	1164	Variable 'speed' has been eliminated by optimizer	Planner.c
+>>>>>>> patch2
+=======
+hint: 246	1164	Variable 'speed' has been eliminated by optimizer	Planner.c
 >>>>>>> patch2
 diagnostics: 0	122	Compilation Started	string.h
 hint: 219	1163	Variable 'padd' has been declared, but not used	Flash_R_W.c
@@ -144,6 +148,7 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 diagnostics: 0	127	All files Compiled in 2234 ms	 
@@ -170,13 +175,22 @@ diagnostics: 0	103	Finished successfully: 20 Apr 2023, 23:04:33	Pic32mzClicker2_
 >>>>>>> patch2
 =======
 diagnostics: 0	127	All files Compiled in 3250 ms	 
+=======
+diagnostics: 0	127	All files Compiled in 3360 ms	 
+>>>>>>> patch2
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 5546   Dynamic RAM (bytes): 501685	Static RAM (bytes): 5546   Dynamic RAM (bytes): 501685
+hint: 0	1144	Static RAM (bytes): 5547   Dynamic RAM (bytes): 501685	Static RAM (bytes): 5547   Dynamic RAM (bytes): 501685
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 80565 (4%)  Free ROM (bytes): 2016587 (96%)	Used ROM (bytes): 80565 (4%)  Free ROM (bytes): 2016587 (96%)
+hint: 0	1144	Used ROM (bytes): 80308 (4%)  Free ROM (bytes): 2016844 (96%)	Used ROM (bytes): 80308 (4%)  Free ROM (bytes): 2016844 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 816 (1%)  Free BOOTROM (bytes): 146195 (99%)	Used BOOTROM (bytes): 816 (1%)  Free BOOTROM (bytes): 146195 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
+<<<<<<< HEAD
 diagnostics: 0	128	Linked in 1078 ms	 
 diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6515 ms	 
 diagnostics: 0	103	Finished successfully: 21 Apr 2023, 07:21:15	Pic32mzClicker2_StepperControl.mcp32
+>>>>>>> patch2
+=======
+diagnostics: 0	128	Linked in 968 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6468 ms	 
+diagnostics: 0	103	Finished successfully: 23 Apr 2023, 08:10:53	Pic32mzClicker2_StepperControl.mcp32
 >>>>>>> patch2

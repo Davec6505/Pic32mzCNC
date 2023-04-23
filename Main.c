@@ -44,6 +44,9 @@ coord_sys coord_system[NUMBER_OF_DATUMS] absolute 0xA0003600;
 //DMA specific global decleration
 unsigned long rowbuff[128]={0};
 
+//edge detection for rising edge of axis
+static char old_state;
+
 //////////////////////////////////////////
 //file scope vars
 static unsigned int disable_steps;//stepper timeout
@@ -156,23 +159,25 @@ static int cntr = 0,a = 0;
              dma_printf("modal_action:= %d\n",modal_action);
             #endif
              if(modal_action == 0)modal_group = Rst_modalgroup();
+ //            bit_true(SV.mode_complete,bit(7));
              break;
      }
    }
    
 //Debug for stepper report if not connected to unit
 #if StepperDebug == 1
-if(!SV.mode_complete){
+if(SV.mode_complete){
 if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
 while(DMA_IsOn(1));
 dma_printf("\
-dif:= %l\t%l\t%l\t%l\t%l\t%l\n"
+dif:= %l\t%l\t%l\t%l\t%l\t%l\t%d\n"
 ,STPS[X].step_count
 ,STPS[X].accel_count
 ,STPS[X].step_delay
 ,STPS[Y].step_count
 ,STPS[Y].accel_count
-,STPS[Y].step_delay);
+,STPS[Y].step_delay
+,SV.mode_complete);
 }
 }
 #endif
@@ -184,14 +189,19 @@ dif:= %l\t%l\t%l\t%l\t%l\t%l\n"
   protocol_execute_runtime();
 
   //respond ok if movement is finished
-  if(!Get_Axis_IEnable_States() && SV.mode_complete > 0 && !SV.homed){
+  if((old_state > 0) && (SV.mode_complete == 0)){
+  //if(FP_Axis(SV.mode_complete) && !SV.homed){
+     old_state = 1;
      LED2 = false;
      //debug STATUS_OK response after moves complete
      status_of_gcode == STATUS_OK;
      report_status_message(status_of_gcode);
-     //reset SV.mode_complete if an error has occured prior to move finishing
-     SV.mode_complete = 0;
+  #if MainDebug == 13
+  while(DMA_IsOn(1));
+  dma_printf("old_state:= %d\tSV.mode_complete:= %d\n",old_state &0xF,SV.mode_complete);
+  #endif
   }
+  old_state = SV.mode_complete;
 
   //check ring buffer for data transfer
   status_of_gcode = Sample_Gocde_Line();
@@ -528,8 +538,7 @@ static int Modal_Group_Actions1(int action){
               
               //return the number of axis completed
               sys.state = STATE_IDLE;
-              SV.mode_complete = 1;
-              SV.homed = false;
+              SV.mode_complete = 0;
             }
             break;
         default: return action = 0;
