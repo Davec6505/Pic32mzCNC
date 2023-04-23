@@ -97,8 +97,9 @@ NOP
 L_Kinematics_Set_Axisdirection9:
 ;Kinematics.c,56 :: 		DIR_StepZ = (Z_DIR_DIR ^ dir) & 0x0001;
 ; dir start address is: 16 (R4)
-ANDI	R3, R4, 1
+XORI	R2, R4, 1
 ; dir end address is: 16 (R4)
+ANDI	R3, R2, 1
 _LX	
 INS	R2, R3, BitPos(DIR_StepZ+0), 1
 _SX	
@@ -207,18 +208,13 @@ LW	R3, 0(R3)
 SUBU	R2, R2, R3
 ; tempA start address is: 12 (R3)
 MOVZ	R3, R2, R0
-;Kinematics.c,98 :: 		if(tempA== 0){
+;Kinematics.c,99 :: 		if(tempA== 0){
 BEQ	R2, R0, L__SingleAxisStep96
 NOP	
 J	L_SingleAxisStep13
 NOP	
 L__SingleAxisStep96:
 ; tempA end address is: 12 (R3)
-;Kinematics.c,99 :: 		SV.mode_complete = 1;
-ORI	R3, R0, 1
-LBU	R2, Offset(_SV+0)(GP)
-INS	R2, R3, 6, 2
-SB	R2, Offset(_SV+0)(GP)
 ;Kinematics.c,100 :: 		return;
 J	L_end_SingleAxisStep
 NOP	
@@ -244,7 +240,7 @@ MOVZ	R3, R2, R0
 MOVZ	R2, R3, R0
 ;Kinematics.c,104 :: 		}
 L_SingleAxisStep14:
-;Kinematics.c,106 :: 		SingleAxisStart(tempA,speed,axis_No);
+;Kinematics.c,105 :: 		SingleAxisStart(tempA,speed,axis_No);
 ; tempA start address is: 8 (R2)
 MOV.S 	S12, S13
 SEH	R26, R25
@@ -252,7 +248,7 @@ MOVZ	R25, R2, R0
 ; tempA end address is: 8 (R2)
 JAL	Kinematics_SingleAxisStart+0
 NOP	
-;Kinematics.c,108 :: 		}
+;Kinematics.c,107 :: 		}
 L_end_SingleAxisStep:
 LW	R26, 8(SP)
 LW	R25, 4(SP)
@@ -262,12 +258,12 @@ JR	RA
 NOP	
 ; end of _SingleAxisStep
 Kinematics_SingleAxisStart:
-;Kinematics.c,110 :: 		static void SingleAxisStart(long dist,float speed,int axis_No){
+;Kinematics.c,109 :: 		static void SingleAxisStart(long dist,float speed,int axis_No){
 ADDIU	SP, SP, -24
 SW	RA, 0(SP)
-;Kinematics.c,111 :: 		long speed_ = 0;
+;Kinematics.c,110 :: 		long speed_ = 0;
 SW	R25, 4(SP)
-;Kinematics.c,113 :: 		STPS[axis_No].dist =labs(dist);
+;Kinematics.c,112 :: 		STPS[axis_No].dist =labs(dist);
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -281,7 +277,7 @@ JAL	_labs+0
 NOP	
 LW	R3, 20(SP)
 SW	R2, 0(R3)
-;Kinematics.c,114 :: 		Single_Axis_Enable(axis_No);
+;Kinematics.c,113 :: 		Single_Axis_Enable(axis_No);
 SH	R26, 8(SP)
 SW	R25, 12(SP)
 SWC1	S12, 16(SP)
@@ -291,17 +287,17 @@ NOP
 LWC1	S12, 16(SP)
 LW	R25, 12(SP)
 LH	R26, 8(SP)
-;Kinematics.c,115 :: 		speed_cntr_Move(dist , speed, axis_No);
+;Kinematics.c,114 :: 		speed_cntr_Move(dist , speed, axis_No);
 SH	R26, 8(SP)
 SW	R25, 12(SP)
 JAL	_speed_cntr_Move+0
 NOP	
 LW	R25, 12(SP)
 LH	R26, 8(SP)
-;Kinematics.c,120 :: 		Set_Axisdirection(dist,axis_No);
+;Kinematics.c,119 :: 		Set_Axisdirection(dist,axis_No);
 JAL	Kinematics_Set_Axisdirection+0
 NOP	
-;Kinematics.c,121 :: 		STPS[axis_No].axis_dir = Direction(dist);
+;Kinematics.c,120 :: 		STPS[axis_No].axis_dir = Direction(dist);
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -330,11 +326,11 @@ L_Kinematics_SingleAxisStart16:
 SEB	R2, R4
 ; ?FLOC__Kinematics_SingleAxisStart?T55 end address is: 16 (R4)
 SH	R2, 0(R3)
-;Kinematics.c,122 :: 		SV.Single_Dual = 0;
+;Kinematics.c,121 :: 		SV.Single_Dual = 0;
 LBU	R2, Offset(_SV+0)(GP)
 INS	R2, R0, 5, 1
 SB	R2, Offset(_SV+0)(GP)
-;Kinematics.c,123 :: 		STPS[axis_No].psingle  = 0;
+;Kinematics.c,122 :: 		STPS[axis_No].psingle  = 0;
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -344,7 +340,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 40
 SW	R0, 0(R2)
-;Kinematics.c,124 :: 		STPS[axis_No].dist = labs(dist) - STPS[axis_No].psingle;
+;Kinematics.c,123 :: 		STPS[axis_No].dist = labs(dist) - STPS[axis_No].psingle;
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -368,7 +364,7 @@ LW	R3, 0(R3)
 SUBU	R3, R2, R3
 LW	R2, 20(SP)
 SW	R3, 0(R2)
-;Kinematics.c,125 :: 		STPS[axis_No].step_count = 0;
+;Kinematics.c,124 :: 		STPS[axis_No].step_count = 0;
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -378,7 +374,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 32
 SW	R0, 0(R2)
-;Kinematics.c,126 :: 		STPS[axis_No].mmToTravel = dist;
+;Kinematics.c,125 :: 		STPS[axis_No].mmToTravel = dist;
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -388,11 +384,11 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 68
 SW	R25, 0(R2)
-;Kinematics.c,128 :: 		Step_Cycle(axis_No);
+;Kinematics.c,127 :: 		Step_Cycle(axis_No);
 SEH	R25, R26
 JAL	_Step_Cycle+0
 NOP	
-;Kinematics.c,129 :: 		}
+;Kinematics.c,128 :: 		}
 L_end_SingleAxisStart:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -401,10 +397,10 @@ JR	RA
 NOP	
 ; end of Kinematics_SingleAxisStart
 _DualAxisStep:
-;Kinematics.c,134 :: 		void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
+;Kinematics.c,133 :: 		void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 ADDIU	SP, SP, -36
 SW	RA, 0(SP)
-;Kinematics.c,139 :: 		speed = RPS_FROM_MMPMIN(speed);
+;Kinematics.c,138 :: 		speed = RPS_FROM_MMPMIN(speed);
 LUI	R2, 16928
 ORI	R2, R2, 0
 MTC1	R2, S0
@@ -414,7 +410,7 @@ ORI	R2, R2, 0
 MTC1	R2, S0
 DIV.S 	S0, S1, S0
 MOV.S 	S14, S0
-;Kinematics.c,142 :: 		if(gc.absolute_mode == true){
+;Kinematics.c,141 :: 		if(gc.absolute_mode == true){
 LBU	R3, Offset(_gc+5)(GP)
 ORI	R2, R0, 1
 BEQ	R3, R2, L__DualAxisStep100
@@ -422,7 +418,7 @@ NOP
 J	L_DualAxisStep17
 NOP	
 L__DualAxisStep100:
-;Kinematics.c,144 :: 		tempA = belt_steps(axis_a,axisA);
+;Kinematics.c,143 :: 		tempA = belt_steps(axis_a,axisA);
 SH	R26, 4(SP)
 SH	R25, 6(SP)
 SWC1	S14, 8(SP)
@@ -434,7 +430,7 @@ LWC1	S14, 8(SP)
 LH	R25, 6(SP)
 LH	R26, 4(SP)
 SW	R2, 16(SP)
-;Kinematics.c,145 :: 		tempB = belt_steps(axis_b,axisB);
+;Kinematics.c,144 :: 		tempB = belt_steps(axis_b,axisB);
 SH	R26, 4(SP)
 SH	R25, 6(SP)
 SWC1	S14, 8(SP)
@@ -445,7 +441,7 @@ NOP
 LWC1	S14, 8(SP)
 LH	R25, 6(SP)
 LH	R26, 4(SP)
-;Kinematics.c,157 :: 		tempA = tempA - STPS[axisA].steps_abs_position;
+;Kinematics.c,156 :: 		tempA = tempA - STPS[axisA].steps_abs_position;
 SEH	R4, R25
 ORI	R3, R0, 80
 MULTU	R3, R4
@@ -458,7 +454,7 @@ LW	R4, 0(R3)
 LW	R3, 16(SP)
 SUBU	R3, R3, R4
 SW	R3, 16(SP)
-;Kinematics.c,158 :: 		tempB = tempB - STPS[axisB].steps_abs_position;
+;Kinematics.c,157 :: 		tempB = tempB - STPS[axisB].steps_abs_position;
 SEH	R4, R26
 ORI	R3, R0, 80
 MULTU	R3, R4
@@ -470,11 +466,11 @@ ADDIU	R3, R3, 72
 LW	R3, 0(R3)
 SUBU	R2, R2, R3
 SW	R2, 20(SP)
-;Kinematics.c,166 :: 		}else{
+;Kinematics.c,165 :: 		}else{
 J	L_DualAxisStep18
 NOP	
 L_DualAxisStep17:
-;Kinematics.c,167 :: 		tempA = belt_steps(axis_a,axisA);
+;Kinematics.c,166 :: 		tempA = belt_steps(axis_a,axisA);
 SH	R26, 4(SP)
 SH	R25, 6(SP)
 SWC1	S14, 8(SP)
@@ -486,7 +482,7 @@ LWC1	S14, 8(SP)
 LH	R25, 6(SP)
 LH	R26, 4(SP)
 SW	R2, 16(SP)
-;Kinematics.c,168 :: 		tempB = belt_steps(axis_b,axisB);
+;Kinematics.c,167 :: 		tempB = belt_steps(axis_b,axisB);
 SH	R26, 4(SP)
 SH	R25, 6(SP)
 SWC1	S14, 8(SP)
@@ -498,17 +494,17 @@ LWC1	S14, 8(SP)
 LH	R25, 6(SP)
 LH	R26, 4(SP)
 SW	R2, 20(SP)
-;Kinematics.c,169 :: 		}
+;Kinematics.c,168 :: 		}
 L_DualAxisStep18:
-;Kinematics.c,170 :: 		SV.over = 0;
+;Kinematics.c,169 :: 		SV.over = 0;
 SW	R0, Offset(_SV+44)(GP)
-;Kinematics.c,171 :: 		SV.dif  = 0;
+;Kinematics.c,170 :: 		SV.dif  = 0;
 SW	R0, Offset(_SV+16)(GP)
-;Kinematics.c,174 :: 		SV.Single_Dual = 1;
+;Kinematics.c,173 :: 		SV.Single_Dual = 1;
 LBU	R2, Offset(_SV+0)(GP)
 ORI	R2, R2, 32
 SB	R2, Offset(_SV+0)(GP)
-;Kinematics.c,175 :: 		Single_Axis_Enable(axisA);
+;Kinematics.c,174 :: 		Single_Axis_Enable(axisA);
 SH	R26, 4(SP)
 SH	R25, 6(SP)
 SWC1	S14, 8(SP)
@@ -517,7 +513,7 @@ NOP
 LWC1	S14, 8(SP)
 LH	R25, 6(SP)
 LH	R26, 4(SP)
-;Kinematics.c,176 :: 		Single_Axis_Enable(axisB);
+;Kinematics.c,175 :: 		Single_Axis_Enable(axisB);
 SH	R26, 4(SP)
 SH	R25, 6(SP)
 SWC1	S14, 8(SP)
@@ -527,32 +523,32 @@ NOP
 LWC1	S14, 8(SP)
 LH	R25, 6(SP)
 LH	R26, 4(SP)
-;Kinematics.c,180 :: 		if (!gc.absolute_mode){
+;Kinematics.c,179 :: 		if (!gc.absolute_mode){
 LBU	R2, Offset(_gc+5)(GP)
 BEQ	R2, R0, L__DualAxisStep101
 NOP	
 J	L_DualAxisStep19
 NOP	
 L__DualAxisStep101:
-;Kinematics.c,181 :: 		SV.prevA = 0;
+;Kinematics.c,180 :: 		SV.prevA = 0;
 SW	R0, Offset(_SV+32)(GP)
-;Kinematics.c,182 :: 		SV.prevB = 0;
+;Kinematics.c,181 :: 		SV.prevB = 0;
 SW	R0, Offset(_SV+36)(GP)
-;Kinematics.c,183 :: 		SV.prevC = 0;
+;Kinematics.c,182 :: 		SV.prevC = 0;
 SW	R0, Offset(_SV+40)(GP)
-;Kinematics.c,184 :: 		}else{
+;Kinematics.c,183 :: 		}else{
 J	L_DualAxisStep20
 NOP	
 L_DualAxisStep19:
-;Kinematics.c,185 :: 		SV.prevA = 0;//tempA;
+;Kinematics.c,184 :: 		SV.prevA = 0;//tempA;
 SW	R0, Offset(_SV+32)(GP)
-;Kinematics.c,186 :: 		SV.prevB = 0;//tempB;
+;Kinematics.c,185 :: 		SV.prevB = 0;//tempB;
 SW	R0, Offset(_SV+36)(GP)
-;Kinematics.c,187 :: 		SV.prevC = 0;//tempC;
+;Kinematics.c,186 :: 		SV.prevC = 0;//tempC;
 SW	R0, Offset(_SV+40)(GP)
-;Kinematics.c,188 :: 		}
+;Kinematics.c,187 :: 		}
 L_DualAxisStep20:
-;Kinematics.c,191 :: 		Set_Axisdirection(tempA,axisA);
+;Kinematics.c,190 :: 		Set_Axisdirection(tempA,axisA);
 SH	R26, 4(SP)
 SH	R25, 6(SP)
 SEH	R26, R25
@@ -561,7 +557,7 @@ JAL	Kinematics_Set_Axisdirection+0
 NOP	
 LH	R25, 6(SP)
 LH	R26, 4(SP)
-;Kinematics.c,192 :: 		STPS[axisA].axis_dir = Direction(tempA);
+;Kinematics.c,191 :: 		STPS[axisA].axis_dir = Direction(tempA);
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -593,13 +589,13 @@ L_DualAxisStep22:
 SEB	R2, R4
 ; ?FLOC___DualAxisStep?T119 end address is: 16 (R4)
 SH	R2, 0(R3)
-;Kinematics.c,193 :: 		Set_Axisdirection(tempB,axisB);
+;Kinematics.c,192 :: 		Set_Axisdirection(tempB,axisB);
 SH	R25, 4(SP)
 LW	R25, 20(SP)
 JAL	Kinematics_Set_Axisdirection+0
 NOP	
 LH	R25, 4(SP)
-;Kinematics.c,194 :: 		STPS[axisB].axis_dir = Direction(tempB);
+;Kinematics.c,193 :: 		STPS[axisB].axis_dir = Direction(tempB);
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -631,28 +627,28 @@ L_DualAxisStep24:
 SEB	R2, R4
 ; ?FLOC___DualAxisStep?T127 end address is: 16 (R4)
 SH	R2, 0(R3)
-;Kinematics.c,197 :: 		SV.dA   = tempA;// - SV.prevA;
+;Kinematics.c,196 :: 		SV.dA   = tempA;// - SV.prevA;
 LW	R2, 16(SP)
 SW	R2, Offset(_SV+20)(GP)
-;Kinematics.c,198 :: 		SV.dB   = tempB;// - SV.prevB;
+;Kinematics.c,197 :: 		SV.dB   = tempB;// - SV.prevB;
 LW	R2, 20(SP)
 SW	R2, Offset(_SV+24)(GP)
-;Kinematics.c,199 :: 		SV.dC   = tempC;// - SV.prevC;
+;Kinematics.c,198 :: 		SV.dC   = tempC;// - SV.prevC;
 LW	R2, 24(SP)
 SW	R2, Offset(_SV+28)(GP)
-;Kinematics.c,202 :: 		SV.dA = labs(SV.dA);
+;Kinematics.c,201 :: 		SV.dA = labs(SV.dA);
 SH	R25, 4(SP)
 LW	R25, Offset(_SV+20)(GP)
 JAL	_labs+0
 NOP	
 SW	R2, Offset(_SV+20)(GP)
-;Kinematics.c,203 :: 		SV.dB = labs(SV.dB);
+;Kinematics.c,202 :: 		SV.dB = labs(SV.dB);
 LW	R25, Offset(_SV+24)(GP)
 JAL	_labs+0
 NOP	
 LH	R25, 4(SP)
 SW	R2, Offset(_SV+24)(GP)
-;Kinematics.c,211 :: 		if(SV.dA == 0 && SV.dB == 0){
+;Kinematics.c,210 :: 		if(SV.dA == 0 && SV.dB == 0){
 LW	R2, Offset(_SV+20)(GP)
 BEQ	R2, R0, L__DualAxisStep104
 NOP	
@@ -666,18 +662,16 @@ J	L__DualAxisStep78
 NOP	
 L__DualAxisStep105:
 L__DualAxisStep77:
-;Kinematics.c,212 :: 		SV.mode_complete = 1; //set this to respond with ok
-ORI	R3, R0, 1
-LBU	R2, Offset(_SV+0)(GP)
-INS	R2, R3, 6, 2
-SB	R2, Offset(_SV+0)(GP)
-;Kinematics.c,213 :: 		return;
+;Kinematics.c,211 :: 		SV.mode_complete = 1; //set this to respond with ok
+ORI	R2, R0, 1
+SB	R2, Offset(_SV+1)(GP)
+;Kinematics.c,212 :: 		return;
 J	L_end_DualAxisStep
 NOP	
-;Kinematics.c,211 :: 		if(SV.dA == 0 && SV.dB == 0){
+;Kinematics.c,210 :: 		if(SV.dA == 0 && SV.dB == 0){
 L__DualAxisStep79:
 L__DualAxisStep78:
-;Kinematics.c,217 :: 		STPS[axisA].dist =labs(tempA);
+;Kinematics.c,216 :: 		STPS[axisA].dist =labs(tempA);
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -693,7 +687,7 @@ JAL	_labs+0
 NOP	
 LW	R3, 32(SP)
 SW	R2, 0(R3)
-;Kinematics.c,218 :: 		STPS[axisB].dist =labs(tempB);
+;Kinematics.c,217 :: 		STPS[axisB].dist =labs(tempB);
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -709,7 +703,7 @@ NOP
 LH	R25, 4(SP)
 LW	R3, 32(SP)
 SW	R2, 0(R3)
-;Kinematics.c,222 :: 		speed_cntr_Move(tempA,speed,axisA);
+;Kinematics.c,221 :: 		speed_cntr_Move(tempA,speed,axisA);
 SH	R26, 4(SP)
 SH	R25, 6(SP)
 SWC1	S14, 8(SP)
@@ -721,7 +715,7 @@ NOP
 LWC1	S14, 8(SP)
 LH	R25, 6(SP)
 LH	R26, 4(SP)
-;Kinematics.c,223 :: 		speed_cntr_Move(tempB,speed,axisB);
+;Kinematics.c,222 :: 		speed_cntr_Move(tempB,speed,axisB);
 SH	R26, 4(SP)
 SH	R25, 6(SP)
 MOV.S 	S12, S14
@@ -730,7 +724,7 @@ JAL	_speed_cntr_Move+0
 NOP	
 LH	R25, 6(SP)
 LH	R26, 4(SP)
-;Kinematics.c,225 :: 		if(SV.dA >= SV.dB){
+;Kinematics.c,224 :: 		if(SV.dA >= SV.dB){
 LW	R3, Offset(_SV+24)(GP)
 LW	R2, Offset(_SV+20)(GP)
 SLT	R2, R2, R3
@@ -739,13 +733,13 @@ NOP
 J	L_DualAxisStep28
 NOP	
 L__DualAxisStep106:
-;Kinematics.c,229 :: 		SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
+;Kinematics.c,228 :: 		SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
 LW	R3, Offset(_SV+20)(GP)
 LW	R2, Offset(_SV+24)(GP)
 SUBU	R2, R2, R3
 SLL	R2, R2, 1
 SW	R2, Offset(_SV+16)(GP)
-;Kinematics.c,230 :: 		STPS[axisA].master = 1;
+;Kinematics.c,229 :: 		STPS[axisA].master = 1;
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -756,7 +750,7 @@ ADDU	R3, R2, R3
 LBU	R2, 0(R3)
 ORI	R2, R2, 1
 SB	R2, 0(R3)
-;Kinematics.c,231 :: 		STPS[axisB].master = 0;
+;Kinematics.c,230 :: 		STPS[axisB].master = 0;
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -767,17 +761,17 @@ ADDU	R3, R2, R3
 LBU	R2, 0(R3)
 INS	R2, R0, 0, 1
 SB	R2, 0(R3)
-;Kinematics.c,232 :: 		}else{
+;Kinematics.c,231 :: 		}else{
 J	L_DualAxisStep29
 NOP	
 L_DualAxisStep28:
-;Kinematics.c,235 :: 		SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
+;Kinematics.c,234 :: 		SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
 LW	R3, Offset(_SV+24)(GP)
 LW	R2, Offset(_SV+20)(GP)
 SUBU	R2, R2, R3
 SLL	R2, R2, 1
 SW	R2, Offset(_SV+16)(GP)
-;Kinematics.c,236 :: 		STPS[axisA].master = 0;
+;Kinematics.c,235 :: 		STPS[axisA].master = 0;
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -788,7 +782,7 @@ ADDU	R3, R2, R3
 LBU	R2, 0(R3)
 INS	R2, R0, 0, 1
 SB	R2, 0(R3)
-;Kinematics.c,237 :: 		STPS[axisB].master = 1;
+;Kinematics.c,236 :: 		STPS[axisB].master = 1;
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -799,9 +793,9 @@ ADDU	R3, R2, R3
 LBU	R2, 0(R3)
 ORI	R2, R2, 1
 SB	R2, 0(R3)
-;Kinematics.c,238 :: 		}
+;Kinematics.c,237 :: 		}
 L_DualAxisStep29:
-;Kinematics.c,240 :: 		STPS[axisA].step_count = 0;
+;Kinematics.c,239 :: 		STPS[axisA].step_count = 0;
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -811,7 +805,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 32
 SW	R0, 0(R2)
-;Kinematics.c,241 :: 		STPS[axisB].step_count = 0;
+;Kinematics.c,240 :: 		STPS[axisB].step_count = 0;
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -821,7 +815,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 32
 SW	R0, 0(R2)
-;Kinematics.c,242 :: 		STPS[axisA].mmToTravel = tempA;
+;Kinematics.c,241 :: 		STPS[axisA].mmToTravel = tempA;
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -832,7 +826,7 @@ ADDU	R2, R2, R3
 ADDIU	R3, R2, 68
 LW	R2, 16(SP)
 SW	R2, 0(R3)
-;Kinematics.c,243 :: 		STPS[axisB].mmToTravel = tempB;
+;Kinematics.c,242 :: 		STPS[axisB].mmToTravel = tempB;
 SEH	R3, R26
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -843,10 +837,10 @@ ADDU	R2, R2, R3
 ADDIU	R3, R2, 68
 LW	R2, 20(SP)
 SW	R2, 0(R3)
-;Kinematics.c,245 :: 		Start_Interpolation(axisA,axisB);
+;Kinematics.c,244 :: 		Start_Interpolation(axisA,axisB);
 JAL	_Start_Interpolation+0
 NOP	
-;Kinematics.c,246 :: 		}
+;Kinematics.c,245 :: 		}
 L_end_DualAxisStep:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 36
@@ -854,27 +848,27 @@ JR	RA
 NOP	
 ; end of _DualAxisStep
 _mc_arc:
-;Kinematics.c,282 :: 		, float radius, char isclockwise){
-ADDIU	SP, SP, -92
+;Kinematics.c,281 :: 		, float radius, char isclockwise){
+ADDIU	SP, SP, -88
 SW	RA, 0(SP)
 ; axis_1 start address is: 20 (R5)
-LH	R5, 92(SP)
-LH	R2, 94(SP)
-SH	R2, 94(SP)
+LH	R5, 88(SP)
+LH	R2, 90(SP)
+SH	R2, 90(SP)
 ; invert_feed_rate start address is: 24 (R6)
-LBU	R6, 96(SP)
+LBU	R6, 92(SP)
 ; isclockwise start address is: 28 (R7)
-LBU	R7, 97(SP)
-;Kinematics.c,283 :: 		float arc_target[3] = {0};
-ADDIU	R23, SP, 76
+LBU	R7, 93(SP)
+;Kinematics.c,282 :: 		float arc_target[3] = {0};
+ADDIU	R23, SP, 72
 ADDIU	R22, R23, 14
 LUI	R24, hi_addr(?ICSmc_arc_arc_target_L0+0)
 ORI	R24, R24, lo_addr(?ICSmc_arc_arc_target_L0+0)
 JAL	___CC2DW+0
 NOP	
-;Kinematics.c,288 :: 		int count = 0;
-;Kinematics.c,289 :: 		char limit_error = 0;
-;Kinematics.c,291 :: 		center_axis0            = position[axis_0] + offset[axis_0];
+;Kinematics.c,287 :: 		int count = 0;
+;Kinematics.c,288 :: 		char limit_error = 0;
+;Kinematics.c,290 :: 		center_axis0            = position[axis_0] + offset[axis_0];
 SEH	R2, R28
 SLL	R4, R2, 2
 ADDU	R2, R25, R4
@@ -883,7 +877,7 @@ ADDU	R2, R27, R4
 LWC1	S4, 0(R2)
 ADD.S 	S3, S0, S4
 SWC1	S3, 24(SP)
-;Kinematics.c,292 :: 		center_axis1            = position[axis_1] + offset[axis_1];
+;Kinematics.c,291 :: 		center_axis1            = position[axis_1] + offset[axis_1];
 SEH	R2, R5
 SLL	R3, R2, 2
 ADDU	R2, R25, R3
@@ -892,30 +886,30 @@ ADDU	R2, R27, R3
 LWC1	S2, 0(R2)
 ADD.S 	S1, S0, S2
 SWC1	S1, 28(SP)
-;Kinematics.c,293 :: 		r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
+;Kinematics.c,292 :: 		r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 SUB.S 	S0, S0, S4
 SWC1	S0, 32(SP)
-;Kinematics.c,294 :: 		r_axis1                 = -offset[axis_1];
+;Kinematics.c,293 :: 		r_axis1                 = -offset[axis_1];
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 SUB.S 	S0, S0, S2
 SWC1	S0, 36(SP)
-;Kinematics.c,295 :: 		rt_axis0                = target[axis_0] - center_axis0;
+;Kinematics.c,294 :: 		rt_axis0                = target[axis_0] - center_axis0;
 ADDU	R2, R26, R4
 LWC1	S0, 0(R2)
 SUB.S 	S0, S0, S3
 ; rt_axis0 start address is: 32 (R8)
 MOV.S 	S4, S0
-;Kinematics.c,296 :: 		rt_axis1                = target[axis_1] - center_axis1;
+;Kinematics.c,295 :: 		rt_axis1                = target[axis_1] - center_axis1;
 ADDU	R2, R26, R3
 LWC1	S0, 0(R2)
 SUB.S 	S0, S0, S1
 ; rt_axis1 start address is: 40 (R10)
 MOV.S 	S5, S0
-;Kinematics.c,297 :: 		linear_travel           = target[axis_linear] - position[axis_linear];
-LH	R2, 94(SP)
+;Kinematics.c,296 :: 		linear_travel           = target[axis_linear] - position[axis_linear];
+LH	R2, 90(SP)
 SLL	R3, R2, 2
 ADDU	R2, R26, R3
 LWC1	S0, 0(R2)
@@ -924,17 +918,17 @@ LWC1	S1, 0(R2)
 SUB.S 	S0, S0, S1
 ; linear_travel start address is: 24 (R6)
 MOV.S 	S3, S0
-;Kinematics.c,299 :: 		arc_target[axis_linear] = position[axis_linear];
-ADDIU	R2, SP, 76
+;Kinematics.c,298 :: 		arc_target[axis_linear] = position[axis_linear];
+ADDIU	R2, SP, 72
 ADDU	R2, R2, R3
 SWC1	S1, 0(R2)
-;Kinematics.c,306 :: 		x = r_axis0*rt_axis1-r_axis1*rt_axis0;
+;Kinematics.c,305 :: 		x = r_axis0*rt_axis1-r_axis1*rt_axis0;
 LWC1	S0, 32(SP)
 MUL.S 	S1, S0, S5
 LWC1	S0, 36(SP)
 MUL.S 	S0, S0, S4
 SUB.S 	S2, S1, S0
-;Kinematics.c,307 :: 		y = r_axis0*rt_axis0+r_axis1*rt_axis1;
+;Kinematics.c,306 :: 		y = r_axis0*rt_axis0+r_axis1*rt_axis1;
 LWC1	S0, 32(SP)
 MUL.S 	S1, S0, S4
 ; rt_axis0 end address is: 32 (R8)
@@ -942,7 +936,7 @@ LWC1	S0, 36(SP)
 MUL.S 	S0, S0, S5
 ; rt_axis1 end address is: 40 (R10)
 ADD.S 	S0, S1, S0
-;Kinematics.c,315 :: 		angular_travel = atan2(y,x);
+;Kinematics.c,314 :: 		angular_travel = atan2(y,x);
 SW	R26, 4(SP)
 SWC1	S13, 8(SP)
 SWC1	S12, 12(SP)
@@ -955,7 +949,7 @@ LWC1	S13, 8(SP)
 LW	R26, 4(SP)
 ; angular_travel start address is: 32 (R8)
 MOV.S 	S4, S0
-;Kinematics.c,318 :: 		if(isclockwise > 0) {
+;Kinematics.c,317 :: 		if(isclockwise > 0) {
 ANDI	R2, R7, 255
 ; isclockwise end address is: 28 (R7)
 SLTIU	R2, R2, 1
@@ -964,7 +958,7 @@ NOP
 J	L_mc_arc30
 NOP	
 L__mc_arc108:
-;Kinematics.c,319 :: 		if (angular_travel >= 0)
+;Kinematics.c,318 :: 		if (angular_travel >= 0)
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 C.LT.S 	0, S4, S0
@@ -973,7 +967,7 @@ NOP
 J	L__mc_arc80
 NOP	
 L__mc_arc109:
-;Kinematics.c,320 :: 		angular_travel -= PIx2;
+;Kinematics.c,319 :: 		angular_travel -= PIx2;
 LUI	R2, 16585
 ORI	R2, R2, 4059
 MTC1	R2, S0
@@ -986,15 +980,15 @@ MOV.S 	S4, S1
 J	L_mc_arc31
 NOP	
 L__mc_arc80:
-;Kinematics.c,319 :: 		if (angular_travel >= 0)
-;Kinematics.c,320 :: 		angular_travel -= PIx2;
+;Kinematics.c,318 :: 		if (angular_travel >= 0)
+;Kinematics.c,319 :: 		angular_travel -= PIx2;
 L_mc_arc31:
-;Kinematics.c,321 :: 		}else {
+;Kinematics.c,320 :: 		}else {
 ; angular_travel start address is: 32 (R8)
 J	L_mc_arc32
 NOP	
 L_mc_arc30:
-;Kinematics.c,322 :: 		if(angular_travel <= 0)
+;Kinematics.c,321 :: 		if(angular_travel <= 0)
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 C.LT.S 	0, S0, S4
@@ -1003,7 +997,7 @@ NOP
 J	L__mc_arc81
 NOP	
 L__mc_arc110:
-;Kinematics.c,323 :: 		angular_travel += PIx2;
+;Kinematics.c,322 :: 		angular_travel += PIx2;
 LUI	R2, 16585
 ORI	R2, R2, 4059
 MTC1	R2, S0
@@ -1016,14 +1010,14 @@ MOV.S 	S4, S1
 J	L_mc_arc33
 NOP	
 L__mc_arc81:
-;Kinematics.c,322 :: 		if(angular_travel <= 0)
-;Kinematics.c,323 :: 		angular_travel += PIx2;
+;Kinematics.c,321 :: 		if(angular_travel <= 0)
+;Kinematics.c,322 :: 		angular_travel += PIx2;
 L_mc_arc33:
-;Kinematics.c,324 :: 		}
+;Kinematics.c,323 :: 		}
 ; angular_travel start address is: 32 (R8)
 ; angular_travel end address is: 32 (R8)
 L_mc_arc32:
-;Kinematics.c,343 :: 		mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
+;Kinematics.c,342 :: 		mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
 ; angular_travel start address is: 32 (R8)
 SWC1	S12, 4(SP)
 MOV.S 	S12, S3
@@ -1041,7 +1035,7 @@ LWC1	S12, 8(SP)
 LW	R25, 4(SP)
 ; mm_of_travel start address is: 16 (R4)
 MOV.S 	S2, S0
-;Kinematics.c,344 :: 		if (mm_of_travel == 0.0) { return; }
+;Kinematics.c,343 :: 		if (mm_of_travel == 0.0) { return; }
 MOVZ	R2, R0, R0
 MTC1	R2, S1
 C.EQ.S 	0, S0, S1
@@ -1058,7 +1052,7 @@ L__mc_arc111:
 J	L_end_mc_arc
 NOP	
 L_mc_arc34:
-;Kinematics.c,346 :: 		segments = floor(mm_of_travel/settings.mm_per_arc_segment);
+;Kinematics.c,345 :: 		segments = floor(mm_of_travel/settings.mm_per_arc_segment);
 ; axis_1 start address is: 20 (R5)
 ; mm_of_travel start address is: 16 (R4)
 ; angular_travel start address is: 32 (R8)
@@ -1073,29 +1067,29 @@ JAL	_floor+0
 NOP	
 LWC1	S12, 4(SP)
 SWC1	S0, 48(SP)
-;Kinematics.c,351 :: 		if (invert_feed_rate)
+;Kinematics.c,350 :: 		if (invert_feed_rate)
 BNE	R6, R0, L__mc_arc113
 NOP	
 J	L_mc_arc35
 NOP	
 L__mc_arc113:
 ; invert_feed_rate end address is: 24 (R6)
-;Kinematics.c,352 :: 		feed_rate *= segments;
+;Kinematics.c,351 :: 		feed_rate *= segments;
 LWC1	S0, 48(SP)
 MUL.S 	S0, S12, S0
 MOV.S 	S12, S0
 L_mc_arc35:
-;Kinematics.c,355 :: 		theta_per_segment = angular_travel/segments;
+;Kinematics.c,354 :: 		theta_per_segment = angular_travel/segments;
 LWC1	S0, 48(SP)
 DIV.S 	S2, S4, S0
 ; angular_travel end address is: 32 (R8)
 SWC1	S2, 40(SP)
-;Kinematics.c,360 :: 		linear_per_segment = linear_travel/segments;
+;Kinematics.c,359 :: 		linear_per_segment = linear_travel/segments;
 LWC1	S0, 48(SP)
 DIV.S 	S0, S3, S0
 ; linear_travel end address is: 24 (R6)
 SWC1	S0, 44(SP)
-;Kinematics.c,363 :: 		cos_T = 1-0.5*theta_per_segment*theta_per_segment; // Small angle approximation
+;Kinematics.c,362 :: 		cos_T = 1-0.5*theta_per_segment*theta_per_segment; // Small angle approximation
 LUI	R2, 16128
 ORI	R2, R2, 0
 MTC1	R2, S0
@@ -1106,24 +1100,24 @@ ORI	R2, R2, 0
 MTC1	R2, S0
 SUB.S 	S0, S0, S1
 SWC1	S0, 52(SP)
-;Kinematics.c,364 :: 		sin_T = theta_per_segment;
+;Kinematics.c,363 :: 		sin_T = theta_per_segment;
 SWC1	S2, 56(SP)
-;Kinematics.c,367 :: 		nPx = arc_target[axis_0] = position[axis_0];
-ADDIU	R4, SP, 76
+;Kinematics.c,366 :: 		nPx = arc_target[axis_0] = position[axis_0];
+ADDIU	R4, SP, 72
 SEH	R2, R28
 SLL	R2, R2, 2
 ADDU	R3, R4, R2
 ADDU	R2, R25, R2
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
-;Kinematics.c,368 :: 		nPy = arc_target[axis_1] = position[axis_1];
+;Kinematics.c,367 :: 		nPy = arc_target[axis_1] = position[axis_1];
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R3, R4, R2
 ADDU	R2, R25, R2
 LWC1	S0, 0(R2)
 SWC1	S0, 0(R3)
-;Kinematics.c,369 :: 		DisableStepperInterrupt(X);
+;Kinematics.c,368 :: 		DisableStepperInterrupt(X);
 SH	R5, 4(SP)
 SH	R28, 6(SP)
 SW	R27, 8(SP)
@@ -1133,7 +1127,7 @@ SWC1	S12, 20(SP)
 MOVZ	R25, R0, R0
 JAL	_DisableStepperInterrupt+0
 NOP	
-;Kinematics.c,370 :: 		DisableStepperInterrupt(Y);
+;Kinematics.c,369 :: 		DisableStepperInterrupt(Y);
 ORI	R25, R0, 1
 JAL	_DisableStepperInterrupt+0
 NOP	
@@ -1143,31 +1137,31 @@ LW	R26, 12(SP)
 LW	R27, 8(SP)
 LH	R28, 6(SP)
 LH	R5, 4(SP)
-;Kinematics.c,384 :: 		for (i = 1; i<segments; i+=1.00) { // Increment (segments-1)
+;Kinematics.c,383 :: 		for (i = 1; i<segments; i+=1.00) { // Increment (segments-1)
 LUI	R2, 16256
 ORI	R2, R2, 0
-SW	R2, 72(SP)
+SW	R2, 68(SP)
 ; axis_1 end address is: 20 (R5)
 L_mc_arc36:
 ; axis_1 start address is: 20 (R5)
 LWC1	S1, 48(SP)
-LWC1	S0, 72(SP)
+LWC1	S0, 68(SP)
 C.LE.S 	0, S1, S0
 BC1F	0, L__mc_arc114
 NOP	
 J	L_mc_arc37
 NOP	
 L__mc_arc114:
-;Kinematics.c,387 :: 		if (count < settings.n_arc_correction) {
+;Kinematics.c,386 :: 		if (count < settings.n_arc_correction) {
 LHU	R3, Offset(_settings+48)(GP)
-LH	R2, 88(SP)
+LH	R2, 84(SP)
 SLTU	R2, R2, R3
 BNE	R2, R0, L__mc_arc115
 NOP	
 J	L_mc_arc39
 NOP	
 L__mc_arc115:
-;Kinematics.c,389 :: 		r_axisi = r_axis0*sin_T + r_axis1*cos_T;
+;Kinematics.c,388 :: 		r_axisi = r_axis0*sin_T + r_axis1*cos_T;
 LWC1	S1, 56(SP)
 LWC1	S0, 32(SP)
 MUL.S 	S2, S0, S1
@@ -1175,7 +1169,7 @@ LWC1	S1, 52(SP)
 LWC1	S0, 36(SP)
 MUL.S 	S0, S0, S1
 ADD.S 	S3, S2, S0
-;Kinematics.c,390 :: 		r_axis0 = r_axis0*cos_T - r_axis1*sin_T;
+;Kinematics.c,389 :: 		r_axis0 = r_axis0*cos_T - r_axis1*sin_T;
 LWC1	S1, 52(SP)
 LWC1	S0, 32(SP)
 MUL.S 	S2, S0, S1
@@ -1184,45 +1178,45 @@ LWC1	S0, 36(SP)
 MUL.S 	S0, S0, S1
 SUB.S 	S0, S2, S0
 SWC1	S0, 32(SP)
-;Kinematics.c,391 :: 		r_axis1 = r_axisi;
+;Kinematics.c,390 :: 		r_axis1 = r_axisi;
 SWC1	S3, 36(SP)
-;Kinematics.c,392 :: 		count++;
-LH	R2, 88(SP)
+;Kinematics.c,391 :: 		count++;
+LH	R2, 84(SP)
 ADDIU	R2, R2, 1
-SH	R2, 88(SP)
-;Kinematics.c,393 :: 		} else {
+SH	R2, 84(SP)
+;Kinematics.c,392 :: 		} else {
 J	L_mc_arc40
 NOP	
 L_mc_arc39:
-;Kinematics.c,396 :: 		cos_Ti = cos(i*theta_per_segment);
+;Kinematics.c,395 :: 		cos_Ti = cos(i*theta_per_segment);
 LWC1	S1, 40(SP)
-LWC1	S0, 72(SP)
+LWC1	S0, 68(SP)
 MUL.S 	S0, S0, S1
 SW	R26, 4(SP)
 SWC1	S12, 8(SP)
 MOV.S 	S12, S0
 JAL	_cos+0
 NOP	
-SWC1	S0, 60(SP)
-;Kinematics.c,397 :: 		sin_Ti = sin(i*theta_per_segment);
+; cos_Ti start address is: 40 (R10)
+MOV.S 	S5, S0
+;Kinematics.c,396 :: 		sin_Ti = sin(i*theta_per_segment);
 LWC1	S1, 40(SP)
-LWC1	S0, 72(SP)
+LWC1	S0, 68(SP)
 MUL.S 	S0, S0, S1
 MOV.S 	S12, S0
 JAL	_sin+0
 NOP	
 LWC1	S12, 8(SP)
 LW	R26, 4(SP)
-;Kinematics.c,398 :: 		r_axis0 = -offset[axis_0]*cos_Ti + offset[axis_1]*sin_Ti;
+;Kinematics.c,397 :: 		r_axis0 = -offset[axis_0]*cos_Ti + offset[axis_1]*sin_Ti;
 SEH	R2, R28
 SLL	R2, R2, 2
 ADDU	R2, R27, R2
 LWC1	S4, 0(R2)
 MOVZ	R2, R0, R0
 MTC1	R2, S1
-SUB.S 	S2, S1, S4
-LWC1	S1, 60(SP)
-MUL.S 	S3, S2, S1
+SUB.S 	S1, S1, S4
+MUL.S 	S3, S1, S5
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R27, R2
@@ -1230,21 +1224,21 @@ LWC1	S2, 0(R2)
 MUL.S 	S1, S2, S0
 ADD.S 	S1, S3, S1
 SWC1	S1, 32(SP)
-;Kinematics.c,399 :: 		r_axis1 = -offset[axis_0]*sin_Ti - offset[axis_1]*cos_Ti;
+;Kinematics.c,398 :: 		r_axis1 = -offset[axis_0]*sin_Ti - offset[axis_1]*cos_Ti;
 MOVZ	R2, R0, R0
 MTC1	R2, S1
 SUB.S 	S1, S1, S4
 MUL.S 	S1, S1, S0
-LWC1	S0, 60(SP)
-MUL.S 	S0, S2, S0
+MUL.S 	S0, S2, S5
+; cos_Ti end address is: 40 (R10)
 SUB.S 	S0, S1, S0
 SWC1	S0, 36(SP)
-;Kinematics.c,400 :: 		count = 0;
-SH	R0, 88(SP)
-;Kinematics.c,401 :: 		}
+;Kinematics.c,399 :: 		count = 0;
+SH	R0, 84(SP)
+;Kinematics.c,400 :: 		}
 L_mc_arc40:
-;Kinematics.c,404 :: 		arc_target[axis_0] = center_axis0 + r_axis0;
-ADDIU	R4, SP, 76
+;Kinematics.c,403 :: 		arc_target[axis_0] = center_axis0 + r_axis0;
+ADDIU	R4, SP, 72
 SEH	R2, R28
 SLL	R2, R2, 2
 ADDU	R2, R4, R2
@@ -1252,7 +1246,7 @@ LWC1	S1, 32(SP)
 LWC1	S0, 24(SP)
 ADD.S 	S0, S0, S1
 SWC1	S0, 0(R2)
-;Kinematics.c,405 :: 		arc_target[axis_1] = center_axis1 + r_axis1;
+;Kinematics.c,404 :: 		arc_target[axis_1] = center_axis1 + r_axis1;
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R4, R2
@@ -1260,15 +1254,15 @@ LWC1	S1, 36(SP)
 LWC1	S0, 28(SP)
 ADD.S 	S0, S0, S1
 SWC1	S0, 0(R2)
-;Kinematics.c,406 :: 		arc_target[axis_linear] += linear_per_segment;
-LH	R2, 94(SP)
+;Kinematics.c,405 :: 		arc_target[axis_linear] += linear_per_segment;
+LH	R2, 90(SP)
 SLL	R2, R2, 2
 ADDU	R2, R4, R2
 LWC1	S1, 0(R2)
 LWC1	S0, 44(SP)
 ADD.S 	S0, S1, S0
 SWC1	S0, 0(R2)
-;Kinematics.c,407 :: 		nPx =  arc_target[axis_0] - position[axis_0];
+;Kinematics.c,406 :: 		nPx =  arc_target[axis_0] - position[axis_0];
 SEH	R2, R28
 SLL	R3, R2, 2
 ADDU	R2, R4, R3
@@ -1276,8 +1270,8 @@ LWC1	S1, 0(R2)
 ADDU	R2, R25, R3
 LWC1	S0, 0(R2)
 SUB.S 	S0, S1, S0
-SWC1	S0, 64(SP)
-;Kinematics.c,408 :: 		nPy =  arc_target[axis_1] - position[axis_1];
+SWC1	S0, 60(SP)
+;Kinematics.c,407 :: 		nPy =  arc_target[axis_1] - position[axis_1];
 SEH	R2, R5
 SLL	R3, R2, 2
 ADDU	R2, R4, R3
@@ -1285,33 +1279,33 @@ LWC1	S1, 0(R2)
 ADDU	R2, R25, R3
 LWC1	S0, 0(R2)
 SUB.S 	S0, S1, S0
-SWC1	S0, 68(SP)
-;Kinematics.c,410 :: 		if(gc.absolute_mode){
+SWC1	S0, 64(SP)
+;Kinematics.c,409 :: 		if(gc.absolute_mode){
 LBU	R2, Offset(_gc+5)(GP)
 BNE	R2, R0, L__mc_arc117
 NOP	
 J	L_mc_arc41
 NOP	
 L__mc_arc117:
-;Kinematics.c,411 :: 		nPx += position[axis_0];// += nPx;//arc_target[axis_0];
+;Kinematics.c,410 :: 		nPx += position[axis_0];// += nPx;//arc_target[axis_0];
 SEH	R2, R28
+SLL	R2, R2, 2
+ADDU	R2, R25, R2
+LWC1	S1, 0(R2)
+LWC1	S0, 60(SP)
+ADD.S 	S0, S0, S1
+SWC1	S0, 60(SP)
+;Kinematics.c,411 :: 		nPy += position[axis_1];// += nPy;//arc_target[axis_1];
+SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R25, R2
 LWC1	S1, 0(R2)
 LWC1	S0, 64(SP)
 ADD.S 	S0, S0, S1
 SWC1	S0, 64(SP)
-;Kinematics.c,412 :: 		nPy += position[axis_1];// += nPy;//arc_target[axis_1];
-SEH	R2, R5
-SLL	R2, R2, 2
-ADDU	R2, R25, R2
-LWC1	S1, 0(R2)
-LWC1	S0, 68(SP)
-ADD.S 	S0, S0, S1
-SWC1	S0, 68(SP)
-;Kinematics.c,413 :: 		}
+;Kinematics.c,412 :: 		}
 L_mc_arc41:
-;Kinematics.c,416 :: 		STPS[axis_0].step_delay = feed_rate;
+;Kinematics.c,415 :: 		STPS[axis_0].step_delay = feed_rate;
 SEH	R3, R28
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -1323,7 +1317,7 @@ ADDIU	R3, R2, 8
 CVT36.S 	S0, S12
 MFC1	R2, S0
 SW	R2, 0(R3)
-;Kinematics.c,417 :: 		STPS[axis_1].step_delay = feed_rate;
+;Kinematics.c,416 :: 		STPS[axis_1].step_delay = feed_rate;
 SEH	R3, R5
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -1335,7 +1329,7 @@ ADDIU	R3, R2, 8
 CVT36.S 	S0, S12
 MFC1	R2, S0
 SW	R2, 0(R3)
-;Kinematics.c,425 :: 		if(position[axis_0] > target[axis_0]){
+;Kinematics.c,424 :: 		if(position[axis_0] > target[axis_0]){
 SEH	R2, R28
 SLL	R3, R2, 2
 ADDU	R2, R25, R3
@@ -1348,12 +1342,12 @@ NOP
 J	L_mc_arc42
 NOP	
 L__mc_arc118:
-;Kinematics.c,426 :: 		if(nPx < target[axis_0]){nPx = target[axis_0];}
+;Kinematics.c,425 :: 		if(nPx < target[axis_0]){nPx = target[axis_0];}
 SEH	R2, R28
 SLL	R2, R2, 2
 ADDU	R2, R26, R2
 LWC1	S1, 0(R2)
-LWC1	S0, 64(SP)
+LWC1	S0, 60(SP)
 C.LE.S 	0, S1, S0
 BC1F	0, L__mc_arc119
 NOP	
@@ -1364,9 +1358,9 @@ SEH	R2, R28
 SLL	R2, R2, 2
 ADDU	R2, R26, R2
 LWC1	S0, 0(R2)
-SWC1	S0, 64(SP)
+SWC1	S0, 60(SP)
 L_mc_arc43:
-;Kinematics.c,427 :: 		}else if(position[axis_0] < target[axis_0]){
+;Kinematics.c,426 :: 		}else if(position[axis_0] < target[axis_0]){
 J	L_mc_arc44
 NOP	
 L_mc_arc42:
@@ -1382,12 +1376,12 @@ NOP
 J	L_mc_arc45
 NOP	
 L__mc_arc120:
-;Kinematics.c,428 :: 		if(nPx > target[axis_0]){nPx = target[axis_0];}
+;Kinematics.c,427 :: 		if(nPx > target[axis_0]){nPx = target[axis_0];}
 SEH	R2, R28
 SLL	R2, R2, 2
 ADDU	R2, R26, R2
 LWC1	S1, 0(R2)
-LWC1	S0, 64(SP)
+LWC1	S0, 60(SP)
 C.LE.S 	0, S0, S1
 BC1F	0, L__mc_arc121
 NOP	
@@ -1398,12 +1392,12 @@ SEH	R2, R28
 SLL	R2, R2, 2
 ADDU	R2, R26, R2
 LWC1	S0, 0(R2)
-SWC1	S0, 64(SP)
+SWC1	S0, 60(SP)
 L_mc_arc46:
-;Kinematics.c,429 :: 		}
+;Kinematics.c,428 :: 		}
 L_mc_arc45:
 L_mc_arc44:
-;Kinematics.c,431 :: 		if(position[axis_1] > target[axis_1]){
+;Kinematics.c,430 :: 		if(position[axis_1] > target[axis_1]){
 SEH	R2, R5
 SLL	R3, R2, 2
 ADDU	R2, R25, R3
@@ -1416,12 +1410,12 @@ NOP
 J	L_mc_arc47
 NOP	
 L__mc_arc122:
-;Kinematics.c,432 :: 		if(nPy <= target[axis_1]){nPy = target[axis_1];}
+;Kinematics.c,431 :: 		if(nPy <= target[axis_1]){nPy = target[axis_1];}
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R26, R2
 LWC1	S1, 0(R2)
-LWC1	S0, 68(SP)
+LWC1	S0, 64(SP)
 C.LT.S 	0, S1, S0
 BC1F	0, L__mc_arc123
 NOP	
@@ -1432,9 +1426,9 @@ SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R26, R2
 LWC1	S0, 0(R2)
-SWC1	S0, 68(SP)
+SWC1	S0, 64(SP)
 L_mc_arc48:
-;Kinematics.c,433 :: 		}else if(position[axis_1] < target[axis_1]){
+;Kinematics.c,432 :: 		}else if(position[axis_1] < target[axis_1]){
 J	L_mc_arc49
 NOP	
 L_mc_arc47:
@@ -1450,12 +1444,12 @@ NOP
 J	L_mc_arc50
 NOP	
 L__mc_arc124:
-;Kinematics.c,434 :: 		if(nPy >= target[axis_1]){nPy = target[axis_1];}
+;Kinematics.c,433 :: 		if(nPy >= target[axis_1]){nPy = target[axis_1];}
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R26, R2
 LWC1	S1, 0(R2)
-LWC1	S0, 68(SP)
+LWC1	S0, 64(SP)
 C.LT.S 	0, S0, S1
 BC1F	0, L__mc_arc125
 NOP	
@@ -1466,12 +1460,12 @@ SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R26, R2
 LWC1	S0, 0(R2)
-SWC1	S0, 68(SP)
+SWC1	S0, 64(SP)
 L_mc_arc51:
-;Kinematics.c,435 :: 		}
+;Kinematics.c,434 :: 		}
 L_mc_arc50:
 L_mc_arc49:
-;Kinematics.c,438 :: 		DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);//,xy);
+;Kinematics.c,437 :: 		DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);//,xy);
 SH	R5, 4(SP)
 SH	R28, 6(SP)
 SW	R27, 8(SP)
@@ -1481,8 +1475,8 @@ SWC1	S12, 20(SP)
 SEH	R26, R5
 SEH	R25, R28
 MOV.S 	S14, S12
-LWC1	S13, 68(SP)
-LWC1	S12, 64(SP)
+LWC1	S13, 64(SP)
+LWC1	S12, 60(SP)
 JAL	_DualAxisStep+0
 NOP	
 ; axis_1 end address is: 20 (R5)
@@ -1493,9 +1487,9 @@ LW	R27, 8(SP)
 LH	R28, 6(SP)
 LH	R5, 4(SP)
 SEH	R3, R5
-;Kinematics.c,442 :: 		while(1){
+;Kinematics.c,441 :: 		while(1){
 L_mc_arc52:
-;Kinematics.c,449 :: 		if(!Get_Axis_IEnable_States())
+;Kinematics.c,448 :: 		if(!Get_Axis_IEnable_States())
 ; axis_1 start address is: 12 (R3)
 ; axis_1 start address is: 12 (R3)
 ; axis_1 end address is: 12 (R3)
@@ -1519,34 +1513,34 @@ J	L_mc_arc54
 NOP	
 L__mc_arc126:
 ; axis_1 end address is: 12 (R3)
-;Kinematics.c,450 :: 		break;
+;Kinematics.c,449 :: 		break;
 ; axis_1 start address is: 12 (R3)
 J	L_mc_arc53
 NOP	
 L_mc_arc54:
-;Kinematics.c,451 :: 		}
+;Kinematics.c,450 :: 		}
 J	L_mc_arc52
 NOP	
 L_mc_arc53:
-;Kinematics.c,384 :: 		for (i = 1; i<segments; i+=1.00) { // Increment (segments-1)
-LWC1	S1, 72(SP)
+;Kinematics.c,383 :: 		for (i = 1; i<segments; i+=1.00) { // Increment (segments-1)
+LWC1	S1, 68(SP)
 LUI	R2, 16256
 ORI	R2, R2, 0
 MTC1	R2, S0
 ADD.S 	S0, S1, S0
-SWC1	S0, 72(SP)
-;Kinematics.c,466 :: 		}
+SWC1	S0, 68(SP)
+;Kinematics.c,465 :: 		}
 SEH	R5, R3
 ; axis_1 end address is: 12 (R3)
 J	L_mc_arc36
 NOP	
 L_mc_arc37:
-;Kinematics.c,468 :: 		SV.cir = 0;
+;Kinematics.c,467 :: 		SV.cir = 0;
 ; axis_1 start address is: 20 (R5)
 LBU	R2, Offset(_SV+0)(GP)
 INS	R2, R0, 4, 1
 SB	R2, Offset(_SV+0)(GP)
-;Kinematics.c,470 :: 		DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,feed_rate);
+;Kinematics.c,469 :: 		DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,feed_rate);
 SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R2, R26, R2
@@ -1571,25 +1565,25 @@ LW	R25, 16(SP)
 LW	R26, 12(SP)
 LW	R27, 8(SP)
 LH	R28, 4(SP)
-;Kinematics.c,478 :: 		}
+;Kinematics.c,477 :: 		}
 L_end_mc_arc:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 92
+ADDIU	SP, SP, 88
 JR	RA
 NOP	
 ; end of _mc_arc
 _hypot:
-;Kinematics.c,482 :: 		float hypot(float x, float y){
+;Kinematics.c,481 :: 		float hypot(float x, float y){
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
-;Kinematics.c,483 :: 		return(sqrt((x*x) + (y*y)));
+;Kinematics.c,482 :: 		return(sqrt((x*x) + (y*y)));
 MUL.S 	S1, S12, S12
 MUL.S 	S0, S13, S13
 ADD.S 	S0, S1, S0
 MOV.S 	S12, S0
 JAL	_sqrt+0
 NOP	
-;Kinematics.c,484 :: 		}
+;Kinematics.c,483 :: 		}
 L_end_hypot:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 4
@@ -1597,8 +1591,8 @@ JR	RA
 NOP	
 ; end of _hypot
 _GetAxisDirection:
-;Kinematics.c,492 :: 		int GetAxisDirection(long mm2move){
-;Kinematics.c,493 :: 		return(mm2move < 0)? CCW_:CW_ ;
+;Kinematics.c,491 :: 		int GetAxisDirection(long mm2move){
+;Kinematics.c,492 :: 		return(mm2move < 0)? CCW_:CW_ ;
 SLTI	R2, R25, 0
 BNE	R2, R0, L__GetAxisDirection129
 NOP	
@@ -1618,28 +1612,28 @@ L_GetAxisDirection56:
 ; ?FLOC___GetAxisDirection?T425 start address is: 8 (R2)
 SEB	R2, R2
 ; ?FLOC___GetAxisDirection?T425 end address is: 8 (R2)
-;Kinematics.c,494 :: 		}
+;Kinematics.c,493 :: 		}
 L_end_GetAxisDirection:
 JR	RA
 NOP	
 ; end of _GetAxisDirection
 _Home:
-;Kinematics.c,506 :: 		int Home(int axis){
+;Kinematics.c,505 :: 		int Home(int axis){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Kinematics.c,510 :: 		if(sys.state == STATE_IDLE){
+;Kinematics.c,509 :: 		if(sys.state == STATE_IDLE){
 LH	R2, Offset(_sys+2)(GP)
 BEQ	R2, R0, L__Home131
 NOP	
 J	L_Home57
 NOP	
 L__Home131:
-;Kinematics.c,511 :: 		speed = settings.homing_seek_rate;
+;Kinematics.c,510 :: 		speed = settings.homing_seek_rate;
 LWC1	S0, Offset(_settings+28)(GP)
 CVT36.S 	S0, S0
 MFC1	R2, S0
 SW	R2, Offset(Home_speed_L0+0)(GP)
-;Kinematics.c,514 :: 		Rst_FP(axis);Rst_FN(axis);
+;Kinematics.c,513 :: 		Rst_FP(axis);Rst_FN(axis);
 SH	R25, 4(SP)
 JAL	_Rst_FP+0
 NOP	
@@ -1648,7 +1642,7 @@ SH	R25, 4(SP)
 JAL	_Rst_FN+0
 NOP	
 LH	R25, 4(SP)
-;Kinematics.c,517 :: 		bit_false(homing[axis].home_state,bit(HOME_COMPLETE));
+;Kinematics.c,516 :: 		bit_false(homing[axis].home_state,bit(HOME_COMPLETE));
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1658,7 +1652,7 @@ LHU	R3, 0(R4)
 ORI	R2, R0, 65503
 AND	R2, R3, R2
 SH	R2, 0(R4)
-;Kinematics.c,520 :: 		bit_false(homing[axis].home_state,bit(HOME_REV));
+;Kinematics.c,519 :: 		bit_false(homing[axis].home_state,bit(HOME_REV));
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1668,7 +1662,7 @@ LHU	R3, 0(R4)
 ORI	R2, R0, 65527
 AND	R2, R3, R2
 SH	R2, 0(R4)
-;Kinematics.c,523 :: 		homing[axis].home_cnt = 0;
+;Kinematics.c,522 :: 		homing[axis].home_cnt = 0;
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1676,15 +1670,15 @@ ORI	R2, R2, lo_addr(Kinematics_homing+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 2
 SH	R0, 0(R2)
-;Kinematics.c,526 :: 		EnableStepper(axis);//sort this out
+;Kinematics.c,525 :: 		EnableStepper(axis);//sort this out
 SH	R25, 4(SP)
 JAL	_EnableStepper+0
 NOP	
 LH	R25, 4(SP)
-;Kinematics.c,529 :: 		sys.state = STATE_HOMING;
+;Kinematics.c,528 :: 		sys.state = STATE_HOMING;
 ORI	R2, R0, 5
 SH	R2, Offset(_sys+2)(GP)
-;Kinematics.c,532 :: 		if(!Test_Port_Pins(axis)){
+;Kinematics.c,531 :: 		if(!Test_Port_Pins(axis)){
 SH	R25, 4(SP)
 JAL	_Test_Port_Pins+0
 NOP	
@@ -1694,7 +1688,7 @@ NOP
 J	L_Home58
 NOP	
 L__Home132:
-;Kinematics.c,534 :: 		homing[axis].home_cnt = 1;
+;Kinematics.c,533 :: 		homing[axis].home_cnt = 1;
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1703,12 +1697,12 @@ ADDU	R2, R2, R3
 ADDIU	R3, R2, 2
 ORI	R2, R0, 1
 SH	R2, 0(R3)
-;Kinematics.c,536 :: 		goto HOMED;
+;Kinematics.c,535 :: 		goto HOMED;
 J	___Home_HOMED
 NOP	
-;Kinematics.c,537 :: 		}
+;Kinematics.c,536 :: 		}
 L_Home58:
-;Kinematics.c,541 :: 		Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
+;Kinematics.c,540 :: 		Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
 LWC1	S0, Offset(Home_speed_L0+0)(GP)
 CVT32.W 	S2, S0
 SEH	R2, R25
@@ -1730,13 +1724,13 @@ MOV.S 	S12, S0
 JAL	Kinematics_Home_Axis+0
 NOP	
 LH	R25, 4(SP)
-;Kinematics.c,551 :: 		return axis;
+;Kinematics.c,550 :: 		return axis;
 SEH	R2, R25
 J	L_end_Home
 NOP	
-;Kinematics.c,552 :: 		}
+;Kinematics.c,551 :: 		}
 L_Home57:
-;Kinematics.c,556 :: 		if(sys.state == STATE_HOMING){
+;Kinematics.c,555 :: 		if(sys.state == STATE_HOMING){
 LH	R3, Offset(_sys+2)(GP)
 ORI	R2, R0, 5
 BEQ	R3, R2, L__Home133
@@ -1744,7 +1738,7 @@ NOP
 J	L_Home59
 NOP	
 L__Home133:
-;Kinematics.c,561 :: 		if(FN(axis)){
+;Kinematics.c,560 :: 		if(FN(axis)){
 SH	R25, 4(SP)
 JAL	_FN+0
 NOP	
@@ -1754,14 +1748,14 @@ NOP
 J	L_Home60
 NOP	
 L__Home135:
-;Kinematics.c,564 :: 		HOMED:
+;Kinematics.c,563 :: 		HOMED:
 ___Home_HOMED:
-;Kinematics.c,565 :: 		speed = settings.homing_feed_rate;
+;Kinematics.c,564 :: 		speed = settings.homing_feed_rate;
 LWC1	S0, Offset(_settings+24)(GP)
 CVT36.S 	S0, S0
 MFC1	R2, S0
 SW	R2, Offset(Home_speed_L0+0)(GP)
-;Kinematics.c,574 :: 		if(bit_isfalse(homing[axis].home_state,BIT_HOME_COMPLETE)){
+;Kinematics.c,573 :: 		if(bit_isfalse(homing[axis].home_state,BIT_HOME_COMPLETE)){
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1775,7 +1769,7 @@ NOP
 J	L_Home61
 NOP	
 L__Home136:
-;Kinematics.c,576 :: 		if(bit_isfalse(homing[axis].home_state,BIT_HOME_REV)){
+;Kinematics.c,575 :: 		if(bit_isfalse(homing[axis].home_state,BIT_HOME_REV)){
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1789,7 +1783,7 @@ NOP
 J	L_Home62
 NOP	
 L__Home137:
-;Kinematics.c,579 :: 		if(homing[axis].home_cnt == 1){ //at 1st hit of limit
+;Kinematics.c,578 :: 		if(homing[axis].home_cnt == 1){ //at 1st hit of limit
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1804,7 +1798,7 @@ NOP
 J	L_Home63
 NOP	
 L__Home138:
-;Kinematics.c,581 :: 		bit_true(homing[axis].home_state,bit(HOME_REV));
+;Kinematics.c,580 :: 		bit_true(homing[axis].home_state,bit(HOME_REV));
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1813,7 +1807,7 @@ ADDU	R3, R2, R3
 LHU	R2, 0(R3)
 ORI	R2, R2, 8
 SH	R2, 0(R3)
-;Kinematics.c,582 :: 		bit_false(homing[axis].home_state,bit(HOME));
+;Kinematics.c,581 :: 		bit_false(homing[axis].home_state,bit(HOME));
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1823,14 +1817,14 @@ LHU	R3, 0(R4)
 ORI	R2, R0, 65531
 AND	R2, R3, R2
 SH	R2, 0(R4)
-;Kinematics.c,585 :: 		VDelay_ms((unsigned long)settings.homing_debounce_delay);
+;Kinematics.c,584 :: 		VDelay_ms((unsigned long)settings.homing_debounce_delay);
 LHU	R2, Offset(_settings+54)(GP)
 SH	R25, 4(SP)
 MOVZ	R25, R2, R0
 JAL	_VDelay_ms+0
 NOP	
 LH	R25, 4(SP)
-;Kinematics.c,589 :: 		Home_Axis(12.0,settings.homing_feed_rate, axis);
+;Kinematics.c,588 :: 		Home_Axis(12.0,settings.homing_feed_rate, axis);
 LUI	R2, 16704
 ORI	R2, R2, 0
 SH	R25, 4(SP)
@@ -1839,7 +1833,7 @@ MTC1	R2, S12
 JAL	Kinematics_Home_Axis+0
 NOP	
 LH	R25, 4(SP)
-;Kinematics.c,591 :: 		}else if(homing[axis].home_cnt > 1){//2nd hit of limit
+;Kinematics.c,590 :: 		}else if(homing[axis].home_cnt > 1){//2nd hit of limit
 J	L_Home64
 NOP	
 L_Home63:
@@ -1857,7 +1851,7 @@ NOP
 J	L_Home65
 NOP	
 L__Home139:
-;Kinematics.c,593 :: 		bit_true(homing[axis].home_state,bit(HOME_COMPLETE));
+;Kinematics.c,592 :: 		bit_true(homing[axis].home_state,bit(HOME_COMPLETE));
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1866,17 +1860,17 @@ ADDU	R3, R2, R3
 LHU	R2, 0(R3)
 ORI	R2, R2, 32
 SH	R2, 0(R3)
-;Kinematics.c,594 :: 		StopAxis(axis);
+;Kinematics.c,593 :: 		StopAxis(axis);
 SH	R25, 4(SP)
 JAL	_StopAxis+0
 NOP	
 LH	R25, 4(SP)
-;Kinematics.c,595 :: 		axis++;
+;Kinematics.c,594 :: 		axis++;
 ADDIU	R2, R25, 1
 SEH	R25, R2
-;Kinematics.c,597 :: 		sys.state = STATE_IDLE;
+;Kinematics.c,596 :: 		sys.state = STATE_IDLE;
 SH	R0, Offset(_sys+2)(GP)
-;Kinematics.c,600 :: 		homing[axis].home_cnt = 0;
+;Kinematics.c,599 :: 		homing[axis].home_cnt = 0;
 SEH	R2, R2
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1884,27 +1878,27 @@ ORI	R2, R2, lo_addr(Kinematics_homing+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 2
 SH	R0, 0(R2)
-;Kinematics.c,612 :: 		Home_Axis(settings.homing_pulloff,settings.homing_feed_rate, axis);
+;Kinematics.c,611 :: 		Home_Axis(settings.homing_pulloff,settings.homing_feed_rate, axis);
 SH	R25, 4(SP)
 LWC1	S13, Offset(_settings+24)(GP)
 LWC1	S12, Offset(_settings+32)(GP)
 JAL	Kinematics_Home_Axis+0
 NOP	
 LH	R25, 4(SP)
-;Kinematics.c,614 :: 		return axis;
+;Kinematics.c,613 :: 		return axis;
 SEH	R2, R25
 J	L_end_Home
 NOP	
-;Kinematics.c,615 :: 		}
+;Kinematics.c,614 :: 		}
 L_Home65:
 L_Home64:
-;Kinematics.c,616 :: 		}
+;Kinematics.c,615 :: 		}
 L_Home62:
-;Kinematics.c,621 :: 		}
+;Kinematics.c,620 :: 		}
 L_Home61:
-;Kinematics.c,622 :: 		}
+;Kinematics.c,621 :: 		}
 L_Home60:
-;Kinematics.c,630 :: 		if(FP(axis)){
+;Kinematics.c,629 :: 		if(FP(axis)){
 SH	R25, 4(SP)
 JAL	_FP+0
 NOP	
@@ -1914,7 +1908,7 @@ NOP
 J	L_Home66
 NOP	
 L__Home141:
-;Kinematics.c,632 :: 		homing[axis].home_cnt++;
+;Kinematics.c,631 :: 		homing[axis].home_cnt++;
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1924,7 +1918,7 @@ ADDIU	R3, R2, 2
 LHU	R2, 0(R3)
 ADDIU	R2, R2, 1
 SH	R2, 0(R3)
-;Kinematics.c,633 :: 		if(bit_istrue(homing[axis].home_state,BIT_HOME_REV)){
+;Kinematics.c,632 :: 		if(bit_istrue(homing[axis].home_state,BIT_HOME_REV)){
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1938,7 +1932,7 @@ NOP
 J	L_Home67
 NOP	
 L__Home143:
-;Kinematics.c,634 :: 		bit_false(homing[axis].home_state,bit(HOME_REV));
+;Kinematics.c,633 :: 		bit_false(homing[axis].home_state,bit(HOME_REV));
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -1948,7 +1942,7 @@ LHU	R3, 0(R4)
 ORI	R2, R0, 65527
 AND	R2, R3, R2
 SH	R2, 0(R4)
-;Kinematics.c,637 :: 		Home_Axis(-290.00,settings.homing_feed_rate,axis);
+;Kinematics.c,636 :: 		Home_Axis(-290.00,settings.homing_feed_rate,axis);
 LUI	R2, 50065
 ORI	R2, R2, 0
 SH	R25, 4(SP)
@@ -1957,15 +1951,15 @@ MTC1	R2, S12
 JAL	Kinematics_Home_Axis+0
 NOP	
 LH	R25, 4(SP)
-;Kinematics.c,638 :: 		}
+;Kinematics.c,637 :: 		}
 L_Home67:
-;Kinematics.c,647 :: 		}
+;Kinematics.c,646 :: 		}
 L_Home66:
-;Kinematics.c,648 :: 		}
+;Kinematics.c,647 :: 		}
 L_Home59:
-;Kinematics.c,649 :: 		return axis;
+;Kinematics.c,648 :: 		return axis;
 SEH	R2, R25
-;Kinematics.c,650 :: 		}
+;Kinematics.c,649 :: 		}
 L_end_Home:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -1973,10 +1967,10 @@ JR	RA
 NOP	
 ; end of _Home
 Kinematics_Home_Axis:
-;Kinematics.c,653 :: 		static void Home_Axis(double distance,float speed,int axis){
+;Kinematics.c,652 :: 		static void Home_Axis(double distance,float speed,int axis){
 ADDIU	SP, SP, -20
 SW	RA, 0(SP)
-;Kinematics.c,655 :: 		StopAxis(axis);
+;Kinematics.c,654 :: 		StopAxis(axis);
 SH	R25, 4(SP)
 SWC1	S13, 8(SP)
 SWC1	S12, 12(SP)
@@ -1985,7 +1979,7 @@ NOP
 LWC1	S12, 12(SP)
 LWC1	S13, 8(SP)
 LH	R25, 4(SP)
-;Kinematics.c,656 :: 		STPS[axis].run_state = STOP ;
+;Kinematics.c,655 :: 		STPS[axis].run_state = STOP ;
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -1995,7 +1989,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 4
 SH	R0, 0(R2)
-;Kinematics.c,666 :: 		STPS[axis].mmToTravel = belt_steps(distance,axis);
+;Kinematics.c,665 :: 		STPS[axis].mmToTravel = belt_steps(distance,axis);
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -2013,7 +2007,7 @@ LWC1	S13, 8(SP)
 LH	R25, 4(SP)
 LW	R3, 16(SP)
 SW	R2, 0(R3)
-;Kinematics.c,668 :: 		speed = RPS_FROM_MMPMIN(speed);
+;Kinematics.c,667 :: 		speed = RPS_FROM_MMPMIN(speed);
 LUI	R2, 16928
 ORI	R2, R2, 0
 MTC1	R2, S0
@@ -2023,14 +2017,14 @@ ORI	R2, R2, 0
 MTC1	R2, S0
 DIV.S 	S0, S1, S0
 MOV.S 	S13, S0
-;Kinematics.c,670 :: 		speed = Get_Step_Rate(speed,axis);
+;Kinematics.c,669 :: 		speed = Get_Step_Rate(speed,axis);
 SH	R25, 4(SP)
 MOV.S 	S12, S0
 JAL	_Get_Step_Rate+0
 NOP	
 LH	R25, 4(SP)
 MOV.S 	S13, S0
-;Kinematics.c,671 :: 		SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
+;Kinematics.c,670 :: 		SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 SEH	R3, R25
 ORI	R2, R0, 80
 MULTU	R2, R3
@@ -2046,7 +2040,7 @@ MOV.S 	S13, S0
 MOV.S 	S12, S1
 JAL	_SingleAxisStep+0
 NOP	
-;Kinematics.c,672 :: 		}
+;Kinematics.c,671 :: 		}
 L_end_Home_Axis:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 20
@@ -2054,9 +2048,9 @@ JR	RA
 NOP	
 ; end of Kinematics_Home_Axis
 Kinematics_ResetHoming:
-;Kinematics.c,674 :: 		static void ResetHoming(){
-;Kinematics.c,675 :: 		int i = 0;
-;Kinematics.c,676 :: 		for(i = 0;i< NoOfAxis;i++){
+;Kinematics.c,673 :: 		static void ResetHoming(){
+;Kinematics.c,674 :: 		int i = 0;
+;Kinematics.c,675 :: 		for(i = 0;i< NoOfAxis;i++){
 ; i start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; i end address is: 16 (R4)
@@ -2069,14 +2063,14 @@ NOP
 J	L_Kinematics_ResetHoming69
 NOP	
 L_Kinematics_ResetHoming146:
-;Kinematics.c,677 :: 		homing[i].home_state = 0;
+;Kinematics.c,676 :: 		homing[i].home_state = 0;
 SEH	R2, R4
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
 ORI	R2, R2, lo_addr(Kinematics_homing+0)
 ADDU	R2, R2, R3
 SH	R0, 0(R2)
-;Kinematics.c,678 :: 		homing[i].home_cnt = 0;
+;Kinematics.c,677 :: 		homing[i].home_cnt = 0;
 SEH	R2, R4
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Kinematics_homing+0)
@@ -2084,24 +2078,24 @@ ORI	R2, R2, lo_addr(Kinematics_homing+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 2
 SH	R0, 0(R2)
-;Kinematics.c,676 :: 		for(i = 0;i< NoOfAxis;i++){
+;Kinematics.c,675 :: 		for(i = 0;i< NoOfAxis;i++){
 ADDIU	R2, R4, 1
 SEH	R4, R2
-;Kinematics.c,679 :: 		}
+;Kinematics.c,678 :: 		}
 ; i end address is: 16 (R4)
 J	L_Kinematics_ResetHoming68
 NOP	
 L_Kinematics_ResetHoming69:
-;Kinematics.c,680 :: 		}
+;Kinematics.c,679 :: 		}
 L_end_ResetHoming:
 JR	RA
 NOP	
 ; end of Kinematics_ResetHoming
 _mc_reset:
-;Kinematics.c,687 :: 		void mc_reset(){
+;Kinematics.c,686 :: 		void mc_reset(){
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
-;Kinematics.c,689 :: 		if (bit_isfalse(sys.execute, EXEC_RESET)) {
+;Kinematics.c,688 :: 		if (bit_isfalse(sys.execute, EXEC_RESET)) {
 LH	R2, Offset(_sys+26)(GP)
 ANDI	R2, R2, 16
 SEH	R2, R2
@@ -2110,31 +2104,31 @@ NOP
 J	L_mc_reset71
 NOP	
 L__mc_reset148:
-;Kinematics.c,690 :: 		sys.execute |= EXEC_RESET;
+;Kinematics.c,689 :: 		sys.execute |= EXEC_RESET;
 LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 16
 SH	R2, Offset(_sys+26)(GP)
-;Kinematics.c,700 :: 		switch (sys.state) {
+;Kinematics.c,699 :: 		switch (sys.state) {
 J	L_mc_reset72
 NOP	
-;Kinematics.c,701 :: 		case STATE_CYCLE: case STATE_HOLD: case STATE_HOMING: // case STATE_JOG:
+;Kinematics.c,700 :: 		case STATE_CYCLE: case STATE_HOLD: case STATE_HOMING: // case STATE_JOG:
 L_mc_reset74:
 L_mc_reset75:
 L_mc_reset76:
-;Kinematics.c,702 :: 		sys.execute |= EXEC_ALARM; // Execute alarm state.
+;Kinematics.c,701 :: 		sys.execute |= EXEC_ALARM; // Execute alarm state.
 LH	R2, Offset(_sys+26)(GP)
 ORI	R2, R2, 32
 SH	R2, Offset(_sys+26)(GP)
-;Kinematics.c,703 :: 		disableOCx(); // Execute alarm force kills steppers. Position likely lost.
+;Kinematics.c,702 :: 		disableOCx(); // Execute alarm force kills steppers. Position likely lost.
 JAL	_disableOCx+0
 NOP	
-;Kinematics.c,704 :: 		DisableStepper();
+;Kinematics.c,703 :: 		DisableStepper();
 JAL	_DisableStepper+0
 NOP	
-;Kinematics.c,705 :: 		ResetHoming();
+;Kinematics.c,704 :: 		ResetHoming();
 JAL	Kinematics_ResetHoming+0
 NOP	
-;Kinematics.c,706 :: 		}
+;Kinematics.c,705 :: 		}
 J	L_mc_reset73
 NOP	
 L_mc_reset72:
@@ -2160,9 +2154,9 @@ J	L_mc_reset76
 NOP	
 L__mc_reset154:
 L_mc_reset73:
-;Kinematics.c,707 :: 		}
+;Kinematics.c,706 :: 		}
 L_mc_reset71:
-;Kinematics.c,708 :: 		}
+;Kinematics.c,707 :: 		}
 L_end_mc_reset:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 4

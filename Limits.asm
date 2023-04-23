@@ -379,7 +379,7 @@ NOP
 ; end of Limits_Reset_Min_Debounce
 _Debounce_Limits:
 ;Limits.c,163 :: 		void Debounce_Limits(int axis){
-ADDIU	SP, SP, -28
+ADDIU	SP, SP, -8
 SW	RA, 0(SP)
 ;Limits.c,164 :: 		Limit[axis].T0 = (TMR.clock >> BASE_TMR)&1;
 SEH	R3, R25
@@ -403,11 +403,11 @@ MFLO	R3
 LUI	R2, hi_addr(Limits_Limit+0)
 ORI	R2, R2, lo_addr(Limits_Limit+0)
 ADDU	R2, R2, R3
-SW	R2, 24(SP)
+SW	R2, 4(SP)
 JAL	_Test_Port_Pins+0
 NOP	
 ANDI	R4, R2, 255
-LW	R3, 24(SP)
+LW	R3, 4(SP)
 LBU	R2, 0(R3)
 INS	R2, R4, 0, 1
 SB	R2, 0(R3)
@@ -494,32 +494,6 @@ ADDIU	R3, R2, 4
 LHU	R2, 0(R3)
 ADDIU	R2, R2, 1
 SH	R2, 0(R3)
-;Limits.c,177 :: 		dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
-SEH	R3, R25
-ORI	R2, R0, 12
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(Limits_Limit+0)
-ORI	R2, R2, lo_addr(Limits_Limit+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 4
-LHU	R3, 0(R2)
-ADDIU	R23, SP, 6
-ADDIU	R22, R23, 17
-LUI	R24, hi_addr(?ICS?lstr1_Limits+0)
-ORI	R24, R24, lo_addr(?ICS?lstr1_Limits+0)
-JAL	___CC2DW+0
-NOP	
-ADDIU	R2, SP, 6
-SH	R25, 4(SP)
-ADDIU	SP, SP, -12
-SH	R3, 8(SP)
-SH	R25, 4(SP)
-SW	R2, 0(SP)
-JAL	_dma_printf+0
-NOP	
-ADDIU	SP, SP, 12
-LH	R25, 4(SP)
 ;Limits.c,180 :: 		if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
 SEH	R3, R25
 ORI	R2, R0, 12
@@ -657,7 +631,7 @@ L_Debounce_Limits15:
 ;Limits.c,194 :: 		}
 L_end_Debounce_Limits:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 28
+ADDIU	SP, SP, 8
 JR	RA
 NOP	
 ; end of _Debounce_Limits

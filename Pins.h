@@ -89,7 +89,7 @@ extern sfr sbit Z_Min_Limit_Dir;
 //Direction pins  0 =ve 1 || = -ve
 #define X_DIR_DIR  1
 #define Y_DIR_DIR  0
-#define Z_DIR_DIR  0
+#define Z_DIR_DIR  1
 #define A_DIR_DIR  0
 
 

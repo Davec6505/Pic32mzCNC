@@ -110,14 +110,14 @@ extern unsigned long volatile buffA[128];
 ///////////////////////////////////////////////////////////////////////////////
 // Define global system variables
 typedef struct {
-  int abort;                 // System abort flag. Forces exit back to main loop for reset.
-  int state;                 // Tracks the current state of Grbl.
-  int  homing;                //track the axis homing -1 = none, 0 = x, 1 = y, 2 = z etc
-  int homing_cnt;             //count the homing bounce
-  long position[NoOfAxis];      // Real-time machine (aka home) position vector in steps.
-                              // NOTE: This may need to be a volatile variable, if problems arise.
-  int auto_start;            // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
-  int execute;      // Global system runtime executor bitflag variable. See EXEC bitmasks.
+  int abort;                // System abort flag. Forces exit back to main loop for reset.
+  int state;                // Tracks the current state of Grbl.
+  int  homing;              //track the axis homing -1 = none, 0 = x, 1 = y, 2 = z etc
+  int homing_cnt;           //count the homing bounce
+  long position[NoOfAxis];  // Real-time machine (aka home) position vector in steps.
+                            // NOTE: This may need to be a volatile variable, if problems arise.
+  int auto_start;           // Planner auto-start flag. Toggled off during feed hold. Defaulted by settings.
+  int execute;              // Global system runtime executor bitflag variable. See EXEC bitmasks.
 } system_t;
 extern system_t sys;
 

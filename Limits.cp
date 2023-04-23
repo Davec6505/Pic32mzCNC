@@ -519,7 +519,7 @@ typedef struct genVars{
  char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
- char mode_complete: 2;
+ char mode_complete;
  int AxisNo;
  int dirx;
  int diry;
@@ -695,6 +695,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+
 void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
@@ -1082,10 +1083,7 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-
- dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
-
-
+#line 180 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }

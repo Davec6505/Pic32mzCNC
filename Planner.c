@@ -80,7 +80,9 @@ float temp_speed,max_s_limit;
 static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
- // STPS[axis_No].dist =  abs_mmSteps;  //done prior to getting here
+  //set the bit that indicates when axis has stopped stopped
+  //this send UGS OK once all axis are stopped.
+  bit_true(SV.mode_complete,bit(axis_No));
   
   // speed is in rpm ~ need to convert tp pps / steprate
   // speed /= 60.0; //base_pps[axis_No]/speed;
@@ -178,7 +180,6 @@ long abs_mmSteps = labs(mmSteps);
   STPS[axis_No].step_count  = 0;
   STPS[axis_No].rest        = 0;
   STPS[axis_No].accel_count = 1;
-  SV.mode_complete          = 0;
   SV.running                = 1;
   last_speed                = speed;
   
@@ -199,7 +200,8 @@ acc_lim:= %l\n\
 dec_val:= %l\n\
 dec_start:= %l\n\
 step_delay:= %l\n\
-min_dly:= %l\n\n"
+min_dly:= %l\n\
+SV.mode-complete:= %d\n\n"
 ,acc
 ,dec
 ,temp_speed
@@ -215,7 +217,8 @@ min_dly:= %l\n\n"
 ,STPS[axis_No].decel_val
 ,STPS[axis_No].decel_start
 ,STPS[axis_No].step_delay
-,STPS[axis_No].min_delay);
+,STPS[axis_No].min_delay
+,SV.mode_complete);
 
 #endif
 }

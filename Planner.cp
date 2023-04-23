@@ -836,6 +836,7 @@ void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+
 void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
@@ -870,7 +871,7 @@ typedef struct genVars{
  char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
- char mode_complete: 2;
+ char mode_complete;
  int AxisNo;
  int dirx;
  int diry;
@@ -978,6 +979,8 @@ long abs_mmSteps = labs(mmSteps);
 
 
 
+  (SV.mode_complete |= (1 << axis_No) ) ;
+
 
 
  speed = Get_Step_Rate(speed,axis_No);
@@ -1074,12 +1077,11 @@ long abs_mmSteps = labs(mmSteps);
  STPS[axis_No].step_count = 0;
  STPS[axis_No].rest = 0;
  STPS[axis_No].accel_count = 1;
- SV.mode_complete = 0;
  SV.running = 1;
  last_speed = speed;
-#line 221 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 224 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
-#line 233 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 236 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
  float r, float i, float j, float k, int axis_A,int axis_B,int dir){
 char isclockwise = 0;
@@ -1105,7 +1107,7 @@ int axis_plane_a,axis_plane_b;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 321 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 324 "C:/Users/Git/Pic32mzCNC/Planner.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -1118,7 +1120,7 @@ int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (Get_motionmode() ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 355 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 358 "C:/Users/Git/Pic32mzCNC/Planner.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -1136,7 +1138,7 @@ int axis_plane_a,axis_plane_b;
 
  isclockwise = 0;
  if (dir ==  0 ) { isclockwise = 1; }
-#line 380 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 383 "C:/Users/Git/Pic32mzCNC/Planner.c"
  speed =  (( ((gc.feed_rate)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
 
  speed = Get_Step_Rate(speed,axis_A);
@@ -1159,7 +1161,7 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-#line 408 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 411 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 
 
@@ -1168,7 +1170,7 @@ void plan_reset_absolute_position(){
  for(i=0;i< 4 ;i++)
  STPS[X].steps_abs_position = 0;
 }
-#line 432 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 435 "C:/Users/Git/Pic32mzCNC/Planner.c"
 long sqrt_(long x){
 
  volatile unsigned long xr;

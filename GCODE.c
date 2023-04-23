@@ -343,7 +343,7 @@ int i = 0;
       //motion_mode holds movement set in G_Mode()!!
        switch (motion_mode) {
           case MOTION_MODE_SEEK:
-               gc.frequency = lround(settings.default_seek_rate);
+               gc.feed_rate = settings.default_seek_rate;
           case MOTION_MODE_LINEAR:
              FAIL(STATUS_OK);
             break;

@@ -69,6 +69,7 @@ void EnStepperA(){
   EN_StepA       = 0;
 }
 
+
 void EnableSteppers(int steppers){
 int i;
   for(i=0;i<steppers;i++){
@@ -273,7 +274,9 @@ static int Pulse(int axis_No){
     case STOP:
         STPS[axis_No].run_state  = STOP;
         StopAxis(axis_No);
-        bit_true(SV.mode_complete,bit(axis_No));
+        //resetting the axis movement bit to indicate axis finnished
+        //moving, UGS NEEDS AN ok TO
+        bit_false(SV.mode_complete,bit(axis_No));
       break;
     case ACCEL:
       //taylor series calculation for acc
@@ -411,7 +414,6 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 ////////////////////////////////////////////////////////
 
 static void SingleStepAxis(int axis){
-  if(bit_istrue(SV.mode_complete,axis))return;
   Step_Cycle(axis);
   Pulse(axis);
 }
@@ -460,6 +462,7 @@ static int cnt;
         StopAxis(axisB);
         STPS[axisA].run_state = STOP;
         STPS[axisB].run_state = STOP;
+        SV.mode_complete = 0;
       }
         
    }else{
@@ -488,6 +491,7 @@ static int cnt;
         StopAxis(axisA);
         STPS[axisA].run_state = STOP;
         STPS[axisB].run_state = STOP;
+        SV.mode_complete = 0;
      }
    }
 }
