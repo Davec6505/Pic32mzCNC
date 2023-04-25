@@ -109,7 +109,7 @@ int   dir    = 0;
 static void SingleAxisStart(long dist,float speed,int axis_No){
 long speed_ = 0;
 
-  STPS[axis_No].dist =labs(dist);
+  STPS[axis_No].dist = labs(dist);
   Single_Axis_Enable(axis_No);
   speed_cntr_Move(dist , speed, axis_No);
 
@@ -118,7 +118,7 @@ long speed_ = 0;
              STPS[axis].psingle = newxyz; */
    Set_Axisdirection(dist,axis_No);
    STPS[axis_No].axis_dir = Direction(dist);
-   SV.Single_Dual = 0;
+   SV.Single_Dual = SINGLE;
    STPS[axis_No].psingle  = 0;
    STPS[axis_No].dist = labs(dist) - STPS[axis_No].psingle;
    STPS[axis_No].step_count = 0;
@@ -143,18 +143,9 @@ long tempA,tempB,tempC;
    tempA = belt_steps(axis_a,axisA);
    tempB = belt_steps(axis_b,axisB);
    
-  #if KineDebug == 4
-  while(DMA_IsOn(1));
-  dma_printf("\
-  tempA:= %l\tabsA:= %l\n\
-  tempB:= %l\tabsB:= %l\n"
-  ,tempA,STPS[axisA].steps_abs_position
-  ,tempB,STPS[axisB].steps_abs_position);
-  #endif
-  
   //subtract new from current
-  tempA = tempA - STPS[axisA].steps_abs_position;
-  tempB = tempB - STPS[axisB].steps_abs_position;
+   tempA = tempA - STPS[axisA].steps_abs_position;
+   tempB = tempB - STPS[axisB].steps_abs_position;
   
   #if KineDebug == 4
   while(DMA_IsOn(1));
@@ -166,82 +157,66 @@ long tempA,tempB,tempC;
    tempA = belt_steps(axis_a,axisA);
    tempB = belt_steps(axis_b,axisB);
  }
+
+ //fresh values for calc
  SV.over = 0;
  SV.dif  = 0;
 
 //Enable the relevant axis in Stepper.c
- SV.Single_Dual = 1;
+ SV.Single_Dual = DUAL;
  Single_Axis_Enable(axisA);
  Single_Axis_Enable(axisB);
  // Multi_Axis_Enable(xyza);
   
- //if in abs mode prev must be cur pos
- if (!gc.absolute_mode){
-     SV.prevA = 0;
-     SV.prevB = 0;
-     SV.prevC = 0;
- }else{
-     SV.prevA = 0;//tempA;
-     SV.prevB = 0;//tempB;
-     SV.prevC = 0;//tempC;
- }
-
   //set the direction counter for absolute position
   Set_Axisdirection(tempA,axisA);
   STPS[axisA].axis_dir = Direction(tempA);
   Set_Axisdirection(tempB,axisB);
   STPS[axisB].axis_dir = Direction(tempB);
 
-  //Delta distance to move
-  SV.dA   = tempA;// - SV.prevA;
-  SV.dB   = tempB;// - SV.prevB;
-  SV.dC   = tempC;// - SV.prevC;
+  //check if movement is needed on the axis
+  //calculate acc/dec "if arc is runninG use last min speed ?"
+  //Remove -ve values for dist in Steps to complete move
+ if(SV.prevA != axis_a){
+   STPS[axisA].dist = SV.dA = labs(tempA);
+   speed_cntr_Move(tempA,speed,axisA);
+ }
+  if(SV.prevB != axis_b){
+   STPS[axisB].dist = SV.dB = labs(tempB);
+   speed_cntr_Move(tempB,speed,axisB);
+ }
+  #if KineDebug == 4
+  while(DMA_IsOn(1));
+  dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
+  #endif
 
-  //Remove -ve values
-  SV.dA = labs(SV.dA);
-  SV.dB = labs(SV.dB);
 
-#if KineDebug == 4
-while(DMA_IsOn(1));
-dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
-#endif
-
-  //Start values for Bresenhams
-  if(SV.dA == 0 && SV.dB == 0){
-    SV.mode_complete = 1; //set this to respond with ok
-    return;
-  }
-  
-  //the distance need in Steps to completee move
-  STPS[axisA].dist =labs(tempA);
-  STPS[axisB].dist =labs(tempB);
-  
-  //don'tcalculate acc if arc is runnin use last min speed
-  //if(!SV.cir){
-    speed_cntr_Move(tempA,speed,axisA);
-    speed_cntr_Move(tempB,speed,axisB);
-  //}
   if(SV.dA >= SV.dB){
-   //disabled this for trial purposes
+   //disabled for trial purposes as computing both axis acc dec
    // STPS[axisB].step_delay = STPS[axisA].step_delay;
    // STPS[axisB].accel_count = STPS[axisA].accel_count;
     SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
-    STPS[axisA].master = 1;
-    STPS[axisB].master = 0;
+    STPS[axisA].master = MASTER;
+    STPS[axisB].master = SLAVE;
   }else{
   //  STPS[axisA].step_delay = STPS[axisB].step_delay;
   //  STPS[axisA].accel_count = STPS[axisB].accel_count;
     SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
-    STPS[axisA].master = 0;
-    STPS[axisB].master = 1;
+    STPS[axisA].master = SLAVE;
+    STPS[axisB].master = MASTER;
   }
   
-   STPS[axisA].step_count = 0;
-   STPS[axisB].step_count = 0;
-   STPS[axisA].mmToTravel = tempA;
-   STPS[axisB].mmToTravel = tempB;
+   //store current pos prev must be cur pos
+  SV.prevA = axis_a;
+  SV.prevB = axis_b;
 
-   Start_Interpolation(axisA,axisB);
+  
+  STPS[axisA].step_count = 0;
+  STPS[axisB].step_count = 0;
+  STPS[axisA].mmToTravel = tempA;
+  STPS[axisB].mmToTravel = tempB;
+
+  Start_Interpolation(axisA,axisB);
 }
 
 

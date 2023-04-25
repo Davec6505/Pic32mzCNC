@@ -54,6 +54,14 @@
 #define BIT_HOME_BACK     bit(4)
 #define BIT_HOME_COMPLETE bit(5)
 
+//indicator for single axis or dual axis movement
+#define SINGLE 0
+#define DUAL   1
+
+//master axis indicator
+#define SLAVE  0
+#define MASTER 1
+
 /////////////////////////////////////////////////////////
 //sbits and bit types
 extern char stepper_state;

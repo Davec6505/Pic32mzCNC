@@ -66,7 +66,7 @@ typedef struct genVars{
   char  run_circle: 1;        //circle in motion indicator
   char  cir: 1;
   char  Single_Dual: 1;
-  char  mode_complete;
+  int  mode_complete;
   int   AxisNo;
   int   dirx;
   int   diry;
@@ -78,10 +78,9 @@ typedef struct genVars{
   long  dA;
   long  dB;
   long  dC;
-  long  prevA;
-  long  prevB;
-  long  prevC;
   long  over;
+  float  prevA;
+  float  prevB;
 }sVars;
 extern sVars SV;
 

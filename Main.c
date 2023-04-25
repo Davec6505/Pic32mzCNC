@@ -167,21 +167,38 @@ static int cntr = 0,a = 0;
 //Debug for stepper report if not connected to unit
 #if StepperDebug == 1
 if(SV.mode_complete){
-if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
+if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP | STPS[Z].run_state != STOP){
 while(DMA_IsOn(1));
 dma_printf("\
-dif:= %l\t%l\t%l\t%l\t%l\t%l\t%d\n"
+%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
 ,STPS[X].step_count
 ,STPS[X].accel_count
 ,STPS[X].step_delay
 ,STPS[Y].step_count
 ,STPS[Y].accel_count
 ,STPS[Y].step_delay
-,SV.mode_complete);
+,STPS[Z].step_count
+,STPS[Z].accel_count
+,STPS[Z].step_delay
+,(SV.mode_complete&0x00FF));
 }
 }
 #endif
-
+#if StepperDebug == 2
+if(SV.mode_complete){
+if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP | STPS[Z].run_state != STOP){
+while(DMA_IsOn(1));
+dma_printf("\
+Get_Axis_IEnable_States():= %d\t\
+SV.mode_complete:= %d\n"
+,Get_Axis_IEnable_States()
+,SV.mode_complete
+,STPS[X].step_count
+,STPS[Y].step_count
+,STPS[Z].step_count);
+}
+}
+#endif
   //state check for resets
   protocol_system_check();
    
@@ -189,18 +206,22 @@ dif:= %l\t%l\t%l\t%l\t%l\t%l\t%d\n"
   protocol_execute_runtime();
 
   //respond ok if movement is finished
-  if((old_state > 0) && (SV.mode_complete == 0)){
-  //if(FP_Axis(SV.mode_complete) && !SV.homed){
+  if((old_state > 0) && (SV.mode_complete == 0)){// && (!SV.homed)){
      old_state = 1;
      LED2 = false;
      //debug STATUS_OK response after moves complete
      status_of_gcode == STATUS_OK;
      report_status_message(status_of_gcode);
-  #if MainDebug == 13
-  while(DMA_IsOn(1));
-  dma_printf("old_state:= %d\tSV.mode_complete:= %d\n",old_state &0xF,SV.mode_complete);
-  #endif
+     
+    #if MainDebug == 13
+    while(DMA_IsOn(1));
+    dma_printf("old_state:= %d\tSV.mode_complete:= %d\tstepX:= %l\tstepY:= %l\tstepZ= %l\n"
+    ,old_state &0xF,SV.mode_complete,STPS[X].step_count
+    ,STPS[Y].step_count,STPS[Z].step_count);
+    #endif
   }
+  //sanity check incase SV.mode_complete is not resetin the correct places
+  if(!Get_Axis_IEnable_States()){SV.mode_complete = 0;}
   old_state = SV.mode_complete;
 
   //check ring buffer for data transfer

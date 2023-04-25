@@ -499,7 +499,7 @@ typedef struct genVars{
  char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
- char mode_complete;
+ int mode_complete;
  int AxisNo;
  int dirx;
  int diry;
@@ -511,10 +511,9 @@ typedef struct genVars{
  long dA;
  long dB;
  long dC;
- long prevA;
- long prevB;
- long prevC;
  long over;
+ float prevA;
+ float prevB;
 }sVars;
 extern sVars SV;
 
@@ -549,7 +548,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 59 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 67 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -686,6 +685,7 @@ void disableOCx();
 int GET_RunState(int axis_No);
 int Get_AxisStatus(int stepper);
 int Get_Axis_IEnable_States();
+int Get_Axis_Run_States();
 
 
 static void SingleStepAxis(int axis);

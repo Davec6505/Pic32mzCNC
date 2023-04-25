@@ -31,6 +31,11 @@ int i = 0;
  acc = lround(accel);
  dec = lround(decel);
  set_calculation_constants();
+ 
+ //important to set these to 0 at power on, determins
+ //which axis needs to run in axis interpolation
+ SV.prevA = 0.0;
+ SV.prevB = 0.0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -80,10 +85,7 @@ float temp_speed,max_s_limit;
 static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
-  //set the bit that indicates when axis has stopped stopped
-  //this send UGS OK once all axis are stopped.
   bit_true(SV.mode_complete,bit(axis_No));
-  
   // speed is in rpm ~ need to convert tp pps / steprate
   // speed /= 60.0; //base_pps[axis_No]/speed;
   speed = Get_Step_Rate(speed,axis_No);//*= spr_x_mstep[axis_No];
@@ -138,7 +140,7 @@ long abs_mmSteps = labs(mmSteps);
 
     // Find out after how many Steps before we must start deceleration.
     // n1 = (n1+n2)decel / (accel + decel) which is 50%
-     STPS[axis_No].accel_lim = (abs_mmSteps * dec) / (acc + dec);
+    STPS[axis_No].accel_lim = (abs_mmSteps * dec) / (acc + dec);
     if(STPS[axis_No].accel_lim > STPS[axis_No].max_step_lim)
         STPS[axis_No].accel_lim = STPS[axis_No].max_step_lim;
         

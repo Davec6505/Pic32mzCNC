@@ -710,7 +710,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 59 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 67 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -847,6 +847,7 @@ void disableOCx();
 int GET_RunState(int axis_No);
 int Get_AxisStatus(int stepper);
 int Get_Axis_IEnable_States();
+int Get_Axis_Run_States();
 
 
 static void SingleStepAxis(int axis);
@@ -871,7 +872,7 @@ typedef struct genVars{
  char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
- char mode_complete;
+ int mode_complete;
  int AxisNo;
  int dirx;
  int diry;
@@ -883,10 +884,9 @@ typedef struct genVars{
  long dA;
  long dB;
  long dC;
- long prevA;
- long prevB;
- long prevC;
  long over;
+ float prevA;
+ float prevB;
 }sVars;
 extern sVars SV;
 
@@ -941,6 +941,11 @@ int i = 0;
  acc = lround(accel);
  dec = lround(decel);
  set_calculation_constants();
+
+
+
+ SV.prevA = 0.0;
+ SV.prevB = 0.0;
 }
 
 
@@ -970,17 +975,14 @@ float Get_Step_Rate(float speed,int axis){
  speed *= spr_x_mstep[axis];
  return speed;
 }
-#line 77 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 82 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void speed_cntr_Move(long mmSteps, float speed, int axis_No){
 int ii;
 float temp_speed,max_s_limit;
 static float last_speed;
 long abs_mmSteps = labs(mmSteps);
 
-
-
   (SV.mode_complete |= (1 << axis_No) ) ;
-
 
 
  speed = Get_Step_Rate(speed,axis_No);
@@ -1079,9 +1081,34 @@ long abs_mmSteps = labs(mmSteps);
  STPS[axis_No].accel_count = 1;
  SV.running = 1;
  last_speed = speed;
-#line 224 "C:/Users/Git/Pic32mzCNC/Planner.c"
+
+
+
+
+while(DMA_IsOn(1));
+#line 206 "C:/Users/Git/Pic32mzCNC/Planner.c"
+dma_printf("\nacc:= %l\ndec:= %l\nspeed:= %f\nabs_mmSteps:= %l\na_sq[%d]:= %l\nalpha[%d]:= %f\na_t_x100[%d]:= %f\nSTPS[axis_No].max_step_lim:= %l\nacc_lim:= %l\ndec_val:= %l\ndec_start:= %l\nstep_delay:= %l\nmin_dly:= %l\nSV.mode-complete:= %d\n\n"
+,acc
+,dec
+,temp_speed
+,abs_mmSteps
+,axis_No
+,a_sq[axis_No]
+,axis_No
+,alpha[axis_No]
+,axis_No
+,a_t_x100[axis_No]
+,STPS[axis_No].max_step_lim
+,STPS[axis_No].accel_lim
+,STPS[axis_No].decel_val
+,STPS[axis_No].decel_start
+,STPS[axis_No].step_delay
+,STPS[axis_No].min_delay
+,SV.mode_complete);
+
+
 }
-#line 236 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 238 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
  float r, float i, float j, float k, int axis_A,int axis_B,int dir){
 char isclockwise = 0;
@@ -1107,7 +1134,7 @@ int axis_plane_a,axis_plane_b;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 324 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 326 "C:/Users/Git/Pic32mzCNC/Planner.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -1120,7 +1147,7 @@ int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (Get_motionmode() ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 358 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 360 "C:/Users/Git/Pic32mzCNC/Planner.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -1138,7 +1165,7 @@ int axis_plane_a,axis_plane_b;
 
  isclockwise = 0;
  if (dir ==  0 ) { isclockwise = 1; }
-#line 383 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 385 "C:/Users/Git/Pic32mzCNC/Planner.c"
  speed =  (( ((gc.feed_rate)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
 
  speed = Get_Step_Rate(speed,axis_A);
@@ -1161,7 +1188,12 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-#line 411 "C:/Users/Git/Pic32mzCNC/Planner.c"
+
+
+while(DMA_IsOn(1));
+dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
+
+
 }
 
 
@@ -1170,7 +1202,7 @@ void plan_reset_absolute_position(){
  for(i=0;i< 4 ;i++)
  STPS[X].steps_abs_position = 0;
 }
-#line 435 "C:/Users/Git/Pic32mzCNC/Planner.c"
+#line 437 "C:/Users/Git/Pic32mzCNC/Planner.c"
 long sqrt_(long x){
 
  volatile unsigned long xr;

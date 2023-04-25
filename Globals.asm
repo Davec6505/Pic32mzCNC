@@ -149,11 +149,11 @@ JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612448)(GP)
 ;Globals.c,89 :: 		settings.homing_seek_rate   = DEFAULT_HOMING_RAPID_FEEDRATE ;
-LUI	R2, 17096
+LUI	R2, 17056
 ORI	R2, R2, 0
 SW	R2, Offset(_settings+28)(GP)
 ;Globals.c,90 :: 		buffA[H_SEEK_RATE_OFFSET]   = flt2ulong(settings.homing_seek_rate);
-LUI	R2, 17096
+LUI	R2, 17056
 ORI	R2, R2, 0
 MTC1	R2, S12
 JAL	_flt2ulong+0

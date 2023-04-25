@@ -60,6 +60,7 @@ void disableOCx();
 int GET_RunState(int axis_No);
 int Get_AxisStatus(int stepper);
 int Get_Axis_IEnable_States();
+int Get_Axis_Run_States();
 
 //Axis control functions
 static void SingleStepAxis(int axis);

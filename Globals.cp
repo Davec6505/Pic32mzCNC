@@ -251,7 +251,7 @@ typedef struct genVars{
  char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
- char mode_complete;
+ int mode_complete;
  int AxisNo;
  int dirx;
  int diry;
@@ -263,10 +263,9 @@ typedef struct genVars{
  long dA;
  long dB;
  long dC;
- long prevA;
- long prevB;
- long prevC;
  long over;
+ float prevA;
+ float prevB;
 }sVars;
 extern sVars SV;
 
@@ -396,7 +395,7 @@ static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 59 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 67 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -533,6 +532,7 @@ void disableOCx();
 int GET_RunState(int axis_No);
 int Get_AxisStatus(int stepper);
 int Get_Axis_IEnable_States();
+int Get_Axis_Run_States();
 
 
 static void SingleStepAxis(int axis);
@@ -990,7 +990,7 @@ int retry_flash_write = 0;
  settings.default_seek_rate =  300.00 ;
  buffA[ 0x48 ] = flt2ulong(settings.default_seek_rate);
 
- settings.homing_seek_rate =  100.00  ;
+ settings.homing_seek_rate =  80.00  ;
  buffA[ 0x4A ] = flt2ulong(settings.homing_seek_rate);
 
  settings.homing_feed_rate =  12.00 ;

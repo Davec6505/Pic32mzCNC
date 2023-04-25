@@ -716,7 +716,7 @@ typedef struct genVars{
  char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
- char mode_complete;
+ int mode_complete;
  int AxisNo;
  int dirx;
  int diry;
@@ -728,10 +728,9 @@ typedef struct genVars{
  long dA;
  long dB;
  long dC;
- long prevA;
- long prevB;
- long prevC;
  long over;
+ float prevA;
+ float prevB;
 }sVars;
 extern sVars SV;
 
@@ -766,7 +765,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 59 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 67 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -903,6 +902,7 @@ void disableOCx();
 int GET_RunState(int axis_No);
 int Get_AxisStatus(int stepper);
 int Get_Axis_IEnable_States();
+int Get_Axis_Run_States();
 
 
 static void SingleStepAxis(int axis);
@@ -1051,10 +1051,19 @@ int state = 0;
 
 int Get_Axis_IEnable_States(){
  int temp = 0;
- temp |= OC3IE_bit << 3;
+ temp = OC3IE_bit << 3;
  temp |= OC7IE_bit << 2;
  temp |= OC2IE_bit << 1;
  temp |= OC5IE_bit << 0;
+ return temp;
+}
+
+int Get_Axis_Run_States(){
+int i,temp = 0;
+ for(i=0;i< 4 ;i++){
+ temp |= STPS[i].run_state;
+ temp = (temp<< i);
+ }
  return temp;
 }
 
@@ -1109,7 +1118,8 @@ void StopAxis(int axis){
  break;
  default : break;
  }
- STPS[axis].stopAxis = 1;
+ STPS[axis].run_state =  0 ;
+
 }
 
 
@@ -1199,13 +1209,16 @@ static int Pulse(int axis_No){
  case  1 :
 
  AccDec(axis_No);
+
  if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
  STPS[axis_No].step_delay = STPS[axis_No].min_delay;
 
  }
+
  if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
  STPS[axis_No].run_state =  3 ;
  }
+
 
 
  if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
@@ -1258,7 +1271,7 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
  if(SV.Single_Dual == 0){
  SingleStepAxis(X);
  }else{
- if(STPS[X].master = 1){
+ if(STPS[X].master =  1 ){
  if(axis_xyz == xy)
  Axis_Interpolate(X,Y);
  else if(axis_xyz == xz)
@@ -1277,7 +1290,7 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
  if(SV.Single_Dual == 0){
  SingleStepAxis(Y);
  }else {
- if(STPS[Y].master = 1){
+ if(STPS[Y].master =  1 ){
  if(axis_xyz == xy )
  Axis_Interpolate(X,Y);
  else if(axis_xyz == yz)
@@ -1295,7 +1308,7 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
  if(SV.Single_Dual == 0){
  SingleStepAxis(Z);
  }else{
- if(STPS[Z].master = 1){
+ if(STPS[Z].master =  1 ){
  if(axis_xyz == xz)
  Axis_Interpolate(X,Z);
  else if(axis_xyz == yz)
@@ -1315,7 +1328,7 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
  if(SV.Single_Dual == 0){
  SingleStepAxis(A);
  }else{
- if(STPS[A].master = 1){
+ if(STPS[A].master =  1 ){
  if(axis_xyz == xa)
  Axis_Interpolate(X,A);
  else if(axis_xyz == ya)
@@ -1355,61 +1368,36 @@ static int cnt;
  }
 
  if(SV.dA >= SV.dB){
-
-
-
- if(STPS[axisA].step_count < STPS[axisA].dist)
+ if(STPS[axisA].step_count < STPS[axisA].dist){
  Step_Cycle(axisA);
- else{
- if(SV.cir)
- StopAxis(axisA);
+ if(!SV.cir)Pulse(axisA);
+ }else{
+ if(SV.cir)StopAxis(axisA);
  }
-
- if(!SV.cir)
- Pulse(axisA);
 
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dB)) ;
  }else{
  Step_Cycle(axisB);
+ if(!SV.cir)Pulse(axisB);
  SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
  }
 
-
- if(STPS[axisA].run_state ==  0  | STPS[axisA].step_count >= STPS[axisA].dist){
- StopAxis(axisB);
- STPS[axisA].run_state =  0 ;
- STPS[axisB].run_state =  0 ;
- SV.mode_complete = 0;
- }
-
  }else{
-
-
-
- if(STPS[axisB].step_count < STPS[axisB].dist)
+ if(STPS[axisB].step_count < STPS[axisB].dist){
  Step_Cycle(axisB);
- else{
+ if(!SV.cir)Pulse(axisB);
+ }else{
  if(SV.cir)
  StopAxis(axisB);
  }
-
- if(!SV.cir)
- Pulse(axisB);
-
 
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dA)) ;
  }else{
  Step_Cycle(axisA);
+ if(!SV.cir)Pulse(axisA);
  SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
- }
-
- if(STPS[axisB].run_state ==  0  | STPS[axisB].step_count >= STPS[axisB].dist){
- StopAxis(axisA);
- STPS[axisA].run_state =  0 ;
- STPS[axisB].run_state =  0 ;
- SV.mode_complete = 0;
  }
  }
 }

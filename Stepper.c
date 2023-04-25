@@ -133,11 +133,20 @@ int state = 0;
 //returns the output state of the axis
 int Get_Axis_IEnable_States(){
  int temp = 0;
- temp |= OC3IE_bit << 3;
+ temp  = OC3IE_bit << 3;
  temp |= OC7IE_bit << 2;
  temp |= OC2IE_bit << 1;
  temp |= OC5IE_bit << 0;
  return temp;
+}
+
+int Get_Axis_Run_States(){
+int i,temp = 0;
+  for(i=0;i<NoOfAxis;i++){
+    temp |= STPS[i].run_state;
+    temp = (temp<< i);
+  }
+  return temp;
 }
 
 //////////////////////////////////////////////////////////
@@ -191,7 +200,8 @@ void StopAxis(int axis){
         break;
    default : break;
   }
-  STPS[axis].stopAxis = 1;
+  STPS[axis].run_state = STOP;
+  //STPS[axis].stopAxis = 1;
 }
 
 
@@ -281,13 +291,16 @@ static int Pulse(int axis_No){
     case ACCEL:
       //taylor series calculation for acc
       AccDec(axis_No);
+
       if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
          STPS[axis_No].step_delay = STPS[axis_No].min_delay;
          //STPS[axis_No].run_state  = RUN;
       }
+      
       if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
            STPS[axis_No].run_state  = RUN;
       }
+      
       //if the peak of the triangle is before max_accel_limit
       //then start to decel
       if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
@@ -340,7 +353,7 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
      if(SV.Single_Dual == 0){
         SingleStepAxis(X);
      }else{
-       if(STPS[X].master = 1){
+       if(STPS[X].master = MASTER){
           if(axis_xyz == xy)
                Axis_Interpolate(X,Y);
           else if(axis_xyz == xz)
@@ -359,7 +372,7 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
    if(SV.Single_Dual == 0){
         SingleStepAxis(Y);
    }else {
-      if(STPS[Y].master = 1){
+      if(STPS[Y].master = MASTER){
         if(axis_xyz == xy )
            Axis_Interpolate(X,Y);
         else if(axis_xyz == yz)
@@ -377,7 +390,7 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
    if(SV.Single_Dual == 0){
         SingleStepAxis(Z);
    }else{
-     if(STPS[Z].master = 1){
+     if(STPS[Z].master = MASTER){
         if(axis_xyz == xz)
            Axis_Interpolate(X,Z);
         else if(axis_xyz == yz)
@@ -397,7 +410,7 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
    if(SV.Single_Dual == 0){
         SingleStepAxis(A);
    }else{
-     if(STPS[A].master = 1){
+     if(STPS[A].master = MASTER){
         if(axis_xyz == xa)
            Axis_Interpolate(X,A);
         else if(axis_xyz == ya)
@@ -437,61 +450,36 @@ static int cnt;
    }
 
    if(SV.dA >= SV.dB){
-     //STPS[axisB].step_delay  = STPS[axisA].step_delay;
-     //STPS[axisB].accel_count = STPS[axisA].accel_count;
-     
-     if(STPS[axisA].step_count < STPS[axisA].dist)
+     if(STPS[axisA].step_count < STPS[axisA].dist){
         Step_Cycle(axisA);
-     else{
-       if(SV.cir)
-          StopAxis(axisA);
+        if(!SV.cir)Pulse(axisA);
+     }else{
+       if(SV.cir)StopAxis(axisA);
      }
-        
-     if(!SV.cir)
-        Pulse(axisA);
 
-      if(SV.dif < 0){
-          SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
-      }else{
-          Step_Cycle(axisB);
-          SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
-      }
-      
-      //axisA is used here to stop axisB otherwise axisB will over step its mark
-      if(STPS[axisA].run_state == STOP | STPS[axisA].step_count >= STPS[axisA].dist){
-        StopAxis(axisB);
-        STPS[axisA].run_state = STOP;
-        STPS[axisB].run_state = STOP;
-        SV.mode_complete = 0;
-      }
-        
-   }else{
-     //STPS[axisA].step_delay  = STPS[axisB].step_delay;
-     //STPS[axisA].accel_count = STPS[axisB].accel_count;
-     
-     if(STPS[axisB].step_count < STPS[axisB].dist)
+     if(SV.dif < 0){
+       SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
+     }else{
        Step_Cycle(axisB);
-     else{
+       if(!SV.cir)Pulse(axisB);
+       SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
+     }
+
+   }else{
+     if(STPS[axisB].step_count < STPS[axisB].dist){
+       Step_Cycle(axisB);
+       if(!SV.cir)Pulse(axisB);
+     }else{
        if(SV.cir)
          StopAxis(axisB);
      }
      
-     if(!SV.cir)
-       Pulse(axisB);
-       
-         
      if(SV.dif < 0){
        SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
      }else{
          Step_Cycle(axisA);
+         if(!SV.cir)Pulse(axisA);
          SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
-     }
-     //axisB is used here to stop axisA otherwise axisA will over step its mark
-     if(STPS[axisB].run_state == STOP | STPS[axisB].step_count >= STPS[axisB].dist){
-        StopAxis(axisA);
-        STPS[axisA].run_state = STOP;
-        STPS[axisB].run_state = STOP;
-        SV.mode_complete = 0;
      }
    }
 }
