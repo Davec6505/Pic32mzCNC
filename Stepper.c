@@ -449,7 +449,9 @@ static int cnt;
       cnt = 0;
    }
 
-   if(SV.dA >= SV.dB){
+   if(STPS[axisA].dist >= STPS[axisB].dist){//if(SV.dA >= SV.dB){
+     STPS[axisB].step_delay  = STPS[axisA].step_delay;
+     STPS[axisB].accel_count = STPS[axisA].accel_count;
      if(STPS[axisA].step_count < STPS[axisA].dist){
         Step_Cycle(axisA);
         if(!SV.cir)Pulse(axisA);
@@ -458,14 +460,22 @@ static int cnt;
      }
 
      if(SV.dif < 0){
-       SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
+       SV.dif += BresIncVal(STPS[axisB].dist);//SV.dB);//2*SV.dy;//
      }else{
        Step_Cycle(axisB);
        if(!SV.cir)Pulse(axisB);
-       SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
+       SV.dif += BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
      }
-
+       //axisA is used here to stop axisB otherwise axisB will over step its mark
+      if(STPS[axisA].run_state == STOP | STPS[axisA].step_count >= STPS[axisA].dist){
+        SV.mode_complete = 0;
+        StopAxis(axisB);
+        STPS[axisA].run_state = STOP;
+        STPS[axisB].run_state = STOP;
+      }
    }else{
+     STPS[axisA].step_delay  = STPS[axisB].step_delay;
+     STPS[axisA].accel_count = STPS[axisB].accel_count;
      if(STPS[axisB].step_count < STPS[axisB].dist){
        Step_Cycle(axisB);
        if(!SV.cir)Pulse(axisB);
@@ -475,11 +485,18 @@ static int cnt;
      }
      
      if(SV.dif < 0){
-       SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
+       SV.dif += BresIncVal(STPS[axisA].dist);//SV.dA);//2 * SV.dx;//
      }else{
          Step_Cycle(axisA);
          if(!SV.cir)Pulse(axisA);
-         SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
+         SV.dif += BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
      }
+           //axisA is used here to stop axisB otherwise axisB will over step its mark
+      if(STPS[axisB].run_state == STOP | STPS[axisB].step_count >= STPS[axisB].dist){
+        SV.mode_complete = 0;
+        StopAxis(axisA);
+        STPS[axisA].run_state = STOP;
+        STPS[axisB].run_state = STOP;
+      }
    }
 }

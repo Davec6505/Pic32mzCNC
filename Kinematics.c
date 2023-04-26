@@ -177,31 +177,37 @@ long tempA,tempB,tempC;
   //check if movement is needed on the axis
   //calculate acc/dec "if arc is runninG use last min speed ?"
   //Remove -ve values for dist in Steps to complete move
- if(SV.prevA != axis_a){
-   STPS[axisA].dist = SV.dA = labs(tempA);
-   speed_cntr_Move(tempA,speed,axisA);
- }
-  if(SV.prevB != axis_b){
-   STPS[axisB].dist = SV.dB = labs(tempB);
-   speed_cntr_Move(tempB,speed,axisB);
- }
-  #if KineDebug == 4
-  while(DMA_IsOn(1));
-  dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
-  #endif
+ if(SV.prevA != axis_a)
+    SV.dA  = labs(tempA); //= SV.dA = labs(tempA);
+ else
+    SV.dA = 0;
+    
+ if(SV.prevB != axis_b)
+    SV.dB = labs(tempB);
+ else
+   SV.dB = 0;
+
+ #if KineDebug == 4
+ while(DMA_IsOn(1));
+ dma_printf("prevA:= %f\tSV.dA:= %l\tprevB:= %f\tSV.dB:= %l\n"
+            ,SV.prevA,SV.dA,SV.prevB,SV.dB);
+ #endif
 
 
-  if(SV.dA >= SV.dB){
-   //disabled for trial purposes as computing both axis acc dec
-   // STPS[axisB].step_delay = STPS[axisA].step_delay;
-   // STPS[axisB].accel_count = STPS[axisA].accel_count;
-    SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
+ if(SV.dA >= SV.dB){
+    STPS[axisA].dist = labs(tempA);
+    speed_cntr_Move(tempA,speed,axisA);
+    STPS[axisB].step_delay = STPS[axisA].step_delay;
+    STPS[axisB].accel_count = STPS[axisA].accel_count;
+    SV.dif = BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//2*(SV.dy - SV.dx);
     STPS[axisA].master = MASTER;
     STPS[axisB].master = SLAVE;
-  }else{
-  //  STPS[axisA].step_delay = STPS[axisB].step_delay;
-  //  STPS[axisA].accel_count = STPS[axisB].accel_count;
-    SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
+ }else{
+    STPS[axisB].dist = labs(tempB);
+    speed_cntr_Move(tempB,speed,axisB);
+    STPS[axisA].step_delay = STPS[axisB].step_delay;
+    STPS[axisA].accel_count = STPS[axisB].accel_count;
+    SV.dif = BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//2* (SV.dx - SV.dy);
     STPS[axisA].master = SLAVE;
     STPS[axisB].master = MASTER;
   }
