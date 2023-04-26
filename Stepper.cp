@@ -729,8 +729,8 @@ typedef struct genVars{
  long dB;
  long dC;
  long over;
- float prevA;
- float prevB;
+ long prevA;
+ long prevB;
 }sVars;
 extern sVars SV;
 
@@ -1367,7 +1367,7 @@ static int cnt;
  cnt = 0;
  }
 
- if(STPS[axisA].dist >= STPS[axisB].dist){
+ if(SV.dA >= SV.dB){
  STPS[axisB].step_delay = STPS[axisA].step_delay;
  STPS[axisB].accel_count = STPS[axisA].accel_count;
  if(STPS[axisA].step_count < STPS[axisA].dist){
@@ -1378,11 +1378,11 @@ static int cnt;
  }
 
  if(SV.dif < 0){
- SV.dif +=  ((2)*(STPS[axisB].dist)) ;
+ SV.dif +=  ((2)*(SV.dB)) ;
  }else{
  Step_Cycle(axisB);
  if(!SV.cir)Pulse(axisB);
- SV.dif +=  ((2)*((STPS[axisB].dist) - (STPS[axisA].dist))) ;
+ SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
  }
 
  if(STPS[axisA].run_state ==  0  | STPS[axisA].step_count >= STPS[axisA].dist){
@@ -1403,11 +1403,11 @@ static int cnt;
  }
 
  if(SV.dif < 0){
- SV.dif +=  ((2)*(STPS[axisA].dist)) ;
+ SV.dif +=  ((2)*(SV.dA)) ;
  }else{
  Step_Cycle(axisA);
  if(!SV.cir)Pulse(axisA);
- SV.dif +=  ((2)*((STPS[axisA].dist) - (STPS[axisB].dist))) ;
+ SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
  }
 
  if(STPS[axisB].run_state ==  0  | STPS[axisB].step_count >= STPS[axisB].dist){

@@ -177,15 +177,9 @@ long tempA,tempB,tempC;
   //check if movement is needed on the axis
   //calculate acc/dec "if arc is runninG use last min speed ?"
   //Remove -ve values for dist in Steps to complete move
- if(SV.prevA != axis_a)
-    SV.dA  = labs(tempA); //= SV.dA = labs(tempA);
- else
-    SV.dA = 0;
-    
- if(SV.prevB != axis_b)
-    SV.dB = labs(tempB);
- else
-   SV.dB = 0;
+  SV.dA = labs(tempA);
+  SV.dB = labs(tempB);
+
 
  #if KineDebug == 4
  while(DMA_IsOn(1));
@@ -213,8 +207,8 @@ long tempA,tempB,tempC;
   }
   
    //store current pos prev must be cur pos
-  SV.prevA = axis_a;
-  SV.prevB = axis_b;
+  SV.prevA = tempA;
+  SV.prevB = tempB;
 
   
   STPS[axisA].step_count = 0;

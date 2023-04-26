@@ -1906,26 +1906,10 @@ _SX
 SH	R0, Offset(Stepper_Axis_Interpolate_cnt_L0+0)(GP)
 ;Stepper.c,450 :: 		}
 L_Stepper_Axis_Interpolate97:
-;Stepper.c,452 :: 		if(STPS[axisA].dist >= STPS[axisB].dist){//if(SV.dA >= SV.dB){
-SEH	R3, R25
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 36
-LW	R4, 0(R2)
-SEH	R3, R26
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 36
-LW	R2, 0(R2)
-SLT	R2, R4, R2
+;Stepper.c,452 :: 		if(SV.dA >= SV.dB){
+LW	R3, Offset(_SV+28)(GP)
+LW	R2, Offset(_SV+24)(GP)
+SLT	R2, R2, R3
 BEQ	R2, R0, L_Stepper_Axis_Interpolate243
 NOP	
 J	L_Stepper_Axis_Interpolate98
@@ -2026,16 +2010,8 @@ NOP
 J	L_Stepper_Axis_Interpolate103
 NOP	
 L_Stepper_Axis_Interpolate248:
-;Stepper.c,463 :: 		SV.dif += BresIncVal(STPS[axisB].dist);//SV.dB);//2*SV.dy;//
-SEH	R3, R26
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 36
-LW	R2, 0(R2)
+;Stepper.c,463 :: 		SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
+LW	R2, Offset(_SV+28)(GP)
 SLL	R3, R2, 1
 LW	R2, Offset(_SV+20)(GP)
 ADDU	R2, R2, R3
@@ -2064,26 +2040,10 @@ JAL	Stepper_Pulse+0
 NOP	
 LH	R25, 4(SP)
 L_Stepper_Axis_Interpolate105:
-;Stepper.c,467 :: 		SV.dif += BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
-SEH	R3, R26
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 36
-LW	R4, 0(R2)
-SEH	R3, R25
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 36
-LW	R2, 0(R2)
-SUBU	R2, R4, R2
+;Stepper.c,467 :: 		SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
+LW	R3, Offset(_SV+24)(GP)
+LW	R2, Offset(_SV+28)(GP)
+SUBU	R2, R2, R3
 SLL	R3, R2, 1
 LW	R2, Offset(_SV+20)(GP)
 ADDU	R2, R2, R3
@@ -2254,16 +2214,8 @@ NOP
 J	L_Stepper_Axis_Interpolate112
 NOP	
 L_Stepper_Axis_Interpolate258:
-;Stepper.c,488 :: 		SV.dif += BresIncVal(STPS[axisA].dist);//SV.dA);//2 * SV.dx;//
-SEH	R3, R25
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 36
-LW	R2, 0(R2)
+;Stepper.c,488 :: 		SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
+LW	R2, Offset(_SV+24)(GP)
 SLL	R3, R2, 1
 LW	R2, Offset(_SV+20)(GP)
 ADDU	R2, R2, R3
@@ -2286,26 +2238,10 @@ L_Stepper_Axis_Interpolate259:
 JAL	Stepper_Pulse+0
 NOP	
 L_Stepper_Axis_Interpolate114:
-;Stepper.c,492 :: 		SV.dif += BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
-SEH	R3, R25
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 36
-LW	R4, 0(R2)
-SEH	R3, R26
-ORI	R2, R0, 80
-MULTU	R2, R3
-MFLO	R3
-LUI	R2, hi_addr(_STPS+0)
-ORI	R2, R2, lo_addr(_STPS+0)
-ADDU	R2, R2, R3
-ADDIU	R2, R2, 36
-LW	R2, 0(R2)
-SUBU	R2, R4, R2
+;Stepper.c,492 :: 		SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
+LW	R3, Offset(_SV+28)(GP)
+LW	R2, Offset(_SV+24)(GP)
+SUBU	R2, R2, R3
 SLL	R3, R2, 1
 LW	R2, Offset(_SV+20)(GP)
 ADDU	R2, R2, R3

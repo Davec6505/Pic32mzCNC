@@ -80,6 +80,8 @@ NOP
 L__main147:
 L__main146:
 ;Main.c,98 :: 		int axis_to_run = 0;
+MOVZ	R30, R0, R0
+SH	R30, 2(SP)
 ;Main.c,100 :: 		modal_group = Get_modalgroup();
 JAL	_Get_modalgroup+0
 NOP	
@@ -116,7 +118,7 @@ L_main9:
 ;Main.c,115 :: 		axis_to_run = Get_Axisword();
 JAL	_Get_Axisword+0
 NOP	
-SH	R2, 104(SP)
+SH	R2, 2(SP)
 ;Main.c,117 :: 		if(axis_to_run){
 BNE	R2, R0, L__main157
 NOP	
@@ -128,12 +130,13 @@ ORI	R25, R0, 31
 JAL	_EnableSteppers+0
 NOP	
 ;Main.c,121 :: 		Modal_Group_Actions1(axis_to_run);
-LH	R25, 104(SP)
+LH	R25, 2(SP)
 JAL	Main_Modal_Group_Actions1+0
 NOP	
 ;Main.c,122 :: 		axis_to_run = Rst_Axisword();
 JAL	_Rst_Axisword+0
 NOP	
+SH	R2, 2(SP)
 ;Main.c,123 :: 		modal_group = Rst_modalgroup();
 JAL	_Rst_modalgroup+0
 NOP	
@@ -376,13 +379,13 @@ L_main25:
 LH	R2, Offset(_SV+2)(GP)
 ANDI	R2, R2, 255
 ;Main.c,173 :: 		%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
-ADDIU	R23, SP, 2
+ADDIU	R23, SP, 4
 ADDIU	R22, R23, 31
 LUI	R24, hi_addr(?ICS?lstr1_Main+0)
 ORI	R24, R24, lo_addr(?ICS?lstr1_Main+0)
 JAL	___CC2DW+0
 NOP	
-ADDIU	R3, SP, 2
+ADDIU	R3, SP, 4
 ;Main.c,183 :: 		,(SV.mode_complete&0x00FF));
 ADDIU	SP, SP, -44
 SH	R2, 40(SP)
@@ -472,13 +475,13 @@ L_main30:
 LBU	R2, Offset(Main_old_state+0)(GP)
 ANDI	R4, R2, 15
 ;Main.c,218 :: 		dma_printf("old_state:= %d\tSV.mode_complete:= %d\tstepX:= %l\tstepY:= %l\tstepZ= %l\n"
-ADDIU	R23, SP, 33
+ADDIU	R23, SP, 35
 ADDIU	R22, R23, 70
 LUI	R24, hi_addr(?ICS?lstr2_Main+0)
 ORI	R24, R24, lo_addr(?ICS?lstr2_Main+0)
 JAL	___CC2DW+0
 NOP	
-ADDIU	R3, SP, 33
+ADDIU	R3, SP, 35
 ;Main.c,220 :: 		,STPS[Y].step_count,STPS[Z].step_count);
 LW	R2, Offset(-1610600000)(GP)
 ADDIU	SP, SP, -24
