@@ -116,11 +116,11 @@ main
 		SingleAxisStep
 		DualAxisStep
 			belt_steps
-			DMA_IsOn
-			dma_printf
 			Single_Axis_Enable
 			Set_Axisdirection
 			labs
+			DMA_IsOn
+			dma_printf
 			speed_cntr_Move
 			Start_Interpolation
 				Axis_Interpolate
@@ -209,7 +209,6 @@ main
 			dma_printf
 			beltsteps2mm
 			__CC2DW
-	Get_Axis_IEnable_States
 	Sample_Gocde_Line
 		Get_Difference
 		DMA0_ReadDstPtr

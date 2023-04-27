@@ -45,7 +45,7 @@ coord_sys coord_system[NUMBER_OF_DATUMS] absolute 0xA0003600;
 unsigned long rowbuff[128]={0};
 
 //edge detection for rising edge of axis
-static char old_state;
+static volatile int old_state;
 
 //////////////////////////////////////////
 //file scope vars
@@ -204,7 +204,10 @@ SV.mode_complete:= %d\n"
    
   //run at end of every scan
   protocol_execute_runtime();
-
+  
+  //sanity check incase SV.mode_complete is not resetin the correct places
+  // if(!Get_Axis_IEnable_States()){SV.mode_complete = 0;}
+  old_state = SV.mode_complete;
   //respond ok if movement is finished
   if((old_state > 0) && (SV.mode_complete == 0)){// && (!SV.homed)){
      old_state = 1;
@@ -216,13 +219,10 @@ SV.mode_complete:= %d\n"
     #if MainDebug == 13
     while(DMA_IsOn(1));
     dma_printf("old_state:= %d\tSV.mode_complete:= %d\tstepX:= %l\tstepY:= %l\tstepZ= %l\n"
-    ,old_state &0xF,SV.mode_complete,STPS[X].step_count
+    ,old_state ,SV.mode_complete,STPS[X].step_count
     ,STPS[Y].step_count,STPS[Z].step_count);
     #endif
   }
-  //sanity check incase SV.mode_complete is not resetin the correct places
-  if(!Get_Axis_IEnable_States()){SV.mode_complete = 0;}
-  old_state = SV.mode_complete;
 
   //check ring buffer for data transfer
   status_of_gcode = Sample_Gocde_Line();

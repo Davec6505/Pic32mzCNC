@@ -729,8 +729,8 @@ typedef struct genVars{
  long dB;
  long dC;
  long over;
- long prevA;
- long prevB;
+ float prevA;
+ float prevB;
 }sVars;
 extern sVars SV;
 
@@ -1374,23 +1374,23 @@ static int cnt;
  Step_Cycle(axisA);
  if(!SV.cir)Pulse(axisA);
  }else{
- if(SV.cir)StopAxis(axisA);
+ StopAxis(axisA);
+  (SV.mode_complete &= ~ (1 << axisA) ) ;
  }
 
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dB)) ;
  }else{
+ if(STPS[axisB].step_count < STPS[axisB].dist){
  Step_Cycle(axisB);
  if(!SV.cir)Pulse(axisB);
  SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
+ }else{
+ StopAxis(axisB);
+  (SV.mode_complete &= ~ (1 << axisB) ) ;
+ }
  }
 
- if(STPS[axisA].run_state ==  0  | STPS[axisA].step_count >= STPS[axisA].dist){
- SV.mode_complete = 0;
- StopAxis(axisB);
- STPS[axisA].run_state =  0 ;
- STPS[axisB].run_state =  0 ;
- }
  }else{
  STPS[axisA].step_delay = STPS[axisB].step_delay;
  STPS[axisA].accel_count = STPS[axisB].accel_count;
@@ -1405,16 +1405,14 @@ static int cnt;
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dA)) ;
  }else{
+ if(STPS[axisA].step_count < STPS[axisA].dist){
  Step_Cycle(axisA);
  if(!SV.cir)Pulse(axisA);
  SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
+ }else{
+ StopAxis(axisB);
+  (SV.mode_complete &= ~ (1 << axisB) ) ;
  }
-
- if(STPS[axisB].run_state ==  0  | STPS[axisB].step_count >= STPS[axisB].dist){
- SV.mode_complete = 0;
- StopAxis(axisA);
- STPS[axisA].run_state =  0 ;
- STPS[axisB].run_state =  0 ;
  }
  }
 }

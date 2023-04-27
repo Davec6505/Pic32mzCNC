@@ -18,9 +18,11 @@ SW	R2, Offset(-1610598140)(GP)
 JAL	_set_calculation_constants+0
 NOP	
 ;Planner.c,37 :: 		SV.prevA = 0.0;
-SW	R0, Offset(_SV+40)(GP)
+MOVZ	R2, R0, R0
+SW	R2, Offset(_SV+40)(GP)
 ;Planner.c,38 :: 		SV.prevB = 0.0;
-SW	R0, Offset(_SV+44)(GP)
+MOVZ	R2, R0, R0
+SW	R2, Offset(_SV+44)(GP)
 ;Planner.c,39 :: 		}
 L_end_plan_init:
 LW	RA, 0(SP)

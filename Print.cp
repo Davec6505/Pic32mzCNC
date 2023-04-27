@@ -384,8 +384,8 @@ typedef struct genVars{
  long dB;
  long dC;
  long over;
- long prevA;
- long prevB;
+ float prevA;
+ float prevB;
 }sVars;
 extern sVars SV;
 

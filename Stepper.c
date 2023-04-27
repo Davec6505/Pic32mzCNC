@@ -456,23 +456,23 @@ static int cnt;
         Step_Cycle(axisA);
         if(!SV.cir)Pulse(axisA);
      }else{
-       if(SV.cir)StopAxis(axisA);
+        StopAxis(axisA);
+        bit_false(SV.mode_complete,bit(axisA));
      }
 
      if(SV.dif < 0){
        SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
      }else{
+      if(STPS[axisB].step_count < STPS[axisB].dist){
        Step_Cycle(axisB);
        if(!SV.cir)Pulse(axisB);
        SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
-     }
-       //axisA is used here to stop axisB otherwise axisB will over step its mark
-      if(STPS[axisA].run_state == STOP | STPS[axisA].step_count >= STPS[axisA].dist){
-        SV.mode_complete = 0;
+      }else{
         StopAxis(axisB);
-        STPS[axisA].run_state = STOP;
-        STPS[axisB].run_state = STOP;
+        bit_false(SV.mode_complete,bit(axisB));
       }
+     }
+
    }else{
      STPS[axisA].step_delay  = STPS[axisB].step_delay;
      STPS[axisA].accel_count = STPS[axisB].accel_count;
@@ -487,16 +487,14 @@ static int cnt;
      if(SV.dif < 0){
        SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
      }else{
+      if(STPS[axisA].step_count < STPS[axisA].dist){
          Step_Cycle(axisA);
          if(!SV.cir)Pulse(axisA);
          SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
-     }
-           //axisA is used here to stop axisB otherwise axisB will over step its mark
-      if(STPS[axisB].run_state == STOP | STPS[axisB].step_count >= STPS[axisB].dist){
-        SV.mode_complete = 0;
-        StopAxis(axisA);
-        STPS[axisA].run_state = STOP;
-        STPS[axisB].run_state = STOP;
+      }else{
+        StopAxis(axisB);
+        bit_false(SV.mode_complete,bit(axisB));
       }
+     }
    }
 }

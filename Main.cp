@@ -530,8 +530,8 @@ typedef struct genVars{
  long dB;
  long dC;
  long over;
- long prevA;
- long prevB;
+ float prevA;
+ float prevB;
 }sVars;
 extern sVars SV;
 
@@ -930,7 +930,7 @@ coord_sys coord_system[ 9 ] absolute 0xA0003600;
 unsigned long rowbuff[128]={0};
 
 
-static char old_state;
+static volatile int old_state;
 
 
 
@@ -1067,6 +1067,9 @@ dma_printf("%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
  protocol_execute_runtime();
 
 
+
+ old_state = SV.mode_complete;
+
  if((old_state > 0) && (SV.mode_complete == 0)){
  old_state = 1;
  LED2 =  0 ;
@@ -1077,13 +1080,10 @@ dma_printf("%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
 
  while(DMA_IsOn(1));
  dma_printf("old_state:= %d\tSV.mode_complete:= %d\tstepX:= %l\tstepY:= %l\tstepZ= %l\n"
- ,old_state &0xF,SV.mode_complete,STPS[X].step_count
+ ,old_state ,SV.mode_complete,STPS[X].step_count
  ,STPS[Y].step_count,STPS[Z].step_count);
 
  }
-
- if(!Get_Axis_IEnable_States()){SV.mode_complete = 0;}
- old_state = SV.mode_complete;
 
 
  status_of_gcode = Sample_Gocde_Line();
