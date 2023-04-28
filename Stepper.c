@@ -181,6 +181,7 @@ void Single_Axis_Enable(_axis_ axis_){
 }
 
 void StopAxis(int axis){
+
   switch(axis){
    case X:
          OC5IE_bit = 0;
@@ -201,7 +202,8 @@ void StopAxis(int axis){
    default : break;
   }
   STPS[axis].run_state = STOP;
-  //STPS[axis].stopAxis = 1;
+ // SV.mode_complete ^= axis + 1;
+  bit_false(SV.mode_complete,bit(axis));
 }
 
 
@@ -282,11 +284,11 @@ static int Pulse(int axis_No){
 
   switch(STPS[axis_No].run_state) {
     case STOP:
-        STPS[axis_No].run_state  = STOP;
-        //StopAxis(axis_No);
+       // STPS[axis_No].run_state  = STOP;
+        StopAxis(axis_No);
         //resetting the axis movement bit to indicate axis finnished
         //moving, UGS NEEDS AN ok TO
-        bit_false(SV.mode_complete,bit(axis_No));
+      //  bit_false(SV.mode_complete,bit(axis_No));
       break;
     case ACCEL:
       //taylor series calculation for acc
@@ -294,7 +296,7 @@ static int Pulse(int axis_No){
 
       if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
          STPS[axis_No].step_delay = STPS[axis_No].min_delay;
-         //STPS[axis_No].run_state  = RUN;
+         STPS[axis_No].run_state  = RUN;
       }
       
       if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
@@ -317,13 +319,14 @@ static int Pulse(int axis_No){
            STPS[axis_No].accel_count = STPS[axis_No].decel_val;
            STPS[axis_No].rest        = 0;
            STPS[axis_No].run_state =  DECEL;
-        }
+        }else  if(STPS[axis_No].step_count >= STPS[axis_No].dist)
+           STPS[axis_No].run_state =  STOP;
       break;
     case DECEL:
       //taylor series calculation for dec
       AccDec(axis_No);
       // Check for final step
-      if(STPS[axis_No].accel_count >= -1 ){
+      if(STPS[axis_No].accel_count >= -1 || STPS[axis_No].step_count >= STPS[axis_No].dist ){
         STPS[axis_No].run_state = STOP;
       }
       break;
@@ -429,6 +432,8 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 static void SingleStepAxis(int axis){
   Step_Cycle(axis);
   Pulse(axis);
+  if(STPS[axis].step_count >= STPS[axis].dist)
+    StopAxis(axis);
 }
 
 ////////////////////////////////////////////////////////
@@ -449,48 +454,50 @@ static int cnt;
       cnt = 0;
    }
 
-   if(SV.dA >= SV.dB){
+   if(STPS[axisA].dist >= STPS[axisB].dist){//SV.dA >= SV.dB){
      if(STPS[axisA].step_count < STPS[axisA].dist){
        Step_Cycle(axisA);
+       if(STPS[axisB].step_count >= STPS[axisB].dist)
+         StopAxis(axisB);
      }
-     if(!SV.cir)Pulse(axisA);
+     //Pulse can't be hideen behind above if statement, it needs
+     //to execute a state check regardless of whether the axis pulsed
+     Pulse(axisA);
 
      if(SV.dif < 0){
-       SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
+       SV.dif += BresIncVal(STPS[axisB].dist);//SV.dB);//2*SV.dy;//
      }else{
       if(STPS[axisB].step_count < STPS[axisB].dist){
        STPS[axisB].step_delay = STPS[axisA].step_delay;
        STPS[axisB].accel_count = STPS[axisA].accel_count;
        Step_Cycle(axisB);
-       if(!SV.cir)Pulse(axisB);
-       SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
+       //if(!SV.cir)Pulse(axisB);
+       SV.dif += BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
       }
+      Pulse(axisB);
      }
    }else{
      if(STPS[axisB].step_count < STPS[axisB].dist){
        Step_Cycle(axisB);
+       if(STPS[axisA].step_count >= STPS[axisA].dist)
+         StopAxis(axisA);
      }
-     if(!SV.cir)Pulse(axisB);
+     //Pulse can't be hideen behind above if statement, it needs
+     //to execute a state check regardless of whether the axis pulsed
+     Pulse(axisB);
      
      if(SV.dif < 0){
-       SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
+       SV.dif += BresIncVal(STPS[axisA].dist);//SV.dA);//2 * SV.dx;//
      }else{
       if(STPS[axisA].step_count < STPS[axisA].dist){
          STPS[axisA].step_delay = STPS[axisB].step_delay;
          STPS[axisA].accel_count = STPS[axisB].accel_count;
          Step_Cycle(axisA);
-         if(!SV.cir)Pulse(axisA);
-         SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
+         //if(!SV.cir)Pulse(axisA);
+         SV.dif += BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
       }
+      Pulse(axisA);
      }
 
    }
-   
-   if(STPS[axisA].run_state == STOP){
-      StopAxis(axisA);
-   }
-   if(STPS[axisB].run_state == STOP){
-      StopAxis(axisB);
-   }
-
 }

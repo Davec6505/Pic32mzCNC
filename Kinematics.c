@@ -131,7 +131,7 @@ long speed_ = 0;
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
-long tempA,tempB,tempC;
+long tempA,tempB,tempC,temp1,temp2;
 //int dirA,dirB;
       //Start values for Bresenhams
   if(SV.prevA == axis_a){
@@ -165,6 +165,8 @@ long tempA,tempB,tempC;
  }
 
  //fresh values for calc
+ temp1 = labs(tempA);
+ temp2 = labs(tempB);
  SV.over = 0;
  SV.dif  = 0;
 
@@ -183,16 +185,16 @@ long tempA,tempB,tempC;
   //check if movement is needed on the axis
   //calculate acc/dec "if arc is runninG use last min speed ?"
   //Remove -ve values for dist in Steps to complete move
-  STPS[axisA].dist = SV.dA = labs(tempA);
-  STPS[axisB].dist = SV.dB = labs(tempB);
+  STPS[axisA].dist =  labs(tempA);
+  STPS[axisB].dist =  labs(tempB);
   
  #if KineDebug == 4
  while(DMA_IsOn(1));
  dma_printf("SV.dA:= %l\tSV.dB:= %l\n"
-            ,SV.dA,SV.dB);
+            ,STPS[axisA].dist,STPS[axisB].dist);
  #endif
   
- if(SV.dA >= SV.dB){
+ if(temp1 >= temp2){//SV.dA >= SV.dB){
     speed_cntr_Move(tempA,speed,axisA);
     STPS[axisB].step_delay = STPS[axisA].step_delay;
     STPS[axisB].accel_count = STPS[axisA].accel_count;
@@ -355,10 +357,9 @@ dma_printf("\
   cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
   ,linear_travel,linear_per_segment,theta_per_segment,feed_rate);
   #endif
-  
+
   for (i = 1; i<segments; i+=1.00) { // Increment (segments-1)
   //while(i < segments) { // Increment (segments-1)
-
       if (count < settings.n_arc_correction) {
         // Apply vector rotation matrix
         r_axisi = r_axis0*sin_T + r_axis1*cos_T;
@@ -415,27 +416,27 @@ dma_printf("\
    //check limits and estops as well as send out status report
    // will want ot unblockthis nce we have a complete working model
    while(1){
-     /*
-     if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
+
+    /* if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
          disableOCx();
          limit_error = 1;
-     }
-     */
-     if(!Get_Axis_IEnable_States())
+     }*/
+    if(!Get_Axis_IEnable_States()||SV.mode_complete < 1)
        break;
    }
-
+   SV.mode_complete = 0;
     // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
     // if (sys.abort) { return; }
    /*if(limit_error)
       break; */
-#if KineDebug == 3
+#if KineDebug == 4
 while(DMA_IsOn(1));
 dma_printf("\
 [ i:= %d\tseg:= %d ]\n\
 [ nPx:= %f\tnPy:= %f ]\n\
-[ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n"
-,i,segments,nPx,nPy,target[axis_0],target[axis_1]);
+[ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n\
+[SV.mode_complete:= %d\r\n"
+,i,segments,nPx,nPy,target[axis_0],target[axis_1],SV.mode_complete);
 #endif
 
   }
@@ -444,7 +445,7 @@ dma_printf("\
   //ensure axis are in position when arc is complete
   DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,feed_rate);
   //report_status_message(STATUS_OK);
- // SV.mode_complete = 1;
+  SV.mode_complete = 0;
   #if KineDebug == 3
      while(DMA_IsOn(1));
      dma_printf("\n%s\n","Arc Finnished");

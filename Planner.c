@@ -100,10 +100,10 @@ long abs_mmSteps = labs(mmSteps);
     SV.running = 1;                        // start running
 
   }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
+  
     //if the motor is still moving at time of recalculating then use difference
     //still need to figure out if we should be doing this gcode is ususlly specific
     //to finnishing a move before starting a next!!!!
-    
     //dly = (Vlast - Vcur) / (2 . a)
    if(STPS[axis_No].run_state != STOP)
         temp_speed = last_speed - speed;
@@ -115,11 +115,10 @@ long abs_mmSteps = labs(mmSteps);
     // min_delay = (ALPHA / T1_Freq)/ speed
     STPS[axis_No].min_delay =  lround(a_t_x100[axis_No] / temp_speed);
 
-    
     // Set accelration by calc the first (c0) step delay .
     // step_delay = 1/T_Freq*sqrt(2*alpha/accel)
     // step_delay = ( T_Freq*0.676/100 ) * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-    STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / acc))/100));
+    STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / acc)))/100);
     
     if(STPS[axis_No].step_delay > minSpeed)
        STPS[axis_No].StartUp_delay = minSpeed;
@@ -128,10 +127,13 @@ long abs_mmSteps = labs(mmSteps);
 
     // max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
     // Find the number of Steps before the speed hits the max speed limit.
-    //A_x20000 (int)(ALPHA*20000)
     //STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*10000.00*(float)STPS[axis_No].acc));
-    STPS[axis_No].max_step_lim = (long)((temp_speed*temp_speed)/((alpha[axis_No]*x20000*(float)acc)/100.00));
+    STPS[axis_No].max_step_lim = (long)((temp_speed*temp_speed)/((2*alpha[axis_No]*(float)acc)*100.00));
     
+    // If max_step is greater than 50% of max travel then
+    if(STPS[axis_No].max_step_lim > (abs_mmSteps>>1)){
+       STPS[axis_No].max_step_lim = (abs_mmSteps >> 1);
+    }
     // If we hit max speed limit before 0,5 step it will round to 0.
     // But in practice we need to move atleast 1 step to get any speed at all.
     if(STPS[axis_No].max_step_lim == 0){
@@ -143,18 +145,13 @@ long abs_mmSteps = labs(mmSteps);
     STPS[axis_No].accel_lim = (abs_mmSteps * dec) / (acc + dec);
     if(STPS[axis_No].accel_lim > STPS[axis_No].max_step_lim)
         STPS[axis_No].accel_lim = STPS[axis_No].max_step_lim;
-        
+
     // We must accelrate at least 1 step before we can start deceleration.
     if(STPS[axis_No].accel_lim == 0){
        STPS[axis_No].accel_lim = 1;
     }
+     STPS[axis_No].decel_val = -(STPS[axis_No].max_step_lim * (acc/dec));
 
-    // Use the limit we hit first to calc decel.
-    if(STPS[axis_No].accel_lim < STPS[axis_No].max_step_lim){
-         STPS[axis_No].decel_val = STPS[axis_No].accel_lim - mmSteps;//-(abs_mmSteps - STPS[axis_No].max_step_lim);
-    }else{
-         STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim * acc)/dec);
-    }
     //we must at least dec by 1 step
     if(STPS[axis_No].decel_val == 0)
            STPS[axis_No].decel_val = -1;
@@ -193,6 +190,7 @@ dma_printf("\n\
 acc:= %l\n\
 dec:= %l\n\
 speed:= %f\n\
+mmSteps:= %l\n\
 abs_mmSteps:= %l\n\
 a_sq[%d]:= %l\n\
 alpha[%d]:= %f\n\
@@ -207,6 +205,7 @@ SV.mode-complete:= %d\n\n"
 ,acc
 ,dec
 ,temp_speed
+,mmSteps
 ,abs_mmSteps
 ,axis_No
 ,a_sq[axis_No]

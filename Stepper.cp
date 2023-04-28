@@ -1099,6 +1099,7 @@ void Single_Axis_Enable(_axis_ axis_){
 }
 
 void StopAxis(int axis){
+
  switch(axis){
  case X:
  OC5IE_bit = 0;
@@ -1120,6 +1121,7 @@ void StopAxis(int axis){
  }
  STPS[axis].run_state =  0 ;
 
+  (SV.mode_complete &= ~ (1 << axis) ) ;
 }
 
 
@@ -1200,11 +1202,11 @@ static int Pulse(int axis_No){
 
  switch(STPS[axis_No].run_state) {
  case  0 :
- STPS[axis_No].run_state =  0 ;
+
+ StopAxis(axis_No);
 
 
 
-  (SV.mode_complete &= ~ (1 << axis_No) ) ;
  break;
  case  1 :
 
@@ -1212,7 +1214,7 @@ static int Pulse(int axis_No){
 
  if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
  STPS[axis_No].step_delay = STPS[axis_No].min_delay;
-
+ STPS[axis_No].run_state =  3 ;
  }
 
  if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
@@ -1235,13 +1237,14 @@ static int Pulse(int axis_No){
  STPS[axis_No].accel_count = STPS[axis_No].decel_val;
  STPS[axis_No].rest = 0;
  STPS[axis_No].run_state =  2 ;
- }
+ }else if(STPS[axis_No].step_count >= STPS[axis_No].dist)
+ STPS[axis_No].run_state =  0 ;
  break;
  case  2 :
 
  AccDec(axis_No);
 
- if(STPS[axis_No].accel_count >= -1 ){
+ if(STPS[axis_No].accel_count >= -1 || STPS[axis_No].step_count >= STPS[axis_No].dist ){
  STPS[axis_No].run_state =  0 ;
  }
  break;
@@ -1347,6 +1350,8 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
 static void SingleStepAxis(int axis){
  Step_Cycle(axis);
  Pulse(axis);
+ if(STPS[axis].step_count >= STPS[axis].dist)
+ StopAxis(axis);
 }
 
 
@@ -1367,48 +1372,50 @@ static int cnt;
  cnt = 0;
  }
 
- if(SV.dA >= SV.dB){
+ if(STPS[axisA].dist >= STPS[axisB].dist){
  if(STPS[axisA].step_count < STPS[axisA].dist){
  Step_Cycle(axisA);
+ if(STPS[axisB].step_count >= STPS[axisB].dist)
+ StopAxis(axisB);
  }
- if(!SV.cir)Pulse(axisA);
+
+
+ Pulse(axisA);
 
  if(SV.dif < 0){
- SV.dif +=  ((2)*(SV.dB)) ;
+ SV.dif +=  ((2)*(STPS[axisB].dist)) ;
  }else{
  if(STPS[axisB].step_count < STPS[axisB].dist){
  STPS[axisB].step_delay = STPS[axisA].step_delay;
  STPS[axisB].accel_count = STPS[axisA].accel_count;
  Step_Cycle(axisB);
- if(!SV.cir)Pulse(axisB);
- SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
+
+ SV.dif +=  ((2)*((STPS[axisB].dist) - (STPS[axisA].dist))) ;
  }
+ Pulse(axisB);
  }
  }else{
  if(STPS[axisB].step_count < STPS[axisB].dist){
  Step_Cycle(axisB);
+ if(STPS[axisA].step_count >= STPS[axisA].dist)
+ StopAxis(axisA);
  }
- if(!SV.cir)Pulse(axisB);
+
+
+ Pulse(axisB);
 
  if(SV.dif < 0){
- SV.dif +=  ((2)*(SV.dA)) ;
+ SV.dif +=  ((2)*(STPS[axisA].dist)) ;
  }else{
  if(STPS[axisA].step_count < STPS[axisA].dist){
  STPS[axisA].step_delay = STPS[axisB].step_delay;
  STPS[axisA].accel_count = STPS[axisB].accel_count;
  Step_Cycle(axisA);
- if(!SV.cir)Pulse(axisA);
- SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
+
+ SV.dif +=  ((2)*((STPS[axisA].dist) - (STPS[axisB].dist))) ;
  }
+ Pulse(axisA);
  }
 
  }
-
- if(STPS[axisA].run_state ==  0 ){
- StopAxis(axisA);
- }
- if(STPS[axisB].run_state ==  0 ){
- StopAxis(axisB);
- }
-
 }
