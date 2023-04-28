@@ -1080,7 +1080,7 @@ long abs_mmSteps = labs(mmSteps);
  STPS[axis_No].rest = 0;
  STPS[axis_No].accel_count = 1;
  SV.running = 1;
- last_speed = speed;
+
 
 
 

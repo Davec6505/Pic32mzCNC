@@ -126,7 +126,6 @@ main
 				Axis_Interpolate
 					Step_Cycle
 					Pulse
-						StopAxis
 						AccDec
 					StopAxis
 			__CC2DW

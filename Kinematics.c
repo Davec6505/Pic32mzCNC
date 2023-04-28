@@ -134,10 +134,18 @@ void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 long tempA,tempB,tempC;
 //int dirA,dirB;
       //Start values for Bresenhams
-  if(SV.prevA == axis_a && SV.prevB == axis_b){
-    SV.mode_complete = 0; //set this to respond with ok
-    return;
+  if(SV.prevA == axis_a){
+     bit_false(SV.mode_complete,bit(axisA));
+     SV.prevA = axis_a;
   }
+  if(SV.prevB == axis_b){
+      bit_false(SV.mode_complete,bit(axisB));
+     SV.prevB = axis_b;
+  }
+  
+ /* if( SV.mode_complete == 0){ //set this to respond with ok
+    return;
+  }*/
   //get rps from mm/min
   speed = RPS_FROM_MMPMIN(speed);
  
@@ -175,31 +183,27 @@ long tempA,tempB,tempC;
   //check if movement is needed on the axis
   //calculate acc/dec "if arc is runninG use last min speed ?"
   //Remove -ve values for dist in Steps to complete move
-  SV.dA = labs(tempA);
-  SV.dB = labs(tempB);
-
+  STPS[axisA].dist = SV.dA = labs(tempA);
+  STPS[axisB].dist = SV.dB = labs(tempB);
+  
  #if KineDebug == 4
  while(DMA_IsOn(1));
- dma_printf("prevA:= %f\tSV.dA:= %l\tprevB:= %f\tSV.dB:= %l\n"
-            ,SV.prevA,SV.dA,SV.prevB,SV.dB);
+ dma_printf("SV.dA:= %l\tSV.dB:= %l\n"
+            ,SV.dA,SV.dB);
  #endif
-
+  
  if(SV.dA >= SV.dB){
-    STPS[axisA].dist = SV.dA;
     speed_cntr_Move(tempA,speed,axisA);
-    speed_cntr_Move(tempB,speed,axisB);
-   // STPS[axisB].step_delay = STPS[axisA].step_delay;
-   // STPS[axisB].accel_count = STPS[axisA].accel_count;
-    SV.dif = BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//2*(SV.dy - SV.dx);
+    STPS[axisB].step_delay = STPS[axisA].step_delay;
+    STPS[axisB].accel_count = STPS[axisA].accel_count;
+    SV.dif = BresDiffVal(SV.dB,SV.dA);//STPS[axisB].dist,STPS[axisA].dist);//2*(SV.dy - SV.dx);
     STPS[axisA].master = MASTER;
     STPS[axisB].master = SLAVE;
  }else{
-    STPS[axisB].dist = SV.dB;
-    speed_cntr_Move(tempA,speed,axisA);
     speed_cntr_Move(tempB,speed,axisB);
-    //STPS[axisA].step_delay = STPS[axisB].step_delay;
-    //STPS[axisA].accel_count = STPS[axisB].accel_count;
-    SV.dif = BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//2* (SV.dx - SV.dy);
+    STPS[axisA].step_delay = STPS[axisB].step_delay;
+    STPS[axisA].accel_count = STPS[axisB].accel_count;
+    SV.dif = BresDiffVal(SV.dA,SV.dB);//STPS[axisA].dist,STPS[axisB].dist);//2* (SV.dx - SV.dy);
     STPS[axisA].master = SLAVE;
     STPS[axisB].master = MASTER;
   }

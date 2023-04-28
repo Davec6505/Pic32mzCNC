@@ -283,7 +283,7 @@ static int Pulse(int axis_No){
   switch(STPS[axis_No].run_state) {
     case STOP:
         STPS[axis_No].run_state  = STOP;
-        StopAxis(axis_No);
+        //StopAxis(axis_No);
         //resetting the axis movement bit to indicate axis finnished
         //moving, UGS NEEDS AN ok TO
         bit_false(SV.mode_complete,bit(axis_No));
@@ -450,51 +450,47 @@ static int cnt;
    }
 
    if(SV.dA >= SV.dB){
-     STPS[axisB].step_delay  = STPS[axisA].step_delay;
-     STPS[axisB].accel_count = STPS[axisA].accel_count;
      if(STPS[axisA].step_count < STPS[axisA].dist){
-        Step_Cycle(axisA);
-        if(!SV.cir)Pulse(axisA);
-     }else{
-        StopAxis(axisA);
-        bit_false(SV.mode_complete,bit(axisA));
+       Step_Cycle(axisA);
      }
+     if(!SV.cir)Pulse(axisA);
 
      if(SV.dif < 0){
        SV.dif += BresIncVal(SV.dB);//2*SV.dy;//
      }else{
       if(STPS[axisB].step_count < STPS[axisB].dist){
+       STPS[axisB].step_delay = STPS[axisA].step_delay;
+       STPS[axisB].accel_count = STPS[axisA].accel_count;
        Step_Cycle(axisB);
        if(!SV.cir)Pulse(axisB);
        SV.dif += BresDiffVal(SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
-      }else{
-        StopAxis(axisB);
-        bit_false(SV.mode_complete,bit(axisB));
       }
      }
-
    }else{
-     STPS[axisA].step_delay  = STPS[axisB].step_delay;
-     STPS[axisA].accel_count = STPS[axisB].accel_count;
      if(STPS[axisB].step_count < STPS[axisB].dist){
        Step_Cycle(axisB);
-       if(!SV.cir)Pulse(axisB);
-     }else{
-       if(SV.cir)
-         StopAxis(axisB);
      }
+     if(!SV.cir)Pulse(axisB);
      
      if(SV.dif < 0){
        SV.dif += BresIncVal(SV.dA);//2 * SV.dx;//
      }else{
       if(STPS[axisA].step_count < STPS[axisA].dist){
+         STPS[axisA].step_delay = STPS[axisB].step_delay;
+         STPS[axisA].accel_count = STPS[axisB].accel_count;
          Step_Cycle(axisA);
          if(!SV.cir)Pulse(axisA);
          SV.dif += BresDiffVal(SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
-      }else{
-        StopAxis(axisB);
-        bit_false(SV.mode_complete,bit(axisB));
       }
      }
+
    }
+   
+   if(STPS[axisA].run_state == STOP){
+      StopAxis(axisA);
+   }
+   if(STPS[axisB].run_state == STOP){
+      StopAxis(axisB);
+   }
+
 }

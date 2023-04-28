@@ -205,11 +205,8 @@ SV.mode_complete:= %d\n"
   //run at end of every scan
   protocol_execute_runtime();
   
-  //sanity check incase SV.mode_complete is not resetin the correct places
-  // if(!Get_Axis_IEnable_States()){SV.mode_complete = 0;}
-  old_state = SV.mode_complete;
   //respond ok if movement is finished
-  if((old_state > 0) && (SV.mode_complete == 0)){// && (!SV.homed)){
+  if((old_state == 0) && (SV.mode_complete == 0)){// && (!SV.homed)){
      old_state = 1;
      LED2 = false;
      //debug STATUS_OK response after moves complete
@@ -222,6 +219,9 @@ SV.mode_complete:= %d\n"
     ,old_state ,SV.mode_complete,STPS[X].step_count
     ,STPS[Y].step_count,STPS[Z].step_count);
     #endif
+  }
+  if(SV.mode_complete > 0 && old_state != 0){
+     old_state = 0;
   }
 
   //check ring buffer for data transfer

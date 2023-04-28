@@ -1201,7 +1201,7 @@ static int Pulse(int axis_No){
  switch(STPS[axis_No].run_state) {
  case  0 :
  STPS[axis_No].run_state =  0 ;
- StopAxis(axis_No);
+
 
 
   (SV.mode_complete &= ~ (1 << axis_No) ) ;
@@ -1368,51 +1368,47 @@ static int cnt;
  }
 
  if(SV.dA >= SV.dB){
- STPS[axisB].step_delay = STPS[axisA].step_delay;
- STPS[axisB].accel_count = STPS[axisA].accel_count;
  if(STPS[axisA].step_count < STPS[axisA].dist){
  Step_Cycle(axisA);
- if(!SV.cir)Pulse(axisA);
- }else{
- StopAxis(axisA);
-  (SV.mode_complete &= ~ (1 << axisA) ) ;
  }
+ if(!SV.cir)Pulse(axisA);
 
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dB)) ;
  }else{
  if(STPS[axisB].step_count < STPS[axisB].dist){
+ STPS[axisB].step_delay = STPS[axisA].step_delay;
+ STPS[axisB].accel_count = STPS[axisA].accel_count;
  Step_Cycle(axisB);
  if(!SV.cir)Pulse(axisB);
  SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
- }else{
- StopAxis(axisB);
-  (SV.mode_complete &= ~ (1 << axisB) ) ;
  }
  }
-
  }else{
- STPS[axisA].step_delay = STPS[axisB].step_delay;
- STPS[axisA].accel_count = STPS[axisB].accel_count;
  if(STPS[axisB].step_count < STPS[axisB].dist){
  Step_Cycle(axisB);
- if(!SV.cir)Pulse(axisB);
- }else{
- if(SV.cir)
- StopAxis(axisB);
  }
+ if(!SV.cir)Pulse(axisB);
 
  if(SV.dif < 0){
  SV.dif +=  ((2)*(SV.dA)) ;
  }else{
  if(STPS[axisA].step_count < STPS[axisA].dist){
+ STPS[axisA].step_delay = STPS[axisB].step_delay;
+ STPS[axisA].accel_count = STPS[axisB].accel_count;
  Step_Cycle(axisA);
  if(!SV.cir)Pulse(axisA);
  SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
- }else{
+ }
+ }
+
+ }
+
+ if(STPS[axisA].run_state ==  0 ){
+ StopAxis(axisA);
+ }
+ if(STPS[axisB].run_state ==  0 ){
  StopAxis(axisB);
-  (SV.mode_complete &= ~ (1 << axisB) ) ;
  }
- }
- }
+
 }

@@ -1067,10 +1067,7 @@ dma_printf("%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
  protocol_execute_runtime();
 
 
-
- old_state = SV.mode_complete;
-
- if((old_state > 0) && (SV.mode_complete == 0)){
+ if((old_state == 0) && (SV.mode_complete == 0)){
  old_state = 1;
  LED2 =  0 ;
 
@@ -1083,6 +1080,9 @@ dma_printf("%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
  ,old_state ,SV.mode_complete,STPS[X].step_count
  ,STPS[Y].step_count,STPS[Z].step_count);
 
+ }
+ if(SV.mode_complete > 0 && old_state != 0){
+ old_state = 0;
  }
 
 
