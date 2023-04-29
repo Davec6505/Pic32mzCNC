@@ -133,7 +133,7 @@ long speed_ = 0;
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 long tempA,tempB,tempC,temp1,temp2;
 //int dirA,dirB;
-      //Start values for Bresenhams
+  //Start values for Bresenhams
   if(SV.prevA == axis_a){
      bit_false(SV.mode_complete,bit(axisA));
      SV.prevA = axis_a;
@@ -143,14 +143,11 @@ long tempA,tempB,tempC,temp1,temp2;
      SV.prevB = axis_b;
   }
   
- /* if( SV.mode_complete == 0){ //set this to respond with ok
-    return;
-  }*/
   //get rps from mm/min
   speed = RPS_FROM_MMPMIN(speed);
  
  //if absolute mode ~ newxyz = new_position - current_position
- if(gc.absolute_mode == true){
+  if(gc.absolute_mode == true){
    //get current position
    tempA = belt_steps(axis_a,axisA);
    tempB = belt_steps(axis_b,axisB);
@@ -159,20 +156,19 @@ long tempA,tempB,tempC,temp1,temp2;
    tempA = tempA - STPS[axisA].steps_abs_position;
    tempB = tempB - STPS[axisB].steps_abs_position;
 
- }else{
+  }else{
    tempA = belt_steps(axis_a,axisA);
    tempB = belt_steps(axis_b,axisB);
- }
+  }
 
  //fresh values for calc
- SV.over = 0;
- SV.dif  = 0;
+  SV.over = 0;
+  SV.dif  = 0;
 
-//Enable the relevant axis in Stepper.c
- SV.Single_Dual = DUAL;
- Single_Axis_Enable(axisA);
- Single_Axis_Enable(axisB);
- // Multi_Axis_Enable(xyza);
+  //Enable the relevant axis in Stepper.c
+  SV.Single_Dual = DUAL;
+  Single_Axis_Enable(axisA);
+  Single_Axis_Enable(axisB);
   
   //set the direction counter for absolute position
   Set_Axisdirection(tempA,axisA);
@@ -193,18 +189,18 @@ long tempA,tempB,tempC,temp1,temp2;
  #endif
 
 
- if(tempA >= tempB){//SV.dA >= SV.dB){
+ if(STPS[axisA].dist >= STPS[axisB].dist){
     if(!SV.cir)speed_cntr_Move(tempA,speed,axisA);
     STPS[axisB].step_delay = STPS[axisA].step_delay;
     STPS[axisB].accel_count = STPS[axisA].accel_count;
-    SV.dif = BresDiffVal(SV.dB,SV.dA);//STPS[axisB].dist,STPS[axisA].dist);//2*(SV.dy - SV.dx);
+    SV.dif = BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//2*(SV.dy - SV.dx);
     STPS[axisA].master = MASTER;
     STPS[axisB].master = SLAVE;
  }else{
     if(!SV.cir)speed_cntr_Move(tempB,speed,axisB);
     STPS[axisA].step_delay = STPS[axisB].step_delay;
     STPS[axisA].accel_count = STPS[axisB].accel_count;
-    SV.dif = BresDiffVal(SV.dA,SV.dB);//STPS[axisA].dist,STPS[axisB].dist);//2* (SV.dx - SV.dy);
+    SV.dif = BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//2* (SV.dx - SV.dy);
     STPS[axisA].master = SLAVE;
     STPS[axisB].master = MASTER;
   }
@@ -350,10 +346,10 @@ dma_printf("\
   #if KineDebug == 3
   while(DMA_IsOn(1));
   dma_printf("\
-[cos_T:=%f : sin_T:=%f]\n\
-[radius:=%f : segments:=%f]\n\
-[angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n\
-[LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
+  [cos_T:=%f : sin_T:=%f]\n\
+  [radius:=%f : segments:=%f]\n\
+  [angTrav:= %f : mmoftrav:= %f : Lin_trav:= %f]\r\n\
+  [LinPseg:= %f : *pSeg:= %f]\n[gc.freq:= %l]\r\n",
   cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
   ,linear_travel,linear_per_segment,theta_per_segment,feed_rate);
   #endif
@@ -433,15 +429,15 @@ dma_printf("\
     // if (sys.abort) { return; }
    /*if(limit_error)
       break; */
-#if KineDebug == 4
-while(DMA_IsOn(1));
-dma_printf("\
-[ i:= %d\tseg:= %d ]\n\
-[ nPx:= %f\tnPy:= %f ]\n\
-[ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n\
-[SV.mode_complete:= %d\r\n"
-,i,segments,nPx,nPy,target[axis_0],target[axis_1],SV.mode_complete);
-#endif
+  #if KineDebug == 4
+  while(DMA_IsOn(1));
+  dma_printf("\
+  [ i:= %d\tseg:= %d ]\n\
+  [ nPx:= %f\tnPy:= %f ]\n\
+  [ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n\
+  [SV.mode_complete:= %d\r\n"
+  ,i,segments,nPx,nPy,target[axis_0],target[axis_1],SV.mode_complete);
+  #endif
 
   }
   //end of arc get to correct target
