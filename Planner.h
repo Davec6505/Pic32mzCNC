@@ -93,6 +93,18 @@ void set_calculation_constants();
 //Speed in steprate for timers
 float Get_Step_Rate(float speed,int axis);
 
+//Start delay for Timer,
+long Get_Startup_Delay(int axis);
+
+//Calc the minimum delay for run
+long Get_Min_Delay(float _speed,int axis);
+
+//calculate the max step it takes to reach the min Timer val
+long Get_Maxsteplimit_Tofastestspeed(float _speed,int axis);
+
+//calculate where to start accelerating finishes or decelerating starts
+long Get_Acceleration_Limit(long mmsteps);
+
 //Acceleration, speed and Circ calcs
 void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 

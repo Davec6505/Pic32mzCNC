@@ -712,9 +712,9 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/git/pic32mzcnc/stepper.h"
+#line 19 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 33 "c:/users/git/pic32mzcnc/stepper.h"
+#line 36 "c:/users/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -798,6 +798,18 @@ void set_calculation_constants();
 float Get_Step_Rate(float speed,int axis);
 
 
+long Get_Startup_Delay(int axis);
+
+
+long Get_Min_Delay(float _speed,int axis);
+
+
+long Get_Maxsteplimit_Tofastestspeed(float _speed,int axis);
+
+
+long Get_Acceleration_Limit(long mmsteps);
+
+
 void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 
 
@@ -872,8 +884,6 @@ typedef struct Steps{
  long max_step_lim;
 
  long rest;
-
- long StartUp_delay;
 
  long mmToTravel;
 
@@ -1064,8 +1074,6 @@ long tempA,tempB,tempC,temp1,temp2;
  }
 
 
- temp1 = labs(tempA);
- temp2 = labs(tempB);
  SV.over = 0;
  SV.dif = 0;
 
@@ -1093,15 +1101,16 @@ long tempA,tempB,tempC,temp1,temp2;
  ,STPS[axisA].dist,STPS[axisB].dist);
 
 
- if(temp1 >= temp2){
- speed_cntr_Move(tempA,speed,axisA);
+
+ if(tempA >= tempB){
+ if(!SV.cir)speed_cntr_Move(tempA,speed,axisA);
  STPS[axisB].step_delay = STPS[axisA].step_delay;
  STPS[axisB].accel_count = STPS[axisA].accel_count;
  SV.dif =  ((2)*((SV.dB) - (SV.dA))) ;
  STPS[axisA].master =  1 ;
  STPS[axisB].master =  0 ;
  }else{
- speed_cntr_Move(tempB,speed,axisB);
+ if(!SV.cir)speed_cntr_Move(tempB,speed,axisB);
  STPS[axisA].step_delay = STPS[axisB].step_delay;
  STPS[axisA].accel_count = STPS[axisB].accel_count;
  SV.dif =  ((2)*((SV.dA) - (SV.dB))) ;
@@ -1120,7 +1129,7 @@ long tempA,tempB,tempC,temp1,temp2;
 
  Start_Interpolation(axisA,axisB);
 }
-#line 257 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 256 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 void mc_arc(float *position, float *target, float *offset, int axis_0
  , int axis_1,int axis_linear, float feed_rate, char invert_feed_rate
  , float radius, char isclockwise){
@@ -1131,6 +1140,7 @@ float cos_T,sin_T,sin_Ti,cos_Ti;
 float r_axisi,nPx,nPy,i,x,y;
 int count = 0;
 char limit_error = 0;
+int cnt;
 
  center_axis0 = position[axis_0] + offset[axis_0];
  center_axis1 = position[axis_1] + offset[axis_1];
@@ -1249,14 +1259,19 @@ char limit_error = 0;
 
 
  while(1){
-#line 424 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
- if(!Get_Axis_IEnable_States()||SV.mode_complete < 1)
+ cnt++;
+ if(cnt > 5){
+ LED2=!LED2;
+ cnt = 0;
+ }
+#line 428 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ if(!OC5IE_bit && !OC3IE_bit)
  break;
  }
  SV.mode_complete = 0;
-#line 433 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 437 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 while(DMA_IsOn(1));
-#line 438 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 442 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 dma_printf("[ i:= %d\tseg:= %d ]\n[ nPx:= %f\tnPy:= %f ]\n[ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n[SV.mode_complete:= %d\r\n"
 ,i,segments,nPx,nPy,target[axis_0],target[axis_1],SV.mode_complete);
 
@@ -1268,7 +1283,7 @@ dma_printf("[ i:= %d\tseg:= %d ]\n[ nPx:= %f\tnPy:= %f ]\n[ tar[axis_0]:= %f\tta
  DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,feed_rate);
 
  SV.mode_complete = 0;
-#line 454 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 458 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 }
 
 
@@ -1286,7 +1301,7 @@ float hypot(float x, float y){
 int GetAxisDirection(long mm2move){
  return(mm2move < 0)?  -1 : 1  ;
 }
-#line 482 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 486 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 int Home(int axis){
 static long speed = 0;
 
@@ -1323,7 +1338,7 @@ static long speed = 0;
 
 
  Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
-#line 527 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 531 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  return axis;
  }
 
@@ -1339,7 +1354,7 @@ static long speed = 0;
 
 HOMED:
  speed = settings.homing_feed_rate;
-#line 550 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 554 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
 
  if( ((homing[axis].home_state & (1 << 3) ) == 0) ){
@@ -1367,13 +1382,13 @@ HOMED:
 
 
  homing[axis].home_cnt = 0;
-#line 588 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 592 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  Home_Axis(settings.homing_pulloff,settings.homing_feed_rate, axis);
 
  return axis;
  }
  }
-#line 597 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 601 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
 
@@ -1392,7 +1407,7 @@ HOMED:
 
  Home_Axis(-290.00,settings.homing_feed_rate,axis);
  }
-#line 623 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 627 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  }
  return axis;
@@ -1403,7 +1418,7 @@ static void Home_Axis(double distance,float speed,int axis){
 
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
-#line 642 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 646 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis].mmToTravel = belt_steps(distance,axis);
 
  speed =  (( ((speed)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;

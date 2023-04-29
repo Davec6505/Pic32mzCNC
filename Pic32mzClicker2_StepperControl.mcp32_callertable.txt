@@ -93,8 +93,13 @@ main
 				speed_cntr_Move
 					labs
 					Get_Step_Rate
-					lround
-					sqrt_
+					Get_Min_Delay
+						lround
+					Get_Startup_Delay
+						sqrt_
+						labs
+					Get_Maxsteplimit_Tofastestspeed
+					Get_Acceleration_Limit
 					DMA_IsOn
 					dma_printf
 					__CC2DW
@@ -116,9 +121,9 @@ main
 		SingleAxisStep
 		DualAxisStep
 			belt_steps
-			labs
 			Single_Axis_Enable
 			Set_Axisdirection
+			labs
 			DMA_IsOn
 			dma_printf
 			speed_cntr_Move
@@ -161,7 +166,6 @@ main
 						eval_poly
 				sin
 				DualAxisStep
-				Get_Axis_IEnable_States
 				DMA_IsOn
 				dma_printf
 				__CC2DW

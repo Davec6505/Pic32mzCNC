@@ -167,8 +167,8 @@ static int cntr = 0,a = 0;
 //Debug for stepper report if not connected to unit
 #if StepperDebug == 1
 if(SV.mode_complete){
-if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP | STPS[Z].run_state != STOP){
-while(DMA_IsOn(1));
+//if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP | STPS[Z].run_state != STOP){
+if(!DMA_IsOn(1)){
 dma_printf("\
 %l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
 ,STPS[X].step_count

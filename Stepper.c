@@ -462,7 +462,11 @@ static int cnt;
      }
      //Pulse can't be hideen behind above if statement, it needs
      //to execute a state check regardless of whether the axis pulsed
-     Pulse(axisA);
+     if(!SV.cir)Pulse(axisA);
+     else{
+       if(STPS[axisA].step_count >= STPS[axisA].dist)
+         StopAxis(axisA);
+     }
 
      if(SV.dif < 0){
        SV.dif += BresIncVal(STPS[axisB].dist);//SV.dB);//2*SV.dy;//
@@ -474,7 +478,8 @@ static int cnt;
        //if(!SV.cir)Pulse(axisB);
        SV.dif += BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
       }
-      Pulse(axisB);
+       //if(!SV.cir)Pulse(axisB);
+       
      }
    }else{
      if(STPS[axisB].step_count < STPS[axisB].dist){
@@ -484,7 +489,11 @@ static int cnt;
      }
      //Pulse can't be hideen behind above if statement, it needs
      //to execute a state check regardless of whether the axis pulsed
-     Pulse(axisB);
+     if(!SV.cir)Pulse(axisB);
+     else{
+       if(STPS[axisB].step_count >= STPS[axisB].dist)
+         StopAxis(axisB);
+     }
      
      if(SV.dif < 0){
        SV.dif += BresIncVal(STPS[axisA].dist);//SV.dA);//2 * SV.dx;//
@@ -496,7 +505,7 @@ static int cnt;
          //if(!SV.cir)Pulse(axisA);
          SV.dif += BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
       }
-      Pulse(axisA);
+      //if(!SV.cir)Pulse(axisA);
      }
 
    }

@@ -66,6 +66,36 @@ float Get_Step_Rate(float speed,int axis){
   return speed;
 }
 
+////////////////////////////////////////////////////////////////////////
+//calculate the minimum delay for the speed supplied in mm/min
+//Set max speed limit, by calc min_delay to use in timer.
+//min_delay = (ALPHA / T1_Freq)/ speed
+long Get_Min_Delay(float _speed,int axis){
+    return  lround(a_t_x100[axis] / _speed);
+}
+
+/////////////////////////////////////////////////////////////////////////
+//c0 = startup delay, this will always be the same according to acc const
+//and Timer fequency  (T1_FREQ_148 * sqrt(A_SQ / accel))/100;
+long Get_Startup_Delay(int axis){
+   return labs(((long)T1_FREQ_148 * sqrt_(a_sq[axis] / acc))/100);;
+}
+
+////////////////////////////////////////////////////////////////////////
+//calculate the maximum step count to reach fastest speed ~ smallest
+//timer value to be used
+// max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
+long Get_Maxsteplimit_Tofastestspeed(float _speed,int axis){
+  return (long)((_speed*_speed)/((2*alpha[axis]*(float)acc)*100.00));
+}
+
+///////////////////////////////////////////////////////////////////////
+//calculate where to start accelerating finishes or decelerating starts
+// n1 = (n1+n2)decel / (accel + decel) which is 50%
+long Get_Acceleration_Limit(long mmsteps){
+  return (mmsteps * dec) / (acc + dec);
+}
+
 /************************************************************************
  *  Makes the stepper motor move the given number of steps.
  *  It accelrate with given accelration up to maximum speed and decelerate
@@ -83,6 +113,7 @@ void speed_cntr_Move(long mmSteps, float speed, int axis_No){
 int ii;
 float temp_speed,max_s_limit;
 static float last_speed;
+long startup_dly = 0;
 long abs_mmSteps = labs(mmSteps);
 
   bit_true(SV.mode_complete,bit(axis_No));
@@ -109,31 +140,22 @@ long abs_mmSteps = labs(mmSteps);
         temp_speed = last_speed - speed;
     else
         temp_speed = speed;
-        
-    // Only move if number of steps to move is not zero.
+
     // Set max speed limit, by calc min_delay to use in timer.
-    // min_delay = (ALPHA / T1_Freq)/ speed
-    STPS[axis_No].min_delay =  lround(a_t_x100[axis_No] / temp_speed);
+    //STPS[axis_No].min_delay = lround(a_t_x100[axis_No] / temp_speed);
+    STPS[axis_No].min_delay = Get_Min_Delay(temp_speed,axis_No);
 
     // Set accelration by calc the first (c0) step delay .
-    // step_delay = 1/T_Freq*sqrt(2*alpha/accel)
-    // step_delay = ( T_Freq*0.676/100 ) * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-    STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / acc)))/100);
+    startup_dly = Get_Startup_Delay(axis_No);
     
-    if(STPS[axis_No].step_delay > minSpeed)
-       STPS[axis_No].StartUp_delay = minSpeed;
-    else
-       STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
-
-    // max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
     // Find the number of Steps before the speed hits the max speed limit.
-    //STPS[axis_No].max_step_lim =(long)((temp_speed*temp_speed)/(2.0*alpha[axis_No]*10000.00*(float)STPS[axis_No].acc));
-    STPS[axis_No].max_step_lim = (long)((temp_speed*temp_speed)/((2*alpha[axis_No]*(float)acc)*100.00));
+    STPS[axis_No].max_step_lim = Get_Maxsteplimit_Tofastestspeed(temp_speed, axis_No);
     
     // If max_step is greater than 50% of max travel then
     if(STPS[axis_No].max_step_lim > (abs_mmSteps>>1)){
        STPS[axis_No].max_step_lim = (abs_mmSteps >> 1);
     }
+    
     // If we hit max speed limit before 0,5 step it will round to 0.
     // But in practice we need to move atleast 1 step to get any speed at all.
     if(STPS[axis_No].max_step_lim == 0){
@@ -142,7 +164,8 @@ long abs_mmSteps = labs(mmSteps);
 
     // Find out after how many Steps before we must start deceleration.
     // n1 = (n1+n2)decel / (accel + decel) which is 50%
-    STPS[axis_No].accel_lim = (abs_mmSteps * dec) / (acc + dec);
+    STPS[axis_No].accel_lim = Get_Acceleration_Limit(abs_mmSteps);
+    
     if(STPS[axis_No].accel_lim > STPS[axis_No].max_step_lim)
         STPS[axis_No].accel_lim = STPS[axis_No].max_step_lim;
 
@@ -166,14 +189,13 @@ long abs_mmSteps = labs(mmSteps);
 
     //find the position at which to start decelerating from
     // If the maximum speed is so low that we won't need to go via accelration state.
-    if(STPS[axis_No].StartUp_delay <= STPS[axis_No].min_delay){
+    if(startup_dly <= STPS[axis_No].min_delay){
       STPS[axis_No].step_delay = labs(STPS[axis_No].min_delay);
       STPS[axis_No].run_state = RUN;
     }else{
-       STPS[axis_No].step_delay = labs(STPS[axis_No].StartUp_delay);
+       STPS[axis_No].step_delay = startup_dly;
        STPS[axis_No].run_state = ACCEL;
     }
-
   }
 
   STPS[axis_No].step_count  = 0;
@@ -182,47 +204,47 @@ long abs_mmSteps = labs(mmSteps);
   SV.running                = 1;
   //last_speed                = speed;
 
-//Debug for stepper report if not connected to unit
-#if PlanDebug == 1
+  //Debug for stepper report if not connected to unit
+  #if PlanDebug == 1
 
-while(DMA_IsOn(1));
-dma_printf("\n\
-acc:= %l\n\
-dec:= %l\n\
-speed:= %f\n\
-mmSteps:= %l\n\
-abs_mmSteps:= %l\n\
-a_sq[%d]:= %l\n\
-alpha[%d]:= %f\n\
-a_t_x100[%d]:= %f\n\
-STPS[axis_No].max_step_lim:= %l\n\
-acc_lim:= %l\n\
-dec_val:= %l\n\
-dec_start:= %l\n\
-step_delay:= %l\n\
-min_dly:= %l\n\
-SV.mode-complete:= %d\n\n"
-,acc
-,dec
-,temp_speed
-,mmSteps
-,abs_mmSteps
-,axis_No
-,a_sq[axis_No]
-,axis_No
-,alpha[axis_No]
-,axis_No
-,a_t_x100[axis_No]
-,STPS[axis_No].max_step_lim
-,STPS[axis_No].accel_lim
-,STPS[axis_No].decel_val
-,STPS[axis_No].decel_start
-,STPS[axis_No].step_delay
-,STPS[axis_No].min_delay
-,SV.mode_complete);
+  while(DMA_IsOn(1));
+  dma_printf("\n\
+  acc:= %l\n\
+  dec:= %l\n\
+  speed:= %f\n\
+  mmSteps:= %l\n\
+  abs_mmSteps:= %l\n\
+  a_sq[%d]:= %l\n\
+  alpha[%d]:= %f\n\
+  a_t_x100[%d]:= %f\n\
+  STPS[axis_No].max_step_lim:= %l\n\
+  acc_lim:= %l\n\
+  dec_val:= %l\n\
+  dec_start:= %l\n\
+  step_delay:= %l\n\
+  min_dly:= %l\n\
+  SV.mode-complete:= %d\n\n"
+  ,acc
+  ,dec
+  ,temp_speed
+  ,mmSteps
+  ,abs_mmSteps
+  ,axis_No
+  ,a_sq[axis_No]
+  ,axis_No
+  ,alpha[axis_No]
+  ,axis_No
+  ,a_t_x100[axis_No]
+  ,STPS[axis_No].max_step_lim
+  ,STPS[axis_No].accel_lim
+  ,STPS[axis_No].decel_val
+  ,STPS[axis_No].decel_start
+  ,STPS[axis_No].step_delay
+  ,STPS[axis_No].min_delay
+  ,SV.mode_complete);
 
-#endif
-}
+  #endif
+  }
 
 //////////////////////////////////////////////////////////////////////////////
 //GCODE uses either radius or I,J,K for offset / this function can condition//
@@ -373,12 +395,12 @@ int axis_plane_a,axis_plane_b;
   // Set clockwise/counter-clockwise sign for mc_arc computations
   isclockwise = 0;
   if (dir == CW) { isclockwise = 1; }
-#if KineDebug == 3
-while(DMA_IsOn(1));
-dma_printf("\n\
-[pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
-,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
-#endif
+  #if KineDebug == 3
+  while(DMA_IsOn(1));
+  dma_printf("\n\
+  [pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
+  ,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
+  #endif
 
   //get rps from mm/min
   speed = RPS_FROM_MMPMIN(gc.feed_rate);
@@ -404,10 +426,10 @@ int i = 0;
   for(i=0;i<NoOfAxis;i++)
   gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
   
-#if PlanDebug == 1
-while(DMA_IsOn(1));
-dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
-#endif
+  #if PlanDebug == 1
+  while(DMA_IsOn(1));
+  dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
+  #endif
 
 }
 

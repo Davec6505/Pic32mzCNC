@@ -165,8 +165,6 @@ long tempA,tempB,tempC,temp1,temp2;
  }
 
  //fresh values for calc
- temp1 = labs(tempA);
- temp2 = labs(tempB);
  SV.over = 0;
  SV.dif  = 0;
 
@@ -193,16 +191,17 @@ long tempA,tempB,tempC,temp1,temp2;
  dma_printf("SV.dA:= %l\tSV.dB:= %l\n"
             ,STPS[axisA].dist,STPS[axisB].dist);
  #endif
-  
- if(temp1 >= temp2){//SV.dA >= SV.dB){
-    speed_cntr_Move(tempA,speed,axisA);
+
+
+ if(tempA >= tempB){//SV.dA >= SV.dB){
+    if(!SV.cir)speed_cntr_Move(tempA,speed,axisA);
     STPS[axisB].step_delay = STPS[axisA].step_delay;
     STPS[axisB].accel_count = STPS[axisA].accel_count;
     SV.dif = BresDiffVal(SV.dB,SV.dA);//STPS[axisB].dist,STPS[axisA].dist);//2*(SV.dy - SV.dx);
     STPS[axisA].master = MASTER;
     STPS[axisB].master = SLAVE;
  }else{
-    speed_cntr_Move(tempB,speed,axisB);
+    if(!SV.cir)speed_cntr_Move(tempB,speed,axisB);
     STPS[axisA].step_delay = STPS[axisB].step_delay;
     STPS[axisA].accel_count = STPS[axisB].accel_count;
     SV.dif = BresDiffVal(SV.dA,SV.dB);//STPS[axisA].dist,STPS[axisB].dist);//2* (SV.dx - SV.dy);
@@ -264,6 +263,7 @@ float cos_T,sin_T,sin_Ti,cos_Ti;
 float r_axisi,nPx,nPy,i,x,y;
 int count = 0;
 char limit_error = 0;
+int cnt;
 
  center_axis0            = position[axis_0] + offset[axis_0];
  center_axis1            = position[axis_1] + offset[axis_1];
@@ -416,12 +416,16 @@ dma_printf("\
    //check limits and estops as well as send out status report
    // will want ot unblockthis nce we have a complete working model
    while(1){
-
+     cnt++;
+     if(cnt > 5){
+        LED2=!LED2;
+        cnt = 0;
+     }
     /* if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
          disableOCx();
          limit_error = 1;
      }*/
-    if(!Get_Axis_IEnable_States()||SV.mode_complete < 1)
+    if(!OC5IE_bit && !OC3IE_bit)//!Get_Axis_IEnable_States()||SV.mode_complete < 1)
        break;
    }
    SV.mode_complete = 0;

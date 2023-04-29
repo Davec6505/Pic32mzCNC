@@ -1582,13 +1582,13 @@ ORI	R2, R2, lo_addr(report_realtime_status_print_position_L0+0)
 ADDU	R2, R2, R3
 SW	R2, 72(SP)
 SEH	R3, R4
-ORI	R2, R0, 80
+ORI	R2, R0, 76
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 72
+ADDIU	R2, R2, 68
 LW	R2, 0(R2)
 SH	R4, 12(SP)
 SEH	R26, R4

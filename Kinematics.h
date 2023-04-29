@@ -116,8 +116,6 @@ typedef struct Steps{
  long max_step_lim;
  // calculation modulo value
  long rest;
- // Generate a startup delay to accellerate from
- long StartUp_delay;
  //!  the mm to travel
  long mmToTravel;
  //!  Real-time machine (aka home) abs position vector in steps.

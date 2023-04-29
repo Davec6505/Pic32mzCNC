@@ -744,6 +744,18 @@ void set_calculation_constants();
 float Get_Step_Rate(float speed,int axis);
 
 
+long Get_Startup_Delay(int axis);
+
+
+long Get_Min_Delay(float _speed,int axis);
+
+
+long Get_Maxsteplimit_Tofastestspeed(float _speed,int axis);
+
+
+long Get_Acceleration_Limit(long mmsteps);
+
+
 void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 
 
@@ -819,8 +831,6 @@ typedef struct Steps{
 
  long rest;
 
- long StartUp_delay;
-
  long mmToTravel;
 
  long steps_abs_position;
@@ -869,9 +879,9 @@ void mc_reset();
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/git/pic32mzcnc/stepper.h"
+#line 19 "c:/users/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 33 "c:/users/git/pic32mzcnc/stepper.h"
+#line 36 "c:/users/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -1380,7 +1390,11 @@ static int cnt;
  }
 
 
- Pulse(axisA);
+ if(!SV.cir)Pulse(axisA);
+ else{
+ if(STPS[axisA].step_count >= STPS[axisA].dist)
+ StopAxis(axisA);
+ }
 
  if(SV.dif < 0){
  SV.dif +=  ((2)*(STPS[axisB].dist)) ;
@@ -1392,7 +1406,8 @@ static int cnt;
 
  SV.dif +=  ((2)*((STPS[axisB].dist) - (STPS[axisA].dist))) ;
  }
- Pulse(axisB);
+
+
  }
  }else{
  if(STPS[axisB].step_count < STPS[axisB].dist){
@@ -1402,7 +1417,11 @@ static int cnt;
  }
 
 
- Pulse(axisB);
+ if(!SV.cir)Pulse(axisB);
+ else{
+ if(STPS[axisB].step_count >= STPS[axisB].dist)
+ StopAxis(axisB);
+ }
 
  if(SV.dif < 0){
  SV.dif +=  ((2)*(STPS[axisA].dist)) ;
@@ -1414,7 +1433,7 @@ static int cnt;
 
  SV.dif +=  ((2)*((STPS[axisA].dist) - (STPS[axisB].dist))) ;
  }
- Pulse(axisA);
+
  }
 
  }
