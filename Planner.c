@@ -125,7 +125,7 @@ long abs_mmSteps;
   // and run state to decellerate -ve acc count value
   // is for addition to step couter.
   if(mmSteps == 1){
-    STPS[axis_No].accel_count = -1;        // Move one step...
+    STPS[axis_No].accel_count = -2;        // Move one step...
     STPS[axis_No].run_state = DECEL;       // ...in DECEL state.
     STPS[axis_No].step_delay = 10000;      // Just a short delay so main() can act on 'running'.
     SV.running = 1;                        // start running

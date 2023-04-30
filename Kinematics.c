@@ -131,18 +131,8 @@ long speed_ = 0;
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
-long tempA,tempB,tempC,temp1,temp2;
-//int dirA,dirB;
-  //Start values for Bresenhams
-  if(SV.prevA == axis_a){
-     bit_false(SV.mode_complete,bit(axisA));
-     SV.prevA = axis_a;
-  }
-  if(SV.prevB == axis_b){
-      bit_false(SV.mode_complete,bit(axisB));
-     SV.prevB = axis_b;
-  }
-  
+long tempA,tempB,tempC;
+
   //get rps from mm/min
   speed = RPS_FROM_MMPMIN(speed);
  
@@ -196,6 +186,9 @@ long tempA,tempB,tempC,temp1,temp2;
     SV.dif = BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//2*(SV.dy - SV.dx);
     STPS[axisA].master = MASTER;
     STPS[axisB].master = SLAVE;
+    if(SV.prevA == axis_a){
+     bit_false(SV.mode_complete,bit(axisA));
+    }
  }else{
     if(!SV.cir)speed_cntr_Move(tempB,speed,axisB);
     STPS[axisA].step_delay = STPS[axisB].step_delay;
@@ -203,8 +196,11 @@ long tempA,tempB,tempC,temp1,temp2;
     SV.dif = BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//2* (SV.dx - SV.dy);
     STPS[axisA].master = SLAVE;
     STPS[axisB].master = MASTER;
+    if(SV.prevB == axis_b){
+      bit_false(SV.mode_complete,bit(axisB));
+    }
   }
-  
+ 
    //store current pos prev must be cur pos
   SV.prevA = axis_a;
   SV.prevB = axis_b;
@@ -213,6 +209,12 @@ long tempA,tempB,tempC,temp1,temp2;
   STPS[axisB].step_count = 0;
   STPS[axisA].mmToTravel = tempA;
   STPS[axisB].mmToTravel = tempB;
+  
+  if(SV.mode_complete == 0){
+    StopAxis(axisA);
+    StopAxis(axisB);
+    return;
+  }
 
   Start_Interpolation(axisA,axisB);
 }

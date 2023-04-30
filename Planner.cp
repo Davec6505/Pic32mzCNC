@@ -1032,7 +1032,7 @@ long abs_mmSteps;
 
 
  if(mmSteps == 1){
- STPS[axis_No].accel_count = -1;
+ STPS[axis_No].accel_count = -2;
  STPS[axis_No].run_state =  2 ;
  STPS[axis_No].step_delay = 10000;
  SV.running = 1;

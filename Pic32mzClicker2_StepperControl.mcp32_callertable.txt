@@ -119,6 +119,7 @@ main
 			Set_Axisdirection
 			labs
 			speed_cntr_Move
+			StopAxis
 			Start_Interpolation
 				Axis_Interpolate
 					Step_Cycle

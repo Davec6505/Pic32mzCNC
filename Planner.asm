@@ -295,7 +295,7 @@ J	L_speed_cntr_Move3
 NOP	
 L__speed_cntr_Move55:
 ; abs_mmSteps end address is: 16 (R4)
-;Planner.c,128 :: 		STPS[axis_No].accel_count = -1;        // Move one step...
+;Planner.c,128 :: 		STPS[axis_No].accel_count = -2;        // Move one step...
 SEH	R3, R26
 ORI	R2, R0, 76
 MULTU	R2, R3
@@ -305,7 +305,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R3, R2, 24
 LUI	R2, 65535
-ORI	R2, R2, 65535
+ORI	R2, R2, 65534
 SW	R2, 0(R3)
 ;Planner.c,129 :: 		STPS[axis_No].run_state = DECEL;       // ...in DECEL state.
 SEH	R3, R26
