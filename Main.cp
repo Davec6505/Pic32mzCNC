@@ -1050,26 +1050,6 @@ static int cntr = 0,a = 0;
  break;
  }
  }
-
-
-
-if(SV.mode_complete){
-
-if(!DMA_IsOn(1)){
-#line 173 "C:/Users/Git/Pic32mzCNC/Main.c"
-dma_printf("%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
-,STPS[X].step_count
-,STPS[X].accel_count
-,STPS[X].step_delay
-,STPS[Y].step_count
-,STPS[Y].accel_count
-,STPS[Y].step_delay
-,STPS[Z].step_count
-,STPS[Z].accel_count
-,STPS[Z].step_delay
-,(SV.mode_complete&0x00FF));
-}
-}
 #line 203 "C:/Users/Git/Pic32mzCNC/Main.c"
  protocol_system_check();
 
@@ -1083,13 +1063,7 @@ dma_printf("%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
 
  status_of_gcode ==  0 ;
  report_status_message(status_of_gcode);
-
-
- while(DMA_IsOn(1));
- dma_printf("old_state:= %d\tSV.mode_complete:= %d\tstepX:= %l\tstepY:= %l\tstepZ= %l\n"
- ,old_state ,SV.mode_complete,STPS[X].step_count
- ,STPS[Y].step_count,STPS[Z].step_count);
-
+#line 222 "C:/Users/Git/Pic32mzCNC/Main.c"
  }
  if(SV.mode_complete > 0 && old_state != 0){
  old_state = 0;

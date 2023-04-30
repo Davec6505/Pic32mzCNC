@@ -110,12 +110,12 @@ long Get_Acceleration_Limit(long mmsteps){
  *
  ***********************************************************************/
 void speed_cntr_Move(long mmSteps, float speed, int axis_No){
-int ii;
-float temp_speed,max_s_limit;
+float volatile temp_speed,max_s_limit;
 static float last_speed;
 long startup_dly = 0;
-long abs_mmSteps = labs(mmSteps);
+long abs_mmSteps;
 
+  abs_mmSteps = labs(mmSteps);
   bit_true(SV.mode_complete,bit(axis_No));
   // speed is in rpm ~ need to convert tp pps / steprate
   // speed /= 60.0; //base_pps[axis_No]/speed;

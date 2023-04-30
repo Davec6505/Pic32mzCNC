@@ -296,21 +296,21 @@ int cnt;
         angular_travel += PIx2;
   }
   
-#if KineDebug == 3
-while(DMA_IsOn(1));
-dma_printf("\
-[posx:=%f : posy:=%f]\n\
-[tarx:=%f : tary:=%f]\n\
-[offx:= %f : offy:= %f]\r\n\
-[cenx:= %f : ceny:= %f]\r\n\
-[r_axis0:= %f : r_axis1:= %f]\r\n\
-[rt_axis0:= %f : rt_axis1:= %f]\r\n\n",
-  position[axis_0],position[axis_1]
-  ,target[axis_0],target[axis_1]
-  ,offset[axis_0],offset[axis_1]
-  ,center_axis0,center_axis1
-  ,r_axis0,r_axis1,rt_axis0,rt_axis1);
-#endif
+  #if KineDebug == 3
+  while(DMA_IsOn(1));
+  dma_printf("\
+  [posx:=%f : posy:=%f]\n\
+  [tarx:=%f : tary:=%f]\n\
+  [offx:= %f : offy:= %f]\r\n\
+  [cenx:= %f : ceny:= %f]\r\n\
+  [r_axis0:= %f : r_axis1:= %f]\r\n\
+  [rt_axis0:= %f : rt_axis1:= %f]\r\n\n",
+    position[axis_0],position[axis_1]
+    ,target[axis_0],target[axis_1]
+    ,offset[axis_0],offset[axis_1]
+    ,center_axis0,center_axis1
+    ,r_axis0,r_axis1,rt_axis0,rt_axis1);
+  #endif
 
   // Check this with calculator
   mm_of_travel = hypot(angular_travel*radius, fabs(linear_travel));
@@ -421,7 +421,7 @@ dma_printf("\
          disableOCx();
          limit_error = 1;
      }*/
-    if(!OC5IE_bit && !OC3IE_bit)//!Get_Axis_IEnable_States()||SV.mode_complete < 1)
+    if(!Get_Axis_IEnable_States()||SV.mode_complete < 1)
        break;
    }
    SV.mode_complete = 0;
@@ -444,13 +444,12 @@ dma_printf("\
   SV.cir = 0;
   //ensure axis are in position when arc is complete
   DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,feed_rate);
-  //report_status_message(STATUS_OK);
-  SV.mode_complete = 0;
-  #if KineDebug == 3
+
+  #if KineDebug == 4
      while(DMA_IsOn(1));
      dma_printf("\n%s\n","Arc Finnished");
   #endif
-
+  SV.mode_complete = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
