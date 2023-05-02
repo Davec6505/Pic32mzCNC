@@ -68,12 +68,12 @@ void Conditin_Externs(){
 //main function
 
 void main() {
-int error = 0;
-int has_flash = 0;
-int modal_group = 0;
-int modal_action = 0;
-int dif,status_of_gcode;
-static int cntr = 0,a = 0;
+  int error = 0;
+  int has_flash = 0;
+  int modal_group = 0;
+  int modal_action = 0;
+  int dif,status_of_gcode;
+  static int cntr = 0,a = 0;
 
  //setup
  Conditin_Externs();
@@ -164,41 +164,42 @@ static int cntr = 0,a = 0;
      }
    }
    
-//Debug for stepper report if not connected to unit
-#if StepperDebug == 1
-if(SV.mode_complete){
-//if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP | STPS[Z].run_state != STOP){
-if(!DMA_IsOn(1)){
-dma_printf("\
-%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
-,STPS[X].step_count
-,STPS[X].accel_count
-,STPS[X].step_delay
-,STPS[Y].step_count
-,STPS[Y].accel_count
-,STPS[Y].step_delay
-,STPS[Z].step_count
-,STPS[Z].accel_count
-,STPS[Z].step_delay
-,(SV.mode_complete&0x00FF));
-}
-}
-#endif
-#if StepperDebug == 2
-if(SV.mode_complete){
-if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP | STPS[Z].run_state != STOP){
-while(DMA_IsOn(1));
-dma_printf("\
-Get_Axis_IEnable_States():= %d\t\
-SV.mode_complete:= %d\n"
-,Get_Axis_IEnable_States()
-,SV.mode_complete
-,STPS[X].step_count
-,STPS[Y].step_count
-,STPS[Z].step_count);
-}
-}
-#endif
+    //Debug for stepper report if not connected to unit
+    #if StepperDebug == 1
+    if(SV.mode_complete){
+    //if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP | STPS[Z].run_state != STOP){
+    if(!DMA_IsOn(1)){
+    dma_printf("\
+    %l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%l\t%d\n"
+    ,STPS[X].step_count
+    ,STPS[X].accel_count
+    ,STPS[X].step_delay
+    ,STPS[Y].step_count
+    ,STPS[Y].accel_count
+    ,STPS[Y].step_delay
+    ,STPS[Z].step_count
+    ,STPS[Z].accel_count
+    ,STPS[Z].step_delay
+    ,(SV.mode_complete&0x00FF));
+    }
+    }
+    #endif
+    
+    #if StepperDebug == 2
+    if(SV.mode_complete){
+    if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP | STPS[Z].run_state != STOP){
+    while(DMA_IsOn(1));
+    dma_printf("\
+    Get_Axis_IEnable_States():= %d\t\
+    SV.mode_complete:= %d\n"
+    ,Get_Axis_IEnable_States()
+    ,SV.mode_complete
+    ,STPS[X].step_count
+    ,STPS[Y].step_count
+    ,STPS[Z].step_count);
+    }
+    }
+    #endif
   //state check for resets
   protocol_system_check();
    
@@ -206,8 +207,9 @@ SV.mode_complete:= %d\n"
   protocol_execute_runtime();
   
   //respond ok if movement is finished
-  if((old_state == 0) && (SV.mode_complete == 0)){// && (!SV.homed)){
+  if((old_state == 0 || SV.cir == 1) && (SV.mode_complete == 0)){// && (!SV.homed)){
      old_state = 1;
+     SV.cir    = 0; //end of circle
      LED2 = false;
      //debug STATUS_OK response after moves complete
      status_of_gcode == STATUS_OK;
@@ -251,11 +253,11 @@ SV.mode_complete:= %d\n"
 static int Modal_Group_Actions0(int action){
 //[b0=10ms | b1=100ms | b2 = 300ms | b4=500ms | b5 = 1sec]
 int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
-unsigned int home_select = 0;
-unsigned long _data;
-unsigned long _flash,*addr;
-float coord_data[NoOfAxis];
-float a_val;
+  unsigned int home_select = 0;
+  unsigned long _data;
+  unsigned long _flash,*addr;
+  float coord_data[NoOfAxis];
+  float a_val;
 
 //actions below are focused on the bit positions hence the
 //numbering system grows 2^n

@@ -114,8 +114,10 @@ main
 	Modal_Group_Actions1
 		SingleAxisStep
 		DualAxisStep
-			belt_steps
+			DMA_IsOn
+			dma_printf
 			Single_Axis_Enable
+			belt_steps
 			Set_Axisdirection
 			labs
 			speed_cntr_Move
@@ -127,28 +129,28 @@ main
 					Pulse
 						StopAxis
 						AccDec
+			__CC2DW
 		sys_sync_current_position
 			plan_set_current_position
 				beltsteps2mm
 					fround
 		r_or_ijk
-			__CC2DW
 			sqrt
 				frexp
 				ldexp
 			hypot
 				sqrt
 			Get_motionmode
-			Get_Step_Rate
+			DMA_IsOn
+			dma_printf
 			mc_arc
-				__CC2DW
 				atan2
 					fabs
 					atan
 						fabs
 						eval_poly
-				fabs
 				hypot
+				fabs
 				floor
 				DisableStepperInterrupt
 				cos
@@ -158,6 +160,10 @@ main
 				sin
 				DualAxisStep
 				Get_Axis_IEnable_States
+				DMA_IsOn
+				dma_printf
+				__CC2DW
+			__CC2DW
 		Home
 			Rst_FP
 			Rst_FN

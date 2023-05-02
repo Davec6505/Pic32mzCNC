@@ -547,7 +547,7 @@ NOP
 L_GCODE_Set_Motion_Mode34:
 SH	R0, 10(SP)
 LBU	R2, Offset(_SV+0)(GP)
-INS	R2, R0, 4, 1
+INS	R2, R0, 1, 1
 SB	R2, Offset(_SV+0)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
@@ -556,7 +556,7 @@ L_GCODE_Set_Motion_Mode35:
 ORI	R2, R0, 1
 SH	R2, 10(SP)
 LBU	R2, Offset(_SV+0)(GP)
-INS	R2, R0, 4, 1
+INS	R2, R0, 1, 1
 SB	R2, Offset(_SV+0)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
@@ -566,7 +566,7 @@ ORI	R2, R0, 2
 SH	R2, 10(SP)
 SH	R0, Offset(_gc+128)(GP)
 LBU	R2, Offset(_SV+0)(GP)
-ORI	R2, R2, 16
+ORI	R2, R2, 2
 SB	R2, Offset(_SV+0)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	
@@ -577,7 +577,7 @@ SH	R2, 10(SP)
 ORI	R2, R0, 1
 SH	R2, Offset(_gc+128)(GP)
 LBU	R2, Offset(_SV+0)(GP)
-ORI	R2, R2, 16
+ORI	R2, R2, 2
 SB	R2, Offset(_SV+0)(GP)
 J	L_GCODE_Set_Motion_Mode33
 NOP	

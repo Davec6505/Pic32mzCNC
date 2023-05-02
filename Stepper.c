@@ -339,9 +339,8 @@ static int Pulse(int axis_No){
 //Accel Decel calculation and test
 static void AccDec(int axis_No){
   STPS[axis_No].accel_count++;
-  STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
+  STPS[axis_No].step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
   STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
-  STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
 }
 
 
@@ -475,11 +474,8 @@ static int cnt;
        STPS[axisB].step_delay = STPS[axisA].step_delay;
        STPS[axisB].accel_count = STPS[axisA].accel_count;
        Step_Cycle(axisB);
-       //if(!SV.cir)Pulse(axisB);
        SV.dif += BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//SV.dB,SV.dA);//2 * (SV.dy - SV.dx);//
       }
-       //if(!SV.cir)Pulse(axisB);
-       
      }
    }else{
      if(STPS[axisB].step_count < STPS[axisB].dist){
@@ -502,10 +498,8 @@ static int cnt;
          STPS[axisA].step_delay = STPS[axisB].step_delay;
          STPS[axisA].accel_count = STPS[axisB].accel_count;
          Step_Cycle(axisA);
-         //if(!SV.cir)Pulse(axisA);
          SV.dif += BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//SV.dA,SV.dB);//2 * (SV.dx - SV.dy);//
       }
-      //if(!SV.cir)Pulse(axisA);
      }
 
    }

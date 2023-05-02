@@ -305,10 +305,7 @@ unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 30 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-int read_float(char *line, char *char_counter, float *float_ptr);
-
-
+#line 27 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 unsigned long flt2ulong(float f_);
 
 
@@ -710,7 +707,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 67 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -752,10 +749,6 @@ typedef struct Steps{
 
  long dist;
 
- long psingle;
-
- long new_step_delay;
-
  long last_accel_delay;
 
  long accel_lim;
@@ -789,7 +782,7 @@ void SingleAxisStep(float newxyz,float speed,int axis_No);
 static void SingleAxisStart(long dist,float speed,int axis_No);
 
 
-void mc_arc(float *position, float *target, float *offset, int axis_0,
+void mc_arc(volatile float *position,volatile float *target,volatile float *offset, int axis_0,
  int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
  float radius, char isclockwise);
 
@@ -864,10 +857,7 @@ void Single_Axis_Enable(_axis_ axis_);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
 #line 62 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
- char running: 1;
- char startPulses: 1;
  char homed: 1;
- char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
  int mode_complete;
@@ -882,7 +872,6 @@ typedef struct genVars{
  long dA;
  long dB;
  long dC;
- long over;
  float prevA;
  float prevB;
 }sVars;
@@ -1034,8 +1023,7 @@ long abs_mmSteps;
  if(mmSteps == 1){
  STPS[axis_No].accel_count = -2;
  STPS[axis_No].run_state =  2 ;
- STPS[axis_No].step_delay = 10000;
- SV.running = 1;
+ STPS[axis_No].step_delay = 500;
 
  }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
 
@@ -1043,9 +1031,9 @@ long abs_mmSteps;
 
 
 
- if(STPS[axis_No].run_state !=  0 )
- temp_speed = last_speed - speed;
- else
+
+
+
  temp_speed = speed;
 
 
@@ -1104,11 +1092,13 @@ long abs_mmSteps;
  STPS[axis_No].run_state =  1 ;
  }
  }
-
+ if(SV.cir){
+ STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+ STPS[axis_No].run_state =  3 ;
+ }
  STPS[axis_No].step_count = 0;
  STPS[axis_No].rest = 0;
  STPS[axis_No].accel_count = 1;
- SV.running = 1;
 #line 247 "C:/Users/Git/Pic32mzCNC/Planner.c"
  }
 #line 259 "C:/Users/Git/Pic32mzCNC/Planner.c"
@@ -1168,14 +1158,21 @@ int axis_plane_a,axis_plane_b;
 
  isclockwise = 0;
  if (dir ==  0 ) { isclockwise = 1; }
-#line 406 "C:/Users/Git/Pic32mzCNC/Planner.c"
- speed =  (( ((gc.feed_rate)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
 
- speed = Get_Step_Rate(speed,axis_A);
+ while(DMA_IsOn(1));
+#line 401 "C:/Users/Git/Pic32mzCNC/Planner.c"
+ dma_printf("\n  [pos[X]:= %f\tpos[Y]:= %f\tpos[Z]:= %f][tar[X]:= %f\ttar[Y]:= %f\ttar[Z]:= %f]\n\n"
+ ,position[X],position[Y],position[Z],target[X],target[Y],target[Z]);
+
+
+
+
+
+
 
 
  mc_arc(position, target, offset, axis_A, axis_B, Z,
- speed, gc.inverse_feed_rate_mode,r, isclockwise);
+ gc.feed_rate, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
 

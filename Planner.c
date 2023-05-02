@@ -127,18 +127,17 @@ long abs_mmSteps;
   if(mmSteps == 1){
     STPS[axis_No].accel_count = -2;        // Move one step...
     STPS[axis_No].run_state = DECEL;       // ...in DECEL state.
-    STPS[axis_No].step_delay = 10000;      // Just a short delay so main() can act on 'running'.
-    SV.running = 1;                        // start running
-
+    STPS[axis_No].step_delay = 500;      // Just a short delay so main() can act on 'running'.
+    
   }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
   
     //if the motor is still moving at time of recalculating then use difference
     //still need to figure out if we should be doing this gcode is ususlly specific
     //to finnishing a move before starting a next!!!!
     //dly = (Vlast - Vcur) / (2 . a)
-   if(STPS[axis_No].run_state != STOP)
-        temp_speed = last_speed - speed;
-    else
+   //if(STPS[axis_No].run_state != STOP)
+   //     temp_speed = last_speed - speed;
+   // else
         temp_speed = speed;
 
     // Set max speed limit, by calc min_delay to use in timer.
@@ -197,13 +196,14 @@ long abs_mmSteps;
        STPS[axis_No].run_state = ACCEL;
     }
   }
-
+  if(SV.cir){
+    STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+    STPS[axis_No].run_state = RUN;
+  }
   STPS[axis_No].step_count  = 0;
   STPS[axis_No].rest        = 0;
   STPS[axis_No].accel_count = 1;
-  SV.running                = 1;
-  //last_speed                = speed;
-
+  
   //Debug for stepper report if not connected to unit
   #if PlanDebug == 1
 
@@ -403,13 +403,13 @@ int axis_plane_a,axis_plane_b;
   #endif
 
   //get rps from mm/min
-  speed = RPS_FROM_MMPMIN(gc.feed_rate);
+ // speed = RPS_FROM_MMPMIN(gc.feed_rate);
   //rps to step rate
-  speed = Get_Step_Rate(speed,axis_A);
+ // speed = Get_Step_Rate(speed,axis_A);
 
   // Trace the arc  inverse_feed_rate_mode used withG01 G02 G03 for Fxxx
   mc_arc(position, target, offset, axis_A, axis_B, Z,
-         speed, gc.inverse_feed_rate_mode,r, isclockwise);
+         gc.feed_rate, gc.inverse_feed_rate_mode,r, isclockwise);
 }
 
 

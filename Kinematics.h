@@ -13,6 +13,8 @@
 /////////////////////////////////////////////////////////
 //                       MACROS                        //
 /////////////////////////////////////////////////////////
+#define FLOAT_ZERO 0.00
+#define FLOAT_INC1 1.00
 
 //Direction counts values for absolute values
 //count addition values for absolute values
@@ -104,10 +106,6 @@ typedef struct Steps{
   long step_count;
   //! Distance calculated to travel
   long dist;
-  //! if a change of speed is required from dir change or any other
-  long psingle;
-  //! Counter used when accelerateing/decelerateing to calculate step_delay.
-  long new_step_delay;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long last_accel_delay;
  //! Limit accelleration
@@ -142,7 +140,7 @@ void SingleAxisStep(float newxyz,float speed,int axis_No);
 static void SingleAxisStart(long dist,float speed,int axis_No);
 
 //Circle move axis
-void mc_arc(float *position, float *target, float *offset, int axis_0,
+void mc_arc(volatile float *position,volatile float *target,volatile float *offset, int axis_0,
             int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
             float radius, char isclockwise);
 

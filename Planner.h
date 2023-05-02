@@ -60,13 +60,10 @@
 //  ****** INTERPOLATION SPECIFIC  ******         //
 ////////////////////////////////////////////////////
 typedef struct genVars{
-  char  running: 1;        //running bit
-  char  startPulses: 1;
   char  homed: 1;         //busy homing
-  char  run_circle: 1;        //circle in motion indicator
   char  cir: 1;
   char  Single_Dual: 1;
-  int  mode_complete;
+  int   mode_complete;
   int   AxisNo;
   int   dirx;
   int   diry;
@@ -78,7 +75,6 @@ typedef struct genVars{
   long  dA;
   long  dB;
   long  dC;
-  long  over;
   float  prevA;
   float  prevB;
 }sVars;

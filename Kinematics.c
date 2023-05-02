@@ -113,14 +113,9 @@ long speed_ = 0;
   Single_Axis_Enable(axis_No);
   speed_cntr_Move(dist , speed, axis_No);
 
-//static long dist;
-    /* if(STPS[axis].psingle != newxyz)
-             STPS[axis].psingle = newxyz; */
    Set_Axisdirection(dist,axis_No);
    STPS[axis_No].axis_dir = Direction(dist);
    SV.Single_Dual = SINGLE;
-   STPS[axis_No].psingle  = 0;
-   STPS[axis_No].dist = labs(dist) - STPS[axis_No].psingle;
    STPS[axis_No].step_count = 0;
    STPS[axis_No].mmToTravel = dist;
    //Start output compare module
@@ -132,65 +127,62 @@ long speed_ = 0;
 //////////////////////////////////////////////////////////
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 long tempA,tempB,tempC;
-
-  //get rps from mm/min
-  speed = RPS_FROM_MMPMIN(speed);
- 
- //if absolute mode ~ newxyz = new_position - current_position
-  if(gc.absolute_mode == true){
-   //get current position
-   tempA = belt_steps(axis_a,axisA);
-   tempB = belt_steps(axis_b,axisB);
-   
-  //subtract new from current
-   tempA = tempA - STPS[axisA].steps_abs_position;
-   tempB = tempB - STPS[axisB].steps_abs_position;
-
-  }else{
-   tempA = belt_steps(axis_a,axisA);
-   tempB = belt_steps(axis_b,axisB);
-  }
-
- //fresh values for calc
-  SV.over = 0;
+  //fresh values for calc
   SV.dif  = 0;
-
+  #if KineDebug == 3
+  while(DMA_IsOn(1));
+  dma_printf("axis_a:= %f\tabs_posA:= %l\taxis_b:= %f\tabs_posB:= %l\n"
+            ,axis_a,STPS[axisA].steps_abs_position,axis_b,STPS[axisB].steps_abs_position);
+ #endif
   //Enable the relevant axis in Stepper.c
   SV.Single_Dual = DUAL;
   Single_Axis_Enable(axisA);
   Single_Axis_Enable(axisB);
   
+  //get rps from mm/min
+  if(!SV.cir)
+    speed = RPS_FROM_MMPMIN(speed);
+  
+  //new position in Steps  move
+  tempA = belt_steps(axis_a,axisA);
+  tempB = belt_steps(axis_b,axisB);
+  
+ //if absolute mode ~ newxyz = new_position - current_position
+  if(gc.absolute_mode == true){
+  //subtract current from new
+   tempA = tempA - STPS[axisA].steps_abs_position;
+   tempB = tempB - STPS[axisB].steps_abs_position;
+  }
+
   //set the direction counter for absolute position
   Set_Axisdirection(tempA,axisA);
   STPS[axisA].axis_dir = Direction(tempA);
   Set_Axisdirection(tempB,axisB);
   STPS[axisB].axis_dir = Direction(tempB);
 
-  //check if movement is needed on the axis
-  //calculate acc/dec "if arc is runninG use last min speed ?"
   //Remove -ve values for dist in Steps to complete move
   STPS[axisA].dist =  labs(tempA);
   STPS[axisB].dist =  labs(tempB);
   
- #if KineDebug == 4
+ #if KineDebug == 3
  while(DMA_IsOn(1));
- dma_printf("SV.dA:= %l\tSV.dB:= %l\n"
-            ,STPS[axisA].dist,STPS[axisB].dist);
+ dma_printf("tempA:= %l\tSTPS[axisA].dist:= %l\ttempB:= %l\tSTPS[axisB].dist:= %l\n"
+            ,tempA,STPS[axisA].dist,tempB,STPS[axisB].dist);
  #endif
 
 
  if(STPS[axisA].dist >= STPS[axisB].dist){
-    if(!SV.cir)speed_cntr_Move(tempA,speed,axisA);
+   /* if(!SV.cir)*/speed_cntr_Move(tempA,speed,axisA);
     STPS[axisB].step_delay = STPS[axisA].step_delay;
     STPS[axisB].accel_count = STPS[axisA].accel_count;
     SV.dif = BresDiffVal(STPS[axisB].dist,STPS[axisA].dist);//2*(SV.dy - SV.dx);
     STPS[axisA].master = MASTER;
     STPS[axisB].master = SLAVE;
     if(SV.prevA == axis_a){
-     bit_false(SV.mode_complete,bit(axisA));
+      bit_false(SV.mode_complete,bit(axisA));
     }
  }else{
-    if(!SV.cir)speed_cntr_Move(tempB,speed,axisB);
+   /* if(!SV.cir)*/speed_cntr_Move(tempB,speed,axisB);
     STPS[axisA].step_delay = STPS[axisB].step_delay;
     STPS[axisA].accel_count = STPS[axisB].accel_count;
     SV.dif = BresDiffVal(STPS[axisA].dist,STPS[axisB].dist);//2* (SV.dx - SV.dy);
@@ -207,8 +199,8 @@ long tempA,tempB,tempC;
 
   STPS[axisA].step_count = 0;
   STPS[axisB].step_count = 0;
-  STPS[axisA].mmToTravel = tempA;
-  STPS[axisB].mmToTravel = tempB;
+ // STPS[axisA].mmToTravel = tempA;
+ // STPS[axisB].mmToTravel = tempB;
   
   if(SV.mode_complete == 0){
     StopAxis(axisA);
@@ -251,18 +243,19 @@ long tempA,tempB,tempC;
      This is important when there are successive arc motions.
   */
 
-void mc_arc(float *position, float *target, float *offset, int axis_0
+void mc_arc(volatile float *position,volatile float *target,volatile float *offset, int axis_0
            , int axis_1,int axis_linear, float feed_rate, char invert_feed_rate
            , float radius, char isclockwise){
 float arc_target[3] = {0};
 float center_axis0,center_axis1, r_axis0 , r_axis1 , rt_axis0 , rt_axis1 , linear_travel;
 float theta_per_segment, linear_per_segment , angular_travel , mm_of_travel , segments;
 float cos_T,sin_T,sin_Ti,cos_Ti;
-float r_axisi,nPx,nPy,i,x,y;
+float r_axisi,axis,i,x,y;
+float nPx,nPy;
 int count = 0;
 char limit_error = 0;
 int cnt;
-
+ nPx = nPy = FLOAT_ZERO;
  center_axis0            = position[axis_0] + offset[axis_0];
  center_axis1            = position[axis_1] + offset[axis_1];
  r_axis0                 = -offset[axis_0];  // Radius vector from center to current location
@@ -298,7 +291,7 @@ int cnt;
         angular_travel += PIx2;
   }
   
-  #if KineDebug == 3
+  #if KineDebug == 4
   while(DMA_IsOn(1));
   dma_printf("\
   [posx:=%f : posy:=%f]\n\
@@ -323,8 +316,8 @@ int cnt;
   // Multiply inverse feed_rate to compensate for the fact that this movement is approximated
   // by a number of discrete segments. The inverse feed_rate should be correct for the sum of
   // all segments.
-  if (invert_feed_rate)
-      feed_rate *= segments;
+  /*if (invert_feed_rate)
+      feed_rate *= segments; */
       
   // angular_travel = angular_travel * rad2deg;
    theta_per_segment = angular_travel/segments;
@@ -345,7 +338,7 @@ int cnt;
   DisableStepperInterrupt(Y);
   i = 0.0;
   
-  #if KineDebug == 3
+  #if KineDebug == 4
   while(DMA_IsOn(1));
   dma_printf("\
   [cos_T:=%f : sin_T:=%f]\n\
@@ -355,9 +348,8 @@ int cnt;
   cos_T,sin_T,radius,segments,angular_travel,mm_of_travel
   ,linear_travel,linear_per_segment,theta_per_segment,feed_rate);
   #endif
-
-  for (i = 1; i<segments; i+=1.00) { // Increment (segments-1)
-  //while(i < segments) { // Increment (segments-1)
+  
+  for (i = FLOAT_INC1; i<segments; i+=FLOAT_INC1) {
       if (count < settings.n_arc_correction) {
         // Apply vector rotation matrix
         r_axisi = r_axis0*sin_T + r_axis1*cos_T;
@@ -385,18 +377,16 @@ int cnt;
         nPx += position[axis_0];// += nPx;//arc_target[axis_0];
         nPy += position[axis_1];// += nPy;//arc_target[axis_1];
       }
-     //if absolute mode use current position + nP...
-  // if(gc.absolute_mode){
-     STPS[axis_0].step_delay = feed_rate;
-     STPS[axis_1].step_delay = feed_rate;
-  // }
 
+    // STPS[axis_0].step_count = STPS[axis_1].step_count = 0;
+   // STPS[axis_0].run_state =  STPS[axis_1].run_state = RUN;
+   
     //to ensure the axis does not over step during an
     //arc, there is a correction interpolation after
     //arc incrament to get axis into target position,
-    // if axis is ahead then it would have to reversr
+    // if axis is ahead then it would have to reverse
     //this prevents the reversal of wither axis.
-    if(position[axis_0] > target[axis_0]){
+  /*  if(position[axis_0] > target[axis_0]){
       if(nPx < target[axis_0]){nPx = target[axis_0];}
     }else if(position[axis_0] < target[axis_0]){
       if(nPx > target[axis_0]){nPx = target[axis_0];}
@@ -406,50 +396,52 @@ int cnt;
       if(nPy <= target[axis_1]){nPy = target[axis_1];}
     }else if(position[axis_1] < target[axis_1]){
       if(nPy >= target[axis_1]){nPy = target[axis_1];}
-    }
-
+    } */
+    
     //interpolate the difference
     DualAxisStep(nPx,nPy,axis_0,axis_1,feed_rate);//,xy);
+    
    //wait here while axis completes its move can posibly
    //check limits and estops as well as send out status report
    // will want ot unblockthis nce we have a complete working model
    while(1){
-     cnt++;
-     if(cnt > 5){
-        LED2=!LED2;
-        cnt = 0;
-     }
     /* if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
          disableOCx();
          limit_error = 1;
      }*/
-    if(!Get_Axis_IEnable_States()||SV.mode_complete < 1)
+     if(!Get_Axis_IEnable_States()||SV.mode_complete < 1)
        break;
-   }
-   SV.mode_complete = 0;
-    // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
-    // if (sys.abort) { return; }
-   /*if(limit_error)
-      break; */
-  #if KineDebug == 4
-  while(DMA_IsOn(1));
-  dma_printf("\
-  [ i:= %d\tseg:= %d ]\n\
-  [ nPx:= %f\tnPy:= %f ]\n\
-  [ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n\
-  [SV.mode_complete:= %d\r\n"
-  ,i,segments,nPx,nPy,target[axis_0],target[axis_1],SV.mode_complete);
-  #endif
+     }
+
+      // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
+      // if (sys.abort) { return; }
+     /*if(limit_error)
+        break; */
+    #if KineDebug == 4
+    while(DMA_IsOn(1));
+    dma_printf("\
+    [ nPx:= %f\tnPy:= %f ]\n"
+    ,nPx,nPy);
+    #endif
+    #if KineDebug == 3
+    while(DMA_IsOn(1));
+    dma_printf("\
+    [ i:= %f\tseg:= %f ]\n\
+    [ nPx:= %f\tnPy:= %f ]\n\
+    [ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n\
+    [SV.mode_complete:= %d\r\n"
+    ,i,segments,nPx,nPy,target[axis_0],target[axis_1],SV.mode_complete);
+    #endif
 
   }
-  //end of arc get to correct target
-  SV.cir = 0;
+
   //ensure axis are in position when arc is complete
   DualAxisStep(target[axis_0],target[axis_1],axis_0,axis_1,feed_rate);
 
   #if KineDebug == 4
-     while(DMA_IsOn(1));
-     dma_printf("\n%s\n","Arc Finnished");
+  while(DMA_IsOn(1));
+  dma_printf("\n%s\r\nSV.mode_complete:= %d\n"
+  ,"Arc Finnished",SV.mode_complete);
   #endif
   SV.mode_complete = 0;
 }

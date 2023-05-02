@@ -43759,7 +43759,6 @@ oswen
 oswen
 oswen_bit
 outputpulsexyz
-over
 overrun
 overrun
 overrun_bit
@@ -46904,7 +46903,6 @@ read_
 read_bit
 read_coord_data_indicator
 read_emacxmcmd_bit
-read_float
 read_ram_loaded_indicator
 read_row_from_flash
 readopcode
@@ -49111,7 +49109,6 @@ rtsmd_uefmode_bit
 rtsmd_ughmode_bit
 rtsmd_ujkmode_bit
 rtsmd_ulmmode_bit
-run_circle
 rundiv
 rundiv
 rundiv
@@ -49126,7 +49123,6 @@ rundiv3
 rundiv3_bit
 rundiv4
 rundiv4_bit
-running
 runten
 runten
 runten
@@ -61029,7 +61025,6 @@ start
 start
 start_bit
 start_interpolation
-startpulses
 startup
 statbytes
 statbytes0

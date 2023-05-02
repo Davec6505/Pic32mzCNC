@@ -326,10 +326,7 @@ unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/git/pic32mzcnc/config.h"
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 30 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-int read_float(char *line, char *char_counter, float *float_ptr);
-
-
+#line 27 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 unsigned long flt2ulong(float f_);
 
 
@@ -419,10 +416,7 @@ void write_global_settings();
 int settings_store_global_setting(int parameter, float value);
 #line 62 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
- char running: 1;
- char startPulses: 1;
  char homed: 1;
- char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
  int mode_complete;
@@ -437,7 +431,6 @@ typedef struct genVars{
  long dA;
  long dB;
  long dC;
- long over;
  float prevA;
  float prevB;
 }sVars;
@@ -486,7 +479,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 67 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -528,10 +521,6 @@ typedef struct Steps{
 
  long dist;
 
- long psingle;
-
- long new_step_delay;
-
  long last_accel_delay;
 
  long accel_lim;
@@ -565,7 +554,7 @@ void SingleAxisStep(float newxyz,float speed,int axis_No);
 static void SingleAxisStart(long dist,float speed,int axis_No);
 
 
-void mc_arc(float *position, float *target, float *offset, int axis_0,
+void mc_arc(volatile float *position,volatile float *target,volatile float *offset, int axis_0,
  int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
  float radius, char isclockwise);
 

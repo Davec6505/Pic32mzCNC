@@ -23,12 +23,6 @@
 // #define STATE_JOG     8 // Jogging mode is unique like homing.
 
 
-
-// Read a floating point value from a string. Line points to the input buffer, char_counter
-// is the indexer pointing to the current character of the line, while float_ptr is
-// a pointer to the result variable. Returns true when it succeeds
-int read_float(char *line, char *char_counter, float *float_ptr);
-
 //Conversion from float to unsigned long keeping byte order
 unsigned long flt2ulong(float f_);
 

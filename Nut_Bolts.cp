@@ -493,10 +493,7 @@ void write_global_settings();
 int settings_store_global_setting(int parameter, float value);
 #line 62 "c:/users/git/pic32mzcnc/planner.h"
 typedef struct genVars{
- char running: 1;
- char startPulses: 1;
  char homed: 1;
- char run_circle: 1;
  char cir: 1;
  char Single_Dual: 1;
  int mode_complete;
@@ -511,7 +508,6 @@ typedef struct genVars{
  long dA;
  long dB;
  long dC;
- long over;
  float prevA;
  float prevB;
 }sVars;
@@ -560,7 +556,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 67 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -602,10 +598,6 @@ typedef struct Steps{
 
  long dist;
 
- long psingle;
-
- long new_step_delay;
-
  long last_accel_delay;
 
  long accel_lim;
@@ -639,7 +631,7 @@ void SingleAxisStep(float newxyz,float speed,int axis_No);
 static void SingleAxisStart(long dist,float speed,int axis_No);
 
 
-void mc_arc(float *position, float *target, float *offset, int axis_0,
+void mc_arc(volatile float *position,volatile float *target,volatile float *offset, int axis_0,
  int axis_1,int axis_linear, float feed_rate,char invert_feed_rate,
  float radius, char isclockwise);
 
@@ -910,10 +902,7 @@ static int Modal_Group_Actions7(int action);
 
 static int Modal_Group_Actions12(int action);
 #line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 30 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-int read_float(char *line, char *char_counter, float *float_ptr);
-
-
+#line 27 "c:/users/git/pic32mzcnc/nuts_bolts.h"
 unsigned long flt2ulong(float f_);
 
 
@@ -927,91 +916,10 @@ int round(float val);
 
 
 long lround(float val);
-#line 14 "C:/Users/Git/Pic32mzCNC/Nut_Bolts.c"
-int read_float(char *line, uint8_t *char_counter, float *float_ptr)
-{
- bit isnegative,isdecimal;
- char *ptr = line + *char_counter;
- unsigned char c;
-
- long intval = 0;
- short exp = 0;
- char ndigit = 0;
- float fval;
-
- isnegative = isdecimal =  0 ;
-
-
- c = *ptr++;
-
-
- isnegative =  0 ;
- if (c == '-') {
- isnegative =  1 ;
- c = *ptr++;
- } else if (c == '+') {
- c = *ptr++;
- }
-
-
- while(1) {
- c -= '0';
- if (c <= 9) {
- ndigit++;
- if (ndigit <=  8 ) {
- if (isdecimal) { exp--; }
- intval = (((intval << 2) + intval) << 1) + c;
- } else {
- if (!(isdecimal)) { exp++; }
- }
- } else if (c == (('.'-'0') & 0xff) && !(isdecimal)) {
- isdecimal =  1 ;
- } else {
- break;
- }
- c = *ptr++;
- }
-
-
- if (!ndigit) { return( 0 ); };
-
-
-
- fval = (float)intval;
-
-
-
- if (fval != 0) {
- while (exp <= -2) {
- fval *= 0.01;
- exp += 2;
- }
- if (exp < 0) {
- fval *= 0.1;
- } else if (exp > 0) {
- do {
- fval *= 10.0;
- } while (--exp > 0);
- }
- }
-
-
- if (isnegative) {
- *float_ptr = -fval;
- } else {
- *float_ptr = fval;
- }
-
- *char_counter = ptr - line - 1;
-
- return( 1 );
-}
-
-
+#line 8 "C:/Users/Git/Pic32mzCNC/Nut_Bolts.c"
 unsigned long flt2ulong(float f_){
 unsigned long ul_ = 0;
  memcpy(&ul_,&f_,sizeof(float));
-
  return ul_;
 }
 
@@ -1031,7 +939,7 @@ float value = (long)(val * 100.00 + 0.5);
 
 
 int round(float val){
-double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
+float temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
  tempC = ceil(val);
  tempF = floor(val);
  dec = val - tempF;
@@ -1041,7 +949,7 @@ double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
 
 
 long lround(float val){
-double temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
+float temp = 0.00,tempC = 0.00,tempF = 0.00,dec = 0.00;
  tempC = ceil(val);
  tempF = floor(val);
  dec = val - tempF;

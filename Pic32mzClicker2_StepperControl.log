@@ -9,9 +9,9 @@ warning: 155	1506	Implicit conversion of pointer to int	__Lib_MemManager.c
 warning: 174	1508	Implicit conversion of int to ptr	__Lib_MemManager.c
 diagnostics: 297	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	pins.h
-hint: 256	1163	Variable 'addr' has been declared, but not used	Main.c
-hint: 258	1163	Variable 'a_val' has been declared, but not used	Main.c
-diagnostics: 622	123	Compiled Successfully	Main.c
+hint: 258	1163	Variable 'addr' has been declared, but not used	Main.c
+hint: 260	1163	Variable 'a_val' has been declared, but not used	Main.c
+diagnostics: 624	123	Compiled Successfully	Main.c
 hint: 125	1164	Variable 'report' has been eliminated by optimizer	Main.c
 hint: 75	1164	Variable 'dif' has been eliminated by optimizer	Main.c
 hint: 76	1164	Variable 'cntr' has been eliminated by optimizer	Main.c
@@ -19,8 +19,8 @@ hint: 76	1164	Variable 'a' has been eliminated by optimizer	Main.c
 hint: 71	1164	Variable 'error' has been eliminated by optimizer	Main.c
 hint: 72	1164	Variable 'has_flash' has been eliminated by optimizer	Main.c
 hint: 74	1164	Variable 'modal_action' has been eliminated by optimizer	Main.c
-hint: 253	1164	Variable 'result' has been eliminated by optimizer	Main.c
-hint: 253	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
+hint: 255	1164	Variable 'result' has been eliminated by optimizer	Main.c
+hint: 255	1164	Variable 'temp_axis' has been eliminated by optimizer	Main.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (UART2 at 0x0092)	Config.c
 diagnostics: 392	123	Compiled Successfully	Config.c
@@ -29,35 +29,34 @@ hint: 0	1004	interrupt handler (StepX at 0x001B)	Stepper.c
 hint: 0	1004	interrupt handler (StepY at 0x000C)	Stepper.c
 hint: 0	1004	interrupt handler (StepZ at 0x0023)	Stepper.c
 hint: 0	1004	interrupt handler (StepA at 0x0011)	Stepper.c
-diagnostics: 512	123	Compiled Successfully	Stepper.c
+diagnostics: 506	123	Compiled Successfully	Stepper.c
 hint: 135	1164	Variable 'temp' has been eliminated by optimizer	Stepper.c
 diagnostics: 0	122	Compilation Started	stdint.h
-diagnostics: 82	123	Compiled Successfully	Steptodistance.c
+diagnostics: 74	123	Compiled Successfully	Steptodistance.c
 hint: 18	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
-hint: 32	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
-hint: 41	1164	Variable 'temp' has been eliminated by optimizer	Steptodistance.c
-hint: 69	1164	Variable 'circ' has been eliminated by optimizer	Steptodistance.c
-hint: 69	1164	Variable 'cirDivision' has been eliminated by optimizer	Steptodistance.c
-hint: 69	1164	Variable 'stepsToMove' has been eliminated by optimizer	Steptodistance.c
+hint: 61	1164	Variable 'circ' has been eliminated by optimizer	Steptodistance.c
+hint: 61	1164	Variable 'cirDivision' has been eliminated by optimizer	Steptodistance.c
+hint: 61	1164	Variable 'stepsToMove' has been eliminated by optimizer	Steptodistance.c
 diagnostics: 0	122	Compilation Started	pins.h
 hint: 0	1004	interrupt handler (Timer1Interrupt at 0x0004)	Timers.c
 hint: 0	1004	interrupt handler (Timer8Interrupt at 0x0024)	Timers.c
 diagnostics: 110	123	Compiled Successfully	Timers.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 113	1354	argument may be out of range [axis_No]	Kinematics.c
-hint: 160	1354	argument may be out of range [axisA]	Kinematics.c
-hint: 161	1354	argument may be out of range [axisB]	Kinematics.c
-hint: 134	1163	Variable 'tempC' has been declared, but not used	Kinematics.c
-diagnostics: 685	123	Compiled Successfully	Kinematics.c
-warning: 417	1512	variable 'cnt' might not have been initialized	Kinematics.c
+hint: 139	1354	argument may be out of range [axisA]	Kinematics.c
+hint: 140	1354	argument may be out of range [axisB]	Kinematics.c
+hint: 129	1163	Variable 'tempC' has been declared, but not used	Kinematics.c
+hint: 253	1163	Variable 'axis' has been declared, but not used	Kinematics.c
+hint: 257	1163	Variable 'cnt' has been declared, but not used	Kinematics.c
+diagnostics: 677	123	Compiled Successfully	Kinematics.c
 hint: 78	1164	Variable 'absxyz' has been eliminated by optimizer	Kinematics.c
 hint: 80	1164	Variable 'dir' has been eliminated by optimizer	Kinematics.c
 hint: 110	1164	Variable 'speed_' has been eliminated by optimizer	Kinematics.c
-hint: 260	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
-hint: 261	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
-hint: 261	1164	Variable 'x' has been eliminated by optimizer	Kinematics.c
-hint: 261	1164	Variable 'y' has been eliminated by optimizer	Kinematics.c
-hint: 263	1164	Variable 'limit_error' has been eliminated by optimizer	Kinematics.c
+hint: 252	1164	Variable 'sin_Ti' has been eliminated by optimizer	Kinematics.c
+hint: 253	1164	Variable 'r_axisi' has been eliminated by optimizer	Kinematics.c
+hint: 253	1164	Variable 'x' has been eliminated by optimizer	Kinematics.c
+hint: 253	1164	Variable 'y' has been eliminated by optimizer	Kinematics.c
+hint: 256	1164	Variable 'limit_error' has been eliminated by optimizer	Kinematics.c
 diagnostics: 0	122	Compilation Started	pins.h
 diagnostics: 78	123	Compiled Successfully	Pins.c
 diagnostics: 0	122	Compilation Started	stdlib.h
@@ -111,14 +110,15 @@ hint: 503	1164	Variable 'str_len' has been eliminated by optimizer	Protocol.c
 hint: 589	1164	Variable 'mode' has been eliminated by optimizer	Protocol.c
 hint: 589	1164	Variable 'flow' has been eliminated by optimizer	Protocol.c
 diagnostics: 0	122	Compilation Started	stdint.h
-diagnostics: 133	123	Compiled Successfully	Nut_Bolts.c
-hint: 111	1164	Variable 'value' has been eliminated by optimizer	Nut_Bolts.c
-hint: 117	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
-hint: 117	1164	Variable 'dec' has been eliminated by optimizer	Nut_Bolts.c
-hint: 127	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
-hint: 127	1164	Variable 'dec' has been eliminated by optimizer	Nut_Bolts.c
+diagnostics: 46	123	Compiled Successfully	Nut_Bolts.c
+hint: 24	1164	Variable 'value' has been eliminated by optimizer	Nut_Bolts.c
+hint: 30	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
+hint: 30	1164	Variable 'dec' has been eliminated by optimizer	Nut_Bolts.c
+hint: 40	1164	Variable 'temp' has been eliminated by optimizer	Nut_Bolts.c
+hint: 40	1164	Variable 'dec' has been eliminated by optimizer	Nut_Bolts.c
 diagnostics: 0	122	Compilation Started	stdint.h
 hint: 113	1163	Variable 'max_s_limit' has been declared, but not used	Planner.c
+hint: 114	1163	Variable 'last_speed' has been declared, but not used	Planner.c
 diagnostics: 487	123	Compiled Successfully	Planner.c
 warning: 347	1512	variable 'axis_plane_a' might not have been initialized	Planner.c
 warning: 349	1512	variable 'axis_plane_b' might not have been initialized	Planner.c
@@ -132,13 +132,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 3391 ms	 
+diagnostics: 0	127	All files Compiled in 3750 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
-hint: 0	1144	Static RAM (bytes): 5532   Dynamic RAM (bytes): 501685	Static RAM (bytes): 5532   Dynamic RAM (bytes): 501685
+hint: 0	1144	Static RAM (bytes): 5492   Dynamic RAM (bytes): 501685	Static RAM (bytes): 5492   Dynamic RAM (bytes): 501685
 hint: 0	1144	HEAP RAM (bytes): 8000	HEAP RAM (bytes): 8000
-hint: 0	1144	Used ROM (bytes): 81700 (4%)  Free ROM (bytes): 2015452 (96%)	Used ROM (bytes): 81700 (4%)  Free ROM (bytes): 2015452 (96%)
+hint: 0	1144	Used ROM (bytes): 81940 (4%)  Free ROM (bytes): 2015212 (96%)	Used ROM (bytes): 81940 (4%)  Free ROM (bytes): 2015212 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 816 (1%)  Free BOOTROM (bytes): 146195 (99%)	Used BOOTROM (bytes): 816 (1%)  Free BOOTROM (bytes): 146195 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 1109 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 6625 ms	 
-diagnostics: 0	103	Finished successfully: 30 Apr 2023, 23:14:34	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 1125 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 7078 ms	 
+diagnostics: 0	103	Finished successfully: 01 May 2023, 22:53:38	Pic32mzClicker2_StepperControl.mcp32
