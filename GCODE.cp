@@ -235,8 +235,8 @@ div_t div(int number, int denom);
 ldiv_t ldiv(long number, long denom);
 uldiv_t uldiv(unsigned long number, unsigned long denom);
 long labs(long x);
-long max(long a, long int b);
-long min(long a, long int b);
+long int max(long int a, long int b);
+long int min(long int a, long int b);
 void srand(unsigned x);
 int rand();
 int xtoi(char * s);
@@ -1121,7 +1121,10 @@ int i,m_mode;
  }
 
  }
-#line 258 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 255 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ while(DMA_IsOn(1));
+ dma_printf("axis_words:= %d\n",axis_words&0x00ff);
+
  return m_mode;
 }
 
@@ -1220,7 +1223,11 @@ int i = 0;
 
  for(i=0;i<=3;i++)
  Set_Axisword(i);
-#line 371 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 367 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ while(DMA_IsOn(1));
+ dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
+
+
  break;
  case  4 :
  FAIL( 0 );
@@ -1368,6 +1375,9 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 536 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+#line 533 "C:/Users/Git/Pic32mzCNC/GCODE.c"
+ while(DMA_IsOn(1));
+ dma_printf("axis_words:= %d\n",axis_words&0x00ff);
+
  return status_code;
 }

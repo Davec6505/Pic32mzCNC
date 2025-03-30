@@ -233,8 +233,8 @@ div_t div(int number, int denom);
 ldiv_t ldiv(long number, long denom);
 uldiv_t uldiv(unsigned long number, unsigned long denom);
 long labs(long x);
-long max(long a, long int b);
-long min(long a, long int b);
+long int max(long int a, long int b);
+long int min(long int a, long int b);
 void srand(unsigned x);
 int rand();
 int xtoi(char * s);
@@ -1053,7 +1053,13 @@ void main() {
 
  status_of_gcode ==  0 ;
  report_status_message(status_of_gcode);
-#line 224 "C:/Users/Git/Pic32mzCNC/Main.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("old_state:= %d\tSV.mode_complete:= %d\tstepX:= %l\tstepY:= %l\tstepZ= %l\n"
+ ,old_state ,SV.mode_complete,STPS[X].step_count
+ ,STPS[Y].step_count,STPS[Z].step_count);
+
  }
  if(SV.mode_complete > 0 && old_state != 0){
  old_state = 0;

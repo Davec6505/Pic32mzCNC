@@ -460,6 +460,9 @@ int status;
                //SV.Tog to prepare for ok response
                SV.homed = true;
                break;
+         case 'I' : //grbl firmware
+              report_init_message();
+              break;
          case 'N' : // Startup lines. $N
                if ( str_[2] < 0x20 ) { // Print startup lines
                   for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {

@@ -28,7 +28,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Kinematics.c
+Value=Protocol.c
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -118,7 +118,7 @@ Value=0
 [USE_HEAP]
 Value=1
 [HEAP_SIZE]
-Value=8000
+Value=100000
 [EEPROM_DEFINITION]
 Value=
 [FILES]
@@ -147,14 +147,11 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Kinematics.c
-File2=Stepper.c
-File3=Stepper.h
-File4=Kinematics.h
-File5=Planner.h
-File6=Planner.c
-File7=DEFINES.pld
-Count=8
+File1=DEFINES.pld
+File2=Protocol.c
+File3=Print.c
+File4=Globals.c
+Count=5
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -183,8 +180,7 @@ File8=Flash_60001193B.pdf
 Count=9
 [SEARCH_PATH]
 Path0=..\..\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\
-Path1=E:\Downloads\CNC _Papers\
-Count=2
+Count=1
 [HEADER_PATH]
 Path0=..\..\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\
 Count=1
@@ -225,7 +221,7 @@ File10=MemManager
 Count=11
 [INTERRUPT_DEFS]
 EBASE=9FC01000
-VECTOR_SPACEING=512
+VECTOR_SPACEING=32
 VECTOR_MODE=1
 USE_SRS=7
 [EXPANDED_NODES]

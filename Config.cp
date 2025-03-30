@@ -233,8 +233,8 @@ div_t div(int number, int denom);
 ldiv_t ldiv(long number, long denom);
 uldiv_t uldiv(unsigned long number, unsigned long denom);
 long labs(long x);
-long max(long a, long int b);
-long min(long a, long int b);
+long int max(long int a, long int b);
+long int min(long int a, long int b);
 void srand(unsigned x);
 int rand();
 int xtoi(char * s);
@@ -1047,7 +1047,19 @@ void UartConfig(){
  UART2_Init_Advanced(115200, 200000 , _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
  UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle);
  Delay_ms(10);
-#line 148 "C:/Users/Git/Pic32mzCNC/Config.c"
+
+
+
+
+ UART3_Init_Advanced(256000, 200000 , _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
+ UART_Set_Active(&UART3_Read, &UART3_Write, &UART3_Data_Ready, &UART3_Tx_Idle);
+ Delay_ms(100);
+
+
+
+
+
+
 }
 
 

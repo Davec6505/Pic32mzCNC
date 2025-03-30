@@ -1,6 +1,4 @@
 main
-	__CC2DW
-	__FillZeros
 	Conditin_Externs
 		PinMode
 			set_performance_mode
@@ -27,6 +25,8 @@ main
 				UART2_Init_Advanced
 					UART_Calc_BRG
 				UART_Set_Active
+				UART3_Init_Advanced
+					UART_Calc_BRG
 			settings_init
 				NVMReadWord
 				NVMErasePage
@@ -59,7 +59,6 @@ main
 		Reset_Min_Limit
 		Reset_Min_Debounce
 	Get_modalgroup
-	Get_non_modalword
 	Modal_Group_Actions0
 		settings_write_coord_data
 			__CC2DW
@@ -94,6 +93,7 @@ main
 		GET_RunState
 		FAIL
 		memset
+	Get_non_modalword
 	Rst_modalgroup
 	report_status_message
 		DMA_IsOn
@@ -208,6 +208,8 @@ main
 			dma_printf
 			beltsteps2mm
 			__CC2DW
+	DMA_IsOn
+	dma_printf
 	Sample_Gocde_Line
 		Get_Difference
 		DMA0_ReadDstPtr
@@ -256,6 +258,7 @@ main
 			Rst_modalgroup
 			Set_modalgroup
 			Set_Axisword
+			report_init_message
 			settings_read_startup_line
 				memcpy
 			report_status_message
@@ -298,8 +301,8 @@ main
 				Str_Initialize
 					memset
 				strlen
-			strlen
 			cpy_val_from_str
+			strlen
 			atoi
 			atof
 			G_Mode
@@ -307,18 +310,32 @@ main
 				Set_Motion_Mode
 					FAIL
 					Select_Plane
+					DMA_IsOn
+					dma_printf
+					__CC2DW
+			DMA_IsOn
+			dma_printf
 			Instruction_Values
 				FAIL
 				To_Millimeters
+				DMA_IsOn
+				dma_printf
+				__CC2DW
 			M_Mode
 				Set_M_Modal_Commands
 				Set_M_Commands
 					FAIL
+			__CC2DW
 		Check_group_multiple_violations
 			FAIL
 			Rst_modalgroup
 			Rst_non_modalword
 			Set_Axisword
+			DMA_IsOn
+			dma_printf
+			__CC2DW
+	__CC2DW
+	__FillZeros
 	ResetSteppers
 		DisableStepper
 StepZ
