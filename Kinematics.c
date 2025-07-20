@@ -486,7 +486,7 @@ static long speed = 0;
   bit_false(homing[axis].home_state,bit(HOME_COMPLETE));
     
   //Force a reversal of axis
-  bit_false(homing[axis].home_state,bit(HOME_REV));
+  bit_false(homing[axis].home_state,bit(HOME_BACK_OFF));
     
   //set counter to 0
   homing[axis].home_cnt = 0;
@@ -547,7 +547,7 @@ HOMED:
            //move Home iterations
            if(homing[axis].home_cnt == 1){ //at 1st hit of limit
            
-               bit_true(homing[axis].home_state,bit(HOME_REV));
+               bit_true(homing[axis].home_state,bit(HOME_BACK_OFF));
                bit_false(homing[axis].home_state,bit(HOME));
                
                //pause prior to reentering limit switch
@@ -600,7 +600,7 @@ HOMED:
 #endif
        homing[axis].home_cnt++;
        if(bit_istrue(homing[axis].home_state,BIT_HOME_REV)){
-          bit_false(homing[axis].home_state,bit(HOME_REV));
+          bit_false(homing[axis].home_state,bit(HOME_BACK_OFF));
           //distance here is any value to move onto the limit
           //movement will stop on edge of limit
           Home_Axis(-290.00,settings.homing_feed_rate,axis);
@@ -640,6 +640,89 @@ static void Home_Axis(double distance,float speed,int axis){
   SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 
+
+int _Home(int axis){
+ static long speed = 0;
+
+  //idle homing can only take place once all alarms are cleared
+ if(sys.state == STATE_IDLE){
+    speed = settings.homing_seek_rate;
+
+   //condition the triggers
+    Rst_FP(axis);Rst_FN(axis);
+
+    //set counter to 0
+    homing[axis].home_cnt = 0;
+    homing[axis].home_state = 0;
+  }
+  
+  switch(homing[axis].home_state){
+       default: //Nothing
+
+            //enable all axis at the start
+            EnableStepper(axis);//sort this out
+
+            //indicator for interface
+            sys.state = STATE_HOMING;
+
+
+            //if limit is already made go to rev mode
+            if(!Test_Port_Pins(axis)){
+              //Force the homing counter to 1 == reverse state
+              homing[axis].home_state = HOME_BACK_OFF;
+             // goto homed lable to start reversing
+             //distance here is any value to move off the limit
+             //movement will stop on falling edge of limit
+               Home_Axis(12.0,settings.homing_feed_rate, axis);
+
+            }
+            else{
+               //start the movement
+               //(max_sizes[axis]+100.0)to ensure axis gets to limit
+              Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
+
+               #if HomeDebug == 2
+               while(DMA_IsOn(1));
+                dma_printf("[sys.state:= %d ][home_state:= %d ][home_cnt:= %d]\n"
+                            ,sys.state
+                            ,homing[axis].home_state
+                            ,homing[axis].home_cnt);
+               #endif
+            }
+
+            break;
+       case HOME_SET:  //Home set
+            break;
+       case HOME: //Home
+            if(!Test_Port_Pins(axis)){
+              //Force the homing counter to 1 == reverse state
+              homing[axis].home_state = HOME_BACK_OFF;
+             // goto homed lable to start reversing
+             //distance here is any value to move off the limit
+             //movement will stop on falling edge of limit
+               Home_Axis(12.0,settings.homing_feed_rate, axis);
+
+            }
+            break;
+       case HOME_BACK_OFF: //Home retract off home position
+            if(!(Get_Axis_Run_States() & axis)){
+                Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
+                homing[axis].home_state = HOME_BACK;
+            }
+            break;
+       case HOME_BACK: //Back to home
+            if(!Test_Port_Pins(axis)){
+              //Axis homed
+              homing[axis].home_state = HOME_COMPLETE;
+            }
+            break;
+       case HOME_COMPLETE: //Home Complete
+
+            break;
+  }
+  return axis;
+}
+
 static void ResetHoming(){
 int i = 0;
    for(i = 0;i< NoOfAxis;i++){
@@ -647,6 +730,7 @@ int i = 0;
         homing[i].home_cnt = 0;
    }
 }
+
 
 // Method to ready the system to reset by setting the runtime reset command and killing any
 // active processes in the system. This also checks if a system reset is issued while Grbl

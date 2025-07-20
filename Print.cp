@@ -608,6 +608,7 @@ int GetAxisDirection(long mm2move);
 
 void ResetHoming();
 int Home(int axis);
+int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);

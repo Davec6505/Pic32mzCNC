@@ -45,6 +45,7 @@ _exccode_sys
 _exccode_tr
 _flash_erase
 _flash_write_latch
+_home
 _ic1
 _ic2
 _ic3

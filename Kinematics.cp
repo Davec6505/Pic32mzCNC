@@ -912,6 +912,7 @@ int GetAxisDirection(long mm2move);
 
 void ResetHoming();
 int Home(int axis);
+int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);
@@ -1409,6 +1410,89 @@ static void Home_Axis(double distance,float speed,int axis){
  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 
+
+int _Home(int axis){
+ static long speed = 0;
+
+
+ if(sys.state ==  0 ){
+ speed = settings.homing_seek_rate;
+
+
+ Rst_FP(axis);Rst_FN(axis);
+
+
+ homing[axis].home_cnt = 0;
+ homing[axis].home_state = 0;
+ }
+
+ switch(homing[axis].home_state){
+ default:
+
+
+ EnableStepper(axis);
+
+
+ sys.state =  5 ;
+
+
+
+ if(!Test_Port_Pins(axis)){
+
+ homing[axis].home_state =  3 ;
+
+
+
+ Home_Axis(12.0,settings.homing_feed_rate, axis);
+
+ }
+ else{
+
+
+ Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
+
+
+ while(DMA_IsOn(1));
+ dma_printf("[sys.state:= %d ][home_state:= %d ][home_cnt:= %d]\n"
+ ,sys.state
+ ,homing[axis].home_state
+ ,homing[axis].home_cnt);
+
+ }
+
+ break;
+ case  1 :
+ break;
+ case  2 :
+ if(!Test_Port_Pins(axis)){
+
+ homing[axis].home_state =  3 ;
+
+
+
+ Home_Axis(12.0,settings.homing_feed_rate, axis);
+
+ }
+ break;
+ case  3 :
+ if(!(Get_Axis_Run_States() & axis)){
+ Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
+ homing[axis].home_state =  4 ;
+ }
+ break;
+ case  4 :
+ if(!Test_Port_Pins(axis)){
+
+ homing[axis].home_state =  5 ;
+ }
+ break;
+ case  5 :
+
+ break;
+ }
+ return axis;
+}
+
 static void ResetHoming(){
 int i = 0;
  for(i = 0;i<  4 ;i++){
@@ -1416,6 +1500,7 @@ int i = 0;
  homing[i].home_cnt = 0;
  }
 }
+
 
 
 

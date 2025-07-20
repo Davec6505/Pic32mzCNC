@@ -44,7 +44,7 @@
 //Homing control
 #define HOME_SET         1
 #define HOME             2
-#define HOME_REV         3
+#define HOME_BACK_OFF    3
 #define HOME_BACK        4
 #define HOME_COMPLETE    5
 
@@ -153,6 +153,7 @@ int GetAxisDirection(long mm2move);
 //homing cycle
 void ResetHoming();
 int Home(int axis);
+int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);
