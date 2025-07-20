@@ -56,8 +56,21 @@ main
 		DisableStepper
 	Debounce_Limits
 		Test_Port_Pins
+		dma_printf
+			DMA_CH_Busy
+			sprintf
+				_doprntf
+					isdigit
+					scale
+					fround
+			strcat
+			strlen
+			strncpy
+			DMA1_Enable
+			__CC2DW
 		Reset_Min_Limit
 		Reset_Min_Debounce
+		__CC2DW
 	Get_modalgroup
 	Modal_Group_Actions0
 		settings_write_coord_data
@@ -87,6 +100,9 @@ main
 						labs
 					Get_Maxsteplimit_Tofastestspeed
 					Get_Acceleration_Limit
+					DMA_IsOn
+					dma_printf
+					__CC2DW
 				Set_Axisdirection
 				Step_Cycle
 					toggleOCx
@@ -98,17 +114,6 @@ main
 	report_status_message
 		DMA_IsOn
 		dma_printf
-			DMA_CH_Busy
-			sprintf
-				_doprntf
-					isdigit
-					scale
-					fround
-			strcat
-			strlen
-			strncpy
-			DMA1_Enable
-			__CC2DW
 	Get_Axisword
 	EnableSteppers
 	Modal_Group_Actions1
@@ -134,6 +139,9 @@ main
 			plan_set_current_position
 				beltsteps2mm
 					fround
+				DMA_IsOn
+				dma_printf
+				__CC2DW
 		r_or_ijk
 			sqrt
 				frexp
@@ -171,15 +179,21 @@ main
 			Test_Port_Pins
 			Home_Axis
 				StopAxis
+				DMA_IsOn
+				dma_printf
 				belt_steps
 				Get_Step_Rate
 				SingleAxisStep
+				__CC2DW
+			DMA_IsOn
+			dma_printf
 			FN
 				Test_Min
 			VDelay_ms
 			StopAxis
 			FP
 				Test_Min
+			__CC2DW
 		mc_reset
 			disableOCx
 			DisableStepper
@@ -286,9 +300,11 @@ main
 					isdigit
 			settings_store_global_setting
 				read_ram_loaded_indicator
-				read_row_from_flash
 				set_ram_loaded_indicator
+				read_row_from_flash
 				NVMErasePage
+				DMA_IsOn
+				dma_printf
 				flt2ulong
 				round
 					ceil
@@ -296,6 +312,7 @@ main
 				floor
 				fabs
 				NVMWriteRow
+				__CC2DW
 		Do_Gcode
 			strsplit2
 				Str_Initialize

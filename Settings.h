@@ -8,7 +8,7 @@
 typedef __attribute__((aligned (32))) float afloat;
 
 #define FIRMWARE "Grbl "
-#define GRBL_VERSION "0.8c "
+#define GRBL_VERSION "1.1c "
 #define GRBL_HELP "['$' for help]"
 
 

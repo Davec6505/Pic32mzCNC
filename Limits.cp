@@ -928,10 +928,10 @@ static struct limit Limit[ 4 ];
 void Limit_Initialize(){
  int i = 0;
 
-
  X_Min_Limit_Dir = 1;
  Y_Min_Limit_Dir = 1;
  Z_Min_Limit_Dir = 1;
+
 
  Limit[X].Limit_Min = 0;
  Limit[Y].Limit_Min = 0;
@@ -939,7 +939,7 @@ void Limit_Initialize(){
 
 
  IEC0CLR = 0x8021 << 8;
-
+ INTCONCLR = 15;
 
  X_Min_Limit_Setup();
  Y_Min_Limit_Setup();
@@ -950,6 +950,8 @@ void Limit_Initialize(){
 
 
 static void X_Min_Limit_Setup(){
+
+
 
 
 
@@ -974,6 +976,7 @@ static void Y_Min_Limit_Setup(){
 
 
 
+
  IPC3SET = 11 << 8;
 
 
@@ -985,6 +988,8 @@ static void Y_Min_Limit_Setup(){
 
 
 static void Z_Min_Limit_Setup(){
+
+
 
 
 
@@ -1082,7 +1087,10 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 180 "C:/Users/Git/Pic32mzCNC/Limits.c"
+
+ dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
+
+
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }

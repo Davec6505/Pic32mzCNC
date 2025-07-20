@@ -15,10 +15,10 @@ static struct limit Limit[NoOfAxis];
 void Limit_Initialize(){
  int i = 0;
    //set the limit ports to inputs
-
    X_Min_Limit_Dir = 1;
    Y_Min_Limit_Dir = 1;
    Z_Min_Limit_Dir = 1;
+   
    //set initial limit values
    Limit[X].Limit_Min = 0;
    Limit[Y].Limit_Min = 0;
@@ -26,7 +26,8 @@ void Limit_Initialize(){
    
    //disable external interrupts 1 and 2
    IEC0CLR  = 0x8021 << 8;
-
+   
+   INTCONCLR = 15;
    
    X_Min_Limit_Setup();
    Y_Min_Limit_Setup();
@@ -46,6 +47,8 @@ static void X_Min_Limit_Setup(){
 //IPC2<4:2>
 //IPC2<1:0>
 
+
+ 
  //Set Priority level to 4 & sub 1
  IPC2SET = 11 ;
  
@@ -63,6 +66,7 @@ static void Y_Min_Limit_Setup(){
 //IPC3<12:10>
 //IPC3<9:8>
 
+  
  //Set Priority level to 4 & sub 1
  //limits should seldom hit at the sametime [same sub prior]
  IPC3SET = 11 << 8;
@@ -81,6 +85,8 @@ static void Z_Min_Limit_Setup(){
 //IPC3<12:10>
 //IPC3<9:8>
 
+
+ 
  //Set Priority level to 4 & sub 1
  //limits should seldom hit at the sametime [same sub prior]
  IPC5SET = 11 << 24;

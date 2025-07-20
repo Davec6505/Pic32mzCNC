@@ -967,7 +967,7 @@ static void Set_Axisdirection(long temp,int axis){
  DIR_StepX = ( 1  ^ dir) & 0x0001;
  break;
  case Y:
- DIR_StepY = ( 0  ^ dir) & 0x0001;
+ DIR_StepY = ( 1  ^ dir) & 0x0001;
  break;
  case Z:
  DIR_StepZ = ( 1  ^ dir) & 0x0001;
@@ -1280,7 +1280,15 @@ static long speed = 0;
 
 
  Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
-#line 520 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("[sys.state:= %d ][home_state:= %d ][home_cnt:= %d]\n"
+ ,sys.state
+ ,homing[axis].home_state
+ ,homing[axis].home_cnt);
+
+
  return axis;
  }
 
@@ -1296,7 +1304,14 @@ static long speed = 0;
 
 HOMED:
  speed = settings.homing_feed_rate;
-#line 543 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("[%s][axis:= %d][cnt:= %d]\n"
+ ,"FN"
+ ,axis
+ ,homing[axis].home_cnt);
+
+
  if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
 
  if( ((homing[axis].home_state & (1 << 3) ) == 0) ){
@@ -1324,7 +1339,17 @@ HOMED:
 
 
  homing[axis].home_cnt = 0;
-#line 581 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n"
+ ,"axis finnished"
+ ,sys.state
+ ,axis
+ ,homing[axis].home_cnt);
+
+
+
  Home_Axis(settings.homing_pulloff,settings.homing_feed_rate, axis);
 
  return axis;
@@ -1349,7 +1374,14 @@ HOMED:
 
  Home_Axis(-290.00,settings.homing_feed_rate,axis);
  }
-#line 616 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("[%s][axis[%d].home_cnt:= %d][home_state:= %d]\n"
+ ,"FP"
+ ,axis
+ ,homing[axis].home_cnt
+ ,homing[axis].home_state);
+
  }
  }
  return axis;
@@ -1360,7 +1392,15 @@ static void Home_Axis(double distance,float speed,int axis){
 
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
-#line 635 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
+
+
+
+
+ while(DMA_IsOn(1));
+ dma_printf("HomeAxis(%f,%f,%d);\n",distance,speed,axis);
+
+
  STPS[axis].mmToTravel = belt_steps(distance,axis);
 
  speed =  (( ((speed)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;

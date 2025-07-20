@@ -1405,7 +1405,15 @@ int val_temp = 0;
 #line 633 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return( 6 );
  }
-#line 644 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("param:= %d & value:= %f\n",
+ parameter,
+ value);
+
+
+
  switch(parameter) {
  case 0: case 1: case 2:
  if (value <= 0.0) { return( 8 ); }
@@ -1533,7 +1541,13 @@ int val_temp = 0;
 
 
  set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
-#line 787 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+
+ while(DMA_IsOn(1));
+ dma_printf("ram_loaded_indicator:= %d\t%d\t%d\n",
+ read_ram_loaded_indicator(),
+ error,settings.flags);
+
  }
  break;
  default:

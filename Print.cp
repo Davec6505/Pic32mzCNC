@@ -1028,7 +1028,7 @@ void report_feedback_message(int message_code){
 
 void report_init_message(){
  while(DMA_IsOn(1));
- dma_printf("%s%s%s\r\n", "Grbl " , "0.8c " , "['$' for help]" );
+ dma_printf("%s%s%s\r\n", "Grbl " , "1.1c " , "['$' for help]" );
 }
 
 
