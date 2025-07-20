@@ -939,12 +939,13 @@ void Limit_Initialize(){
 
 
  IEC0CLR = 0x8021 << 8;
+
  INTCONCLR = 15;
 
  X_Min_Limit_Setup();
  Y_Min_Limit_Setup();
  Z_Min_Limit_Setup();
-#line 39 "C:/Users/Git/Pic32mzCNC/Limits.c"
+#line 40 "C:/Users/Git/Pic32mzCNC/Limits.c"
 }
 
 

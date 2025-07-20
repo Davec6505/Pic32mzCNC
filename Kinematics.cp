@@ -967,10 +967,10 @@ static void Set_Axisdirection(long temp,int axis){
  DIR_StepX = ( 1  ^ dir) & 0x0001;
  break;
  case Y:
- DIR_StepY = ( 1  ^ dir) & 0x0001;
+ DIR_StepY = ( 0  ^ dir) & 0x0001;
  break;
  case Z:
- DIR_StepZ = ( 1  ^ dir) & 0x0001;
+ DIR_StepZ = ( 0  ^ dir) & 0x0001;
  break;
  case A:
  DIR_StepA = ( 0  ^ dir) & 0x0001;

@@ -28,7 +28,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Limits.c
+Value=Kinematics.c
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -148,14 +148,15 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 File1=Limits.c
-File2=Config.h
-File3=Settings.h
-File4=Limits.h
-File5=Pins.h
-File6=Globals.h
-File7=Config.c
+File2=Protocol.c
+File3=Limits.h
+File4=Kinematics.c
+File5=Kinematics.h
+File6=Timers.c
+File7=Pins.h
 File8=Pins.c
-Count=9
+File9=Protocol.h
+Count=10
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -234,5 +235,10 @@ USE_SRS=7
 1=Sources
 18=Header Files
 37=Project Level Defines
-74=Other Files
-Count=5
+86=Sources
+87=..\
+88=Common Files
+90=..\
+91=Driver
+95=Header Files
+Count=10

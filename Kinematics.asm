@@ -85,9 +85,8 @@ NOP
 L_Kinematics_Set_Axisdirection8:
 ;Kinematics.c,53 :: 		DIR_StepY = (Y_DIR_DIR ^ dir) & 0x0001;
 ; dir start address is: 16 (R4)
-XORI	R2, R4, 1
+ANDI	R3, R4, 1
 ; dir end address is: 16 (R4)
-ANDI	R3, R2, 1
 _LX	
 INS	R2, R3, BitPos(DIR_StepY+0), 1
 _SX	
@@ -98,9 +97,8 @@ NOP
 L_Kinematics_Set_Axisdirection9:
 ;Kinematics.c,56 :: 		DIR_StepZ = (Z_DIR_DIR ^ dir) & 0x0001;
 ; dir start address is: 16 (R4)
-XORI	R2, R4, 1
+ANDI	R3, R4, 1
 ; dir end address is: 16 (R4)
-ANDI	R3, R2, 1
 _LX	
 INS	R2, R3, BitPos(DIR_StepZ+0), 1
 _SX	
