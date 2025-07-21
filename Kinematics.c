@@ -591,7 +591,7 @@ HOMED:
      }
 
 
-#ifdef POSITIVE_EDGE
+#if POSITIVE_EDGE
      //rising edge of limit switch
      if(FN(axis)){
 #else
@@ -654,31 +654,34 @@ int _Home(int axis){
     //set counter to 0
     homing[axis].home_cnt = 0;
     homing[axis].home_state = 0;
+    
+    //enable all axis at the start
+    EnableStepper(axis);//sort this out
+
+  }
+  else{
+    homing[axis].home_state = 99;
   }
   
   switch(homing[axis].home_state){
-       default: //Nothing
-
-            //enable all axis at the start
-            EnableStepper(axis);//sort this out
-
+       case 0: //start homing
             //indicator for interface
             sys.state = STATE_HOMING;
-
-
-            //if limit is already made go to rev mode
+            
+            //if limit is already made go to rev mode.
             if(!Test_Port_Pins(axis)){
-              //Force the homing counter to 1 == reverse state
+              //homing speed slow after initial homing done.
+              speed = settings.homing_feed_rate;
+              //got to back off state immediately.
               homing[axis].home_state = HOME_BACK_OFF;
-             // goto homed lable to start reversing
-             //distance here is any value to move off the limit
-             //movement will stop on falling edge of limit
+              
+             //distance here is any value to move off the limit.
                Home_Axis(12.0,settings.homing_feed_rate, axis);
 
             }
             else{
-               //start the movement
-               //(max_sizes[axis]+100.0)to ensure axis gets to limit
+               //start the movement.
+               //(max_sizes[axis]+100.0)to ensure axis gets to limit.
               Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
 
                #if HomeDebug == 2
@@ -691,9 +694,30 @@ int _Home(int axis){
             }
 
             break;
-       case HOME_SET:  //Home set
-            break;
        case HOME: //Home
+#if EDGE  == 1
+            //rising edge of limit switch
+            if(FN(axis)){
+              //Force the homing counter to 1 == reverse state
+              homing[axis].home_state = HOME_BACK_OFF;
+             // goto homed lable to start reversing
+             //distance here is any value to move off the limit
+             //movement will stop on falling edge of limit
+               Home_Axis(12.0,settings.homing_feed_rate, axis);
+
+            }
+#elif EDGE  == 0
+            //falling edge of limit ISR set to hi to low transition give a FP
+            if(FP(axis)){
+              //Force the homing counter to 1 == reverse state
+              homing[axis].home_state = HOME_BACK_OFF;
+             // goto homed lable to start reversing
+             //distance here is any value to move off the limit
+             //movement will stop on falling edge of limit
+               Home_Axis(12.0,settings.homing_feed_rate, axis);
+
+            }
+#else
             if(!Test_Port_Pins(axis)){
               //Force the homing counter to 1 == reverse state
               homing[axis].home_state = HOME_BACK_OFF;
@@ -703,6 +727,7 @@ int _Home(int axis){
                Home_Axis(12.0,settings.homing_feed_rate, axis);
 
             }
+#endif
             break;
        case HOME_BACK_OFF: //Home retract off home position
             if(!(Get_Axis_Run_States() & axis)){
@@ -710,14 +735,34 @@ int _Home(int axis){
                 homing[axis].home_state = HOME_BACK;
             }
             break;
-       case HOME_BACK: //Back to home
+       case HOME_BACK: //Back to home slowly
+#if EDGE == 0
+             //falling edge of limit ISR set to hi to low transition give a FP
+            if(FN(axis)){
+               homing[axis].home_state = HOME_COMPLETE;
+            }
+#elif EDGE == 1
+            if(FP(axis)){
+               homing[axis].home_state = HOME_COMPLETE;
+            }
+#else
             if(!Test_Port_Pins(axis)){
               //Axis homed
               homing[axis].home_state = HOME_COMPLETE;
             }
+#endif
             break;
        case HOME_COMPLETE: //Home Complete
-
+       
+            StopAxis(axis);
+            
+            //increase the axis number to tell callee the next axis is
+            //going to be run
+            axis++;
+            
+            //reset to idle to start at fast feed rate for homing
+            sys.state = STATE_IDLE;
+            
             break;
   }
   return axis;

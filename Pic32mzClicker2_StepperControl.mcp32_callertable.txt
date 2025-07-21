@@ -172,7 +172,7 @@ main
 				dma_printf
 				__CC2DW
 			__CC2DW
-		Home
+		_Home
 			Rst_FP
 			Rst_FN
 			EnableStepper
@@ -187,12 +187,12 @@ main
 				__CC2DW
 			DMA_IsOn
 			dma_printf
-			FN
-				Test_Min
-			VDelay_ms
-			StopAxis
 			FP
 				Test_Min
+			Get_Axis_Run_States
+			FN
+				Test_Min
+			StopAxis
 			__CC2DW
 		mc_reset
 			disableOCx

@@ -40,7 +40,7 @@
 //rising or falling edge triggers
 //#define POSITIVE_EDGE
 #define NEGATIVE_EDGE
-
+#define EDGE    0
 //Homing control
 #define HOME_SET         1
 #define HOME             2

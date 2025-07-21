@@ -1424,23 +1424,26 @@ int _Home(int axis){
 
  homing[axis].home_cnt = 0;
  homing[axis].home_state = 0;
- }
-
- switch(homing[axis].home_state){
- default:
 
 
  EnableStepper(axis);
 
+ }
+ else{
+ homing[axis].home_state = 99;
+ }
+
+ switch(homing[axis].home_state){
+ case 0:
 
  sys.state =  5 ;
 
 
-
  if(!Test_Port_Pins(axis)){
 
- homing[axis].home_state =  3 ;
+ speed = settings.homing_feed_rate;
 
+ homing[axis].home_state =  3 ;
 
 
  Home_Axis(12.0,settings.homing_feed_rate, axis);
@@ -1461,10 +1464,9 @@ int _Home(int axis){
  }
 
  break;
- case  1 :
- break;
  case  2 :
- if(!Test_Port_Pins(axis)){
+#line 711 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ if(FP(axis)){
 
  homing[axis].home_state =  3 ;
 
@@ -1473,6 +1475,7 @@ int _Home(int axis){
  Home_Axis(12.0,settings.homing_feed_rate, axis);
 
  }
+#line 731 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  break;
  case  3 :
  if(!(Get_Axis_Run_States() & axis)){
@@ -1481,12 +1484,23 @@ int _Home(int axis){
  }
  break;
  case  4 :
- if(!Test_Port_Pins(axis)){
 
+
+ if(FN(axis)){
  homing[axis].home_state =  5 ;
  }
+#line 754 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  break;
  case  5 :
+
+ StopAxis(axis);
+
+
+
+ axis++;
+
+
+ sys.state =  0 ;
 
  break;
  }

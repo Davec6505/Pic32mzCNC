@@ -28,7 +28,7 @@ Value=0
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-Value=Kinematics.c
+Value=Main.c
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -146,17 +146,15 @@ File0=Pic32mzClicker2_Pinout.png
 Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
-File0=Main.c
-File1=Limits.c
-File2=Limits.h
-File3=Kinematics.c
-File4=Kinematics.h
-File5=Timers.c
-File6=Pins.h
-File7=Pins.c
-File8=Protocol.h
-File9=Stepper.c
-Count=10
+File0=Limits.c
+File1=Limits.h
+File2=Kinematics.c
+File3=Timers.c
+File4=Pins.h
+File5=Pins.c
+File6=Protocol.h
+File7=Main.c
+Count=8
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

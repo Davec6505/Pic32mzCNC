@@ -1718,10 +1718,10 @@ J	L_Main_Modal_Group_Actions1102
 NOP	
 ;Main.c,525 :: 		case ALL_AXIS://Homing X axis
 L_Main_Modal_Group_Actions1114:
-;Main.c,526 :: 		axis_to_home = Home(axis_to_home);
+;Main.c,526 :: 		axis_to_home = _Home(axis_to_home);
 SH	R25, 12(SP)
 LH	R25, Offset(Main_axis_to_home+0)(GP)
-JAL	_Home+0
+JAL	__Home+0
 NOP	
 LH	R25, 12(SP)
 SH	R2, Offset(Main_axis_to_home+0)(GP)

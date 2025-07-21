@@ -523,7 +523,7 @@ static int Modal_Group_Actions1(int action){
             r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
             break;
        case ALL_AXIS://Homing X axis
-            axis_to_home = Home(axis_to_home);
+            axis_to_home = _Home(axis_to_home);
             LED2 = TMR.clock >> 3;
             #if HomeDebug == 10
             while(DMA_IsOn(1));

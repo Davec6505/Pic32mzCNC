@@ -1327,7 +1327,7 @@ static int Modal_Group_Actions1(int action){
  r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
  break;
  case  ((( 4 * 4 )*2)-1) :
- axis_to_home = Home(axis_to_home);
+ axis_to_home = _Home(axis_to_home);
  LED2 = TMR.clock >> 3;
 #line 532 "C:/Users/Git/Pic32mzCNC/Main.c"
  if(axis_to_home < 3){
