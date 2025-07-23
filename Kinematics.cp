@@ -824,7 +824,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 74 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -907,11 +907,6 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
-int Home(int axis);
 int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
@@ -1245,181 +1240,19 @@ int GetAxisDirection(long mm2move){
  return(mm2move < 0)?  -1 : 1  ;
 }
 #line 475 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
-int Home(int axis){
-static long speed = 0;
-
-
- if(sys.state ==  0 ){
- speed = settings.homing_seek_rate;
-
-
- Rst_FP(axis);Rst_FN(axis);
-
-
-  (homing[axis].home_state &= ~ (1 << 5 ) ) ;
-
-
-  (homing[axis].home_state &= ~ (1 << 3 ) ) ;
-
-
- homing[axis].home_cnt = 0;
-
-
- EnableStepper(axis);
-
-
- sys.state =  5 ;
-
-
- if(!Test_Port_Pins(axis)){
-
- homing[axis].home_cnt = 1;
-
- goto HOMED;
- }
-
-
-
- Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
-
-
- while(DMA_IsOn(1));
- dma_printf("[sys.state:= %d ][home_state:= %d ][home_cnt:= %d]\n"
- ,sys.state
- ,homing[axis].home_state
- ,homing[axis].home_cnt);
-
-
- return axis;
- }
-
-
-
- if(sys.state ==  5 ){
-
-
-
-
- if(FN(axis)){
-
-
-HOMED:
- speed = settings.homing_feed_rate;
-
- while(DMA_IsOn(1));
- dma_printf("[%s][axis:= %d][cnt:= %d]\n"
- ,"FN"
- ,axis
- ,homing[axis].home_cnt);
-
-
- if( ((homing[axis].home_state & (1 << 5) ) == 0) ){
-
- if( ((homing[axis].home_state & (1 << 3) ) == 0) ){
-
-
- if(homing[axis].home_cnt == 1){
-
-  (homing[axis].home_state |= (1 << 3 ) ) ;
-  (homing[axis].home_state &= ~ (1 << 2 ) ) ;
-
-
- VDelay_ms((unsigned long)settings.homing_debounce_delay);
-
-
-
- Home_Axis(12.0,settings.homing_feed_rate, axis);
-
- }else if(homing[axis].home_cnt > 1){
-
-  (homing[axis].home_state |= (1 << 5 ) ) ;
- StopAxis(axis);
- axis++;
-
- sys.state =  0 ;
-
-
- homing[axis].home_cnt = 0;
-
-
- while(DMA_IsOn(1));
- dma_printf("[%s][sys.state:= %d][axis:= %d][cnt:= %d]\n"
- ,"axis finnished"
- ,sys.state
- ,axis
- ,homing[axis].home_cnt);
-
-
-
- Home_Axis(settings.homing_pulloff,settings.homing_feed_rate, axis);
-
- return axis;
- }
- }
-#line 590 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
- }
- }
-
-
-
-
-
-
-
- if(FP(axis)){
-
- homing[axis].home_cnt++;
- if( ((homing[axis].home_state & (1 << 3) ) != 0) ){
-  (homing[axis].home_state &= ~ (1 << 3 ) ) ;
-
-
- Home_Axis(-290.00,settings.homing_feed_rate,axis);
- }
-
- while(DMA_IsOn(1));
- dma_printf("[%s][axis[%d].home_cnt:= %d][home_state:= %d]\n"
- ,"FP"
- ,axis
- ,homing[axis].home_cnt
- ,homing[axis].home_state);
-
- }
- }
- return axis;
-}
-
-
-static void Home_Axis(double distance,float speed,int axis){
-
- StopAxis(axis);
- STPS[axis].run_state =  0  ;
-
-
-
-
-
- while(DMA_IsOn(1));
- dma_printf("HomeAxis(%f,%f,%d);\n",distance,speed,axis);
-
-
- STPS[axis].mmToTravel = belt_steps(distance,axis);
-
- speed =  (( ((speed)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
-
- speed = Get_Step_Rate(speed,axis);
- SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
-}
-
-
 int _Home(int axis){
  static long speed = 0;
+ static bit one_shot_local;
 
 
  if(sys.state ==  0 ){
+
  speed = settings.homing_seek_rate;
 
 
- Rst_FP(axis);Rst_FN(axis);
+ one_shot_local =  0 ;
+
+
 
 
  homing[axis].home_cnt = 0;
@@ -1428,10 +1261,13 @@ int _Home(int axis){
 
  EnableStepper(axis);
 
+ while(DMA_IsOn(1));
+ dma_printf("\n%s\n"
+ ,"START");
+
  }
- else{
- homing[axis].home_state = 99;
- }
+
+
 
  switch(homing[axis].home_state){
  case 0:
@@ -1448,48 +1284,89 @@ int _Home(int axis){
 
  Home_Axis(12.0,settings.homing_feed_rate, axis);
 
+ while(DMA_IsOn(1));
+ dma_printf("\n%s\n"
+ ,"BACK OFF");
+
  }
  else{
 
 
  Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
 
+ homing[axis].home_state =  2 ;
 
  while(DMA_IsOn(1));
- dma_printf("[sys.state:= %d ][home_state:= %d ][home_cnt:= %d]\n"
- ,sys.state
- ,homing[axis].home_state
- ,homing[axis].home_cnt);
+ dma_printf("\n%s\n"
+ ,"HOME");
 
  }
 
  break;
  case  2 :
-#line 711 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
- if(FP(axis)){
+#line 555 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ if(Test_Port_Pins(axis)){
+ break;
+ }
+ else{
+ speed = settings.homing_feed_rate;
 
  homing[axis].home_state =  3 ;
+ }
 
 
 
+
+ if(homing[axis].home_state ==  3 )
+ {
  Home_Axis(12.0,settings.homing_feed_rate, axis);
 
+
+ while(DMA_IsOn(1));
+ dma_printf("\n%s\n"
+ ,"GOTO BACK OFF");
+
  }
-#line 731 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+
  break;
  case  3 :
+
+ if(!Test_Port_Pins(axis)){
+ break;
+ }
  if(!(Get_Axis_Run_States() & axis)){
  Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
  homing[axis].home_state =  4 ;
+ Home_Axis(-20.0,settings.homing_feed_rate, axis);
+
+ while(DMA_IsOn(1));
+ dma_printf("\n%s\n"
+ ,"GO BACK HOME");
+
  }
+
  break;
  case  4 :
 
 
- if(FN(axis)){
+
+
+
+
+
+
+
+
+ if(!Test_Port_Pins(axis)){
+ if( 20  != 0){
+ homing[axis].home_state =  3 ;
+ }
+ else{
+
  homing[axis].home_state =  5 ;
  }
-#line 754 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ }
+
  break;
  case  5 :
 
@@ -1502,10 +1379,47 @@ int _Home(int axis){
 
  sys.state =  0 ;
 
+
+ while(DMA_IsOn(1));
+ dma_printf("\n%s\t%d\n"
+ ,"COMPLETE",axis);
+
+ break;
+ case  3 :
+
+ if(!Test_Port_Pins(axis) && !one_shot_local){
+ one_shot_local =  1 ;
+
+ Home_Axis(12.0,settings.homing_feed_rate, axis);
+ }
+ else {
+
+ if(!(Get_Axis_Run_States() & axis)){
+ homing[axis].home_state =  5 ;
+ }
+ }
  break;
  }
  return axis;
 }
+
+
+
+static void Home_Axis(double distance,float speed,int axis){
+
+ StopAxis(axis);
+ STPS[axis].run_state =  0  ;
+#line 668 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+ STPS[axis].mmToTravel = belt_steps(distance,axis);
+
+ speed =  (( ((speed)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
+
+ speed = Get_Step_Rate(speed,axis);
+ SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
+}
+
+
+
 
 static void ResetHoming(){
 int i = 0;

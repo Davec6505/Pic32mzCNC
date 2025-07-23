@@ -770,7 +770,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 74 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -853,11 +853,6 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
-int Home(int axis);
 int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);

@@ -478,7 +478,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 74 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -561,11 +561,6 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
-int Home(int axis);
 int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
@@ -1122,10 +1117,7 @@ int i,m_mode;
  }
 
  }
-#line 255 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- while(DMA_IsOn(1));
- dma_printf("axis_words:= %d\n",axis_words&0x00ff);
-
+#line 258 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return m_mode;
 }
 
@@ -1224,11 +1216,7 @@ int i = 0;
 
  for(i=0;i<=3;i++)
  Set_Axisword(i);
-#line 367 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- while(DMA_IsOn(1));
- dma_printf("%s\taxis_words:= %d\n","ARC",axis_words&0x00ff);
-
-
+#line 371 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  break;
  case  4 :
  FAIL( 0 );
@@ -1376,9 +1364,6 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 533 "C:/Users/Git/Pic32mzCNC/GCODE.c"
- while(DMA_IsOn(1));
- dma_printf("axis_words:= %d\n",axis_words&0x00ff);
-
+#line 536 "C:/Users/Git/Pic32mzCNC/GCODE.c"
  return status_code;
 }

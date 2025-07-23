@@ -33,7 +33,7 @@ void Limit_Initialize(){
    Y_Min_Limit_Setup();
    Z_Min_Limit_Setup();
    
-   //pre condition last know Limit luesva
+   //pre condition last know Limit
   /* for(i = 0;i < NoOfAxis;i++){
      Limit[i].old_Fval = Limit[i].old_Pval = Test_Min(i) & 0x0001;
    }  */
@@ -56,6 +56,7 @@ static void X_Min_Limit_Setup(){
  IEC0SET = 1 << 8;
  // clear the interrupt flag
  IFS0CLR  = 1 << 8;
+ 
 }
 
 ////////////////////////////////////////////////////////
@@ -75,6 +76,7 @@ static void Y_Min_Limit_Setup(){
  IEC0SET = 1 << 13;
  // clear the interrupt flag
  IFS0CLR = (1 << 13);
+ 
 }
 
 ////////////////////////////////////////////////////////

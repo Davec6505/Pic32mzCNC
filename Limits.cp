@@ -573,7 +573,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 74 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -656,11 +656,6 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
-int Home(int axis);
 int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
@@ -966,6 +961,7 @@ static void X_Min_Limit_Setup(){
  IEC0SET = 1 << 8;
 
  IFS0CLR = 1 << 8;
+
 }
 
 
@@ -985,6 +981,7 @@ static void Y_Min_Limit_Setup(){
  IEC0SET = 1 << 13;
 
  IFS0CLR = (1 << 13);
+
 }
 
 
@@ -1089,10 +1086,7 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-
- dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
-
-
+#line 188 "C:/Users/Git/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }

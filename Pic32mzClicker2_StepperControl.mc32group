@@ -1,5 +1,6 @@
 [PROJECTS]
 Count=1
-Project0=..\RGB_MZ\RGB_MZ.mcp32
+Project0=Pic32mzClicker2_StepperControl.mcp32
+Project1=Pic32mzClicker2_StepperControl.mcp32
 [ActiveProject]
 Index=0

@@ -707,7 +707,7 @@ int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 74 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -790,11 +790,6 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
-int Home(int axis);
 int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
@@ -1100,33 +1095,7 @@ long abs_mmSteps;
  STPS[axis_No].step_count = 0;
  STPS[axis_No].rest = 0;
  STPS[axis_No].accel_count = 1;
-
-
-
-
- while(DMA_IsOn(1));
-#line 226 "C:/Users/Git/Pic32mzCNC/Planner.c"
- dma_printf("\n  acc:= %l\n  dec:= %l\n  speed:= %f\n  mmSteps:= %l\n  abs_mmSteps:= %l\n  a_sq[%d]:= %l\n  alpha[%d]:= %f\n  a_t_x100[%d]:= %f\n  STPS[axis_No].max_step_lim:= %l\n  acc_lim:= %l\n  dec_val:= %l\n  dec_start:= %l\n  step_delay:= %l\n  min_dly:= %l\n  SV.mode-complete:= %d\n\n"
- ,acc
- ,dec
- ,temp_speed
- ,mmSteps
- ,abs_mmSteps
- ,axis_No
- ,a_sq[axis_No]
- ,axis_No
- ,alpha[axis_No]
- ,axis_No
- ,a_t_x100[axis_No]
- ,STPS[axis_No].max_step_lim
- ,STPS[axis_No].accel_lim
- ,STPS[axis_No].decel_val
- ,STPS[axis_No].decel_start
- ,STPS[axis_No].step_delay
- ,STPS[axis_No].min_delay
- ,SV.mode_complete);
-
-
+#line 247 "C:/Users/Git/Pic32mzCNC/Planner.c"
  }
 #line 259 "C:/Users/Git/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
@@ -1215,12 +1184,7 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-
-
- while(DMA_IsOn(1));
- dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
-
-
+#line 434 "C:/Users/Git/Pic32mzCNC/Planner.c"
 }
 
 

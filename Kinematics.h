@@ -40,13 +40,18 @@
 //rising or falling edge triggers
 //#define POSITIVE_EDGE
 #define NEGATIVE_EDGE
-#define EDGE    0
+//Hardware edge detection -1 off 0 rising 1 falling
+#define EDGE    -1
+
+
 //Homing control
+#define HOME_IDLE        0
 #define HOME_SET         1
 #define HOME             2
 #define HOME_BACK_OFF    3
 #define HOME_BACK        4
 #define HOME_COMPLETE    5
+#define HOME_MOVE_OFF    6
 
 
 //bitflags defined
@@ -148,11 +153,6 @@ float hypot(float angular_travel, float linear_travel);
 
 //Directional values
 int GetAxisDirection(long mm2move);
-
-
-//homing cycle
-void ResetHoming();
-int Home(int axis);
 int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);

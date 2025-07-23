@@ -479,7 +479,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 74 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -562,11 +562,6 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
-int Home(int axis);
 int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
@@ -1435,11 +1430,7 @@ int Val = 0;
  }
  mode = G_Mode(Val);
  status =  0 ;
-
- while(DMA_IsOn(1));
- dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
-
-
+#line 623 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  case 'X':case 'x':case 'Y':case 'y':
  case 'Z':case 'z':case 'A':case 'a':
@@ -1453,11 +1444,7 @@ int Val = 0;
  status =  0 ;
  else
  status =  20 ;
-
-
- while(DMA_IsOn(1));
- dma_printf("[%d][%s][%f][%d]\n",i,gcode[i],XYZ_Val,status);
-
+#line 641 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
  case 'P':case 'p':case 'L':case 'l':
  case 'S':case 's':
@@ -1467,10 +1454,7 @@ int Val = 0;
  case 'M':case'm':
  Val = atoi(temp);
  flow = M_Mode(Val);
-
- while(DMA_IsOn(1));
- dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
-
+#line 654 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  status =  0 ;
  break;
  }

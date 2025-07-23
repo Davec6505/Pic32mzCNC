@@ -272,36 +272,6 @@ L_UartConfig2:
 ADDIU	R24, R24, -1
 BNE	R24, R0, L_UartConfig2
 NOP	
-;Config.c,139 :: 		UART3_Init_Advanced(256000, 200000/*PBClk / 8*/, _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
-MOVZ	R28, R0, R0
-ORI	R27, R0, 1
-LUI	R26, 3
-ORI	R26, R26, 3392
-LUI	R25, 3
-ORI	R25, R25, 59392
-ADDIU	SP, SP, -4
-SB	R0, 0(SP)
-JAL	_UART3_Init_Advanced+0
-NOP	
-ADDIU	SP, SP, 4
-;Config.c,140 :: 		UART_Set_Active(&UART3_Read, &UART3_Write, &UART3_Data_Ready, &UART3_Tx_Idle); // set UART2 active
-LUI	R28, hi_addr(_UART3_Tx_Idle+0)
-ORI	R28, R28, lo_addr(_UART3_Tx_Idle+0)
-LUI	R27, hi_addr(_UART3_Data_Ready+0)
-ORI	R27, R27, lo_addr(_UART3_Data_Ready+0)
-LUI	R26, hi_addr(_UART3_Write+0)
-ORI	R26, R26, lo_addr(_UART3_Write+0)
-LUI	R25, hi_addr(_UART3_Read+0)
-ORI	R25, R25, lo_addr(_UART3_Read+0)
-JAL	_UART_Set_Active+0
-NOP	
-;Config.c,141 :: 		Delay_ms(100);                  // Wait for UART module to stabilize
-LUI	R24, 101
-ORI	R24, R24, 47530
-L_UartConfig4:
-ADDIU	R24, R24, -1
-BNE	R24, R0, L_UartConfig4
-NOP	
 ;Config.c,148 :: 		}
 L_end_UartConfig:
 LW	R28, 16(SP)
@@ -381,17 +351,17 @@ ORI	R2, R0, 32768
 SWR	R2, Offset(PB2DIVbits+8)(GP)
 SWL	R2, Offset(PB2DIVbits+11)(GP)
 ;Config.c,201 :: 		while(!PB2DIVbits.PBDIVRDY);
-L_set_performance_mode6:
+L_set_performance_mode4:
 LBU	R2, Offset(PB2DIVbits+1)(GP)
 EXT	R2, R2, 3, 1
-BEQ	R2, R0, L__set_performance_mode22
+BEQ	R2, R0, L__set_performance_mode20
 NOP	
-J	L_set_performance_mode7
+J	L_set_performance_mode5
 NOP	
-L__set_performance_mode22:
-J	L_set_performance_mode6
+L__set_performance_mode20:
+J	L_set_performance_mode4
 NOP	
-L_set_performance_mode7:
+L_set_performance_mode5:
 ;Config.c,202 :: 		PB2DIVbits.PBDIV = 0x07; // Peripheral Bus 2 Clock Divisor Control (PBCLK2 is SYSCLK "200MHZ" / 8)
 ORI	R3, R0, 7
 LBU	R2, Offset(PB2DIVbits+0)(GP)
@@ -402,17 +372,17 @@ ORI	R2, R0, 32768
 SWR	R2, Offset(PB3DIVbits+8)(GP)
 SWL	R2, Offset(PB3DIVbits+11)(GP)
 ;Config.c,206 :: 		while(!PB3DIVbits.PBDIVRDY);
-L_set_performance_mode8:
+L_set_performance_mode6:
 LBU	R2, Offset(PB3DIVbits+1)(GP)
 EXT	R2, R2, 3, 1
-BEQ	R2, R0, L__set_performance_mode23
+BEQ	R2, R0, L__set_performance_mode21
 NOP	
-J	L_set_performance_mode9
+J	L_set_performance_mode7
 NOP	
-L__set_performance_mode23:
-J	L_set_performance_mode8
+L__set_performance_mode21:
+J	L_set_performance_mode6
 NOP	
-L_set_performance_mode9:
+L_set_performance_mode7:
 ;Config.c,207 :: 		PB3DIVbits.PBDIV = 3; // Peripheral Bus 3 Clock Divisor Control (PBCLK3 is SYSCLK divided by 4)
 ORI	R3, R0, 3
 LBU	R2, Offset(PB3DIVbits+0)(GP)
@@ -423,17 +393,17 @@ ORI	R2, R0, 32768
 SWR	R2, Offset(PB4DIVbits+8)(GP)
 SWL	R2, Offset(PB4DIVbits+11)(GP)
 ;Config.c,211 :: 		while (!PB4DIVbits.PBDIVRDY); // Wait until it is ready to write to
-L_set_performance_mode10:
+L_set_performance_mode8:
 LBU	R2, Offset(PB4DIVbits+1)(GP)
 EXT	R2, R2, 3, 1
-BEQ	R2, R0, L__set_performance_mode24
+BEQ	R2, R0, L__set_performance_mode22
 NOP	
-J	L_set_performance_mode11
+J	L_set_performance_mode9
 NOP	
-L__set_performance_mode24:
-J	L_set_performance_mode10
+L__set_performance_mode22:
+J	L_set_performance_mode8
 NOP	
-L_set_performance_mode11:
+L_set_performance_mode9:
 ;Config.c,212 :: 		PB4DIVbits.PBDIV = 0; // Peripheral Bus 4 Clock Divisor Control (PBCLK4 is SYSCLK divided by 1)
 ORI	R2, R0, 127
 SB	R2, Offset(PB4DIVbits+4)(GP)
@@ -442,17 +412,17 @@ ORI	R2, R0, 32768
 SWR	R2, Offset(PB5DIVbits+8)(GP)
 SWL	R2, Offset(PB5DIVbits+11)(GP)
 ;Config.c,216 :: 		while(!PB5DIVbits.PBDIVRDY);
-L_set_performance_mode12:
+L_set_performance_mode10:
 LBU	R2, Offset(PB5DIVbits+1)(GP)
 EXT	R2, R2, 3, 1
-BEQ	R2, R0, L__set_performance_mode25
+BEQ	R2, R0, L__set_performance_mode23
 NOP	
-J	L_set_performance_mode13
+J	L_set_performance_mode11
 NOP	
-L__set_performance_mode25:
-J	L_set_performance_mode12
+L__set_performance_mode23:
+J	L_set_performance_mode10
 NOP	
-L_set_performance_mode13:
+L_set_performance_mode11:
 ;Config.c,217 :: 		PB5DIVbits.PBDIV = 1; // Peripheral Bus 5 Clock Divisor Control (PBCLK5 is SYSCLK divided by 2)
 ORI	R3, R0, 1
 LBU	R2, Offset(PB5DIVbits+0)(GP)
@@ -463,17 +433,17 @@ ORI	R2, R0, 32768
 SWR	R2, Offset(PB7DIVbits+8)(GP)
 SWL	R2, Offset(PB7DIVbits+11)(GP)
 ;Config.c,221 :: 		while(!PB7DIVbits.PBDIVRDY);
-L_set_performance_mode14:
+L_set_performance_mode12:
 LBU	R2, Offset(PB7DIVbits+1)(GP)
 EXT	R2, R2, 3, 1
-BEQ	R2, R0, L__set_performance_mode26
+BEQ	R2, R0, L__set_performance_mode24
 NOP	
-J	L_set_performance_mode15
+J	L_set_performance_mode13
 NOP	
-L__set_performance_mode26:
-J	L_set_performance_mode14
+L__set_performance_mode24:
+J	L_set_performance_mode12
 NOP	
-L_set_performance_mode15:
+L_set_performance_mode13:
 ;Config.c,222 :: 		PB7DIVbits.PBDIV = 0; // Peripheral Bus 7 Clock Divisor Control (PBCLK7 is SYSCLK divided by 1)
 ORI	R2, R0, 127
 SB	R2, Offset(PB7DIVbits+4)(GP)
@@ -482,17 +452,17 @@ ORI	R2, R0, 32768
 SWR	R2, Offset(PB8DIVbits+8)(GP)
 SWL	R2, Offset(PB8DIVbits+11)(GP)
 ;Config.c,226 :: 		while(!PB8DIVbits.PBDIVRDY);
-L_set_performance_mode16:
+L_set_performance_mode14:
 LBU	R2, Offset(PB8DIVbits+1)(GP)
 EXT	R2, R2, 3, 1
-BEQ	R2, R0, L__set_performance_mode27
+BEQ	R2, R0, L__set_performance_mode25
 NOP	
-J	L_set_performance_mode17
+J	L_set_performance_mode15
 NOP	
-L__set_performance_mode27:
-J	L_set_performance_mode16
+L__set_performance_mode25:
+J	L_set_performance_mode14
 NOP	
-L_set_performance_mode17:
+L_set_performance_mode15:
 ;Config.c,227 :: 		PB8DIVbits.PBDIV = 1; // Peripheral Bus 8 Clock Divisor Control (PBCLK8 is SYSCLK divided by 2)
 ORI	R3, R0, 1
 LBU	R2, Offset(PB8DIVbits+0)(GP)

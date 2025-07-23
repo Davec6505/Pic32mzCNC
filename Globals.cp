@@ -403,7 +403,7 @@ static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
 #line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 69 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 74 "c:/users/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -486,11 +486,6 @@ float hypot(float angular_travel, float linear_travel);
 
 
 int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
-int Home(int axis);
 int _Home( int axis);
 static void Home_Axis(double distance,float speed,int axis);
 static void Inv_Home_Axis(double distance,float speed,int axis);
@@ -1145,7 +1140,10 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 287 "C:/Users/Git/Pic32mzCNC/Globals.c"
+
+ while(DMA_IsOn(1));
+ dma_printf("buffA[%l]:= %l\n",j,buffA[j]);
+
  }
 
 
@@ -1406,15 +1404,7 @@ int val_temp = 0;
 #line 633 "C:/Users/Git/Pic32mzCNC/Globals.c"
  return( 6 );
  }
-
-
- while(DMA_IsOn(1));
- dma_printf("param:= %d & value:= %f\n",
- parameter,
- value);
-
-
-
+#line 644 "C:/Users/Git/Pic32mzCNC/Globals.c"
  switch(parameter) {
  case 0: case 1: case 2:
  if (value <= 0.0) { return( 8 ); }
@@ -1542,13 +1532,7 @@ int val_temp = 0;
 
 
  set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
-
-
- while(DMA_IsOn(1));
- dma_printf("ram_loaded_indicator:= %d\t%d\t%d\n",
- read_ram_loaded_indicator(),
- error,settings.flags);
-
+#line 787 "C:/Users/Git/Pic32mzCNC/Globals.c"
  }
  break;
  default:

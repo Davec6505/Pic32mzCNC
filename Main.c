@@ -26,8 +26,15 @@
 * source.
 *
 * Using Flash memory to store data instead of Eprom  ac:Flash_Prgm &  ac:Flasg_gen
+*
 *******************************************************************************/
 
+/******************************************************************************
+ ******************************** TO DO ***************************************
+ *1) In DEFINES.pld FlashDebug=22 otherwise serial stalls thecode!!!
+ *2)
+ ******************************************************************************/
+ 
 #include "Config.h"
 
 
@@ -87,7 +94,7 @@ void main() {
    Debounce_Limits(Y);
    Debounce_Limits(Z);
    
-   
+
    //continously check the communication channel
    //if STATUS_OK because some modal functions here keep their value for 
    //-> functionality like homing, therefor we continously need to pol
