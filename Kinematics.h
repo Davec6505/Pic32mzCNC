@@ -52,7 +52,7 @@
 #define HOME_BACK        4
 #define HOME_COMPLETE    5
 #define HOME_MOVE_OFF    6
-
+#define WAIT             99
 
 //bitflags defined
 #define BIT_HOME_SET      bit(1)

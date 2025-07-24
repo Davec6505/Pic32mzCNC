@@ -1099,6 +1099,7 @@ void StopAxis(int axis){
  case X:
  OC5IE_bit = 0;
  OC5CONbits.ON = 0;
+
  break;
  case Y:
  OC2IE_bit = 0;
@@ -1201,7 +1202,7 @@ static int Pulse(int axis_No){
  StopAxis(axis_No);
 
 
-
+  (SV.mode_complete &= ~ (1 << axis_No) ) ;
  break;
  case  1 :
 

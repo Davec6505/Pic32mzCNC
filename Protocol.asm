@@ -1641,6 +1641,8 @@ NOP
 LW	R25, 20(SP)
 LH	R26, 18(SP)
 LH	R3, 16(SP)
+;Protocol.c,473 :: 		status = STATUS_OK;
+SH	R0, 24(SP)
 ;Protocol.c,474 :: 		}
 L_Protocol_Check_Query_Type104:
 ;Protocol.c,468 :: 		for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
@@ -1979,6 +1981,9 @@ J	L_Protocol_Check_Query_Type133
 NOP	
 L_Protocol_Check_Query_Type211:
 L_Protocol_Check_Query_Type210:
+;Protocol.c,564 :: 		status = STATUS_UNSUPPORTED_STATEMENT;
+ORI	R2, R0, 3
+SH	R2, 24(SP)
 ;Protocol.c,565 :: 		}
 L_Protocol_Check_Query_Type133:
 ;Protocol.c,566 :: 		value = atof(str_val);
@@ -2182,6 +2187,9 @@ J	L_end_Check_Query_Type
 NOP	
 ;Protocol.c,582 :: 		}else{
 L_Protocol_Check_Query_Type72:
+;Protocol.c,583 :: 		status = STATUS_COMMAND_EXECUTE_MOTION;
+ORI	R2, R0, 20
+SH	R2, 24(SP)
 ;Protocol.c,585 :: 		return status;
 ORI	R2, R0, 20
 ;Protocol.c,586 :: 		}

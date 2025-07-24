@@ -29,7 +29,7 @@ hint: 0	1004	interrupt handler (StepX at 0x001B)	Stepper.c
 hint: 0	1004	interrupt handler (StepY at 0x000C)	Stepper.c
 hint: 0	1004	interrupt handler (StepZ at 0x0023)	Stepper.c
 hint: 0	1004	interrupt handler (StepA at 0x0011)	Stepper.c
-diagnostics: 506	123	Compiled Successfully	Stepper.c
+diagnostics: 507	123	Compiled Successfully	Stepper.c
 hint: 135	1164	Variable 'temp' has been eliminated by optimizer	Stepper.c
 diagnostics: 0	122	Compilation Started	stdint.h
 diagnostics: 74	123	Compiled Successfully	Steptodistance.c
@@ -48,7 +48,7 @@ hint: 140	1354	argument may be out of range [axisB]	Kinematics.c
 hint: 129	1163	Variable 'tempC' has been declared, but not used	Kinematics.c
 hint: 253	1163	Variable 'axis' has been declared, but not used	Kinematics.c
 hint: 257	1163	Variable 'cnt' has been declared, but not used	Kinematics.c
-diagnostics: 714	123	Compiled Successfully	Kinematics.c
+diagnostics: 739	123	Compiled Successfully	Kinematics.c
 hint: 78	1164	Variable 'absxyz' has been eliminated by optimizer	Kinematics.c
 hint: 80	1164	Variable 'dir' has been eliminated by optimizer	Kinematics.c
 hint: 110	1164	Variable 'speed_' has been eliminated by optimizer	Kinematics.c
@@ -132,13 +132,13 @@ hint: 49	1164	Variable 'padd' has been eliminated by optimizer	Flash_R_W.c
 hint: 118	1164	Variable 'dma_' has been eliminated by optimizer	Flash_R_W.c
 hint: 168	1164	Variable 'error' has been eliminated by optimizer	Flash_R_W.c
 hint: 287	1164	Variable 'val' has been eliminated by optimizer	Flash_R_W.c
-diagnostics: 0	127	All files Compiled in 2703 ms	 
+diagnostics: 0	127	All files Compiled in 2500 ms	 
 hint: 0	1144	Used RX: 23 (72%)   Free RX: 9 (28%)	Used RX: 23 (72%)   Free RX: 9 (28%)
 hint: 0	1144	Static RAM (bytes): 5493   Dynamic RAM (bytes): 489685	Static RAM (bytes): 5493   Dynamic RAM (bytes): 489685
 hint: 0	1144	HEAP RAM (bytes): 20000	HEAP RAM (bytes): 20000
-hint: 0	1144	Used ROM (bytes): 82253 (4%)  Free ROM (bytes): 2014899 (96%)	Used ROM (bytes): 82253 (4%)  Free ROM (bytes): 2014899 (96%)
+hint: 0	1144	Used ROM (bytes): 82798 (4%)  Free ROM (bytes): 2014354 (96%)	Used ROM (bytes): 82798 (4%)  Free ROM (bytes): 2014354 (96%)
 hint: 0	1144	Used BOOTROM (bytes): 816 (1%)  Free BOOTROM (bytes): 146195 (99%)	Used BOOTROM (bytes): 816 (1%)  Free BOOTROM (bytes): 146195 (99%)
 diagnostics: 0	125	Project Linked Successfully	Pic32mzClicker2_StepperControl.mcp32
-diagnostics: 0	128	Linked in 719 ms	 
-diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 5203 ms	 
-diagnostics: 0	103	Finished successfully: 23 Jul 2025, 21:46:34	Pic32mzClicker2_StepperControl.mcp32
+diagnostics: 0	128	Linked in 734 ms	 
+diagnostics: 0	129	Project 'Pic32mzClicker2_StepperControl.mcp32' completed: 4812 ms	 
+diagnostics: 0	103	Finished successfully: 24 Jul 2025, 20:58:42	Pic32mzClicker2_StepperControl.mcp32

@@ -1240,9 +1240,10 @@ int GetAxisDirection(long mm2move){
  return(mm2move < 0)?  -1 : 1  ;
 }
 #line 475 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+static char one_shot_local;
 int _Home(int axis){
  static long speed = 0;
- static bit one_shot_local;
+
 
 
  if(sys.state ==  0 ){
@@ -1250,7 +1251,7 @@ int _Home(int axis){
  speed = settings.homing_seek_rate;
 
 
- one_shot_local =  0 ;
+ one_shot_local = 0;
 
 
 
@@ -1304,7 +1305,7 @@ int _Home(int axis){
 
  break;
  case  2 :
-#line 555 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 556 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(Test_Port_Pins(axis)){
  break;
  }
@@ -1324,7 +1325,7 @@ int _Home(int axis){
 
  while(DMA_IsOn(1));
  dma_printf("\n%s\n"
- ,"GOTO BACK OFF");
+ ,"GOTO HOME_BACK_OFF");
 
  }
 
@@ -1341,7 +1342,7 @@ int _Home(int axis){
 
  while(DMA_IsOn(1));
  dma_printf("\n%s\n"
- ,"GO BACK HOME");
+ ,"GOTO HOME_BACK");
 
  }
 
@@ -1358,8 +1359,13 @@ int _Home(int axis){
 
 
  if(!Test_Port_Pins(axis)){
- if( 20  != 0){
- homing[axis].home_state =  3 ;
+ if( 10.0  != 0){
+ homing[axis].home_state =  6 ;
+
+ while(DMA_IsOn(1));
+ dma_printf("\n%s\t%d\n"
+ ,"GOTO HOME_MOVE_OFF",axis);
+
  }
  else{
 
@@ -1385,18 +1391,37 @@ int _Home(int axis){
  ,"COMPLETE",axis);
 
  break;
- case  3 :
+ case  6 :
 
- if(!Test_Port_Pins(axis) && !one_shot_local){
- one_shot_local =  1 ;
+ Home_Axis( 10.0 ,settings.homing_feed_rate, axis);
+ homing[axis].home_state =  99 ;
 
- Home_Axis(12.0,settings.homing_feed_rate, axis);
+ while(DMA_IsOn(1));
+ dma_printf("\n%s\t%d\n"
+ ,"GOTO WAIT",axis);
+
+ break;
+ case  99 :
+ if(!Test_Port_Pins(axis)){
+ break;
  }
- else {
 
- if(!(Get_Axis_Run_States() & axis)){
+ if(GET_RunState(axis)){
+
+ while(DMA_IsOn(1));
+ dma_printf("%s\t%d\n"
+ ,"run",axis);
+
+ break;
+ }
+ else{
  homing[axis].home_state =  5 ;
- }
+
+
+ while(DMA_IsOn(1));
+ dma_printf("\n%s\t%d\n"
+ ,"GOTO COMPLETE",axis);
+
  }
  break;
  }
@@ -1409,7 +1434,7 @@ static void Home_Axis(double distance,float speed,int axis){
 
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
-#line 668 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 693 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis].mmToTravel = belt_steps(distance,axis);
 
  speed =  (( ((speed)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;

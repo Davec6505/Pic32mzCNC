@@ -475,12 +475,12 @@ int GetAxisDirection(long mm2move){
 int _Home(int axis){
  static long speed = 0;
  static bit one_shot_local;
- 
+
   //idle homing can only take place once all alarms are cleared
  if(sys.state == STATE_IDLE){
     //set the speed to max homing speed.
     speed = settings.homing_seek_rate;
-    
+
     //reset the one shot bit
     one_shot_local = false;
    //condition the triggers
@@ -605,13 +605,13 @@ int _Home(int axis){
               }
               #else
               if(!Test_Port_Pins(axis)){
-                if(DEFAULT_HOME_BACKOFF != 0){
-                  homing[axis].home_state = HOME_BACK_OFF;
-                }
-                else{
+          //      if(DEFAULT_HOME_BACKOFF != 0){
+          //        homing[axis].home_state = HOME_BACK_OFF;
+          //      }
+          //      else{
                 //Axis homed
                   homing[axis].home_state = HOME_COMPLETE;
-                }
+          //      }
               }
             #endif
             break;
@@ -632,19 +632,19 @@ int _Home(int axis){
               ,"COMPLETE",axis);
             #endif
             break;
-       case HOME_BACK_OFF:
+        case HOME_BACK_OFF:
                //If the limit is made then back off
-               if(!Test_Port_Pins(axis) && !one_shot_local){
+           /*    if(!Test_Port_Pins(axis) && !one_shot_local){
                   one_shot_local = true;
                   //distance here is any value to move off the limit.
                   Home_Axis(12.0,settings.homing_feed_rate, axis);
               }
               else {
-              
+
                  if(!(Get_Axis_Run_States() & axis)){
                     homing[axis].home_state = HOME_COMPLETE;
                  }
-              }
+              }   */
             break;
   }
   return axis;

@@ -186,6 +186,7 @@ void StopAxis(int axis){
    case X:
          OC5IE_bit = 0;
          OC5CONbits.ON = 0;
+         
          break;
    case Y:
          OC2IE_bit = 0;
@@ -288,7 +289,7 @@ static int Pulse(int axis_No){
         StopAxis(axis_No);
         //resetting the axis movement bit to indicate axis finnished
         //moving, UGS NEEDS AN ok TO
-      //  bit_false(SV.mode_complete,bit(axis_No));
+        bit_false(SV.mode_complete,bit(axis_No));
       break;
     case ACCEL:
       //taylor series calculation for acc

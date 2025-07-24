@@ -179,6 +179,7 @@ main
 				SingleAxisStep
 			Get_Axis_Run_States
 			StopAxis
+			GET_RunState
 			__CC2DW
 		mc_reset
 			disableOCx

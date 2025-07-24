@@ -68,7 +68,7 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_N_ARC_CORRECTION       25
 #define DEFAULT_HOME_DIR_MASK          15      // move positive dir
 #define DEFAULT_INVERT_MASK            15      // move positive dir
-#define DEFAULT_HOME_BACKOFF           20      // move off home position
+#define DEFAULT_HOME_BACKOFF           10.0      // move off home position
 
 
 ////////////////////////////////////////////////////////////////
