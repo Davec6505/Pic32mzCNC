@@ -326,7 +326,7 @@ int M_Mode(int flow);
 int Check_group_multiple_violations();
 
 
-static float To_Millimeters(float value);
+float To_Millimeters(float value);
 
 
 int Motion_mode();
@@ -1084,9 +1084,9 @@ static int Modal_Group_Actions0(int action){
 int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
  unsigned int home_select = 0;
  unsigned long _data;
- unsigned long _flash,*addr;
+ unsigned long _flash;
  float coord_data[ 4 ];
- float a_val;
+
 
 
 

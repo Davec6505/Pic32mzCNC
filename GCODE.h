@@ -231,8 +231,8 @@ int M_Mode(int flow);
 // check G / M commands for functionality
 int Check_group_multiple_violations();
 
-
-static float To_Millimeters(float value);
+// a test to see if inches is being used
+float To_Millimeters(float value);
 
 
 int Motion_mode();

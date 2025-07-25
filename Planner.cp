@@ -470,7 +470,7 @@ int M_Mode(int flow);
 int Check_group_multiple_violations();
 
 
-static float To_Millimeters(float value);
+float To_Millimeters(float value);
 
 
 int Motion_mode();

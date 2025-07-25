@@ -1,32 +1,32 @@
-GCODE_To_Millimeters:
-;GCODE.c,47 :: 		static float To_Millimeters(float value){
+_To_Millimeters:
+;GCODE.c,47 :: 		float To_Millimeters(float value){
 ;GCODE.c,48 :: 		return(gc.inches_mode) ? (value * MM_PER_INCH) : value;
 LBU	R2, Offset(_gc+3)(GP)
-BNE	R2, R0, L_GCODE_To_Millimeters161
+BNE	R2, R0, L__To_Millimeters161
 NOP	
-J	L_GCODE_To_Millimeters0
+J	L_To_Millimeters0
 NOP	
-L_GCODE_To_Millimeters161:
+L__To_Millimeters161:
 LUI	R2, 16843
 ORI	R2, R2, 13107
 MTC1	R2, S0
 MUL.S 	S0, S12, S0
-; ?FLOC__GCODE_To_Millimeters?T5 start address is: 0 (R0)
-; ?FLOC__GCODE_To_Millimeters?T5 end address is: 0 (R0)
-J	L_GCODE_To_Millimeters1
+; ?FLOC___To_Millimeters?T5 start address is: 0 (R0)
+; ?FLOC___To_Millimeters?T5 end address is: 0 (R0)
+J	L_To_Millimeters1
 NOP	
-L_GCODE_To_Millimeters0:
-; ?FLOC__GCODE_To_Millimeters?T5 start address is: 0 (R0)
+L_To_Millimeters0:
+; ?FLOC___To_Millimeters?T5 start address is: 0 (R0)
 MOV.S 	S0, S12
-; ?FLOC__GCODE_To_Millimeters?T5 end address is: 0 (R0)
-L_GCODE_To_Millimeters1:
-; ?FLOC__GCODE_To_Millimeters?T5 start address is: 0 (R0)
-; ?FLOC__GCODE_To_Millimeters?T5 end address is: 0 (R0)
+; ?FLOC___To_Millimeters?T5 end address is: 0 (R0)
+L_To_Millimeters1:
+; ?FLOC___To_Millimeters?T5 start address is: 0 (R0)
+; ?FLOC___To_Millimeters?T5 end address is: 0 (R0)
 ;GCODE.c,49 :: 		}
 L_end_To_Millimeters:
 JR	RA
 NOP	
-; end of GCODE_To_Millimeters
+; end of _To_Millimeters
 GCODE_Select_Plane:
 ;GCODE.c,52 :: 		static void Select_Plane(int axis_combo){
 ;GCODE.c,53 :: 		axis_xyz = axis_combo;
@@ -1678,7 +1678,7 @@ L_Instruction_Values128:
 L_Instruction_Values129:
 ;GCODE.c,442 :: 		gc.next_position[X] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+80)(GP)
 ;GCODE.c,443 :: 		bit_true(axis_words,bit(X));
@@ -1692,7 +1692,7 @@ NOP
 L_Instruction_Values130:
 ;GCODE.c,447 :: 		gc.next_position[Y] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+84)(GP)
 ;GCODE.c,448 :: 		bit_true(axis_words,bit(Y));
@@ -1706,7 +1706,7 @@ NOP
 L_Instruction_Values131:
 ;GCODE.c,452 :: 		gc.next_position[Z] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+88)(GP)
 ;GCODE.c,453 :: 		bit_true(axis_words,bit(Z));
@@ -1720,7 +1720,7 @@ NOP
 L_Instruction_Values132:
 ;GCODE.c,457 :: 		gc.next_position[A] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+92)(GP)
 ;GCODE.c,458 :: 		bit_true(axis_words,bit(A));
@@ -1734,7 +1734,7 @@ NOP
 L_Instruction_Values133:
 ;GCODE.c,462 :: 		gc.next_position[B] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+96)(GP)
 ;GCODE.c,463 :: 		bit_true(axis_words,bit(B));
@@ -1748,7 +1748,7 @@ NOP
 L_Instruction_Values134:
 ;GCODE.c,467 :: 		gc.R = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+108)(GP)
 ;GCODE.c,468 :: 		break;
@@ -1769,7 +1769,7 @@ LWC1	S0, 0(R26)
 SWC1	S0, Offset(_gc+112)(GP)
 ;GCODE.c,474 :: 		gc.offset[I] = To_Millimeters(XYZ_Val);
 MOV.S 	S12, S0
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+96)(GP)
 ;GCODE.c,475 :: 		break;
@@ -1783,7 +1783,7 @@ LWC1	S0, 0(R26)
 SWC1	S0, Offset(_gc+116)(GP)
 ;GCODE.c,479 :: 		gc.offset[J] = To_Millimeters(XYZ_Val);
 MOV.S 	S12, S0
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+100)(GP)
 ;GCODE.c,480 :: 		break;
@@ -1797,7 +1797,7 @@ LWC1	S0, 0(R26)
 SWC1	S0, Offset(_gc+120)(GP)
 ;GCODE.c,484 :: 		gc.offset[K] = To_Millimeters(XYZ_Val);
 MOV.S 	S12, S0
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+104)(GP)
 ;GCODE.c,485 :: 		break;
@@ -1829,7 +1829,7 @@ L_Instruction_Values139:
 ; XYZ_Val start address is: 16 (R4)
 MOV.S 	S12, S2
 ; XYZ_Val end address is: 16 (R4)
-JAL	GCODE_To_Millimeters+0
+JAL	_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+24)(GP)
 ;GCODE.c,496 :: 		break;

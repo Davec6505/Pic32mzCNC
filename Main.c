@@ -262,9 +262,9 @@ static int Modal_Group_Actions0(int action){
 int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
   unsigned int home_select = 0;
   unsigned long _data;
-  unsigned long _flash,*addr;
+  unsigned long _flash;//,*addr;
   float coord_data[NoOfAxis];
-  float a_val;
+ // float a_val;
 
 //actions below are focused on the bit positions hence the
 //numbering system grows 2^n

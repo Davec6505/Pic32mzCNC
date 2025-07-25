@@ -44,7 +44,7 @@ volatile float value;
 /////////////////////////////////////////////////////////////
 //                file scope functions                     //
 /////////////////////////////////////////////////////////////
-static float To_Millimeters(float value){
+float To_Millimeters(float value){
   return(gc.inches_mode) ? (value * MM_PER_INCH) : value;
 }
 

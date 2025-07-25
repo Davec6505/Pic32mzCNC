@@ -474,83 +474,73 @@ int GetAxisDirection(long mm2move){
 // 4) next axis starts from 1 & repeats until NoOfAxis is reached
 int _Home(int axis){
  static long speed = 0;
- static bit one_shot_local;
+ static long err_cntr = 0;
+ float mm2run = 0.0;
+ 
+  if(sys.state == STATE_IDLE){
 
-  //idle homing can only take place once all alarms are cleared
- if(sys.state == STATE_IDLE){
-    //set the speed to max homing speed.
-    speed = settings.homing_seek_rate;
-
-    //reset the one shot bit
-    one_shot_local = false;
-   //condition the triggers
-   // Rst_FP(axis);Rst_FN(axis);
-
+    sys.state= STATE_HOMING;
     //set counter to 0
     homing[axis].home_cnt = 0;
     homing[axis].home_state = 0;
 
-    //enable all axis at the start
-    EnableStepper(axis);//sort this out
-    #if KineDebug == 3
-      while(DMA_IsOn(1));
-      dma_printf("\n%s\n"
-      ,"START");
-   #endif
-  }
+     // reset the error counter
+     err_cntr = 0;
+     
+      //enable all axis at the start
+      EnableStepper(axis);//sort this out
+      #if KineDebug == 3
+        while(DMA_IsOn(1));
+        dma_printf("\n%s\n"
+        ,"START");
+     #endif
+   
+   }
 
+   if(sys.state == STATE_HOMING){
 
-
-  switch(homing[axis].home_state){
+     switch(homing[axis].home_state){
        case 0: //start homing
+
             //indicator for interface
             sys.state = STATE_HOMING;
 
             //if limit is already made go to rev mode.
             if(!Test_Port_Pins(axis)){
+            
               //homing speed slow after initial homing done.
               speed = settings.homing_feed_rate;
+              
               //got to back off state immediately.
               homing[axis].home_state = HOME_BACK_OFF;
 
              //distance here is any value to move off the limit.
-               Home_Axis(12.0,settings.homing_feed_rate, axis);
+               mm2run = To_Millimeters(12.0);
+               Home_Axis(mm2run,settings.homing_feed_rate, axis);
                #if KineDebug == 3
                 while(DMA_IsOn(1));
                 dma_printf("\n%s\n"
-                ,"BACK OFF");
+                ,"GOTO HOME_BACK_OFF");
                #endif
             }
             else{
                //start the movement.
+              //homing speed slow after initial homing done.
+              speed = settings.homing_seek_rate;
                //(max_sizes[axis]+100.0)to ensure axis gets to limit.
-              Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
+               mm2run = To_Millimeters(max_sizes[axis]+100.0);
+              Home_Axis(-mm2run,speed,axis);
                //got to back off state immediately.
               homing[axis].home_state = HOME;
               #if KineDebug == 3
                 while(DMA_IsOn(1));
                 dma_printf("\n%s\n"
-                ,"HOME");
+                ,"GOTO HOME");
               #endif
             }
 
             break;
        case HOME: //Home
-#if EDGE  == 0
-            //falling edge of limit switch
-            if(FN(axis)){
-               speed = settings.homing_feed_rate;
-               //Force the homing counter to 1 == reverse state
-               homing[axis].home_state = HOME_BACK_OFF;
-            }
-#elif EDGE  == 1
-            //rising edge of limit ISR set to hi to low transition give a FP
-            if(FP(axis)){
-               speed = settings.homing_feed_rate;
-               //Force the homing counter to 1 == reverse state
-               homing[axis].home_state = HOME_BACK_OFF;
-            }
-#else
 
             if(Test_Port_Pins(axis)){
                 break;
@@ -560,67 +550,56 @@ int _Home(int axis){
                //Force the homing counter to 1 == reverse state
                homing[axis].home_state = HOME_BACK_OFF;
             }
- #endif
+
              // goto homed lable to start reversing
              //distance here is any value to move off the limit
              //movement will stop on falling edge of limit
              if(homing[axis].home_state == HOME_BACK_OFF)
              {
-                 Home_Axis(12.0,settings.homing_feed_rate, axis);
+                 mm2run = To_Millimeters(5.0);
+                 Home_Axis(mm2run,settings.homing_feed_rate, axis);
 
                   #if KineDebug == 3
                     while(DMA_IsOn(1));
                     dma_printf("\n%s\n"
-                    ,"GOTO BACK OFF");
+                    ,"GOTO HOME_BACK_OFF");
                   #endif
              }
-                 
             break;
        case HOME_BACK_OFF: //Home retract off home position
 
               if(!Test_Port_Pins(axis)){
                   break;
               }
-              if(!(Get_Axis_Run_States() & axis)){
-                  Home_Axis(-(max_sizes[axis]+100.0),speed,axis);
-                  homing[axis].home_state = HOME_BACK;
-                  Home_Axis(-20.0,settings.homing_feed_rate, axis);
-                  #if KineDebug == 3
-                      while(DMA_IsOn(1));
+              // has the axis travelled to its destination?
+              if((GET_RunState(axis) == STOP) || (err_cntr > 10000)){
+                 // backed off by 12 now home a little longer
+                 mm2run = To_Millimeters(20.0);
+                 Home_Axis(-mm2run,speed,axis);
+                 homing[axis].home_state = BACK_HOME;
+
+                 #if KineDebug == 3
+                   while(DMA_IsOn(1));
                       dma_printf("\n%s\n"
-                      ,"GO BACK HOME");
-                   #endif
+                      ,"GOTO BACK_HOME");
+                 #endif
+              }
+              err_cntr++;
+            break;
+       case BACK_HOME: //Back to home slowly
+              // has the limit been hit?
+              if(!Test_Port_Pins(axis)){
+                  homing[axis].home_state = HOME_COMPLETE;
               }
 
-            break;
-       case HOME_BACK: //Back to home slowly
-            #if EDGE == 0
-               //falling edge of limit ISR set to hi to low transition give a FP
-              if(FN(axis)){
-                 homing[axis].home_state = HOME_COMPLETE;
-              }
-            #elif EDGE == 1
-              if(FP(axis)){
-                 homing[axis].home_state = HOME_COMPLETE;
-              }
-              #else
-              if(!Test_Port_Pins(axis)){
-          //      if(DEFAULT_HOME_BACKOFF != 0){
-          //        homing[axis].home_state = HOME_BACK_OFF;
-          //      }
-          //      else{
-                //Axis homed
-                  homing[axis].home_state = HOME_COMPLETE;
-          //      }
-              }
-            #endif
             break;
        case HOME_COMPLETE: //Home Complete
 
+            //ensure the axis has stopped.
             StopAxis(axis);
 
             //increase the axis number to tell callee the next axis is
-            //going to be run
+            // to be run
             axis++;
 
             //reset to idle to start at fast feed rate for homing
@@ -632,20 +611,7 @@ int _Home(int axis){
               ,"COMPLETE",axis);
             #endif
             break;
-        case HOME_BACK_OFF:
-               //If the limit is made then back off
-           /*    if(!Test_Port_Pins(axis) && !one_shot_local){
-                  one_shot_local = true;
-                  //distance here is any value to move off the limit.
-                  Home_Axis(12.0,settings.homing_feed_rate, axis);
-              }
-              else {
-
-                 if(!(Get_Axis_Run_States() & axis)){
-                    homing[axis].home_state = HOME_COMPLETE;
-                 }
-              }   */
-            break;
+      }
   }
   return axis;
 }

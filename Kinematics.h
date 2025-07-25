@@ -49,7 +49,7 @@
 #define HOME_SET         1
 #define HOME             2
 #define HOME_BACK_OFF    3
-#define HOME_BACK        4
+#define BACK_HOME        4
 #define HOME_COMPLETE    5
 #define HOME_MOVE_OFF    6
 #define WAIT             99

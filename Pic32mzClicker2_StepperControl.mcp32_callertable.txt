@@ -172,14 +172,14 @@ main
 			DMA_IsOn
 			dma_printf
 			Test_Port_Pins
+			To_Millimeters
 			Home_Axis
 				StopAxis
 				belt_steps
 				Get_Step_Rate
 				SingleAxisStep
-			Get_Axis_Run_States
-			StopAxis
 			GET_RunState
+			StopAxis
 			__CC2DW
 		mc_reset
 			disableOCx

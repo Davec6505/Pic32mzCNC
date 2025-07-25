@@ -148,11 +148,13 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Kinematics.c
 File1=Kinematics.h
-File2=Settings.h
-File3=Stepper.c
+File2=Stepper.c
+File3=Stepper.h
 File4=Globals.h
-File5=Stepper.h
-Count=6
+File5=Settings.h
+File6=Protocol.c
+File7=Globals.c
+Count=8
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

@@ -320,8 +320,10 @@ static int Pulse(int axis_No){
            STPS[axis_No].accel_count = STPS[axis_No].decel_val;
            STPS[axis_No].rest        = 0;
            STPS[axis_No].run_state =  DECEL;
-        }else  if(STPS[axis_No].step_count >= STPS[axis_No].dist)
+        }
+        else  if(STPS[axis_No].step_count >= STPS[axis_No].dist) {
            STPS[axis_No].run_state =  STOP;
+        }
       break;
     case DECEL:
       //taylor series calculation for dec
