@@ -184,21 +184,16 @@ void StopAxis(int axis){
 
   switch(axis){
    case X:
-         OC5IE_bit = 0;
-         OC5CONbits.ON = 0;
-         
+         OC5IE_bit = 0; OC5CONbits.ON = 0;
          break;
    case Y:
-         OC2IE_bit = 0;
-         OC2CONbits.ON = 0;
+         OC2IE_bit = 0; OC2CONbits.ON = 0;
          break;
    case Z:
-        OC7IE_bit = 0;
-        OC7CONbits.ON = 0;
+        OC7IE_bit = 0; OC7CONbits.ON = 0;
         break;
    case A:
-        OC3IE_bit = 0;
-        OC3CONbits.ON = 0;
+        OC3IE_bit = 0; OC3CONbits.ON = 0;
         break;
    default : break;
   }

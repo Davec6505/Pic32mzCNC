@@ -1286,7 +1286,7 @@ float XYZ_Val;
 int F_Val,O_Val;
  FAIL( 0 );
  switch(c[0]){
- case 'X':case 'x':
+ case 'X':
  XYZ_Val = *(float*)any;
  gc.next_position[X] = To_Millimeters(XYZ_Val);
   (axis_words |= (1 << X) ) ;

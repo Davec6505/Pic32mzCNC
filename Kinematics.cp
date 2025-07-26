@@ -1023,12 +1023,7 @@ void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
 long tempA,tempB,tempC;
 
  SV.dif = 0;
-
- while(DMA_IsOn(1));
- dma_printf("axis_a:= %f\tabs_posA:= %l\taxis_b:= %f\tabs_posB:= %l\n"
- ,axis_a,STPS[axisA].steps_abs_position,axis_b,STPS[axisB].steps_abs_position);
-
-
+#line 138 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  SV.Single_Dual =  1 ;
  Single_Axis_Enable(axisA);
  Single_Axis_Enable(axisB);
@@ -1057,14 +1052,7 @@ long tempA,tempB,tempC;
 
  STPS[axisA].dist = labs(tempA);
  STPS[axisB].dist = labs(tempB);
-
-
- while(DMA_IsOn(1));
- dma_printf("tempA:= %l\tSTPS[axisA].dist:= %l\ttempB:= %l\tSTPS[axisB].dist:= %l\n"
- ,tempA,STPS[axisA].dist,tempB,STPS[axisB].dist);
-
-
-
+#line 174 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  if(STPS[axisA].dist >= STPS[axisB].dist){
  speed_cntr_Move(tempA,speed,axisA);
  STPS[axisB].step_delay = STPS[axisA].step_delay;
@@ -1209,13 +1197,7 @@ int cnt;
  if(!Get_Axis_IEnable_States()||SV.mode_complete < 1)
  break;
  }
-#line 427 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
- while(DMA_IsOn(1));
-#line 432 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
- dma_printf("    [ i:= %f\tseg:= %f ]\n    [ nPx:= %f\tnPy:= %f ]\n    [ tar[axis_0]:= %f\ttar[axis_1]:= %f]\r\n    [SV.mode_complete:= %d\r\n"
- ,i,segments,nPx,nPy,target[axis_0],target[axis_1],SV.mode_complete);
-
-
+#line 436 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
 
 
@@ -1241,9 +1223,9 @@ int GetAxisDirection(long mm2move){
 }
 #line 475 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
 int _Home(int axis){
- static long speed = 0;
+ static float speed = 0;
  static long err_cntr = 0;
- float mm2run = 0.0;
+ float mm2run = -1.0;
 
  if(sys.state ==  0 ){
 
@@ -1257,12 +1239,7 @@ int _Home(int axis){
 
 
  EnableStepper(axis);
-
- while(DMA_IsOn(1));
- dma_printf("\n%s\n"
- ,"START");
-
-
+#line 498 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
 
  if(sys.state ==  5 ){
@@ -1277,34 +1254,25 @@ int _Home(int axis){
  if(!Test_Port_Pins(axis)){
 
 
- speed = settings.homing_feed_rate;
+ speed = 20.0;
 
 
  homing[axis].home_state =  3 ;
 
 
- mm2run = To_Millimeters(12.0);
  Home_Axis(mm2run,settings.homing_feed_rate, axis);
-
- while(DMA_IsOn(1));
- dma_printf("\n%s\n"
- ,"GOTO HOME_BACK_OFF");
-
+#line 524 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  else{
 
 
- speed = settings.homing_seek_rate;
+ speed = 15.0;
 
- mm2run = To_Millimeters(max_sizes[axis]+100.0);
+ mm2run = To_Millimeters(max_sizes[axis]);
  Home_Axis(-mm2run,speed,axis);
 
  homing[axis].home_state =  2 ;
-
- while(DMA_IsOn(1));
- dma_printf("\n%s\n"
- ,"GOTO HOME");
-
+#line 539 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
 
  break;
@@ -1314,7 +1282,7 @@ int _Home(int axis){
  break;
  }
  else{
- speed = settings.homing_feed_rate;
+ speed = 5.0;
 
  homing[axis].home_state =  3 ;
  }
@@ -1324,14 +1292,9 @@ int _Home(int axis){
 
  if(homing[axis].home_state ==  3 )
  {
- mm2run = To_Millimeters(5.0);
- Home_Axis(mm2run,settings.homing_feed_rate, axis);
-
-
- while(DMA_IsOn(1));
- dma_printf("\n%s\n"
- ,"GOTO HOME_BACK_OFF");
-
+ mm2run = To_Millimeters(2.5);
+ Home_Axis(mm2run,speed, axis);
+#line 566 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  break;
  case  3 :
@@ -1340,17 +1303,12 @@ int _Home(int axis){
  break;
  }
 
- if((GET_RunState(axis) ==  0 ) || (err_cntr > 10000)){
+ if((GET_RunState(axis) ==  0 ) || (err_cntr > 500000)){
 
  mm2run = To_Millimeters(20.0);
  Home_Axis(-mm2run,speed,axis);
  homing[axis].home_state =  4 ;
-
-
- while(DMA_IsOn(1));
- dma_printf("\n%s\n"
- ,"GOTO BACK_HOME");
-
+#line 585 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  }
  err_cntr++;
  break;
@@ -1372,12 +1330,7 @@ int _Home(int axis){
 
 
  sys.state =  0 ;
-
-
- while(DMA_IsOn(1));
- dma_printf("\n%s\t%d\n"
- ,"COMPLETE",axis);
-
+#line 612 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  break;
  }
  }
@@ -1390,13 +1343,14 @@ static void Home_Axis(double distance,float speed,int axis){
 
  StopAxis(axis);
  STPS[axis].run_state =  0  ;
-#line 634 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
+#line 633 "C:/Users/Git/Pic32mzCNC/Kinematics.c"
  STPS[axis].mmToTravel = belt_steps(distance,axis);
 
- speed =  (( ((speed)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
 
- speed = Get_Step_Rate(speed,axis);
- SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
+
+
+ SingleAxisStart(STPS[axis].mmToTravel, speed,axis);
+
 }
 
 

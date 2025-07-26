@@ -985,10 +985,10 @@ int retry_flash_write = 0;
  settings.default_seek_rate =  300.00 ;
  buffA[ 0x48 ] = flt2ulong(settings.default_seek_rate);
 
- settings.homing_seek_rate =  80.00  ;
+ settings.homing_seek_rate =  20.00  ;
  buffA[ 0x4A ] = flt2ulong(settings.homing_seek_rate);
 
- settings.homing_feed_rate =  12.00 ;
+ settings.homing_feed_rate =  5.00 ;
  buffA[ 0x49 ] = flt2ulong(settings.homing_feed_rate);
 
  settings.homing_pulloff =  1.00 ;

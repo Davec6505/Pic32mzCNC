@@ -105,7 +105,10 @@ void main() {
     int axis_to_run = 0;
     //get the modal_group
      modal_group = Get_modalgroup();
-     #if MainDebug == 10
+     
+     // to check the modal group from a command
+     // set MainDebug in DEFINES.pld
+     #if MainDebug == 14
      while(DMA_IsOn(1));
      dma_printf("modal_group:= %d\n",modal_group);
      #endif
@@ -113,12 +116,12 @@ void main() {
      //than this switch statement
      switch(modal_group){
         case 0:break;
-        case 2://MODAL_GROUP_0: // [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
+        case 2:// [G4,G10,G28,G30,G53,G92,G92.1] Non-modal
              modal_action = Modal_Group_Actions0(Get_non_modalword());
              modal_action = modal_group = Rst_modalgroup();
              report_status_message(STATUS_OK);
              break;
-        case 4://MODAL_GROUP_1: // [G0,G1,G2,G3,G80] Motion
+        case 4: // [G0,G1,G2,G3,G80] Motion
             axis_to_run = Get_Axisword();
 
             if(axis_to_run){
@@ -161,17 +164,22 @@ void main() {
         case 1024: //$H Home all axis
              //temp debug for steppers
              modal_action = Modal_Group_Actions1(ALL_AXIS);
-             #if HomeDebug == 10
+             
+             // to check the modal group from a command
+             // set HomeDebug in DEFINES.pld
+             #if HomeDebug == 13
              while(DMA_IsOn(1));
              dma_printf("modal_action:= %d\n",modal_action);
             #endif
+            
              if(modal_action == 0)modal_group = Rst_modalgroup();
  //            bit_true(SV.mode_complete,bit(7));
              break;
      }
    }
-   
-    //Debug for stepper report if not connected to unit
+
+     // to check stepper report if not connected to unit
+     // set StepperDebug in DEFINES.pld
     #if StepperDebug == 1
     if(SV.mode_complete){
     //if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP | STPS[Z].run_state != STOP){
@@ -491,8 +499,10 @@ int dly_time,i,j,result,axis_words,indx,temp_axis,axis_cnt,temp;
 ////////////////////////////////////////////////////////////////////////////////
 static int Modal_Group_Actions1(int action){
     #if MainDebug == 10
-    while(DMA_IsOn(1));
-    dma_printf("action:= %d\tgc.frequency:= %l\n",action,gc.frequency);
+    if(action > 0){
+      while(DMA_IsOn(1));
+      dma_printf("action:= %d\tgc.frequency:= %l\tgc.feed_rate:= %f\n",action,gc.frequency,gc.feed_rate);
+    }
     #endif
     switch(action){
       case 1: //b0000 0001
@@ -532,7 +542,7 @@ static int Modal_Group_Actions1(int action){
        case ALL_AXIS://Homing X axis
             axis_to_home = _Home(axis_to_home);
             LED2 = TMR.clock >> 3;
-            #if HomeDebug == 10
+            #if HomeDebug == 11
             while(DMA_IsOn(1));
             dma_printf("axis_to_home:= %d\n",axis_to_home);
             #endif

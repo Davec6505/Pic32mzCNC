@@ -1385,7 +1385,7 @@ int status;
  status =  3 ;
  }
  value = atof(str_val);
-#line 571 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 575 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  settings_store_global_setting(N_Val,value);
  status =  0 ;
  }
@@ -1405,7 +1405,9 @@ int status;
 
 
 static int Do_Gcode(char str_[64],int dif_){
+char g_char;
 char temp[9];
+unsigned int upper;
 float XYZ_Val = 0.0;
 int i,j,num_of_strings,mode,flow,status;
 int Val = 0;
@@ -1413,11 +1415,25 @@ int Val = 0;
 
 
  num_of_strings = strsplit2(gcode,str_,0x20);
-#line 602 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 610 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  for(i=0; i < num_of_strings; i++){
+
  j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+
+
+ g_char = gcode[i][0];
+ upper = toupper(g_char);
+ g_char = (char)upper;
+ gcode[i][0] = g_char;
+
+
+
+ while(DMA_IsOn(1));
+ dma_printf("%d = %c <%c>\n",upper,g_char,gcode[0][0]);
+
+
  switch(gcode[i][0]){
- case 'G':case'g':
+ case 'G':
  if(j < 3){
  Val = atoi(temp);
 
@@ -1430,31 +1446,27 @@ int Val = 0;
  }
  mode = G_Mode(Val);
  status =  0 ;
-#line 623 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 648 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
- case 'X':case 'x':case 'Y':case 'y':
- case 'Z':case 'z':case 'A':case 'a':
- case 'I':case 'i':case 'J':case 'j':
- case 'K':case 'k':case 'F':case 'f':
+ case 'X':case 'Y':case 'Z':case 'A':
+ case 'I':case 'J':case 'K':case 'F':
  status =  0 ;
  XYZ_Val = atof(temp);
  status = Instruction_Values(gcode[i],&XYZ_Val);
 
- if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
- status =  0 ;
- else
+
+ if(gcode[0][0] != 'F')
  status =  20 ;
-#line 641 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 666 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  break;
- case 'P':case 'p':case 'L':case 'l':
- case 'S':case 's':
+ case 'P':case 'L':case 'S':
  Val = atoi(temp);
  status = Instruction_Values(gcode[i],&Val);
  break;
- case 'M':case'm':
+ case 'M':
  Val = atoi(temp);
  flow = M_Mode(Val);
-#line 654 "C:/Users/Git/Pic32mzCNC/Protocol.c"
+#line 682 "C:/Users/Git/Pic32mzCNC/Protocol.c"
  status =  0 ;
  break;
  }

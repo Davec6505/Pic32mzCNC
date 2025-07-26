@@ -564,10 +564,14 @@ int status;
                      status = STATUS_UNSUPPORTED_STATEMENT;
                  }
                  value = atof(str_val);
+                 
+                  // to check the converted values of $ instructions
+                  // set ProtoDebug in DEFINES.pld
                  #if ProtoDebug == 21
                  while(DMA_IsOn(1));
                  dma_printf("%d\t%s\t%f\n",N_Val,str_val,value);
                  #endif
+                 
                  settings_store_global_setting(N_Val,value);
                  status = STATUS_OK;
                }
@@ -587,7 +591,9 @@ int status;
 
 
 static int Do_Gcode(char str_[64],int dif_){
+char g_char;
 char temp[9];
+unsigned int upper;
 float XYZ_Val = 0.0;
 int i,j,num_of_strings,mode,flow,status;
 int  Val = 0;
@@ -595,14 +601,30 @@ int  Val = 0;
 
    //split up the line into string array using SPC seperator
    num_of_strings = strsplit2(gcode,str_,0x20);
+   
+   // to check the strings being sent set ProtoDebug in DEFINES.pld
    #if ProtoDebug == 27
    while(DMA_IsOn(1));
    dma_printf("no_of_strings:= %d\n",num_of_strings);
    #endif
    for(i=0; i < num_of_strings; i++){
+   
      j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
+     
+     //upper = toupper(*(*(gcode+i)));
+     g_char = gcode[i][0];
+     upper = toupper(g_char);
+     g_char = (char)upper;
+     gcode[i][0] = g_char;
+     
+     // to check the conversion of toupper set ProtoDebug in DEFINES.pld
+    #if ProtoDebug == 28
+     while(DMA_IsOn(1));
+     dma_printf("%d = %c <%c>\n",upper,g_char,gcode[0][0]);
+    #endif
+    
      switch(gcode[i][0]){
-        case 'G':case'g':
+        case 'G':
            if(j < 3){ //G00 - G99
             Val = atoi(temp);
              //Compensation for G28,G30 & G92 have other codes with
@@ -615,42 +637,48 @@ int  Val = 0;
            }
           mode = G_Mode(Val);
           status = STATUS_OK;
+          
+          // to check the converted values of gcode instructions
+          // set ProtoDebug in DEFINES.pld
           #if ProtoDebug == 25
           while(DMA_IsOn(1));
           dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
           #endif
 
            break;
-        case 'X':case 'x':case 'Y':case 'y':
-        case 'Z':case 'z':case 'A':case 'a':
-        case 'I':case 'i':case 'J':case 'j':
-        case 'K':case 'k':case 'F':case 'f':
+        case 'X':case 'Y':case 'Z':case 'A':
+        case 'I':case 'J':case 'K':case 'F':
           status = STATUS_OK;
           XYZ_Val = atof(temp);
           status = Instruction_Values(gcode[i],&XYZ_Val);
 
-          if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
-            status = STATUS_OK;
-          else
+          //only if F is send on its owm.
+          if(gcode[0][0] != 'F')
             status = STATUS_COMMAND_EXECUTE_MOTION;
-            
+          
+          // to check the converted values of gcode instructions 
+          // set ProtoDebug in DEFINES.pld
           #if ProtoDebug == 25
           while(DMA_IsOn(1));
           dma_printf("[%d][%s][%f][%d]\n",i,gcode[i],XYZ_Val,status);
           #endif
+          
           break;
-        case 'P':case 'p':case 'L':case 'l':
-        case 'S':case 's':
+        case 'P':case 'L':case 'S':
           Val = atoi(temp);
           status = Instruction_Values(gcode[i],&Val);
           break;
-       case 'M':case'm':
+       case 'M':
           Val = atoi(temp);
           flow = M_Mode(Val);
+          
+          // to check the converted values of gcode instructions
+          // set ProtoDebug in DEFINES.pld
           #if ProtoDebug == 25
           while(DMA_IsOn(1));
           dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
           #endif
+          
           status = STATUS_OK;
           break;
      }//switch

@@ -117,6 +117,7 @@ long abs_mmSteps;
 
   abs_mmSteps = labs(mmSteps);
   bit_true(SV.mode_complete,bit(axis_No));
+  
   // speed is in rpm ~ need to convert tp pps / steprate
   // speed /= 60.0; //base_pps[axis_No]/speed;
   speed = Get_Step_Rate(speed,axis_No);//*= spr_x_mstep[axis_No];
@@ -138,7 +139,7 @@ long abs_mmSteps;
    //if(STPS[axis_No].run_state != STOP)
    //     temp_speed = last_speed - speed;
    // else
-        temp_speed = speed;
+    temp_speed = speed;
 
     // Set max speed limit, by calc min_delay to use in timer.
     //STPS[axis_No].min_delay = lround(a_t_x100[axis_No] / temp_speed);

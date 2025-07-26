@@ -473,9 +473,9 @@ int GetAxisDirection(long mm2move){
 // 3) at 2nd hit axis stops and
 // 4) next axis starts from 1 & repeats until NoOfAxis is reached
 int _Home(int axis){
- static long speed = 0;
+ static float speed = 0;
  static long err_cntr = 0;
- float mm2run = 0.0;
+ float mm2run = -1.0;
  
   if(sys.state == STATE_IDLE){
 
@@ -509,13 +509,12 @@ int _Home(int axis){
             if(!Test_Port_Pins(axis)){
             
               //homing speed slow after initial homing done.
-              speed = settings.homing_feed_rate;
+              speed = 20.0;//settings.homing_feed_rate;
               
               //got to back off state immediately.
               homing[axis].home_state = HOME_BACK_OFF;
 
              //distance here is any value to move off the limit.
-               mm2run = To_Millimeters(12.0);
                Home_Axis(mm2run,settings.homing_feed_rate, axis);
                #if KineDebug == 3
                 while(DMA_IsOn(1));
@@ -526,9 +525,9 @@ int _Home(int axis){
             else{
                //start the movement.
               //homing speed slow after initial homing done.
-              speed = settings.homing_seek_rate;
+              speed = 15.0;
                //(max_sizes[axis]+100.0)to ensure axis gets to limit.
-               mm2run = To_Millimeters(max_sizes[axis]+100.0);
+               mm2run = To_Millimeters(max_sizes[axis]);
               Home_Axis(-mm2run,speed,axis);
                //got to back off state immediately.
               homing[axis].home_state = HOME;
@@ -546,7 +545,7 @@ int _Home(int axis){
                 break;
             }
             else{
-               speed = settings.homing_feed_rate;
+               speed = 5.0;
                //Force the homing counter to 1 == reverse state
                homing[axis].home_state = HOME_BACK_OFF;
             }
@@ -556,8 +555,8 @@ int _Home(int axis){
              //movement will stop on falling edge of limit
              if(homing[axis].home_state == HOME_BACK_OFF)
              {
-                 mm2run = To_Millimeters(5.0);
-                 Home_Axis(mm2run,settings.homing_feed_rate, axis);
+                 mm2run = To_Millimeters(2.5);
+                 Home_Axis(mm2run,speed, axis);
 
                   #if KineDebug == 3
                     while(DMA_IsOn(1));
@@ -572,7 +571,7 @@ int _Home(int axis){
                   break;
               }
               // has the axis travelled to its destination?
-              if((GET_RunState(axis) == STOP) || (err_cntr > 10000)){
+              if((GET_RunState(axis) == STOP) || (err_cntr > 500000)){
                  // backed off by 12 now home a little longer
                  mm2run = To_Millimeters(20.0);
                  Home_Axis(-mm2run,speed,axis);
@@ -633,10 +632,11 @@ static void Home_Axis(double distance,float speed,int axis){
   //calculate the distance in Steps and send to stepper control
   STPS[axis].mmToTravel = belt_steps(distance,axis);
   //get rps from mm/min
-  speed = RPS_FROM_MMPMIN(speed);
+ // speed = RPS_FROM_MMPMIN(speed);
   //get pps from rps
-  speed = Get_Step_Rate(speed,axis);
-  SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
+
+  SingleAxisStart(STPS[axis].mmToTravel, speed,axis);
+  //SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 }
 
 

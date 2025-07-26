@@ -437,7 +437,7 @@ float XYZ_Val;
 int F_Val,O_Val;
    FAIL(STATUS_OK);
    switch(c[0]){
-      case 'X':case 'x':
+      case 'X':
             XYZ_Val = *(float*)any;
             gc.next_position[X] = To_Millimeters(XYZ_Val);
             bit_true(axis_words,bit(X));
