@@ -1,5 +1,5 @@
-#line 1 "C:/Users/Git/Pic32mzCNC/Pins.c"
-#line 1 "c:/users/git/pic32mzcnc/pins.h"
+#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Pins.c"
+#line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 
 
 
@@ -80,7 +80,7 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 extern sfr sbit Z_Min_Limit;
 extern sfr sbit Z_Min_Limit_Dir;
-#line 10 "C:/Users/Git/Pic32mzCNC/Pins.c"
+#line 10 "C:/Users/davec/GIT/Pic32mzCNC/Pins.c"
  sbit LED2 at LATA9_bit;
  sbit LED2_Dir at TRISA9_bit;
  sbit LED1 at LATE7_bit;

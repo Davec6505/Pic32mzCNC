@@ -1,6 +1,6 @@
-#line 1 "C:/Users/Git/Pic32mzCNC/Print.c"
-#line 1 "c:/users/git/pic32mzcnc/print.h"
-#line 34 "c:/users/git/pic32mzcnc/print.h"
+#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
+#line 1 "c:/users/davec/git/pic32mzcnc/print.h"
+#line 34 "c:/users/davec/git/pic32mzcnc/print.h"
 void report_status_message(int status_code);
 
 void report_alarm_message(int alarm_code);
@@ -23,7 +23,7 @@ void report_gcode_modes();
 void protocol_execute_startup();
 
 void report_realtime_status();
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 
 
 
@@ -32,7 +32,7 @@ void report_realtime_status();
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/git/pic32mzcnc/settings.h"
+#line 173 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -57,7 +57,7 @@ typedef struct {
 } settings_t;
 
 extern settings_t settings;
-#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/string.h"
 
 
@@ -83,7 +83,7 @@ char * strpbrk(char * s1, char * s2);
 char * strrchr(char *ptr, char chr);
 char * strstr(char * s1, char * s2);
 char * strtok(char * s1, char * s2);
-#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdlib.h"
 
 
@@ -115,8 +115,8 @@ div_t div(int number, int denom);
 ldiv_t ldiv(long number, long denom);
 uldiv_t uldiv(unsigned long number, unsigned long denom);
 long labs(long x);
-long max(long a, long int b);
-long min(long a, long int b);
+long int max(long int a, long int b);
+long int min(long int a, long int b);
 void srand(unsigned x);
 int rand();
 int xtoi(char * s);
@@ -124,8 +124,8 @@ int xtoi(char * s);
 
 
 typedef void * va_list[1];
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/pins.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 
 
 
@@ -206,11 +206,11 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 extern sfr sbit Z_Min_Limit;
 extern sfr sbit Z_Min_Limit_Dir;
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 
 
@@ -259,20 +259,20 @@ typedef unsigned long int uintptr_t;
 
 typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
-#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 1 "c:/users/git/pic32mzcnc/planner.h"
-#line 1 "c:/users/git/pic32mzcnc/config_adv.h"
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
-#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/config_adv.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/config_adv.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 30 "c:/users/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 30 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
 int read_float(char *line, char *char_counter, float *float_ptr);
 
 
@@ -289,7 +289,7 @@ int round(float val);
 
 
 long lround(float val);
-#line 106 "c:/users/git/pic32mzcnc/globals.h"
+#line 106 "c:/users/davec/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[128];
 
 
@@ -363,7 +363,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 62 "c:/users/git/pic32mzcnc/planner.h"
+#line 62 "c:/users/davec/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
  char startPulses: 1;
@@ -417,17 +417,17 @@ long sqrt_(long v);
 
 void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
  float r, float i, float j, float k, int axis_A,int axis_B,int dir);
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 1 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 49 "c:/users/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
+#line 49 "c:/users/davec/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 161 "c:/users/git/pic32mzcnc/gcode.h"
+#line 161 "c:/users/davec/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;
@@ -515,8 +515,8 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
-#line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 59 "c:/users/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
+#line 59 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
 extern sfr stp_stopped;
 extern sfr stp_run;
@@ -553,12 +553,9 @@ typedef struct Steps{
 
  long accel_count;
  long deccl_count;
-<<<<<<< HEAD
 
  long acc;
  long dec;
-=======
->>>>>>> patch2
 
  long step_count;
 
@@ -621,14 +618,14 @@ static void Inv_Home_Axis(double distance,float speed,int axis);
 void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
-#line 1 "c:/users/git/pic32mzcnc/pins.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
+#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef unsigned short UInt8_t;
-#line 33 "c:/users/git/pic32mzcnc/stepper.h"
+#line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
 
@@ -673,7 +670,7 @@ static void toggleOCx(int axis_No);
 static static void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
-#line 11 "c:/users/git/pic32mzcnc/timers.h"
+#line 11 "c:/users/davec/git/pic32mzcnc/timers.h"
 struct Timer{
 char clock;
 char P1: 1;
@@ -689,14 +686,14 @@ void InitTimer8();
 static void ClockPulse();
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
-#line 1 "c:/users/git/pic32mzcnc/steptodistance.h"
-#line 1 "c:/users/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 58 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 58 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
 const float Dia;
-#line 70 "c:/users/git/pic32mzcnc/steptodistance.h"
+#line 70 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
 long calcSteps(float mmsToMove, float Dia);
 long leadscrew_sets(float move_distance,int axis);
 long belt_steps(float move_distance,int axis);
@@ -706,15 +703,15 @@ float in2mm(float inch);
 float fround(float var);
 float torpm(float mm_per_min);
 float toradians(float rev_per_min);
-#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 1 "c:/users/git/pic32mzcnc/gcode.h"
-#line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/git/pic32mzcnc/limits.h"
-#line 1 "c:/users/git/pic32mzcnc/pins.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 33 "c:/users/git/pic32mzcnc/limits.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/limits.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 33 "c:/users/davec/git/pic32mzcnc/limits.h"
 struct limit {
 
 char Pin: 1;
@@ -758,17 +755,17 @@ char FP(int axis);
 void Rst_FP(int axis);
 char FN(int axis);
 void Rst_FN(int axis);
-#line 1 "c:/users/git/pic32mzcnc/protocol.h"
-#line 1 "c:/users/git/pic32mzcnc/gcode.h"
-#line 1 "c:/users/git/pic32mzcnc/serial_dma.h"
-#line 1 "c:/users/git/pic32mzcnc/print.h"
-#line 1 "c:/users/git/pic32mzcnc/settings.h"
-#line 1 "c:/users/git/pic32mzcnc/config.h"
-#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-#line 1 "c:/users/git/pic32mzcnc/globals.h"
-#line 1 "c:/users/git/pic32mzcnc/timers.h"
-#line 1 "c:/users/git/pic32mzcnc/kinematics.h"
-#line 52 "c:/users/git/pic32mzcnc/protocol.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/protocol.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/print.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
+#line 52 "c:/users/davec/git/pic32mzcnc/protocol.h"
 void Init_Protocol();
 
 
@@ -818,8 +815,8 @@ void protocol_system_check();
 
 
 void protocol_execute_runtime();
-#line 1 "c:/users/git/pic32mzcnc/flash_r_w.h"
-#line 27 "c:/users/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
+#line 27 "c:/users/davec/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 
 
@@ -849,8 +846,8 @@ static int Modal_Group_Actions7(int action);
 
 
 static int Modal_Group_Actions12(int action);
-#line 1 "c:/users/git/pic32mzcnc/gcode.h"
-#line 14 "c:/users/git/pic32mzcnc/serial_dma.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
+#line 14 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 extern char txt[];
 extern char rxBuf[];
 extern char txBuf[];
@@ -908,7 +905,7 @@ void Reset_Ring();
 int Loopback();
 int dma_printf(char* str,...);
 void lTrim(char* d,char* s);
-#line 151 "c:/users/git/pic32mzcnc/flash_r_w.h"
+#line 151 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -925,9 +922,9 @@ void NVMReadRow(unsigned long addr,unsigned long *buff);
 void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
-#line 1 "c:/users/git/pic32mzcnc/nuts_bolts.h"
-#line 1 "c:/users/git/pic32mzcnc/gcode.h"
-#line 9 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 1 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
+#line 9 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
  void report_status_message(int status_code){
  if (status_code == 0) {
  while(DMA_IsOn(1));
@@ -1041,7 +1038,7 @@ void report_init_message(){
 
 void report_grbl_help() {
  while(DMA_IsOn(1));
-#line 135 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 135 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
  dma_printf("%s","$$ (view Grbl settings)\r\n$# (view # parameters)\r\n$G (view parser state)\r\n$N (view startup blocks)\r\n$x=value (save Grbl setting)\r\n$Nx=line (save startup block)\r\n$C (check gcode mode)\r\n$X (kill alarm lock)\r\n$H (run homing cycle)\r\n~ (cycle start)\r\n! (feed hold)\r\n? (current status)\r\nctrl-x (reset Grbl)\r\n");
 }
 
@@ -1051,7 +1048,7 @@ void report_grbl_settings() {
 float acc = settings.acceleration;
  acc /=(60*60);
  while(DMA_IsOn(1));
-#line 167 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 167 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
  dma_printf("\r\n$0=%f (x, step/mm)\r\n$1=%f (y, step/mm)\r\n$2=%f (z, step/mm)\r\n$3=%d (step pulse, usec)\r\n$4=%f (default feed, mm/min)\r\n$5=%f (default seek, mm/min)\r\n$6=%d (step port invert mask, int)\r\n$7=%d (step idle delay, msec)\r\n$8=%f (acceleration, mm/sec^2)\r\n$9=%f (junction deviation, mm)\r\n$10=%f (arc, mm/segment)\r\n$11=%d (n-arc correction, int)\r\n$12=%d (n-decimals, int)\r\n$13=%d (report inches, bool)\r\n$14=%d (auto start, bool)\r\n$15=%d (invert step enable, bool)\r\n$16=%d (hard limits, bool)\r\n$17=%d (homing cycle, bool)\r\n$18=%d (homing dir invert mask, int:)\r\n$19=%f (homing feed, mm/min)\r\n$20=%f (homing seek, mm/min)\r\n$21=%d (homing debounce, msec)\r\n$22=%f (homing pull-off, mm)\r\n"
 ,settings.steps_per_mm[X]
 ,settings.steps_per_mm[Y]
@@ -1243,7 +1240,7 @@ void report_gcode_modes(){
  }
  while(DMA_IsOn(1));
  switch (gc.coolant_mode) {
-#line 363 "C:/Users/Git/Pic32mzCNC/Print.c"
+#line 363 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
  }
  while(DMA_IsOn(1));
  if (gc.inches_mode)

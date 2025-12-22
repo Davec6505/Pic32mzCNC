@@ -92,12 +92,9 @@ typedef struct Steps{
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long accel_count;
   long deccl_count;
-<<<<<<< HEAD
   //! aaceleration and decelleration constants
   long acc;
   long dec;
-=======
->>>>>>> patch2
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long step_count;
   //! Distance calculated to travel

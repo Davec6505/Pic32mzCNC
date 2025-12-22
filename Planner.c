@@ -23,13 +23,10 @@ long dec                         absolute 0xA0003904 ;
 /////////////////////////////////////////////////////
 
 void plan_init(float accel,float decel){
-<<<<<<< HEAD
 long i = 0;
  for(i = 0; i < NoOfAxis; i++){
-=======
 int i = 0;
  /*for(i = 0; i < NoOfAxis; i++){
->>>>>>> patch2
   STPS[i].acc = lround(accel);
   STPS[i].dec = lround(decel);
  } */
@@ -193,40 +190,28 @@ long abs_mmSteps = labs(mmSteps);
 
 while(DMA_IsOn(1));
 dma_printf("\n\
-<<<<<<< HEAD
 STPS[].acc %l\n\
 STPS[].dec %l\n\
-=======
 acc:= %l\n\
 dec:= %l\n\
->>>>>>> patch2
 speed:= %f\n\
 abs_mmSteps:= %l\n\
 a_sq[%d]:= %l\n\
 alpha[%d]:= %f\n\
 a_t_x100[%d]:= %f\n\
 STPS[axis_No].max_step_lim:= %l\n\
-<<<<<<< HEAD
 abs_mmSteps:= %l\n\
-=======
->>>>>>> patch2
 acc_lim:= %l\n\
 dec_val:= %l\n\
 dec_start:= %l\n\
 step_delay:= %l\n\
-<<<<<<< HEAD
 min_dly:= %l\n\n"
-<<<<<<< HEAD
 ,STPS[axis_No].acc
 ,STPS[axis_No].dec
-=======
-=======
 min_dly:= %l\n\
 SV.mode-complete:= %d\n\n"
->>>>>>> patch2
 ,acc
 ,dec
->>>>>>> patch2
 ,temp_speed
 ,abs_mmSteps
 ,axis_No
@@ -236,10 +221,7 @@ SV.mode-complete:= %d\n\n"
 ,axis_No
 ,a_t_x100[axis_No]
 ,STPS[axis_No].max_step_lim
-<<<<<<< HEAD
 ,abs_mmSteps
-=======
->>>>>>> patch2
 ,STPS[axis_No].accel_lim
 ,STPS[axis_No].decel_val
 ,STPS[axis_No].decel_start
@@ -297,13 +279,13 @@ int axis_plane_a,axis_plane_b;
         Equilateral formulae derived as
         area = 0.5 * d * h
         a^2 = h^2 + (r/2)^2
-        ? h^2 = r^2 – (r^2/4)
-        ? h^2 = (3r^2)/4  Or h = ½(sqrt(3r))
+        ? h^2 = r^2 ï¿½ (r^2/4)
+        ? h^2 = (3r^2)/4  Or h = ï¿½(sqrt(3r))
         *********************************
-        area formula: h? = 2 × area / r = sqrt(r² - (0.5 × b)²) × b / r
+        area formula: h? = 2 ï¿½ area / r = sqrt(rï¿½ - (0.5 ï¿½ b)ï¿½) ï¿½ b / r
         *********************************
-        area = ¼(sqrt(3r^2))
-        h = ½ × (sqrt(3 )× r)
+        area = ï¿½(sqrt(3r^2))
+        h = ï¿½ ï¿½ (sqrt(3 )ï¿½ r)
         *********************************
         d^2 == x^2 + y^2
         h^2 == r^2 - (d/2)^2
