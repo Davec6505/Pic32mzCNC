@@ -40,6 +40,8 @@ void PinMode(){
 //outputs
     LED1_Dir = 0;
     LED2_Dir = 0;
+    LED3_Dir = 0;
+    LED4_Dir = 0;
 
 ////////////////////////////////////////////////////
 //INPUTS
@@ -248,7 +250,8 @@ unsigned long cp0;
     PFMWS1_bit = 1;
     PFMWS2_bit = 0;
 }
-//////////////////////////////////////////////////////////////////
+
+
 //configure the output pulse mode OCx  use 16bit as 1.28us tick on tmrs
 void OutPutPulseXYZ(){
 /*

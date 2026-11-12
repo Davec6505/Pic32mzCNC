@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/protocol.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
@@ -60,6 +60,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -582,14 +586,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -791,7 +793,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -921,7 +923,7 @@ void protocol_system_check();
 
 void protocol_execute_runtime();
 #line 1 "c:/users/davec/git/pic32mzcnc/print.h"
-#line 29 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 29 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
 const code char SL[] = "$N";
 volatile char gcode[ 20 ][ 64 ];
 char startup absolute 0xA0002600 ;
@@ -1038,7 +1040,7 @@ int result = 0;
 
  return result;
 }
-#line 163 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 163 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
 void protocol_execute_runtime(){
  if (sys.execute) {
  int rt_exec = sys.execute;
@@ -1115,7 +1117,7 @@ void protocol_system_check(){
 
 
  if (sys.abort) {
-#line 251 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 251 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  sys_sync_current_position();
 
 
@@ -1198,7 +1200,7 @@ int dif,state;
  if(state ==  20 ){
  state = Do_Gcode(str,dif);
  modal_response = Check_group_multiple_violations();
-#line 337 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 337 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  }
  }
  return state;
@@ -1226,7 +1228,7 @@ int i;
 
 
 static void Do_Critical_Msg(char ch_){
-#line 368 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 368 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  switch(ch_){
  case  '?' : sys.execute |=  (1 << 0) ; break;
  case  '~' : sys.execute |=  (1 << 1) ; break;
@@ -1242,7 +1244,7 @@ static int Check_Query_Type(char *str_,int dif_){
 int query;
 int helper_var;
 int status;
-#line 387 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 387 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  if(str_[0] == '$'){
  switch(str_[1]){
  case '\r' :case '\n' :
@@ -1263,7 +1265,7 @@ int status;
  break;
  case 'C' :
  status =  0 ;
-#line 414 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 414 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  if ( sys.state ==  7  ) {
  mc_reset();
  report_feedback_message( 5 );
@@ -1322,7 +1324,7 @@ int status;
  report_startup_line(helper_var,str_);
  status =  0 ;
  }
-#line 476 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 476 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  }
  break;
  }else {
@@ -1337,7 +1339,7 @@ int status;
 
  num[0] = str_[2];
  N_Val = atoi(num);
-#line 496 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 496 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  }else {
  query = 2;
  break;
@@ -1350,12 +1352,12 @@ int status;
 
 
  helper_var = strlen((str_));
-#line 516 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 516 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  str_len = strlen(str_);
-#line 521 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 521 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  }else{
  int str_length = 0;
-#line 530 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 530 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  settings_store_startup_line(N_Val,str_+4);
  }
 
@@ -1390,7 +1392,7 @@ int status;
  status =  3 ;
  }
  value = atof(str_val);
-#line 568 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 568 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  settings_store_global_setting(N_Val,value);
  status =  0 ;
  }
@@ -1418,7 +1420,7 @@ int Val = 0;
 
 
  num_of_strings = strsplit2(gcode,str_,0x20);
-#line 599 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 599 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  for(i=0; i < num_of_strings; i++){
  j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
  switch(gcode[i][0]){
@@ -1435,7 +1437,7 @@ int Val = 0;
  }
  mode = G_Mode(Val);
  status =  0 ;
-#line 620 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 620 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  break;
  case 'X':case 'x':case 'Y':case 'y':
  case 'Z':case 'z':case 'A':case 'a':
@@ -1449,7 +1451,7 @@ int Val = 0;
  status =  0 ;
  else
  status =  20 ;
-#line 638 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 638 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  break;
  case 'P':case 'p':case 'L':case 'l':
  case 'S':case 's':
@@ -1459,7 +1461,7 @@ int Val = 0;
  case 'M':case'm':
  Val = atoi(temp);
  flow = M_Mode(Val);
-#line 651 "C:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
+#line 651 "c:/Users/davec/GIT/Pic32mzCNC/Protocol.c"
  status =  0 ;
  break;
  }

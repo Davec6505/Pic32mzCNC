@@ -199,9 +199,9 @@ int i,m_mode;
     case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW;SV.cir = 1; break;
     case 4: non_modal_action  = NON_MODAL_DWELL;     break;
     case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
-    case 17: Select_Plane(xy);m_mode    = MOTION_MODE_NULL; break;
-    case 18: Select_Plane(xz);m_mode    = MOTION_MODE_NULL; break;
-    case 19: Select_Plane(yz);m_mode    = MOTION_MODE_NULL; break;
+    case 17: Select_Plane(AXIS_XY);m_mode    = MOTION_MODE_NULL; break;
+    case 18: Select_Plane(AXIS_XZ);m_mode    = MOTION_MODE_NULL; break;
+    case 19: Select_Plane(AXIS_YZ);m_mode    = MOTION_MODE_NULL; break;
     case 20: gc.inches_mode = 1;m_mode  = MOTION_MODE_NULL; break;
     case 21: gc.inches_mode = 0;m_mode  = MOTION_MODE_NULL; break;
     case 53: gc.absolute_override = true;m_mode = MOTION_MODE_NULL; break;
@@ -471,17 +471,17 @@ int F_Val,O_Val;
             gc.R = 0;
             XYZ_Val = *(float*)any;
             gc.I = XYZ_Val;
-            gc.offset[I] = To_Millimeters(XYZ_Val);
+         //   gc.offset[gc.I] = To_Millimeters(XYZ_Val);
             break;
       case 'J':
             XYZ_Val = *(float*)any;
             gc.J = XYZ_Val;
-            gc.offset[J] = To_Millimeters(XYZ_Val);
+          //  gc.offset[gc.J] = To_Millimeters(XYZ_Val);
             break;
       case 'K':
             XYZ_Val = *(float*)any;
             gc.K = XYZ_Val;
-            gc.offset[K] = To_Millimeters(XYZ_Val);
+         //   gc.offset[gc.K] = To_Millimeters(XYZ_Val);
             break;
       case 'F':
             XYZ_Val = *(float*)any;
@@ -516,7 +516,7 @@ int F_Val,O_Val;
                FAIL(STATUS_SPEED_ERROR);
             }
             gc.L = O_Val;
-       break; //L2 tells the G10 we’re setting standard work offsets
+       break; //L2 tells the G10 weï¿½re setting standard work offsets
       default:FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
    }
   #if GcodeDebug == 1

@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Pins.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Pins.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 
 
@@ -9,6 +9,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -80,16 +84,20 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 extern sfr sbit Z_Min_Limit;
 extern sfr sbit Z_Min_Limit_Dir;
-#line 10 "C:/Users/davec/GIT/Pic32mzCNC/Pins.c"
- sbit LED2 at LATA9_bit;
- sbit LED2_Dir at TRISA9_bit;
- sbit LED1 at LATE7_bit;
- sbit LED1_Dir at TRISE7_bit;
+#line 10 "c:/Users/davec/GIT/Pic32mzCNC/Pins.c"
+sbit LED1 at LATA6_bit;
+sbit LED1_Dir at TRISA6_bit;
+sbit LED2 at LATA7_bit;
+sbit LED2_Dir at TRISA7_bit;
+sbit LED3 at LATE0_bit;
+sbit LED3_Dir at TRISE0_bit;
+sbit LED4 at LATE1_bit;
+sbit LED4_Dir at TRISE1_bit;
 
- sbit SW1 at RC3_bit;
- sbit SW1_Dir at TRISC3_bit;
- sbit SW2 at RB0_bit;
- sbit SW2_Dir at TRISB0_bit;
+ sbit SW1 at RD10_bit;
+ sbit SW1_Dir at TRISD10_bit;
+ sbit SW2 at RD11_bit;
+ sbit SW2_Dir at TRISD11_bit;
 
 
 

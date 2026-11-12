@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Limits.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Limits.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/limits.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 
@@ -10,6 +10,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -293,7 +297,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -676,14 +680,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -920,7 +922,7 @@ char FP(int axis);
 void Rst_FP(int axis);
 char FN(int axis);
 void Rst_FN(int axis);
-#line 7 "C:/Users/davec/GIT/Pic32mzCNC/Limits.c"
+#line 7 "c:/Users/davec/GIT/Pic32mzCNC/Limits.c"
 static struct limit Limit[ 4 ];
 
 
@@ -948,7 +950,7 @@ void Limit_Initialize(){
  X_Min_Limit_Setup();
  Y_Min_Limit_Setup();
  Z_Min_Limit_Setup();
-#line 39 "C:/Users/davec/GIT/Pic32mzCNC/Limits.c"
+#line 39 "c:/Users/davec/GIT/Pic32mzCNC/Limits.c"
 }
 
 
@@ -1086,7 +1088,7 @@ void Debounce_Limits(int axis){
  if(!Limit[axis].T0 && !Limit[axis].T2){
  Limit[axis].T2 = 1;
  Limit[axis].Min_DeBnc++;
-#line 180 "C:/Users/davec/GIT/Pic32mzCNC/Limits.c"
+#line 180 "c:/Users/davec/GIT/Pic32mzCNC/Limits.c"
  if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
  Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
  }

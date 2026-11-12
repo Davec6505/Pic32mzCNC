@@ -1,0 +1,65 @@
+mikroC PRO for PIC32 Command Line Options  mikroC PRO for PIC32 Command Line Options > 
+   
+ 
+
+mikroC PRO for PIC32 Command Line Options
+Usage: mikroCPIC32.exe [-<opts> [-<opts>]] [<infile> [-<opts>]] [-<opts>]] 
+Infile can be of *.c, *.emcl and *.pld type. 
+
+The following parameters are valid :
+
+-P <devicename> : MCU for which compilation will be done. 
+-FO <oscillator> : Set oscillator [in MHz]. 
+-SP <directory> : Add directory to the search path list. 
+-N <filename> : Output files generated to file path specified by filename. 
+-B <directory> : Save compiled binary files (*.emcl) to 'directory'. 
+-O : Miscellaneous output options. 
+-DBG : Generate debug info. 
+-MSF : Short message format. 
+-Y : Dynamic link for string literals. 
+-RA : Rebuild all sources in project. 
+-L : Check and rebuild new libraries. 
+-DL : Build all files as libraries. 
+-LHF : Generate Long hex format. 
+-PF : Project file name. 
+-EH <filename> : Full EEPROM HEX file name with path. 
+-HEAP <size> : Heap size in bytes. 
+-GC : Generate COFF file. 
+-PF : Project file name. 
+-SSA : Enable SSA optimization. 
+-UICD : ICD build type. 
+-INTDEF : Interrupt settings. 
+-EBASE : Exception base address. 
+Example:
+
+mikroCPIC32.exe -MSF -DBG -p32MX460F512L -Y -DL -O11111114 -fo80 -N"C:\Lcd\Lcd.mcp32" -SP"C:\Program Files\Mikroelektronika\mikroC PRO for PIC32\Defs" 
+              -SP"C:\Program Files\Mikroelektronika\mikroC PRO for PIC32\Uses" -SP"C:\Lcd\" "Lcd.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" 
+              "__Lib_System.emcl" "__Lib_Delays.emcl" "__Lib_LcdConsts.emcl" "__Lib_Lcd.emcl"
+Parameters used in the example: 
+
+-MSF : Short Message Format; used for internal purposes by IDE. 
+-DBG : Generate debug info. 
+-p32MX460F512L : MCU PIC32MX460F512L selected. 
+-Y : Dynamic link for string literals enabled. 
+-DL : All files built as libraries. 
+-O11111114 : Miscellaneous output options : 
+1. Generate ASM file, valid values 0 or 1. 
+2. Include HEX opcodes, valid values 0 or 1. 
+3. Include ROM constants, valid values 0 or 1. 
+4. Include ROM addresses, valid values 0 or 1. 
+5. Generate LST file, valid values 0 or 1. 
+6. Include Debug Info, valid values 0 or 1. 
+7. Include Source Lines in Output Files, valid values 0 or 1. 
+8. The optimization level, valid values from 0 to 5. 
+-fo80 : Set oscillator frequency [in MHz]. 
+-N"C:\Lcd\Lcd.mcp32" -SP"C:\Program Files\Mikroelektronika\mikroC PRO for PIC32\Defs\" : Output files generated to file path specified by filename. 
+-SP"C:\Program Files\Mikroelektronika\mikroC PRO for PIC32\Defs\" : Add directory to the search path list. 
+-SP"C:\Program Files\Mikroelektronika\mikroC PRO for PIC32\Uses\" : Add directory to the search path list. 
+-SP"C:\Lcd\" : Add directory to the search path list. 
+"Lcd.c" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_System.emcl" "__Lib_Delays.emcl" "__Lib_LcdConsts.emcl" "__Lib_Lcd.emcl" : Specify input files. 
+
+
+Copyright (c) 2002-2017 mikroElektronika. All rights reserved. 
+What do you think about this topic ? Send us feedback! 
+Want more examples and libraries?  
+Find them on LibStock - A place for the code 

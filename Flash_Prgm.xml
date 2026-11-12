@@ -1,8 +1,8 @@
-<Flash_Prgm>
+<Flasg_gen>
 	<Attributes>
 		<Url></Url>
 		<Image></Image>
-		<File>Flash_Prgm.pdf</File>
+		<File></File>
 	</Attributes>
 	<Events>
 		<OnLeftClick></OnLeftClick>
@@ -10,4 +10,4 @@
 		<OnDblClick>OpenFile</OnDblClick>
 		<OnMouseOver></OnMouseOver>
 	</Events>
-</Flash_Prgm>
+</Flasg_gen>

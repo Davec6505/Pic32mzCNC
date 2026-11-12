@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
@@ -168,6 +168,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -326,7 +330,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -873,14 +877,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -920,7 +922,7 @@ static void toggleOCx(int axis_No);
 static static void AccDec(int axis_No);
 void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
-#line 3 "C:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
+#line 3 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
 char txt_A[9];
 
 
@@ -1262,11 +1264,11 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
  SingleStepAxis(X);
  }else{
  if(STPS[X].master = 1){
- if(axis_xyz == xy)
+ if(axis_xyz == AXIS_XY)
  Axis_Interpolate(X,Y);
- else if(axis_xyz == xz)
+ else if(axis_xyz == AXIS_XZ)
  Axis_Interpolate(X,Z);
- else if(axis_xyz == yz)
+ else if(axis_xyz == AXIS_YZ)
  Axis_Interpolate(Y,Z);
  }
  }
@@ -1281,11 +1283,11 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
  SingleStepAxis(Y);
  }else {
  if(STPS[Y].master = 1){
- if(axis_xyz == xy )
+ if(axis_xyz == AXIS_XY )
  Axis_Interpolate(X,Y);
- else if(axis_xyz == yz)
+ else if(axis_xyz == AXIS_YZ)
  Axis_Interpolate(Y,Z);
- else if(axis_xyz == ya)
+ else if(axis_xyz == AXIS_YA)
  Axis_Interpolate(Y,A);
  }
  }
@@ -1299,11 +1301,11 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
  SingleStepAxis(Z);
  }else{
  if(STPS[Z].master = 1){
- if(axis_xyz == xz)
+ if(axis_xyz == AXIS_XZ)
  Axis_Interpolate(X,Z);
- else if(axis_xyz == yz)
+ else if(axis_xyz == AXIS_YZ)
  Axis_Interpolate(Y,Z);
- else if(axis_xyz == za)
+ else if(axis_xyz == AXIS_ZA)
  Axis_Interpolate(Z,A);
 
  }
@@ -1319,11 +1321,11 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
  SingleStepAxis(A);
  }else{
  if(STPS[A].master = 1){
- if(axis_xyz == xa)
+ if(axis_xyz == AXIS_XA)
  Axis_Interpolate(X,A);
- else if(axis_xyz == ya)
+ else if(axis_xyz == AXIS_YA)
  Axis_Interpolate(Y,A);
- else if(axis_xyz == za)
+ else if(axis_xyz == AXIS_ZA)
  Axis_Interpolate(Z,A);
  }
  }

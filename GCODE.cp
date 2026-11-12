@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 
@@ -59,6 +59,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -581,14 +585,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -872,7 +874,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -920,7 +922,7 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
-#line 28 "C:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 28 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
 volatile float coord_data[ 4 ];
 
 int axis_words absolute 0xA0002602 ;
@@ -1017,7 +1019,7 @@ int Rst_non_modalword(){
 void Set_Axisword(int value){
   (axis_words |= (1 << value) ) ;
 }
-#line 131 "C:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 131 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
 int Get_Axisword(){
  return axis_words & 0x0fff;
 }
@@ -1050,7 +1052,7 @@ int G_Mode(int mode){
 int M_Mode(int flow){
  group_number = Set_M_Modal_Commands(flow);
  m_flow = Set_M_Commands(flow);
-#line 167 "C:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 167 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
  return flow;
 }
 
@@ -1086,9 +1088,9 @@ int i,m_mode;
  case 3: m_mode =  3 ;gc.DIR =  1 ;SV.cir = 1; break;
  case 4: non_modal_action =  1 ; break;
  case 10: non_modal_action =  2 ; break;
- case 17: Select_Plane(xy);m_mode =  6 ; break;
- case 18: Select_Plane(xz);m_mode =  6 ; break;
- case 19: Select_Plane(yz);m_mode =  6 ; break;
+ case 17: Select_Plane(AXIS_XY);m_mode =  6 ; break;
+ case 18: Select_Plane(AXIS_XZ);m_mode =  6 ; break;
+ case 19: Select_Plane(AXIS_YZ);m_mode =  6 ; break;
  case 20: gc.inches_mode = 1;m_mode =  6 ; break;
  case 21: gc.inches_mode = 0;m_mode =  6 ; break;
  case 53: gc.absolute_override =  1 ;m_mode =  6 ; break;
@@ -1125,7 +1127,7 @@ int i,m_mode;
  }
 
  }
-#line 258 "C:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 258 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
  return m_mode;
 }
 
@@ -1154,7 +1156,7 @@ static int Set_M_Commands(int flow){
  case 3: gc.spindle_direction = 1; break;
  case 4: gc.spindle_direction = -1; break;
  case 5: gc.spindle_direction = 0; break;
-#line 289 "C:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 289 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
  case 8: gc.coolant_mode =  1 ; break;
  case 9: gc.coolant_mode =  0 ; break;
  default: FAIL( 3 );break;
@@ -1224,7 +1226,7 @@ int i = 0;
 
  for(i=0;i<=3;i++)
  Set_Axisword(i);
-#line 371 "C:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 371 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
  break;
  case  4 :
  FAIL( 0 );
@@ -1328,24 +1330,24 @@ int F_Val,O_Val;
  gc.R = 0;
  XYZ_Val = *(float*)any;
  gc.I = XYZ_Val;
- gc.offset[I] = To_Millimeters(XYZ_Val);
+
  break;
  case 'J':
  XYZ_Val = *(float*)any;
  gc.J = XYZ_Val;
- gc.offset[J] = To_Millimeters(XYZ_Val);
+
  break;
  case 'K':
  XYZ_Val = *(float*)any;
  gc.K = XYZ_Val;
- gc.offset[K] = To_Millimeters(XYZ_Val);
+
  break;
  case 'F':
  XYZ_Val = *(float*)any;
  if(XYZ_Val < 0){FAIL( 13 );break;}
 
  gc.feed_rate = To_Millimeters(XYZ_Val);
-#line 496 "C:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 496 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
@@ -1372,6 +1374,6 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 536 "C:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 536 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
  return status_code;
 }

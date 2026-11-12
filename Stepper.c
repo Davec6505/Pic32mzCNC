@@ -341,11 +341,11 @@ void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
         SingleStepAxis(X);
      }else{
        if(STPS[X].master = 1){
-          if(axis_xyz == xy)
+          if(axis_xyz == AXIS_XY)
                Axis_Interpolate(X,Y);
-          else if(axis_xyz == xz)
+          else if(axis_xyz == AXIS_XZ)
                Axis_Interpolate(X,Z);
-          else if(axis_xyz == yz)
+          else if(axis_xyz == AXIS_YZ)
                Axis_Interpolate(Y,Z);
        }
      }
@@ -360,11 +360,11 @@ void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
         SingleStepAxis(Y);
    }else {
       if(STPS[Y].master = 1){
-        if(axis_xyz == xy )
+        if(axis_xyz == AXIS_XY )
            Axis_Interpolate(X,Y);
-        else if(axis_xyz == yz)
+        else if(axis_xyz == AXIS_YZ)
            Axis_Interpolate(Y,Z);
-        else if(axis_xyz == ya)
+        else if(axis_xyz == AXIS_YA)
            Axis_Interpolate(Y,A);
       }
    }
@@ -378,11 +378,11 @@ void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
         SingleStepAxis(Z);
    }else{
      if(STPS[Z].master = 1){
-        if(axis_xyz == xz)
+        if(axis_xyz == AXIS_XZ)
            Axis_Interpolate(X,Z);
-        else if(axis_xyz == yz)
+        else if(axis_xyz == AXIS_YZ)
            Axis_Interpolate(Y,Z);
-        else if(axis_xyz == za)
+        else if(axis_xyz == AXIS_ZA)
            Axis_Interpolate(Z,A);
 
      }
@@ -398,11 +398,11 @@ void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
         SingleStepAxis(A);
    }else{
      if(STPS[A].master = 1){
-        if(axis_xyz == xa)
+        if(axis_xyz == AXIS_XA)
            Axis_Interpolate(X,A);
-        else if(axis_xyz == ya)
+        else if(axis_xyz == AXIS_YA)
            Axis_Interpolate(Y,A);
-        else if(axis_xyz == za)
+        else if(axis_xyz == AXIS_ZA)
            Axis_Interpolate(Z,A);
       }
    }

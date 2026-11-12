@@ -1,4 +1,4 @@
-<AVR_Stepper_Acc_Dec>
+<OUTPUT_COMPARE>
 	<Attributes>
 		<Url></Url>
 		<Image></Image>
@@ -10,4 +10,4 @@
 		<OnDblClick>OpenFile</OnDblClick>
 		<OnMouseOver></OnMouseOver>
 	</Events>
-</AVR_Stepper_Acc_Dec>
+</OUTPUT_COMPARE>

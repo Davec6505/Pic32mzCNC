@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/print.h"
 #line 34 "c:/users/davec/git/pic32mzcnc/print.h"
 void report_status_message(int status_code);
@@ -135,6 +135,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -467,7 +471,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -623,14 +627,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -924,7 +926,7 @@ unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
-#line 9 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
+#line 9 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
  void report_status_message(int status_code){
  if (status_code == 0) {
  while(DMA_IsOn(1));
@@ -1038,7 +1040,7 @@ void report_init_message(){
 
 void report_grbl_help() {
  while(DMA_IsOn(1));
-#line 135 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
+#line 135 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
  dma_printf("%s","$$ (view Grbl settings)\r\n$# (view # parameters)\r\n$G (view parser state)\r\n$N (view startup blocks)\r\n$x=value (save Grbl setting)\r\n$Nx=line (save startup block)\r\n$C (check gcode mode)\r\n$X (kill alarm lock)\r\n$H (run homing cycle)\r\n~ (cycle start)\r\n! (feed hold)\r\n? (current status)\r\nctrl-x (reset Grbl)\r\n");
 }
 
@@ -1048,7 +1050,7 @@ void report_grbl_settings() {
 float acc = settings.acceleration;
  acc /=(60*60);
  while(DMA_IsOn(1));
-#line 167 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
+#line 167 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
  dma_printf("\r\n$0=%f (x, step/mm)\r\n$1=%f (y, step/mm)\r\n$2=%f (z, step/mm)\r\n$3=%d (step pulse, usec)\r\n$4=%f (default feed, mm/min)\r\n$5=%f (default seek, mm/min)\r\n$6=%d (step port invert mask, int)\r\n$7=%d (step idle delay, msec)\r\n$8=%f (acceleration, mm/sec^2)\r\n$9=%f (junction deviation, mm)\r\n$10=%f (arc, mm/segment)\r\n$11=%d (n-arc correction, int)\r\n$12=%d (n-decimals, int)\r\n$13=%d (report inches, bool)\r\n$14=%d (auto start, bool)\r\n$15=%d (invert step enable, bool)\r\n$16=%d (hard limits, bool)\r\n$17=%d (homing cycle, bool)\r\n$18=%d (homing dir invert mask, int:)\r\n$19=%f (homing feed, mm/min)\r\n$20=%f (homing seek, mm/min)\r\n$21=%d (homing debounce, msec)\r\n$22=%f (homing pull-off, mm)\r\n"
 ,settings.steps_per_mm[X]
 ,settings.steps_per_mm[Y]
@@ -1240,7 +1242,7 @@ void report_gcode_modes(){
  }
  while(DMA_IsOn(1));
  switch (gc.coolant_mode) {
-#line 363 "C:/Users/davec/GIT/Pic32mzCNC/Print.c"
+#line 363 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
  }
  while(DMA_IsOn(1));
  if (gc.inches_mode)

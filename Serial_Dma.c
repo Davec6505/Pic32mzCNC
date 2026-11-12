@@ -7,7 +7,7 @@
 Serial serial;
 char rxBuf[200] = {0}  absolute 0xA0002000 ; //resides in flash ??
 char txBuf[200] = {0}  absolute 0xA0002200 ;
-char cherie[] = " CHERIF Error\r";
+//char cherie[] = " CHERIF Error\r";
 char dma0[] = "DMA0_";
 char dma1[] = "DMA1_";
 const char newline[] = "\r\n";
@@ -37,7 +37,7 @@ void DMA_global(){
 * Sent or a block transfer will only take place after
 * 200 bytes. An abort can be forced by setting the CABORT bit
 ************************************************************/
-void  DMA0(){
+ void DMA0(){
     //Disable DMA0 IE
     IEC4CLR      = 0x40;
     IFS4CLR      = 0x40;
@@ -196,7 +196,7 @@ int Get_Difference(){
 }
 
 void Reset_Ring(){
-   serial.tail = serial.head = 0;
+  serial.tail = serial.head = 0;
 }
 
 //read the line from thebuffer
@@ -213,7 +213,7 @@ void Get_Line(char *str,int dif){
 }
 
 //loopback the message
-int  Loopback(){
+int Loopback(){
 char str[50];
 int dif;
 
@@ -443,7 +443,7 @@ int dma_printf(const char* str,...){
  
  //check that str is not null
  if(str == 0)
-     return;
+     return 0;
      
  //can only call this once the va_list has bee declared
  //or the compiler throws an undefined error!!! not sure

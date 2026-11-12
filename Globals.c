@@ -314,7 +314,7 @@ P      Value        Coordinate System        G code
  *Gnnn:= The X and Y values represent the distance from the machine home
  *to part datum XY. The Z value is the distance from the tool reference 
  *point (for example, the top of a 1-2-3 block) and the part Z-datum
- *Gnnn holds the datum’s distance in relations with the tip of the tool.
+ *Gnnn holds the datumï¿½s distance in relations with the tip of the tool.
  *These work offsets are registered into the machine to hold the distance 
  *from the X, Y, Z position to part of the datum.
 *******************************************************************/

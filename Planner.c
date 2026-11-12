@@ -25,11 +25,11 @@ long dec                         absolute 0xA0003904 ;
 void plan_init(float accel,float decel){
 long i = 0;
  for(i = 0; i < NoOfAxis; i++){
-int i = 0;
- /*for(i = 0; i < NoOfAxis; i++){
+
+ //for(i = 0; i < NoOfAxis; i++){
   STPS[i].acc = lround(accel);
   STPS[i].dec = lround(decel);
- } */
+ }
  acc = lround(accel);
  dec = lround(decel);
  set_calculation_constants();
@@ -205,11 +205,10 @@ acc_lim:= %l\n\
 dec_val:= %l\n\
 dec_start:= %l\n\
 step_delay:= %l\n\
-min_dly:= %l\n\n"
-,STPS[axis_No].acc
-,STPS[axis_No].dec
 min_dly:= %l\n\
 SV.mode-complete:= %d\n\n"
+,STPS[axis_No].acc
+,STPS[axis_No].dec
 ,acc
 ,dec
 ,temp_speed

@@ -1,0 +1,1168 @@
+2013 IEEE/ASME International Conference on
+Advanced Intelligent Mechatronics (AIM)
+Wollongong, Australia, July 9-12, 2013
+
+Exponential Trajectory Generation for Point to Point Motions
+Z. Rymansaib
+zr202@bath.ac.uk
+
+P. Iravani
+pi204@bath.ac.uk
+Department of Mechanical Engineering
+University of Bath, BA2 7AY, UK
+
+Abstract— This paper presents a new method to generate
+point-to-point (PTP) trajectories, such as the ones used by
+robots or CNC machines, using an exponential function as
+the basis for the trajectory profile. The method is based
+on adding a series of time-delayed third-order exponential
+functions to generate an approximation to the trapezoidal
+velocity profile commonly used in time-optimal motions. The
+exponential velocity has zero-starting and ending values as well
+as continuous derivatives (acceleration and jerk).
+The proposed algorithm has several advantages over conventional trajectory planning methods such as those using Scurve and trapezoidal velocity profiles. These include: (i) the
+generated trajectory is continuous up to the third derivative,
+i.e. jerk, resulting in smooth machine motions (ii) only two
+control parameters, a gain and a delay, are required simplifying
+trajectory planning, and (iii) allows for simple blending of
+consecutive trajectories.
+The method has been tested experimentally on an industrial
+six Degree-of-Freedom (DOF) robot, a KUKA KR5 sixx R650.
+The results show position accuracy improvements over conventional S-curve and time-optimal (trapezoidal) velocity methods.
+The implementation is based on a simple look-up table which
+enables its real-time implementation.
+
+I. I NTRODUCTION
+Trajectory planning is a key stage in processes requiring
+precision movements, such as those often used by machine
+tools, CNCs, and robots in general. Limiting jerk has been
+shown to reduce wear and extend machine and tool life, as
+well as enabling better quality surface finishes in machining
+tasks [1], [2]. Actuator performance is adversely affected by
+sudden changes in jerk, and minimising jerk discontinuities
+leads to the reduction of position tracking errors [3].
+Time-optimal trajectories, i.e. minimal travel time,
+are commonly generated using bang-bang/bang-cruise-bang
+methods, which have a trapezoidal velocity profile [4],
+also known as Linear Segments with Parabolic Blends
+(LSPB). Such trajectories are based on generating a triangular/trapezoidal velocity profile using the maximum actuator
+accelerations. However, these trajectories demand instantaneous acceleration changes. These changes are not physically
+realisable, and results in the generation of discontinuous
+actuator torques and forces.
+An alternative method that limits jerk and has noninstantaneous acceleration demands is the S-curve velocity profile [5]. With S-curve velocities, the corresponding
+acceleration starts from zero and gradually ramps to a
+maximum/minimum value. The continuous acceleration and
+bounded jerk characteristics make such trajectories more
+978-1-4673-5320-5/13/$31.00 ©2013 IEEE
+
+M.N.Sahinkaya
+ensmns@bath.ac.uk
+
+adequate for precision motions and extending actuator lifespan. Numerous methods and algorithms have been established which generate such trajectories with jerk limitation
+[3]–[9]; additionally, the jerk profile can be continuous or
+discontinuous depending on the method employed.
+The method described in this paper approximates the
+trapezoidal velocity profile with a smoother function, which
+is less demanding for a controller to perform. The method
+is based on adding a series of time-delayed third-order
+exponential function with zero start and end values [10]–
+[12]. To the best of our knowledge, a method of using this
+type of exponential function for velocity trajectory planning
+has not been implemented before. A similar method is shown
+in [13], but it shows no way of incorporating acceleration
+or jerk limitation. Additionally, with the recent release of
+the Reflexxes libraries and work by T.Kroeger [14], using
+the algorithm for online trajectory generation (OTG) seems
+feasible due to its simplistic nature as well as its continuous
+acceleration and jerk properties. Although the main focus
+here is for pre-planned PTP motions.
+The rest of this paper is organised as follows: Section
+II describes the exponential function and how limits are implemented; Section III describes the experiments and results;
+Section IV is a discussion of the acquired results, with a brief
+comparison of the proposed blending functionality against
+the one described in [9]; Finally, Section V summarises the
+outcome of the paper and discusses possible implementations
+and further work.
+II. E XPONENTIAL FUNCTION
+A third-order exponential function is used to generate the
+basic velocity profile, ensuring that it is continuous up to
+the third derivative, i.e. jerk. To generalise the analysis, a
+non-dimensional time, u, is defined as:
+
+906
+
+u=αt
+
+(1)
+
+The third order exponential function f , is then defined as:
+3
+f (t)
+= 1 − e−u
+vmax
+3
+f˙(t)
+f˙(u) =
+= 3u2 e−u
+αvmax
+3
+f¨(t)
+f¨(u) = 2
+= (6u − 9u4 )e−u
+α vmax
+
+f (u) =
+
+(2)
+
+Where vmax is the trajectory’s maximum or cruising
+velocity, α is a time-scaling parameter, and t is the time. This
+function was originally developed to synthesize input shaping
+functions based on the inverse dynamics of a second order
+system [10]. Figure 1a illustrates the exponential function
+profile for three values of α = 0.5, 1, 2; the larger values
+result in a steeper exponential function, and thus when used
+as a velocity profile, generate a greater acceleration. The
+normalised acceleration and jerk profiles are illustrated in
+Figures 1b and 1c. This normalisation allows the method
+to use a single exponential profile to calculate any demand
+trajectory. This enables the implementation to be based on
+storing the function profile once in a simple look-up table.
+
+|Vmax | = |vmax |
+|Amax | = |vmax · α · 0.3918|
+
+
+|Jmax | = vmax · α2 6Q(1/3) − 9Q(4/3) · e−Q
+
+(4)
+
+= vmax · α2 · 0.7652
+Therefore, given the actuator velocity, acceleration and
+jerk limits as Vmax , Amax and Jmax respectively, the maximum α value which can be used, thus generating the fastest
+possible motion within the limits, is calculated as:
+
+αmax = min
+
+Amax
+;
+1.1754 Vmax
+
+r
+
+Jmax
+2.1524 Vmax
+
+!
+(5)
+
+1
+
+B. Approximation to the time-optimal velocity
+
+α = 0.5
+α = 1 (normalised)
+α=2
+
+0.9
+0.8
+
+Time-optimal LSPB trajectories exploit the maximum
+acceleration available to the system to produce the fastest
+possible PTP motions. Figure 2 illustrates the position,
+velocity and acceleration profile such a motion. This approach results in step accelerations and trapezoidal velocity profiles. In this particular example, the desired motion
+distance (displacement) is 1 m, the maximum velocity is
+1 m/s and the maximum acceleration 2 m/s2 . As shown,
+the acceleration is discontinuous and changes instantly from
+zero to the maximum value. In real systems, this would also
+require the force to change instantaneously; this is physically
+impossible, resulting in poor motion tracking.
+
+Velocity, f(u)
+
+0.7
+0.6
+0.5
+0.4
+0.3
+0.2
+0.1
+0
+
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+2.5
+
+3
+
+Normalised Time [u]
+
+(a) Exponential velocity function with various α values
+2.5
+2
+1.2
+
+Normalised Jerk, f¨(u)
+
+1
+
+0.8
+
+0.6
+
+0.4
+
+1.5
+1
+
+2
+
+0.5
+
+−0.5
+
+1.5
+
+−1
+−1.5
+
+1
+
+0.2
+
+−2
+0
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+2.5
+
+3
+
+Acceleration (m/s2)
+Velocity (m/s)
+Position (m)
+
+0
+
+−2.5
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+2.5
+
+Normalised time [u]
+
+Normalised time [u]
+
+(b) Normalised acceleration, f˙(u)
+
+(c) Normalised jerk, f¨(u)
+
+[Pos, Vel, Accel]
+
+Normalised Acceleration, f˙(u)
+
+1.4
+
+3
+
+Fig. 1: Exponential function characteristics
+
+0.5
+0
+−0.5
+−1
+−1.5
+
+A. Function maxima
+
+−2
+0
+
+In order to ensure that actuator limits are not violated
+during the trajectory, the maximum velocities, accelerations
+and jerks must be computed. These maximum values occur
+at:
+r
+1 3 2
+0.8736
+tam = ·
+≈
+α
+3
+α
+s
+√
+1 3 3− 7
+Q
+0.4906
+tjm = ·
+=
+≈
+α
+3
+α
+α
+
+(3)
+
+Where tam and tjm represent the times at which the
+maximum acceleration and jerk values occur, respectively.
+Substituting these times into the respective trajectory equations, the maximum values are found as:
+
+0.5
+
+1
+
+1.5
+
+2
+
+2.5
+
+Time [s]
+
+Fig. 2: LSPB time-optimal trajectory
+Using an S-curve velocity profile negates these issues by
+smoothing out the trapezoidal velocity, and instead generates
+trapezoidal accelerations. This makes the overall motion
+slightly slower, as some extra time is required to allow
+the system to reach the maximum acceleration, rather than
+assuming it will instantly reach the value, i.e. near time
+optimal. Figure 3 illustrates an S-curve velocity profile, with
+corresponding position and acceleration profiles. The first
+derivative of acceleration, i.e. jerk, now has a bounded value,
+and its jerk profile (not shown) has a rectangular shape
+
+907
+
+2
+
+The function accelerates for Ts seconds; this time defined
+as the settling time of the function, is the time taken to reach
+99.9% of Vmax , and is computed as:
+p
+3
+−ln(0.001)
+1.9045
+≈
+(9)
+Ts =
+α
+α
+
+2
+
+Acceleration (m/s )
+Velocity (m/s)
+Position (m)
+
+1.5
+
+[Pos, Vel Accel]
+
+1
+0.5
+0
+
+It is possible to attain a settling value closer to 100% of
+Vmax by reducing the 0.001 figure.
+The velocity then cruises at the maximum speed before
+taking Ts seconds to reach the resting velocity. Thus, the
+total travel time tend can be calculated by:
+
+−0.5
+−1
+−1.5
+−2
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+2.5
+
+3
+
+Time [s]
+
+tend = Td + Ts
+
+(10)
+
+Fig. 3: S-curve velocity (jerk limited)
+2
+
+akin to the resultant acceleration profile of the trapezoidal
+velocity. The S-curve profiles used in this paper have been
+generated using the method in [5].
+In order to create an approximation to a near time optimal
+trajectory, this paper proposes the use of two of the velocity
+profiles defined in Equation 2, used in sequence:
+
+Td
+
+1.8
+Ts
+
+Ts
+
+1.6
+
+Tc
+
+Vel [m/s]
+
+1.4
+
+A2
+
+1.2
+1
+0.8
+
+A2
+
+A3
+
+A1
+
+0.6
+
+v(t) = f (t) − f (t − Td ) · H(t − Td )
+
+0.4
+
+(6)
+
+A1
+
+A2
+
+0.2
+
+Where H(t) is a Heaviside function, defined as:
+
+0
+
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+2.5
+
+3
+
+Time [s]
+
+(
+H(x) =
+
+0
+1
+
+for
+for
+
+x<0
+x≥0
+
+Fig. 4: Exponential velocity profile
+(7)
+
+Figure 4 illustrates the resultant exponential velocity profile. From t = 0 until Td a single velocity profile is
+evaluated. At time Td the second exponential function starts
+being evaluated but is subtracted from the first one. This
+results in a velocity profile that is similar in essence to one
+produced by the S-curve method, but the subtle difference
+is that rather than having a rectangular jerk profile, it more
+closely resembles a sinusoidal shape which is smooth and
+continuous, as illustrated in Figure 1c.
+Being a velocity profile, the position must be calculated
+by integrating it over t = 0 to tend , where tend is the
+time at which the velocity returns to 0 m/s. Obviously,
+the desired end position must be achieved at this point. The
+integration of this function cannot be calculated analytically,
+and the concatenation of the two profiles at the correct time
+complicates this further. The position profile would thus be
+obtained by integrating numerically. However, the area under
+the profile for a desired displacement, ∆x can be simply
+found as:
+∆x = Vmax · Td
+
+(8)
+
+As illustrated in Figure 4, this is because the summation
+of the areas under the combined curves i.e. A1, A2 and A3,
+equals a rectangle of height Vmax and width Td .
+
+Increasing Vmax means that the delay time Td would
+be shorter; additionally, increasing the acceleration means
+that Vmax is reached sooner. The parameter tying these
+two together, α, is thus evaluated beforehand to ensure that
+velocity, acceleration as well as jerk limits are respected; as
+described in Equation 5. Thus, given the demanded motion
+∆x, the relevant timings Td and tend can be easily calculated.
+C. Sequencing point to point trajectories and blending
+The section above illustrates how to compute a single
+PTP motion. A sequence of motions can be generated by
+iterating the procedure. Each required PTP displacement can
+be converted into time delays and used sequentially.
+Given a sequence of required displacements x =
+(x1 , x2 , ...xn ) the corresponding time delays are: Td =
+(x1 /Vmax , x2 /Vmax ...xn /Vmax ). If each subsequent motion
+is started after the previous has reached its desired position
+(without any trajectory blending), then the total travel time
+for a sequence of n motions is:
+Tt =
+
+x1 + x2 + ... + xN
++ n Ts
+Vmax
+
+(11)
+
+During the period Td to tend , i.e. the braking period, the
+proceeding profile can begin evaluation. This results in the
+next function starting before the previous one ends, thus,
+blending motions. The amount of overlap or blending is
+
+908
+
+varied by controlling the point during the braking region
+where the second function begins. A 0% overlap indicates
+that subsequent motions only start when the preceding one
+reaches its zero velocity. A 100% overlap would cause the
+second function to start at Td i.e. overlapping the braking and
+acceleration regions of two functions. With a 100% overlap
+the total travel time would be:
+Tt =
+
+x1 + x2 + ... + xN
++ Ts
+Vmax
+
+(12)
+
+Figure 5 illustrates this concept more clearly. Here, the
+generated x and y Cartesian velocity commands (absolute
+values) for tracing a square are shown. The upper figure
+shows how each motion starts and ends at zero velocity,
+i.e. without any blending. The lower figure shows the same
+commands but with 100% blending applied. As can be seen,
+subsequent motions begin evaluation at the delay time, Td
+of each preceding one. The velocity is thus always non zero
+until the final motion is completed.
+No
+Overlap
+
+0.5
+0.4
+0.3
+
+Cartesian Velocity [m/s]
+
+0.2
+0.1
+0
+
+Td
+0
+
+0.5
+
+1
+
+1.5
+
+100%
+Overlap
+
+0.5
+0.4
+0.3
+0.2
+0.1
+0
+
+0
+
+0.5
+
+1
+
+1.5
+
+Time[s]
+
+Fig. 5: Unblended and blended Cartesian velocity
+commands
+Controlling this overlap allows for a simple trade-off
+between way-point tracking accuracy and the path’s duration.
+III. E XPERIMENTAL R ESULTS
+The described method was used to generate parameters
+(α, Vmax , and Td ), given a set of velocity, acceleration
+and jerk limits, for stop-to-stop motions between Cartesianspace points using a Matlab script. A real-time Simulink
+model, with an interface block designed for KUKA, uses
+these parameters to generate velocity commands to send to
+the robot. An image of the device used is shown in Figure
+6. The robot controller automatically performs the inverse
+kinematics for the joint angles.
+Three different paths are used in the experiments; a 10 x
+10 cm square, a rough figure of eight - composed of two
+hexagonal shapes with 10 cm length sides, and the same 10
+cm2 square overlaid 10 times to evaluate repeatability. They
+are each effectively sets of waypoints connected together
+using the exponentials to describe a path. These are run at
+low and high speeds. After each motion is completed, the
+robot is homed to the same starting position. In order to
+
+Fig. 6: Kuka 6 DOF robot
+compare the accuracy of the methods, the routes traced from
+repeating 10 squares are averaged to give a mean travel path.
+An average error value, i.e. deviation of end effector from
+desired positions, is also found for each method.
+The S-curve and trapezoidal velocity algorithms generate
+quicker motions. Their limits are thus adjusted (reduced)
+so as to slow the motions down to within 100 ms, i.e. the
+average speeds equalised; a faster motion is more prone to
+overshooting the path points and would thus give an unfair
+comparison. The limits given to the different algorithms are
+detailed in Table I, and Tables II and III show the resultant
+motion durations of using these limits.
+The recorded data include: desired input Cartesian positions, the actual position of the robot end-effector, and the
+joint torques. Data is captured every 10 ms.
+Figures 7 and 8 illustrate the desired and achieved motions
+for a square path (mean of 10 runs) when using the different
+methods, run at the higher speed. Results of the slower
+motions are excluded as the differences between these (i.e.
+low speed tracking accuracy) are negligible. Similarly, the
+desired and achieved paths of the figure of eight shapes and
+single square runs are excluded; results are similar to the 10
+square experiments. The figure of eight shapes are instead
+used to illustrate the method’s blending functionality, with
+figures 9 and 10 showing the effect of using different overlap
+parameters.
+TABLE I: Velocity (m/s), acceleration (m/s2 ) and jerk
+(m/s3 ) limits for each function
+
+Slow
+Fast
+
+Vel
+
+Original
+Accel
+
+Jerk
+
+S Curve (adj.)
+Vel
+Accel
+Jerk
+
+Trapezoidal (adj.)
+Vel
+Accel Jerk
+
+0.05
+0.5
+
+5
+8
+
+200
+200
+
+0.05
+0.5
+
+0.05
+0.5
+
+5
+8
+
+102
+102
+
+1.2
+3.6
+
+-
+
+TABLE II: Actual motion durations (s) using original limits
+
+909
+
+Speed
+
+Shape Traced
+
+Exponential
+
+S Curve
+
+Trapezoidal
+
+Low
+
+Figure of Eight
+10 Squares
+
+25.00
+81.77
+
+24.85
+81.26
+
+24.59
+80.40
+
+High
+
+Figure of Eight
+10 Squares
+
+4.13
+13.60
+
+3.68
+12.10
+
+3.20
+10.5
+
+TABLE IV: Mean error from corners (mm)
+
+TABLE III: Actual motion durations (s) using adjusted
+limits
+Speed
+
+Shape Traced
+
+Exponential
+
+S Curve
+
+Trapezoidal
+
+Low
+
+Figure of Eight
+10 Squares
+
+As prev
+As prev
+
+25.00
+81.77
+
+24.97
+80.67
+
+High
+
+Figure of Eight
+10 Squares
+
+As prev
+As prev
+
+4.13
+13.60
+
+4.11
+13.56
+
+Corner
+
+Exponential
+
+S Curve
+
+Trapezoidal
+
+A
+B
+C
+
+1.05
+1.1
+1.04
+
+1.23
+1.34
+1.27
+
+1.98
+2.07
+2.07
+
+0% Overlap
+60% Overlap
+80% Overlap
+100% Overlap
+
+0.2
+
+Y − Position [m]
+
+0.1
+Corner B
+
+Corner C
+
+Y − Position [m]
+
+0.08
+Desired Path (X − Waypoints)
+Exponential Path
+S Curve Path
+Trapezoidal Path
+
+0.06
+
+0.15
+A
+0.1
+
+0.05
+
+0.04
+0
+0.02
+−0.05
+−0.25
+
+Corner A
+
+−0.2
+
+−0.15
+
+−0.1
+
+−0.05
+
+0
+
+0.05
+
+0.1
+
+0.15
+
+0.2
+
+X − Position [m]
+
+0
+0
+
+0.02
+
+0.04
+
+0.06
+
+0.08
+
+Fig. 9: Figure of eight path with various blend parameters
+
+0.1
+
+X − Position [m]
+
+Fig. 7: Desired and achieved square path
+
+IV. D ISCUSSION
+Figure 8 shows that the performance of the exponential method is comparable to the S-curve algorithm, but
+in general tracks the corners of the square shape more
+accurately. This can be attributed to the continuous jerk of
+the exponential method; as mentioned in the literature such
+a motion is easier to track. Table IV shows the distances of
+the points closest to the corners of the square, with table
+V showing the overall mean errors and standard deviations
+of the various methods. This was found by averaging the
+accuracy error for each of the three indicated corners, A,
+B and C. With the unadjusted motions (i.e. faster average
+velocities) the performances are even worse in comparison,
+
+but this is to be expected.
+There is also some slight deviation from the straight-line
+paths, but this is present with all the tested methods. The
+methods have been implemented using cartesian velocity
+control and use of position control would be required to
+correct the deviations.
+As the jerk profiles of the exponential motions are continuous, one would expect the resulting joint torques to be
+lower than that of the S-curve counterparts. However whilst
+being discontinuous, the motions are still jerk bounded; this
+leads to the joints experiencing similar torques throughout
+the experiments. The results are thus omitted here.
+For a given jerk limit, the exponential method is slightly
+less efficient due to its inability to generate profiles with
+trapezoidal accelerations, such as those shown in Figure 3.
+Once the acceleration limit is reached, the velocity also
+
+0.102
+Waypoint tracking
+error
+
+0.101
+
+0.11
+
+0.1
+0.105
+
+Y − Position [m]
+
+Y − Position [m]
+
+0.099
+0.098
+0.097
+
+Desired Path (X − Waypoints)
+Exponential Path
+
+0.096
+
+S Curve Path
+
+0.095
+
+Trapezoidal Path
+
+0.094
+
+0.1
+
+0% Overlap (4.13s)
+60% Overlap (3.12s)
+80% Overlap (2.78s)
+100% Overlap (2.45s)
+
+0.095
+0.09
+0.085
+
+0.093
+0.08
+0.092
+0.092
+
+0.094
+
+0.096
+
+0.098
+
+0.1
+
+0.075
+
+0.102
+
+X − Position [m]
+
+0.15
+
+0.155
+
+0.16
+
+0.165
+
+0.17
+
+0.175
+
+X − Position [m]
+
+Fig. 8: Corner B zoomed view - Square trajectory
+
+Fig. 10: Corner A zoomed view - figure of eight
+910
+
+TABLE V: Overall mean error and standard deviation (mm)
+Exponential
+
+S Curve
+
+Trapezoidal
+
+1.06
+0.06
+
+1.28
+0.07
+
+2.04
+0.1
+
+Mean Error
+Std Dev
+
+TABLE VI: Effect of overlap on motion duration (figure of
+eight path)
+Percentage Overlap(%)
+Motion Duration (s)
+
+0
+4.13
+
+50
+3.29
+
+60
+3.12
+
+80
+2.78
+
+100
+2.45
+
+stops increasing, regardless of whether the velocity limit
+has been reached (as in Figure 1b). It is therefore not time
+optimal as such. Generating such motions would involve
+either repeatedly overlaying multiple modified profiles (with
+adjusted delays) to approximate a trapezoid, or using the base
+function shown in Equation 2 to generate the acceleration
+instead of the velocity. The former would lead to multiple
+evaluations of the exponential being carried out; the latter
+leads to a higher order exponential and the requirement
+of integrating twice for the position, somewhat negating
+the simplistic nature of this method. An advantage to this
+approach however is the generation of continuous jounce
+profiles, i.e. the 1st derivative of jerk.
+The blending function effectively overlaps the start of the
+next motion with that of the current one. This has the effect
+of reducing the overall motion duration, as the overall path
+length is shortened. A figure-of-eight shape was used to
+evaluate various blend percentages, as shown in figures 9
+and 10. Table VI shows how the motion duration is affected
+by using higher blending percentages; it can effectively be
+reduced down to values similar to those produced by the
+time-optimal LSPB method, but with the added benefits of
+having continuous acceleration and jerk. The trade-off is
+slightly reduced accuracy at the waypoints, and as can be
+seen in figure 10 results in some rounding of the corners.
+The ‘tightness’ of the corner tracking is thus controlled by
+how much overlap is used.
+The blending method shown in [9] involves generating
+multiple stitched fifth order polynomials (quintics) to describe a motion, e.g. a trapezoidal type acceleration can
+require three; one for the acceleration ramp up, one for
+the velocity cruise and one for the acceleration ramp down.
+Blending the actual motions together then involves an additional fifth order polynomial, which determines the tightness
+of the waypoint. In comparison, the exponential method uses
+only one single parameter to control the blending. The computationally expensive calculation of the exponential function
+needs to be performed just once off-line and stored in a
+normalised manner in the real time controller. The controller
+then only needs to perform simple multiplications to compute
+the required motion. Current in-progress improvements to
+the method are to allow for specifying the tracking tolerance
+when blending waypoints.
+
+V. C ONCLUSION
+An exponential based trajectory-planning algorithm was
+implemented and compared with LSPB and S-curve velocity
+methods. The method is tested on a KUKA 6 DOF robot; the
+results show that the proposed method gives better tracking
+accuracy when switching between paths, is jerk continuous,
+simpler to implement than the S-curve counterpart and also
+provides an easy way of blending continuous paths together.
+It is based simply on calculating a sequence of time delays
+which are used to start and stop each point to point motion
+within the demanded trajectory.
+Future work involves optimisation of the procedure to
+allow for a more robust trajectory generation method, as it
+currently cannot generate motions with sustained accelerations. The method in its current state is therefore ideally
+suited to robots/manipulators with high speed, but low force
+capabilities. For example a CNC machine or a RepRap style
+rapid prototyper.
+R EFERENCES
+[1] J. R. Rivera-Guillen, R. J. Romero-Troncoso, A. Osornio-Rios,
+A. Garcia-Perez, and I. Torres-Pacheco, “Extending tool-life through
+jerk-limited motion dynamics in machining processes: An experimental study,” JSIR, vol. 69, pp. 919–925, 2010.
+[2] A. Piazzi and A. Visioli, “Global minimum-jerk trajectory planning
+of robot manipulators,” Industrial Electronics, IEEE Transactions on,
+vol. 47, pp. 140 –149, feb 2000.
+[3] K. Kyriakopoulos and G. Saridis, “Minimum jerk path generation,”
+in Robotics and Automation, 1988. Proceedings., 1988 IEEE International Conference on, apr 1988, pp. 364 –369 vol.1.
+[4] R. Haschke, E. Weitnauer, and H. Ritter, “On-line planning of timeoptimal, jerk-limited trajectories,” in IROS 2008. IEEE/RSJ International Conference on. IEEE, 2008, pp. 3248–3253.
+[5] H. Mu, Y. Zhou, S. Yan, and A. Han, “Third-order trajectory planning
+for high accuracy point-to-point motion,” Frontiers of Electrical and
+Electronic Engineering in China, vol. 4, no. 1, pp. 83–87, 2009.
+[6] K. Erkorkmaz and Y. Altintas, “High speed cnc system design. part
+i: jerk limited trajectory generation and quintic spline interpolation,”
+International Journal of Machine Tools and Manufacture, vol. 41,
+no. 9, pp. 1323–1345, 2001.
+[7] P. Meckl and P. Arestides, “Optimized s-curve motion profiles for
+minimum residual vibration,” in American Control Conference, 1998.
+Proceedings of the 1998, vol. 5. IEEE, 1998, pp. 2627–2631.
+[8] H. Liu, X. Lai, and W. Wu, “Time-optimal and jerk-continuous
+trajectory planning for robot manipulators with kinematic constraints,”
+Robotics and Computer-Integrated Manufacturing, 2012.
+[9] S. Macfarlane and E. Croft, “Jerk-bounded manipulator trajectory
+planning: Design for real-time applications,” Robotics and Automation,
+IEEE Transactions on, vol. 19, no. 1, pp. 42–52, 2003.
+[10] M. Sahinkaya, “Input shaping for vibration-free positioning of flexible
+systems,” Proceedings of the Institution of mechanical engineers, part
+I: Journal of Systems and Control Engineering, vol. 215, no. 5, pp.
+467–481, 2001.
+[11] M. N. Sahinkaya, “Exponential input shaping for vibration free
+positioning of lightly damped multi-mode systems,” in Seventh
+International Conference on Motion and Vibration Control (MOvIC’
+04), 2004. [Online]. Available: http://opus.bath.ac.uk/2200/
+[12] P. Iravani and M. N. Sahinkaya, “Variable-velocity exponential input
+shaping for position controlled robotic systems,” in 3rd Annual
+Dynamic Systems and Control Conference, 2010. [Online]. Available:
+http://opus.bath.ac.uk/24543/
+[13] C. M. Muller-Karger, A. Leonell Granados Mirena, and
+J. Scarpati Lopez, “Hyperbolic trajectories for pick-and-place
+operations to elude obstacles,” Robotics and Automation, IEEE
+Transactions on, vol. 16, no. 3, pp. 294–300, 2000.
+[14] T. Kröger and F. M. Wahl, “Online trajectory generation: basic
+concepts for instantaneous reactions to unforeseen events,” IEEE
+Transactions on Robotics, vol. 26, no. 1, pp. 94–111, 2010.
+
+911
+
+

@@ -2,8 +2,8 @@
  *Standard Modal groups for G-codes are as follows:
 
 Group 1 {G00, G01, G02, G03, G33, G38.x, G73, G76, G80, G81, G82, G84, G85, 
-         G86, G87, G88, G89} motion – This is a group of G-codes for motion 
-         called current motion mode — one is always in effect.
+         G86, G87, G88, G89} motion ï¿½ This is a group of G-codes for motion 
+         called current motion mode ï¿½ one is always in effect.
 Group 2 {G17, G18, G19, G17.1, G17.2, G17.3} plane selection
 Group 3 {G90, G91} distance mode
 Group 4 {G90.1, G91.1} arc IJK distance mode
@@ -175,7 +175,7 @@ typedef struct {
        plane_axis_2;                      // The axes of the selected plane
   int  coord_select;                      // Active work coordinate system number. Default: 0=G54.
  // int spindle_speed;                    // RPM/100
-  int L;                                  //L2 tells the G10 we’re setting standard work offsets
+  int L;                                  //L2 tells the G10 weï¿½re setting standard work offsets
   long frequency;                // Speed expressed as Frequency of pulses
   float feed_rate;               // Millimeters/min
   float inverse_feedrate;        //
@@ -197,7 +197,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+// enum IJK{I,J,K}; // Removed - conflicts with struct members I, J, K above
 
 
 ///////////////////////////////////////////////////////////////////////////////

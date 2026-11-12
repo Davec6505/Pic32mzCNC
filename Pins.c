@@ -7,15 +7,19 @@
 
 //////////////////////////////////////
 //ONBOARD SWITCHES AND LEDS
- sbit LED2 at LATA9_bit;
- sbit LED2_Dir at TRISA9_bit;
- sbit LED1 at LATE7_bit;
- sbit LED1_Dir at TRISE7_bit;
+sbit LED1 at LATA6_bit;
+sbit LED1_Dir at TRISA6_bit;
+sbit LED2 at LATA7_bit;
+sbit LED2_Dir at TRISA7_bit;
+sbit LED3 at LATE0_bit;
+sbit LED3_Dir at TRISE0_bit;
+sbit LED4 at LATE1_bit;
+sbit LED4_Dir at TRISE1_bit;
 
- sbit SW1 at RC3_bit;
- sbit SW1_Dir at TRISC3_bit;
- sbit SW2 at RB0_bit;
- sbit SW2_Dir at TRISB0_bit;
+ sbit SW1 at RD10_bit;
+ sbit SW1_Dir at TRISD10_bit;
+ sbit SW2 at RD11_bit;
+ sbit SW2_Dir at TRISD11_bit;
  
  
  //////////////////////////////////

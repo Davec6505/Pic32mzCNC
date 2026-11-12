@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 
@@ -10,6 +10,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -291,7 +295,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -674,14 +678,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -920,7 +922,7 @@ static int Modal_Group_Actions7(int action);
 
 
 static int Modal_Group_Actions12(int action);
-#line 5 "C:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 5 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
 void PinMode(){
 
 
@@ -1051,7 +1053,7 @@ void UartConfig(){
  UART2_Init_Advanced(115200, 200000 , _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
  UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle);
  Delay_ms(10);
-#line 148 "C:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 148 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
 }
 
 
@@ -1062,7 +1064,7 @@ void UartConfig(){
 
 
 void Uart2InterruptSetup(){
-#line 164 "C:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 164 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
  URXISEL0_bit = 0;
  URXISEL1_bit = 0;
 
@@ -1153,7 +1155,7 @@ unsigned long cp0;
 
 
 void OutPutPulseXYZ(){
-#line 259 "C:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 259 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
  OC5CON = 0x0000;
  OC2CON = 0x0000;
  OC7CON = 0X0000;
@@ -1191,7 +1193,7 @@ void OutPutPulseXYZ(){
  OC3CON = 0x000C;
  OC6CON = 0x000C;
  OC8CON = 0x000C;
-#line 303 "C:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 303 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
  OC5R = 0x5;
  OC5RS = 0x234;
  OC2R = 0x5;

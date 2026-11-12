@@ -1,5 +1,5 @@
 MainDebug=-13
-DMADebug=--1
+DMADebug=-1
 ProtoDebug=-25
 GcodeDebug=-3
 StepperDebug=-1

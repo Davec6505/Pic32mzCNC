@@ -1,0 +1,205 @@
+Real Time Stepper Motor Linear Ramping
+Just by Addition and Multiplication
+Aryeh Eiderman <leib@eiderman.com>
+
+The linear acceleration (ramping) formulas are:
+
+and the calculated parameters are:
+
+[1],
+
+v = v0 + a . t
+
+The given parameters are:
+v0 - base speed,
+v - slew speed,
+a - acceleration,
+F - timer frequency
+
+1. Kinematic basics
+
+S = v0 . t + a . t2 / 2
+
+4. Implementation
+
+S - acceleration/deceleration distance
+
+[2]
+
+S = (v2 - v02) / (2 . a)
+
+where
+S - acceleration distance, in stepper motor case - number of steps,
+v0 - initial velocity, base speed (steps per second),
+v - target velocity, slew speed (steps per second),
+a - acceleration (steps per second per second),
+t - acceleration time, ramping period (seconds).
+By rearranging [2]
+
+[4, 16],
+
+p1 - delay period for the initial step
+p1 = F / (v02 + 2 . a)1/2
+
+[17],
+
+pS - delay period for the slew speed steps
+pS = F / v
+
+[18],
+
+R - constant multiplier
+[3]
+
+t = (v - v0) / a
+
+R = a / F2
+
+and putting it in [1] we have
+S = (v2 - v02) / (2 . a)
+
+The variable delay period p (initially p = p1) that will be recalculated for
+each next step is:
+
+[4]
+
+p = p . (1 + m . p . p)
+
+and
+v = (v02 + 2 . a . S)1/2
+
+that can be represented as a recursive form of speed calculation for one
+step:
+vi =
+
+[20].
+
+where
+
+[5]
+
+(vi-12 + 2 . a)1/2
+
+[19].
+
+m - variable multiplier that depends on the movement phase:
+m = -R during acceleration phase,
+m = 0 between acceleration and deceleration phases,
+m = R during deceleration phase.
+
+[6]
+
+where
+
+For accuracy purpose let's set
+
+i - step number (1 < i < S).
+
+p = pS if p < pS or between acceleration and deceleration phases,
+p = p1 if p > p1 .
+
+2. Control basics
+To produce the speed profile for stepper motor we need to provide the real
+time delays between step pulses:
+pi = F / vi
+
+5. Optional enhancement
+Using the higher order approximation of Taylor series
+
+[7]
+
+1 / (1 + n)1/2 ~ 1 - n / 2 + 3 . n2 / 8
+
+where
+
+[21]
+
+we can get more accurate results replacing [20] with
+
+pi - delay period for the i-th step (timer ticks),
+F - timer frequency (count of timer ticks per second),
+
+[22]
+
+where
+
+so according to [6] the exact delay value will be:
+pi = F / ((F / pi-1)2 + 2 . a)1/2
+
+[8]
+
+or
+pi = pi-1 / (1 + pi-12 . 2 . a / F2)1/2
+
+[9].
+
+q = m.p.p.
+By [22] we have excellent precision but with two extra multiplications and
+one extra addition vs [20]'s good precision way. Finally let's construct a
+very good compromise with just one extra multiplication and one extra
+addition:
+p = p . (1 + q + q . q)
+
+3. Approximation
+
+[23].
+
+[10]
+
+However I think that the good way ([20]) is not merely good but even good
+enough for most of stepper motor applications.
+The enhancement is important for servo drivers with the step/direction
+control that ramping up from and down to zero speed.
+
+[11].
+
+6. Programming note
+
+Using Taylor series
+1 / (1 + n)1/2 ~ 1 - n / 2
+
+p = p . (1 + q + 1.5 . q . q)
+
+when -1 < n < 1 we can approximate [9] to
+pi = pi-1 . (1 - pi-12 . a / F2)
+Let's check the -1 < n < 1 condition. Our n was
+n = pi-12 . 2 . a / F2
+
+[12]
+
+This algorithm was designed for floating point mathematics and in this
+form it works faster than in the integer form that requires division.
+
+or, by velocity,
+n = 2 . a / vi-12
+
+[13].
+
+The maximum n value will be at minimum speed, on the first calculated
+step, where i = 2
+nmax = 2
+
+.
+
+a / v12
+
+[14].
+
+Because the minimal v0 is 0, from [6] we have
+v1min = (2 . a)1/2
+
+[15].
+
+So n will be always less than or equal to 1. Because our calculations are
+forward-only we have no limitation in case of deceleration (negative
+acceleration) too.
+
+* This algorithm was developed by the author in 1994 for L.I.D. Ltd as a
+part of POEM Stepper Organizer software to control up to 4 axes through
+IBM PC's parallel port (LPT) and was ported to microcontroller platform in
+2004.
+The main field of usage since 1994 - laser diamond cutting.
+** Special thanks to David Austin <dave@slotech.fsnet.co.uk> who helped
+me with the enhancement part.
+
+

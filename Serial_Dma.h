@@ -37,7 +37,7 @@ unsigned int DMA_Resume();
 
 ////////////////////////////////////////////
 //DMA0 rcv functions
-void DMA0();
+void  DMA0();
 char DMA0_Flag();
 void DMA0_Enable();
 void DMA0_Disable();

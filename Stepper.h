@@ -13,7 +13,7 @@
 
 //////////////////////////////////////////////
 //defines
-typedef unsigned short UInt8_t;
+//typedef unsigned short UInt8_t;
 
 
 // Speed ramp states
@@ -31,10 +31,10 @@ typedef unsigned short UInt8_t;
 
 //enums
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 //enum StepState{STOP,ACCEL,RUN,DECEL};
 
 /////////////////////////////////////////

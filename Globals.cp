@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 
@@ -112,6 +112,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -347,7 +351,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -503,14 +507,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -920,7 +922,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
-#line 11 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 11 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
 unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
 static unsigned long volatile add = 0;
 
@@ -958,7 +960,7 @@ int retry_flash_write = 0;
  sys.auto_start = 0;
  }else{
  has_data = NVMReadWord(ptr);
-#line 55 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 55 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  if(has_data ==  -1 ){
 
 
@@ -1035,17 +1037,17 @@ int retry_flash_write = 0;
 
  settings.flags = 0;
  if ( 0 ) {settings.flags |=  (1 << 0) ;}
-#line 135 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 135 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  if ( 1 ) { settings.flags |= ( (1 << 1) );}
-#line 140 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 140 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  if ( 1 ) { settings.flags |= ( (1 << 2) );}
-#line 145 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 145 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  if ( 1 ){ settings.flags |= ( (1 << 3) );}
-#line 150 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 150 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  if ( 1 ) { settings.flags |= ( (1 << 4) );}
-#line 155 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 155 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  buffA[0x50] = ((unsigned long)settings.flags) & 0x1F;
-#line 166 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 166 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  buffA[ 0x17C ] =  -1 ;
 
 
@@ -1056,7 +1058,7 @@ int retry_flash_write = 0;
 
  has_data = (unsigned long)NVMWriteRow(&add,buffA);
  retry_flash_write++;
-#line 182 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 182 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  if(retry_flash_write >  2 )break;
  }
 
@@ -1092,7 +1094,7 @@ int retry_flash_write = 0;
  }
 
 }
-#line 228 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 228 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
 static int set_ram_loaded_indicator(int val){
  ram_loaded = val;
  return ram_loaded;
@@ -1148,7 +1150,7 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 287 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 287 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  }
 
 
@@ -1158,7 +1160,7 @@ int data_count;
 
  return data_count;
 }
-#line 324 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 324 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
 unsigned int settings_write_coord_data(int coord_select,float *coord){
 float ptr;
 int res=0,recipe = 0;
@@ -1182,7 +1184,7 @@ unsigned long temp[4] = {0};
 
 
  if(error){
-#line 351 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 351 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -1206,7 +1208,7 @@ unsigned long temp[4] = {0};
  j = i = 0;
  for (i=0;i<3;i++){
  wdata[i] = flt2ulong(coord[i]);
-#line 378 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 378 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  }
 
 
@@ -1221,7 +1223,7 @@ unsigned long temp[4] = {0};
 
  res = NVMWriteRow(&add,buffA);
  set_ram_loaded_indicator(res);
-#line 407 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 407 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  return res;
 }
 
@@ -1249,7 +1251,7 @@ void settings_read_coord_data(){
  temp = 0UL;
  value = ulong2flt(temp);
  coord_system[i].coord[j] = value;
-#line 441 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 441 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  }
  }
 
@@ -1278,7 +1280,7 @@ unsigned long temp[ 4 ];
  temp[j] = flt2ulong(coord_data[j]);
  buffA[i] = temp[j];
  j++;
-#line 473 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 473 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  }
 
  switch(coord_select){
@@ -1309,7 +1311,7 @@ unsigned long temp[ 4 ];
 
 
  if(error){
-#line 507 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 507 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -1333,7 +1335,7 @@ char *char_add;
  }
 
  memcpy(line,char_add,64);
-#line 537 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 537 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  return  0 ;
 }
 
@@ -1345,7 +1347,7 @@ int str_len;
 char temp_char;
 
  str_len = strlen(line);
-#line 556 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 556 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  add = (unsigned long) 0xBD1BC000 ;
 
 
@@ -1366,7 +1368,7 @@ char temp_char;
 
 
  if(error){
-#line 580 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 580 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  return error;
  }
 
@@ -1377,7 +1379,7 @@ char temp_char;
 
 
  memcpy(buffA+start_offset,line,str_len);
-#line 601 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 601 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
 
  return error;
@@ -1406,10 +1408,10 @@ int val_temp = 0;
 
 
  if(error){
-#line 633 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 633 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  return( 6 );
  }
-#line 644 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 644 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  switch(parameter) {
  case 0: case 1: case 2:
  if (value <= 0.0) { return( 8 ); }
@@ -1417,7 +1419,7 @@ int val_temp = 0;
  settings.steps_per_mm[parameter] = value;
 
  buffA[ 0x40 +parameter] = flt2ulong(value);
-#line 661 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 661 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  break;
  case 3:
  if (value < 3) { return( 9 ); }
@@ -1537,7 +1539,7 @@ int val_temp = 0;
 
 
  set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
-#line 787 "C:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 787 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  }
  break;
  default:

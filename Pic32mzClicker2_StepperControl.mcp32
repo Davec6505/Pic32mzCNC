@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=Main.c
+Value=Pins.c
 Value=DEFINES.pld
 Value=Limits.c
 Value=Main.c
@@ -70,31 +70,8 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Kinematics.c
-File2=Stepper.c
-File3=Stepper.h
-File4=Kinematics.h
-File5=Stepper.c
-File6=Stepper.h
-File7=DEFINES.pld
-File8=Globals.c
-File9=GCODE.h
-Count=10
-File8=Limits.c
-File9=Limits.h
-File10=Pins.c
-File11=Config.c
-Count=12
-File12=Pins.h
-Count=13
-File5=GCODE.c
-File6=GCODE.h
-File7=Planner.h
-File8=Planner.c
-File9=DEFINES.pld
-File10=Protocol.c
-File11=Protocol.h
-Count=12
+File1=Pins.c
+Count=2
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -111,23 +88,21 @@ File9=Flasg_gen.xml
 File10=grbl_settings.xml
 Count=11
 [OTHER_FILES]
-File0=AVR_StepperAccDec.pdf
-File1=DMA_Pic32.pdf
-File2=Clicker2_Dwg.pdf
-File3=PIC32MZ2048EFH100.pdf
-File4=OUTPUT Compare.pdf
-File5=Interrupts pic32.pdf
-File6=Flash_Prgm.pdf
-File7=Pic32_Flash_Prgm_60001121g.pdf
-File8=Flash_60001193B.pdf
+File0=Pic32mzClicker2_StepperControl.mcp32
+File1=.\Notes and Todo\AVR_StepperAccDec.pdf
+File2=.\Notes and Todo\Clicker2_Dwg.pdf
+File3=.\Notes and Todo\PIC32MZ2048EFH100.pdf
+File4=.\Notes and Todo\OUTPUT Compare.pdf
+File5=.\Notes and Todo\Interrupts pic32.pdf
+File6=.\Notes and Todo\DMA_Pic32.pdf
+File7=.\Notes and Todo\Flash_Prgm.pdf
+File8=.\Notes and Todo\Flash_60001193B.pdf
 Count=9
 [SEARCH_PATH]
-Path0=..\..\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\
-Path1=E:\Downloads\CNC _Papers\
-Count=2
-[HEADER_PATH]
-Path0=..\..\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Packages\I2C_Lcd\Uses\
+Path0=.\Notes and Todo\
 Count=1
+[HEADER_PATH]
+Count=0
 [HEADERS]
 File0=Config.h
 File1=Stepper.h
@@ -173,4 +148,6 @@ USE_SRS=7
 1=Sources
 18=Header Files
 37=Project Level Defines
-Count=4
+39=Image Files
+42=Active Comments Files
+Count=6

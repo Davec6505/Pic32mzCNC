@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/config_adv.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
@@ -140,6 +140,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -438,7 +442,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -817,14 +821,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -920,7 +922,7 @@ long sqrt_(long v);
 
 void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
  float r, float i, float j, float k, int axis_A,int axis_B,int dir);
-#line 8 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 8 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
 sVars SV;
 
 
@@ -941,8 +943,11 @@ long dec absolute 0xA0003904 ;
 void plan_init(float accel,float decel){
 long i = 0;
  for(i = 0; i <  4 ; i++){
-int i = 0;
-#line 36 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+
+
+ STPS[i].acc = lround(accel);
+ STPS[i].dec = lround(decel);
+ }
  acc = lround(accel);
  dec = lround(decel);
  set_calculation_constants();
@@ -975,7 +980,7 @@ float Get_Step_Rate(float speed,int axis){
  speed *= spr_x_mstep[axis];
  return speed;
 }
-#line 82 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 79 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
 void speed_cntr_Move(long mmSteps, float speed, int axis_No){
 int ii;
 float temp_speed,max_s_limit;
@@ -1084,9 +1089,9 @@ long abs_mmSteps = labs(mmSteps);
  STPS[axis_No].accel_count = 1;
  SV.running = 1;
  last_speed = speed;
-#line 251 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 232 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
 }
-#line 263 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 244 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
 void r_or_ijk(float Cur_axis_a,float Cur_axis_b,float Fin_axis_a,float Fin_axis_b,
  float r, float i, float j, float k, int axis_A,int axis_B,int dir){
 char isclockwise = 0;
@@ -1112,7 +1117,7 @@ int axis_plane_a,axis_plane_b;
  offset[axis_B] = j;
 
  if (r != 0.00) {
-#line 351 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 332 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
  x = target[axis_plane_a] - position[axis_plane_a];
 
  y = target[axis_plane_b] - position[axis_plane_b];
@@ -1125,7 +1130,7 @@ int axis_plane_a,axis_plane_b;
  h_x2_div_d = -sqrt(h_x2_div_d)/hypot(x,y);
 
  if (Get_motionmode() ==  3 ) { h_x2_div_d = -h_x2_div_d; }
-#line 385 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 366 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
  if (r < 0) {
  h_x2_div_d = -h_x2_div_d;
  r = -r;
@@ -1143,7 +1148,7 @@ int axis_plane_a,axis_plane_b;
 
  isclockwise = 0;
  if (dir ==  0 ) { isclockwise = 1; }
-#line 410 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 391 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
  speed =  (( ((gc.feed_rate)/( (( 20.00 )*( 2.00 )) )) )/( 60.00 )) ;
 
  speed = Get_Step_Rate(speed,axis_A);
@@ -1166,7 +1171,7 @@ void plan_set_current_position(){
 int i = 0;
  for(i=0;i< 4 ;i++)
  gc.position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-#line 438 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 419 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
 }
 
 
@@ -1175,7 +1180,7 @@ void plan_reset_absolute_position(){
  for(i=0;i< 4 ;i++)
  STPS[X].steps_abs_position = 0;
 }
-#line 462 "C:/Users/davec/GIT/Pic32mzCNC/Planner.c"
+#line 443 "c:/Users/davec/GIT/Pic32mzCNC/Planner.c"
 long sqrt_(long x){
 
  volatile unsigned long xr;

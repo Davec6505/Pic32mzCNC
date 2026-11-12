@@ -35,7 +35,7 @@
 //external scope variables
 _axis_ _axis;
 axis_combination axis_xyz;
-settings_t settings absolute 0xA0002800 ;
+settings_t settings absolute 0xA0002800;
 parser_state_t gc   absolute 0xA0002900;
 STP STPS[NoOfAxis]  absolute 0xA0003100;
 system_t sys        absolute 0xA0003500;

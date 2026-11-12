@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 
@@ -10,6 +10,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -291,7 +295,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -674,14 +678,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -920,10 +922,10 @@ static int Modal_Group_Actions7(int action);
 
 
 static int Modal_Group_Actions12(int action);
-#line 36 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 36 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
 _axis_ _axis;
 axis_combination axis_xyz;
-settings_t settings absolute 0xA0002800 ;
+settings_t settings absolute 0xA0002800;
 parser_state_t gc absolute 0xA0002900;
 STP STPS[ 4 ] absolute 0xA0003100;
 system_t sys absolute 0xA0003500;
@@ -986,7 +988,7 @@ static int cntr = 0,a = 0;
  int axis_to_run = 0;
 
  modal_group = Get_modalgroup();
-#line 107 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 107 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  switch(modal_group){
  case 0:break;
  case 2:
@@ -1037,13 +1039,13 @@ static int cntr = 0,a = 0;
  case 1024:
 
  modal_action = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
-#line 161 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 161 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  if(modal_action == 0)modal_group = Rst_modalgroup();
 
  break;
  }
  }
-#line 186 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 186 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  protocol_system_check();
 
 
@@ -1057,7 +1059,7 @@ static int cntr = 0,a = 0;
 
  status_of_gcode ==  0 ;
  report_status_message(status_of_gcode);
-#line 203 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 203 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  }
  old_state = SV.mode_complete;
 
@@ -1120,7 +1122,7 @@ float a_val;
  LED2 =  0 ;
  break;
  case 4:
-#line 277 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 277 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  if(gc.L != 2 && gc.L != 20)
  return -1;
  if (gc.L == 20) {
@@ -1161,12 +1163,12 @@ float a_val;
 
 
  coord_data[i] = ulong2flt(_flash);
-#line 324 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 324 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  }else{
 
 
  coord_data[i] = gc.next_position[i];
-#line 335 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 335 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  }
  indx++;
  }
@@ -1183,7 +1185,7 @@ float a_val;
 
 
  axis_words = Get_Axisword();
-#line 359 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 359 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  if (axis_words) {
 
  for (i=0; i< 4 ; i++){
@@ -1215,7 +1217,7 @@ float a_val;
  for(j = 0;j<4;j++){
  _data = buffA[i];
  coord_system[temp].coord[j] = ulong2flt(_data);
-#line 394 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 394 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  i++;
 
 
@@ -1285,7 +1287,7 @@ float a_val;
 
 
 static int Modal_Group_Actions1(int action){
-#line 467 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 467 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  switch(action){
  case 1:
  SingleAxisStep(gc.next_position[X],gc.feed_rate,X);
@@ -1324,7 +1326,7 @@ static int Modal_Group_Actions1(int action){
  case  ((( 4 * 4 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
-#line 509 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 509 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  if(axis_to_home < 3){
 
 
@@ -1383,7 +1385,7 @@ static int Modal_Group_Actions3(int action){
 
 
 static int Modal_Group_Actions4(int action){
-#line 571 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 571 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  if(gc.program_flow <  0  ||
  gc.program_flow >  2 )
  FAIL( 6 );
@@ -1395,7 +1397,7 @@ static int Modal_Group_Actions4(int action){
 
 
 static int Modal_Group_Actions7(int action){
-#line 586 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 586 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  if(gc.spindle_direction < -1 || gc.spindle_direction > 1)
  FAIL( 6 );
  SV.mode_complete = 1;
@@ -1406,6 +1408,6 @@ static int Modal_Group_Actions7(int action){
 
 
 static int Modal_Group_Actions12(int action){
-#line 600 "C:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 600 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  return action;
 }

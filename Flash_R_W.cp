@@ -1,4 +1,4 @@
-#line 1 "C:/Users/davec/GIT/Pic32mzCNC/Flash_R_W.c"
+#line 1 "c:/Users/davec/GIT/Pic32mzCNC/Flash_R_W.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/string.h"
 
@@ -77,6 +77,10 @@ extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
 extern sfr sbit LED2_Dir;
+extern sfr sbit LED3;
+extern sfr sbit LED3_Dir;
+extern sfr sbit LED4;
+extern sfr sbit LED4_Dir;
 
 
 
@@ -442,7 +446,7 @@ typedef struct {
 extern parser_state_t gc;
 
 
-enum IJK{I,J,K};
+
 
 
 
@@ -598,14 +602,12 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 16 "c:/users/davec/git/pic32mzcnc/stepper.h"
-typedef unsigned short UInt8_t;
 #line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
-typedef enum {xy,xz,yz,xa,ya,za,yx,zx,ax,zy,ay,az}axis_combination ;
+typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
 extern _axis_ _axis;
-extern volatile axis_combination axis_xyz;
+extern axis_combination axis_xyz;
 
 
 
@@ -920,7 +922,7 @@ void NVMReadRow(unsigned long addr,unsigned long *buff);
 void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
-#line 22 "C:/Users/davec/GIT/Pic32mzCNC/Flash_R_W.c"
+#line 22 "c:/Users/davec/GIT/Pic32mzCNC/Flash_R_W.c"
 volatile unsigned int res;
 
 
@@ -983,7 +985,7 @@ unsigned int NVMWriteRow (const void *address, void *_data){
 
 
  NVMSRCADDR = (unsigned long)_data &  0x1FFFFFFF ;
-#line 90 "C:/Users/davec/GIT/Pic32mzCNC/Flash_R_W.c"
+#line 90 "c:/Users/davec/GIT/Pic32mzCNC/Flash_R_W.c"
  res = NVMUnlock(0x4003);
 
 
@@ -1027,7 +1029,7 @@ unsigned int dma_ = 0;
  LED2 =  0 ;
  while(DMA_Busy());
  }
-#line 141 "C:/Users/davec/GIT/Pic32mzCNC/Flash_R_W.c"
+#line 141 "c:/Users/davec/GIT/Pic32mzCNC/Flash_R_W.c"
  NVMKEY = 0x0U;
  NVMKEY = 0xAA996655;
  NVMKEY = 0x556699AA;

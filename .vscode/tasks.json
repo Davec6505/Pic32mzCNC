@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build MikroC Project (External Terminal)",
+            "type": "shell",
+            "command": "start cmd /k \"cd /d ${workspaceFolder} && make && pause\"",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "never",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Clean Build Artifacts",
+            "type": "shell",
+            "command": "make clean",
+            "problemMatcher": []
+        },
+        {
+            "label": "Flash Device",
+            "type": "shell",
+            "command": "make flash",
+            "problemMatcher": []
+        }
+    ]
+}
