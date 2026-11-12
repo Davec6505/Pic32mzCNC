@@ -694,16 +694,21 @@ extern long test;
 void SetPinMode();
 void CycleStart();
 void CycleStop();
+
 void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+void EnStepperB();
+void EnStepperC();
+
+void EnStepperAll();
 
 void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
 void DisableStepper();
-void disableOCx();
+void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
@@ -717,11 +722,7 @@ static void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 
-static int Pulse(int axis_No);
-static void toggleOCx(int axis_No);
 
-static static void AccDec(int axis_No);
-void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
 #line 1 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
@@ -953,7 +954,6 @@ void InitTimer1(){
 
 
 
-
 void InitTimer8(){
  T8CON = 0x8000;
  T8IP0_bit = 1;
@@ -964,11 +964,10 @@ void InitTimer8(){
 
 
  T8IF_bit = 0;
- T8IE_bit = 0;
- PR8 = 50;
+ T8IE_bit = 1;
+ PR8 = 500;
  TMR8 = 0;
 }
-
 
 
 
@@ -980,10 +979,19 @@ void Timer1Interrupt() iv IVT_TIMER_1 ilevel 6 ics ICS_SRS {
 
 
 
+uint32_t old_phase, phase_x, incrament_x = 42950;
+
 void Timer8Interrupt() iv IVT_TIMER_8 ilevel 3 ics ICS_SRS {
 
 
  T8IF_bit = 0;
+ old_phase = phase_x;
+ phase_x += incrament_x;
+ if(phase_x < old_phase){
+
+
+ LED2 = !LED2;
+ }
 }
 
 

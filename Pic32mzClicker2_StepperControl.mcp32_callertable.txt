@@ -12,6 +12,7 @@ main
 			Lock_IOLOCK
 			MM_Init
 			InitTimer1
+			InitTimer8
 			Limit_Initialize
 				X_Min_Limit_Setup
 				Y_Min_Limit_Setup
@@ -52,7 +53,7 @@ main
 				lround
 		Init_Protocol
 		G_Initialise
-		disableOCx
+		disableSpindleOCx
 		DisableStepper
 	Debounce_Limits
 		Test_Port_Pins
@@ -84,8 +85,6 @@ main
 					lround
 					sqrt_
 				Set_Axisdirection
-				Step_Cycle
-					toggleOCx
 		GET_RunState
 		FAIL
 		memset
@@ -114,13 +113,6 @@ main
 			Set_Axisdirection
 			labs
 			speed_cntr_Move
-			Start_Interpolation
-				Axis_Interpolate
-					Step_Cycle
-					StopAxis
-					Pulse
-						StopAxis
-						AccDec
 		sys_sync_current_position
 			plan_set_current_position
 				beltsteps2mm
@@ -144,14 +136,12 @@ main
 				fabs
 				hypot
 				floor
-				DisableStepperInterrupt
 				cos
 					sin
 						floor
 						eval_poly
 				sin
 				DualAxisStep
-				Get_Axis_IEnable_States
 		Home
 			Rst_FP
 			Rst_FN
@@ -169,7 +159,7 @@ main
 			FP
 				Test_Min
 		mc_reset
-			disableOCx
+			disableSpindleOCx
 			DisableStepper
 			ResetHoming
 		Rst_Axisword
@@ -309,26 +299,12 @@ main
 			Set_Axisword
 	ResetSteppers
 		DisableStepper
-StepZ
-	SingleStepAxis
-		Step_Cycle
-		Pulse
-	Axis_Interpolate
-StepA
-	SingleStepAxis
-	Axis_Interpolate
 Timer8Interrupt
-StepX
-	SingleStepAxis
-	Axis_Interpolate
-StepY
-	SingleStepAxis
-	Axis_Interpolate
 X_Min_Limit
 	Set_Min_Limit
-Y_Min_Limit
-	Set_Min_Limit
 Z_Min_Limit
+	Set_Min_Limit
+Y_Min_Limit
 	Set_Min_Limit
 DMA_CH1_ISR
 UART2

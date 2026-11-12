@@ -694,16 +694,21 @@ extern long test;
 void SetPinMode();
 void CycleStart();
 void CycleStop();
+
 void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+void EnStepperB();
+void EnStepperC();
+
+void EnStepperAll();
 
 void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
 void DisableStepper();
-void disableOCx();
+void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
@@ -717,11 +722,7 @@ static void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 
-static int Pulse(int axis_No);
-static void toggleOCx(int axis_No);
 
-static static void AccDec(int axis_No);
-void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
 #line 11 "c:/users/davec/git/pic32mzcnc/timers.h"
 struct Timer{
@@ -949,7 +950,7 @@ void Conditin_Externs(){
  plan_init(5000.0,5000.0);
  Init_Protocol();
  G_Initialise();
- disableOCx();
+ disableSpindleOCx();
  DisableStepper();
 
  disable_steps = 0;

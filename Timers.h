@@ -5,7 +5,7 @@
 #include "Config.h"
 #include "built_in.h"
 #include "Stepper.h"
-////////////////////////////////////////////////////
+
 //STRUCTS and ENUMS
 
 struct Timer{

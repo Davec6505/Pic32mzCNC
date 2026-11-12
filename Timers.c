@@ -28,8 +28,7 @@ void InitTimer1(){
 }
 
 
-///////////////////////////////////////////////////////////////////
-//TMR 8  initialized to interrupt at 1us was used for early
+//TMR 8  initialized to interrupt at 10us was used for early
 //interpolation no longer used to interpolate
 void InitTimer8(){
   T8CON            = 0x8000;
@@ -41,13 +40,12 @@ void InitTimer8(){
  // IEC0             = 1<<4;
  // IFS0             =
   T8IF_bit         = 0;
-  T8IE_bit         = 0;
-  PR8              = 50;
+  T8IE_bit         = 1;
+  PR8              = 500;
   TMR8             = 0;
 }
 
 
-///////////////////////////////////////////
 //TMR 1 as a 10ms clock pulse ???
 void Timer1Interrupt() iv IVT_TIMER_1 ilevel 6 ics ICS_SRS {
   T1IF_bit  = 0;
@@ -55,15 +53,24 @@ void Timer1Interrupt() iv IVT_TIMER_1 ilevel 6 ics ICS_SRS {
   Clock();
 }
 
-//////////////////////////////////////////
+
+//test accumulator for Timer 8 interrupts
+uint32_t old_phase, phase_x, incrament_x = 42950;
 // TMR 8 interrupts
 void Timer8Interrupt() iv IVT_TIMER_8 ilevel 3 ics ICS_SRS {
 //Enter your code here
 //oneShot to start the steppers runnin
   T8IF_bit  = 0;
+  old_phase = phase_x;
+  phase_x += incrament_x;
+  if(phase_x < old_phase){
+
+      //handle overflow or wrap-around if necessary
+   LED2 = !LED2;
+  }
 }
 
-//////////////////////////////////////////
+
 //Do Clock pulses
 static void ClockPulse(){
  ms100++;
@@ -91,7 +98,7 @@ static void ClockPulse(){
 
 }
 
-////////////////////////////////////////////
+
 //COUNT STEPPER RESET
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable){
    TMR.P1 = TMR. clock >> 4;  //1sec clock pulse

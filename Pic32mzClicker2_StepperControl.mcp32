@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=Pins.c
+Value=Kinematics.c
 Value=DEFINES.pld
 Value=Limits.c
 Value=Main.c
@@ -71,7 +71,11 @@ ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
 File1=Pins.c
-Count=2
+File2=Config.c
+File3=Kinematics.c
+File4=Kinematics.h
+File5=Stepper.h
+Count=6
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -145,9 +149,8 @@ VECTOR_MODE=1
 USE_SRS=7
 [EXPANDED_NODES]
 0=Pic32mzClicker2_StepperControl.mcp32
-1=Sources
 18=Header Files
 37=Project Level Defines
 39=Image Files
 42=Active Comments Files
-Count=6
+Count=5

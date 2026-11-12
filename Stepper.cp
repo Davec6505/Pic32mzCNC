@@ -893,16 +893,21 @@ extern long test;
 void SetPinMode();
 void CycleStart();
 void CycleStop();
+
 void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+void EnStepperB();
+void EnStepperC();
+
+void EnStepperAll();
 
 void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
 void DisableStepper();
-void disableOCx();
+void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
@@ -916,11 +921,7 @@ static void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 
-static int Pulse(int axis_No);
-static void toggleOCx(int axis_No);
 
-static static void AccDec(int axis_No);
-void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
 #line 3 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
 char txt_A[9];
@@ -939,7 +940,7 @@ void SetPinMode(){
  DIR_Step_PinDirX = 0;
 
 
-
+ PLS_Step_PinDirX = 0;
 
 
 
@@ -947,7 +948,7 @@ void SetPinMode(){
  DIR_Step_PinDirY = 0;
 
 
-
+ PLS_Step_PinDirY = 0;
 
 
 
@@ -955,7 +956,7 @@ void SetPinMode(){
  DIR_Step_PinDirZ = 0;
 
 
-
+ PLS_Step_PinDirZ = 0;
 
 
 
@@ -963,7 +964,7 @@ void SetPinMode(){
  DIR_Step_PinDirA = 0;
 
 
-
+ PLS_Step_PinDirA = 0;
 
 
 }
@@ -1021,15 +1022,9 @@ void DisableStepper(){
  EN_StepA = 1;
 }
 
-void DisableStepperInterrupt(int stepper){
- switch(stepper){
- case X:OC5IE_bit = 0; break;
- case Y:OC2IE_bit = 0; break;
- case Z:OC7IE_bit = 0; break;
- case A:OC3IE_bit = 0; break;
-
-
- }
+void DisableSpindleInterrupt(int stepper){
+ OC8IE_bit = 0;
+ OC8CONbits.ON = 0;
 }
 
 
@@ -1056,10 +1051,10 @@ int state = 0;
 
 int Get_Axis_IEnable_States(){
  int temp = 0;
- temp |= OC3IE_bit << 3;
- temp |= OC7IE_bit << 2;
- temp |= OC2IE_bit << 1;
- temp |= OC5IE_bit << 0;
+ temp |= EN_StepX << 3;
+ temp |= EN_StepY << 2;
+ temp |= EN_StepZ << 1;
+ temp |= EN_StepA << 0;
  return temp;
 }
 
@@ -1072,23 +1067,18 @@ void Single_Axis_Enable(_axis_ axis_){
 
  switch(axis_){
  case X:
- OC5IE_bit = 1;OC5CONbits.ON = 1;
+ EN_StepX = 0;
  break;
  case Y:
- OC2IE_bit = 1;OC2CONbits.ON = 1;
+ EN_StepY = 0;
  break;
  case Z:
- OC7IE_bit = 1;OC7CONbits.ON = 1;
+ EN_StepZ = 0;
  break;
  case A:
- OC3IE_bit = 1;OC3CONbits.ON = 1;
+ EN_StepA = 0;
  break;
- case B:
- OC6IE_bit = 1;OC6CONbits.ON = 1;
- break;
- case C:
- OC8IE_bit = 1;OC8CONbits.ON = 1;
- break;
+#line 164 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
  default:
  break;
  }
@@ -1097,20 +1087,16 @@ void Single_Axis_Enable(_axis_ axis_){
 void StopAxis(int axis){
  switch(axis){
  case X:
- OC5IE_bit = 0;
- OC5CONbits.ON = 0;
+ EN_StepX = 1;
  break;
  case Y:
- OC2IE_bit = 0;
- OC2CONbits.ON = 0;
+ EN_StepY = 1;
  break;
  case Z:
- OC7IE_bit = 0;
- OC7CONbits.ON = 0;
+ EN_StepZ = 1;
  break;
  case A:
- OC3IE_bit = 0;
- OC3CONbits.ON = 0;
+ EN_StepA = 1;
  break;
  default : break;
  }
@@ -1118,303 +1104,6 @@ void StopAxis(int axis){
 }
 
 
-void disableOCx(){
- OC5IE_bit = 0;OC5CONbits.ON = 0;
- OC2IE_bit = 0;OC2CONbits.ON = 0;
+void disableSpindleOCx(){
  OC7IE_bit = 0;OC7CONbits.ON = 0;
-
- OC3IE_bit = 0;OC3CONbits.ON = 0;
- OC6IE_bit = 0;OC6CONbits.ON = 0;
- OC8IE_bit = 0;OC8CONbits.ON = 0;
-}
-
-
-
-static void toggleOCx(int axis_No){
- switch(axis_No){
- case X:
- OC5IF_bit = 0;
- OC5R = 0x5;
- OC5RS = STPS[X].step_delay & 0xFFFF;
- TMR2 = 0xFFFF;
- OC5CON = 0x8004;
- break;
- case Y:
- OC2IF_bit = 0;
- OC2R = 0x5;
- OC2RS = STPS[Y].step_delay & 0xFFFF;
- TMR4 = 0xFFFF;
- OC2CON = 0x8004;
- break;
- case Z:
- OC7R = 0x5;
- OC7RS = STPS[Z].step_delay & 0xFFFF;
- TMR6 = 0xFFFF;
- OC7CON = 0x8004;
- break;
- case A:
- OC3R = 0x5;
- OC3RS = STPS[A].step_delay & 0xFFFF;
- TMR5 = 0xFFFF;
- OC3CON = 0x800C;
- break;
- case B:
- OC6R = 0x5;
- OC6RS = STPS[B].step_delay & 0xFFFF;
- TMR3 = 0xFFFF;
- OC6CON = 0x800C;
- break;
- case C:
- OC8R = 0x5;
- OC8RS = STPS[C].step_delay & 0xFFFF;
- TMR7 = 0xFFFF;
- OC8CON = 0x800C;
- break;
- default:
- break;
- }
-
-}
-
-
-
-
-
-
-void Step_Cycle(int axis_No){
- toggleOCx(axis_No);
-
- STPS[axis_No].step_count++;
-
- STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
-
-}
-
-
-static int Pulse(int axis_No){
-
- switch(STPS[axis_No].run_state) {
- case  0 :
- STPS[axis_No].run_state =  0 ;
- StopAxis(axis_No);
-
-
-  (SV.mode_complete &= ~ (1 << axis_No) ) ;
- break;
- case  1 :
-
- AccDec(axis_No);
- if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
- STPS[axis_No].step_delay = STPS[axis_No].min_delay;
-
- }
- if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
- STPS[axis_No].run_state =  3 ;
- }
-
-
- if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
- STPS[axis_No].accel_count = STPS[axis_No].decel_val;
- STPS[axis_No].rest = 0;
- STPS[axis_No].run_state =  2 ;
- }
- break;
- case  3 :
- STPS[axis_No].step_delay = STPS[axis_No].min_delay;
-
-
- if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
- STPS[axis_No].accel_count = STPS[axis_No].decel_val;
- STPS[axis_No].rest = 0;
- STPS[axis_No].run_state =  2 ;
- }
- break;
- case  2 :
-
- AccDec(axis_No);
-
- if(STPS[axis_No].accel_count >= -1 ){
- STPS[axis_No].run_state =  0 ;
- }
- break;
- default:break;
- }
- return axis_No;
-}
-
-
-
-static void AccDec(int axis_No){
- STPS[axis_No].accel_count++;
- STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
- STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
- STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
-}
-
-
-
-
-
-
-
-void StepX() iv IVT_OUTPUT_COMPARE_5 ilevel 3 ics ICS_SRS {
- OC5IF_bit = 0;
-
- if(SV.Single_Dual == 0){
- SingleStepAxis(X);
- }else{
- if(STPS[X].master = 1){
- if(axis_xyz == AXIS_XY)
- Axis_Interpolate(X,Y);
- else if(axis_xyz == AXIS_XZ)
- Axis_Interpolate(X,Z);
- else if(axis_xyz == AXIS_YZ)
- Axis_Interpolate(Y,Z);
- }
- }
-}
-
-
-
-void StepY() iv IVT_OUTPUT_COMPARE_2 ilevel 3 ics ICS_SRS {
- OC2IF_bit = 0;
-
- if(SV.Single_Dual == 0){
- SingleStepAxis(Y);
- }else {
- if(STPS[Y].master = 1){
- if(axis_xyz == AXIS_XY )
- Axis_Interpolate(X,Y);
- else if(axis_xyz == AXIS_YZ)
- Axis_Interpolate(Y,Z);
- else if(axis_xyz == AXIS_YA)
- Axis_Interpolate(Y,A);
- }
- }
-}
-
-
-void StepZ() iv IVT_OUTPUT_COMPARE_7 ilevel 3 ics ICS_SRS {
- OC7IF_bit = 0;
-
- if(SV.Single_Dual == 0){
- SingleStepAxis(Z);
- }else{
- if(STPS[Z].master = 1){
- if(axis_xyz == AXIS_XZ)
- Axis_Interpolate(X,Z);
- else if(axis_xyz == AXIS_YZ)
- Axis_Interpolate(Y,Z);
- else if(axis_xyz == AXIS_ZA)
- Axis_Interpolate(Z,A);
-
- }
- }
-
-}
-
-
-void StepA() iv IVT_OUTPUT_COMPARE_3 ilevel 3 ics ICS_SRS {
- OC3IF_bit = 0;
-
- if(SV.Single_Dual == 0){
- SingleStepAxis(A);
- }else{
- if(STPS[A].master = 1){
- if(axis_xyz == AXIS_XA)
- Axis_Interpolate(X,A);
- else if(axis_xyz == AXIS_YA)
- Axis_Interpolate(Y,A);
- else if(axis_xyz == AXIS_ZA)
- Axis_Interpolate(Z,A);
- }
- }
-}
-
-
-
-
-
-
-static void SingleStepAxis(int axis){
- Step_Cycle(axis);
- Pulse(axis);
-}
-
-
-
-
-
-
-void Start_Interpolation(int axisA,int axisB){
- Axis_Interpolate(axisA,axisB);
-}
-
-static void Axis_Interpolate(int axisA,int axisB){
-static int cnt;
-
- cnt++;
- if(cnt > 5){
- LED2=!LED2;
- cnt = 0;
- }
-
- if(SV.dA >= SV.dB){
-
-
-
- if(STPS[axisA].step_count < STPS[axisA].dist)
- Step_Cycle(axisA);
- else{
- if(SV.cir)
- StopAxis(axisA);
- }
-
- if(!SV.cir)
- Pulse(axisA);
-
- if(SV.dif < 0){
- SV.dif +=  ((2)*(SV.dB)) ;
- }else{
- Step_Cycle(axisB);
- SV.dif +=  ((2)*((SV.dB) - (SV.dA))) ;
- }
-
-
- if(STPS[axisA].run_state ==  0  | STPS[axisA].step_count >= STPS[axisA].dist){
- StopAxis(axisB);
- STPS[axisA].run_state =  0 ;
- STPS[axisB].run_state =  0 ;
- SV.mode_complete = 0;
- }
-
- }else{
-
-
-
- if(STPS[axisB].step_count < STPS[axisB].dist)
- Step_Cycle(axisB);
- else{
- if(SV.cir)
- StopAxis(axisB);
- }
-
- if(!SV.cir)
- Pulse(axisB);
-
-
- if(SV.dif < 0){
- SV.dif +=  ((2)*(SV.dA)) ;
- }else{
- Step_Cycle(axisA);
- SV.dif +=  ((2)*((SV.dA) - (SV.dB))) ;
- }
-
- if(STPS[axisB].run_state ==  0  | STPS[axisB].step_count >= STPS[axisB].dist){
- StopAxis(axisA);
- STPS[axisA].run_state =  0 ;
- STPS[axisB].run_state =  0 ;
- SV.mode_complete = 0;
- }
- }
 }

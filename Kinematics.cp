@@ -732,16 +732,21 @@ extern long test;
 void SetPinMode();
 void CycleStart();
 void CycleStop();
+
 void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+void EnStepperB();
+void EnStepperC();
+
+void EnStepperAll();
 
 void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
 void DisableStepper();
-void disableOCx();
+void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
@@ -755,11 +760,7 @@ static void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 
-static int Pulse(int axis_No);
-static void toggleOCx(int axis_No);
 
-static static void AccDec(int axis_No);
-void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
 #line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
@@ -1025,7 +1026,7 @@ long speed_ = 0;
  STPS[axis_No].step_count = 0;
  STPS[axis_No].mmToTravel = dist;
 
- Step_Cycle(axis_No);
+
 }
 
 
@@ -1120,7 +1121,7 @@ long tempA,tempB,tempC;
  STPS[axisA].mmToTravel = tempA;
  STPS[axisB].mmToTravel = tempB;
 
- Start_Interpolation(axisA,axisB);
+
 }
 #line 279 "c:/Users/davec/GIT/Pic32mzCNC/Kinematics.c"
 void mc_arc(float *position, float *target, float *offset, int axis_0
@@ -1189,8 +1190,8 @@ char limit_error = 0;
 
  nPx = arc_target[axis_0] = position[axis_0];
  nPy = arc_target[axis_1] = position[axis_1];
- DisableStepperInterrupt(X);
- DisableStepperInterrupt(Y);
+
+
  i = 0.0;
 #line 383 "c:/Users/davec/GIT/Pic32mzCNC/Kinematics.c"
  for (i = 1; i<segments; i+=1.00) {
@@ -1252,8 +1253,7 @@ char limit_error = 0;
 
 
  while(1){
-#line 448 "c:/Users/davec/GIT/Pic32mzCNC/Kinematics.c"
- if(!Get_Axis_IEnable_States())
+#line 449 "c:/Users/davec/GIT/Pic32mzCNC/Kinematics.c"
  break;
  }
 #line 465 "c:/Users/davec/GIT/Pic32mzCNC/Kinematics.c"
@@ -1435,7 +1435,7 @@ void mc_reset(){
  switch (sys.state) {
  case  3 : case  4 : case  5 :
  sys.execute |=  (1 << 5) ;
- disableOCx();
+ disableSpindleOCx();
  DisableStepper();
  ResetHoming();
  }

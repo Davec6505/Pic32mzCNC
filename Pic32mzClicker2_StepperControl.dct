@@ -23508,9 +23508,9 @@ dirx
 diry
 dirz
 disable_cnt
-disableocx
+disablespindleinterrupt
+disablespindleocx
 disablestepper
-disablestepperinterrupt
 disablethreads
 disconie
 disconie
@@ -36546,6 +36546,7 @@ incomptx_usbe6csr0_bit
 incomptx_usbe6csr1_bit
 incomptx_usbe7csr0_bit
 incomptx_usbe7csr1_bit
+incrament_x
 init_protocol
 init1cmd1
 init1cmd10
@@ -43175,6 +43176,7 @@ off210bits
 off213
 off213bits
 offset
+old_phase
 on
 on
 on
@@ -44420,6 +44422,7 @@ pgl1way_ubadevcfg3_bit
 pglock
 pglock
 pglock_bit
+phase_x
 phyaddr
 phyaddr
 phyaddr
@@ -61027,7 +61030,6 @@ stalled_bit
 start
 start
 start_bit
-start_interpolation
 startpulses
 startup
 statbytes
@@ -61081,7 +61083,6 @@ status
 status
 status_bit
 status_code
-step_cycle
 step_idle_delay
 step1
 step10
@@ -61117,12 +61118,8 @@ step26
 step26_bit
 step27
 step27_bit
-stepa
 stepper_idle_lock_time
 steps_per_mm
-stepx
-stepy
-stepz
 stnaddr1
 stnaddr1
 stnaddr1

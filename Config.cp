@@ -694,16 +694,21 @@ extern long test;
 void SetPinMode();
 void CycleStart();
 void CycleStop();
+
 void EnStepperX();
 void EnStepperY();
 void EnStepperZ();
 void EnStepperA();
+void EnStepperB();
+void EnStepperC();
+
+void EnStepperAll();
 
 void DisableStepperInterrupt(int stepper);
 void EnableSteppers(int steppers);
 void EnableStepper(int stepper);
 void DisableStepper();
-void disableOCx();
+void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
@@ -717,11 +722,7 @@ static void Axis_Interpolate(int axisA,int axisB);
 void StopAxis(int axis);
 
 
-static int Pulse(int axis_No);
-static void toggleOCx(int axis_No);
 
-static static void AccDec(int axis_No);
-void Step_Cycle(int axis_No);
 void Single_Axis_Enable(_axis_ axis_);
 #line 11 "c:/users/davec/git/pic32mzcnc/timers.h"
 struct Timer{
@@ -922,12 +923,11 @@ static int Modal_Group_Actions7(int action);
 
 
 static int Modal_Group_Actions12(int action);
-#line 5 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 11 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
 void PinMode(){
 
 
  DI();
-
 
 
  SYSKEY = 0xAA996655;
@@ -936,10 +936,8 @@ void PinMode(){
  SYSKEY = 0x33333333;
 
 
-
  JTAGEN_bit = 0;
  Delay_ms(100);
-
 
 
  ANSELA = 0X0000;
@@ -961,7 +959,8 @@ void PinMode(){
 
  LED1_Dir = 0;
  LED2_Dir = 0;
-
+ LED3_Dir = 0;
+ LED4_Dir = 0;
 
 
  SW1_Dir = 1;
@@ -972,7 +971,6 @@ void PinMode(){
 
 
  set_performance_mode();
-
 
 
  Unlock_IOLOCK();
@@ -987,11 +985,6 @@ void PinMode(){
  PPS_Mapping_NoLock(_RPB10, _OUTPUT, _NULL);
 
 
- PPS_Mapping_NoLock(_RPD4, _OUTPUT, _OC5);
- PPS_Mapping_NoLock(_RPD5, _OUTPUT, _OC2);
- PPS_Mapping_NoLock(_RPF0, _OUTPUT, _OC7);
- PPS_Mapping_NoLock(_RPF1, _OUTPUT, _OC3);
- PPS_Mapping_NoLock(_RPG1, _OUTPUT, _OC6);
  PPS_Mapping_NoLock(_RPE3, _OUTPUT, _OC8);
 
 
@@ -1008,6 +1001,7 @@ void PinMode(){
 
  InitTimer1();
 
+ InitTimer8();
 
 
 
@@ -1038,7 +1032,6 @@ void PinMode(){
 
 
 
-
  EnableInterrupts();
 
 
@@ -1049,11 +1042,10 @@ void PinMode(){
 
 void UartConfig(){
 
-
  UART2_Init_Advanced(115200, 200000 , _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
  UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle);
  Delay_ms(10);
-#line 148 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 144 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
 }
 
 
@@ -1064,7 +1056,7 @@ void UartConfig(){
 
 
 void Uart2InterruptSetup(){
-#line 164 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 160 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
  URXISEL0_bit = 0;
  URXISEL1_bit = 0;
 
@@ -1154,8 +1146,10 @@ unsigned long cp0;
 }
 
 
+
+
 void OutPutPulseXYZ(){
-#line 259 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+
  OC5CON = 0x0000;
  OC2CON = 0x0000;
  OC7CON = 0X0000;
@@ -1164,67 +1158,22 @@ void OutPutPulseXYZ(){
  OC8CON = 0X0000;
 
 
- T2CON = 0x0000;
- T3CON = 0x0000;
- T4CON = 0x0000;
- T5CON = 0x0000;
- T6CON = 0x0000;
  T7CON = 0x0000;
 
- T2CON = 0x0030;
- T3CON = 0x0030;
- T4CON = 0x0030;
- T5CON = 0x0030;
- T6CON = 0x0030;
+
  T7CON = 0x0030;
 
 
- PR2 = 0xFFFF;
- PR3 = 0xFFFF;
- PR4 = 0xFFFF;
- PR5 = 0xFFFF;
- PR6 = 0xFFFF;
  PR7 = 0xFFFF;
 
 
- OC5CON = 0x0004;
- OC2CON = 0x0004;
- OC7CON = 0x0004;
- OC3CON = 0x000C;
- OC6CON = 0x000C;
  OC8CON = 0x000C;
-#line 303 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
- OC5R = 0x5;
- OC5RS = 0x234;
- OC2R = 0x5;
- OC2RS = 0x234;
+#line 279 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
  OC7R = 0x5;
  OC7RS = 0x234;
- OC3R = 0x5;
- OC3RS = 0x234;
- OC6R = 0x5;
- OC6RS = 0x234;
- OC8R = 0x5;
- OC8RS = 0x234;
 
 
 
- OC5IP0_bit = 1;
- OC5IP1_bit = 1;
- OC5IP2_bit = 0;
- OC5IS0_bit = 0;
- OC5IS1_bit = 0;
- OC5IF_bit = 0;
- OC5IE_bit = 0;
-
-
- OC2IP0_bit = 1;
- OC2IP1_bit = 1;
- OC2IP2_bit = 0;
- OC2IS0_bit = 1;
- OC2IS1_bit = 0;
- OC2IF_bit = 0;
- OC2IE_bit = 0;
 
 
  OC7IP0_bit = 1;
@@ -1236,46 +1185,12 @@ void OutPutPulseXYZ(){
  OC7IE_bit = 0;
 
 
- OC3IP0_bit = 1;
- OC3IP1_bit = 1;
- OC3IP2_bit = 0;
- OC3IS0_bit = 1;
- OC3IS1_bit = 1;
- OC3IF_bit = 0;
- OC3IE_bit = 0;
 
-
- OC6IP0_bit = 1;
- OC6IP1_bit = 1;
- OC6IP2_bit = 0;
- OC6IS0_bit = 1;
- OC6IS1_bit = 1;
- OC6IF_bit = 0;
- OC6IE_bit = 0;
-
-
- OC8IP0_bit = 1;
- OC8IP1_bit = 1;
- OC8IP2_bit = 0;
- OC8IS0_bit = 1;
- OC8IS1_bit = 1;
- OC8IF_bit = 0;
- OC8IE_bit = 0;
-
-
- T2CONSET = 0x8000;
- T4CONSET = 0x8000;
- T6CONSET = 0x8000;
- T5CONSET = 0x8000;
- T3CONSET = 0x8000;
  T7CONSET = 0x8000;
 
 
 
-
-
 }
-
 
 
 void UART2() iv IVT_UART2_RX ilevel 5 ics ICS_SOFT {

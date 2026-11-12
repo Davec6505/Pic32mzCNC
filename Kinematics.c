@@ -124,7 +124,7 @@ long speed_ = 0;
    STPS[axis_No].step_count = 0;
    STPS[axis_No].mmToTravel = dist;
    //Start output compare module
-   Step_Cycle(axis_No);
+  // Step_Cycle(axis_No);
 }
 
 //////////////////////////////////////////////////////////
@@ -241,7 +241,7 @@ dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
    STPS[axisA].mmToTravel = tempA;
    STPS[axisB].mmToTravel = tempB;
 
-   Start_Interpolation(axisA,axisB);
+ //  Start_Interpolation(axisA,axisB);
 }
 
 
@@ -365,8 +365,8 @@ dma_printf("\
   // Initialize the linear axis to current posxition
   nPx = arc_target[axis_0] = position[axis_0];
   nPy = arc_target[axis_1] = position[axis_1];
-  DisableStepperInterrupt(X);
-  DisableStepperInterrupt(Y);
+ // DisableStepperInterrupt(X);
+ // DisableStepperInterrupt(Y);
   i = 0.0;
   
   #if KineDebug == 3
@@ -445,7 +445,7 @@ dma_printf("\
          limit_error = 1;
      }
      */
-     if(!Get_Axis_IEnable_States())
+     //if(!Get_Axis_IEnable_States())
        break;
    }
 
@@ -699,7 +699,7 @@ void mc_reset(){
     switch (sys.state) {
       case STATE_CYCLE: case STATE_HOLD: case STATE_HOMING: // case STATE_JOG:
         sys.execute |= EXEC_ALARM; // Execute alarm state.
-        disableOCx(); // Execute alarm force kills steppers. Position likely lost.
+        disableSpindleOCx(); // Execute alarm force kills steppers. Position likely lost.
         DisableStepper();
         ResetHoming();
     }

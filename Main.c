@@ -59,7 +59,7 @@ void Conditin_Externs(){
   plan_init(5000.0,5000.0);//settings.acceleration,settings.acceleration);
   Init_Protocol();
   G_Initialise();
-  disableOCx();
+  disableSpindleOCx();
   DisableStepper();
   //stepper timeout counter
   disable_steps = 0;
