@@ -1,5 +1,13 @@
 #include "Stepper.h"
 
+
+/*
+ * DDS (Direct Digital Synthesis) tick function and axis control
+*/
+void dds_tick();
+volatile dds_axis_t dds_axes[4];
+
+
 char txt_A[9];
 
 
@@ -7,9 +15,11 @@ char txt_A[9];
 //long test;
 static int axis_running;
 
-//////////////////////////////////
+
 //Set up pin outs
 void SetPinMode(){
+// configure the dds callback function first
+  Timer8CallbackInitialize(dds_tick);
 
 //Xaxis
   EN_Step_PinDirX  = 0; //output
@@ -45,7 +55,22 @@ void SetPinMode(){
 //stepper timeout counter
 }
 
-/////////////////////////////////
+
+/*
+ * void dds_tick() is called on each Timer8 interrupt to update the DDS axes
+ * This function should handle the timing and control of the stepper motor
+ * Timer 8 must be started in code first.
+ */
+void dds_tick(){
+  // Implement the DDS tick handling for each axis here
+  dds_axes[0].old_phase = dds_axes[0].phase;
+  dds_axes[0].phase += dds_axes[0].incrament;
+
+  if(dds_axes[0].phase < dds_axes[0].old_phase){
+    LED2 = !LED2;
+  }
+}
+
 //Enable Steppers
 void EnStepperX(){
 //  SLP_FLT_StepX = 1;

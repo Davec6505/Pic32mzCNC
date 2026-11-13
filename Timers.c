@@ -1,5 +1,6 @@
 #include "Timers.h"
 
+void (*DDS_Tick)();
 void (*Clock)();
 struct Timer TMR;
 
@@ -31,7 +32,7 @@ void InitTimer1(){
 //TMR 8  initialized to interrupt at 10us was used for early
 //interpolation no longer used to interpolate
 void InitTimer8(){
-  T8CON            = 0x8000;
+  T8CON            = 0x0000;
   T8IP0_bit        = 1;
   T8IP1_bit        = 1;
   T8IP2_bit        = 0;
@@ -45,7 +46,23 @@ void InitTimer8(){
   TMR8             = 0;
 }
 
+void Timer8_Start(){
+   T8CONbits.ON = 1;
+}
 
+void Timer8_Stop(){
+   T8CONbits.ON = 0;
+}
+
+void Timer8CallbackInitialize(void (*callback)()){
+   DDS_Tick = callback;
+}
+
+
+
+/*
+ * ISR for Timer interrupts
+*/
 //TMR 1 as a 10ms clock pulse ???
 void Timer1Interrupt() iv IVT_TIMER_1 ilevel 6 ics ICS_SRS {
   T1IF_bit  = 0;
@@ -54,20 +71,12 @@ void Timer1Interrupt() iv IVT_TIMER_1 ilevel 6 ics ICS_SRS {
 }
 
 
-//test accumulator for Timer 8 interrupts
-uint32_t old_phase, phase_x, incrament_x = 42950;
 // TMR 8 interrupts
 void Timer8Interrupt() iv IVT_TIMER_8 ilevel 3 ics ICS_SRS {
 //Enter your code here
-//oneShot to start the steppers runnin
   T8IF_bit  = 0;
-  old_phase = phase_x;
-  phase_x += incrament_x;
-  if(phase_x < old_phase){
+  if(DDS_Tick) DDS_Tick();
 
-      //handle overflow or wrap-around if necessary
-   LED2 = !LED2;
-  }
 }
 
 

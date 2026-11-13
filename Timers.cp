@@ -678,7 +678,8 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 35 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
@@ -689,6 +690,15 @@ extern axis_combination axis_xyz;
 
 
 extern long test;
+#line 52 "c:/users/davec/git/pic32mzcnc/stepper.h"
+ typedef struct{
+ uint32_t phase;
+ uint32_t incrament;
+ uint32_t old_phase;
+ } dds_axis_t;
+
+ extern volatile dds_axis_t dds_axes[4];
+
 
 
 void SetPinMode();
@@ -908,7 +918,7 @@ static int Modal_Group_Actions7(int action);
 static int Modal_Group_Actions12(int action);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
-#line 11 "c:/users/davec/git/pic32mzcnc/timers.h"
+#line 16 "c:/users/davec/git/pic32mzcnc/timers.h"
 struct Timer{
 char clock;
 char P1: 1;
@@ -917,13 +927,22 @@ unsigned int disable_cnt;
 unsigned int (*Reset)(unsigned int time,unsigned int last_sec);
 };
 extern struct Timer TMR;
-
-
+#line 35 "c:/users/davec/git/pic32mzcnc/timers.h"
 void InitTimer1();
+#line 46 "c:/users/davec/git/pic32mzcnc/timers.h"
 void InitTimer8();
+#line 53 "c:/users/davec/git/pic32mzcnc/timers.h"
+void Timer8CallbackInitialize(void (*callback)());
+#line 58 "c:/users/davec/git/pic32mzcnc/timers.h"
+void Timer8_Start();
+#line 63 "c:/users/davec/git/pic32mzcnc/timers.h"
+void Timer8_Stop();
+#line 70 "c:/users/davec/git/pic32mzcnc/timers.h"
 static void ClockPulse();
+#line 78 "c:/users/davec/git/pic32mzcnc/timers.h"
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 3 "c:/Users/davec/GIT/Pic32mzCNC/Timers.c"
+void (*DDS_Tick)();
 void (*Clock)();
 struct Timer TMR;
 
@@ -955,7 +974,7 @@ void InitTimer1(){
 
 
 void InitTimer8(){
- T8CON = 0x8000;
+ T8CON = 0x0000;
  T8IP0_bit = 1;
  T8IP1_bit = 1;
  T8IP2_bit = 0;
@@ -969,8 +988,18 @@ void InitTimer8(){
  TMR8 = 0;
 }
 
+void Timer8_Start(){
+ T8CONbits.ON = 1;
+}
 
+void Timer8_Stop(){
+ T8CONbits.ON = 0;
+}
 
+void Timer8CallbackInitialize(void (*callback)()){
+ DDS_Tick = callback;
+}
+#line 67 "c:/Users/davec/GIT/Pic32mzCNC/Timers.c"
 void Timer1Interrupt() iv IVT_TIMER_1 ilevel 6 ics ICS_SRS {
  T1IF_bit = 0;
 
@@ -979,19 +1008,11 @@ void Timer1Interrupt() iv IVT_TIMER_1 ilevel 6 ics ICS_SRS {
 
 
 
-uint32_t old_phase, phase_x, incrament_x = 42950;
-
 void Timer8Interrupt() iv IVT_TIMER_8 ilevel 3 ics ICS_SRS {
 
-
  T8IF_bit = 0;
- old_phase = phase_x;
- phase_x += incrament_x;
- if(phase_x < old_phase){
+ if(DDS_Tick) DDS_Tick();
 
-
- LED2 = !LED2;
- }
 }
 
 

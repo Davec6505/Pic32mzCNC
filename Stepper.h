@@ -8,6 +8,8 @@
  #include "Settings.h"
  #include "Globals.h"
  #include "Planner.h"
+ #include <stdint.h>
+
 //extern bit PLS_Step_;sfr;
 
 
@@ -37,10 +39,26 @@ extern _axis_ _axis;
 extern axis_combination axis_xyz;
 //enum StepState{STOP,ACCEL,RUN,DECEL};
 
-/////////////////////////////////////////
+
 //global variables
 extern long test;
-/////////////////////////////////////////
+
+/* DDS section of control, 
+ * TODO: 
+ *    1: once implemented, complete the DDS control section remove all old unused code
+ */
+
+ 
+ // axis structure for stepper control
+ typedef struct{
+    uint32_t phase;
+    uint32_t incrament;
+    uint32_t old_phase;
+ } dds_axis_t;
+
+ extern volatile dds_axis_t dds_axes[4];
+
+
 //function prototypes
 void SetPinMode();
 void CycleStart();

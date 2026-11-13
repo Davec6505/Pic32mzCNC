@@ -12,28 +12,56 @@ branch.
 - The old step-generation output-compare mappings and interrupt-driven motion
   code are being removed. Spindle PWM is deferred; OC8 is currently reserved
   in the configuration, but its setup is not yet a completed spindle PWM.
-- Timer8 is initialized from `Config.c`; its interrupt is enabled. Its ISR
-  in `Timers.c` runs the first single-axis DDS experiment.
+- Timer8 is initialized from `Config.c` with its interrupt enabled but the
+  timer stopped. Its ISR in `Timers.c` calls the callback registered by
+  `SetPinMode()` in `Stepper.c`.
 - With a nominal 200 MHz system clock, PBCLK3 divided by four and a 1:1 timer
   prescaler, Timer8 has a 50 MHz input. `PR8 = 500` gives 501 counts, or
   approximately 10.02 microseconds per tick. `PR8 = 499` would give 500
   counts, or 10 microseconds, under those clock assumptions.
-- The experiment uses an unsigned 32-bit `phase_x` accumulator and adds
-  `incrament_x` on each timer interrupt. Wraparound is detected by comparing
-  the new phase with its previous value:
+- The experiment now stores the unsigned 32-bit phase, increment and previous
+  phase in `dds_axes[0]`. `dds_tick()` updates X on each Timer8 interrupt and
+  detects wraparound by comparing the new phase with the previous value:
 
   ```c
-  old_phase = phase_x;
-  phase_x += incrament_x;
-  if (phase_x < old_phase) {
+  dds_axes[0].old_phase = dds_axes[0].phase;
+  dds_axes[0].phase += dds_axes[0].incrament;
+  if (dds_axes[0].phase < dds_axes[0].old_phase) {
     LED2 = !LED2;
   }
   ```
 
-- The user observed a faint flicker at `incrament_x = 42949637`, and verified
-  a visible change of LED state approximately once per second with `42950`.
-  This is a visual check, not an instrumented frequency measurement. The
-  current experiment toggles LED2; it does not generate motor STEP pulses.
+- In the earlier experiment, the user observed a faint flicker at an increment
+  of `42949637`, and a visible change of LED state approximately once per
+  second with `42950`. This was a visual check, not an instrumented frequency
+  measurement. The current callback still toggles LED2; it does not generate
+  motor STEP pulses. The new array is initially zero and Timer8 is not started,
+  so the refactored experiment needs initialization before it will run.
+
+## Next coding session: X increment setter
+
+Add a setter in `Stepper.c` and declare it in `Stepper.h`, keeping Timer8
+start/stop separate from the stepper's DDS settings. For the first X-only
+experiment, the proposed setter is:
+
+```c
+void Stepper_SetXIncrement(uint32_t increment) {
+  dds_axes[X].incrament = increment;
+}
+```
+
+Set the increment to `42950` for the previous approximately one-overflow-per-
+second LED test, then call `Timer8_Start()` after the callback has been
+registered. Perform the initial setup before global interrupts are enabled.
+Changing the increment does not itself start the timer. Verify the LED
+behavior after the refactor; it has not yet been confirmed on hardware.
+
+For later updates while the timer is running, agree on ownership and protect
+related shared-state changes from the ISR; `volatile` alone does not make
+multiple field updates atomic. `Timer8_Stop()` currently only stops the timer;
+it does not disable its interrupt or clear a pending interrupt flag.
+The previous phase could also become a local variable inside `dds_tick()`,
+because it is only needed during one tick.
 
 ## DDS concepts learned
 

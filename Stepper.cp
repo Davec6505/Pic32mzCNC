@@ -247,7 +247,7 @@ extern sfr sbit Z_Min_Limit_Dir;
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
-#line 11 "c:/users/davec/git/pic32mzcnc/timers.h"
+#line 16 "c:/users/davec/git/pic32mzcnc/timers.h"
 struct Timer{
 char clock;
 char P1: 1;
@@ -256,11 +256,19 @@ unsigned int disable_cnt;
 unsigned int (*Reset)(unsigned int time,unsigned int last_sec);
 };
 extern struct Timer TMR;
-
-
+#line 35 "c:/users/davec/git/pic32mzcnc/timers.h"
 void InitTimer1();
+#line 46 "c:/users/davec/git/pic32mzcnc/timers.h"
 void InitTimer8();
+#line 53 "c:/users/davec/git/pic32mzcnc/timers.h"
+void Timer8CallbackInitialize(void (*callback)());
+#line 58 "c:/users/davec/git/pic32mzcnc/timers.h"
+void Timer8_Start();
+#line 63 "c:/users/davec/git/pic32mzcnc/timers.h"
+void Timer8_Stop();
+#line 70 "c:/users/davec/git/pic32mzcnc/timers.h"
 static void ClockPulse();
+#line 78 "c:/users/davec/git/pic32mzcnc/timers.h"
 unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_disable);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
@@ -877,7 +885,8 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
-#line 33 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 35 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
@@ -888,6 +897,15 @@ extern axis_combination axis_xyz;
 
 
 extern long test;
+#line 52 "c:/users/davec/git/pic32mzcnc/stepper.h"
+ typedef struct{
+ uint32_t phase;
+ uint32_t incrament;
+ uint32_t old_phase;
+ } dds_axis_t;
+
+ extern volatile dds_axis_t dds_axes[4];
+
 
 
 void SetPinMode();
@@ -923,7 +941,11 @@ void StopAxis(int axis);
 
 
 void Single_Axis_Enable(_axis_ axis_);
-#line 3 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
+#line 7 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
+void dds_tick();
+volatile dds_axis_t dds_axes[4];
+
+
 char txt_A[9];
 
 
@@ -934,6 +956,8 @@ static int axis_running;
 
 
 void SetPinMode(){
+
+ Timer8CallbackInitialize(dds_tick);
 
 
  EN_Step_PinDirX = 0;
@@ -968,7 +992,16 @@ void SetPinMode(){
 
 
 }
+#line 64 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
+void dds_tick(){
 
+ dds_axes[0].old_phase = dds_axes[0].phase;
+ dds_axes[0].phase += dds_axes[0].incrament;
+
+ if(dds_axes[0].phase < dds_axes[0].old_phase){
+ LED2 = !LED2;
+ }
+}
 
 
 void EnStepperX(){
@@ -1078,7 +1111,7 @@ void Single_Axis_Enable(_axis_ axis_){
  case A:
  EN_StepA = 0;
  break;
-#line 164 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
+#line 189 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
  default:
  break;
  }

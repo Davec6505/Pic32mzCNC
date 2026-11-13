@@ -19,6 +19,7 @@ main
 				Z_Min_Limit_Setup
 			OutPutPulseXYZ
 			SetPinMode
+				Timer8CallbackInitialize
 			SetInitialSizes
 			DMA_global
 				DMA0
@@ -300,6 +301,8 @@ main
 	ResetSteppers
 		DisableStepper
 Timer8Interrupt
+	dds_tick
+	ClockPulse
 X_Min_Limit
 	Set_Min_Limit
 Z_Min_Limit
@@ -316,4 +319,5 @@ DMA_CH0_ISR
 	strncpy
 	memset
 Timer1Interrupt
+	dds_tick
 	ClockPulse
