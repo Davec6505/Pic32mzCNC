@@ -28,7 +28,7 @@ PLDS = \"DEFINES.pld\"
 # Leave the Uses -IP path without a trailing backslash: mikroC otherwise
 # misquotes it when launching mcpp, which waits for stdin instead of preprocessing.
 # Pass one trailing backslash for the project -SP path to preserve diagnostic filenames.
-FLAGS = -MSF -DBG -pP32MZ2048EFH100 -HEAP 8000 -C  -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111113 -fo200 -N\"Pic32mzClicker2_StepperControl.mcp32\" -SP$(MIKROC_PATH)\\Defs\\\\\" -SP$(MIKROC_PATH)\\Uses\\\\\" -SP\"c:\Users\davec\GIT\Pic32mzCNC\\\" -IP$(MIKROC_PATH)\\Uses\" -IP\"c:\Users\davec\GIT\Pic32mzCNC\" 
+FLAGS = -MSF -DBG -pP32MZ2048EFH100 -HEAP 8000 -C  -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111113 -fo200 -N\"Pic32mzClicker2_StepperControl.mcp32\" -SP$(MIKROC_PATH)\\Defs\\\" -SP$(MIKROC_PATH)\\Uses\\\" -SP\"c:\Users\davec\GIT\Pic32mzCNC\\\" -IP$(MIKROC_PATH)\\Uses\" -IP\"c:\Users\davec\GIT\Pic32mzCNC\" 
 
 # 0 1 mikroCPIC32.exe 
 # -MSF -DBG -pP32MZ2048EFH100 -HEAP 8000 -RA -C -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111113 -fo200 
