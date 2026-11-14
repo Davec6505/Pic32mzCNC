@@ -1,12 +1,12 @@
 GCODE_To_Millimeters:
-;GCODE.c,47 :: 		static float To_Millimeters(float value){
-;GCODE.c,48 :: 		return(gc.inches_mode) ? (value * MM_PER_INCH) : value;
+;GCODE.c,53 :: 		static float To_Millimeters(float value){
+;GCODE.c,54 :: 		return(gc.inches_mode) ? (value * MM_PER_INCH) : value;
 LBU	R2, Offset(_gc+3)(GP)
-BNE	R2, R0, L_GCODE_To_Millimeters161
+BNE	R2, R0, L_GCODE_To_Millimeters143
 NOP	
 J	L_GCODE_To_Millimeters0
 NOP	
-L_GCODE_To_Millimeters161:
+L_GCODE_To_Millimeters143:
 LUI	R2, 16843
 ORI	R2, R2, 13107
 MTC1	R2, S0
@@ -22,1027 +22,1347 @@ MOV.S 	S0, S12
 L_GCODE_To_Millimeters1:
 ; ?FLOC__GCODE_To_Millimeters?T5 start address is: 0 (R0)
 ; ?FLOC__GCODE_To_Millimeters?T5 end address is: 0 (R0)
-;GCODE.c,49 :: 		}
+;GCODE.c,55 :: 		}
 L_end_To_Millimeters:
 JR	RA
 NOP	
 ; end of GCODE_To_Millimeters
 GCODE_Select_Plane:
-;GCODE.c,52 :: 		static void Select_Plane(int axis_combo){
-;GCODE.c,53 :: 		axis_xyz = axis_combo;
+;GCODE.c,58 :: 		static void Select_Plane(int axis_combo){
+;GCODE.c,59 :: 		axis_xyz = axis_combo;
 SB	R25, Offset(_axis_xyz+0)(GP)
-;GCODE.c,54 :: 		}
+;GCODE.c,60 :: 		switch(axis_combo){
+J	L_GCODE_Select_Plane2
+NOP	
+;GCODE.c,61 :: 		case AXIS_XZ: gc.plane_axis_0 = X; gc.plane_axis_1 = Z; gc.plane_axis_2 = Y; break;
+L_GCODE_Select_Plane4:
+SB	R0, Offset(_gc+11)(GP)
+ORI	R2, R0, 2
+SB	R2, Offset(_gc+12)(GP)
+ORI	R2, R0, 1
+SB	R2, Offset(_gc+13)(GP)
+J	L_GCODE_Select_Plane3
+NOP	
+;GCODE.c,62 :: 		case AXIS_YZ: gc.plane_axis_0 = Y; gc.plane_axis_1 = Z; gc.plane_axis_2 = X; break;
+L_GCODE_Select_Plane5:
+ORI	R2, R0, 1
+SB	R2, Offset(_gc+11)(GP)
+ORI	R2, R0, 2
+SB	R2, Offset(_gc+12)(GP)
+SB	R0, Offset(_gc+13)(GP)
+J	L_GCODE_Select_Plane3
+NOP	
+;GCODE.c,63 :: 		default:      gc.plane_axis_0 = X; gc.plane_axis_1 = Y; gc.plane_axis_2 = Z; break;
+L_GCODE_Select_Plane6:
+SB	R0, Offset(_gc+11)(GP)
+ORI	R2, R0, 1
+SB	R2, Offset(_gc+12)(GP)
+ORI	R2, R0, 2
+SB	R2, Offset(_gc+13)(GP)
+J	L_GCODE_Select_Plane3
+NOP	
+;GCODE.c,64 :: 		}
+L_GCODE_Select_Plane2:
+SEH	R3, R25
+ORI	R2, R0, 1
+BNE	R3, R2, L_GCODE_Select_Plane146
+NOP	
+J	L_GCODE_Select_Plane4
+NOP	
+L_GCODE_Select_Plane146:
+SEH	R3, R25
+ORI	R2, R0, 2
+BNE	R3, R2, L_GCODE_Select_Plane148
+NOP	
+J	L_GCODE_Select_Plane5
+NOP	
+L_GCODE_Select_Plane148:
+J	L_GCODE_Select_Plane6
+NOP	
+L_GCODE_Select_Plane3:
+;GCODE.c,65 :: 		}
 L_end_Select_Plane:
 JR	RA
 NOP	
 ; end of GCODE_Select_Plane
+GCODE_Load_Coord_System:
+;GCODE.c,68 :: 		static void Load_Coord_System(int select){
+ADDIU	SP, SP, -20
+SW	RA, 0(SP)
+;GCODE.c,69 :: 		settings_read_coord_data();
+SW	R25, 4(SP)
+SW	R26, 8(SP)
+SW	R27, 12(SP)
+SH	R25, 16(SP)
+JAL	_settings_read_coord_data+0
+NOP	
+LH	R25, 16(SP)
+;GCODE.c,70 :: 		memcpy(gc.coord_system,coord_system[select-1].coord,sizeof(gc.coord_system));
+ADDIU	R2, R25, -1
+SEH	R2, R2
+SLL	R3, R2, 5
+LUI	R2, hi_addr(_coord_system+0)
+ORI	R2, R2, lo_addr(_coord_system+0)
+ADDU	R2, R2, R3
+ORI	R27, R0, 16
+MOVZ	R26, R2, R0
+LUI	R25, hi_addr(_gc+48)
+ORI	R25, R25, lo_addr(_gc+48)
+JAL	_memcpy+0
+NOP	
+;GCODE.c,71 :: 		}
+L_end_Load_Coord_System:
+LW	R27, 12(SP)
+LW	R26, 8(SP)
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 20
+JR	RA
+NOP	
+; end of GCODE_Load_Coord_System
 _G_Initialise:
-;GCODE.c,61 :: 		void G_Initialise(){
-;GCODE.c,62 :: 		m_flow               = 0;
+;GCODE.c,78 :: 		void G_Initialise(){
+ADDIU	SP, SP, -16
+SW	RA, 0(SP)
+;GCODE.c,79 :: 		m_flow               = 0;
+SW	R25, 4(SP)
+SW	R26, 8(SP)
+SW	R27, 12(SP)
 SH	R0, Offset(-1610603000)(GP)
-;GCODE.c,63 :: 		group_number         = 0;
+;GCODE.c,80 :: 		group_number         = 0;
 SH	R0, Offset(-1610602988)(GP)
-;GCODE.c,64 :: 		axis_words           = 0;
+;GCODE.c,81 :: 		axis_words           = 0;
 SH	R0, Offset(-1610603006)(GP)
-;GCODE.c,65 :: 		int_value            = 0;
+;GCODE.c,82 :: 		int_value            = 0;
 SH	R0, Offset(_int_value+0)(GP)
-;GCODE.c,66 :: 		value                = 0;
+;GCODE.c,83 :: 		value                = 0;
 MOVZ	R2, R0, R0
 SW	R2, Offset(_value+0)(GP)
-;GCODE.c,67 :: 		gc.inverse_feed_rate_mode = false;
+;GCODE.c,84 :: 		gc.inverse_feed_rate_mode = false;
 SB	R0, Offset(_gc+2)(GP)
-;GCODE.c,68 :: 		gc.absolute_override = false;
+;GCODE.c,85 :: 		gc.absolute_override = false;
 SB	R0, Offset(_gc+4)(GP)
-;GCODE.c,69 :: 		gc.absolute_mode     = 1;
+;GCODE.c,86 :: 		gc.absolute_mode     = 1;
 ORI	R2, R0, 1
 SB	R2, Offset(_gc+5)(GP)
-;GCODE.c,70 :: 		}
+;GCODE.c,87 :: 		motion_mode = gc.motion_mode = MOTION_MODE_SEEK;
+SB	R0, Offset(_gc+8)(GP)
+SH	R0, Offset(-1610602990)(GP)
+;GCODE.c,88 :: 		Select_Plane(AXIS_XY);
+MOVZ	R25, R0, R0
+JAL	GCODE_Select_Plane+0
+NOP	
+;GCODE.c,89 :: 		gc.coord_select = 1;
+ORI	R2, R0, 1
+SH	R2, Offset(_gc+14)(GP)
+;GCODE.c,90 :: 		Load_Coord_System(gc.coord_select);
+ORI	R25, R0, 1
+JAL	GCODE_Load_Coord_System+0
+NOP	
+;GCODE.c,91 :: 		clear_vector(gc.coord_offset);
+ORI	R27, R0, 16
+MOVZ	R26, R0, R0
+LUI	R25, hi_addr(_gc+64)
+ORI	R25, R25, lo_addr(_gc+64)
+JAL	_memset+0
+NOP	
+;GCODE.c,92 :: 		}
 L_end_G_Initialise:
+LW	R27, 12(SP)
+LW	R26, 8(SP)
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 16
 JR	RA
 NOP	
 ; end of _G_Initialise
+_G_Save_State:
+;GCODE.c,95 :: 		void G_Save_State(){
+ADDIU	SP, SP, -16
+SW	RA, 0(SP)
+;GCODE.c,96 :: 		memcpy(&gc_saved,&gc,sizeof(parser_state_t));
+SW	R25, 4(SP)
+SW	R26, 8(SP)
+SW	R27, 12(SP)
+ORI	R27, R0, 136
+LUI	R26, hi_addr(_gc+0)
+ORI	R26, R26, lo_addr(_gc+0)
+LUI	R25, hi_addr(GCODE_gc_saved+0)
+ORI	R25, R25, lo_addr(GCODE_gc_saved+0)
+JAL	_memcpy+0
+NOP	
+;GCODE.c,97 :: 		motion_mode_saved = motion_mode;
+LH	R2, Offset(-1610602990)(GP)
+SH	R2, Offset(GCODE_motion_mode_saved+0)(GP)
+;GCODE.c,98 :: 		axis_xyz_saved = axis_xyz;
+LBU	R2, Offset(_axis_xyz+0)(GP)
+SB	R2, Offset(GCODE_axis_xyz_saved+0)(GP)
+;GCODE.c,99 :: 		cir_saved = SV.cir;
+LBU	R2, Offset(_SV+0)(GP)
+EXT	R2, R2, 4, 1
+SB	R2, Offset(GCODE_cir_saved+0)(GP)
+;GCODE.c,100 :: 		}
+L_end_G_Save_State:
+LW	R27, 12(SP)
+LW	R26, 8(SP)
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 16
+JR	RA
+NOP	
+; end of _G_Save_State
+_G_Restore_State:
+;GCODE.c,102 :: 		void G_Restore_State(){
+ADDIU	SP, SP, -16
+SW	RA, 0(SP)
+;GCODE.c,103 :: 		memcpy(&gc,&gc_saved,sizeof(parser_state_t));
+SW	R25, 4(SP)
+SW	R26, 8(SP)
+SW	R27, 12(SP)
+ORI	R27, R0, 136
+LUI	R26, hi_addr(GCODE_gc_saved+0)
+ORI	R26, R26, lo_addr(GCODE_gc_saved+0)
+LUI	R25, hi_addr(_gc+0)
+ORI	R25, R25, lo_addr(_gc+0)
+JAL	_memcpy+0
+NOP	
+;GCODE.c,104 :: 		motion_mode = motion_mode_saved;
+LH	R2, Offset(GCODE_motion_mode_saved+0)(GP)
+SH	R2, Offset(-1610602990)(GP)
+;GCODE.c,105 :: 		axis_xyz = axis_xyz_saved;
+LBU	R2, Offset(GCODE_axis_xyz_saved+0)(GP)
+SB	R2, Offset(_axis_xyz+0)(GP)
+;GCODE.c,106 :: 		SV.cir = cir_saved;
+LBU	R3, Offset(GCODE_cir_saved+0)(GP)
+LBU	R2, Offset(_SV+0)(GP)
+INS	R2, R3, 4, 1
+SB	R2, Offset(_SV+0)(GP)
+;GCODE.c,107 :: 		}
+L_end_G_Restore_State:
+LW	R27, 12(SP)
+LW	R26, 8(SP)
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 16
+JR	RA
+NOP	
+; end of _G_Restore_State
+_G_Begin_Block:
+;GCODE.c,110 :: 		void G_Begin_Block(){
+ADDIU	SP, SP, -8
+SW	RA, 0(SP)
+;GCODE.c,111 :: 		Rst_modalgroup();
+SW	R25, 4(SP)
+JAL	_Rst_modalgroup+0
+NOP	
+;GCODE.c,112 :: 		Rst_non_modalword();
+JAL	_Rst_non_modalword+0
+NOP	
+;GCODE.c,113 :: 		Rst_Axisword();
+JAL	_Rst_Axisword+0
+NOP	
+;GCODE.c,114 :: 		non_modal_action = NON_MODAL_NONE;
+SH	R0, Offset(-1610602992)(GP)
+;GCODE.c,115 :: 		gc.absolute_override = false;
+SB	R0, Offset(_gc+4)(GP)
+;GCODE.c,116 :: 		gc.P = gc.S = gc.L = -1;
+ORI	R2, R0, 65535
+SH	R2, Offset(_gc+16)(GP)
+ORI	R2, R0, 65535
+SH	R2, Offset(_gc+126)(GP)
+ORI	R2, R0, 65535
+SH	R2, Offset(_gc+124)(GP)
+;GCODE.c,117 :: 		gc.R = gc.I = gc.J = gc.K = 0.0;
+MOVZ	R2, R0, R0
+SW	R2, Offset(_gc+120)(GP)
+MOVZ	R2, R0, R0
+SW	R2, Offset(_gc+116)(GP)
+MOVZ	R2, R0, R0
+SW	R2, Offset(_gc+112)(GP)
+MOVZ	R2, R0, R0
+SW	R2, Offset(_gc+108)(GP)
+;GCODE.c,118 :: 		gc.dwell = -1.0;
+LUI	R2, 49024
+ORI	R2, R2, 0
+SW	R2, Offset(_gc+128)(GP)
+;GCODE.c,119 :: 		gc.r = 0;
+LBU	R2, Offset(_gc+0)(GP)
+INS	R2, R0, 0, 1
+SB	R2, Offset(_gc+0)(GP)
+;GCODE.c,120 :: 		gc.program_flow = PROGRAM_FLOW_RUNNING;
+SB	R0, Offset(_gc+9)(GP)
+;GCODE.c,121 :: 		FAIL(STATUS_OK);
+MOVZ	R25, R0, R0
+JAL	_FAIL+0
+NOP	
+;GCODE.c,122 :: 		}
+L_end_G_Begin_Block:
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 8
+JR	RA
+NOP	
+; end of _G_Begin_Block
+_G_Program_End:
+;GCODE.c,125 :: 		void G_Program_End(){
+ADDIU	SP, SP, -16
+SW	RA, 0(SP)
+;GCODE.c,126 :: 		motion_mode = gc.motion_mode = MOTION_MODE_LINEAR;
+SW	R25, 4(SP)
+SW	R26, 8(SP)
+SW	R27, 12(SP)
+ORI	R2, R0, 1
+SB	R2, Offset(_gc+8)(GP)
+ORI	R2, R0, 1
+SH	R2, Offset(-1610602990)(GP)
+;GCODE.c,127 :: 		Select_Plane(AXIS_XY);
+MOVZ	R25, R0, R0
+JAL	GCODE_Select_Plane+0
+NOP	
+;GCODE.c,128 :: 		gc.absolute_mode = 1;
+ORI	R2, R0, 1
+SB	R2, Offset(_gc+5)(GP)
+;GCODE.c,129 :: 		gc.inverse_feed_rate_mode = false;
+SB	R0, Offset(_gc+2)(GP)
+;GCODE.c,130 :: 		gc.coord_select = 1;
+ORI	R2, R0, 1
+SH	R2, Offset(_gc+14)(GP)
+;GCODE.c,131 :: 		Load_Coord_System(gc.coord_select);
+ORI	R25, R0, 1
+JAL	GCODE_Load_Coord_System+0
+NOP	
+;GCODE.c,132 :: 		clear_vector(gc.coord_offset);
+ORI	R27, R0, 16
+MOVZ	R26, R0, R0
+LUI	R25, hi_addr(_gc+64)
+ORI	R25, R25, lo_addr(_gc+64)
+JAL	_memset+0
+NOP	
+;GCODE.c,133 :: 		gc.spindle_direction = 0;
+SB	R0, Offset(_gc+6)(GP)
+;GCODE.c,134 :: 		gc.coolant_mode = COOLANT_DISABLE;
+SB	R0, Offset(_gc+7)(GP)
+;GCODE.c,135 :: 		gc.program_flow = PROGRAM_FLOW_RUNNING;
+SB	R0, Offset(_gc+9)(GP)
+;GCODE.c,136 :: 		}
+L_end_G_Program_End:
+LW	R27, 12(SP)
+LW	R26, 8(SP)
+LW	R25, 4(SP)
+LW	RA, 0(SP)
+ADDIU	SP, SP, 16
+JR	RA
+NOP	
+; end of _G_Program_End
 _FAIL:
-;GCODE.c,73 :: 		void FAIL(int status){
-;GCODE.c,74 :: 		status_code = status;
+;GCODE.c,139 :: 		void FAIL(int status){
+;GCODE.c,140 :: 		status_code = status;
 SH	R25, Offset(-1610602986)(GP)
-;GCODE.c,75 :: 		}
+;GCODE.c,141 :: 		}
 L_end_FAIL:
 JR	RA
 NOP	
 ; end of _FAIL
 _GET_FAIL:
-;GCODE.c,77 :: 		int  GET_FAIL(){
-;GCODE.c,78 :: 		return status_code;
+;GCODE.c,143 :: 		int  GET_FAIL(){
+;GCODE.c,144 :: 		return status_code;
 LH	R2, Offset(-1610602986)(GP)
-;GCODE.c,79 :: 		}
+;GCODE.c,145 :: 		}
 L_end_GET_FAIL:
 JR	RA
 NOP	
 ; end of _GET_FAIL
 _SET_FAIL:
-;GCODE.c,81 :: 		int  SET_FAIL(int val){
-;GCODE.c,82 :: 		status_code = val;
+;GCODE.c,147 :: 		int  SET_FAIL(int val){
+;GCODE.c,148 :: 		status_code = val;
 SH	R25, Offset(-1610602986)(GP)
-;GCODE.c,83 :: 		}
+;GCODE.c,149 :: 		}
 L_end_SET_FAIL:
 JR	RA
 NOP	
 ; end of _SET_FAIL
 _Set_modalgroup:
-;GCODE.c,87 :: 		void Set_modalgroup(int value){
-;GCODE.c,88 :: 		bit_true( modal_group_words,bit( value));
+;GCODE.c,153 :: 		void Set_modalgroup(int value){
+;GCODE.c,154 :: 		bit_true( modal_group_words,bit( value));
 SEH	R3, R25
 ORI	R2, R0, 1
 SLLV	R3, R2, R3
 LH	R2, Offset(-1610603004)(GP)
 OR	R2, R2, R3
 SH	R2, Offset(-1610603004)(GP)
-;GCODE.c,89 :: 		}
+;GCODE.c,155 :: 		}
 L_end_Set_modalgroup:
 JR	RA
 NOP	
 ; end of _Set_modalgroup
 _Get_modalgroup:
-;GCODE.c,92 :: 		int Get_modalgroup(){
-;GCODE.c,93 :: 		return modal_group_words;
+;GCODE.c,158 :: 		int Get_modalgroup(){
+;GCODE.c,159 :: 		return modal_group_words;
 LH	R2, Offset(-1610603004)(GP)
-;GCODE.c,94 :: 		}
+;GCODE.c,160 :: 		}
 L_end_Get_modalgroup:
 JR	RA
 NOP	
 ; end of _Get_modalgroup
 _Rst_modalgroup:
-;GCODE.c,96 :: 		int Rst_modalgroup(){
-;GCODE.c,97 :: 		modal_group_words = 0;
+;GCODE.c,162 :: 		int Rst_modalgroup(){
+;GCODE.c,163 :: 		modal_group_words = 0;
 SH	R0, Offset(-1610603004)(GP)
-;GCODE.c,98 :: 		return modal_group_words;
+;GCODE.c,164 :: 		return modal_group_words;
 MOVZ	R2, R0, R0
-;GCODE.c,99 :: 		}
+;GCODE.c,165 :: 		}
 L_end_Rst_modalgroup:
 JR	RA
 NOP	
 ; end of _Rst_modalgroup
 _Set_non_modalword:
-;GCODE.c,104 :: 		void Set_non_modalword(int value){
-;GCODE.c,105 :: 		bit_true( non_modal_words,bit( value));
+;GCODE.c,170 :: 		void Set_non_modalword(int value){
+;GCODE.c,171 :: 		bit_true( non_modal_words,bit( value));
 SEH	R3, R25
 ORI	R2, R0, 1
 SLLV	R3, R2, R3
 LH	R2, Offset(-1610603002)(GP)
 OR	R2, R2, R3
 SH	R2, Offset(-1610603002)(GP)
-;GCODE.c,106 :: 		}
+;GCODE.c,172 :: 		}
 L_end_Set_non_modalword:
 JR	RA
 NOP	
 ; end of _Set_non_modalword
 _Get_non_modalword:
-;GCODE.c,109 :: 		int Get_non_modalword(){
-;GCODE.c,110 :: 		return non_modal_words;
+;GCODE.c,175 :: 		int Get_non_modalword(){
+;GCODE.c,176 :: 		return non_modal_words;
 LH	R2, Offset(-1610603002)(GP)
-;GCODE.c,111 :: 		}
+;GCODE.c,177 :: 		}
 L_end_Get_non_modalword:
 JR	RA
 NOP	
 ; end of _Get_non_modalword
 _Rst_non_modalword:
-;GCODE.c,113 :: 		int Rst_non_modalword(){
-;GCODE.c,114 :: 		non_modal_words = 0;
+;GCODE.c,179 :: 		int Rst_non_modalword(){
+;GCODE.c,180 :: 		non_modal_words = 0;
 SH	R0, Offset(-1610603002)(GP)
-;GCODE.c,115 :: 		return non_modal_words;
+;GCODE.c,181 :: 		return non_modal_words;
 MOVZ	R2, R0, R0
-;GCODE.c,116 :: 		}
+;GCODE.c,182 :: 		}
 L_end_Rst_non_modalword:
 JR	RA
 NOP	
 ; end of _Rst_non_modalword
 _Set_Axisword:
-;GCODE.c,121 :: 		void Set_Axisword(int value){
-;GCODE.c,122 :: 		bit_true( axis_words,bit( value));
+;GCODE.c,187 :: 		void Set_Axisword(int value){
+;GCODE.c,188 :: 		bit_true( axis_words,bit( value));
 SEH	R3, R25
 ORI	R2, R0, 1
 SLLV	R3, R2, R3
 LH	R2, Offset(-1610603006)(GP)
 OR	R2, R2, R3
 SH	R2, Offset(-1610603006)(GP)
-;GCODE.c,123 :: 		}
+;GCODE.c,189 :: 		}
 L_end_Set_Axisword:
 JR	RA
 NOP	
 ; end of _Set_Axisword
 _Get_Axisword:
-;GCODE.c,131 :: 		int Get_Axisword(){
-;GCODE.c,132 :: 		return axis_words & 0x0fff;
+;GCODE.c,197 :: 		int Get_Axisword(){
+;GCODE.c,198 :: 		return axis_words & 0x0fff;
 LH	R2, Offset(-1610603006)(GP)
 ANDI	R2, R2, 4095
-;GCODE.c,133 :: 		}
+;GCODE.c,199 :: 		}
 L_end_Get_Axisword:
 JR	RA
 NOP	
 ; end of _Get_Axisword
 _Rst_Axisword:
-;GCODE.c,135 :: 		int Rst_Axisword(){
-;GCODE.c,136 :: 		axis_words = 0;
+;GCODE.c,201 :: 		int Rst_Axisword(){
+;GCODE.c,202 :: 		axis_words = 0;
 SH	R0, Offset(-1610603006)(GP)
-;GCODE.c,137 :: 		return axis_words;
+;GCODE.c,203 :: 		return axis_words;
 MOVZ	R2, R0, R0
-;GCODE.c,138 :: 		}
+;GCODE.c,204 :: 		}
 L_end_Rst_Axisword:
 JR	RA
 NOP	
 ; end of _Rst_Axisword
 _Get_motionmode:
-;GCODE.c,141 :: 		int Get_motionmode(){
-;GCODE.c,142 :: 		return motion_mode;
+;GCODE.c,207 :: 		int Get_motionmode(){
+;GCODE.c,208 :: 		return motion_mode;
 LH	R2, Offset(-1610602990)(GP)
-;GCODE.c,143 :: 		}
+;GCODE.c,209 :: 		}
 L_end_Get_motionmode:
 JR	RA
 NOP	
 ; end of _Get_motionmode
 _Rst_motionmode:
-;GCODE.c,145 :: 		int Rst_motionmode(){
-;GCODE.c,146 :: 		motion_mode = 0;
+;GCODE.c,211 :: 		int Rst_motionmode(){
+;GCODE.c,212 :: 		motion_mode = 0;
 SH	R0, Offset(-1610602990)(GP)
-;GCODE.c,147 :: 		return motion_mode;
+;GCODE.c,213 :: 		return motion_mode;
 MOVZ	R2, R0, R0
-;GCODE.c,148 :: 		}
+;GCODE.c,214 :: 		}
 L_end_Rst_motionmode:
 JR	RA
 NOP	
 ; end of _Rst_motionmode
 _G_Mode:
-;GCODE.c,152 :: 		int G_Mode(int mode){
-ADDIU	SP, SP, -4
+;GCODE.c,218 :: 		int G_Mode(int mode){
+ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;GCODE.c,153 :: 		group_number = Set_Modal_Groups(mode);
+;GCODE.c,220 :: 		non_modal_action = NON_MODAL_NONE;
+SH	R0, Offset(-1610602992)(GP)
+;GCODE.c,221 :: 		grp = Set_Modal_Groups(mode);
 JAL	GCODE_Set_Modal_Groups+0
 NOP	
-SH	R2, Offset(-1610602988)(GP)
-;GCODE.c,154 :: 		motion_mode  = Set_Motion_Mode(mode);
+; grp start address is: 16 (R4)
+SEH	R4, R2
+;GCODE.c,222 :: 		Set_Motion_Mode(mode);
+SH	R4, 4(SP)
+SH	R25, 6(SP)
 JAL	GCODE_Set_Motion_Mode+0
 NOP	
-SH	R2, Offset(-1610602990)(GP)
-;GCODE.c,155 :: 		return mode;//motion_mode;
+LH	R25, 6(SP)
+LH	R4, 4(SP)
+;GCODE.c,223 :: 		if(status_code == STATUS_OK){
+LH	R2, Offset(-1610602986)(GP)
+BEQ	R2, R0, L__G_Mode170
+NOP	
+J	L_G_Mode7
+NOP	
+L__G_Mode170:
+;GCODE.c,224 :: 		if(bit_istrue(modal_group_words,bit(grp))){
+SEH	R3, R4
+ORI	R2, R0, 1
+SLLV	R3, R2, R3
+LH	R2, Offset(-1610603004)(GP)
+AND	R2, R2, R3
+SEH	R2, R2
+BNE	R2, R0, L__G_Mode172
+NOP	
+J	L_G_Mode8
+NOP	
+L__G_Mode172:
+;GCODE.c,225 :: 		FAIL(STATUS_MODAL_GROUP_VIOLATION);
+SH	R25, 4(SP)
+ORI	R25, R0, 5
+JAL	_FAIL+0
+NOP	
+LH	R25, 4(SP)
+;GCODE.c,226 :: 		}else{
+J	L_G_Mode9
+NOP	
+L_G_Mode8:
+;GCODE.c,227 :: 		bit_true(modal_group_words,bit(grp));
+SEH	R3, R4
+ORI	R2, R0, 1
+SLLV	R3, R2, R3
+LH	R2, Offset(-1610603004)(GP)
+OR	R2, R2, R3
+SH	R2, Offset(-1610603004)(GP)
+;GCODE.c,228 :: 		if(non_modal_action != NON_MODAL_NONE)
+LH	R2, Offset(-1610602992)(GP)
+BNE	R2, R0, L__G_Mode174
+NOP	
+J	L_G_Mode10
+NOP	
+L__G_Mode174:
+;GCODE.c,229 :: 		bit_true(non_modal_words,bit(non_modal_action));
+LH	R3, Offset(-1610602992)(GP)
+ORI	R2, R0, 1
+SLLV	R3, R2, R3
+LH	R2, Offset(-1610603002)(GP)
+OR	R2, R2, R3
+SH	R2, Offset(-1610603002)(GP)
+L_G_Mode10:
+;GCODE.c,230 :: 		}
+L_G_Mode9:
+;GCODE.c,231 :: 		}
+L_G_Mode7:
+;GCODE.c,232 :: 		group_number = grp;
+SH	R4, Offset(-1610602988)(GP)
+; grp end address is: 16 (R4)
+;GCODE.c,233 :: 		return mode;
 SEH	R2, R25
-;GCODE.c,156 :: 		}
+;GCODE.c,234 :: 		}
 L_end_G_Mode:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 4
+ADDIU	SP, SP, 8
 JR	RA
 NOP	
 ; end of _G_Mode
 _M_Mode:
-;GCODE.c,160 :: 		int M_Mode(int flow){
-ADDIU	SP, SP, -4
+;GCODE.c,238 :: 		int M_Mode(int flow){
+ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;GCODE.c,161 :: 		group_number = Set_M_Modal_Commands(flow);
+;GCODE.c,240 :: 		grp = Set_M_Modal_Commands(flow);
 JAL	GCODE_Set_M_Modal_Commands+0
 NOP	
-SH	R2, Offset(-1610602988)(GP)
-;GCODE.c,162 :: 		m_flow = Set_M_Commands(flow);
+; grp start address is: 16 (R4)
+SEH	R4, R2
+;GCODE.c,241 :: 		m_flow = Set_M_Commands(flow);
 JAL	GCODE_Set_M_Commands+0
 NOP	
 SH	R2, Offset(-1610603000)(GP)
-;GCODE.c,167 :: 		return flow;
+;GCODE.c,242 :: 		if(status_code == STATUS_OK && grp != MODAL_GROUP_NONE){
+LH	R2, Offset(-1610602986)(GP)
+BEQ	R2, R0, L__M_Mode176
+NOP	
+J	L__M_Mode131
+NOP	
+L__M_Mode176:
+SEH	R2, R4
+BNE	R2, R0, L__M_Mode178
+NOP	
+J	L__M_Mode130
+NOP	
+L__M_Mode178:
+L__M_Mode129:
+;GCODE.c,243 :: 		if(bit_istrue(modal_group_words,bit(grp)))
+SEH	R3, R4
+ORI	R2, R0, 1
+SLLV	R3, R2, R3
+LH	R2, Offset(-1610603004)(GP)
+AND	R2, R2, R3
+SEH	R2, R2
+BNE	R2, R0, L__M_Mode180
+NOP	
+J	L_M_Mode14
+NOP	
+L__M_Mode180:
+;GCODE.c,244 :: 		FAIL(STATUS_MODAL_GROUP_VIOLATION);
+SH	R25, 4(SP)
+ORI	R25, R0, 5
+JAL	_FAIL+0
+NOP	
+LH	R25, 4(SP)
+J	L_M_Mode15
+NOP	
+L_M_Mode14:
+;GCODE.c,246 :: 		bit_true(modal_group_words,bit(grp));
+SEH	R3, R4
+ORI	R2, R0, 1
+SLLV	R3, R2, R3
+LH	R2, Offset(-1610603004)(GP)
+OR	R2, R2, R3
+SH	R2, Offset(-1610603004)(GP)
+L_M_Mode15:
+;GCODE.c,242 :: 		if(status_code == STATUS_OK && grp != MODAL_GROUP_NONE){
+L__M_Mode131:
+L__M_Mode130:
+;GCODE.c,248 :: 		group_number = grp;
+SH	R4, Offset(-1610602988)(GP)
+; grp end address is: 16 (R4)
+;GCODE.c,253 :: 		return flow;
 SEH	R2, R25
-;GCODE.c,168 :: 		}
+;GCODE.c,254 :: 		}
 L_end_M_Mode:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 4
+ADDIU	SP, SP, 8
 JR	RA
 NOP	
 ; end of _M_Mode
 GCODE_Set_Modal_Groups:
-;GCODE.c,175 :: 		static int Set_Modal_Groups(int mode){
-ADDIU	SP, SP, -4
-;GCODE.c,177 :: 		switch(mode) {
-J	L_GCODE_Set_Modal_Groups2
+;GCODE.c,261 :: 		static int Set_Modal_Groups(int mode){
+;GCODE.c,262 :: 		int gp_num = MODAL_GROUP_NONE;
+; gp_num start address is: 16 (R4)
+MOVZ	R4, R0, R0
+;GCODE.c,263 :: 		switch(mode) {
+J	L_GCODE_Set_Modal_Groups16
 NOP	
-;GCODE.c,178 :: 		case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 920:
-L_GCODE_Set_Modal_Groups4:
-L_GCODE_Set_Modal_Groups5:
-L_GCODE_Set_Modal_Groups6:
-L_GCODE_Set_Modal_Groups7:
-L_GCODE_Set_Modal_Groups8:
-L_GCODE_Set_Modal_Groups9:
-L_GCODE_Set_Modal_Groups10:
-L_GCODE_Set_Modal_Groups11:
-;GCODE.c,179 :: 		gp_num = MODAL_GROUP_0; break;
-ORI	R2, R0, 1
-SH	R2, 0(SP)
-J	L_GCODE_Set_Modal_Groups3
-NOP	
-;GCODE.c,180 :: 		case 0: case 1: case 2: case 3: case 80: gp_num = MODAL_GROUP_1; break;
-L_GCODE_Set_Modal_Groups12:
-L_GCODE_Set_Modal_Groups13:
-L_GCODE_Set_Modal_Groups14:
-L_GCODE_Set_Modal_Groups15:
-L_GCODE_Set_Modal_Groups16:
-ORI	R2, R0, 2
-SH	R2, 0(SP)
-J	L_GCODE_Set_Modal_Groups3
-NOP	
-;GCODE.c,181 :: 		case 17: case 18: case 19: gp_num = MODAL_GROUP_2; break;
-L_GCODE_Set_Modal_Groups17:
+; gp_num end address is: 16 (R4)
+;GCODE.c,264 :: 		case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 920: case 921:
 L_GCODE_Set_Modal_Groups18:
 L_GCODE_Set_Modal_Groups19:
-ORI	R2, R0, 3
-SH	R2, 0(SP)
-J	L_GCODE_Set_Modal_Groups3
-NOP	
-;GCODE.c,182 :: 		case 90: case 91: gp_num = MODAL_GROUP_3; break;
 L_GCODE_Set_Modal_Groups20:
 L_GCODE_Set_Modal_Groups21:
-ORI	R2, R0, 4
-SH	R2, 0(SP)
-J	L_GCODE_Set_Modal_Groups3
-NOP	
-;GCODE.c,183 :: 		case 93: case 94: gp_num = MODAL_GROUP_5; break;
 L_GCODE_Set_Modal_Groups22:
 L_GCODE_Set_Modal_Groups23:
-ORI	R2, R0, 6
-SH	R2, 0(SP)
-J	L_GCODE_Set_Modal_Groups3
-NOP	
-;GCODE.c,184 :: 		case 20: case 21: gp_num = MODAL_GROUP_6; break;
 L_GCODE_Set_Modal_Groups24:
 L_GCODE_Set_Modal_Groups25:
-ORI	R2, R0, 7
-SH	R2, 0(SP)
-J	L_GCODE_Set_Modal_Groups3
-NOP	
-;GCODE.c,185 :: 		case 54: case 55: case 56: case 57: case 58: case 59: gp_num = MODAL_GROUP_12; break;
 L_GCODE_Set_Modal_Groups26:
+;GCODE.c,265 :: 		gp_num = MODAL_GROUP_0; break;
+; gp_num start address is: 8 (R2)
+ORI	R2, R0, 1
+; gp_num end address is: 8 (R2)
+J	L_GCODE_Set_Modal_Groups17
+NOP	
+;GCODE.c,266 :: 		case 0: case 1: case 2: case 3: case 80: gp_num = MODAL_GROUP_1; break;
 L_GCODE_Set_Modal_Groups27:
 L_GCODE_Set_Modal_Groups28:
 L_GCODE_Set_Modal_Groups29:
 L_GCODE_Set_Modal_Groups30:
 L_GCODE_Set_Modal_Groups31:
-ORI	R2, R0, 9
-SH	R2, 0(SP)
-J	L_GCODE_Set_Modal_Groups3
-NOP	
-;GCODE.c,186 :: 		}
-L_GCODE_Set_Modal_Groups2:
-SEH	R3, R25
-ORI	R2, R0, 4
-BNE	R3, R2, L_GCODE_Set_Modal_Groups182
-NOP	
-J	L_GCODE_Set_Modal_Groups4
-NOP	
-L_GCODE_Set_Modal_Groups182:
-SEH	R3, R25
-ORI	R2, R0, 10
-BNE	R3, R2, L_GCODE_Set_Modal_Groups184
-NOP	
-J	L_GCODE_Set_Modal_Groups5
-NOP	
-L_GCODE_Set_Modal_Groups184:
-SEH	R3, R25
-ORI	R2, R0, 280
-BNE	R3, R2, L_GCODE_Set_Modal_Groups186
-NOP	
-J	L_GCODE_Set_Modal_Groups6
-NOP	
-L_GCODE_Set_Modal_Groups186:
-SEH	R3, R25
-ORI	R2, R0, 281
-BNE	R3, R2, L_GCODE_Set_Modal_Groups188
-NOP	
-J	L_GCODE_Set_Modal_Groups7
-NOP	
-L_GCODE_Set_Modal_Groups188:
-SEH	R3, R25
-ORI	R2, R0, 300
-BNE	R3, R2, L_GCODE_Set_Modal_Groups190
-NOP	
-J	L_GCODE_Set_Modal_Groups8
-NOP	
-L_GCODE_Set_Modal_Groups190:
-SEH	R3, R25
-ORI	R2, R0, 301
-BNE	R3, R2, L_GCODE_Set_Modal_Groups192
-NOP	
-J	L_GCODE_Set_Modal_Groups9
-NOP	
-L_GCODE_Set_Modal_Groups192:
-SEH	R3, R25
-ORI	R2, R0, 53
-BNE	R3, R2, L_GCODE_Set_Modal_Groups194
-NOP	
-J	L_GCODE_Set_Modal_Groups10
-NOP	
-L_GCODE_Set_Modal_Groups194:
-SEH	R3, R25
-ORI	R2, R0, 920
-BNE	R3, R2, L_GCODE_Set_Modal_Groups196
-NOP	
-J	L_GCODE_Set_Modal_Groups11
-NOP	
-L_GCODE_Set_Modal_Groups196:
-SEH	R2, R25
-BNE	R2, R0, L_GCODE_Set_Modal_Groups198
-NOP	
-J	L_GCODE_Set_Modal_Groups12
-NOP	
-L_GCODE_Set_Modal_Groups198:
-SEH	R3, R25
-ORI	R2, R0, 1
-BNE	R3, R2, L_GCODE_Set_Modal_Groups200
-NOP	
-J	L_GCODE_Set_Modal_Groups13
-NOP	
-L_GCODE_Set_Modal_Groups200:
-SEH	R3, R25
+; gp_num start address is: 8 (R2)
 ORI	R2, R0, 2
-BNE	R3, R2, L_GCODE_Set_Modal_Groups202
-NOP	
-J	L_GCODE_Set_Modal_Groups14
-NOP	
-L_GCODE_Set_Modal_Groups202:
-SEH	R3, R25
-ORI	R2, R0, 3
-BNE	R3, R2, L_GCODE_Set_Modal_Groups204
-NOP	
-J	L_GCODE_Set_Modal_Groups15
-NOP	
-L_GCODE_Set_Modal_Groups204:
-SEH	R3, R25
-ORI	R2, R0, 80
-BNE	R3, R2, L_GCODE_Set_Modal_Groups206
-NOP	
-J	L_GCODE_Set_Modal_Groups16
-NOP	
-L_GCODE_Set_Modal_Groups206:
-SEH	R3, R25
-ORI	R2, R0, 17
-BNE	R3, R2, L_GCODE_Set_Modal_Groups208
-NOP	
+; gp_num end address is: 8 (R2)
 J	L_GCODE_Set_Modal_Groups17
 NOP	
-L_GCODE_Set_Modal_Groups208:
+;GCODE.c,267 :: 		case 17: case 18: case 19: gp_num = MODAL_GROUP_2; break;
+L_GCODE_Set_Modal_Groups32:
+L_GCODE_Set_Modal_Groups33:
+L_GCODE_Set_Modal_Groups34:
+; gp_num start address is: 8 (R2)
+ORI	R2, R0, 3
+; gp_num end address is: 8 (R2)
+J	L_GCODE_Set_Modal_Groups17
+NOP	
+;GCODE.c,268 :: 		case 90: case 91: gp_num = MODAL_GROUP_3; break;
+L_GCODE_Set_Modal_Groups35:
+L_GCODE_Set_Modal_Groups36:
+; gp_num start address is: 8 (R2)
+ORI	R2, R0, 4
+; gp_num end address is: 8 (R2)
+J	L_GCODE_Set_Modal_Groups17
+NOP	
+;GCODE.c,269 :: 		case 93: case 94: gp_num = MODAL_GROUP_5; break;
+L_GCODE_Set_Modal_Groups37:
+L_GCODE_Set_Modal_Groups38:
+; gp_num start address is: 8 (R2)
+ORI	R2, R0, 6
+; gp_num end address is: 8 (R2)
+J	L_GCODE_Set_Modal_Groups17
+NOP	
+;GCODE.c,270 :: 		case 20: case 21: gp_num = MODAL_GROUP_6; break;
+L_GCODE_Set_Modal_Groups39:
+L_GCODE_Set_Modal_Groups40:
+; gp_num start address is: 8 (R2)
+ORI	R2, R0, 7
+; gp_num end address is: 8 (R2)
+J	L_GCODE_Set_Modal_Groups17
+NOP	
+;GCODE.c,271 :: 		case 54: case 55: case 56: case 57: case 58: case 59: gp_num = MODAL_GROUP_12; break;
+L_GCODE_Set_Modal_Groups41:
+L_GCODE_Set_Modal_Groups42:
+L_GCODE_Set_Modal_Groups43:
+L_GCODE_Set_Modal_Groups44:
+L_GCODE_Set_Modal_Groups45:
+L_GCODE_Set_Modal_Groups46:
+; gp_num start address is: 8 (R2)
+ORI	R2, R0, 9
+; gp_num end address is: 8 (R2)
+J	L_GCODE_Set_Modal_Groups17
+NOP	
+;GCODE.c,272 :: 		}
+L_GCODE_Set_Modal_Groups16:
+; gp_num start address is: 16 (R4)
 SEH	R3, R25
-ORI	R2, R0, 18
-BNE	R3, R2, L_GCODE_Set_Modal_Groups210
+ORI	R2, R0, 4
+BNE	R3, R2, L_GCODE_Set_Modal_Groups183
 NOP	
 J	L_GCODE_Set_Modal_Groups18
 NOP	
-L_GCODE_Set_Modal_Groups210:
+L_GCODE_Set_Modal_Groups183:
 SEH	R3, R25
-ORI	R2, R0, 19
-BNE	R3, R2, L_GCODE_Set_Modal_Groups212
+ORI	R2, R0, 10
+BNE	R3, R2, L_GCODE_Set_Modal_Groups185
 NOP	
 J	L_GCODE_Set_Modal_Groups19
 NOP	
-L_GCODE_Set_Modal_Groups212:
+L_GCODE_Set_Modal_Groups185:
 SEH	R3, R25
-ORI	R2, R0, 90
-BNE	R3, R2, L_GCODE_Set_Modal_Groups214
+ORI	R2, R0, 280
+BNE	R3, R2, L_GCODE_Set_Modal_Groups187
 NOP	
 J	L_GCODE_Set_Modal_Groups20
 NOP	
-L_GCODE_Set_Modal_Groups214:
+L_GCODE_Set_Modal_Groups187:
 SEH	R3, R25
-ORI	R2, R0, 91
-BNE	R3, R2, L_GCODE_Set_Modal_Groups216
+ORI	R2, R0, 281
+BNE	R3, R2, L_GCODE_Set_Modal_Groups189
 NOP	
 J	L_GCODE_Set_Modal_Groups21
 NOP	
-L_GCODE_Set_Modal_Groups216:
+L_GCODE_Set_Modal_Groups189:
 SEH	R3, R25
-ORI	R2, R0, 93
-BNE	R3, R2, L_GCODE_Set_Modal_Groups218
+ORI	R2, R0, 300
+BNE	R3, R2, L_GCODE_Set_Modal_Groups191
 NOP	
 J	L_GCODE_Set_Modal_Groups22
 NOP	
-L_GCODE_Set_Modal_Groups218:
+L_GCODE_Set_Modal_Groups191:
 SEH	R3, R25
-ORI	R2, R0, 94
-BNE	R3, R2, L_GCODE_Set_Modal_Groups220
+ORI	R2, R0, 301
+BNE	R3, R2, L_GCODE_Set_Modal_Groups193
 NOP	
 J	L_GCODE_Set_Modal_Groups23
 NOP	
-L_GCODE_Set_Modal_Groups220:
+L_GCODE_Set_Modal_Groups193:
 SEH	R3, R25
-ORI	R2, R0, 20
-BNE	R3, R2, L_GCODE_Set_Modal_Groups222
+ORI	R2, R0, 53
+BNE	R3, R2, L_GCODE_Set_Modal_Groups195
 NOP	
 J	L_GCODE_Set_Modal_Groups24
 NOP	
-L_GCODE_Set_Modal_Groups222:
+L_GCODE_Set_Modal_Groups195:
 SEH	R3, R25
-ORI	R2, R0, 21
-BNE	R3, R2, L_GCODE_Set_Modal_Groups224
+ORI	R2, R0, 920
+BNE	R3, R2, L_GCODE_Set_Modal_Groups197
 NOP	
 J	L_GCODE_Set_Modal_Groups25
 NOP	
-L_GCODE_Set_Modal_Groups224:
+L_GCODE_Set_Modal_Groups197:
 SEH	R3, R25
-ORI	R2, R0, 54
-BNE	R3, R2, L_GCODE_Set_Modal_Groups226
+ORI	R2, R0, 921
+BNE	R3, R2, L_GCODE_Set_Modal_Groups199
 NOP	
 J	L_GCODE_Set_Modal_Groups26
 NOP	
-L_GCODE_Set_Modal_Groups226:
-SEH	R3, R25
-ORI	R2, R0, 55
-BNE	R3, R2, L_GCODE_Set_Modal_Groups228
+L_GCODE_Set_Modal_Groups199:
+SEH	R2, R25
+BNE	R2, R0, L_GCODE_Set_Modal_Groups201
 NOP	
 J	L_GCODE_Set_Modal_Groups27
 NOP	
-L_GCODE_Set_Modal_Groups228:
+L_GCODE_Set_Modal_Groups201:
 SEH	R3, R25
-ORI	R2, R0, 56
-BNE	R3, R2, L_GCODE_Set_Modal_Groups230
+ORI	R2, R0, 1
+BNE	R3, R2, L_GCODE_Set_Modal_Groups203
 NOP	
 J	L_GCODE_Set_Modal_Groups28
 NOP	
-L_GCODE_Set_Modal_Groups230:
+L_GCODE_Set_Modal_Groups203:
 SEH	R3, R25
-ORI	R2, R0, 57
-BNE	R3, R2, L_GCODE_Set_Modal_Groups232
+ORI	R2, R0, 2
+BNE	R3, R2, L_GCODE_Set_Modal_Groups205
 NOP	
 J	L_GCODE_Set_Modal_Groups29
 NOP	
-L_GCODE_Set_Modal_Groups232:
+L_GCODE_Set_Modal_Groups205:
 SEH	R3, R25
-ORI	R2, R0, 58
-BNE	R3, R2, L_GCODE_Set_Modal_Groups234
+ORI	R2, R0, 3
+BNE	R3, R2, L_GCODE_Set_Modal_Groups207
 NOP	
 J	L_GCODE_Set_Modal_Groups30
 NOP	
-L_GCODE_Set_Modal_Groups234:
+L_GCODE_Set_Modal_Groups207:
 SEH	R3, R25
-ORI	R2, R0, 59
-BNE	R3, R2, L_GCODE_Set_Modal_Groups236
+ORI	R2, R0, 80
+BNE	R3, R2, L_GCODE_Set_Modal_Groups209
 NOP	
 J	L_GCODE_Set_Modal_Groups31
 NOP	
-L_GCODE_Set_Modal_Groups236:
-L_GCODE_Set_Modal_Groups3:
-;GCODE.c,187 :: 		return gp_num;
-LH	R2, 0(SP)
-;GCODE.c,188 :: 		}
+L_GCODE_Set_Modal_Groups209:
+SEH	R3, R25
+ORI	R2, R0, 17
+BNE	R3, R2, L_GCODE_Set_Modal_Groups211
+NOP	
+J	L_GCODE_Set_Modal_Groups32
+NOP	
+L_GCODE_Set_Modal_Groups211:
+SEH	R3, R25
+ORI	R2, R0, 18
+BNE	R3, R2, L_GCODE_Set_Modal_Groups213
+NOP	
+J	L_GCODE_Set_Modal_Groups33
+NOP	
+L_GCODE_Set_Modal_Groups213:
+SEH	R3, R25
+ORI	R2, R0, 19
+BNE	R3, R2, L_GCODE_Set_Modal_Groups215
+NOP	
+J	L_GCODE_Set_Modal_Groups34
+NOP	
+L_GCODE_Set_Modal_Groups215:
+SEH	R3, R25
+ORI	R2, R0, 90
+BNE	R3, R2, L_GCODE_Set_Modal_Groups217
+NOP	
+J	L_GCODE_Set_Modal_Groups35
+NOP	
+L_GCODE_Set_Modal_Groups217:
+SEH	R3, R25
+ORI	R2, R0, 91
+BNE	R3, R2, L_GCODE_Set_Modal_Groups219
+NOP	
+J	L_GCODE_Set_Modal_Groups36
+NOP	
+L_GCODE_Set_Modal_Groups219:
+SEH	R3, R25
+ORI	R2, R0, 93
+BNE	R3, R2, L_GCODE_Set_Modal_Groups221
+NOP	
+J	L_GCODE_Set_Modal_Groups37
+NOP	
+L_GCODE_Set_Modal_Groups221:
+SEH	R3, R25
+ORI	R2, R0, 94
+BNE	R3, R2, L_GCODE_Set_Modal_Groups223
+NOP	
+J	L_GCODE_Set_Modal_Groups38
+NOP	
+L_GCODE_Set_Modal_Groups223:
+SEH	R3, R25
+ORI	R2, R0, 20
+BNE	R3, R2, L_GCODE_Set_Modal_Groups225
+NOP	
+J	L_GCODE_Set_Modal_Groups39
+NOP	
+L_GCODE_Set_Modal_Groups225:
+SEH	R3, R25
+ORI	R2, R0, 21
+BNE	R3, R2, L_GCODE_Set_Modal_Groups227
+NOP	
+J	L_GCODE_Set_Modal_Groups40
+NOP	
+L_GCODE_Set_Modal_Groups227:
+SEH	R3, R25
+ORI	R2, R0, 54
+BNE	R3, R2, L_GCODE_Set_Modal_Groups229
+NOP	
+J	L_GCODE_Set_Modal_Groups41
+NOP	
+L_GCODE_Set_Modal_Groups229:
+SEH	R3, R25
+ORI	R2, R0, 55
+BNE	R3, R2, L_GCODE_Set_Modal_Groups231
+NOP	
+J	L_GCODE_Set_Modal_Groups42
+NOP	
+L_GCODE_Set_Modal_Groups231:
+SEH	R3, R25
+ORI	R2, R0, 56
+BNE	R3, R2, L_GCODE_Set_Modal_Groups233
+NOP	
+J	L_GCODE_Set_Modal_Groups43
+NOP	
+L_GCODE_Set_Modal_Groups233:
+SEH	R3, R25
+ORI	R2, R0, 57
+BNE	R3, R2, L_GCODE_Set_Modal_Groups235
+NOP	
+J	L_GCODE_Set_Modal_Groups44
+NOP	
+L_GCODE_Set_Modal_Groups235:
+SEH	R3, R25
+ORI	R2, R0, 58
+BNE	R3, R2, L_GCODE_Set_Modal_Groups237
+NOP	
+J	L_GCODE_Set_Modal_Groups45
+NOP	
+L_GCODE_Set_Modal_Groups237:
+SEH	R3, R25
+ORI	R2, R0, 59
+BNE	R3, R2, L_GCODE_Set_Modal_Groups239
+NOP	
+J	L_GCODE_Set_Modal_Groups46
+NOP	
+L_GCODE_Set_Modal_Groups239:
+; gp_num end address is: 16 (R4)
+SEH	R2, R4
+L_GCODE_Set_Modal_Groups17:
+;GCODE.c,273 :: 		return gp_num;
+; gp_num start address is: 8 (R2)
+; gp_num end address is: 8 (R2)
+;GCODE.c,274 :: 		}
 L_end_Set_Modal_Groups:
-ADDIU	SP, SP, 4
 JR	RA
 NOP	
 ; end of GCODE_Set_Modal_Groups
 GCODE_Set_Motion_Mode:
-;GCODE.c,191 :: 		static int Set_Motion_Mode(int mode){
+;GCODE.c,277 :: 		static int Set_Motion_Mode(int mode){
 ADDIU	SP, SP, -12
 SW	RA, 0(SP)
-;GCODE.c,193 :: 		FAIL(STATUS_OK);
+;GCODE.c,278 :: 		FAIL(STATUS_OK);
 SW	R25, 4(SP)
 SH	R25, 8(SP)
 MOVZ	R25, R0, R0
 JAL	_FAIL+0
 NOP	
 LH	R25, 8(SP)
-;GCODE.c,195 :: 		switch(mode){
-J	L_GCODE_Set_Motion_Mode32
+;GCODE.c,280 :: 		switch(mode){
+J	L_GCODE_Set_Motion_Mode47
 NOP	
-;GCODE.c,196 :: 		case 0: m_mode    = MOTION_MODE_SEEK;SV.cir = 0;    break;
-L_GCODE_Set_Motion_Mode34:
-SH	R0, 10(SP)
+;GCODE.c,281 :: 		case 0: motion_mode = MOTION_MODE_SEEK;SV.cir = 0;    break;
+L_GCODE_Set_Motion_Mode49:
+SH	R0, Offset(-1610602990)(GP)
 LBU	R2, Offset(_SV+0)(GP)
 INS	R2, R0, 4, 1
 SB	R2, Offset(_SV+0)(GP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,197 :: 		case 1: m_mode    = MOTION_MODE_LINEAR;SV.cir = 0;  break;
-L_GCODE_Set_Motion_Mode35:
+;GCODE.c,282 :: 		case 1: motion_mode = MOTION_MODE_LINEAR;SV.cir = 0;  break;
+L_GCODE_Set_Motion_Mode50:
 ORI	R2, R0, 1
-SH	R2, 10(SP)
+SH	R2, Offset(-1610602990)(GP)
 LBU	R2, Offset(_SV+0)(GP)
 INS	R2, R0, 4, 1
 SB	R2, Offset(_SV+0)(GP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,198 :: 		case 2: m_mode    = MOTION_MODE_CW_ARC;gc.DIR = CW;SV.cir = 1;  break;
-L_GCODE_Set_Motion_Mode36:
+;GCODE.c,283 :: 		case 2: motion_mode = MOTION_MODE_CW_ARC;gc.DIR = CW;SV.cir = 1;  break;
+L_GCODE_Set_Motion_Mode51:
 ORI	R2, R0, 2
-SH	R2, 10(SP)
-SH	R0, Offset(_gc+128)(GP)
+SH	R2, Offset(-1610602990)(GP)
+SH	R0, Offset(_gc+132)(GP)
 LBU	R2, Offset(_SV+0)(GP)
 ORI	R2, R2, 16
 SB	R2, Offset(_SV+0)(GP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,199 :: 		case 3: m_mode    = MOTION_MODE_CCW_ARC;gc.DIR = CCW;SV.cir = 1; break;
-L_GCODE_Set_Motion_Mode37:
+;GCODE.c,284 :: 		case 3: motion_mode = MOTION_MODE_CCW_ARC;gc.DIR = CCW;SV.cir = 1; break;
+L_GCODE_Set_Motion_Mode52:
 ORI	R2, R0, 3
-SH	R2, 10(SP)
+SH	R2, Offset(-1610602990)(GP)
 ORI	R2, R0, 1
-SH	R2, Offset(_gc+128)(GP)
+SH	R2, Offset(_gc+132)(GP)
 LBU	R2, Offset(_SV+0)(GP)
 ORI	R2, R2, 16
 SB	R2, Offset(_SV+0)(GP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,200 :: 		case 4: non_modal_action  = NON_MODAL_DWELL;     break;
-L_GCODE_Set_Motion_Mode38:
+;GCODE.c,285 :: 		case 80: motion_mode = MOTION_MODE_CANCEL; break;
+L_GCODE_Set_Motion_Mode53:
+ORI	R2, R0, 4
+SH	R2, Offset(-1610602990)(GP)
+J	L_GCODE_Set_Motion_Mode48
+NOP	
+;GCODE.c,286 :: 		case 4: non_modal_action  = NON_MODAL_DWELL;     break;
+L_GCODE_Set_Motion_Mode54:
 ORI	R2, R0, 1
 SH	R2, Offset(-1610602992)(GP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,201 :: 		case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
-L_GCODE_Set_Motion_Mode39:
+;GCODE.c,287 :: 		case 10: non_modal_action = NON_MODAL_SET_COORDINATE_DATA; break;
+L_GCODE_Set_Motion_Mode55:
 ORI	R2, R0, 2
 SH	R2, Offset(-1610602992)(GP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,202 :: 		case 17: Select_Plane(AXIS_XY);m_mode    = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode40:
+;GCODE.c,288 :: 		case 17: Select_Plane(AXIS_XY); break;
+L_GCODE_Set_Motion_Mode56:
 MOVZ	R25, R0, R0
 JAL	GCODE_Select_Plane+0
 NOP	
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,203 :: 		case 18: Select_Plane(AXIS_XZ);m_mode    = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode41:
+;GCODE.c,289 :: 		case 18: Select_Plane(AXIS_XZ); break;
+L_GCODE_Set_Motion_Mode57:
 ORI	R25, R0, 1
 JAL	GCODE_Select_Plane+0
 NOP	
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,204 :: 		case 19: Select_Plane(AXIS_YZ);m_mode    = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode42:
+;GCODE.c,290 :: 		case 19: Select_Plane(AXIS_YZ); break;
+L_GCODE_Set_Motion_Mode58:
 ORI	R25, R0, 2
 JAL	GCODE_Select_Plane+0
 NOP	
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,205 :: 		case 20: gc.inches_mode = 1;m_mode  = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode43:
+;GCODE.c,291 :: 		case 20: gc.inches_mode = 1; break;
+L_GCODE_Set_Motion_Mode59:
 ORI	R2, R0, 1
 SB	R2, Offset(_gc+3)(GP)
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,206 :: 		case 21: gc.inches_mode = 0;m_mode  = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode44:
+;GCODE.c,292 :: 		case 21: gc.inches_mode = 0; break;
+L_GCODE_Set_Motion_Mode60:
 SB	R0, Offset(_gc+3)(GP)
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,207 :: 		case 53: gc.absolute_override = true;m_mode = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode45:
+;GCODE.c,293 :: 		case 53: gc.absolute_override = true; break;
+L_GCODE_Set_Motion_Mode61:
 ORI	R2, R0, 1
 SB	R2, Offset(_gc+4)(GP)
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,208 :: 		case 54: case 55: case 56: case 57: case 58: case 59:
-L_GCODE_Set_Motion_Mode46:
-L_GCODE_Set_Motion_Mode47:
-L_GCODE_Set_Motion_Mode48:
-L_GCODE_Set_Motion_Mode49:
-L_GCODE_Set_Motion_Mode50:
-L_GCODE_Set_Motion_Mode51:
-;GCODE.c,209 :: 		gc.coord_select = (mode - 53);//G54-53 == 1...;
+;GCODE.c,294 :: 		case 54: case 55: case 56: case 57: case 58: case 59:
+L_GCODE_Set_Motion_Mode62:
+L_GCODE_Set_Motion_Mode63:
+L_GCODE_Set_Motion_Mode64:
+L_GCODE_Set_Motion_Mode65:
+L_GCODE_Set_Motion_Mode66:
+L_GCODE_Set_Motion_Mode67:
+;GCODE.c,295 :: 		gc.coord_select = (mode - 53);//G54-53 == 1...;
 ADDIU	R2, R25, -53
 SH	R2, Offset(_gc+14)(GP)
-;GCODE.c,210 :: 		m_mode = MOTION_MODE_NULL;break;
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
+;GCODE.c,296 :: 		Load_Coord_System(gc.coord_select);
+SEH	R25, R2
+JAL	GCODE_Load_Coord_System+0
 NOP	
-;GCODE.c,211 :: 		case 80: motion_mode = MOTION_MODE_CANCEL; break; //to be implimented in the future
-L_GCODE_Set_Motion_Mode52:
-ORI	R2, R0, 4
-SH	R2, Offset(-1610602990)(GP)
-J	L_GCODE_Set_Motion_Mode33
+;GCODE.c,297 :: 		break;
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,212 :: 		case 90: gc.absolute_mode = 1; m_mode = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode53:
+;GCODE.c,298 :: 		case 90: gc.absolute_mode = 1; break;
+L_GCODE_Set_Motion_Mode68:
 ORI	R2, R0, 1
 SB	R2, Offset(_gc+5)(GP)
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,213 :: 		case 91: gc.absolute_mode = 0; m_mode = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode54:
+;GCODE.c,299 :: 		case 91: gc.absolute_mode = 0; break;
+L_GCODE_Set_Motion_Mode69:
 SB	R0, Offset(_gc+5)(GP)
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,214 :: 		case 93: gc.inverse_feed_rate_mode = true; m_mode = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode55:
-ORI	R2, R0, 1
-SB	R2, Offset(_gc+2)(GP)
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
-NOP	
-;GCODE.c,215 :: 		case 94: gc.inverse_feed_rate_mode = false;m_mode = MOTION_MODE_NULL; break;
-L_GCODE_Set_Motion_Mode56:
-SB	R0, Offset(_gc+2)(GP)
-ORI	R2, R0, 6
-SH	R2, 10(SP)
-J	L_GCODE_Set_Motion_Mode33
-NOP	
-;GCODE.c,216 :: 		case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
-L_GCODE_Set_Motion_Mode57:
-ORI	R2, R0, 3
-SH	R2, Offset(-1610602992)(GP)
-J	L_GCODE_Set_Motion_Mode33
-NOP	
-;GCODE.c,217 :: 		case 281: non_modal_action = NON_MODAL_SET_HOME_0; break;
-L_GCODE_Set_Motion_Mode58:
-ORI	R2, R0, 4
-SH	R2, Offset(-1610602992)(GP)
-J	L_GCODE_Set_Motion_Mode33
-NOP	
-;GCODE.c,218 :: 		case 300: non_modal_action = NON_MODAL_GO_HOME_1; break;
-L_GCODE_Set_Motion_Mode59:
-ORI	R2, R0, 5
-SH	R2, Offset(-1610602992)(GP)
-J	L_GCODE_Set_Motion_Mode33
-NOP	
-;GCODE.c,219 :: 		case 301: non_modal_action = NON_MODAL_SET_HOME_1; break;
-L_GCODE_Set_Motion_Mode60:
-ORI	R2, R0, 6
-SH	R2, Offset(-1610602992)(GP)
-J	L_GCODE_Set_Motion_Mode33
-NOP	
-;GCODE.c,220 :: 		case 920: non_modal_action = NON_MODAL_SET_COORDINATE_OFFSET; break;
-L_GCODE_Set_Motion_Mode61:
-ORI	R2, R0, 7
-SH	R2, Offset(-1610602992)(GP)
-J	L_GCODE_Set_Motion_Mode33
-NOP	
-;GCODE.c,221 :: 		case 921: non_modal_action = NON_MODAL_RESET_COORDINATE_OFFSET; break;
-L_GCODE_Set_Motion_Mode62:
-ORI	R2, R0, 8
-SH	R2, Offset(-1610602992)(GP)
-J	L_GCODE_Set_Motion_Mode33
-NOP	
-;GCODE.c,222 :: 		default: FAIL(STATUS_UNSUPPORTED_STATEMENT);return;break;
-L_GCODE_Set_Motion_Mode63:
+;GCODE.c,301 :: 		case 93: FAIL(STATUS_UNSUPPORTED_STATEMENT); break;
+L_GCODE_Set_Motion_Mode70:
 ORI	R25, R0, 3
 JAL	_FAIL+0
 NOP	
-J	L_end_Set_Motion_Mode
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-;GCODE.c,223 :: 		}
-L_GCODE_Set_Motion_Mode32:
-SEH	R2, R25
-BNE	R2, R0, L_GCODE_Set_Motion_Mode239
+;GCODE.c,302 :: 		case 94: gc.inverse_feed_rate_mode = false; break;
+L_GCODE_Set_Motion_Mode71:
+SB	R0, Offset(_gc+2)(GP)
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-J	L_GCODE_Set_Motion_Mode34
-NOP	
-L_GCODE_Set_Motion_Mode239:
-SEH	R3, R25
-ORI	R2, R0, 1
-BNE	R3, R2, L_GCODE_Set_Motion_Mode241
-NOP	
-J	L_GCODE_Set_Motion_Mode35
-NOP	
-L_GCODE_Set_Motion_Mode241:
-SEH	R3, R25
-ORI	R2, R0, 2
-BNE	R3, R2, L_GCODE_Set_Motion_Mode243
-NOP	
-J	L_GCODE_Set_Motion_Mode36
-NOP	
-L_GCODE_Set_Motion_Mode243:
-SEH	R3, R25
+;GCODE.c,303 :: 		case 280: non_modal_action = NON_MODAL_GO_HOME_0; break;
+L_GCODE_Set_Motion_Mode72:
 ORI	R2, R0, 3
-BNE	R3, R2, L_GCODE_Set_Motion_Mode245
+SH	R2, Offset(-1610602992)(GP)
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-J	L_GCODE_Set_Motion_Mode37
-NOP	
-L_GCODE_Set_Motion_Mode245:
-SEH	R3, R25
+;GCODE.c,304 :: 		case 281: non_modal_action = NON_MODAL_SET_HOME_0; break;
+L_GCODE_Set_Motion_Mode73:
 ORI	R2, R0, 4
-BNE	R3, R2, L_GCODE_Set_Motion_Mode247
+SH	R2, Offset(-1610602992)(GP)
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-J	L_GCODE_Set_Motion_Mode38
+;GCODE.c,305 :: 		case 300: non_modal_action = NON_MODAL_GO_HOME_1; break;
+L_GCODE_Set_Motion_Mode74:
+ORI	R2, R0, 5
+SH	R2, Offset(-1610602992)(GP)
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-L_GCODE_Set_Motion_Mode247:
-SEH	R3, R25
-ORI	R2, R0, 10
-BNE	R3, R2, L_GCODE_Set_Motion_Mode249
+;GCODE.c,306 :: 		case 301: non_modal_action = NON_MODAL_SET_HOME_1; break;
+L_GCODE_Set_Motion_Mode75:
+ORI	R2, R0, 6
+SH	R2, Offset(-1610602992)(GP)
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-J	L_GCODE_Set_Motion_Mode39
+;GCODE.c,307 :: 		case 920: non_modal_action = NON_MODAL_SET_COORDINATE_OFFSET; break;
+L_GCODE_Set_Motion_Mode76:
+ORI	R2, R0, 7
+SH	R2, Offset(-1610602992)(GP)
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-L_GCODE_Set_Motion_Mode249:
-SEH	R3, R25
-ORI	R2, R0, 17
-BNE	R3, R2, L_GCODE_Set_Motion_Mode251
+;GCODE.c,308 :: 		case 921: non_modal_action = NON_MODAL_RESET_COORDINATE_OFFSET; break;
+L_GCODE_Set_Motion_Mode77:
+ORI	R2, R0, 8
+SH	R2, Offset(-1610602992)(GP)
+J	L_GCODE_Set_Motion_Mode48
 NOP	
-J	L_GCODE_Set_Motion_Mode40
-NOP	
-L_GCODE_Set_Motion_Mode251:
-SEH	R3, R25
-ORI	R2, R0, 18
-BNE	R3, R2, L_GCODE_Set_Motion_Mode253
-NOP	
-J	L_GCODE_Set_Motion_Mode41
-NOP	
-L_GCODE_Set_Motion_Mode253:
-SEH	R3, R25
-ORI	R2, R0, 19
-BNE	R3, R2, L_GCODE_Set_Motion_Mode255
-NOP	
-J	L_GCODE_Set_Motion_Mode42
-NOP	
-L_GCODE_Set_Motion_Mode255:
-SEH	R3, R25
-ORI	R2, R0, 20
-BNE	R3, R2, L_GCODE_Set_Motion_Mode257
-NOP	
-J	L_GCODE_Set_Motion_Mode43
-NOP	
-L_GCODE_Set_Motion_Mode257:
-SEH	R3, R25
-ORI	R2, R0, 21
-BNE	R3, R2, L_GCODE_Set_Motion_Mode259
-NOP	
-J	L_GCODE_Set_Motion_Mode44
-NOP	
-L_GCODE_Set_Motion_Mode259:
-SEH	R3, R25
-ORI	R2, R0, 53
-BNE	R3, R2, L_GCODE_Set_Motion_Mode261
-NOP	
-J	L_GCODE_Set_Motion_Mode45
-NOP	
-L_GCODE_Set_Motion_Mode261:
-SEH	R3, R25
-ORI	R2, R0, 54
-BNE	R3, R2, L_GCODE_Set_Motion_Mode263
-NOP	
-J	L_GCODE_Set_Motion_Mode46
-NOP	
-L_GCODE_Set_Motion_Mode263:
-SEH	R3, R25
-ORI	R2, R0, 55
-BNE	R3, R2, L_GCODE_Set_Motion_Mode265
-NOP	
-J	L_GCODE_Set_Motion_Mode47
-NOP	
-L_GCODE_Set_Motion_Mode265:
-SEH	R3, R25
-ORI	R2, R0, 56
-BNE	R3, R2, L_GCODE_Set_Motion_Mode267
+;GCODE.c,309 :: 		default: FAIL(STATUS_UNSUPPORTED_STATEMENT); break;
+L_GCODE_Set_Motion_Mode78:
+ORI	R25, R0, 3
+JAL	_FAIL+0
 NOP	
 J	L_GCODE_Set_Motion_Mode48
 NOP	
-L_GCODE_Set_Motion_Mode267:
-SEH	R3, R25
-ORI	R2, R0, 57
-BNE	R3, R2, L_GCODE_Set_Motion_Mode269
+;GCODE.c,310 :: 		}
+L_GCODE_Set_Motion_Mode47:
+SEH	R2, R25
+BNE	R2, R0, L_GCODE_Set_Motion_Mode242
 NOP	
 J	L_GCODE_Set_Motion_Mode49
 NOP	
-L_GCODE_Set_Motion_Mode269:
+L_GCODE_Set_Motion_Mode242:
 SEH	R3, R25
-ORI	R2, R0, 58
-BNE	R3, R2, L_GCODE_Set_Motion_Mode271
+ORI	R2, R0, 1
+BNE	R3, R2, L_GCODE_Set_Motion_Mode244
 NOP	
 J	L_GCODE_Set_Motion_Mode50
 NOP	
-L_GCODE_Set_Motion_Mode271:
+L_GCODE_Set_Motion_Mode244:
 SEH	R3, R25
-ORI	R2, R0, 59
-BNE	R3, R2, L_GCODE_Set_Motion_Mode273
+ORI	R2, R0, 2
+BNE	R3, R2, L_GCODE_Set_Motion_Mode246
 NOP	
 J	L_GCODE_Set_Motion_Mode51
 NOP	
-L_GCODE_Set_Motion_Mode273:
+L_GCODE_Set_Motion_Mode246:
 SEH	R3, R25
-ORI	R2, R0, 80
-BNE	R3, R2, L_GCODE_Set_Motion_Mode275
+ORI	R2, R0, 3
+BNE	R3, R2, L_GCODE_Set_Motion_Mode248
 NOP	
 J	L_GCODE_Set_Motion_Mode52
 NOP	
-L_GCODE_Set_Motion_Mode275:
+L_GCODE_Set_Motion_Mode248:
 SEH	R3, R25
-ORI	R2, R0, 90
-BNE	R3, R2, L_GCODE_Set_Motion_Mode277
+ORI	R2, R0, 80
+BNE	R3, R2, L_GCODE_Set_Motion_Mode250
 NOP	
 J	L_GCODE_Set_Motion_Mode53
 NOP	
-L_GCODE_Set_Motion_Mode277:
+L_GCODE_Set_Motion_Mode250:
 SEH	R3, R25
-ORI	R2, R0, 91
-BNE	R3, R2, L_GCODE_Set_Motion_Mode279
+ORI	R2, R0, 4
+BNE	R3, R2, L_GCODE_Set_Motion_Mode252
 NOP	
 J	L_GCODE_Set_Motion_Mode54
 NOP	
-L_GCODE_Set_Motion_Mode279:
+L_GCODE_Set_Motion_Mode252:
 SEH	R3, R25
-ORI	R2, R0, 93
-BNE	R3, R2, L_GCODE_Set_Motion_Mode281
+ORI	R2, R0, 10
+BNE	R3, R2, L_GCODE_Set_Motion_Mode254
 NOP	
 J	L_GCODE_Set_Motion_Mode55
 NOP	
-L_GCODE_Set_Motion_Mode281:
+L_GCODE_Set_Motion_Mode254:
 SEH	R3, R25
-ORI	R2, R0, 94
-BNE	R3, R2, L_GCODE_Set_Motion_Mode283
+ORI	R2, R0, 17
+BNE	R3, R2, L_GCODE_Set_Motion_Mode256
 NOP	
 J	L_GCODE_Set_Motion_Mode56
 NOP	
-L_GCODE_Set_Motion_Mode283:
+L_GCODE_Set_Motion_Mode256:
 SEH	R3, R25
-ORI	R2, R0, 280
-BNE	R3, R2, L_GCODE_Set_Motion_Mode285
+ORI	R2, R0, 18
+BNE	R3, R2, L_GCODE_Set_Motion_Mode258
 NOP	
 J	L_GCODE_Set_Motion_Mode57
 NOP	
-L_GCODE_Set_Motion_Mode285:
+L_GCODE_Set_Motion_Mode258:
 SEH	R3, R25
-ORI	R2, R0, 281
-BNE	R3, R2, L_GCODE_Set_Motion_Mode287
+ORI	R2, R0, 19
+BNE	R3, R2, L_GCODE_Set_Motion_Mode260
 NOP	
 J	L_GCODE_Set_Motion_Mode58
 NOP	
-L_GCODE_Set_Motion_Mode287:
+L_GCODE_Set_Motion_Mode260:
 SEH	R3, R25
-ORI	R2, R0, 300
-BNE	R3, R2, L_GCODE_Set_Motion_Mode289
+ORI	R2, R0, 20
+BNE	R3, R2, L_GCODE_Set_Motion_Mode262
 NOP	
 J	L_GCODE_Set_Motion_Mode59
 NOP	
-L_GCODE_Set_Motion_Mode289:
+L_GCODE_Set_Motion_Mode262:
 SEH	R3, R25
-ORI	R2, R0, 301
-BNE	R3, R2, L_GCODE_Set_Motion_Mode291
+ORI	R2, R0, 21
+BNE	R3, R2, L_GCODE_Set_Motion_Mode264
 NOP	
 J	L_GCODE_Set_Motion_Mode60
 NOP	
-L_GCODE_Set_Motion_Mode291:
+L_GCODE_Set_Motion_Mode264:
 SEH	R3, R25
-ORI	R2, R0, 920
-BNE	R3, R2, L_GCODE_Set_Motion_Mode293
+ORI	R2, R0, 53
+BNE	R3, R2, L_GCODE_Set_Motion_Mode266
 NOP	
 J	L_GCODE_Set_Motion_Mode61
 NOP	
-L_GCODE_Set_Motion_Mode293:
+L_GCODE_Set_Motion_Mode266:
 SEH	R3, R25
-ORI	R2, R0, 921
-BNE	R3, R2, L_GCODE_Set_Motion_Mode295
+ORI	R2, R0, 54
+BNE	R3, R2, L_GCODE_Set_Motion_Mode268
 NOP	
 J	L_GCODE_Set_Motion_Mode62
 NOP	
-L_GCODE_Set_Motion_Mode295:
+L_GCODE_Set_Motion_Mode268:
+SEH	R3, R25
+ORI	R2, R0, 55
+BNE	R3, R2, L_GCODE_Set_Motion_Mode270
+NOP	
 J	L_GCODE_Set_Motion_Mode63
 NOP	
-L_GCODE_Set_Motion_Mode33:
-;GCODE.c,228 :: 		if ( bit_istrue(modal_group_words,bit(MODAL_GROUP_1)) || axis_words ) {
-LH	R2, Offset(-1610603004)(GP)
-ANDI	R2, R2, 4
-SEH	R2, R2
-BEQ	R2, R0, L_GCODE_Set_Motion_Mode296
+L_GCODE_Set_Motion_Mode270:
+SEH	R3, R25
+ORI	R2, R0, 56
+BNE	R3, R2, L_GCODE_Set_Motion_Mode272
 NOP	
-J	L_GCODE_Set_Motion_Mode151
+J	L_GCODE_Set_Motion_Mode64
 NOP	
-L_GCODE_Set_Motion_Mode296:
-LH	R2, Offset(-1610603006)(GP)
-BEQ	R2, R0, L_GCODE_Set_Motion_Mode297
+L_GCODE_Set_Motion_Mode272:
+SEH	R3, R25
+ORI	R2, R0, 57
+BNE	R3, R2, L_GCODE_Set_Motion_Mode274
 NOP	
-J	L_GCODE_Set_Motion_Mode150
+J	L_GCODE_Set_Motion_Mode65
 NOP	
-L_GCODE_Set_Motion_Mode297:
+L_GCODE_Set_Motion_Mode274:
+SEH	R3, R25
+ORI	R2, R0, 58
+BNE	R3, R2, L_GCODE_Set_Motion_Mode276
+NOP	
 J	L_GCODE_Set_Motion_Mode66
 NOP	
-L_GCODE_Set_Motion_Mode151:
-L_GCODE_Set_Motion_Mode150:
-;GCODE.c,230 :: 		if ( gc.inverse_feed_rate_mode ) {
-LBU	R2, Offset(_gc+2)(GP)
-BNE	R2, R0, L_GCODE_Set_Motion_Mode299
+L_GCODE_Set_Motion_Mode276:
+SEH	R3, R25
+ORI	R2, R0, 59
+BNE	R3, R2, L_GCODE_Set_Motion_Mode278
 NOP	
 J	L_GCODE_Set_Motion_Mode67
 NOP	
-L_GCODE_Set_Motion_Mode299:
-;GCODE.c,231 :: 		if (inverse_feed_rate < 0 && motion_mode != MOTION_MODE_CANCEL) {
-LWC1	S1, Offset(_inverse_feed_rate+0)(GP)
-MOVZ	R2, R0, R0
-MTC1	R2, S0
-C.LE.S 	0, S0, S1
-BC1F	0, L_GCODE_Set_Motion_Mode300
+L_GCODE_Set_Motion_Mode278:
+SEH	R3, R25
+ORI	R2, R0, 90
+BNE	R3, R2, L_GCODE_Set_Motion_Mode280
 NOP	
-J	L_GCODE_Set_Motion_Mode153
+J	L_GCODE_Set_Motion_Mode68
 NOP	
-L_GCODE_Set_Motion_Mode300:
-LH	R3, Offset(-1610602990)(GP)
-ORI	R2, R0, 4
-BNE	R3, R2, L_GCODE_Set_Motion_Mode302
+L_GCODE_Set_Motion_Mode280:
+SEH	R3, R25
+ORI	R2, R0, 91
+BNE	R3, R2, L_GCODE_Set_Motion_Mode282
 NOP	
-J	L_GCODE_Set_Motion_Mode152
+J	L_GCODE_Set_Motion_Mode69
 NOP	
-L_GCODE_Set_Motion_Mode302:
-L_GCODE_Set_Motion_Mode148:
-;GCODE.c,232 :: 		FAIL(STATUS_INVALID_STATEMENT);
-ORI	R25, R0, 6
-JAL	_FAIL+0
+L_GCODE_Set_Motion_Mode282:
+SEH	R3, R25
+ORI	R2, R0, 93
+BNE	R3, R2, L_GCODE_Set_Motion_Mode284
 NOP	
-;GCODE.c,231 :: 		if (inverse_feed_rate < 0 && motion_mode != MOTION_MODE_CANCEL) {
-L_GCODE_Set_Motion_Mode153:
-L_GCODE_Set_Motion_Mode152:
-;GCODE.c,234 :: 		}
-L_GCODE_Set_Motion_Mode67:
-;GCODE.c,236 :: 		if ( gc.absolute_override && !(motion_mode == MOTION_MODE_SEEK || motion_mode == MOTION_MODE_LINEAR)) {
-LBU	R2, Offset(_gc+4)(GP)
-BNE	R2, R0, L_GCODE_Set_Motion_Mode304
+J	L_GCODE_Set_Motion_Mode70
 NOP	
-J	L_GCODE_Set_Motion_Mode155
+L_GCODE_Set_Motion_Mode284:
+SEH	R3, R25
+ORI	R2, R0, 94
+BNE	R3, R2, L_GCODE_Set_Motion_Mode286
 NOP	
-L_GCODE_Set_Motion_Mode304:
-LH	R2, Offset(-1610602990)(GP)
-BNE	R2, R0, L_GCODE_Set_Motion_Mode306
-NOP	
-J	L_GCODE_Set_Motion_Mode72
-NOP	
-L_GCODE_Set_Motion_Mode306:
-LH	R3, Offset(-1610602990)(GP)
-ORI	R2, R0, 1
-BNE	R3, R2, L_GCODE_Set_Motion_Mode308
-NOP	
-J	L_GCODE_Set_Motion_Mode72
-NOP	
-L_GCODE_Set_Motion_Mode308:
-MOVZ	R2, R0, R0
 J	L_GCODE_Set_Motion_Mode71
 NOP	
-L_GCODE_Set_Motion_Mode72:
-ORI	R2, R0, 1
-L_GCODE_Set_Motion_Mode71:
-BEQ	R2, R0, L_GCODE_Set_Motion_Mode309
+L_GCODE_Set_Motion_Mode286:
+SEH	R3, R25
+ORI	R2, R0, 280
+BNE	R3, R2, L_GCODE_Set_Motion_Mode288
 NOP	
-J	L_GCODE_Set_Motion_Mode154
+J	L_GCODE_Set_Motion_Mode72
 NOP	
-L_GCODE_Set_Motion_Mode309:
-L_GCODE_Set_Motion_Mode147:
-;GCODE.c,237 :: 		FAIL(STATUS_INVALID_STATEMENT);
-ORI	R25, R0, 6
-JAL	_FAIL+0
+L_GCODE_Set_Motion_Mode288:
+SEH	R3, R25
+ORI	R2, R0, 281
+BNE	R3, R2, L_GCODE_Set_Motion_Mode290
 NOP	
-;GCODE.c,236 :: 		if ( gc.absolute_override && !(motion_mode == MOTION_MODE_SEEK || motion_mode == MOTION_MODE_LINEAR)) {
-L_GCODE_Set_Motion_Mode155:
-L_GCODE_Set_Motion_Mode154:
-;GCODE.c,240 :: 		}
-L_GCODE_Set_Motion_Mode66:
-;GCODE.c,258 :: 		return m_mode;
-LH	R2, 10(SP)
-;GCODE.c,259 :: 		}
-;GCODE.c,258 :: 		return m_mode;
-;GCODE.c,259 :: 		}
+J	L_GCODE_Set_Motion_Mode73
+NOP	
+L_GCODE_Set_Motion_Mode290:
+SEH	R3, R25
+ORI	R2, R0, 300
+BNE	R3, R2, L_GCODE_Set_Motion_Mode292
+NOP	
+J	L_GCODE_Set_Motion_Mode74
+NOP	
+L_GCODE_Set_Motion_Mode292:
+SEH	R3, R25
+ORI	R2, R0, 301
+BNE	R3, R2, L_GCODE_Set_Motion_Mode294
+NOP	
+J	L_GCODE_Set_Motion_Mode75
+NOP	
+L_GCODE_Set_Motion_Mode294:
+SEH	R3, R25
+ORI	R2, R0, 920
+BNE	R3, R2, L_GCODE_Set_Motion_Mode296
+NOP	
+J	L_GCODE_Set_Motion_Mode76
+NOP	
+L_GCODE_Set_Motion_Mode296:
+SEH	R3, R25
+ORI	R2, R0, 921
+BNE	R3, R2, L_GCODE_Set_Motion_Mode298
+NOP	
+J	L_GCODE_Set_Motion_Mode77
+NOP	
+L_GCODE_Set_Motion_Mode298:
+J	L_GCODE_Set_Motion_Mode78
+NOP	
+L_GCODE_Set_Motion_Mode48:
+;GCODE.c,311 :: 		gc.motion_mode = motion_mode;
+LH	R2, Offset(-1610602990)(GP)
+SB	R2, Offset(_gc+8)(GP)
+;GCODE.c,324 :: 		return motion_mode;
+LH	R2, Offset(-1610602990)(GP)
+;GCODE.c,325 :: 		}
+;GCODE.c,324 :: 		return motion_mode;
+;GCODE.c,325 :: 		}
 L_end_Set_Motion_Mode:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -1051,225 +1371,242 @@ JR	RA
 NOP	
 ; end of GCODE_Set_Motion_Mode
 GCODE_Set_M_Modal_Commands:
-;GCODE.c,264 :: 		static int Set_M_Modal_Commands(int flow){
-ADDIU	SP, SP, -4
-;GCODE.c,267 :: 		switch(flow) {
-J	L_GCODE_Set_M_Modal_Commands76
+;GCODE.c,330 :: 		static int Set_M_Modal_Commands(int flow){
+;GCODE.c,331 :: 		int m_num = MODAL_GROUP_NONE;
+; m_num start address is: 16 (R4)
+MOVZ	R4, R0, R0
+;GCODE.c,333 :: 		switch(flow) {
+J	L_GCODE_Set_M_Modal_Commands79
 NOP	
-;GCODE.c,268 :: 		case 0: case 1: case 2: case 30: m_num = MODAL_GROUP_4; break;
-L_GCODE_Set_M_Modal_Commands78:
-L_GCODE_Set_M_Modal_Commands79:
-L_GCODE_Set_M_Modal_Commands80:
+; m_num end address is: 16 (R4)
+;GCODE.c,334 :: 		case 0: case 1: case 2: case 30: m_num = MODAL_GROUP_4; break;
 L_GCODE_Set_M_Modal_Commands81:
-ORI	R2, R0, 5
-SH	R2, 0(SP)
-J	L_GCODE_Set_M_Modal_Commands77
-NOP	
-;GCODE.c,269 :: 		case 3: case 4: case 5: m_num = MODAL_GROUP_7; break;
 L_GCODE_Set_M_Modal_Commands82:
 L_GCODE_Set_M_Modal_Commands83:
 L_GCODE_Set_M_Modal_Commands84:
-ORI	R2, R0, 8
-SH	R2, 0(SP)
-J	L_GCODE_Set_M_Modal_Commands77
-NOP	
-;GCODE.c,270 :: 		}
-L_GCODE_Set_M_Modal_Commands76:
-SEH	R2, R25
-BNE	R2, R0, L_GCODE_Set_M_Modal_Commands312
-NOP	
-J	L_GCODE_Set_M_Modal_Commands78
-NOP	
-L_GCODE_Set_M_Modal_Commands312:
-SEH	R3, R25
-ORI	R2, R0, 1
-BNE	R3, R2, L_GCODE_Set_M_Modal_Commands314
-NOP	
-J	L_GCODE_Set_M_Modal_Commands79
-NOP	
-L_GCODE_Set_M_Modal_Commands314:
-SEH	R3, R25
-ORI	R2, R0, 2
-BNE	R3, R2, L_GCODE_Set_M_Modal_Commands316
-NOP	
+; m_num start address is: 8 (R2)
+ORI	R2, R0, 5
+; m_num end address is: 8 (R2)
 J	L_GCODE_Set_M_Modal_Commands80
 NOP	
-L_GCODE_Set_M_Modal_Commands316:
-SEH	R3, R25
-ORI	R2, R0, 30
-BNE	R3, R2, L_GCODE_Set_M_Modal_Commands318
+;GCODE.c,335 :: 		case 3: case 4: case 5: m_num = MODAL_GROUP_7; break;
+L_GCODE_Set_M_Modal_Commands85:
+L_GCODE_Set_M_Modal_Commands86:
+L_GCODE_Set_M_Modal_Commands87:
+; m_num start address is: 8 (R2)
+ORI	R2, R0, 8
+; m_num end address is: 8 (R2)
+J	L_GCODE_Set_M_Modal_Commands80
+NOP	
+;GCODE.c,336 :: 		}
+L_GCODE_Set_M_Modal_Commands79:
+; m_num start address is: 16 (R4)
+SEH	R2, R25
+BNE	R2, R0, L_GCODE_Set_M_Modal_Commands301
 NOP	
 J	L_GCODE_Set_M_Modal_Commands81
 NOP	
-L_GCODE_Set_M_Modal_Commands318:
+L_GCODE_Set_M_Modal_Commands301:
 SEH	R3, R25
-ORI	R2, R0, 3
-BNE	R3, R2, L_GCODE_Set_M_Modal_Commands320
+ORI	R2, R0, 1
+BNE	R3, R2, L_GCODE_Set_M_Modal_Commands303
 NOP	
 J	L_GCODE_Set_M_Modal_Commands82
 NOP	
-L_GCODE_Set_M_Modal_Commands320:
+L_GCODE_Set_M_Modal_Commands303:
 SEH	R3, R25
-ORI	R2, R0, 4
-BNE	R3, R2, L_GCODE_Set_M_Modal_Commands322
+ORI	R2, R0, 2
+BNE	R3, R2, L_GCODE_Set_M_Modal_Commands305
 NOP	
 J	L_GCODE_Set_M_Modal_Commands83
 NOP	
-L_GCODE_Set_M_Modal_Commands322:
+L_GCODE_Set_M_Modal_Commands305:
 SEH	R3, R25
-ORI	R2, R0, 5
-BNE	R3, R2, L_GCODE_Set_M_Modal_Commands324
+ORI	R2, R0, 30
+BNE	R3, R2, L_GCODE_Set_M_Modal_Commands307
 NOP	
 J	L_GCODE_Set_M_Modal_Commands84
 NOP	
-L_GCODE_Set_M_Modal_Commands324:
-L_GCODE_Set_M_Modal_Commands77:
-;GCODE.c,271 :: 		return m_num;
-LH	R2, 0(SP)
-;GCODE.c,272 :: 		}
+L_GCODE_Set_M_Modal_Commands307:
+SEH	R3, R25
+ORI	R2, R0, 3
+BNE	R3, R2, L_GCODE_Set_M_Modal_Commands309
+NOP	
+J	L_GCODE_Set_M_Modal_Commands85
+NOP	
+L_GCODE_Set_M_Modal_Commands309:
+SEH	R3, R25
+ORI	R2, R0, 4
+BNE	R3, R2, L_GCODE_Set_M_Modal_Commands311
+NOP	
+J	L_GCODE_Set_M_Modal_Commands86
+NOP	
+L_GCODE_Set_M_Modal_Commands311:
+SEH	R3, R25
+ORI	R2, R0, 5
+BNE	R3, R2, L_GCODE_Set_M_Modal_Commands313
+NOP	
+J	L_GCODE_Set_M_Modal_Commands87
+NOP	
+L_GCODE_Set_M_Modal_Commands313:
+; m_num end address is: 16 (R4)
+SEH	R2, R4
+L_GCODE_Set_M_Modal_Commands80:
+;GCODE.c,337 :: 		return m_num;
+; m_num start address is: 8 (R2)
+; m_num end address is: 8 (R2)
+;GCODE.c,338 :: 		}
 L_end_Set_M_Modal_Commands:
-ADDIU	SP, SP, 4
 JR	RA
 NOP	
 ; end of GCODE_Set_M_Modal_Commands
 GCODE_Set_M_Commands:
-;GCODE.c,275 :: 		static int Set_M_Commands(int flow){
+;GCODE.c,341 :: 		static int Set_M_Commands(int flow){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;GCODE.c,276 :: 		FAIL(STATUS_OK);
+;GCODE.c,342 :: 		FAIL(STATUS_OK);
 SH	R25, 4(SP)
 MOVZ	R25, R0, R0
 JAL	_FAIL+0
 NOP	
 LH	R25, 4(SP)
-;GCODE.c,278 :: 		switch(flow) {
-J	L_GCODE_Set_M_Commands85
+;GCODE.c,344 :: 		switch(flow) {
+J	L_GCODE_Set_M_Commands88
 NOP	
-;GCODE.c,279 :: 		case 0: gc.program_flow = PROGRAM_FLOW_PAUSED; break; // Program pause
-L_GCODE_Set_M_Commands87:
+;GCODE.c,345 :: 		case 0: gc.program_flow = PROGRAM_FLOW_PAUSED; break; // Program pause, '~' resumes
+L_GCODE_Set_M_Commands90:
 ORI	R2, R0, 1
 SB	R2, Offset(_gc+9)(GP)
-J	L_GCODE_Set_M_Commands86
+J	L_GCODE_Set_M_Commands89
 NOP	
-;GCODE.c,280 :: 		case 1: break; // Optional stop not supported. Ignore.
-L_GCODE_Set_M_Commands88:
-J	L_GCODE_Set_M_Commands86
+;GCODE.c,346 :: 		case 1: break; // Optional stop not supported. Ignore.
+L_GCODE_Set_M_Commands91:
+J	L_GCODE_Set_M_Commands89
 NOP	
-;GCODE.c,281 :: 		case 2:
-L_GCODE_Set_M_Commands89:
-;GCODE.c,282 :: 		case 30: gc.program_flow = PROGRAM_FLOW_COMPLETED; break; // Program end and reset
-L_GCODE_Set_M_Commands90:
+;GCODE.c,347 :: 		case 2:
+L_GCODE_Set_M_Commands92:
+;GCODE.c,348 :: 		case 30: gc.program_flow = PROGRAM_FLOW_COMPLETED; break; // Program end and reset
+L_GCODE_Set_M_Commands93:
 ORI	R2, R0, 2
 SB	R2, Offset(_gc+9)(GP)
-J	L_GCODE_Set_M_Commands86
+J	L_GCODE_Set_M_Commands89
 NOP	
-;GCODE.c,283 :: 		case 3: gc.spindle_direction = 1; break;
-L_GCODE_Set_M_Commands91:
-ORI	R2, R0, 1
-SB	R2, Offset(_gc+6)(GP)
-J	L_GCODE_Set_M_Commands86
-NOP	
-;GCODE.c,284 :: 		case 4: gc.spindle_direction = -1; break;
-L_GCODE_Set_M_Commands92:
-ORI	R2, R0, 255
-SB	R2, Offset(_gc+6)(GP)
-J	L_GCODE_Set_M_Commands86
-NOP	
-;GCODE.c,285 :: 		case 5: gc.spindle_direction = 0; break;
-L_GCODE_Set_M_Commands93:
-SB	R0, Offset(_gc+6)(GP)
-J	L_GCODE_Set_M_Commands86
-NOP	
-;GCODE.c,289 :: 		case 8: gc.coolant_mode = COOLANT_FLOOD_ENABLE; break;
+;GCODE.c,350 :: 		case 3: case 4: FAIL(STATUS_UNSUPPORTED_STATEMENT); break;
 L_GCODE_Set_M_Commands94:
-ORI	R2, R0, 1
-SB	R2, Offset(_gc+7)(GP)
-J	L_GCODE_Set_M_Commands86
-NOP	
-;GCODE.c,290 :: 		case 9: gc.coolant_mode = COOLANT_DISABLE; break;
 L_GCODE_Set_M_Commands95:
-SB	R0, Offset(_gc+7)(GP)
-J	L_GCODE_Set_M_Commands86
-NOP	
-;GCODE.c,291 :: 		default: FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
-L_GCODE_Set_M_Commands96:
 SH	R25, 4(SP)
 ORI	R25, R0, 3
 JAL	_FAIL+0
 NOP	
 LH	R25, 4(SP)
-J	L_GCODE_Set_M_Commands86
-NOP	
-;GCODE.c,292 :: 		}
-L_GCODE_Set_M_Commands85:
-SEH	R2, R25
-BNE	R2, R0, L_GCODE_Set_M_Commands327
-NOP	
-J	L_GCODE_Set_M_Commands87
-NOP	
-L_GCODE_Set_M_Commands327:
-SEH	R3, R25
-ORI	R2, R0, 1
-BNE	R3, R2, L_GCODE_Set_M_Commands329
-NOP	
-J	L_GCODE_Set_M_Commands88
-NOP	
-L_GCODE_Set_M_Commands329:
-SEH	R3, R25
-ORI	R2, R0, 2
-BNE	R3, R2, L_GCODE_Set_M_Commands331
-NOP	
 J	L_GCODE_Set_M_Commands89
 NOP	
-L_GCODE_Set_M_Commands331:
-SEH	R3, R25
-ORI	R2, R0, 30
-BNE	R3, R2, L_GCODE_Set_M_Commands333
+;GCODE.c,351 :: 		case 5: gc.spindle_direction = 0; break;
+L_GCODE_Set_M_Commands96:
+SB	R0, Offset(_gc+6)(GP)
+J	L_GCODE_Set_M_Commands89
+NOP	
+;GCODE.c,353 :: 		case 7: case 8: FAIL(STATUS_UNSUPPORTED_STATEMENT); break;
+L_GCODE_Set_M_Commands97:
+L_GCODE_Set_M_Commands98:
+SH	R25, 4(SP)
+ORI	R25, R0, 3
+JAL	_FAIL+0
+NOP	
+LH	R25, 4(SP)
+J	L_GCODE_Set_M_Commands89
+NOP	
+;GCODE.c,354 :: 		case 9: gc.coolant_mode = COOLANT_DISABLE; break;
+L_GCODE_Set_M_Commands99:
+SB	R0, Offset(_gc+7)(GP)
+J	L_GCODE_Set_M_Commands89
+NOP	
+;GCODE.c,355 :: 		default: FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
+L_GCODE_Set_M_Commands100:
+SH	R25, 4(SP)
+ORI	R25, R0, 3
+JAL	_FAIL+0
+NOP	
+LH	R25, 4(SP)
+J	L_GCODE_Set_M_Commands89
+NOP	
+;GCODE.c,356 :: 		}
+L_GCODE_Set_M_Commands88:
+SEH	R2, R25
+BNE	R2, R0, L_GCODE_Set_M_Commands316
 NOP	
 J	L_GCODE_Set_M_Commands90
 NOP	
-L_GCODE_Set_M_Commands333:
+L_GCODE_Set_M_Commands316:
 SEH	R3, R25
-ORI	R2, R0, 3
-BNE	R3, R2, L_GCODE_Set_M_Commands335
+ORI	R2, R0, 1
+BNE	R3, R2, L_GCODE_Set_M_Commands318
 NOP	
 J	L_GCODE_Set_M_Commands91
 NOP	
-L_GCODE_Set_M_Commands335:
+L_GCODE_Set_M_Commands318:
 SEH	R3, R25
-ORI	R2, R0, 4
-BNE	R3, R2, L_GCODE_Set_M_Commands337
+ORI	R2, R0, 2
+BNE	R3, R2, L_GCODE_Set_M_Commands320
 NOP	
 J	L_GCODE_Set_M_Commands92
 NOP	
-L_GCODE_Set_M_Commands337:
+L_GCODE_Set_M_Commands320:
 SEH	R3, R25
-ORI	R2, R0, 5
-BNE	R3, R2, L_GCODE_Set_M_Commands339
+ORI	R2, R0, 30
+BNE	R3, R2, L_GCODE_Set_M_Commands322
 NOP	
 J	L_GCODE_Set_M_Commands93
 NOP	
-L_GCODE_Set_M_Commands339:
+L_GCODE_Set_M_Commands322:
 SEH	R3, R25
-ORI	R2, R0, 8
-BNE	R3, R2, L_GCODE_Set_M_Commands341
+ORI	R2, R0, 3
+BNE	R3, R2, L_GCODE_Set_M_Commands324
 NOP	
 J	L_GCODE_Set_M_Commands94
 NOP	
-L_GCODE_Set_M_Commands341:
+L_GCODE_Set_M_Commands324:
 SEH	R3, R25
-ORI	R2, R0, 9
-BNE	R3, R2, L_GCODE_Set_M_Commands343
+ORI	R2, R0, 4
+BNE	R3, R2, L_GCODE_Set_M_Commands326
 NOP	
 J	L_GCODE_Set_M_Commands95
 NOP	
-L_GCODE_Set_M_Commands343:
+L_GCODE_Set_M_Commands326:
+SEH	R3, R25
+ORI	R2, R0, 5
+BNE	R3, R2, L_GCODE_Set_M_Commands328
+NOP	
 J	L_GCODE_Set_M_Commands96
 NOP	
-L_GCODE_Set_M_Commands86:
-;GCODE.c,293 :: 		return flow;
+L_GCODE_Set_M_Commands328:
+SEH	R3, R25
+ORI	R2, R0, 7
+BNE	R3, R2, L_GCODE_Set_M_Commands330
+NOP	
+J	L_GCODE_Set_M_Commands97
+NOP	
+L_GCODE_Set_M_Commands330:
+SEH	R3, R25
+ORI	R2, R0, 8
+BNE	R3, R2, L_GCODE_Set_M_Commands332
+NOP	
+J	L_GCODE_Set_M_Commands98
+NOP	
+L_GCODE_Set_M_Commands332:
+SEH	R3, R25
+ORI	R2, R0, 9
+BNE	R3, R2, L_GCODE_Set_M_Commands334
+NOP	
+J	L_GCODE_Set_M_Commands99
+NOP	
+L_GCODE_Set_M_Commands334:
+J	L_GCODE_Set_M_Commands100
+NOP	
+L_GCODE_Set_M_Commands89:
+;GCODE.c,357 :: 		return flow;
 SEH	R2, R25
-;GCODE.c,294 :: 		}
+;GCODE.c,358 :: 		}
 L_end_Set_M_Commands:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -1277,379 +1614,104 @@ JR	RA
 NOP	
 ; end of GCODE_Set_M_Commands
 _Check_group_multiple_violations:
-;GCODE.c,302 :: 		int Check_group_multiple_violations(){
+;GCODE.c,365 :: 		int Check_group_multiple_violations(){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;GCODE.c,304 :: 		int i = 0;
+;GCODE.c,366 :: 		if(status_code != STATUS_OK)
 SW	R25, 4(SP)
-;GCODE.c,309 :: 		if(group_number == MODAL_GROUP_NONE){
-LH	R2, Offset(-1610602988)(GP)
-BEQ	R2, R0, L__Check_group_multiple_violations345
-NOP	
-J	L_Check_group_multiple_violations97
-NOP	
-L__Check_group_multiple_violations345:
-;GCODE.c,310 :: 		FAIL(STATUS_MODAL_GROUP_VIOLATION);
-ORI	R25, R0, 5
-JAL	_FAIL+0
-NOP	
-;GCODE.c,311 :: 		return STATUS_MODAL_GROUP_VIOLATION;
-ORI	R2, R0, 5
-J	L_end_Check_group_multiple_violations
-NOP	
-;GCODE.c,312 :: 		}
-L_Check_group_multiple_violations97:
-;GCODE.c,314 :: 		if(group_number > 0) {
-LH	R2, Offset(-1610602988)(GP)
-SLTI	R2, R2, 1
-BEQ	R2, R0, L__Check_group_multiple_violations346
-NOP	
-J	L_Check_group_multiple_violations98
-NOP	
-L__Check_group_multiple_violations346:
-;GCODE.c,316 :: 		if(group_number != last_group_number)
-LH	R3, Offset(Check_group_multiple_violations_last_group_number_L0+0)(GP)
-LH	R2, Offset(-1610602988)(GP)
-BNE	R2, R3, L__Check_group_multiple_violations348
-NOP	
-J	L_Check_group_multiple_violations99
-NOP	
-L__Check_group_multiple_violations348:
-;GCODE.c,317 :: 		Rst_modalgroup();
-JAL	_Rst_modalgroup+0
-NOP	
-L_Check_group_multiple_violations99:
-;GCODE.c,319 :: 		bit_true(modal_group_words,bit(group_number));
-LH	R3, Offset(-1610602988)(GP)
-ORI	R2, R0, 1
-SLLV	R3, R2, R3
-LH	R2, Offset(-1610603004)(GP)
-OR	R2, R2, R3
-SH	R2, Offset(-1610603004)(GP)
-;GCODE.c,321 :: 		last_group_number = group_number;
-LH	R2, Offset(-1610602988)(GP)
-SH	R2, Offset(Check_group_multiple_violations_last_group_number_L0+0)(GP)
-;GCODE.c,325 :: 		if (group_number == MODAL_GROUP_0){
-LH	R3, Offset(-1610602988)(GP)
-ORI	R2, R0, 1
-BEQ	R3, R2, L__Check_group_multiple_violations349
-NOP	
-J	L_Check_group_multiple_violations100
-NOP	
-L__Check_group_multiple_violations349:
-;GCODE.c,328 :: 		Rst_non_modalword();
-JAL	_Rst_non_modalword+0
-NOP	
-;GCODE.c,330 :: 		if(!gc.absolute_override)
-LBU	R2, Offset(_gc+4)(GP)
-BEQ	R2, R0, L__Check_group_multiple_violations350
+LH	R2, Offset(-1610602986)(GP)
+BNE	R2, R0, L__Check_group_multiple_violations337
 NOP	
 J	L_Check_group_multiple_violations101
 NOP	
-L__Check_group_multiple_violations350:
-;GCODE.c,331 :: 		bit_true( non_modal_words,bit( non_modal_action));
-LH	R3, Offset(-1610602992)(GP)
-ORI	R2, R0, 1
-SLLV	R3, R2, R3
-LH	R2, Offset(-1610603002)(GP)
-OR	R2, R2, R3
-SH	R2, Offset(-1610603002)(GP)
+L__Check_group_multiple_violations337:
+;GCODE.c,367 :: 		return status_code;
+LH	R2, Offset(-1610602986)(GP)
+J	L_end_Check_group_multiple_violations
+NOP	
 L_Check_group_multiple_violations101:
-;GCODE.c,334 :: 		return status_code;
-LH	R2, Offset(-1610602986)(GP)
-J	L_end_Check_group_multiple_violations
+;GCODE.c,370 :: 		if(motion_mode == MOTION_MODE_CANCEL && axis_words &&
+LH	R3, Offset(-1610602990)(GP)
+ORI	R2, R0, 4
+BEQ	R3, R2, L__Check_group_multiple_violations338
 NOP	
-;GCODE.c,335 :: 		}
-L_Check_group_multiple_violations100:
-;GCODE.c,342 :: 		if(group_number == MODAL_GROUP_1){
-LH	R3, Offset(-1610602988)(GP)
-ORI	R2, R0, 2
-BEQ	R3, R2, L__Check_group_multiple_violations351
+J	L__Check_group_multiple_violations136
 NOP	
-J	L_Check_group_multiple_violations102
-NOP	
-L__Check_group_multiple_violations351:
-;GCODE.c,344 :: 		switch (motion_mode) {
-J	L_Check_group_multiple_violations103
-NOP	
-;GCODE.c,345 :: 		case MOTION_MODE_SEEK:
-L_Check_group_multiple_violations105:
-;GCODE.c,346 :: 		gc.feed_rate = settings.default_seek_rate;
-LWC1	S0, Offset(_settings+20)(GP)
-SWC1	S0, Offset(_gc+24)(GP)
-;GCODE.c,347 :: 		case MOTION_MODE_LINEAR:
-L_Check_group_multiple_violations106:
-;GCODE.c,348 :: 		FAIL(STATUS_OK);
-MOVZ	R25, R0, R0
-JAL	_FAIL+0
-NOP	
-;GCODE.c,349 :: 		break;
-J	L_Check_group_multiple_violations104
-NOP	
-;GCODE.c,350 :: 		case MOTION_MODE_CW_ARC: case MOTION_MODE_CCW_ARC:
-L_Check_group_multiple_violations107:
-L_Check_group_multiple_violations108:
-;GCODE.c,351 :: 		FAIL(STATUS_OK);
-MOVZ	R25, R0, R0
-JAL	_FAIL+0
-NOP	
-;GCODE.c,356 :: 		for(i=0;i<=3;i++)
-; i start address is: 16 (R4)
-MOVZ	R4, R0, R0
-; i end address is: 16 (R4)
-L_Check_group_multiple_violations109:
-; i start address is: 16 (R4)
-SEH	R2, R4
-SLTI	R2, R2, 4
-BNE	R2, R0, L__Check_group_multiple_violations352
-NOP	
-J	L_Check_group_multiple_violations110
-NOP	
-L__Check_group_multiple_violations352:
-;GCODE.c,357 :: 		Set_Axisword(i);
-SEH	R25, R4
-JAL	_Set_Axisword+0
-NOP	
-;GCODE.c,356 :: 		for(i=0;i<=3;i++)
-ADDIU	R2, R4, 1
-SEH	R4, R2
-;GCODE.c,357 :: 		Set_Axisword(i);
-; i end address is: 16 (R4)
-J	L_Check_group_multiple_violations109
-NOP	
-L_Check_group_multiple_violations110:
-;GCODE.c,371 :: 		break;
-J	L_Check_group_multiple_violations104
-NOP	
-;GCODE.c,372 :: 		case MOTION_MODE_CANCEL:
-L_Check_group_multiple_violations112:
-;GCODE.c,373 :: 		FAIL(STATUS_OK);
-MOVZ	R25, R0, R0
-JAL	_FAIL+0
-NOP	
-;GCODE.c,375 :: 		if (axis_words) { FAIL(STATUS_INVALID_STATEMENT); }
+L__Check_group_multiple_violations338:
 LH	R2, Offset(-1610603006)(GP)
-BNE	R2, R0, L__Check_group_multiple_violations354
+BNE	R2, R0, L__Check_group_multiple_violations340
 NOP	
-J	L_Check_group_multiple_violations113
+J	L__Check_group_multiple_violations135
 NOP	
-L__Check_group_multiple_violations354:
+L__Check_group_multiple_violations340:
+;GCODE.c,371 :: 		bit_istrue(modal_group_words,bit(MODAL_GROUP_1)))
+LH	R2, Offset(-1610603004)(GP)
+ANDI	R2, R2, 4
+SEH	R2, R2
+BNE	R2, R0, L__Check_group_multiple_violations342
+NOP	
+J	L__Check_group_multiple_violations134
+NOP	
+L__Check_group_multiple_violations342:
+L__Check_group_multiple_violations133:
+;GCODE.c,372 :: 		FAIL(STATUS_INVALID_STATEMENT);
 ORI	R25, R0, 6
 JAL	_FAIL+0
 NOP	
-L_Check_group_multiple_violations113:
-;GCODE.c,376 :: 		break;
-J	L_Check_group_multiple_violations104
+;GCODE.c,370 :: 		if(motion_mode == MOTION_MODE_CANCEL && axis_words &&
+L__Check_group_multiple_violations136:
+L__Check_group_multiple_violations135:
+;GCODE.c,371 :: 		bit_istrue(modal_group_words,bit(MODAL_GROUP_1)))
+L__Check_group_multiple_violations134:
+;GCODE.c,375 :: 		if(bit_istrue(modal_group_words,bit(MODAL_GROUP_0)) &&
+LH	R2, Offset(-1610603004)(GP)
+ANDI	R2, R2, 2
+;GCODE.c,376 :: 		bit_istrue(modal_group_words,bit(MODAL_GROUP_1)) && axis_words &&
+SEH	R2, R2
+BNE	R2, R0, L__Check_group_multiple_violations344
 NOP	
-;GCODE.c,377 :: 		}
-L_Check_group_multiple_violations103:
-LH	R2, Offset(-1610602990)(GP)
-BNE	R2, R0, L__Check_group_multiple_violations356
+J	L__Check_group_multiple_violations140
 NOP	
-J	L_Check_group_multiple_violations105
+L__Check_group_multiple_violations344:
+LH	R2, Offset(-1610603004)(GP)
+ANDI	R2, R2, 4
+SEH	R2, R2
+BNE	R2, R0, L__Check_group_multiple_violations346
 NOP	
-L__Check_group_multiple_violations356:
-LH	R3, Offset(-1610602990)(GP)
-ORI	R2, R0, 1
-BNE	R3, R2, L__Check_group_multiple_violations358
+J	L__Check_group_multiple_violations139
 NOP	
-J	L_Check_group_multiple_violations106
+L__Check_group_multiple_violations346:
+LH	R2, Offset(-1610603006)(GP)
+BNE	R2, R0, L__Check_group_multiple_violations348
 NOP	
-L__Check_group_multiple_violations358:
-LH	R3, Offset(-1610602990)(GP)
-ORI	R2, R0, 2
-BNE	R3, R2, L__Check_group_multiple_violations360
+J	L__Check_group_multiple_violations138
 NOP	
-J	L_Check_group_multiple_violations107
+L__Check_group_multiple_violations348:
+;GCODE.c,377 :: 		(non_modal_words & ~bit(NON_MODAL_DWELL)))
+LH	R3, Offset(-1610603002)(GP)
+ORI	R2, R0, 65533
+AND	R2, R3, R2
+BNE	R2, R0, L__Check_group_multiple_violations350
 NOP	
-L__Check_group_multiple_violations360:
-LH	R3, Offset(-1610602990)(GP)
-ORI	R2, R0, 3
-BNE	R3, R2, L__Check_group_multiple_violations362
+J	L__Check_group_multiple_violations137
 NOP	
-J	L_Check_group_multiple_violations108
-NOP	
-L__Check_group_multiple_violations362:
-LH	R3, Offset(-1610602990)(GP)
-ORI	R2, R0, 4
-BNE	R3, R2, L__Check_group_multiple_violations364
-NOP	
-J	L_Check_group_multiple_violations112
-NOP	
-L__Check_group_multiple_violations364:
-L_Check_group_multiple_violations104:
-;GCODE.c,380 :: 		for(i=0;i<NoOfAxis;i++){
-; i start address is: 20 (R5)
-MOVZ	R5, R0, R0
-; i end address is: 20 (R5)
-L_Check_group_multiple_violations114:
-; i start address is: 20 (R5)
-SEH	R2, R5
-SLTI	R2, R2, 4
-BNE	R2, R0, L__Check_group_multiple_violations365
-NOP	
-J	L_Check_group_multiple_violations115
-NOP	
-L__Check_group_multiple_violations365:
-;GCODE.c,381 :: 		gc.position[i] =  gc.next_position[i];
-SEH	R2, R5
-SLL	R4, R2, 2
-LUI	R2, hi_addr(_gc+32)
-ORI	R2, R2, lo_addr(_gc+32)
-ADDU	R3, R2, R4
-LUI	R2, hi_addr(_gc+80)
-ORI	R2, R2, lo_addr(_gc+80)
-ADDU	R2, R2, R4
-LWC1	S0, 0(R2)
-SWC1	S0, 0(R3)
-;GCODE.c,380 :: 		for(i=0;i<NoOfAxis;i++){
-ADDIU	R2, R5, 1
-SEH	R5, R2
-;GCODE.c,382 :: 		}
-; i end address is: 20 (R5)
-J	L_Check_group_multiple_violations114
-NOP	
-L_Check_group_multiple_violations115:
-;GCODE.c,383 :: 		}
-L_Check_group_multiple_violations102:
-;GCODE.c,386 :: 		if (group_number == MODAL_GROUP_2){
-LH	R3, Offset(-1610602988)(GP)
-ORI	R2, R0, 3
-BEQ	R3, R2, L__Check_group_multiple_violations366
-NOP	
-J	L_Check_group_multiple_violations117
-NOP	
-L__Check_group_multiple_violations366:
-;GCODE.c,387 :: 		FAIL(STATUS_OK);
-MOVZ	R25, R0, R0
+L__Check_group_multiple_violations350:
+L__Check_group_multiple_violations132:
+;GCODE.c,378 :: 		FAIL(STATUS_MODAL_GROUP_VIOLATION);
+ORI	R25, R0, 5
 JAL	_FAIL+0
 NOP	
-;GCODE.c,389 :: 		if(axis_xyz > NO_OF_PLANES){
-LBU	R2, Offset(_axis_xyz+0)(GP)
-SLTIU	R2, R2, 5
-BEQ	R2, R0, L__Check_group_multiple_violations367
-NOP	
-J	L_Check_group_multiple_violations118
-NOP	
-L__Check_group_multiple_violations367:
-;GCODE.c,390 :: 		status_code = STATUS_INVALID_STATEMENT;
-ORI	R2, R0, 6
-SH	R2, Offset(-1610602986)(GP)
-;GCODE.c,391 :: 		FAIL(STATUS_INVALID_STATEMENT);
-ORI	R25, R0, 6
-JAL	_FAIL+0
-NOP	
-;GCODE.c,392 :: 		}
-L_Check_group_multiple_violations118:
-;GCODE.c,394 :: 		return status_code;
+;GCODE.c,376 :: 		bit_istrue(modal_group_words,bit(MODAL_GROUP_1)) && axis_words &&
+L__Check_group_multiple_violations140:
+L__Check_group_multiple_violations139:
+L__Check_group_multiple_violations138:
+;GCODE.c,377 :: 		(non_modal_words & ~bit(NON_MODAL_DWELL)))
+L__Check_group_multiple_violations137:
+;GCODE.c,380 :: 		return status_code;
 LH	R2, Offset(-1610602986)(GP)
-J	L_end_Check_group_multiple_violations
-NOP	
-;GCODE.c,395 :: 		}
-L_Check_group_multiple_violations117:
-;GCODE.c,398 :: 		if (group_number == MODAL_GROUP_3){
-LH	R3, Offset(-1610602988)(GP)
-ORI	R2, R0, 4
-BEQ	R3, R2, L__Check_group_multiple_violations368
-NOP	
-J	L_Check_group_multiple_violations119
-NOP	
-L__Check_group_multiple_violations368:
-;GCODE.c,399 :: 		FAIL(STATUS_OK);
-MOVZ	R25, R0, R0
-JAL	_FAIL+0
-NOP	
-;GCODE.c,400 :: 		return status_code;
-LH	R2, Offset(-1610602986)(GP)
-J	L_end_Check_group_multiple_violations
-NOP	
-;GCODE.c,401 :: 		}
-L_Check_group_multiple_violations119:
-;GCODE.c,404 :: 		if (group_number == MODAL_GROUP_5){
-LH	R3, Offset(-1610602988)(GP)
-ORI	R2, R0, 6
-BEQ	R3, R2, L__Check_group_multiple_violations369
-NOP	
-J	L_Check_group_multiple_violations120
-NOP	
-L__Check_group_multiple_violations369:
-;GCODE.c,405 :: 		FAIL(STATUS_OK);
-MOVZ	R25, R0, R0
-JAL	_FAIL+0
-NOP	
-;GCODE.c,406 :: 		return status_code;
-LH	R2, Offset(-1610602986)(GP)
-J	L_end_Check_group_multiple_violations
-NOP	
-;GCODE.c,407 :: 		}
-L_Check_group_multiple_violations120:
-;GCODE.c,410 :: 		if (group_number == MODAL_GROUP_6){
-LH	R3, Offset(-1610602988)(GP)
-ORI	R2, R0, 7
-BEQ	R3, R2, L__Check_group_multiple_violations370
-NOP	
-J	L_Check_group_multiple_violations121
-NOP	
-L__Check_group_multiple_violations370:
-;GCODE.c,411 :: 		FAIL(STATUS_OK);
-MOVZ	R25, R0, R0
-JAL	_FAIL+0
-NOP	
-;GCODE.c,412 :: 		return status_code;
-LH	R2, Offset(-1610602986)(GP)
-J	L_end_Check_group_multiple_violations
-NOP	
-;GCODE.c,413 :: 		}
-L_Check_group_multiple_violations121:
-;GCODE.c,416 :: 		if (group_number == MODAL_GROUP_12){
-LH	R3, Offset(-1610602988)(GP)
-ORI	R2, R0, 9
-BEQ	R3, R2, L__Check_group_multiple_violations371
-NOP	
-J	L_Check_group_multiple_violations122
-NOP	
-L__Check_group_multiple_violations371:
-;GCODE.c,417 :: 		FAIL(STATUS_OK);
-MOVZ	R25, R0, R0
-JAL	_FAIL+0
-NOP	
-;GCODE.c,419 :: 		if(gc.coord_select < 0 || gc.coord_select > 7)
-LH	R2, Offset(_gc+14)(GP)
-SLTI	R2, R2, 0
-BEQ	R2, R0, L__Check_group_multiple_violations372
-NOP	
-J	L__Check_group_multiple_violations158
-NOP	
-L__Check_group_multiple_violations372:
-LH	R2, Offset(_gc+14)(GP)
-SLTI	R2, R2, 8
-BNE	R2, R0, L__Check_group_multiple_violations373
-NOP	
-J	L__Check_group_multiple_violations157
-NOP	
-L__Check_group_multiple_violations373:
-J	L_Check_group_multiple_violations125
-NOP	
-L__Check_group_multiple_violations158:
-L__Check_group_multiple_violations157:
-;GCODE.c,420 :: 		FAIL(STATUS_BAD_NUMBER_FORMAT);
-ORI	R25, R0, 1
-JAL	_FAIL+0
-NOP	
-L_Check_group_multiple_violations125:
-;GCODE.c,422 :: 		return status_code;
-LH	R2, Offset(-1610602986)(GP)
-J	L_end_Check_group_multiple_violations
-NOP	
-;GCODE.c,423 :: 		}
-L_Check_group_multiple_violations122:
-;GCODE.c,424 :: 		}
-L_Check_group_multiple_violations98:
-;GCODE.c,429 :: 		return status_code;
-LH	R2, Offset(-1610602986)(GP)
-;GCODE.c,430 :: 		}
-;GCODE.c,429 :: 		return status_code;
-;GCODE.c,430 :: 		}
+;GCODE.c,381 :: 		}
+;GCODE.c,380 :: 		return status_code;
+;GCODE.c,381 :: 		}
 L_end_Check_group_multiple_violations:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -1658,382 +1720,385 @@ JR	RA
 NOP	
 ; end of _Check_group_multiple_violations
 _Instruction_Values:
-;GCODE.c,435 :: 		int Instruction_Values(char *c,void *any){
+;GCODE.c,386 :: 		int Instruction_Values(char *c,void *any){
 ADDIU	SP, SP, -16
 SW	RA, 0(SP)
-;GCODE.c,438 :: 		FAIL(STATUS_OK);
+;GCODE.c,389 :: 		FAIL(STATUS_OK);
 SW	R25, 4(SP)
 SW	R25, 8(SP)
 MOVZ	R25, R0, R0
 JAL	_FAIL+0
 NOP	
 LW	R25, 8(SP)
-;GCODE.c,439 :: 		switch(c[0]){
+;GCODE.c,390 :: 		switch(c[0]){
 MOVZ	R2, R25, R0
 SW	R2, 12(SP)
-J	L_Instruction_Values126
+J	L_Instruction_Values108
 NOP	
-;GCODE.c,440 :: 		case 'X':case 'x':
-L_Instruction_Values128:
-L_Instruction_Values129:
-;GCODE.c,442 :: 		gc.next_position[X] = To_Millimeters(XYZ_Val);
+;GCODE.c,391 :: 		case 'X':case 'x':
+L_Instruction_Values110:
+L_Instruction_Values111:
+;GCODE.c,393 :: 		gc.next_position[X] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+80)(GP)
-;GCODE.c,443 :: 		bit_true(axis_words,bit(X));
+;GCODE.c,394 :: 		bit_true(axis_words,bit(X));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 1
 SH	R2, Offset(-1610603006)(GP)
-;GCODE.c,444 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,395 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,445 :: 		case 'Y':
-L_Instruction_Values130:
-;GCODE.c,447 :: 		gc.next_position[Y] = To_Millimeters(XYZ_Val);
+;GCODE.c,396 :: 		case 'Y':
+L_Instruction_Values112:
+;GCODE.c,398 :: 		gc.next_position[Y] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+84)(GP)
-;GCODE.c,448 :: 		bit_true(axis_words,bit(Y));
+;GCODE.c,399 :: 		bit_true(axis_words,bit(Y));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 2
 SH	R2, Offset(-1610603006)(GP)
-;GCODE.c,449 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,400 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,450 :: 		case 'Z':
-L_Instruction_Values131:
-;GCODE.c,452 :: 		gc.next_position[Z] = To_Millimeters(XYZ_Val);
+;GCODE.c,401 :: 		case 'Z':
+L_Instruction_Values113:
+;GCODE.c,403 :: 		gc.next_position[Z] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+88)(GP)
-;GCODE.c,453 :: 		bit_true(axis_words,bit(Z));
+;GCODE.c,404 :: 		bit_true(axis_words,bit(Z));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 4
 SH	R2, Offset(-1610603006)(GP)
-;GCODE.c,454 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,405 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,455 :: 		case 'A':
-L_Instruction_Values132:
-;GCODE.c,457 :: 		gc.next_position[A] = To_Millimeters(XYZ_Val);
+;GCODE.c,406 :: 		case 'A':
+L_Instruction_Values114:
+;GCODE.c,408 :: 		gc.next_position[A] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+92)(GP)
-;GCODE.c,458 :: 		bit_true(axis_words,bit(A));
+;GCODE.c,409 :: 		bit_true(axis_words,bit(A));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 8
 SH	R2, Offset(-1610603006)(GP)
-;GCODE.c,459 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,410 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,460 :: 		case 'E':
-L_Instruction_Values133:
-;GCODE.c,462 :: 		gc.next_position[B] = To_Millimeters(XYZ_Val);
+;GCODE.c,411 :: 		case 'E':
+L_Instruction_Values115:
+;GCODE.c,413 :: 		gc.next_position[B] = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+96)(GP)
-;GCODE.c,463 :: 		bit_true(axis_words,bit(B));
+;GCODE.c,414 :: 		bit_true(axis_words,bit(B));
 LH	R2, Offset(-1610603006)(GP)
 ORI	R2, R2, 16
 SH	R2, Offset(-1610603006)(GP)
-;GCODE.c,464 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,415 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,465 :: 		case 'R':
-L_Instruction_Values134:
-;GCODE.c,467 :: 		gc.R = To_Millimeters(XYZ_Val);
+;GCODE.c,416 :: 		case 'R':
+L_Instruction_Values116:
+;GCODE.c,418 :: 		gc.R = To_Millimeters(XYZ_Val);
 LWC1	S12, 0(R26)
 JAL	GCODE_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+108)(GP)
-;GCODE.c,468 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,419 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,469 :: 		case 'I':
-L_Instruction_Values135:
-;GCODE.c,470 :: 		gc.r = 0;
+;GCODE.c,420 :: 		case 'I':
+L_Instruction_Values117:
+;GCODE.c,421 :: 		gc.r = 0;
 LBU	R2, Offset(_gc+0)(GP)
 INS	R2, R0, 0, 1
 SB	R2, Offset(_gc+0)(GP)
-;GCODE.c,471 :: 		gc.R = 0;
+;GCODE.c,422 :: 		gc.R = 0;
 MOVZ	R2, R0, R0
 SW	R2, Offset(_gc+108)(GP)
-;GCODE.c,472 :: 		XYZ_Val = *(float*)any;
-LWC1	S0, 0(R26)
-;GCODE.c,473 :: 		gc.I = XYZ_Val;
+;GCODE.c,424 :: 		gc.I = To_Millimeters(XYZ_Val);
+LWC1	S12, 0(R26)
+JAL	GCODE_To_Millimeters+0
+NOP	
 SWC1	S0, Offset(_gc+112)(GP)
-;GCODE.c,475 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,426 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,476 :: 		case 'J':
-L_Instruction_Values136:
-;GCODE.c,477 :: 		XYZ_Val = *(float*)any;
-LWC1	S0, 0(R26)
-;GCODE.c,478 :: 		gc.J = XYZ_Val;
+;GCODE.c,427 :: 		case 'J':
+L_Instruction_Values118:
+;GCODE.c,429 :: 		gc.J = To_Millimeters(XYZ_Val);
+LWC1	S12, 0(R26)
+JAL	GCODE_To_Millimeters+0
+NOP	
 SWC1	S0, Offset(_gc+116)(GP)
-;GCODE.c,480 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,431 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,481 :: 		case 'K':
-L_Instruction_Values137:
-;GCODE.c,482 :: 		XYZ_Val = *(float*)any;
-LWC1	S0, 0(R26)
-;GCODE.c,483 :: 		gc.K = XYZ_Val;
+;GCODE.c,432 :: 		case 'K':
+L_Instruction_Values119:
+;GCODE.c,434 :: 		gc.K = To_Millimeters(XYZ_Val);
+LWC1	S12, 0(R26)
+JAL	GCODE_To_Millimeters+0
+NOP	
 SWC1	S0, Offset(_gc+120)(GP)
-;GCODE.c,485 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,436 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,486 :: 		case 'F':
-L_Instruction_Values138:
-;GCODE.c,487 :: 		XYZ_Val = *(float*)any;
+;GCODE.c,437 :: 		case 'F':
+L_Instruction_Values120:
+;GCODE.c,438 :: 		XYZ_Val = *(float*)any;
 LWC1	S1, 0(R26)
 ; XYZ_Val start address is: 16 (R4)
 MOV.S 	S2, S1
-;GCODE.c,488 :: 		if(XYZ_Val < 0){FAIL(STATUS_SPEED_ERROR);break;}
+;GCODE.c,439 :: 		if(XYZ_Val < 0){FAIL(STATUS_SPEED_ERROR);break;}
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 C.LE.S 	0, S0, S1
-BC1F	0, L__Instruction_Values375
+BC1F	0, L__Instruction_Values352
 NOP	
-J	L_Instruction_Values139
+J	L_Instruction_Values121
 NOP	
-L__Instruction_Values375:
+L__Instruction_Values352:
 ; XYZ_Val end address is: 16 (R4)
 ORI	R25, R0, 13
 JAL	_FAIL+0
 NOP	
-J	L_Instruction_Values127
+J	L_Instruction_Values109
 NOP	
-L_Instruction_Values139:
-;GCODE.c,490 :: 		gc.feed_rate = To_Millimeters(XYZ_Val);
+L_Instruction_Values121:
+;GCODE.c,441 :: 		gc.feed_rate = To_Millimeters(XYZ_Val);
 ; XYZ_Val start address is: 16 (R4)
 MOV.S 	S12, S2
 ; XYZ_Val end address is: 16 (R4)
 JAL	GCODE_To_Millimeters+0
 NOP	
 SWC1	S0, Offset(_gc+24)(GP)
-;GCODE.c,496 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,447 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,497 :: 		case 'P':
-L_Instruction_Values140:
-;GCODE.c,498 :: 		O_Val = *(int*)any;
+;GCODE.c,448 :: 		case 'P':
+L_Instruction_Values122:
+;GCODE.c,449 :: 		O_Val = *(int*)any;
 LH	R2, 0(R26)
 ; O_Val start address is: 12 (R3)
 SEH	R3, R2
-;GCODE.c,499 :: 		if(O_Val < 0){
+;GCODE.c,450 :: 		if(O_Val < 0){
 SEH	R2, R2
 SLTI	R2, R2, 0
-BNE	R2, R0, L__Instruction_Values376
+BNE	R2, R0, L__Instruction_Values353
 NOP	
-J	L_Instruction_Values141
+J	L_Instruction_Values123
 NOP	
-L__Instruction_Values376:
-;GCODE.c,500 :: 		FAIL(STATUS_SPEED_ERROR);
+L__Instruction_Values353:
+;GCODE.c,451 :: 		FAIL(STATUS_SPEED_ERROR);
 ORI	R25, R0, 13
 JAL	_FAIL+0
 NOP	
-;GCODE.c,501 :: 		}
-L_Instruction_Values141:
-;GCODE.c,502 :: 		gc.P = O_Val;
+;GCODE.c,452 :: 		}
+L_Instruction_Values123:
+;GCODE.c,453 :: 		gc.P = O_Val;
 SH	R3, Offset(_gc+124)(GP)
 ; O_Val end address is: 12 (R3)
-;GCODE.c,503 :: 		gc.S = -1;
+;GCODE.c,454 :: 		gc.S = -1;
 ORI	R2, R0, 65535
 SH	R2, Offset(_gc+126)(GP)
-;GCODE.c,504 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,455 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,505 :: 		case 'S':
-L_Instruction_Values142:
-;GCODE.c,506 :: 		O_Val = *(int*)any;
+;GCODE.c,456 :: 		case 'S':
+L_Instruction_Values124:
+;GCODE.c,457 :: 		O_Val = *(int*)any;
 LH	R2, 0(R26)
 ; O_Val start address is: 12 (R3)
 SEH	R3, R2
-;GCODE.c,507 :: 		if(O_Val < 0){
+;GCODE.c,458 :: 		if(O_Val < 0){
 SEH	R2, R2
 SLTI	R2, R2, 0
-BNE	R2, R0, L__Instruction_Values377
+BNE	R2, R0, L__Instruction_Values354
 NOP	
-J	L_Instruction_Values143
+J	L_Instruction_Values125
 NOP	
-L__Instruction_Values377:
-;GCODE.c,508 :: 		FAIL(STATUS_SPEED_ERROR);
+L__Instruction_Values354:
+;GCODE.c,459 :: 		FAIL(STATUS_SPEED_ERROR);
 ORI	R25, R0, 13
 JAL	_FAIL+0
 NOP	
-;GCODE.c,509 :: 		}
-L_Instruction_Values143:
-;GCODE.c,510 :: 		gc.S = O_Val;
+;GCODE.c,460 :: 		}
+L_Instruction_Values125:
+;GCODE.c,461 :: 		gc.S = O_Val;
 SH	R3, Offset(_gc+126)(GP)
 ; O_Val end address is: 12 (R3)
-;GCODE.c,511 :: 		gc.P = -1;
+;GCODE.c,462 :: 		gc.P = -1;
 ORI	R2, R0, 65535
 SH	R2, Offset(_gc+124)(GP)
-;GCODE.c,512 :: 		break;
-J	L_Instruction_Values127
+;GCODE.c,463 :: 		break;
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,513 :: 		case 'L':
-L_Instruction_Values144:
-;GCODE.c,514 :: 		O_Val = *(int*)any;
+;GCODE.c,464 :: 		case 'L':
+L_Instruction_Values126:
+;GCODE.c,465 :: 		O_Val = *(int*)any;
 LH	R2, 0(R26)
 ; O_Val start address is: 12 (R3)
 SEH	R3, R2
-;GCODE.c,515 :: 		if(O_Val < 0){
+;GCODE.c,466 :: 		if(O_Val < 0){
 SEH	R2, R2
 SLTI	R2, R2, 0
-BNE	R2, R0, L__Instruction_Values378
+BNE	R2, R0, L__Instruction_Values355
 NOP	
-J	L_Instruction_Values145
+J	L_Instruction_Values127
 NOP	
-L__Instruction_Values378:
-;GCODE.c,516 :: 		FAIL(STATUS_SPEED_ERROR);
+L__Instruction_Values355:
+;GCODE.c,467 :: 		FAIL(STATUS_SPEED_ERROR);
 ORI	R25, R0, 13
 JAL	_FAIL+0
 NOP	
-;GCODE.c,517 :: 		}
-L_Instruction_Values145:
-;GCODE.c,518 :: 		gc.L = O_Val;
+;GCODE.c,468 :: 		}
+L_Instruction_Values127:
+;GCODE.c,469 :: 		gc.L = O_Val;
 SH	R3, Offset(_gc+16)(GP)
 ; O_Val end address is: 12 (R3)
-;GCODE.c,519 :: 		break; //L2 tells the G10 we�re setting standard work offsets
-J	L_Instruction_Values127
+;GCODE.c,470 :: 		break; //L2 tells the G10 we�re setting standard work offsets
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,520 :: 		default:FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
-L_Instruction_Values146:
+;GCODE.c,471 :: 		default:FAIL(STATUS_UNSUPPORTED_STATEMENT);break;
+L_Instruction_Values128:
 ORI	R25, R0, 3
 JAL	_FAIL+0
 NOP	
-J	L_Instruction_Values127
+J	L_Instruction_Values109
 NOP	
-;GCODE.c,521 :: 		}
-L_Instruction_Values126:
+;GCODE.c,472 :: 		}
+L_Instruction_Values108:
 LW	R4, 12(SP)
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 88
-BNE	R3, R2, L__Instruction_Values380
+BNE	R3, R2, L__Instruction_Values357
 NOP	
-J	L_Instruction_Values128
+J	L_Instruction_Values110
 NOP	
-L__Instruction_Values380:
+L__Instruction_Values357:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 120
-BNE	R3, R2, L__Instruction_Values382
+BNE	R3, R2, L__Instruction_Values359
 NOP	
-J	L_Instruction_Values129
+J	L_Instruction_Values111
 NOP	
-L__Instruction_Values382:
+L__Instruction_Values359:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 89
-BNE	R3, R2, L__Instruction_Values384
+BNE	R3, R2, L__Instruction_Values361
 NOP	
-J	L_Instruction_Values130
+J	L_Instruction_Values112
 NOP	
-L__Instruction_Values384:
+L__Instruction_Values361:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 90
-BNE	R3, R2, L__Instruction_Values386
+BNE	R3, R2, L__Instruction_Values363
 NOP	
-J	L_Instruction_Values131
+J	L_Instruction_Values113
 NOP	
-L__Instruction_Values386:
+L__Instruction_Values363:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 65
-BNE	R3, R2, L__Instruction_Values388
+BNE	R3, R2, L__Instruction_Values365
 NOP	
-J	L_Instruction_Values132
+J	L_Instruction_Values114
 NOP	
-L__Instruction_Values388:
+L__Instruction_Values365:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 69
-BNE	R3, R2, L__Instruction_Values390
+BNE	R3, R2, L__Instruction_Values367
 NOP	
-J	L_Instruction_Values133
+J	L_Instruction_Values115
 NOP	
-L__Instruction_Values390:
+L__Instruction_Values367:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 82
-BNE	R3, R2, L__Instruction_Values392
+BNE	R3, R2, L__Instruction_Values369
 NOP	
-J	L_Instruction_Values134
+J	L_Instruction_Values116
 NOP	
-L__Instruction_Values392:
+L__Instruction_Values369:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 73
-BNE	R3, R2, L__Instruction_Values394
+BNE	R3, R2, L__Instruction_Values371
 NOP	
-J	L_Instruction_Values135
+J	L_Instruction_Values117
 NOP	
-L__Instruction_Values394:
+L__Instruction_Values371:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 74
-BNE	R3, R2, L__Instruction_Values396
+BNE	R3, R2, L__Instruction_Values373
 NOP	
-J	L_Instruction_Values136
+J	L_Instruction_Values118
 NOP	
-L__Instruction_Values396:
+L__Instruction_Values373:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 75
-BNE	R3, R2, L__Instruction_Values398
+BNE	R3, R2, L__Instruction_Values375
 NOP	
-J	L_Instruction_Values137
+J	L_Instruction_Values119
 NOP	
-L__Instruction_Values398:
+L__Instruction_Values375:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 70
-BNE	R3, R2, L__Instruction_Values400
+BNE	R3, R2, L__Instruction_Values377
 NOP	
-J	L_Instruction_Values138
+J	L_Instruction_Values120
 NOP	
-L__Instruction_Values400:
+L__Instruction_Values377:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 80
-BNE	R3, R2, L__Instruction_Values402
+BNE	R3, R2, L__Instruction_Values379
 NOP	
-J	L_Instruction_Values140
+J	L_Instruction_Values122
 NOP	
-L__Instruction_Values402:
+L__Instruction_Values379:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 83
-BNE	R3, R2, L__Instruction_Values404
+BNE	R3, R2, L__Instruction_Values381
 NOP	
-J	L_Instruction_Values142
+J	L_Instruction_Values124
 NOP	
-L__Instruction_Values404:
+L__Instruction_Values381:
 LBU	R2, 0(R4)
 ANDI	R3, R2, 255
 ORI	R2, R0, 76
-BNE	R3, R2, L__Instruction_Values406
+BNE	R3, R2, L__Instruction_Values383
 NOP	
-J	L_Instruction_Values144
+J	L_Instruction_Values126
 NOP	
-L__Instruction_Values406:
-J	L_Instruction_Values146
+L__Instruction_Values383:
+J	L_Instruction_Values128
 NOP	
-L_Instruction_Values127:
-;GCODE.c,536 :: 		return status_code;
+L_Instruction_Values109:
+;GCODE.c,487 :: 		return status_code;
 LH	R2, Offset(-1610602986)(GP)
-;GCODE.c,537 :: 		}
-;GCODE.c,536 :: 		return status_code;
-;GCODE.c,537 :: 		}
+;GCODE.c,488 :: 		}
+;GCODE.c,487 :: 		return status_code;
+;GCODE.c,488 :: 		}
 L_end_Instruction_Values:
 LW	R25, 4(SP)
 LW	RA, 0(SP)

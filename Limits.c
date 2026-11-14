@@ -24,13 +24,14 @@ void Limit_Initialize(){
    Limit[Y].Limit_Min = 0;
    Limit[Z].Limit_Min = 0;
    
-   //disable external interrupts 1 and 2
+   //disable external interrupts 1, 2 and 4
    IEC0CLR  = 0x8021 << 8;
 
-   
-   X_Min_Limit_Setup();
-   Y_Min_Limit_Setup();
-   Z_Min_Limit_Setup();
+   // Limits are sampled in the Timer1 10 ms ISR (Limits_Sample). The INT1/
+   // INT2/INT4 handlers below stay unused until PPS-mapped in Config.c.
+   // X_Min_Limit_Setup();
+   // Y_Min_Limit_Setup();
+   // Z_Min_Limit_Setup();
    
    //pre condition last know Limit luesva
   /* for(i = 0;i < NoOfAxis;i++){
@@ -46,13 +47,11 @@ static void X_Min_Limit_Setup(){
 //IPC2<4:2>
 //IPC2<1:0>
 
- //Set Priority level to 4 & sub 1
- IPC2SET = 11 ;
- 
- // enable INT0
+ //Set Priority level to 4 & sub 1, IP<4:2> = 4, IS<1:0> = 1
+ IPC2CLR = 0x1F;
+ IPC2SET = 0x11;
+ IFS0CLR = 1 << 8;
  IEC0SET = 1 << 8;
- // clear the interrupt flag
- IFS0CLR  = 1 << 8;
 }
 
 ////////////////////////////////////////////////////////
@@ -65,30 +64,26 @@ static void Y_Min_Limit_Setup(){
 
  //Set Priority level to 4 & sub 1
  //limits should seldom hit at the sametime [same sub prior]
- IPC3SET = 11 << 8;
-
- // enable INT0
+ IPC3CLR = 0x1F << 8;
+ IPC3SET = 0x11 << 8;
+ IFS0CLR = 1 << 13;
  IEC0SET = 1 << 13;
- // clear the interrupt flag
- IFS0CLR = (1 << 13);
 }
 
 ////////////////////////////////////////////////////////
 //Z_Limit SETUP   INT4
 static void Z_Min_Limit_Setup(){
-//IFS0<13>
-//IEC0<13>
-//IPC3<12:10>
-//IPC3<9:8>
+//IFS0<23>
+//IEC0<23>
+//IPC5<28:26>
+//IPC5<25:24>
 
  //Set Priority level to 4 & sub 1
  //limits should seldom hit at the sametime [same sub prior]
- IPC5SET = 11 << 24;
-
- // enable INT0
+ IPC5CLR = 0x1F << 24;
+ IPC5SET = 0x11 << 24;
+ IFS0CLR = 1 << 23;
  IEC0SET = 1 << 23;
- // clear the interrupt flag
- IFS0CLR = (1 << 23);
 }
 
 /////////////////////////////////////////////////////////////
@@ -96,7 +91,7 @@ static void Z_Min_Limit_Setup(){
 /////////////////////////////////////////////////////////////
 
 //X Min Limit interrupt
-void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
+void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_SRS {
    INT1IF_bit = 0;
    Set_Min_Limit(X);
 }
@@ -104,14 +99,14 @@ void X_Min_Limit() iv IVT_EXTERNAL_1 ilevel 4 ics ICS_AUTO {
 
 ///////////////////////////////////////////////////////////
 //Y Min Limit interrupt
-void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_AUTO {
+void Y_Min_Limit() iv IVT_EXTERNAL_2 ilevel 4 ics ICS_SRS {
    INT2IF_bit = 0;
    Set_Min_Limit(Y);
 }
 
 ///////////////////////////////////////////////////////////
 //Y Min Limit interrupt
-void Z_Min_Limit() iv IVT_EXTERNAL_4 ilevel 4 ics ICS_AUTO {
+void Z_Min_Limit() iv IVT_EXTERNAL_4 ilevel 4 ics ICS_SRS {
    INT4IF_bit = 0;
    Set_Min_Limit(Z);
 }
@@ -150,47 +145,50 @@ void Set_Min_Limit(int axis){
 }
 
 /////////////////////////////////////////////////////////
-//         Debounce the resetting Limits               //
+//         SAMPLE AND DEBOUNCE THE LIMITS (Timer1 ISR) //
 /////////////////////////////////////////////////////////
 
-static void Reset_Min_Debounce(int axis){
-  Limit[axis].Min_DeBnc = 0;
-  Limit[axis].last_cnt_min = 0;
+static volatile char limit_event;
+
+// A pressed (low) limit latches after LIMIT_TRIP_COUNT samples and releases
+// after DEBOUNCE_COUNT. A new trip during motion stops the drivers here, at
+// interrupt level, and leaves the alarm to the main loop.
+static void Sample_Limit(int axis){
+   Limit[axis].Pin = Test_Port_Pins(axis);
+   if(!Limit[axis].Pin){
+      Limit[axis].release_cnt = 0;
+      if(Limit[axis].Limit_Min) return;
+      if(++Limit[axis].trip_cnt < LIMIT_TRIP_COUNT) return;
+      Limit[axis].Limit_Min = 1;
+      // TODO(DDS): Grbl also trips in hold and idle; needs pull-ups on the pins first
+      if(bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE) &&
+         (sys.state == STATE_CYCLE || sys.state == STATE_JOG)){
+         DisableSteppers();
+         disableSpindleOCx();
+         limit_event = 1;
+      }
+   }else{
+      Limit[axis].trip_cnt = 0;
+      if(Limit[axis].Limit_Min && ++Limit[axis].release_cnt > DEBOUNCE_COUNT){
+         Limit[axis].Limit_Min = 0;
+         Limit[axis].release_cnt = 0;
+      }
+   }
 }
 
-////////////////////////////////////////////////////////
-//
-void Debounce_Limits(int axis){
-   Limit[axis].T0 = (TMR.clock >> BASE_TMR)&1;
-  // Limit[axis].T1 = Limit[axis].Limit_Min;
-   
-   //sample the physical pin for is current state
-   Limit[axis].Pin = Test_Port_Pins(axis);
-   
-   //IF Limit is low == on
-   if((!Limit[axis].Pin)&&(Limit[axis].Limit_Min)){
-      //if pin is low state && T2 low state[T2 set && add dbnc cntr]
-      if(!Limit[axis].T0 && !Limit[axis].T2){
-         Limit[axis].T2 = 1;
-         Limit[axis].Min_DeBnc++;
-      #if LimitDebug == 1
-          dma_printf("\nLimit[%d]:=%d\r\n",axis,Limit[axis].Min_DeBnc);
-      #endif
-        //stop from inc further
-        if(Limit[axis].Min_DeBnc > Limit[axis].last_cnt_min){
-           Limit[axis].last_cnt_min = Limit[axis].Min_DeBnc;
-        }
-      }else if(Limit[axis].T0 && Limit[axis].T2)
-         Limit[axis].T2 = 0;
-         
-      //reset debounce once count has reached threshold
-      if(Limit[axis].Min_DeBnc > DEBOUNCE_COUNT)
-          Reset_Min_Limit(axis);
+void Limits_Sample(){
+   Sample_Limit(X);
+   Sample_Limit(Y);
+   Sample_Limit(Z);
+}
 
-   }else if(Limit[axis].Pin){
-         Reset_Min_Debounce(axis);
-   }
-
+char Limits_TakeEvent(){
+   char event;
+   T1IE_bit = 0;
+   event = limit_event;
+   limit_event = 0;
+   T1IE_bit = 1;
+   return event;
 }
 
 

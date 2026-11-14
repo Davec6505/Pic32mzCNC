@@ -15,6 +15,8 @@
 #define STATUS_SETTING_READ_FAIL 10
 #define STATUS_IDLE_ERROR 11
 #define STATUS_ALARM_LOCK 12
+#define STATUS_LINE_OVERFLOW 15
+#define STATUS_SERIAL_RX_ERROR 16
 //my addition to know when gcode was sent
 #define STATUS_GCODE 20
 
@@ -49,6 +51,7 @@ void report_grbl_settings();
 void report_gcode_parameters();
 // Print current gcode parser mode state
 void report_gcode_modes();
+void report_build_info();
 // Executes user startup script, if stored.
 void protocol_execute_startup();
 // Report realtime status

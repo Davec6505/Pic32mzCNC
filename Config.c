@@ -36,6 +36,8 @@ void PinMode(){
      TRISE  = 0X0000;
      ANSELG = 0X0000;
      TRISG  = 0X0000;
+
+     
      
      CNPUB  = 0;//1 << 15;
      CNPUF  = 0;//1 << 3;
@@ -58,23 +60,28 @@ void PinMode(){
 
 //Remapping of Uart 2 pins
     Unlock_IOLOCK();
-     //UART2 PIN MAPPING
-     PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);    // Sets pin PORTE.B8 to be Output and maps UART2 Transmit
-     PPS_Mapping_NoLock(_RPE9, _INPUT,  _U2RX);    // Sets pin PORTE.B9 to be Input and maps UART2 Receive
-  //UART3 PIN MAPPING  FOR LOOPBACK DEBUGGING
-     PPS_Mapping_NoLock(_RPA14, _OUTPUT, _U3TX);    // Sets pin PORTE.B8 to be Output and maps UART2 Transmit
-     PPS_Mapping_NoLock(_RPF5, _INPUT,  _U3RX);    // Sets pin PORTE.B9 to be Input and maps UART2 Receive
-     //???
-     PPS_Mapping_NoLock(_RPB9, _OUTPUT, _NULL);
-     PPS_Mapping_NoLock(_RPB10, _OUTPUT, _NULL);
+  //UART2 PIN MAPPING
+#if BOARD == BOARD_FLIPNCLICK
+     PPS_Mapping_NoLock(_RPC2, _OUTPUT, _U2TX);    // RC2 = UART2 TX
+     PPS_Mapping_NoLock(_RPC3, _INPUT,  _U2RX);    // RC3 = UART2 RX
+#elif BOARD == BOARD_CLICKER2
+     PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);    // RE8 = UART2 TX
+     PPS_Mapping_NoLock(_RPE9, _INPUT,  _U2RX);    // RE9 = UART2 RX
+#endif
+  //UART5 PIN MAPPING
+     PPS_Mapping_NoLock(_RPD15, _OUTPUT, _U5TX);    // Sets pin PORTD.B15 to be Output and maps UART5 Transmit
+     PPS_Mapping_NoLock(_RPD14, _INPUT,  _U5RX);    // Sets pin PORTD.B14 to be Input and maps UART5 Receive
+   
+     //SPI1 Pins for SDI and SDO for ENC28J60 Module
+     PPS_Mapping_NoLock(_RPD2, _INPUT, _SDI1);
+     PPS_Mapping_NoLock(_RPD3, _OUTPUT, _SDO1);
 
      //OUTPUT PULSE TO Spindle
      PPS_Mapping_NoLock(_RPE3, _OUTPUT, _OC8);     //Spindle TMR7
 
      //lIMIT SWITCHES ? do i need interrupt mapping for them??
-     PPS_Mapping_NoLock(_RPF3, _INPUT, _INT1);     //X_Min_Limit
-     PPS_Mapping_NoLock(_RPB15, _INPUT, _INT2);    //Y_Min_Limit
-     PPS_Mapping_NoLock(_RPB1, _INPUT, _INT4);     //Z_Min_Limit
+     // TODO: limits are polled for now. Check each limit pin's PPS input
+     // group before mapping INT1/INT2/INT4 to them (Flip&Click: RF2, RB8, RB10).
     Lock_IOLOCK();
     
 
@@ -101,15 +108,8 @@ void PinMode(){
   SetInitialSizes(STPS);
   
 
-//DMA CONFIG
-
-  DMA_global();
-  DMA0_Enable();
-  //DMA1_Enable();
-   
-
-//configure the uart2 module
- UartConfig();
+//UART RX interrupts with DMA TX.
+   Serial_Init(SERIAL_MODE_RX_IRQ_DMA_TX);
     
 //configure the uart the interrupts
  // Uart2InterruptSetup();
@@ -124,54 +124,6 @@ void PinMode(){
  //settings_read_coord_data();
 }
 
-void UartConfig(){
-//setup the serial comms on uart 2  using PBCLK2 at 50mhz
-  UART2_Init_Advanced(115200, 200000/*PBClk x 2*/, _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
-  UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle); // set UART2 active
-  Delay_ms(10);                  // Wait for UART module to stabilize
-
-#if LoopBackDebug == 1
-//setup the serial comms on uart 2  using PBCLK2 at 50mhz
-  UART3_Init_Advanced(256000, 200000/*PBClk / 8*/, _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
-  UART_Set_Active(&UART3_Read, &UART3_Write, &UART3_Data_Ready, &UART3_Tx_Idle); // set UART2 active
-  Delay_ms(100);                  // Wait for UART module to stabilize
-
- // Uart2InterruptSetup();
-  
-#endif
-
-
-}
-
-
-//Uart 2 interrupt setup, make sure that for DMA
-//the interrupt is turned off for this module,
-//only use the IRQ from the DMA controller but
-//itis important it set up the irelx bits of the
-// 8 level deep interrupt buffer specific to the
-//UART module
-void Uart2InterruptSetup(){
-/*IFS4<18>
-IEC4<18>
-IPC36<20:18>
-IPC36<17:16>
-*/
-    // IRQ after 1 byte is empty, buffer is 8 deep
-    URXISEL0_bit = 0;
-    URXISEL1_bit = 0;
-
-    // IRQ after 1 byte is empty buffer is 8 deep
-    UTXISEL0_bit = 0;
-    UTXISEL1_bit = 0;
-    
-    IPC36CLR     = 0x160000;
-    //Set priority 5 sub-priority 1
-    IPC36SET      = 0x00140000;
-    //set DMA0IE bit
-    IEC4SET       = 0x40000;
-    IFS4CLR       = 0x40000;
-
-}
 
 void set_performance_mode(){
 unsigned long cp0;
@@ -195,7 +147,7 @@ unsigned long cp0;
     UEN1_bit = 1;
     PB2DIVbits.ON = 1; // Peripheral Bus 2 Output Clock Enable (Output clock is enabled)
     while(!PB2DIVbits.PBDIVRDY);
-    PB2DIVbits.PBDIV = 0x07; // Peripheral Bus 2 Clock Divisor Control (PBCLK2 is SYSCLK "200MHZ" / 8)
+    PB2DIVbits.PBDIV = 0x03; // Peripheral Bus 2 Clock Divisor Control (PBCLK2 is SYSCLK "200MHZ" / 4)
 
     // PB3DIV   TIMERS
     PB3DIVbits.ON = 1; // Peripheral Bus 2 Output Clock Enable (Output clock is enabled)
@@ -236,7 +188,7 @@ unsigned long cp0;
 
     // Lock Sequence
     SYSKEY = 0x33333333;
-    PRISS = 0x76543210;   //SRS all priorities
+    PRISS = 0x76543210;   //priority n uses shadow set n; every ISR is ics ICS_SRS
     // SETTING UP PREFETCH MODULE
     PREFEN0_bit = 1;
     PREFEN1_bit = 1;
@@ -299,10 +251,3 @@ void OutPutPulseXYZ(){
  // OC8CONSET = 0x8000; // Enable OC8
 }
 
-//only if DMA is turned off
-void UART2() iv IVT_UART2_RX ilevel 5 ics ICS_SOFT {
-   IFS4CLR  = 0x40000;
-
-   UART3_Write(U2RXREG);
-
-}

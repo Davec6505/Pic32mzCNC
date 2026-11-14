@@ -21,8 +21,11 @@ void SetPinMode(){
 // configure the dds callback function first
   Timer8CallbackInitialize(dds_tick);
 
+//shared driver enable: start disabled, then make it an output
+  EN_Steppers      = 1;
+  EN_Steppers_Dir  = 0;
+
 //Xaxis
-  EN_Step_PinDirX  = 0; //output
   DIR_Step_PinDirX = 0;
 //  RST_Step_PinDirX = 0;
 //  SLP_FLT_Step_PinDirX = 0;
@@ -30,7 +33,6 @@ void SetPinMode(){
 
   
 //Yaxis
-  EN_Step_PinDirY  = 0; //output
   DIR_Step_PinDirY = 0;
 //  RST_Step_PinDirY = 0;
 //  SLP_FLT_Step_PinDirY = 0;
@@ -38,7 +40,6 @@ void SetPinMode(){
 
   
 //zaxis
-  EN_Step_PinDirZ  = 0; //output
   DIR_Step_PinDirZ = 0;
 //  RST_Step_PinDirZ = 0;
 //  SLP_FLT_Step_PinDirZ = 0;
@@ -46,13 +47,13 @@ void SetPinMode(){
 
   
 //aaxis
-  EN_Step_PinDirA  = 0; //output
   DIR_Step_PinDirA = 0;
 //  RST_Step_PinDirA = 0;
 //  SLP_FLT_Step_PinDirA = 0;
   PLS_Step_PinDirA = 0;
 
 //stepper timeout counter
+dds_axes[0].incrament = 54540;
 }
 
 
@@ -71,56 +72,13 @@ void dds_tick(){
   }
 }
 
-//Enable Steppers
-void EnStepperX(){
-//  SLP_FLT_StepX = 1;
-//  RST_StepX     = 1;
-  EN_StepX       = 0;
+//Shared enable: all drivers switch together (active low)
+void EnableSteppers(){
+  EN_Steppers = 0;
 }
 
-void EnStepperY(){
-//  SLP_FLT_StepY = 1;
-//  RST_StepY     = 1;
-  EN_StepY       = 0;
-}
-void EnStepperZ(){
-//  SLP_FLT_StepZ = 1;
-//  RST_StepZ     = 1;
-  EN_StepZ       = 0;
-}
-void EnStepperA(){
-//  SLP_FLT_StepA = 1;
-//  RST_StepA    = 1;
-  EN_StepA       = 0;
-}
-
-
-void EnableSteppers(int steppers){
-int i;
-  for(i=0;i<steppers;i++){
-    if(i==0) EN_StepX       = 0;
-    if(i==1) EN_StepY       = 0;
-    if(i==2) EN_StepZ       = 0;
-    if(i==3) EN_StepA       = 0;
-  }
-}
-
-void EnableStepper(int stepper){
-  switch(stepper){
-   case X:EN_StepX = 0; break;
-   case Y:EN_StepY = 0; break;
-   case Z:EN_StepZ = 0; break;
-   case A:EN_StepA = 0; break;
-   //case B:EN_StepB = 0; break;
-   //case C:EN_StepC = 0; break;
-  }
-}
-
-void DisableStepper(){
-   EN_StepX      = 1;
-   EN_StepY      = 1;
-   EN_StepZ      = 1;
-   EN_StepA      = 1;
+void DisableSteppers(){
+  EN_Steppers = 1;
 }
 
 void DisableSpindleInterrupt(int stepper){
@@ -135,28 +93,8 @@ int GET_RunState(int axis_No){
   return STPS[axis_No].run_state;
 }
 
-int Get_AxisStatus(int stepper){
-int state = 0;
-  switch(stepper){
-   case X:state = EN_StepX&1; break;
-   case Y:state = EN_StepY&1; break;
-   case Z:state = EN_StepZ&1; break;
-   case A:state = EN_StepA&1; break;
-   //case B:EN_StepB = 0; break;
-   //case C:EN_StepC = 0; break;
-  }
-  return state;
-}
-
-//////////////////////////////////////////////////////////
-//returns the output state of the axis
-int Get_Axis_IEnable_States(){
- int temp = 0;
- temp |= EN_StepX << 3;
- temp |= EN_StepY << 2;
- temp |= EN_StepZ << 1;
- temp |= EN_StepA << 0;
- return temp;
+int Steppers_Enabled(){
+  return EN_Steppers? 0:1;
 }
 
 //////////////////////////////////////////////////////////
@@ -164,49 +102,12 @@ int Get_Axis_IEnable_States(){
 //////////////////////////////////////////////////////////
 void Single_Axis_Enable(_axis_ axis_){
 //pre condition axis stop control for interpolate here??
- axis_running =0;
- 
-  switch(axis_){
-     case X:
-            EN_StepX = 0;
-          break;
-     case Y:
-           EN_StepY = 0;
-          break;
-     case Z:
-           EN_StepZ = 0;
-          break;
-     case A:
-           EN_StepA = 0;
-          break;
- /*    case B:
-           EN_StepB = 1;
-          break;
-     case C:
-           EN_StepC = 1;
-          break;
- */
-     default:
-          break;
-  }
+ axis_running = 0;
+ EnableSteppers();
 }
 
+//Stop one axis only; the shared enable stays on for the others
 void StopAxis(int axis){
-  switch(axis){
-   case X:
-         EN_StepX = 1;
-         break;
-   case Y:
-         EN_StepY = 1;
-         break;
-   case Z:
-        EN_StepZ = 1;
-        break;
-   case A:
-        EN_StepA = 1;
-        break;
-   default : break;
-  }
   STPS[axis].stopAxis = 1;
 }
 

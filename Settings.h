@@ -8,15 +8,23 @@
 typedef __attribute__((aligned (32))) float afloat;
 
 #define FIRMWARE "Grbl "
-#define GRBL_VERSION "0.8c "
-#define GRBL_HELP "['$' for help]"
+#define GRBL_VERSION "1.1h"
+#define GRBL_VERSION_BUILD "20190830"
+#define GRBL_HELP " ['$' for help]"
+
+//Uncomment once a step engine (DDS) drives the axes. While undefined, accepted
+//moves are simulated: the position jumps to the target and the cycle completes
+//immediately, and $H replies error:20 because homing needs real motion.
+// #define STEP_ENGINE_READY
 
 
 //G54, G55, G56, G57, G58 and G59 are datum shift G-Codes.
 //This series of commands tell the CNC control which datum we are using.
 //Once the machine reads one of these codes it will continue to work
 //from this position until a new one is called upon
-#define NUMBER_OF_DATUMS 9
+//P1..P9 (G54..G59.3) plus the G28 and G30 home positions, matching the
+//flash recipe layout (coord_system[recipe-1], see SETTING_INDEX_G28/G30)
+#define NUMBER_OF_DATUMS 11
 
 /////////////////////////////////////////////////////////////////
 // Define bit flag masks for the boolean settings in settings.flag.

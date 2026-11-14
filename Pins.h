@@ -2,6 +2,15 @@
 #define PINS_H
 
 ////////////////////////////////////////////////////
+//BOARD SELECT: pin maps are in Pins.c, PPS in Config.c
+#define BOARD_CLICKER2    1
+#define BOARD_FLIPNCLICK  2
+
+#ifndef BOARD
+#define BOARD  BOARD_FLIPNCLICK
+#endif
+
+////////////////////////////////////////////////////
 //LEDS
 extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
@@ -21,10 +30,13 @@ extern sfr sbit SW2_Dir;
 
 
 ///////////////////////////////////////////
+//Shared stepper driver enable (active low, Grbl shield style)
+extern sfr sbit EN_Steppers;
+extern sfr sbit EN_Steppers_Dir;
+
+///////////////////////////////////////////
 //sfr pin modes
 //Xaxis
-extern sfr sbit EN_StepX;
-extern sfr sbit EN_Step_PinDirX;
 extern sfr sbit DIR_StepX;
 extern sfr sbit DIR_Step_PinDirX;
 extern sfr sbit PLS_StepX;
@@ -36,8 +48,6 @@ extern sfr sbit SLP_FLT_Step_PinDirX;
 extern sfr sbit FLT_StepX;
 extern sfr sbit FLT_Step_PinDirX;
 //Yaxis
-extern sfr sbit EN_StepY;
-extern sfr sbit EN_Step_PinDirY;
 extern sfr sbit RST_StepY;
 extern sfr sbit RST_Step_PinDirY;
 extern sfr sbit SLP_FLT_StepY;
@@ -49,8 +59,6 @@ extern sfr sbit DIR_Step_PinDirY;
 extern sfr sbit FLT_StepY;
 extern sfr sbit FLT_Step_PinDirY;
 //Zaxis
-extern sfr sbit EN_StepZ;
-extern sfr sbit EN_Step_PinDirZ;
 extern sfr sbit RST_StepZ;
 extern sfr sbit RST_Step_PinDirZ;
 extern sfr sbit SLP_FLT_StepZ;
@@ -62,8 +70,6 @@ extern sfr sbit DIR_Step_PinDirZ;
 extern sfr sbit FLT_StepZ;
 extern sfr sbit FLT_Step_PinDirZ;
 //Aaxis
-extern sfr sbit EN_StepA;
-extern sfr sbit EN_Step_PinDirA;
 extern sfr sbit RST_StepA;
 extern sfr sbit RST_Step_PinDirA;
 extern sfr sbit SLP_FLT_StepA;
@@ -82,12 +88,17 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 extern sfr sbit Z_Min_Limit;
 extern sfr sbit Z_Min_Limit_Dir;
-///////////////////////////////////////////////////////
-//Enable pins
-#define X_EN_DIR   0
-#define Y_EN_DIR   0
-#define Z_EN_DIR   0
-#define A_EN_DIR   0
+
+
+//////////////////////////////////////////////////////
+//ENC28J60 Pins assignmetn
+extern sfr sbit SPI_Ethernet_CS;
+extern sfr sbit SPI_Ethernet_CS_Direction;
+extern sfr sbit SPI_Ethernet_Rst;
+extern sfr sbit SPI_Ethernet_Rst_Direction;
+
+
+
 
 /////////////////////////////////////////////////////
 //Direction pins  0 =ve 1 || = -ve

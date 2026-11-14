@@ -6,190 +6,128 @@
 
 
 
- void report_status_message(int status_code){
-  if (status_code == 0) { // STATUS_OK
-    while(DMA_IsOn(1));
-    dma_printf("%s","ok\r\n");
-  } else {
-
-    switch(status_code) {
-      case STATUS_BAD_NUMBER_FORMAT:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: Bad number format");
-           break;
-      case STATUS_EXPECTED_COMMAND_LETTER:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: Expected command letter");
-           break;
-      case STATUS_UNSUPPORTED_STATEMENT:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: Unsupported statement");
-            break;
-      case STATUS_ARC_RADIUS_ERROR:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: Invalid radius");
-           break;
-      case STATUS_MODAL_GROUP_VIOLATION:
-           while(DMA_IsOn(1));
-           dma_printf("%s\n","error: Modal group violation");
-           break;
-      case STATUS_INVALID_STATEMENT:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: Invalid statement");
-            break;
-      case STATUS_SETTING_DISABLED:
-           dma_printf("%s\r\n","error: Setting disabled");
-            break;
-      case STATUS_SETTING_VALUE_NEG:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: Value < 0.0");
-            break;
-      case STATUS_SETTING_STEP_PULSE_MIN:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: Value < 3 usec");
-            break;
-      case STATUS_SETTING_READ_FAIL:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: EEPROM read fail. Using defaults");
-            break;
-      case STATUS_IDLE_ERROR:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: Busy or queued");
-            break;
-      case STATUS_ALARM_LOCK:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","error: Alarm lock");
-            break;
-    }
+// Grbl 1.1 reports errors as numeric codes; map the internal status codes onto them.
+void report_status_message(int status_code){
+  int err_no;
+  switch(status_code){
+    case STATUS_OK:
+      while(DMA_IsOn(1));
+      dma_printf("%s","ok\r\n");
+      return;
+    case STATUS_EXPECTED_COMMAND_LETTER: err_no = 1; break;
+    case STATUS_BAD_NUMBER_FORMAT:       err_no = 2; break;
+    case STATUS_INVALID_STATEMENT:       err_no = 3; break;
+    case STATUS_SETTING_VALUE_NEG:       err_no = 4; break;
+    case STATUS_SETTING_DISABLED:        err_no = 5; break;
+    case STATUS_SETTING_STEP_PULSE_MIN:  err_no = 6; break;
+    case STATUS_SETTING_READ_FAIL:       err_no = 7; break;
+    case STATUS_IDLE_ERROR:              err_no = 8; break;
+    case STATUS_ALARM_LOCK:              err_no = 9; break;
+    case STATUS_LINE_OVERFLOW:
+    case STATUS_SERIAL_RX_ERROR:         err_no = 11; break;
+    case STATUS_SPEED_ERROR:             err_no = 12; break;
+    case STATUS_UNSUPPORTED_STATEMENT:
+    case STATUS_EI_ERROR:                err_no = 20; break;
+    case STATUS_MODAL_GROUP_VIOLATION:   err_no = 21; break;
+    case STATUS_UNDEFINED_FEED_RATE:     err_no = 22; break;
+    case STATUS_ARC_RADIUS_ERROR:        err_no = 34; break;
+    case STATUS_COMMAND_EXECUTE_MOTION:
+    case STATUS_NO_REPORT:               return;
+    // every line needs exactly one reply, or the sender waits for ever
+    default:                             err_no = 3; break;
   }
+  while(DMA_IsOn(1));
+  dma_printf("error:%d\r\n",err_no);
 }
 
-// Prints alarm messages.
+// Prints alarm messages using Grbl 1.1 alarm codes.
 void report_alarm_message(int alarm_code){
-  while(DMA_IsOn(1));
-  dma_printf("%s","ALARM: ");
+  int err_no;
   switch (alarm_code) {
-    case ALARM_HARD_LIMIT:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","Hard limit");
-           break;
-    case ALARM_ABORT_CYCLE:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","Abort during cycle");
-           break;
+    case ALARM_HARD_LIMIT:  err_no = 1; break;
+    case ALARM_ABORT_CYCLE: err_no = 3; break;
+    default: return;
   }
   while(DMA_IsOn(1));
-  dma_printf("%s\r\n",". MPos?");
+  dma_printf("ALARM:%d\r\n",err_no);
   Delay_ms(500); //??? Force delay to ensure message clears serial write buffer.
 }
 
 // Prints feedback messages. This serves as a centralized method to provide additional
 // user feedback for things that are not of the status/alarm message protocol. These are
 // messages such as setup warnings, switch toggling, and how to exit alarms.
-// NOTE: For interfaces, messages are always placed within brackets. And if silent mode
-// is installed, the message number codes are less than zero.
-// TODO: Install silence feedback messages option in settings
 void report_feedback_message(int message_code){
-
+  while(DMA_IsOn(1));
   switch(message_code) {
-    case MESSAGE_CRITICAL_EVENT:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","[Reset to continue]"); break;
-    case MESSAGE_ALARM_LOCK:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","['$H'|'$X' to unlock]"); break;
-    case MESSAGE_ALARM_UNLOCK:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","[Caution: Unlocked]"); break;
-    case MESSAGE_ENABLED:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","[Enabled]"); break;
-    case MESSAGE_DISABLED:
-           while(DMA_IsOn(1));
-           dma_printf("%s\r\n","[Disabled]"); break;
+    case MESSAGE_CRITICAL_EVENT: dma_printf("%s","[MSG:Reset to continue]\r\n"); break;
+    case MESSAGE_ALARM_LOCK:     dma_printf("%s","[MSG:'$H'|'$X' to unlock]\r\n"); break;
+    case MESSAGE_ALARM_UNLOCK:   dma_printf("%s","[MSG:Caution: Unlocked]\r\n"); break;
+    case MESSAGE_ENABLED:        dma_printf("%s","[MSG:Enabled]\r\n"); break;
+    case MESSAGE_DISABLED:       dma_printf("%s","[MSG:Disabled]\r\n"); break;
   }
 }
 
 // Welcome message
 void report_init_message(){
   while(DMA_IsOn(1));
-  dma_printf("%s%s%s\r\n",FIRMWARE,GRBL_VERSION,GRBL_HELP);
+  dma_printf("\r\n%s%s%s\r\n",FIRMWARE,GRBL_VERSION,GRBL_HELP);
 }
 
 // Grbl help message
 void report_grbl_help() {
   while(DMA_IsOn(1));
-  dma_printf("%s","\
-$$ (view Grbl settings)\r\n\
-$# (view # parameters)\r\n\
-$G (view parser state)\r\n\
-$N (view startup blocks)\r\n\
-$x=value (save Grbl setting)\r\n\
-$Nx=line (save startup block)\r\n\
-$C (check gcode mode)\r\n\
-$X (kill alarm lock)\r\n\
-$H (run homing cycle)\r\n\
-~ (cycle start)\r\n\
-! (feed hold)\r\n\
-? (current status)\r\n\
-ctrl-x (reset Grbl)\r\n");
+  dma_printf("%s","[HLP:$$ $# $G $I $N $x=val $Nx=line $C $X $H ~ ! ? ctrl-x]\r\n");
 }
 
-// Grbl global settings print out.
-// NOTE: The numbering scheme here must correlate to storing in settings.c
-void report_grbl_settings() {
-float acc = settings.acceleration;
-  acc /=(60*60);
+// $I build info. OPT: no option letters, 15 planner blocks, 128 byte RX budget for the sender.
+void report_build_info(){
   while(DMA_IsOn(1));
-  dma_printf("\r\n\
-$0=%f (x, step/mm)\r\n\
-$1=%f (y, step/mm)\r\n\
-$2=%f (z, step/mm)\r\n\
-$3=%d (step pulse, usec)\r\n\
-$4=%f (default feed, mm/min)\r\n\
-$5=%f (default seek, mm/min)\r\n\
-$6=%d (step port invert mask, int)\r\n\
-$7=%d (step idle delay, msec)\r\n\
-$8=%f (acceleration, mm/sec^2)\r\n\
-$9=%f (junction deviation, mm)\r\n\
-$10=%f (arc, mm/segment)\r\n\
-$11=%d (n-arc correction, int)\r\n\
-$12=%d (n-decimals, int)\r\n\
-$13=%d (report inches, bool)\r\n\
-$14=%d (auto start, bool)\r\n\
-$15=%d (invert step enable, bool)\r\n\
-$16=%d (hard limits, bool)\r\n\
-$17=%d (homing cycle, bool)\r\n\
-$18=%d (homing dir invert mask, int:)\r\n\
-$19=%f (homing feed, mm/min)\r\n\
-$20=%f (homing seek, mm/min)\r\n\
-$21=%d (homing debounce, msec)\r\n\
-$22=%f (homing pull-off, mm)\r\n"
-,settings.steps_per_mm[X]           //0
-,settings.steps_per_mm[Y]           //1
-,settings.steps_per_mm[Z]           //2
-,settings.p_usec                    //3
-,settings.default_feed_rate         //4
-,settings.default_seek_rate         //5
-,settings.invert_mask               //6
-,settings.step_idle_delay           //7
-,settings.acceleration              //8
-,settings.junction_deviation        //9
-,settings.mm_per_arc_segment        //10
-,settings.n_arc_correction          //11
-,settings.decimal_places            //12
-,bit_istrue(settings.flags,FLAG_REPORT_INCHES)     //13
-,bit_istrue(settings.flags,FLAG_AUTO_START)        //14
-,bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE)  //15
-,bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE) //16
-,bit_istrue(settings.flags,FLAG_HOMING_ENABLE)     //17
-,settings.homing_dir_mask                          //18
-,settings.homing_feed_rate                         //19
-,settings.homing_seek_rate                            //20
-,settings.homing_debounce_delay                       //21
-,settings.homing_pulloff);                            //22
+  dma_printf("[VER:%s.%s:]\r\n[OPT:,15,128]\r\n",GRBL_VERSION,GRBL_VERSION_BUILD);
+  while(DMA_IsOn(1));
+  if(Ethernet_Ready()) dma_printf("[MSG:Ethernet %s]\r\n",Ethernet_Address());
+  else dma_printf("[MSG:Ethernet not found]\r\n");
 }
-
+// Grbl 1.1 global settings print out ($$). Unsupported settings report fixed values.
+// NOTE: The numbering here must correlate with settings_store_grbl_setting() in Globals.c
+void report_grbl_settings() {
+float acc = settings.acceleration / sec_sec;
+  while(DMA_IsOn(1));
+  dma_printf("$0=%d\r\n$1=%d\r\n$2=%d\r\n$3=0\r\n$4=%d\r\n$5=0\r\n$6=0\r\n$10=1\r\n"
+    ,(int)settings.p_usec
+    ,(int)settings.stepper_idle_lock_time
+    ,(int)settings.invert_mask
+    ,(int)bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE));
+  while(DMA_IsOn(1));
+  dma_printf("$11=%f\r\n$12=%f\r\n$13=%d\r\n$20=0\r\n$21=%d\r\n$22=%d\r\n$23=%d\r\n"
+    ,settings.junction_deviation
+    ,settings.mm_per_arc_segment
+    ,(int)bit_istrue(settings.flags,FLAG_REPORT_INCHES)
+    ,(int)bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE)
+    ,(int)bit_istrue(settings.flags,FLAG_HOMING_ENABLE)
+    ,(int)settings.homing_dir_mask);
+  while(DMA_IsOn(1));
+  dma_printf("$24=%f\r\n$25=%f\r\n$26=%d\r\n$27=%f\r\n$30=1000\r\n$31=0\r\n$32=0\r\n"
+    ,settings.homing_feed_rate
+    ,settings.homing_seek_rate
+    ,(int)settings.homing_debounce_delay
+    ,settings.homing_pulloff);
+  while(DMA_IsOn(1));
+  dma_printf("$100=%f\r\n$101=%f\r\n$102=%f\r\n"
+    ,settings.steps_per_mm[X]
+    ,settings.steps_per_mm[Y]
+    ,settings.steps_per_mm[Z]);
+  while(DMA_IsOn(1));
+  dma_printf("$110=%f\r\n$111=%f\r\n$112=%f\r\n$120=%f\r\n$121=%f\r\n$122=%f\r\n"
+    ,settings.default_seek_rate
+    ,settings.default_seek_rate
+    ,settings.default_seek_rate
+    ,acc,acc,acc);
+  while(DMA_IsOn(1));
+  dma_printf("$130=%f\r\n$131=%f\r\n$132=%f\r\n"
+    ,(float)X_MAX_SIZE
+    ,(float)Y_MAX_SIZE
+    ,(float)Z_MAX_SIZE);
+}
 
 // Prints specified startup line
 void report_startup_line(int n, char *line){
@@ -197,179 +135,145 @@ void report_startup_line(int n, char *line){
   dma_printf("$N%d=%s\r\n",n,line);
 }
 
- // Prints real-time data. This function grabs a real-time snapshot of the stepper subprogram
- // and the actual location of the CNC machine. Users may change the following function to their
- // specific needs, but the desired real-time data report must be as short as possible. This is
- // requires as it minimizes the computational overhead and allows grbl to keep running smoothly,
- // especially during g-code programs with fast, short line segments and high frequency reports (5-20Hz).
-void report_realtime_status(){
-  // **Under construction** Bare-bones status report. Provides real-time machine position relative to
-  // the system power on location (0,0,0) and work coordinate position (G54 and G92 applied). Eventually
-  // to be added are distance to go on block, processed block id, and feed rate. Also a settings bitmask
-  // for a user to select the desired real-time data.
-  int i;
-  static float print_position[NoOfAxis];
-  
-  //to ensure dma is not busy, under construction to move away from while()
+// Prints XYZ as "x,y,z" in report units.
+static void report_xyz(float *pos){
   while(DMA_IsOn(1));
-  // Report current machine state
+  dma_printf("%f,%f,%f",pos[X],pos[Y],pos[Z]);
+}
+
+static void report_to_units(float *pos){
+  int i;
+  if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
+    for (i=0; i<3; i++) { pos[i] *= INCH_PER_MM; }
+  }
+}
+
+// Prints real-time data in the Grbl 1.1 format:
+// <State|MPos:x,y,z|FS:feed,speed|WCO:x,y,z>
+void report_realtime_status(){
+  int i;
+  float position[3];
+
+  while(DMA_IsOn(1));
   switch (sys.state) {
-    case STATE_IDLE:       dma_printf("%s","<Idle"); break;
-//    case STATE_INIT: printPgmString(PSTR("[Init")); break; // Never observed
-    case STATE_QUEUED:     dma_printf("%s","<Queue"); break;
     case STATE_CYCLE:      dma_printf("%s","<Run"); break;
-    case STATE_HOLD:       dma_printf("%s","<Hold"); break;
+    case STATE_HOLD:       dma_printf("%s","<Hold:0"); break;
     case STATE_HOMING:     dma_printf("%s","<Home"); break;
     case STATE_ALARM:      dma_printf("%s","<Alarm"); break;
     case STATE_CHECK_MODE: dma_printf("%s","<Check"); break;
+    default:               dma_printf("%s","<Idle"); break;
   }
 
-  // Report machine position
-  for (i=0; i<= NoOfAxis; i++) {
-    print_position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
-    if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) { print_position[i] *= INCH_PER_MM; }
+  for (i=0; i<3; i++) {
+    position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
   }
-  
+  report_to_units(position);
   while(DMA_IsOn(1));
-  dma_printf(",MPos: %f,%f,%f,"
-              ,print_position[0]
-              ,print_position[1]
-              ,print_position[2]);
-              
-  // Report work position
-  for (i=0; i<= 2; i++) {
-    if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
-      print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])*INCH_PER_MM;
-    } else {
-      print_position[i] -= gc.coord_system[i]+gc.coord_offset[i];
-    }
+  dma_printf("%s","|MPos:");
+  report_xyz(position);
+
+  while(DMA_IsOn(1));
+  dma_printf("|FS:%d,0|WCO:",(sys.state == STATE_CYCLE) ? (int)gc.feed_rate : 0);
+  for (i=0; i<3; i++) {
+    position[i] = gc.coord_system[i] + gc.coord_offset[i];
   }
-  
+  report_to_units(position);
+  report_xyz(position);
   while(DMA_IsOn(1));
-  dma_printf("WPos: %f,%f,%f>\r\n"
-              ,print_position[0]
-              ,print_position[1]
-              ,print_position[2]);
+  dma_printf("%s",">\r\n");
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Prints gcode coordinate offset parameters from flash
-void report_gcode_parameters(){
-float coord_data[NoOfAxis];
-int coord_select, i;
-
-  if (!read_coord_data_indicator()){
-    settings_read_coord_data();
-    if(!read_ram_loaded_indicator()){
-      report_status_message(STATUS_SETTING_READ_FAIL);
-      return;
-    }
-  }
-
-  for (coord_select = 1; coord_select <= SETTING_INDEX_NCOORD; coord_select++){
-     while(DMA_IsOn(1));
-    dma_printf("[G");
-     while(DMA_IsOn(1));
-    switch (coord_select) {
-      case 1: dma_printf("54:"); break;
-      case 2: dma_printf("55:"); break;
-      case 3: dma_printf("56:"); break;
-      case 4: dma_printf("57:"); break;
-      case 5: dma_printf("58:"); break;
-      case 6: dma_printf("59:"); break;
-      case 7: dma_printf("28:"); break;
-      case 8: dma_printf("30:"); break;
-      // case 9: printPgmString(PSTR("92:")); break; // G92.2, G92.3 not supported. Hence not stored.
-    }
-    for (i=0; i<NoOfAxis; i++) {
-      while(DMA_IsOn(1));
-      if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
-          dma_printf("%f ",coord_system[coord_select].coord[i]*INCH_PER_MM);
-      }else { 
-          dma_printf("%f ",coord_system[coord_select].coord[i]);
-      }
-      while(DMA_IsOn(1));
-      if (i < (NoOfAxis-1)) {
-         dma_printf(",");
-      }else {
-         dma_printf("]\r\n");
-      }
-    }
-  }
+// Prints a coordinate as [name:x,y,z]
+static void report_coord_line(char *name, float *pos){
+  report_to_units(pos);
   while(DMA_IsOn(1));
-  dma_printf("[G92:"); // Print G92,G92.1 which are not persistent in memory
-  for (i=0; i<NoOfAxis; i++) {
-    while(DMA_IsOn(1));
-    if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)){
-      dma_printf("%f ",gc.coord_offset[i]*INCH_PER_MM);
-    }else {
-      dma_printf("%f ",gc.coord_offset[i]);
-    }
-    while(DMA_IsOn(1));
-    if (i < (NoOfAxis-1)) {
-       dma_printf(",");
-    }else {
-      dma_printf("]\r\n"); }
-  }
+  dma_printf("[%s:",name);
+  report_xyz(pos);
+  while(DMA_IsOn(1));
+  dma_printf("%s","]\r\n");
 }
 
-// Print current gcode parser mode state
+// Prints the stored 1 based recipe (P1..P9, G28, G30) from coord_system[recipe-1].
+static void report_coord_system(char *name, int recipe){
+  float position[3];
+  int i;
+  for (i=0; i<3; i++) {
+    position[i] = coord_system[recipe-1].coord[i];
+  }
+  report_coord_line(name,position);
+}
+
+// Prints gcode coordinate offset parameters ($#) in the Grbl 1.1 format.
+// G54..G59 are recipes P1..P6 (gc.coord_select = G-53).
+void report_gcode_parameters(){
+  float position[3];
+  int i;
+
+  settings_read_coord_data();
+  report_coord_system("G54",1);
+  report_coord_system("G55",2);
+  report_coord_system("G56",3);
+  report_coord_system("G57",4);
+  report_coord_system("G58",5);
+  report_coord_system("G59",6);
+  report_coord_system("G28",SETTING_INDEX_G28);
+  report_coord_system("G30",SETTING_INDEX_G30);
+  for (i=0; i<3; i++) { position[i] = gc.coord_offset[i]; }
+  report_coord_line("G92",position);
+  while(DMA_IsOn(1));
+  dma_printf("%s","[TLO:0.000]\r\n");
+  while(DMA_IsOn(1));
+  dma_printf("%s","[PRB:0.000,0.000,0.000:0]\r\n");
+}
+// Print current gcode parser mode state ($G) in the Grbl 1.1 format:
+// [GC:G0 G54 G17 G21 G90 G94 M5 M9 T0 F0 S0]
 void report_gcode_modes(){
-    while(DMA_IsOn(1));
+  int motion;
   switch (gc.motion_mode) {
-    case MOTION_MODE_SEEK :    dma_printf("[G0"); break;
-    case MOTION_MODE_LINEAR :  dma_printf("[G1"); break;
-    case MOTION_MODE_CW_ARC :  dma_printf("[G2"); break;
-    case MOTION_MODE_CCW_ARC : dma_printf("[G3"); break;
-    case MOTION_MODE_CANCEL :  dma_printf("[G80"); break;
+    case MOTION_MODE_LINEAR :  motion = 1; break;
+    case MOTION_MODE_CW_ARC :  motion = 2; break;
+    case MOTION_MODE_CCW_ARC : motion = 3; break;
+    case MOTION_MODE_CANCEL :  motion = 80; break;
+    default:                   motion = 0; break;
   }
   while(DMA_IsOn(1));
-  dma_printf(" G%d",gc.coord_select+54);
+  dma_printf("[GC:G%d G%d",motion,gc.coord_select+53);
+
   while(DMA_IsOn(1));
   if (gc.plane_axis_0 == X) {
-    if (gc.plane_axis_1 == Y) { dma_printf(" G17"); }
-    else { dma_printf(" G18"); }
-  } else { dma_printf(" G19"); }
+    if (gc.plane_axis_1 == Y) { dma_printf("%s"," G17"); }
+    else { dma_printf("%s"," G18"); }
+  } else { dma_printf("%s"," G19"); }
   while(DMA_IsOn(1));
-  if (gc.inches_mode) { dma_printf(" G20"); }
-  else { dma_printf(" G21"); }
+  dma_printf("%s",gc.inches_mode ? " G20" : " G21");
   while(DMA_IsOn(1));
-  if (gc.absolute_mode) { dma_printf(" G90"); }
-  else { dma_printf(" G91"); }
+  dma_printf("%s",gc.absolute_mode ? " G90" : " G91");
   while(DMA_IsOn(1));
-  if (gc.inverse_feed_rate_mode) { dma_printf(" G93"); }
-  else { dma_printf(" G94"); }
-  
+  dma_printf("%s",gc.inverse_feed_rate_mode ? " G93" : " G94");
+
   while(DMA_IsOn(1));
   switch (gc.program_flow) {
-    case PROGRAM_FLOW_RUNNING : dma_printf(" M0"); break;
-    case PROGRAM_FLOW_PAUSED :  dma_printf(" M1"); break;
-    case PROGRAM_FLOW_COMPLETED : dma_printf(" M2"); break;
+    case PROGRAM_FLOW_PAUSED :    dma_printf("%s"," M0"); break;
+    case PROGRAM_FLOW_COMPLETED : dma_printf("%s"," M2"); break;
   }
   while(DMA_IsOn(1));
   switch (gc.spindle_direction) {
-    case 1 : dma_printf(" M3"); break;
-    case -1 : dma_printf(" M4"); break;
-    case 0 : dma_printf(" M5"); break;
+    case 1 :  dma_printf("%s"," M3"); break;
+    case -1 : dma_printf("%s"," M4"); break;
+    default : dma_printf("%s"," M5"); break;
   }
   while(DMA_IsOn(1));
   switch (gc.coolant_mode) {
-    //case MESSAGE_DISABLE : printPgmString(PSTR(" M9")); break;
- //   case COOLANT_FLOOD_ENABLE : printPgmString(PSTR(" M8")); break;
-    #ifdef ENABLE_M7
-      case COOLANT_MIST_ENABLE : dma_printf(" M7"); break;
-    #endif
+    case COOLANT_MIST_ENABLE :  dma_printf("%s"," M7"); break;
+    case COOLANT_FLOOD_ENABLE : dma_printf("%s"," M8"); break;
+    default :                   dma_printf("%s"," M9"); break;
   }
-   while(DMA_IsOn(1));
-   if (gc.inches_mode)
-      dma_printf(" T %dF %f",gc.tool,gc.feed_rate*INCH_PER_MM);
-   else
-      dma_printf(" T %dF %f]\r\n",gc.tool,gc.feed_rate);
-
-
-}
-/*
+  while(DMA_IsOn(1));
+  dma_printf(" T%d F%d S0]\r\n",(int)gc.tool,
+             (int)(gc.inches_mode ? gc.feed_rate*INCH_PER_MM : gc.feed_rate));
+}/*
 // Executes user startup script, if stored.
 void protocol_execute_startup(){
   uint8_t n;

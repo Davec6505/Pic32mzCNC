@@ -1,6 +1,6 @@
 #line 1 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
 #line 1 "c:/users/davec/git/pic32mzcnc/print.h"
-#line 34 "c:/users/davec/git/pic32mzcnc/print.h"
+#line 36 "c:/users/davec/git/pic32mzcnc/print.h"
 void report_status_message(int status_code);
 
 void report_alarm_message(int alarm_code);
@@ -19,6 +19,7 @@ void report_grbl_settings();
 void report_gcode_parameters();
 
 void report_gcode_modes();
+void report_build_info();
 
 void protocol_execute_startup();
 
@@ -32,7 +33,7 @@ void report_realtime_status();
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 181 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -126,11 +127,7 @@ int xtoi(char * s);
 typedef void * va_list[1];
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
-
-
-
-
-
+#line 15 "c:/users/davec/git/pic32mzcnc/pins.h"
 extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
@@ -150,9 +147,12 @@ extern sfr sbit SW2_Dir;
 
 
 
+extern sfr sbit EN_Steppers;
+extern sfr sbit EN_Steppers_Dir;
 
-extern sfr sbit EN_StepX;
-extern sfr sbit EN_Step_PinDirX;
+
+
+
 extern sfr sbit DIR_StepX;
 extern sfr sbit DIR_Step_PinDirX;
 extern sfr sbit PLS_StepX;
@@ -164,8 +164,6 @@ extern sfr sbit SLP_FLT_Step_PinDirX;
 extern sfr sbit FLT_StepX;
 extern sfr sbit FLT_Step_PinDirX;
 
-extern sfr sbit EN_StepY;
-extern sfr sbit EN_Step_PinDirY;
 extern sfr sbit RST_StepY;
 extern sfr sbit RST_Step_PinDirY;
 extern sfr sbit SLP_FLT_StepY;
@@ -177,8 +175,6 @@ extern sfr sbit DIR_Step_PinDirY;
 extern sfr sbit FLT_StepY;
 extern sfr sbit FLT_Step_PinDirY;
 
-extern sfr sbit EN_StepZ;
-extern sfr sbit EN_Step_PinDirZ;
 extern sfr sbit RST_StepZ;
 extern sfr sbit RST_Step_PinDirZ;
 extern sfr sbit SLP_FLT_StepZ;
@@ -190,8 +186,6 @@ extern sfr sbit DIR_Step_PinDirZ;
 extern sfr sbit FLT_StepZ;
 extern sfr sbit FLT_Step_PinDirZ;
 
-extern sfr sbit EN_StepA;
-extern sfr sbit EN_Step_PinDirA;
 extern sfr sbit RST_StepA;
 extern sfr sbit RST_Step_PinDirA;
 extern sfr sbit SLP_FLT_StepA;
@@ -210,6 +204,14 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 extern sfr sbit Z_Min_Limit;
 extern sfr sbit Z_Min_Limit_Dir;
+
+
+
+
+extern sfr sbit SPI_Ethernet_CS;
+extern sfr sbit SPI_Ethernet_CS_Direction;
+extern sfr sbit SPI_Ethernet_Rst;
+extern sfr sbit SPI_Ethernet_Rst_Direction;
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
@@ -293,8 +295,8 @@ int round(float val);
 
 
 long lround(float val);
-#line 106 "c:/users/davec/git/pic32mzcnc/globals.h"
-extern unsigned long volatile buffA[128];
+#line 107 "c:/users/davec/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buffA[512];
 
 
 
@@ -318,13 +320,14 @@ typedef struct{
  float coord[ 4 ];
  float coord_offset[ 4 ];
 }coord_sys;
-extern volatile coord_sys coord_system[ 9 ];
+extern volatile coord_sys coord_system[ 11 ];
 
 
 
 
 
 void settings_init(short reset_all);
+int settings_restore(int restore_mask);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -354,9 +357,6 @@ unsigned int settings_write_coord_data(int coord_select,float *coord);
 void settings_read_coord_data();
 
 
-unsigned int settings_write_one_coord(int coord_select,float *coord);
-
-
 int settings_read_startup_line(int n, char *line);
 
 
@@ -367,6 +367,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
+int settings_store_grbl_setting(int parameter, float value);
 #line 62 "c:/users/davec/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
@@ -431,7 +432,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 49 "c:/users/davec/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 161 "c:/users/davec/git/pic32mzcnc/gcode.h"
+#line 162 "c:/users/davec/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;
@@ -466,9 +467,12 @@ typedef struct {
  float K;
  int P;
  int S;
+ float dwell;
  int DIR;
 } parser_state_t;
 extern parser_state_t gc;
+void G_Save_State();
+void G_Restore_State();
 
 
 
@@ -478,6 +482,8 @@ extern parser_state_t gc;
 
 
 void G_Initialise();
+void G_Begin_Block();
+void G_Program_End();
 
 void FAIL(int status);
 int GET_FAIL();
@@ -519,6 +525,7 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
+static void Load_Coord_System(int select);
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 59 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
@@ -639,7 +646,7 @@ extern axis_combination axis_xyz;
 
 
 extern long test;
-#line 52 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 53 "c:/users/davec/git/pic32mzcnc/stepper.h"
  typedef struct{
  uint32_t phase;
  uint32_t incrament;
@@ -654,25 +661,14 @@ void SetPinMode();
 void CycleStart();
 void CycleStop();
 
-void EnStepperX();
-void EnStepperY();
-void EnStepperZ();
-void EnStepperA();
-void EnStepperB();
-void EnStepperC();
-
-void EnStepperAll();
-
 void DisableStepperInterrupt(int stepper);
-void EnableSteppers(int steppers);
-void EnableStepper(int stepper);
-void DisableStepper();
+void EnableSteppers();
+void DisableSteppers();
 void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
-int Get_AxisStatus(int stepper);
-int Get_Axis_IEnable_States();
+int Steppers_Enabled();
 
 
 static void SingleStepAxis(int axis);
@@ -732,22 +728,18 @@ float toradians(float rev_per_min);
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
-#line 33 "c:/users/davec/git/pic32mzcnc/limits.h"
+#line 35 "c:/users/davec/git/pic32mzcnc/limits.h"
 struct limit {
 
 char Pin: 1;
 char Limit_Min: 1;
 char Limit_Max: 1;
-char T0: 1;
-char T1: 1;
-char T2: 1;
-char T4: 1;
 char new_val;
 char old_Pval;
 char old_Fval;
 
-unsigned int Min_DeBnc;
-unsigned int last_cnt_min;
+unsigned int trip_cnt;
+unsigned int release_cnt;
 
 
 long Soft_Limit_Min;
@@ -769,8 +761,10 @@ char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
 void XOR_Min_Limit(int axis);
 void Invert_Min_Limit(int axis);
-void Debounce_Limits(int axis);
-void Reset_Min_Debounce(int axis);
+
+void Limits_Sample();
+
+char Limits_TakeEvent();
 
 char FP(int axis);
 void Rst_FP(int axis);
@@ -799,12 +793,6 @@ void Str_clear(char *str,int len);
 int Sample_Gocde_Line();
 
 
-static void Do_Startup_Msg(char *str_,int dif_);
-
-
-static void Do_Critical_Msg(char ch_);
-
-
 
 
 
@@ -814,6 +802,12 @@ static int Check_Query_Type(char *str_,int dif_);
 
 
 static int Do_Gcode(char *str_,int dif_);
+
+
+static int gcode_words(char *line);
+
+
+static int Machine_Busy();
 
 
 int Sample_Ringbuffer();
@@ -837,7 +831,17 @@ void protocol_system_check();
 
 void protocol_execute_runtime();
 #line 1 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
-#line 27 "c:/users/davec/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/tcp_ethernet.h"
+
+
+
+
+void Ethernet_Transport_Init();
+void Ethernet_Transport_Poll();
+char Ethernet_Ready();
+char *Ethernet_Address();
+int Ethernet_HostPut(char ch);
+#line 31 "c:/users/davec/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 
 
@@ -847,9 +851,9 @@ extern unsigned char LCD_01_ADDRESS;
 
 
 void PinMode();
-void UartConfig();
+
 void set_performance_mode();
-void Uart2InterruptSetup();
+
 
 void OutPutPulseXYZ();
 
@@ -857,76 +861,59 @@ void OutPutPulseXYZ();
 static int Modal_Group_Actions0(int action);
 
 
-static int Modal_Group_Actions1(int action);
+static int Execute_Gcode_Line();
+static void Compute_Target(int axes,float *target);
+static void Motion_Line(int axes);
+static void Run_Move(float *target,int mode);
 
 
-static int Modal_Group_Actions4(int action);
+void Cycle_Complete();
 
 
-static int Modal_Group_Actions7(int action);
-
-
-static int Modal_Group_Actions12(int action);
+void Host_ServiceNow();
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
-#line 14 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
-extern char txt[];
-extern char rxBuf[];
-extern char txBuf[];
-
+#line 31 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 typedef struct{
- char temp_buffer[500];
- int head;
- int tail;
- int diff;
- char has_data: 1;
-}Serial;
+ volatile char temp_buffer[ 1024 ];
+ volatile unsigned int head;
+ volatile unsigned int tail;
+} Serial;
 
 extern Serial serial;
+extern volatile char rxBuf[];
+extern char txBuf[];
 
+void Serial_Init(char mode);
 
+void Uart2InterruptSetup();
+#line 47 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
+unsigned int Serial_TakeRealtime();
+unsigned int Serial_PeekRealtime();
 
+char Serial_TakeStatusRequest();
 
+int Serial_ReadLine(char *line);
+void Reset_Ring();
+void Host_SetLink(char link);
+char Host_GetLink();
 
-
-void DMA_global();
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
-
-
-
-void DMA0();
-char DMA0_Flag();
-void DMA0_Enable();
-void DMA0_Disable();
-unsigned int DMA0_ReadDstPtr();
-void DMA0_RstDstPtr();
-
-
+void Host_ReceiveBytes(char *bytes, unsigned int n);
+int Get_Head_Value();
+int Get_Tail_Value();
+int Get_Difference();
 
 void DMA1();
 char DMA1_Flag();
 unsigned int DMA1_Enable();
 void DMA1_Disable();
-
-
-
-
 unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Abort(int channel);
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
 
-
-void Reset_rxBuff(int dif);
-int Get_Head_Value();
-int Get_Tail_Value();
-int Get_Difference();
-void Get_Line(char *str,int dif);
-void Reset_Ring();
-int Loopback();
-int dma_printf(char* str,...);
-void lTrim(char* d,char* s);
-#line 151 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
+int dma_printf(const char *str,...);
+void lTrim(char *d,char *s);
+#line 155 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -945,157 +932,128 @@ unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
-#line 9 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
- void report_status_message(int status_code){
- if (status_code == 0) {
+#line 10 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
+void report_status_message(int status_code){
+ int err_no;
+ switch(status_code){
+ case  0 :
  while(DMA_IsOn(1));
  dma_printf("%s","ok\r\n");
- } else {
-
- switch(status_code) {
- case  1 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: Bad number format");
- break;
- case  2 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: Expected command letter");
- break;
+ return;
+ case  2 : err_no = 1; break;
+ case  1 : err_no = 2; break;
+ case  6 : err_no = 3; break;
+ case  8 : err_no = 4; break;
+ case  7 : err_no = 5; break;
+ case  9 : err_no = 6; break;
+ case  10 : err_no = 7; break;
+ case  11 : err_no = 8; break;
+ case  12 : err_no = 9; break;
+ case  15 :
+ case  16 : err_no = 11; break;
+ case  13 : err_no = 12; break;
  case  3 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: Unsupported statement");
- break;
- case  4 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: Invalid radius");
- break;
- case  5 :
- while(DMA_IsOn(1));
- dma_printf("%s\n","error: Modal group violation");
- break;
- case  6 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: Invalid statement");
- break;
- case  7 :
- dma_printf("%s\r\n","error: Setting disabled");
- break;
- case  8 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: Value < 0.0");
- break;
- case  9 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: Value < 3 usec");
- break;
- case  10 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: EEPROM read fail. Using defaults");
- break;
- case  11 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: Busy or queued");
- break;
- case  12 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","error: Alarm lock");
- break;
+ case  14 : err_no = 20; break;
+ case  5 : err_no = 21; break;
+ case  17 : err_no = 22; break;
+ case  4 : err_no = 34; break;
+ case  20 :
+ case  99 : return;
+
+ default: err_no = 3; break;
  }
- }
+ while(DMA_IsOn(1));
+ dma_printf("error:%d\r\n",err_no);
 }
 
 
 void report_alarm_message(int alarm_code){
- while(DMA_IsOn(1));
- dma_printf("%s","ALARM: ");
+ int err_no;
  switch (alarm_code) {
- case  -1 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","Hard limit");
- break;
- case  -2 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","Abort during cycle");
- break;
+ case  -1 : err_no = 1; break;
+ case  -2 : err_no = 3; break;
+ default: return;
  }
  while(DMA_IsOn(1));
- dma_printf("%s\r\n",". MPos?");
+ dma_printf("ALARM:%d\r\n",err_no);
  Delay_ms(500);
 }
 
 
 
 
-
-
-
 void report_feedback_message(int message_code){
-
+ while(DMA_IsOn(1));
  switch(message_code) {
- case  1 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","[Reset to continue]"); break;
- case  2 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","['$H'|'$X' to unlock]"); break;
- case  3 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","[Caution: Unlocked]"); break;
- case  4 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","[Enabled]"); break;
- case  5 :
- while(DMA_IsOn(1));
- dma_printf("%s\r\n","[Disabled]"); break;
+ case  1 : dma_printf("%s","[MSG:Reset to continue]\r\n"); break;
+ case  2 : dma_printf("%s","[MSG:'$H'|'$X' to unlock]\r\n"); break;
+ case  3 : dma_printf("%s","[MSG:Caution: Unlocked]\r\n"); break;
+ case  4 : dma_printf("%s","[MSG:Enabled]\r\n"); break;
+ case  5 : dma_printf("%s","[MSG:Disabled]\r\n"); break;
  }
 }
 
 
 void report_init_message(){
  while(DMA_IsOn(1));
- dma_printf("%s%s%s\r\n", "Grbl " , "0.8c " , "['$' for help]" );
+ dma_printf("\r\n%s%s%s\r\n", "Grbl " , "1.1h" , " ['$' for help]" );
 }
 
 
 void report_grbl_help() {
  while(DMA_IsOn(1));
-#line 135 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
- dma_printf("%s","$$ (view Grbl settings)\r\n$# (view # parameters)\r\n$G (view parser state)\r\n$N (view startup blocks)\r\n$x=value (save Grbl setting)\r\n$Nx=line (save startup block)\r\n$C (check gcode mode)\r\n$X (kill alarm lock)\r\n$H (run homing cycle)\r\n~ (cycle start)\r\n! (feed hold)\r\n? (current status)\r\nctrl-x (reset Grbl)\r\n");
+ dma_printf("%s","[HLP:$$ $# $G $I $N $x=val $Nx=line $C $X $H ~ ! ? ctrl-x]\r\n");
 }
 
+
+void report_build_info(){
+ while(DMA_IsOn(1));
+ dma_printf("[VER:%s.%s:]\r\n[OPT:,15,128]\r\n", "1.1h" , "20190830" );
+ while(DMA_IsOn(1));
+ if(Ethernet_Ready()) dma_printf("[MSG:Ethernet %s]\r\n",Ethernet_Address());
+ else dma_printf("[MSG:Ethernet not found]\r\n");
+}
 
 
 void report_grbl_settings() {
-float acc = settings.acceleration;
- acc /=(60*60);
+float acc = settings.acceleration /  3600 ;
  while(DMA_IsOn(1));
-#line 167 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
- dma_printf("\r\n$0=%f (x, step/mm)\r\n$1=%f (y, step/mm)\r\n$2=%f (z, step/mm)\r\n$3=%d (step pulse, usec)\r\n$4=%f (default feed, mm/min)\r\n$5=%f (default seek, mm/min)\r\n$6=%d (step port invert mask, int)\r\n$7=%d (step idle delay, msec)\r\n$8=%f (acceleration, mm/sec^2)\r\n$9=%f (junction deviation, mm)\r\n$10=%f (arc, mm/segment)\r\n$11=%d (n-arc correction, int)\r\n$12=%d (n-decimals, int)\r\n$13=%d (report inches, bool)\r\n$14=%d (auto start, bool)\r\n$15=%d (invert step enable, bool)\r\n$16=%d (hard limits, bool)\r\n$17=%d (homing cycle, bool)\r\n$18=%d (homing dir invert mask, int:)\r\n$19=%f (homing feed, mm/min)\r\n$20=%f (homing seek, mm/min)\r\n$21=%d (homing debounce, msec)\r\n$22=%f (homing pull-off, mm)\r\n"
-,settings.steps_per_mm[X]
-,settings.steps_per_mm[Y]
-,settings.steps_per_mm[Z]
-,settings.p_usec
-,settings.default_feed_rate
-,settings.default_seek_rate
-,settings.invert_mask
-,settings.step_idle_delay
-,settings.acceleration
-,settings.junction_deviation
-,settings.mm_per_arc_segment
-,settings.n_arc_correction
-,settings.decimal_places
-, ((settings.flags & 1 ) != 0) 
-, ((settings.flags & 2 ) != 0) 
-, ((settings.flags & 4 ) != 0) 
-, ((settings.flags & 8 ) != 0) 
-, ((settings.flags & 16 ) != 0) 
-,settings.homing_dir_mask
-,settings.homing_feed_rate
-,settings.homing_seek_rate
-,settings.homing_debounce_delay
-,settings.homing_pulloff);
+ dma_printf("$0=%d\r\n$1=%d\r\n$2=%d\r\n$3=0\r\n$4=%d\r\n$5=0\r\n$6=0\r\n$10=1\r\n"
+ ,(int)settings.p_usec
+ ,(int)settings.stepper_idle_lock_time
+ ,(int)settings.invert_mask
+ ,(int) ((settings.flags & 4 ) != 0) );
+ while(DMA_IsOn(1));
+ dma_printf("$11=%f\r\n$12=%f\r\n$13=%d\r\n$20=0\r\n$21=%d\r\n$22=%d\r\n$23=%d\r\n"
+ ,settings.junction_deviation
+ ,settings.mm_per_arc_segment
+ ,(int) ((settings.flags & 1 ) != 0) 
+ ,(int) ((settings.flags & 8 ) != 0) 
+ ,(int) ((settings.flags & 16 ) != 0) 
+ ,(int)settings.homing_dir_mask);
+ while(DMA_IsOn(1));
+ dma_printf("$24=%f\r\n$25=%f\r\n$26=%d\r\n$27=%f\r\n$30=1000\r\n$31=0\r\n$32=0\r\n"
+ ,settings.homing_feed_rate
+ ,settings.homing_seek_rate
+ ,(int)settings.homing_debounce_delay
+ ,settings.homing_pulloff);
+ while(DMA_IsOn(1));
+ dma_printf("$100=%f\r\n$101=%f\r\n$102=%f\r\n"
+ ,settings.steps_per_mm[X]
+ ,settings.steps_per_mm[Y]
+ ,settings.steps_per_mm[Z]);
+ while(DMA_IsOn(1));
+ dma_printf("$110=%f\r\n$111=%f\r\n$112=%f\r\n$120=%f\r\n$121=%f\r\n$122=%f\r\n"
+ ,settings.default_seek_rate
+ ,settings.default_seek_rate
+ ,settings.default_seek_rate
+ ,acc,acc,acc);
+ while(DMA_IsOn(1));
+ dma_printf("$130=%f\r\n$131=%f\r\n$132=%f\r\n"
+ ,(float) 300.00 
+ ,(float) 300.00 
+ ,(float) 100.00 );
 }
-
 
 
 void report_startup_line(int n, char *line){
@@ -1104,170 +1062,142 @@ void report_startup_line(int n, char *line){
 }
 
 
+static void report_xyz(float *pos){
+ while(DMA_IsOn(1));
+ dma_printf("%f,%f,%f",pos[X],pos[Y],pos[Z]);
+}
 
+static void report_to_units(float *pos){
+ int i;
+ if ( ((settings.flags & 1 ) != 0) ) {
+ for (i=0; i<3; i++) { pos[i] *=  (0.0393701) ; }
+ }
+}
 
 
 
 void report_realtime_status(){
-
-
-
-
  int i;
- static float print_position[ 4 ];
-
+ float position[3];
 
  while(DMA_IsOn(1));
-
  switch (sys.state) {
- case  0 : dma_printf("%s","<Idle"); break;
-
- case  2 : dma_printf("%s","<Queue"); break;
  case  3 : dma_printf("%s","<Run"); break;
- case  4 : dma_printf("%s","<Hold"); break;
+ case  4 : dma_printf("%s","<Hold:0"); break;
  case  5 : dma_printf("%s","<Home"); break;
  case  6 : dma_printf("%s","<Alarm"); break;
  case  7 : dma_printf("%s","<Check"); break;
+ default: dma_printf("%s","<Idle"); break;
  }
 
-
- for (i=0; i<=  4 ; i++) {
- print_position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
- if ( ((settings.flags & 1 ) != 0) ) { print_position[i] *=  (0.0393701) ; }
+ for (i=0; i<3; i++) {
+ position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
  }
+ report_to_units(position);
+ while(DMA_IsOn(1));
+ dma_printf("%s","|MPos:");
+ report_xyz(position);
 
  while(DMA_IsOn(1));
- dma_printf(",MPos: %f,%f,%f,"
- ,print_position[0]
- ,print_position[1]
- ,print_position[2]);
-
-
- for (i=0; i<= 2; i++) {
- if ( ((settings.flags & 1 ) != 0) ) {
- print_position[i] -= (gc.coord_system[i]+gc.coord_offset[i])* (0.0393701) ;
- } else {
- print_position[i] -= gc.coord_system[i]+gc.coord_offset[i];
+ dma_printf("|FS:%d,0|WCO:",(sys.state ==  3 ) ? (int)gc.feed_rate : 0);
+ for (i=0; i<3; i++) {
+ position[i] = gc.coord_system[i] + gc.coord_offset[i];
  }
- }
-
+ report_to_units(position);
+ report_xyz(position);
  while(DMA_IsOn(1));
- dma_printf("WPos: %f,%f,%f>\r\n"
- ,print_position[0]
- ,print_position[1]
- ,print_position[2]);
+ dma_printf("%s",">\r\n");
 }
 
+
+
+
+static void report_coord_line(char *name, float *pos){
+ report_to_units(pos);
+ while(DMA_IsOn(1));
+ dma_printf("[%s:",name);
+ report_xyz(pos);
+ while(DMA_IsOn(1));
+ dma_printf("%s","]\r\n");
+}
+
+
+static void report_coord_system(char *name, int recipe){
+ float position[3];
+ int i;
+ for (i=0; i<3; i++) {
+ position[i] = coord_system[recipe-1].coord[i];
+ }
+ report_coord_line(name,position);
+}
 
 
 
 void report_gcode_parameters(){
-float coord_data[ 4 ];
-int coord_select, i;
+ float position[3];
+ int i;
 
- if (!read_coord_data_indicator()){
  settings_read_coord_data();
- if(!read_ram_loaded_indicator()){
- report_status_message( 10 );
- return;
- }
- }
-
- for (coord_select = 1; coord_select <=  9 +1 ; coord_select++){
+ report_coord_system("G54",1);
+ report_coord_system("G55",2);
+ report_coord_system("G56",3);
+ report_coord_system("G57",4);
+ report_coord_system("G58",5);
+ report_coord_system("G59",6);
+ report_coord_system("G28", 9 +1 );
+ report_coord_system("G30", 9 +1  + 1 );
+ for (i=0; i<3; i++) { position[i] = gc.coord_offset[i]; }
+ report_coord_line("G92",position);
  while(DMA_IsOn(1));
- dma_printf("[G");
+ dma_printf("%s","[TLO:0.000]\r\n");
  while(DMA_IsOn(1));
- switch (coord_select) {
- case 1: dma_printf("54:"); break;
- case 2: dma_printf("55:"); break;
- case 3: dma_printf("56:"); break;
- case 4: dma_printf("57:"); break;
- case 5: dma_printf("58:"); break;
- case 6: dma_printf("59:"); break;
- case 7: dma_printf("28:"); break;
- case 8: dma_printf("30:"); break;
-
- }
- for (i=0; i< 4 ; i++) {
- while(DMA_IsOn(1));
- if ( ((settings.flags & 1 ) != 0) ) {
- dma_printf("%f ",coord_system[coord_select].coord[i]* (0.0393701) );
- }else {
- dma_printf("%f ",coord_system[coord_select].coord[i]);
- }
- while(DMA_IsOn(1));
- if (i < ( 4 -1)) {
- dma_printf(",");
- }else {
- dma_printf("]\r\n");
- }
- }
- }
- while(DMA_IsOn(1));
- dma_printf("[G92:");
- for (i=0; i< 4 ; i++) {
- while(DMA_IsOn(1));
- if ( ((settings.flags & 1 ) != 0) ){
- dma_printf("%f ",gc.coord_offset[i]* (0.0393701) );
- }else {
- dma_printf("%f ",gc.coord_offset[i]);
- }
- while(DMA_IsOn(1));
- if (i < ( 4 -1)) {
- dma_printf(",");
- }else {
- dma_printf("]\r\n"); }
- }
+ dma_printf("%s","[PRB:0.000,0.000,0.000:0]\r\n");
 }
 
 
 void report_gcode_modes(){
- while(DMA_IsOn(1));
+ int motion;
  switch (gc.motion_mode) {
- case  0  : dma_printf("[G0"); break;
- case  1  : dma_printf("[G1"); break;
- case  2  : dma_printf("[G2"); break;
- case  3  : dma_printf("[G3"); break;
- case  4  : dma_printf("[G80"); break;
+ case  1  : motion = 1; break;
+ case  2  : motion = 2; break;
+ case  3  : motion = 3; break;
+ case  4  : motion = 80; break;
+ default: motion = 0; break;
  }
  while(DMA_IsOn(1));
- dma_printf(" G%d",gc.coord_select+54);
+ dma_printf("[GC:G%d G%d",motion,gc.coord_select+53);
+
  while(DMA_IsOn(1));
  if (gc.plane_axis_0 == X) {
- if (gc.plane_axis_1 == Y) { dma_printf(" G17"); }
- else { dma_printf(" G18"); }
- } else { dma_printf(" G19"); }
+ if (gc.plane_axis_1 == Y) { dma_printf("%s"," G17"); }
+ else { dma_printf("%s"," G18"); }
+ } else { dma_printf("%s"," G19"); }
  while(DMA_IsOn(1));
- if (gc.inches_mode) { dma_printf(" G20"); }
- else { dma_printf(" G21"); }
+ dma_printf("%s",gc.inches_mode ? " G20" : " G21");
  while(DMA_IsOn(1));
- if (gc.absolute_mode) { dma_printf(" G90"); }
- else { dma_printf(" G91"); }
+ dma_printf("%s",gc.absolute_mode ? " G90" : " G91");
  while(DMA_IsOn(1));
- if (gc.inverse_feed_rate_mode) { dma_printf(" G93"); }
- else { dma_printf(" G94"); }
+ dma_printf("%s",gc.inverse_feed_rate_mode ? " G93" : " G94");
 
  while(DMA_IsOn(1));
  switch (gc.program_flow) {
- case  0  : dma_printf(" M0"); break;
- case  1  : dma_printf(" M1"); break;
- case  2  : dma_printf(" M2"); break;
+ case  1  : dma_printf("%s"," M0"); break;
+ case  2  : dma_printf("%s"," M2"); break;
  }
  while(DMA_IsOn(1));
  switch (gc.spindle_direction) {
- case 1 : dma_printf(" M3"); break;
- case -1 : dma_printf(" M4"); break;
- case 0 : dma_printf(" M5"); break;
+ case 1 : dma_printf("%s"," M3"); break;
+ case -1 : dma_printf("%s"," M4"); break;
+ default : dma_printf("%s"," M5"); break;
  }
  while(DMA_IsOn(1));
  switch (gc.coolant_mode) {
-#line 363 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
+ case  2  : dma_printf("%s"," M7"); break;
+ case  1  : dma_printf("%s"," M8"); break;
+ default : dma_printf("%s"," M9"); break;
  }
  while(DMA_IsOn(1));
- if (gc.inches_mode)
- dma_printf(" T %dF %f",gc.tool,gc.feed_rate* (0.0393701) );
- else
- dma_printf(" T %dF %f]\r\n",gc.tool,gc.feed_rate);
-
-
+ dma_printf(" T%d F%d S0]\r\n",(int)gc.tool,
+ (int)(gc.inches_mode ? gc.feed_rate* (0.0393701)  : gc.feed_rate));
+#line 291 "c:/Users/davec/GIT/Pic32mzCNC/Print.c"
 }

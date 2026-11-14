@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=Kinematics.c
+Value=Config.c
 Value=DEFINES.pld
 Value=Limits.c
 Value=Main.c
@@ -41,7 +41,7 @@ Value=0
 [USE_HEAP]
 Value=1
 [HEAP_SIZE]
-Value=8000
+Value=36000
 [EEPROM_DEFINITION]
 Value=
 [FILES]
@@ -61,7 +61,8 @@ File12=Protocol.c
 File13=Nut_Bolts.c
 File14=Planner.c
 File15=Flash_R_W.c
-Count=16
+File16=Tcp_Ethernet.c
+Count=17
 [BINARIES]
 Count=0
 [IMAGES]
@@ -70,12 +71,9 @@ Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=Main.c
-File1=Pins.c
-File2=Config.c
-File3=Kinematics.c
-File4=Kinematics.h
-File5=Stepper.h
-Count=6
+File1=Config.c
+File2=Serial_Dma.c
+Count=3
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -125,7 +123,8 @@ File13=Nuts_Bolts.h
 File14=Config_adv.h
 File15=Planner.h
 File16=Flash_R_W.h
-Count=17
+File17=Tcp_Ethernet.h
+Count=18
 [PLDS]
 File0=DEFINES.pld
 Count=1
@@ -141,7 +140,9 @@ File7=Sprintl
 File8=Conversions
 File9=C_Math
 File10=MemManager
-Count=11
+File11=Spi
+File12=SPI_Ethernet
+Count=13
 [INTERRUPT_DEFS]
 EBASE=9FC01000
 VECTOR_SPACEING=512
@@ -149,7 +150,7 @@ VECTOR_MODE=1
 USE_SRS=7
 [EXPANDED_NODES]
 0=Pic32mzClicker2_StepperControl.mcp32
-18=Header Files
+1=Sources
 37=Project Level Defines
 39=Image Files
 42=Active Comments Files

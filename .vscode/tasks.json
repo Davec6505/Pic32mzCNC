@@ -2,6 +2,15 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Open MikroC PIC32 Help",
+            "type": "process",
+            "command": "${env:WINDIR}\\hh.exe",
+            "args": [
+                "C:\\Users\\Public\\Documents\\Mikroelektronika\\mikroC PRO for PIC32\\mikroC_PRO_PIC32.chm"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Build MikroC Project (External Terminal)",
             "type": "shell",
             "command": "start cmd /k \"cd /d ${workspaceFolder} && make && pause\"",

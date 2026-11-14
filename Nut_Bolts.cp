@@ -50,11 +50,7 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
-
-
-
-
-
+#line 15 "c:/users/davec/git/pic32mzcnc/pins.h"
 extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
@@ -74,9 +70,12 @@ extern sfr sbit SW2_Dir;
 
 
 
+extern sfr sbit EN_Steppers;
+extern sfr sbit EN_Steppers_Dir;
 
-extern sfr sbit EN_StepX;
-extern sfr sbit EN_Step_PinDirX;
+
+
+
 extern sfr sbit DIR_StepX;
 extern sfr sbit DIR_Step_PinDirX;
 extern sfr sbit PLS_StepX;
@@ -88,8 +87,6 @@ extern sfr sbit SLP_FLT_Step_PinDirX;
 extern sfr sbit FLT_StepX;
 extern sfr sbit FLT_Step_PinDirX;
 
-extern sfr sbit EN_StepY;
-extern sfr sbit EN_Step_PinDirY;
 extern sfr sbit RST_StepY;
 extern sfr sbit RST_Step_PinDirY;
 extern sfr sbit SLP_FLT_StepY;
@@ -101,8 +98,6 @@ extern sfr sbit DIR_Step_PinDirY;
 extern sfr sbit FLT_StepY;
 extern sfr sbit FLT_Step_PinDirY;
 
-extern sfr sbit EN_StepZ;
-extern sfr sbit EN_Step_PinDirZ;
 extern sfr sbit RST_StepZ;
 extern sfr sbit RST_Step_PinDirZ;
 extern sfr sbit SLP_FLT_StepZ;
@@ -114,8 +109,6 @@ extern sfr sbit DIR_Step_PinDirZ;
 extern sfr sbit FLT_StepZ;
 extern sfr sbit FLT_Step_PinDirZ;
 
-extern sfr sbit EN_StepA;
-extern sfr sbit EN_Step_PinDirA;
 extern sfr sbit RST_StepA;
 extern sfr sbit RST_Step_PinDirA;
 extern sfr sbit SLP_FLT_StepA;
@@ -134,6 +127,14 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 extern sfr sbit Z_Min_Limit;
 extern sfr sbit Z_Min_Limit_Dir;
+
+
+
+
+extern sfr sbit SPI_Ethernet_CS;
+extern sfr sbit SPI_Ethernet_CS_Direction;
+extern sfr sbit SPI_Ethernet_Rst;
+extern sfr sbit SPI_Ethernet_Rst_Direction;
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
@@ -150,7 +151,7 @@ extern sfr sbit Z_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 181 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -257,7 +258,7 @@ typedef void * va_list[1];
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 49 "c:/users/davec/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 161 "c:/users/davec/git/pic32mzcnc/gcode.h"
+#line 162 "c:/users/davec/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;
@@ -292,9 +293,12 @@ typedef struct {
  float K;
  int P;
  int S;
+ float dwell;
  int DIR;
 } parser_state_t;
 extern parser_state_t gc;
+void G_Save_State();
+void G_Restore_State();
 
 
 
@@ -304,6 +308,8 @@ extern parser_state_t gc;
 
 
 void G_Initialise();
+void G_Begin_Block();
+void G_Program_End();
 
 void FAIL(int status);
 int GET_FAIL();
@@ -345,65 +351,49 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
-#line 14 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
-extern char txt[];
-extern char rxBuf[];
-extern char txBuf[];
-
+static void Load_Coord_System(int select);
+#line 31 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 typedef struct{
- char temp_buffer[500];
- int head;
- int tail;
- int diff;
- char has_data: 1;
-}Serial;
+ volatile char temp_buffer[ 1024 ];
+ volatile unsigned int head;
+ volatile unsigned int tail;
+} Serial;
 
 extern Serial serial;
+extern volatile char rxBuf[];
+extern char txBuf[];
 
+void Serial_Init(char mode);
 
+void Uart2InterruptSetup();
+#line 47 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
+unsigned int Serial_TakeRealtime();
+unsigned int Serial_PeekRealtime();
 
+char Serial_TakeStatusRequest();
 
+int Serial_ReadLine(char *line);
+void Reset_Ring();
+void Host_SetLink(char link);
+char Host_GetLink();
 
-
-void DMA_global();
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
-
-
-
-void DMA0();
-char DMA0_Flag();
-void DMA0_Enable();
-void DMA0_Disable();
-unsigned int DMA0_ReadDstPtr();
-void DMA0_RstDstPtr();
-
-
+void Host_ReceiveBytes(char *bytes, unsigned int n);
+int Get_Head_Value();
+int Get_Tail_Value();
+int Get_Difference();
 
 void DMA1();
 char DMA1_Flag();
 unsigned int DMA1_Enable();
 void DMA1_Disable();
-
-
-
-
 unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Abort(int channel);
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
 
-
-void Reset_rxBuff(int dif);
-int Get_Head_Value();
-int Get_Tail_Value();
-int Get_Difference();
-void Get_Line(char *str,int dif);
-void Reset_Ring();
-int Loopback();
-int dma_printf(char* str,...);
-void lTrim(char* d,char* s);
-#line 151 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
+int dma_printf(const char *str,...);
+void lTrim(char *d,char *s);
+#line 155 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -421,8 +411,8 @@ void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
-#line 106 "c:/users/davec/git/pic32mzcnc/globals.h"
-extern unsigned long volatile buffA[128];
+#line 107 "c:/users/davec/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buffA[512];
 
 
 
@@ -446,13 +436,14 @@ typedef struct{
  float coord[ 4 ];
  float coord_offset[ 4 ];
 }coord_sys;
-extern volatile coord_sys coord_system[ 9 ];
+extern volatile coord_sys coord_system[ 11 ];
 
 
 
 
 
 void settings_init(short reset_all);
+int settings_restore(int restore_mask);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -482,9 +473,6 @@ unsigned int settings_write_coord_data(int coord_select,float *coord);
 void settings_read_coord_data();
 
 
-unsigned int settings_write_one_coord(int coord_select,float *coord);
-
-
 int settings_read_startup_line(int n, char *line);
 
 
@@ -495,6 +483,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
+int settings_store_grbl_setting(int parameter, float value);
 #line 62 "c:/users/davec/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
@@ -672,7 +661,7 @@ extern axis_combination axis_xyz;
 
 
 extern long test;
-#line 52 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 53 "c:/users/davec/git/pic32mzcnc/stepper.h"
  typedef struct{
  uint32_t phase;
  uint32_t incrament;
@@ -687,25 +676,14 @@ void SetPinMode();
 void CycleStart();
 void CycleStop();
 
-void EnStepperX();
-void EnStepperY();
-void EnStepperZ();
-void EnStepperA();
-void EnStepperB();
-void EnStepperC();
-
-void EnStepperAll();
-
 void DisableStepperInterrupt(int stepper);
-void EnableSteppers(int steppers);
-void EnableStepper(int stepper);
-void DisableStepper();
+void EnableSteppers();
+void DisableSteppers();
 void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
-int Get_AxisStatus(int stepper);
-int Get_Axis_IEnable_States();
+int Steppers_Enabled();
 
 
 static void SingleStepAxis(int axis);
@@ -765,22 +743,18 @@ float toradians(float rev_per_min);
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
-#line 33 "c:/users/davec/git/pic32mzcnc/limits.h"
+#line 35 "c:/users/davec/git/pic32mzcnc/limits.h"
 struct limit {
 
 char Pin: 1;
 char Limit_Min: 1;
 char Limit_Max: 1;
-char T0: 1;
-char T1: 1;
-char T2: 1;
-char T4: 1;
 char new_val;
 char old_Pval;
 char old_Fval;
 
-unsigned int Min_DeBnc;
-unsigned int last_cnt_min;
+unsigned int trip_cnt;
+unsigned int release_cnt;
 
 
 long Soft_Limit_Min;
@@ -802,8 +776,10 @@ char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
 void XOR_Min_Limit(int axis);
 void Invert_Min_Limit(int axis);
-void Debounce_Limits(int axis);
-void Reset_Min_Debounce(int axis);
+
+void Limits_Sample();
+
+char Limits_TakeEvent();
 
 char FP(int axis);
 void Rst_FP(int axis);
@@ -813,7 +789,7 @@ void Rst_FN(int axis);
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/print.h"
-#line 34 "c:/users/davec/git/pic32mzcnc/print.h"
+#line 36 "c:/users/davec/git/pic32mzcnc/print.h"
 void report_status_message(int status_code);
 
 void report_alarm_message(int alarm_code);
@@ -832,6 +808,7 @@ void report_grbl_settings();
 void report_gcode_parameters();
 
 void report_gcode_modes();
+void report_build_info();
 
 void protocol_execute_startup();
 
@@ -855,12 +832,6 @@ void Str_clear(char *str,int len);
 int Sample_Gocde_Line();
 
 
-static void Do_Startup_Msg(char *str_,int dif_);
-
-
-static void Do_Critical_Msg(char ch_);
-
-
 
 
 
@@ -870,6 +841,12 @@ static int Check_Query_Type(char *str_,int dif_);
 
 
 static int Do_Gcode(char *str_,int dif_);
+
+
+static int gcode_words(char *line);
+
+
+static int Machine_Busy();
 
 
 int Sample_Ringbuffer();
@@ -893,7 +870,17 @@ void protocol_system_check();
 
 void protocol_execute_runtime();
 #line 1 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
-#line 27 "c:/users/davec/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/tcp_ethernet.h"
+
+
+
+
+void Ethernet_Transport_Init();
+void Ethernet_Transport_Poll();
+char Ethernet_Ready();
+char *Ethernet_Address();
+int Ethernet_HostPut(char ch);
+#line 31 "c:/users/davec/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 
 
@@ -903,9 +890,9 @@ extern unsigned char LCD_01_ADDRESS;
 
 
 void PinMode();
-void UartConfig();
+
 void set_performance_mode();
-void Uart2InterruptSetup();
+
 
 void OutPutPulseXYZ();
 
@@ -913,16 +900,16 @@ void OutPutPulseXYZ();
 static int Modal_Group_Actions0(int action);
 
 
-static int Modal_Group_Actions1(int action);
+static int Execute_Gcode_Line();
+static void Compute_Target(int axes,float *target);
+static void Motion_Line(int axes);
+static void Run_Move(float *target,int mode);
 
 
-static int Modal_Group_Actions4(int action);
+void Cycle_Complete();
 
 
-static int Modal_Group_Actions7(int action);
-
-
-static int Modal_Group_Actions12(int action);
+void Host_ServiceNow();
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 30 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
 int read_float(char *line, char *char_counter, float *float_ptr);

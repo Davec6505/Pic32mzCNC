@@ -1,557 +1,524 @@
 #include "Serial_Dma.h"
-
-#define err(x,y) x##y
-#define DMAx_err(x,y) (#x " " #y)
-
+#include "Protocol.h"
+#include "Tcp_Ethernet.h"
 
 Serial serial;
-char rxBuf[200] = {0}  absolute 0xA0002000 ; //resides in flash ??
-char txBuf[200] = {0}  absolute 0xA0002200 ;
-//char cherie[] = " CHERIF Error\r";
-char dma0[] = "DMA0_";
-char dma1[] = "DMA1_";
-const char newline[] = "\r\n";
+volatile char rxBuf[SERIAL_TX_SIZE] absolute RXBUFF;
+char txBuf[SERIAL_TX_SIZE] = {0} absolute 0xA0002200;
 
-char dma0int_flag;
-char dma1int_flag;
+static char serial_tx_dma;
+static volatile char host_link = HOST_LINK_SERIAL;
+static volatile unsigned int serial_realtime;
+static volatile char serial_rx_fault;
+static volatile char serial_rx_discard;
+static volatile char serial_rx_boundary;
+static volatile char serial_rx_bad_line;
+static volatile char dma1int_flag;
+static char serial_line[LINE_BUFFER_SIZE];
+static unsigned int serial_line_length;
+static char serial_line_overflow;
+static char serial_line_fault;
+static char serial_last_cr;
 
+static unsigned long Serial_DisableRxInterrupt(){
+#ifdef SERIAL_UART2
+  unsigned long enabled = IEC4 & 0x00040000;
+  IEC4CLR = 0x00040000;
+#else
+  unsigned long enabled = IEC5 & 0x00100000;
+  IEC5CLR = 0x00100000;
+#endif
+  return enabled;
+}
 
+static void Serial_RestoreRxInterrupt(unsigned long enabled){
+#ifdef SERIAL_UART2
+  IEC4SET = enabled;
+#else
+  IEC5SET = enabled;
+#endif
+}
 
-////////////////////////////////////////////////////////////////
-//DMA Config
-void DMA_global(){
-    //Enable the whole DMA module
+static void Serial_PollText(const char *text){
+  while(*text){
+#ifdef SERIAL_UART2
+    UART2_Write(*text++);
+#else
+    UART5_Write(*text++);
+#endif
+  }
+}
+
+void Reset_Ring(){
+  unsigned long enabled = Serial_DisableRxInterrupt();
+  serial.tail = serial.head;
+  serial_realtime = 0;
+  serial_rx_fault = serial_rx_discard = serial_rx_boundary = 0;
+  serial_rx_bad_line = 0;
+  serial_line_length = 0;
+  serial_line_overflow = serial_line_fault = serial_last_cr = 0;
+  Serial_RestoreRxInterrupt(enabled);
+}
+
+char Host_GetLink(){
+  return host_link;
+}
+
+// Switching drops anything half received from the old link
+void Host_SetLink(char link){
+  if(link == host_link) return;
+  if(serial_tx_dma) while(DMA_IsOn(1));
+  host_link = link;
+  Reset_Ring();
+}
+
+void Serial_Init(char mode){
+  IEC4CLR = 0xC0; // Neither DMA channel may consume RX bytes.
+  IFS4CLR = 0xC0;
+  DCH0CONCLR = 0x80;
+  DCH0INTCLR = 0x00FF00FF;
+  DCH1CONCLR = 0x80;
+  DCH1INTCLR = 0x00FF00FF;
+#ifdef SERIAL_UART2
+  IEC4CLR = 0x000E0000;
+  UART2_Init_Advanced(115200, 200000, _UART_LOW_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
+  UART_Set_Active(&UART2_Read, &UART2_Write, &UART2_Data_Ready, &UART2_Tx_Idle);
+#else
+  IEC5CLR = 0x00380000;
+  UART5_Init_Advanced(115200, 200000, _UART_HIGH_SPEED, _UART_8BIT_NOPARITY, _UART_ONE_STOPBIT);
+  UART_Set_Active(&UART5_Read, &UART5_Write, &UART5_Data_Ready, &UART5_Tx_Idle);
+#endif
+  Delay_ms(100);
+  serial.head = serial.tail = 0;
+  rxBuf[0] = 0;
+  Reset_Ring();
+  dma1int_flag = 0;
+  serial_tx_dma = (mode == SERIAL_MODE_RX_IRQ_DMA_TX);
+  if(mode != SERIAL_MODE_RX_IRQ_POLL_TX && mode != SERIAL_MODE_RX_IRQ_DMA_TX){
+    Serial_PollText("error: Invalid serial mode\r\n");
+    return;
+  }
+  if(serial_tx_dma){
+    DMACONCLR = 0x1000;
     DMACONSET = 0x8000;
-    DMA0();
     DMA1();
+  }
+#ifdef SERIAL_UART2
+  Uart2InterruptSetup();
+#else
+  Uart5InterruptSetup();
+#endif
 }
 
-
-/************************************************************
-* ac:DMA_Pic32
-* This is the DMA channel 0 setup for the receiver
-* it is setup to auto enable after a block transfer or
-* pattern match of '\r' we can enable the 2 char pattern
-* match if needed by setting PATLEN bit on.
-* Destination size is 200 . a pattern match must be
-* Sent or a block transfer will only take place after
-* 200 bytes. An abort can be forced by setting the CABORT bit
-************************************************************/
- void DMA0(){
-    //Disable DMA0 IE
-    IEC4CLR      = 0x40;
-    IFS4CLR      = 0x40;
-    
-    //Disable DMA0 and reset priority
-    DCH0CONCLR = 0x8003;
-
-    //1INTERRUPT IRQ NUMBER for UART 2 TX (146) | [0x10 = SIRQEN] [0x30 = PATEN & SIRQEN]
-    DCH0ECON      =  (146 << 8 ) | 0x30;
-    
-    //Pattern data
-    DCH0DAT       = '?';//'\0' //0x0A0D;//'\r\n';
-    
-    //Source address as UART_RX
-    DCH0SSA       = KVA_TO_PA(0xBF822230);    //[0xBF822230 = U2RXREG]
-    DCH0SSIZ      = 1;                 // source size = 1byte at a time
-
-    //Destination address  as RxBuffer
-    DCH0DSA       = KVA_TO_PA(0xA0002000);    // virtual address:= IN RAM FOR RECIEVED DATA
-    DCH0DSIZ      = 200  ;  // destination size = Size for the 'rxBuf' to fill up with received characters. It is = 5 in this example...
-   
-    //Cell size as 1 byte
-    DCH0CSIZ      = 1  ;  // bytes transferred in the background
-    
-    //Interrupt setup
-    //clear DMA channel priority and sub-priority
-    IPC33CLR     = 0x160000;
-    
-    // Clear existing events, disable all interrupts
-    DCH0INTCLR    = 0x00FF00FF ;
-    
-    //Set priority 5 sub-priority 1
-    IPC33SET      = 0x00140000;
-    
-    //Enable [CHBCIE && CHERIE] Interrupts
-    DCH0INTSET      =  0xB0000;
-    
-    //set DMA0IE bit
-    IEC4SET       = 0x40;
-    IFS4CLR       = 0x40;
-    
-    // Clear existing events, disable all interrupts
-    DCH0INTCLR    = 0x000000FF ;
-    
-    //PATLEN[11] && CHEN[7] && CHEDT[5] && CHAEN[4] && PRIOR[1:0]
-    //Set up AutoEnable & Priority as 3       .
-    DCH0CONSET      = 0X0000513;//013 = 1 char || 813 = 2 char e.g. \r\n
-    
-    //set the recieve buffer counts to 0
-    serial.head = serial.tail = serial.diff = 0;
+// Stores ch unless that would leave fewer than reserve free slots
+static char Serial_Push(char ch, unsigned int reserve){
+  unsigned int used;
+  if(serial.head >= serial.tail) used = serial.head - serial.tail;
+  else used = SERIAL_RX_SIZE - serial.tail + serial.head;
+  if(used + 1 + reserve >= SERIAL_RX_SIZE) return 0;
+  serial.temp_buffer[serial.head] = ch;
+  if(++serial.head == SERIAL_RX_SIZE) serial.head = 0;
+  return 1;
 }
 
-////////////////////////////////////////
-//Test dma0_Flag for indication
-char DMA0_Flag(){
-    return dma0int_flag;
+// Last resort: the reader flushes the whole ring and replies once
+static void Serial_HardFault(){
+  serial_rx_fault = 1;
+  serial_rx_discard = 1;
+  serial_rx_boundary = 0;
+  serial_rx_bad_line = 0;
 }
 
-////////////////////////////////////////
-//DMA0 on control
-void DMA0_Enable(){
-   //CHEN[7]
-   //Turn on DMA0
-   DCH0CONSET  = 1<<7;
-   IFS4CLR     = 0x40;
+// A fault marks only the damaged line: the marker goes into the ring and the
+// rest of the line is dropped up to its line end, so complete lines already
+// queued are kept and the damaged line still gets exactly one reply.
+static void Serial_ReceiveFault(){
+  if(serial_rx_fault || serial_rx_discard || serial_rx_bad_line) return;
+  if(Serial_Push(SERIAL_FAULT_MARK,0)) serial_rx_bad_line = 1;
+  else Serial_HardFault();
 }
 
-////////////////////////////////////////
-//DMA0 off control
-void DMA0_Disable(){
-  //Disable DAM0 module and clear priority level
-   DCH0CONCLR  = 1<<7;
-   //DCH0CONbits.CHEN = 0;
+// Line end of a damaged line: store it so the reader replies once
+static void Serial_EndBadLine(char ch){
+  serial_rx_bad_line = 0;
+  if(!Serial_Push(ch,0)){
+    Serial_HardFault();
+    serial_rx_boundary = 1;
+  }
 }
 
-
-////////////////////////////////////////
-//DMA0 not at initial regester
-unsigned int DMA0_ReadDstPtr(){
-    return DCH0DPTR;
-}
-
-///////////////////////////////////////
-//Reset Dst pointer
-void DMA0_RstDstPtr(){
-   DCH0DPTRCLR = 0xFFFF;
-}
-
-////////////////////////////////////////
-//DMA0 IRQ   UART2 RX
-void DMA_CH0_ISR() iv IVT_DMA0 ilevel 5 ics ICS_AUTO{
- int i = 0;
- 
-   //flags to sample in code if needed
-    dma0int_flag = DCH0INT & 0x00FF;
-
-  // CHANNEN ADDRESS ERROR FLAF
-    if( CHERIF_bit == 1){       // test error int flag
-       //LOOPBACK RECIEVE ERROR COULD BE SPECIFIC MSG
-       strcpy(rxBuf,DMAx_err(dma0,cherie));
-       //Can uncomment if needed
-       //DCH1SSIZ = 13;           //set block size of transfer
-       //DCH1ECONbits.CFORCE = 1 ;// force DMA1 interrupt trigger
+static void Serial_ReceiveByte(char ch){
+  switch(ch){
+    case CMD_STATUS_REPORT: serial_realtime |= EXEC_STATUS_REPORT; return;
+    case CMD_CYCLE_START: serial_realtime |= EXEC_CYCLE_START; return;
+    case CMD_FEED_HOLD: serial_realtime |= EXEC_FEED_HOLD; return;
+    case CMD_RESET: serial_realtime |= EXEC_RESET; return;
+  }
+  // TODO: Grbl 1.1 extended realtime bytes (0x84 door, 0x85 jog cancel,
+  // 0x90-0x9D overrides) are dropped until they have something to drive.
+  if((unsigned char)ch >= 0x80) return;
+  if(ch == 0 || ch == SERIAL_FAULT_MARK){
+    Serial_ReceiveFault();
+    return;
+  }
+  if(serial_rx_bad_line){
+    if(ch == '\r' || ch == '\n') Serial_EndBadLine(ch);
+    return;
+  }
+  if(serial_rx_fault || serial_rx_discard){
+    if(ch == '\r' || ch == '\n'){
+      serial_rx_boundary = 1;
+      if(!serial_rx_fault) serial_rx_discard = 0;
+    }else{
+      serial_rx_boundary = 0;
     }
- //   if(CHTAIF_bit){
- //       i = strlen(rxBuf);
- //   }
- // THIS CHANNEL IS AUTOMATICALLY ENABLED AFTER A BLOCK
- // OR ERROR ABORT EVENT, THIS SHOULD TAKE PLACE IF A
- // '\n' HAS BEEN RECIEVED OR 200 BYTES EXCEEDED
-    if (DCH0INTbits.CHBCIF == 1){
-         i = strlen(rxBuf);
+    return;
+  }
+  // keep one slot free for a fault marker
+  if(!Serial_Push(ch,1)){
+    Serial_ReceiveFault();
+    if(ch == '\r' || ch == '\n'){
+      if(serial_rx_bad_line) Serial_EndBadLine(ch);
+      else serial_rx_boundary = 1;
     }
-
-    // copy RxBuf -> temp_buffer  BUFFER_LENGTH
-    //make sure that head + i don't exceed max buffer length
-    if(serial.head + i > 499)
-       serial.head = 0;
-       
-    strncpy(serial.temp_buffer+serial.head, rxBuf, i);
-    serial.head += i;
-    memset(rxBuf,0,i+2);
-    //*(rxBuf+0) = '\0';
-
-    DCH0INTCLR    = 0x000000ff;
-    IFS4CLR       = 0x40;
-
+  }
 }
 
-//reset rxBuff
-static void Reset_rxBuff(int dif){
-  memset(rxBuf,0,dif);
+#ifdef SERIAL_UART2
+void Uart2InterruptSetup(){
+  IEC4CLR = 0x000E0000;
+  U2STACLR = 0xC0;
+  IPC36CLR = 0x001F0000;
+  IPC36SET = 0x00150000;
+  IFS4CLR = 0x000E0000;
+  IEC4SET = 0x00040000;
 }
 
-//Head index
+void UART2() iv IVT_UART2_RX ilevel 5 ics ICS_SRS {
+  unsigned long status;
+  char ch;
+  IFS4CLR = 0x00040000;
+  if(U2STA & 0x2){
+    if(host_link == HOST_LINK_SERIAL) Serial_ReceiveFault();
+    U2STACLR = 0x2;
+  }
+  while(U2STA & 0x1){
+    status = U2STA;
+    ch = U2RXREG;
+    if(host_link != HOST_LINK_SERIAL) continue;
+    if(status & 0xC) Serial_ReceiveFault();
+    else Serial_ReceiveByte(ch);
+  }
+}
+#else
+void Uart5InterruptSetup(){
+  IEC5CLR = 0x00380000;
+  U5STACLR = 0xC0;
+  IPC45CLR = 0x1F;
+  IPC45SET = 0x15;
+  IFS5CLR = 0x00380000;
+  IEC5SET = 0x00100000;
+}
+
+void UART5() iv IVT_UART5_RX ilevel 5 ics ICS_SRS {
+  unsigned long status;
+  char ch;
+  IFS5CLR = 0x00100000;
+  if(U5STA & 0x2){
+    if(host_link == HOST_LINK_SERIAL) Serial_ReceiveFault();
+    U5STACLR = 0x2;
+  }
+  while(U5STA & 0x1){
+    status = U5STA;
+    ch = U5RXREG;
+    if(host_link != HOST_LINK_SERIAL) continue;
+    if(status & 0xC) Serial_ReceiveFault();
+    else Serial_ReceiveByte(ch);
+  }
+}
+#endif
+
+// Same path as the RX interrupt, with that interrupt held off meanwhile
+void Host_ReceiveBytes(char *bytes, unsigned int n){
+  unsigned long enabled;
+  if(host_link != HOST_LINK_ETHERNET) return;
+  enabled = Serial_DisableRxInterrupt();
+  while(n--) Serial_ReceiveByte(*bytes++);
+  Serial_RestoreRxInterrupt(enabled);
+}
+
+unsigned int Serial_TakeRealtime(){
+  unsigned int flags;
+  unsigned long enabled = Serial_DisableRxInterrupt();
+  flags = serial_realtime;
+  serial_realtime = 0;
+  Serial_RestoreRxInterrupt(enabled);
+  return flags;
+}
+
+unsigned int Serial_PeekRealtime(){
+  return serial_realtime;
+}
+
+char Serial_TakeStatusRequest(){
+  char taken;
+  unsigned long enabled = Serial_DisableRxInterrupt();
+  taken = (serial_realtime & EXEC_STATUS_REPORT) != 0;
+  serial_realtime &= ~EXEC_STATUS_REPORT;
+  Serial_RestoreRxInterrupt(enabled);
+  return taken;
+}
+
 int Get_Head_Value(){
- return serial.head;
+  return serial.head;
 }
 
-//Tail index
 int Get_Tail_Value(){
   return serial.tail;
 }
 
-//get the difference in indexes
 int Get_Difference(){
-
-  if(serial.head > serial.tail)
-    serial.diff = serial.head - serial.tail;
-  else if(serial.tail > serial.head)
-    serial.diff =  serial.head;
-  else
-    serial.diff = 0;
-    
-  return serial.diff;
+  unsigned int head = serial.head;
+  if(head >= serial.tail) return head - serial.tail;
+  return SERIAL_RX_SIZE - serial.tail + head;
 }
 
-void Reset_Ring(){
-  serial.tail = serial.head = 0;
-}
-
-//read the line from thebuffer
-void Get_Line(char *str,int dif){
-
-   if(serial.tail + dif > 499)
-      serial.tail = 0;
-
-    strncpy(str,serial.temp_buffer+serial.tail,dif);
-    
-    //Reset_rxBuff(dif);
-    //incriment the tail
-    serial.tail += dif;
-}
-
-//loopback the message
-int Loopback(){
-char str[50];
-int dif;
-
-   dif = Get_Difference();
-
-   if(serial.tail + dif > 499)
-      serial.tail = 0;
-      
-    strncpy(str,serial.temp_buffer+serial.tail,dif);
-    dma_printf("\n\t%s",str);
-    //incrament the tail
-    serial.tail += dif;
-}
-
-
-/******************************************************
-* This is the DMA setup for the UART2 transmitter and
-* is not auto enabled, this will be done everytime a
-* UART transfer out need to take place. The loopback 
-* is temporary and is done from within the DMA0 IRQ
-* Vector, The steps within this Vector to loopback
-* will be used from within code to perfoem a data send
-* A pattern match should abort the transfer and wait
-* for the next CFORCE bit to be set, DCH1SSIZ can be
-* dynamically assigned to force and abort but block
-* transfer having been finnished
-*******************************************************/
-void DMA1(){
-    //Disable DMA1 IE and clear IF
-    //clear DMA channel priority and sub-priority
-     IPC33CLR      = 0x17000000;
-     IEC4CLR       = 0x7;
-     
-     //Disable DMA0 and reset priority
-    DCH1CONCLR = 0x8003;
-
-    //INTERRUPT IRQ NUMBER for UART 2 TX (147) | [0x10 = SIRQEN] [0x30 = PATEN & SIRQEN]
-    DCH1ECON=(147 << 8)| 0x30;
-    
-    //Pattern Length and char to match not needed here ????
-    //Pattern length = 0 = 1 byte
-    DCH1DAT       = '\0';
-    
-    //Source address and size of transfer buffer
-    DCH1SSA   = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
-    DCH1SSIZ  = 1000;  //' This is how many bytes you want to send out in a block transfer for UART transmitter
-    
-    //Destination Address and size which is 1byte
-    //U1TX2REG for reply  [0xBF822220 = U1TXREG]
-    U1TXREG   = 0x00;
-    DCH1DSA   = KVA_TO_PA(0xBF822220) ;
-    DCH1DSIZ  = 1;
-    
-    //Cell size to transfer each transfer
-    DCH1CSIZ  = 1;    //' x bytes from txBuf in a cell waiting to send out 1 byte at a time to U1TXREG / DCH1DSIZ
-
-    //Interrupt setup
-    //clear DMA channel priority and sub-priority
-    IPC33CLR  = 0x16000000;
-
-    //Disable all interrupts, Clear existing events
-    DCH1INTCLR = 0x00FF00FF ;
-    
-    //Set priority 5 sub-priority 2
-    IPC33SET  = 0x16000000;
-    
-    //[CHERIE]
-    //DCH1INTSET    =  0x10000;
-    
-    //set DMA1IE bit
-    IEC4SET   = 0x80;
-    //Clear DMA1IF bit
-    IFS4CLR   = 0x80;
-    // Clear existing events
-    DCH1INTCLR = 0x00FF ;
-    
-    //PATLEN[11] && CHEN[7] && CHAEN[4] && PRIOR[1:0]
-    //Set up no AutoEnable & Priority as 3        .
-    DCH1CONSET    = 0x00000003;
-
-}
-
-////////////////////////////////////////
-//Test dma0_Flag for indication
-char DMA1_Flag(){
-    return dma1int_flag;
-}
-
-///////////////////////////////////////
-
-////////////////////////////////////////
-//DMA1 on control
-unsigned int DMA1_Enable(){
-   DCH1CONSET = 1<<7;
-   return (DCH1CON & 0x80) >> 7;
-}
-
-////////////////////////////////////////
-//DMA1 off control ?? should compliment
-//need to come back to this eventually
-void DMA1_Disable(){
-    DCH1CONCLR = 1<<7;
-}
-
-////////////////////////////////////////
-//DMA1 Abort abort channel transfer
-unsigned int DMA_Abort(int channel){
-  if(channel == 0){
-    //must investigate the effects of CABORT ??, it is not
-    //resettting the channel!!!
-    //DMA0 CABOART bit
-     DCH0ECONSET |= 1<<6;
-    // DMA0_Disable();
-     //wait for BMA to finnish
-     while(DMA_IsOn(0));
-     //force pointers to reset
-    // DCH0DSA       = KVA_TO_PA(0xA0002000);    // virtual address:= IN RAM FOR RECIEVED DATA
-     //ReEnable DMA0
-     DMA0_Enable();
-     while(!DMA_IsOn(0));
-
-     //return enable bit
-     return (DCH0CON & 0x0080 ) >> 7;
-   
-   }else if(channel == 1){
-     //DMA1 CABOART bit
-     DCH1ECONSET |= 1<<6;
-    // DMA1_Disable();
-     //wait for DMA1 to finish
-     while(DMA_IsOn(1));
-     //force a reset of the pointers
-   //  DCH1SSA   = KVA_TO_PA(0xA0002200) ;  //0xA0002200 virtual address of txBuf
-     while(!DMA_IsOn(1));
-     //ReEnable DMA1
-     DMA1_Enable();
-     return (DCH1CON & 0x0080 ) >> 7;
-   }
-   
-   return 255;
-}
-
-///////////////////////////////////////
-//Check if DMA channel on bit15 is true
-unsigned int DMA_IsOn(int channel){
-   if(channel == 0)
-     return (DCH0CON & 0x8000)>>15;
-   else
-     return (DCH1CON & 0x8000)>>15;
-}
-///////////////////////////////////////
-//Get the status of the respective DMA
-//channel, decide whether or not to send
-//new data  [1 = busy || 0 = free]
-//checking the state oF the DMABUSY bit 15
-//FOR EACH CHANNEL
-unsigned int DMA_CH_Busy(int channel){
-   if(channel == 0)
-     return (DCH0CON & 0x8000)>>15;
-   else
-     return (DCH1CON & 0x8000)>>15;
-}
-
-
-////////////////////////////////////////
-//DMA SUSPEND bit12 force to true to 
-//suspend the channel
-unsigned int DMA_Suspend(){
-  DMACONSET = (1 << 12);
-  //while(DMA_Busy());
-//return the state of the SUSPEND bit
-  return ((DMACON & 0x1000)>>12);
-}
-
-////////////////////////////////////////
-//DMA resume the SUSPEND by forcing bit12
-//to false
-unsigned int DMA_Resume(){
-  DMACONCLR = (1 << 12);
-  //while(DMA_Busy());
- //return the SUSPEN bit state
-  return (DMACON & 0x1000)>>12;
-}
-
-////////////////////////////////////////
-//Global DMA busy bit not channel busy bit!
-//DMACON.DMABUSY
-unsigned int DMA_Busy(){
- return ((DMACON & 0x800)>>11);
-}
-
-/////////////////////////////////////////////////////
-//UART2 TX Interrupt should be handed automatically
-//from within the DMA controller, this IRQ vector
-//is only used if errors are need to be checked
-//or some otherfunctionality is need after a block
-//transfer has completed
-void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
-
-    // user flag to inform this int was triggered. should be cleared in software
-    dma1int_flag = DCH1INT & 0x00FF;
-    //Channel Block Transfer Complete Interrupt Flag bit
-    if (DCH1INTbits.CHBCIF){
-       //DMA1_Disable();
-    }
-     //Channel Address Error Interrupt Flag bit
-    if( CHERIF_DCH1INT_bit == 1){
-        CABORT_DCH1ECON_bit = 1;
-    }
-
-    //However, for the interrupt controller, there is
-    //just one dedicated interrupt flag bit per channel,
-    //DMAxIF, and the corresponding interrupt enable/mask bits, DMAxIE.
-    DCH1INTCLR  = 0x00FF;
-    IFS4CLR     = 0x80;
-
-}
-
-
-//////////////////////////////////////////////////////
-//DMA Print strings and variable arguments formating
-int dma_printf(const char* str,...){
- //Variable decleration of type va_list
- va_list va;
- int i = 0, j = 0;
- char buff[1500]={0},tmp[20],tmp1[20];
- char *str_arg,*tmp_;
- 
- //check that str is not null
- if(str == 0)
-     return 0;
-     
- //can only call this once the va_list has bee declared
- //or the compiler throws an undefined error!!! not sure
- //about the compiler not implimenting va_end????
- if(DMA_CH_Busy(1)){
-   return 0;
- }
- 
- //initialize the va_list via the macro va_start(arg1,arg2)
- //arg1 is type va_list and arg2 is type var preceding elipsis
- va_start(va,str);
- 
- i = j = 0;
- while(*(str+i) != '\0'){
-   if(*(str+i) == '%'){
-     i++;  //step over % char
-     switch(*(str+i)){
-        case 'c':
-             //convert char to ASCII char
-             buff[j] = (char)va_arg(va,char);
-             j++;
-             break;
-        case 'd':
-             //convert int to decimal
-             sprintf(tmp1,"%d",va_arg(va,int));
-             strcat(buff+j, tmp1);
-             j += strlen(tmp1);
-             break;
-        case 'u':
-             //convert unsigned to decimal
-             sprintf(tmp1,"%u",va_arg(va,unsigned int));
-             strcat(buff+j, tmp1);
-             j += strlen(tmp1);
-        case 'l':
-             //convert long to decimal
-             sprintf(tmp,"%ld",va_arg(va,long));
-             //lTrim(tmp_,&tmp);
-             strcat(buff+j, tmp);
-             j += strlen(tmp);
-             break;
-        case 'X':
-             //convert int to hex
-             sprintf(tmp,"%X",va_arg(va,int));
-             strcat(buff+j, tmp);
-             j += strlen(tmp);
-             break;
-        case 'X':
-             //convert long to hex
-             sprintf(tmp,"%lX",va_arg(va,long));
-             strcat(buff+j, tmp);
-             j += strlen(tmp);
-             break;
-        case 'f':
-             sprintf(tmp,"%08.3f",va_arg(va,float));
-             strcat(buff+j, tmp);
-             j += strlen(tmp);
-             break;
-        case 'F':
-             sprintf(tmp,"%E",va_arg(va,double));
-             strcat(buff+j, tmp);
-             j += strlen(tmp);
-             break;
-        case 'p':
-             sprintf(tmp,"%p",va_arg(va,void*));
-             strcat(buff+j, tmp);
-             j += strlen(tmp);
-             break;
-        case 's':
-             //copy string
-             str_arg = va_arg( va, char* );
-             strcat(buff+j, str_arg);
-             j += strlen(str_arg);
-             break;
-     }
-  }else{
-       *(buff+j) = *(str+i);
-       j++;
+// Fault acknowledgement and reading a byte share the same RX interrupt lock.
+static int Serial_ReadByte(char *ch){
+  unsigned long enabled = Serial_DisableRxInterrupt();
+  int result = 0;
+  if(serial_rx_fault){
+    serial.tail = serial.head;
+    serial_rx_discard = !serial_rx_boundary;
+    serial_rx_fault = serial_rx_boundary = 0;
+    result = SERIAL_LINE_RX_ERROR;
+  }else if(serial.tail != serial.head){
+    *ch = serial.temp_buffer[serial.tail];
+    serial.tail++;
+    if(serial.tail == SERIAL_RX_SIZE) serial.tail = 0;
+    result = SERIAL_LINE_READY;
   }
-   i++;
- }
- *(buff+j+1) = 0;
- strncpy(txBuf,buff,j+1);
- DCH1SSIZ    = j ;
- while(!DMA1_Enable());
- //DCH1ECONSET = 1<<7;
- return j;
-
+  Serial_RestoreRxInterrupt(enabled);
+  return result;
 }
 
-///////////////////////////////////////////////////
-//left trim the string of zeros
-void lTrim(char *d,char* s){
-char* temp;
-int i=0,j,k;
-  k = i;
+int Serial_ReadLine(char *line){
+  char ch;
+  int result;
+  while((result = Serial_ReadByte(&ch)) != SERIAL_LINE_NONE){
+    if(result == SERIAL_LINE_RX_ERROR){
+      serial_line_length = 0;
+      serial_line_overflow = serial_line_fault = serial_last_cr = 0;
+      return result;
+    }
+    if(ch == SERIAL_FAULT_MARK){
+      serial_line_fault = 1;
+      continue;
+    }
+    if(ch == '\n' && serial_last_cr){
+      serial_last_cr = 0;
+      continue;
+    }
+    serial_last_cr = (ch == '\r');
+    if(ch == '\r' || ch == '\n'){
+      if(serial_line_fault){
+        serial_line_length = 0;
+        serial_line_overflow = serial_line_fault = 0;
+        return SERIAL_LINE_RX_ERROR;
+      }
+      if(serial_line_overflow){
+        serial_line_length = 0;
+        serial_line_overflow = 0;
+        return SERIAL_LINE_TOO_LONG;
+      }
+      serial_line[serial_line_length] = 0;
+      strcpy(line, serial_line);
+      serial_line_length = 0;
+      return SERIAL_LINE_READY;
+    }
+    if(serial_line_length < LINE_BUFFER_SIZE - 1){
+      serial_line[serial_line_length++] = ch;
+    }else{
+      serial_line_overflow = 1;
+    }
+  }
+  return SERIAL_LINE_NONE;
+}
+
+void DMA1(){
+  IEC4CLR = 0x80;
+  IFS4CLR = 0x80;
+  DCH1CON = 0x3;
+#ifdef SERIAL_UART2
+  U2STACLR = 0xC000;
+  DCH1ECON = (147 << 8) | 0x10;
+  DCH1DSA = KVA_TO_PA(0xBF822220);
+#else
+  U5STACLR = 0xC000;
+  DCH1ECON = (181 << 8) | 0x10;
+  DCH1DSA = KVA_TO_PA(0xBF822820);
+#endif
+  DCH1SSA = KVA_TO_PA(0xA0002200);
+  DCH1SSIZ = SERIAL_TX_SIZE;
+  DCH1DSIZ = 1;
+  DCH1CSIZ = 1;
+  IPC33CLR = 0x1F000000;
+  IPC33SET = 0x16000000;
+  DCH1INTCLR = 0x00FF00FF;
+  DCH1INTSET = 0x00090000;
+  IEC4SET = 0x80;
+}
+
+char DMA1_Flag(){
+  return dma1int_flag;
+}
+
+unsigned int DMA1_Enable(){
+  DCH1CONSET = 0x80;
+  return (DCH1CON & 0x80) >> 7;
+}
+
+void DMA1_Disable(){
+  DCH1ECONSET = 0x40;
+}
+
+// CHEN remains set between cells, unlike CHBUSY. Include the last active cell.
+unsigned int DMA_IsOn(int channel){
+  if(channel == 0) return (DCH0CON & 0x8080) != 0;
+  return (DCH1CON & 0x8080) != 0;
+}
+
+unsigned int DMA_Suspend(){
+  DMACONSET = 0x1000;
+  return (DMACON & 0x1000) >> 12;
+}
+
+unsigned int DMA_Resume(){
+  DMACONCLR = 0x1000;
+  return (DMACON & 0x1000) >> 12;
+}
+
+unsigned int DMA_Busy(){
+  return (DMACON & 0x800) >> 11;
+}
+
+void DMA_CH1_ISR() iv IVT_DMA1 ilevel 5 ics ICS_SRS {
+  dma1int_flag |= DCH1INT & 0xFF;
+  if(DCH1INT & 0x8){
+    DCH1CONCLR = 0x80;
+  }
+  if(DCH1INT & 0x1){
+    DCH1ECONSET = 0x40;
+    DCH1CONCLR = 0x80;
+  }
+  DCH1INTCLR = 0xFF;
+  IFS4CLR = 0x80;
+}
+
+static int Serial_WaitTx(){
+  while(DMA_IsOn(1));
+  if((dma1int_flag | DCH1INT) & 0x1){
+    dma1int_flag = 0;
+    Serial_PollText("error: DMA transmit failure\r\n");
+    return 0;
+  }
+  return 1;
+}
+
+static void Serial_FlushTx(unsigned int *used){
+  if(*used){
+    dma1int_flag = 0;
+    DCH1INTCLR = 0xFF;
+    IFS4CLR = 0x80;
+    DCH1SSIZ = *used;
+    DMA1_Enable();
+    *used = 0;
+  }
+}
+
+static int Serial_PutChar(char ch, unsigned int *used){
+  if(host_link == HOST_LINK_ETHERNET) return Ethernet_HostPut(ch);
+  if(!serial_tx_dma){
+#ifdef SERIAL_UART2
+    UART2_Write(ch);
+#else
+    UART5_Write(ch);
+#endif
+    return 1;
+  }
+  if(*used == 0 && !Serial_WaitTx()) return 0;
+  txBuf[(*used)++] = ch;
+  if(*used == SERIAL_TX_SIZE) Serial_FlushTx(used);
+  return 1;
+}
+
+int dma_printf(const char *str,...){
+  va_list va;
+  unsigned int used = 0;
+  int count = 0;
+  char tmp[384];
+  char *text;
+  char ch;
+  if(!str){
+    Serial_PollText("error: Invalid serial format\r\n");
+    return -1;
+  }
+  va_start(va,str);
+  while(*str){
+    ch = *str++;
+    if(ch != '%'){
+      if(!Serial_PutChar(ch,&used)) goto tx_error;
+      count++;
+      continue;
+    }
+    ch = *str++;
+    text = tmp;
+    switch(ch){
+      case '%': tmp[0] = '%'; tmp[1] = 0; break;
+      case 'c':
+        if(!Serial_PutChar(va_arg(va,char),&used)) goto tx_error;
+        count++;
+        continue;
+      case 'd': sprintf(tmp,"%d",va_arg(va,int)); break;
+      case 'u': sprintf(tmp,"%u",va_arg(va,unsigned int)); break;
+      case 'l': sprintf(tmp,"%ld",va_arg(va,long)); break;
+      case 'X': sprintf(tmp,"%X",va_arg(va,unsigned int)); break;
+      case 'f': sprintf(tmp,"%08.3f",va_arg(va,float)); break;
+      case 'F': sprintf(tmp,"%E",va_arg(va,double)); break;
+      case 'p': sprintf(tmp,"%p",va_arg(va,void*)); break;
+      case 's':
+        text = va_arg(va,char*);
+        if(!text) text = "(null)";
+        break;
+      default:
+        if(serial_tx_dma && !Serial_WaitTx()) return -1;
+        Serial_PollText("error: Invalid serial format\r\n");
+        return -1;
+    }
+    while(*text){
+      if(!Serial_PutChar(*text++,&used)) goto tx_error;
+      count++;
+    }
+  }
+  if(serial_tx_dma) Serial_FlushTx(&used);
+  return count;
+
+tx_error:
+  return -1;
+}
+
+void lTrim(char *d,char *s){
+  int i = 0, j, k = 0;
   j = strlen(s);
- while(*s != '\0'){
-      if((*s > 0x30)||(k>0)){
-         k = 1;
-         *d = *s;
-         d++;
-      }else
-         i++;
-      s++;
- }
- if(i == j){
-   *d = '0';
-   d++;
- }
- *d = 0;
+  while(*s != '\0'){
+    if((*s > 0x30) || k > 0){
+      k = 1;
+      *d++ = *s;
+    }else{
+      i++;
+    }
+    s++;
+  }
+  if(i == j) *d++ = '0';
+  *d = 0;
 }

@@ -64,25 +64,14 @@ void SetPinMode();
 void CycleStart();
 void CycleStop();
 
-void EnStepperX();
-void EnStepperY();
-void EnStepperZ();
-void EnStepperA();
-void EnStepperB();
-void EnStepperC();
-
-void EnStepperAll();
-
 void DisableStepperInterrupt(int stepper);
-void EnableSteppers(int steppers);
-void EnableStepper(int stepper);
-void DisableStepper();
+void EnableSteppers();
+void DisableSteppers();
 void disableSpindleOCx();
 
 //Axis status
 int GET_RunState(int axis_No);
-int Get_AxisStatus(int stepper);
-int Get_Axis_IEnable_States();
+int Steppers_Enabled();
 
 //Axis control functions
 static void SingleStepAxis(int axis);

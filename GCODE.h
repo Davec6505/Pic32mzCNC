@@ -57,7 +57,7 @@ extern volatile int status_code;   // Status of instructions
 //This series of commands tell the CNC control which datum we are using. 
 //Once the machine reads one of these codes it will continue to work 
 //from this position until a new one is called upon
-#define NUMBER_OF_DATUMS 9
+//NUMBER_OF_DATUMS is defined in Settings.h (P1..P9 + G28 + G30)
 
 // Define modal group internal numbers for checking multiple command violations and tracking the
 // type of command that is called in the block. A modal group is a group of g-code commands that are
@@ -132,6 +132,7 @@ extern volatile int status_code;   // Status of instructions
 #define STATUS_ALARM_LOCK 12
 #define STATUS_SPEED_ERROR 13
 #define STATUS_EI_ERROR 14
+#define STATUS_UNDEFINED_FEED_RATE 17
 #define STATUS_COMMAND_EXECUTE_MOTION 20
 #define STATUS_NO_REPORT 99
 
@@ -192,9 +193,12 @@ typedef struct {
   float K;
   int P;               //Pause as in msec if sent with G04 else Coord-position
   int S;               //Pause as in sec
+  float dwell;         //G4 P in seconds (Grbl 1.1), -1 if no P word
   int DIR;
 } parser_state_t;
 extern parser_state_t gc;
+void G_Save_State();
+void G_Restore_State();
 
 
 // enum IJK{I,J,K}; // Removed - conflicts with struct members I, J, K above
@@ -204,6 +208,8 @@ extern parser_state_t gc;
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
 void G_Initialise();
+void G_Begin_Block();
+void G_Program_End();
 
 void FAIL(int status);
 int  GET_FAIL();
@@ -245,5 +251,6 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
+static void Load_Coord_System(int select);
 
 #endif

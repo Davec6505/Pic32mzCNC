@@ -15,10 +15,10 @@ CLOCK = 200000000
 PROJECT_NAME = Pic32mzClicker2_StepperControl
 
 # Source files
-SRCS = \"Main.c\" \"Config.c\" \"Stepper.c\" \"Steptodistance.c\" \"Timers.c\" \"Kinematics.c\" \"Pins.c\" \"Serial_Dma.c\" \"Print.c\" \"GCODE.c\" \"Globals.c\" \"Limits.c\" \"Protocol.c\" \"Nut_Bolts.c\" \"Planner.c\" \"Flash_R_W.c\"
+SRCS = \"Main.c\" \"Config.c\" \"Stepper.c\" \"Steptodistance.c\" \"Timers.c\" \"Kinematics.c\" \"Pins.c\" \"Serial_Dma.c\" \"Print.c\" \"GCODE.c\" \"Globals.c\" \"Limits.c\" \"Protocol.c\" \"Nut_Bolts.c\" \"Planner.c\" \"Flash_R_W.c\" \"Tcp_Ethernet.c\"
 
 # Library files (MikroC compiled libraries)
-LIBS = \"__Lib_CStdlib_EF.emcl\" \"__Lib_CType.emcl\" \"__Lib_CString.emcl\" \"__Lib_System_MZ_EF.emcl\" \"__Lib_PPS_P32MZ_100CAN.emcl\" \"__Lib_UART_123456_MZ.emcl\" \"__Lib_Sprintf_EF.emcl\" \"__Lib_Sprinti.emcl\" \"__Lib_Sprintl.emcl\" \"__Lib_Conversions_EF.emcl\" \"__Lib_CMath_EF.emcl\" \"__Lib_MemManager.emcl\" \"__Lib_CP0.emcl\" \"__Lib_Delays.emcl\" \"__Lib_Math.emcl\" \"__Lib_MathDouble_MZ_EF.emcl\" \"__Lib_SoftResetDma.emcl\"
+LIBS = \"__Lib_CStdlib_EF.emcl\" \"__Lib_CType.emcl\" \"__Lib_CString.emcl\" \"__Lib_System_MZ_EF.emcl\" \"__Lib_PPS_P32MZ_100CAN.emcl\" \"__Lib_UART_123456_MZ.emcl\" \"__Lib_SPI_123456.emcl\" \"__Lib_EthEnc28j60.emcl\" \"__Lib_Sprintf_EF.emcl\" \"__Lib_Sprinti.emcl\" \"__Lib_Sprintl.emcl\" \"__Lib_Conversions_EF.emcl\" \"__Lib_CMath_EF.emcl\" \"__Lib_MemManager.emcl\" \"__Lib_CP0.emcl\" \"__Lib_Delays.emcl\" \"__Lib_Math.emcl\" \"__Lib_MathDouble_MZ_EF.emcl\" \"__Lib_SoftResetDma.emcl\"
 
 # Project definition files
 PLDS = \"DEFINES.pld\"
@@ -28,10 +28,10 @@ PLDS = \"DEFINES.pld\"
 # Leave the Uses -IP path without a trailing backslash: mikroC otherwise
 # misquotes it when launching mcpp, which waits for stdin instead of preprocessing.
 # Pass one trailing backslash for the project -SP path to preserve diagnostic filenames.
-FLAGS = -MSF -DBG -pP32MZ2048EFH100 -HEAP 8000 -C  -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111113 -fo200 -N\"Pic32mzClicker2_StepperControl.mcp32\" -SP$(MIKROC_PATH)\\Defs\\\" -SP$(MIKROC_PATH)\\Uses\\\" -SP\"c:\Users\davec\GIT\Pic32mzCNC\\\" -IP$(MIKROC_PATH)\\Uses\" -IP\"c:\Users\davec\GIT\Pic32mzCNC\" 
+FLAGS = -MSF -DBG -pP32MZ2048EFH100 -HEAP 36000 -C  -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111113 -fo200 -N\"Pic32mzClicker2_StepperControl.mcp32\" -SP$(MIKROC_PATH)\\Defs\\\" -SP$(MIKROC_PATH)\\Uses\\\" -SP\"c:\Users\davec\GIT\Pic32mzCNC\\\" -IP$(MIKROC_PATH)\\Uses\" -IP\"c:\Users\davec\GIT\Pic32mzCNC\" 
 
 # 0 1 mikroCPIC32.exe 
-# -MSF -DBG -pP32MZ2048EFH100 -HEAP 8000 -RA -C -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111113 -fo200 
+# -MSF -DBG -pP32MZ2048EFH100 -HEAP 36000 -RA -C -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111113 -fo200 
 # -N"C:\Users\davec\GIT\Pic32mzCNC\Pic32mzClicker2_StepperControl.mcp32" 
 # -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Defs\" 
 # -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Uses\" 

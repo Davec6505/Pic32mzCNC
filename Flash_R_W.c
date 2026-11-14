@@ -113,50 +113,52 @@ unsigned int NVMErasePage(const void *address){
 
 //Before entering this sequence of events the PHY add and
 // srcadd must be loaded into NVMADDR & NVMSRCADDR
+//Sequence follows FRM Section 52 (DS60001193B) Example 52-1 / 52-2:
+//NVMOP may only change while WREN = 0, and WREN must stay set until the
+//hardware clears WR. Clearing WREN while WR = 1 left the erase hanging.
 static unsigned int NVMUnlock (unsigned long nvmop){
 unsigned int I_status = 0;
-unsigned int dma_ = 0;
-//unsigned int dma_susp=0;   // storage for current DMA state
- NVMCON &= 0xFFF0;
- NVMCON |=  nvmop; //Set NVMOP bits
- //NVMCON |= 0X4000;
- 
-// Suspend or Disable all Interrupts
-  I_status = (unsigned int)DI();
+unsigned int dma_susp = 0;
+unsigned long timeout = NVM_WR_TIMEOUT;
 
-   //Suspend all DMA actions
- dma_ = DMA_Suspend();
- if(dma_){
-  LED2 = false;
-  while(DMA_Busy());
+ NVMCONCLR = 0x4000;              //WREN = 0 so NVMOP can be changed
+ NVMCONCLR = 0x000F;
+ NVMCONSET = nvmop & 0x000F;      //NVMOP
+ NVMCONSET = 0x4000;              //WREN = 1
+
+// Suspend or Disable all Interrupts
+ I_status = (unsigned int)DI();
+
+ //Suspend DMA if it is not already suspended, wait until it actually stops
+ dma_susp = (DMACON & 0x1000) >> 12;
+ if(!dma_susp){
+   DMACONSET = 0x1000;
+   while(DMA_Busy());
  }
 
-// wait at least 6 us for LVD start-up
-#if FlashDebug == 2
-  Delay_ms(150);
-  LED2 = true;
-#endif
-  
-// Write Keys
+// Write Keys, then start the operation with an atomic set of WR
  NVMKEY = 0x0U;
  NVMKEY = 0xAA996655;
  NVMKEY = 0x556699AA;
- NVMCONSET = 0x8000;//1 << 15;
+ NVMCONSET = 0x8000;
  asm{NOP};
- 
- //Resume all DMA actions
- DMA_Resume();
+
+ //Resume DMA only if this function suspended it
+ if(!dma_susp)
+   DMACONCLR = 0x1000;
 
 // Restore Interrupts
- if (I_status != 0)
+ if(I_status & 0x00000001)
     EI();
-    
-//Reset the WREN bit, disables flash programming
-  NVMCONCLR = 0x4000;
- //NVM_WREN_Rst();
- 
-//status = 1;
- while(NVM_WR_Wait());
+
+//wait for the hardware to finish, bounded so a fault cannot freeze the boot
+ while(NVM_WR_Wait() && --timeout);
+
+//only now disable flash programming
+ NVMCONCLR = 0x4000;
+
+ if(!timeout)
+   return NVM_WR_TIMEOUT_ERROR;
 // Return WRERR and LVDERR Error Status Bits
  return (NVMCON & 0x3000)>>12;
 }

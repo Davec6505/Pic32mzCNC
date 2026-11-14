@@ -445,7 +445,7 @@ dma_printf("\
          limit_error = 1;
      }
      */
-     //if(!Get_Axis_IEnable_States())
+     //if(!Steppers_Enabled())
        break;
    }
 
@@ -522,7 +522,7 @@ static long speed = 0;
   homing[axis].home_cnt = 0;
 
   //enable all axis at the start
-  EnableStepper(axis);//sort this out
+  EnableSteppers();
 
   //indicator for interface
   sys.state = STATE_HOMING;
@@ -700,7 +700,7 @@ void mc_reset(){
       case STATE_CYCLE: case STATE_HOLD: case STATE_HOMING: // case STATE_JOG:
         sys.execute |= EXEC_ALARM; // Execute alarm state.
         disableSpindleOCx(); // Execute alarm force kills steppers. Position likely lost.
-        DisableStepper();
+        DisableSteppers();
         ResetHoming();
     }
   }

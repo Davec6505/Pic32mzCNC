@@ -19,14 +19,15 @@
 //                             DEFINES                                       //
 ///////////////////////////////////////////////////////////////////////////////
 
-//set this to initialize default settings in flash prior to writing $99=1
-#define PREPARE_DEFAULT_FLASH
+//written to FLASH_LOADED_OFFSET with every save; change it whenever the
+//settings row layout changes so new firmware restores its defaults once
+#define SETTINGS_VALID_MARKER 0x7FFF0101
 
-//do not make this vale to large it will reduce the life of flash row
-#define FLASH_RETRY_COUNT 2
-
-//flash loaded with data indicator
-#define FLASH_LOADED -1//0x7FFFFFFF
+//$RST restore masks
+#define SETTINGS_RESTORE_DEFAULTS      0x01  // $RST=$
+#define SETTINGS_RESTORE_PARAMETERS    0x02  // $RST=#  G54..G59.3, G28, G30
+#define SETTINGS_RESTORE_STARTUP_LINES 0x04  // part of $RST=*
+#define SETTINGS_RESTORE_ALL           0xFF  // $RST=*
 
 //global usage defines
 #define true 1
@@ -103,7 +104,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //                          EXTERNS                                          //
 ///////////////////////////////////////////////////////////////////////////////
-extern unsigned long volatile buffA[128];
+extern unsigned long volatile buffA[512];
 
 ///////////////////////////////////////////////////////////////////////////////
 //                          STRUCTS UNIONS & ENUMS                           //
@@ -122,7 +123,7 @@ typedef struct {
 extern system_t sys;
 
 ////////////////////////////////////////////
-//9 different coordinates can be saved
+//coord_system[recipe-1]: P1..P9 (G54..G59.3), G28, G30
 typedef struct{
  float coord[NoOfAxis];
  float coord_offset[NoOfAxis];
@@ -134,6 +135,7 @@ extern volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 //                             FUNCTION PROTOTYPES                           //
 ///////////////////////////////////////////////////////////////////////////////
 void settings_init(short reset_all);
+int settings_restore(int restore_mask);
 
 //set the ram_loaded indicator
 static int set_ram_loaded_indicator(int val);
@@ -162,9 +164,6 @@ unsigned int settings_write_coord_data(int coord_select,float *coord);
 //reads a coord from flashinto relevant axis data
 void settings_read_coord_data();
 
-//write 1 coordinate to flash QUAD_WORD
-unsigned int settings_write_one_coord(int coord_select,float *coord);
-
 // Reads startup line from EEPROM. Updated pointed line string data.
 int settings_read_startup_line(int n, char *line);
 
@@ -176,4 +175,5 @@ void write_global_settings();
 
 // A helper method to set settings from command line
 int settings_store_global_setting(int parameter, float value);
+int settings_store_grbl_setting(int parameter, float value);
 #endif

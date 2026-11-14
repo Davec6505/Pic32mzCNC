@@ -24,6 +24,8 @@
 #endif
 
 #define INV 1
+//10 ms samples a pressed limit must hold before it latches
+#define LIMIT_TRIP_COUNT 2
 
 //////////////////////////////////////////////
 //SFR's
@@ -35,16 +37,12 @@ struct limit {
 char Pin: 1;
 char Limit_Min: 1;
 char Limit_Max: 1;
-char T0: 1;
-char T1: 1;
-char T2: 1;
-char T4: 1;
 char new_val;
 char old_Pval;
 char old_Fval;
-//hard limits debounce counters
-unsigned int Min_DeBnc;
-unsigned int last_cnt_min;
+//hard limits debounce counters: consecutive pressed / released samples
+unsigned int trip_cnt;
+unsigned int release_cnt;
 
 //Soft limits
 long Soft_Limit_Min;
@@ -66,8 +64,10 @@ char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
 void XOR_Min_Limit(int axis);
 void Invert_Min_Limit(int axis);
-void Debounce_Limits(int axis);
-void Reset_Min_Debounce(int axis);
+//called from the Timer1 10 ms ISR
+void Limits_Sample();
+//a hard limit tripped during motion; the drivers are already off
+char Limits_TakeEvent();
 
 char FP(int axis);
 void Rst_FP(int axis);

@@ -9,7 +9,7 @@
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 181 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -103,11 +103,7 @@ int xtoi(char * s);
 typedef void * va_list[1];
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
-
-
-
-
-
+#line 15 "c:/users/davec/git/pic32mzcnc/pins.h"
 extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
@@ -127,9 +123,12 @@ extern sfr sbit SW2_Dir;
 
 
 
+extern sfr sbit EN_Steppers;
+extern sfr sbit EN_Steppers_Dir;
 
-extern sfr sbit EN_StepX;
-extern sfr sbit EN_Step_PinDirX;
+
+
+
 extern sfr sbit DIR_StepX;
 extern sfr sbit DIR_Step_PinDirX;
 extern sfr sbit PLS_StepX;
@@ -141,8 +140,6 @@ extern sfr sbit SLP_FLT_Step_PinDirX;
 extern sfr sbit FLT_StepX;
 extern sfr sbit FLT_Step_PinDirX;
 
-extern sfr sbit EN_StepY;
-extern sfr sbit EN_Step_PinDirY;
 extern sfr sbit RST_StepY;
 extern sfr sbit RST_Step_PinDirY;
 extern sfr sbit SLP_FLT_StepY;
@@ -154,8 +151,6 @@ extern sfr sbit DIR_Step_PinDirY;
 extern sfr sbit FLT_StepY;
 extern sfr sbit FLT_Step_PinDirY;
 
-extern sfr sbit EN_StepZ;
-extern sfr sbit EN_Step_PinDirZ;
 extern sfr sbit RST_StepZ;
 extern sfr sbit RST_Step_PinDirZ;
 extern sfr sbit SLP_FLT_StepZ;
@@ -167,8 +162,6 @@ extern sfr sbit DIR_Step_PinDirZ;
 extern sfr sbit FLT_StepZ;
 extern sfr sbit FLT_Step_PinDirZ;
 
-extern sfr sbit EN_StepA;
-extern sfr sbit EN_Step_PinDirA;
 extern sfr sbit RST_StepA;
 extern sfr sbit RST_Step_PinDirA;
 extern sfr sbit SLP_FLT_StepA;
@@ -187,6 +180,14 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 extern sfr sbit Z_Min_Limit;
 extern sfr sbit Z_Min_Limit_Dir;
+
+
+
+
+extern sfr sbit SPI_Ethernet_CS;
+extern sfr sbit SPI_Ethernet_CS_Direction;
+extern sfr sbit SPI_Ethernet_Rst;
+extern sfr sbit SPI_Ethernet_Rst_Direction;
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
@@ -311,7 +312,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 49 "c:/users/davec/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 161 "c:/users/davec/git/pic32mzcnc/gcode.h"
+#line 162 "c:/users/davec/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;
@@ -346,9 +347,12 @@ typedef struct {
  float K;
  int P;
  int S;
+ float dwell;
  int DIR;
 } parser_state_t;
 extern parser_state_t gc;
+void G_Save_State();
+void G_Restore_State();
 
 
 
@@ -358,6 +362,8 @@ extern parser_state_t gc;
 
 
 void G_Initialise();
+void G_Begin_Block();
+void G_Program_End();
 
 void FAIL(int status);
 int GET_FAIL();
@@ -399,6 +405,7 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
+static void Load_Coord_System(int select);
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 59 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 extern char stepper_state;
@@ -519,7 +526,7 @@ extern axis_combination axis_xyz;
 
 
 extern long test;
-#line 52 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 53 "c:/users/davec/git/pic32mzcnc/stepper.h"
  typedef struct{
  uint32_t phase;
  uint32_t incrament;
@@ -534,25 +541,14 @@ void SetPinMode();
 void CycleStart();
 void CycleStop();
 
-void EnStepperX();
-void EnStepperY();
-void EnStepperZ();
-void EnStepperA();
-void EnStepperB();
-void EnStepperC();
-
-void EnStepperAll();
-
 void DisableStepperInterrupt(int stepper);
-void EnableSteppers(int steppers);
-void EnableStepper(int stepper);
-void DisableStepper();
+void EnableSteppers();
+void DisableSteppers();
 void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
-int Get_AxisStatus(int stepper);
-int Get_Axis_IEnable_States();
+int Steppers_Enabled();
 
 
 static void SingleStepAxis(int axis);
@@ -612,22 +608,18 @@ float toradians(float rev_per_min);
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
-#line 33 "c:/users/davec/git/pic32mzcnc/limits.h"
+#line 35 "c:/users/davec/git/pic32mzcnc/limits.h"
 struct limit {
 
 char Pin: 1;
 char Limit_Min: 1;
 char Limit_Max: 1;
-char T0: 1;
-char T1: 1;
-char T2: 1;
-char T4: 1;
 char new_val;
 char old_Pval;
 char old_Fval;
 
-unsigned int Min_DeBnc;
-unsigned int last_cnt_min;
+unsigned int trip_cnt;
+unsigned int release_cnt;
 
 
 long Soft_Limit_Min;
@@ -649,8 +641,10 @@ char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
 void XOR_Min_Limit(int axis);
 void Invert_Min_Limit(int axis);
-void Debounce_Limits(int axis);
-void Reset_Min_Debounce(int axis);
+
+void Limits_Sample();
+
+char Limits_TakeEvent();
 
 char FP(int axis);
 void Rst_FP(int axis);
@@ -660,7 +654,7 @@ void Rst_FN(int axis);
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/print.h"
-#line 34 "c:/users/davec/git/pic32mzcnc/print.h"
+#line 36 "c:/users/davec/git/pic32mzcnc/print.h"
 void report_status_message(int status_code);
 
 void report_alarm_message(int alarm_code);
@@ -679,6 +673,7 @@ void report_grbl_settings();
 void report_gcode_parameters();
 
 void report_gcode_modes();
+void report_build_info();
 
 void protocol_execute_startup();
 
@@ -722,12 +717,6 @@ void Str_clear(char *str,int len);
 int Sample_Gocde_Line();
 
 
-static void Do_Startup_Msg(char *str_,int dif_);
-
-
-static void Do_Critical_Msg(char ch_);
-
-
 
 
 
@@ -737,6 +726,12 @@ static int Check_Query_Type(char *str_,int dif_);
 
 
 static int Do_Gcode(char *str_,int dif_);
+
+
+static int gcode_words(char *line);
+
+
+static int Machine_Busy();
 
 
 int Sample_Ringbuffer();
@@ -760,7 +755,17 @@ void protocol_system_check();
 
 void protocol_execute_runtime();
 #line 1 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
-#line 27 "c:/users/davec/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/tcp_ethernet.h"
+
+
+
+
+void Ethernet_Transport_Init();
+void Ethernet_Transport_Poll();
+char Ethernet_Ready();
+char *Ethernet_Address();
+int Ethernet_HostPut(char ch);
+#line 31 "c:/users/davec/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 
 
@@ -770,9 +775,9 @@ extern unsigned char LCD_01_ADDRESS;
 
 
 void PinMode();
-void UartConfig();
+
 void set_performance_mode();
-void Uart2InterruptSetup();
+
 
 void OutPutPulseXYZ();
 
@@ -780,76 +785,59 @@ void OutPutPulseXYZ();
 static int Modal_Group_Actions0(int action);
 
 
-static int Modal_Group_Actions1(int action);
+static int Execute_Gcode_Line();
+static void Compute_Target(int axes,float *target);
+static void Motion_Line(int axes);
+static void Run_Move(float *target,int mode);
 
 
-static int Modal_Group_Actions4(int action);
+void Cycle_Complete();
 
 
-static int Modal_Group_Actions7(int action);
-
-
-static int Modal_Group_Actions12(int action);
+void Host_ServiceNow();
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
-#line 14 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
-extern char txt[];
-extern char rxBuf[];
-extern char txBuf[];
-
+#line 31 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 typedef struct{
- char temp_buffer[500];
- int head;
- int tail;
- int diff;
- char has_data: 1;
-}Serial;
+ volatile char temp_buffer[ 1024 ];
+ volatile unsigned int head;
+ volatile unsigned int tail;
+} Serial;
 
 extern Serial serial;
+extern volatile char rxBuf[];
+extern char txBuf[];
 
+void Serial_Init(char mode);
 
+void Uart2InterruptSetup();
+#line 47 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
+unsigned int Serial_TakeRealtime();
+unsigned int Serial_PeekRealtime();
 
+char Serial_TakeStatusRequest();
 
+int Serial_ReadLine(char *line);
+void Reset_Ring();
+void Host_SetLink(char link);
+char Host_GetLink();
 
-
-void DMA_global();
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
-
-
-
-void DMA0();
-char DMA0_Flag();
-void DMA0_Enable();
-void DMA0_Disable();
-unsigned int DMA0_ReadDstPtr();
-void DMA0_RstDstPtr();
-
-
+void Host_ReceiveBytes(char *bytes, unsigned int n);
+int Get_Head_Value();
+int Get_Tail_Value();
+int Get_Difference();
 
 void DMA1();
 char DMA1_Flag();
 unsigned int DMA1_Enable();
 void DMA1_Disable();
-
-
-
-
 unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Abort(int channel);
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
 
-
-void Reset_rxBuff(int dif);
-int Get_Head_Value();
-int Get_Tail_Value();
-int Get_Difference();
-void Get_Line(char *str,int dif);
-void Reset_Ring();
-int Loopback();
-int dma_printf(char* str,...);
-void lTrim(char* d,char* s);
-#line 151 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
+int dma_printf(const char *str,...);
+void lTrim(char *d,char *s);
+#line 155 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -867,8 +855,8 @@ void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
-#line 106 "c:/users/davec/git/pic32mzcnc/globals.h"
-extern unsigned long volatile buffA[128];
+#line 107 "c:/users/davec/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buffA[512];
 
 
 
@@ -892,13 +880,14 @@ typedef struct{
  float coord[ 4 ];
  float coord_offset[ 4 ];
 }coord_sys;
-extern volatile coord_sys coord_system[ 9 ];
+extern volatile coord_sys coord_system[ 11 ];
 
 
 
 
 
 void settings_init(short reset_all);
+int settings_restore(int restore_mask);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -928,9 +917,6 @@ unsigned int settings_write_coord_data(int coord_select,float *coord);
 void settings_read_coord_data();
 
 
-unsigned int settings_write_one_coord(int coord_select,float *coord);
-
-
 int settings_read_startup_line(int n, char *line);
 
 
@@ -941,6 +927,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
+int settings_store_grbl_setting(int parameter, float value);
 #line 11 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
 unsigned long volatile buffA[512]= {0} absolute 0xA0000000 ;
 static unsigned long volatile add = 0;
@@ -955,144 +942,99 @@ volatile unsigned long i = 0;
 volatile unsigned int error = 0;
 
 
+static void settings_load_row();
+static void settings_blank_row();
+static int settings_save_row();
+static void settings_default_row();
+static void settings_apply_row();
+
+
 
 
 void settings_init(short reset_all){
-unsigned long *ptr;
-volatile unsigned long has_data = 0;
-
-
-int retry_flash_write = 0;
-
-
-
- add = (unsigned long) 0xBD1BC000 ;
-
- ptr = (unsigned long) 0xBD1BC5F0  ;
-
+unsigned long marker;
  if(!reset_all){
-
  sys.abort = 0;
  sys.state = 0;
  sys.homing = 0;
  sys.execute = 0;
  sys.auto_start = 0;
- }else{
- has_data = NVMReadWord(ptr);
-#line 55 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- if(has_data ==  -1 ){
-
-
-
-
-
- error = (int)NVMErasePage(&add);
-
-
-
-
-
-
-
-
- settings.steps_per_mm[X] =  186.750 ;
- buffA[ 0x40 ] = flt2ulong(settings.steps_per_mm[X]);
- settings.steps_per_mm[Y] =  186.750 ;
- buffA[ 0x41 ] = flt2ulong(settings.steps_per_mm[Y]);
- settings.steps_per_mm[Z] =  186.750 ;
- buffA[ 0x42 ] = flt2ulong(settings.steps_per_mm[Z]);
- settings.steps_per_mm[A] =  186.750 ;
- buffA[ 0x43 ] = flt2ulong(settings.steps_per_mm[A]);
- settings.steps_per_mm[B] =  186.750 ;
- buffA[ 0x42 ] = flt2ulong(settings.steps_per_mm[B]);
- settings.steps_per_mm[C] =  186.750 ;
- buffA[ 0x43 ] = flt2ulong(settings.steps_per_mm[C]);
-
- settings.default_feed_rate =  80.00 ;
- buffA[ 0x47 ] = flt2ulong(settings.default_feed_rate);
-
- settings.default_seek_rate =  300.00 ;
- buffA[ 0x48 ] = flt2ulong(settings.default_seek_rate);
-
- settings.homing_seek_rate =  100.00  ;
- buffA[ 0x4A ] = flt2ulong(settings.homing_seek_rate);
-
- settings.homing_feed_rate =  12.00 ;
- buffA[ 0x49 ] = flt2ulong(settings.homing_feed_rate);
-
- settings.homing_pulloff =  1.00 ;
- buffA[ 0x4B ] = flt2ulong(settings.homing_pulloff);
-
- settings.mm_per_arc_segment =  0.20 ;
- buffA[ 0x4C ] = flt2ulong(settings.mm_per_arc_segment);
-
- settings.acceleration =  (( 1.3889 )*( 3600 )) ;
- buffA[ 0x4D ] = flt2ulong(settings.acceleration);
-
- settings.junction_deviation =  0.05 ;
- buffA[ 0x4E ] = flt2ulong(settings.junction_deviation);
-
-
- settings.n_arc_correction =  25 ;
- buffA[ 0x4F ] = (unsigned long) 0x4F ;
-
- settings.stepper_idle_lock_time =  25 ;
- buffA[ 0x53 ] = (unsigned long)settings.stepper_idle_lock_time;
-
- settings.homing_debounce_delay =  100 ;
- buffA[ 0x52 ] = (unsigned long)settings.homing_debounce_delay;
-
- settings.p_usec =  100 ;
- buffA[ 0x46 ] = (unsigned long)settings.p_usec;
-
- settings.decimal_places =  3 ;
- buffA[ 0x56 ] = (unsigned int)settings.decimal_places;
-
- settings.homing_dir_mask =  15 ;
- buffA[ 0x57 ] = (unsigned long)settings.homing_dir_mask;
-
- settings.invert_mask =  15 ;
- buffA[ 0x58 ] = (unsigned long)settings.invert_mask;
-
- settings.flags = 0;
- if ( 0 ) {settings.flags |=  (1 << 0) ;}
-#line 135 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- if ( 1 ) { settings.flags |= ( (1 << 1) );}
-#line 140 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- if ( 1 ) { settings.flags |= ( (1 << 2) );}
-#line 145 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- if ( 1 ){ settings.flags |= ( (1 << 3) );}
-#line 150 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- if ( 1 ) { settings.flags |= ( (1 << 4) );}
-#line 155 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- buffA[0x50] = ((unsigned long)settings.flags) & 0x1F;
-#line 166 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- buffA[ 0x17C ] =  -1 ;
-
-
-
- has_data = 1;
-
- while(has_data){
-
- has_data = (unsigned long)NVMWriteRow(&add,buffA);
- retry_flash_write++;
-#line 182 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- if(retry_flash_write >  2 )break;
+ return;
  }
 
+ add = (unsigned long) 0xBD1BC5F0 ;
+ marker = NVMReadWord((void*)add);
+#line 53 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+ if(marker !=  0x7FFF0101 ){
+ settings_blank_row();
+ settings_default_row();
+ }
 
- }
- if(has_data){
- set_ram_loaded_indicator(read_row_from_flash(add));
- }
+ settings_load_row();
+ settings_apply_row();
+}
+
+
+
+
+static void settings_blank_row(){
+int k;
+ for(k = 0; k < 512; k++)
+ buffA[k] = 0xFFFFFFFF;
+ for(k = 0; k < ( 11 * 4 ); k++)
+ buffA[k] = 0;
+ for(k =  0x180 ; k < ( 0x190 +16); k++)
+ buffA[k] = 0;
+ set_ram_loaded_indicator(1);
+ rst_coord_read_indicator();
+}
+
+
+
+static void settings_default_row(){
+unsigned long flags = 0;
+
+ buffA[ 0x40 ] = flt2ulong( 186.750 );
+ buffA[ 0x41 ] = flt2ulong( 186.750 );
+ buffA[ 0x42 ] = flt2ulong( 186.750 );
+ buffA[ 0x43 ] = flt2ulong( 186.750 );
+ buffA[ 0x44 ] = flt2ulong( 186.750 );
+ buffA[ 0x45 ] = flt2ulong( 186.750 );
+ buffA[ 0x46 ] = (unsigned long) 100 ;
+ buffA[ 0x47 ] = flt2ulong( 80.00 );
+ buffA[ 0x48 ] = flt2ulong( 300.00 );
+ buffA[ 0x49 ] = flt2ulong( 12.00 );
+ buffA[ 0x4A ] = flt2ulong( 100.00 );
+ buffA[ 0x4B ] = flt2ulong( 1.00 );
+ buffA[ 0x4C ] = flt2ulong( 0.20 );
+
+ buffA[ 0x4D ] = flt2ulong( 1.3889 );
+ buffA[ 0x4E ] = flt2ulong( 0.05 );
+ buffA[ 0x4F ] = (unsigned long) 25 ;
+ buffA[ 0x53 ] = (unsigned long) 25 ;
+ buffA[ 0x52 ] = (unsigned long) 100 ;
+ buffA[ 0x54 ] = (unsigned long) 32.00 ;
+ buffA[ 0x56 ] = (unsigned long) 3 ;
+ buffA[ 0x57 ] = (unsigned long) 15 ;
+ buffA[ 0x58 ] = (unsigned long) 15 ;
+
+ if ( 0 ) { flags |=  (1 << 0) ; }
+ if ( 1 ) { flags |=  (1 << 1) ; }
+ if ( 1 ) { flags |=  (1 << 2) ; }
+ if ( 1 ){ flags |=  (1 << 3) ; }
+ if ( 1 ) { flags |=  (1 << 4) ; }
+ buffA[ 0x50 ] = flags;
+}
+
+
+
+static void settings_apply_row(){
+
 
  settings.steps_per_mm[X] = ulong2flt(buffA[ 0x40 ]);
  settings.steps_per_mm[Y] = ulong2flt(buffA[ 0x41 ]);
  settings.steps_per_mm[Z] = ulong2flt(buffA[ 0x42 ]);
  settings.steps_per_mm[A] = ulong2flt(buffA[ 0x43 ]);
- settings.steps_per_mm[B] = ulong2flt(buffA[ 0x44 ]);
- settings.steps_per_mm[C] = ulong2flt(buffA[ 0x45 ]);
  settings.default_feed_rate = ulong2flt(buffA[ 0x47 ]);
  settings.default_seek_rate = ulong2flt(buffA[ 0x48 ]);
  settings.homing_feed_rate = ulong2flt(buffA[ 0x49 ]);
@@ -1102,18 +1044,47 @@ int retry_flash_write = 0;
  settings.acceleration = ulong2flt(buffA[ 0x4D ])* 3600 ;
  settings.junction_deviation = ulong2flt(buffA[ 0x4E ]);
  settings.n_arc_correction = (unsigned int)buffA[ 0x4F ];
- settings.flags = ((unsigned int)buffA[0x50]);
- settings.stepper_idle_lock_time = (unsigned int)buffA[ 0x51 ];
+ settings.flags = (unsigned int)buffA[ 0x50 ];
+ settings.stepper_idle_lock_time = (unsigned int)buffA[ 0x53 ];
  settings.microsteps = (unsigned int)buffA[ 0x54 ];
  settings.p_usec = (unsigned int)buffA[ 0x46 ];
  settings.decimal_places = (unsigned int)buffA[ 0x56 ];
  settings.homing_debounce_delay = (unsigned int)buffA[ 0x52 ];
  settings.homing_dir_mask = (unsigned int)buffA[ 0x57 ];
  settings.invert_mask = (unsigned int)buffA[ 0x58 ];
+}
+
+
+
+int settings_restore(int restore_mask){
+int k;
+ if(restore_mask ==  0xFF ){
+
+ for(k = 0; k < 512; k++)
+ buffA[k] = 0xFFFFFFFF;
+ set_ram_loaded_indicator(1);
+ }else{
+ settings_load_row();
  }
 
+ if(restore_mask &  0x01 )
+ settings_default_row();
+
+ if(restore_mask &  0x02 ){
+ for(k = 0; k < ( 11 * 4 ); k++)
+ buffA[k] = 0;
+ }
+
+ if(restore_mask &  0x04 ){
+ for(k =  0x180 ; k < ( 0x190 +16); k++)
+ buffA[k] = 0;
+ }
+
+ k = settings_save_row();
+ settings_apply_row();
+ return k;
 }
-#line 228 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 183 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
 static int set_ram_loaded_indicator(int val){
  ram_loaded = val;
  return ram_loaded;
@@ -1134,12 +1105,12 @@ int read_ram_loaded_indicator(){
 
 
 static void set_coord_data_read_indicator(int flag){
-  (coord_read |= flag) ;
+  (coord_read |= (1 << flag) ) ;
 }
 
 
 static void rst_single_coord_read_indicators(int flag){
-  (coord_read &= ~flag) ;
+  (coord_read &= ~ (1 << flag) ) ;
 }
 
 
@@ -1169,7 +1140,7 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 287 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 242 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  }
 
 
@@ -1179,71 +1150,49 @@ int data_count;
 
  return data_count;
 }
-#line 324 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
-unsigned int settings_write_coord_data(int coord_select,float *coord){
-float ptr;
-int res=0,recipe = 0;
-unsigned long wdata[4]={0};
-unsigned long temp[4] = {0};
-
- add = (unsigned long) 0xBD1BC000 ;
-
-
- recipe = coord_select;
-
+#line 280 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+static void settings_load_row(){
  if(!read_ram_loaded_indicator()){
+ add = (unsigned long) 0xBD1BC000 ;
+ read_row_from_flash(add);
+ set_ram_loaded_indicator(1);
+ }
+}
 
- set_ram_loaded_indicator(read_row_from_flash(add));
 
 
 
+static int settings_save_row(){
+
+ buffA[ 0x17C ] =  0x7FFF0101 ;
+ add = (unsigned long) 0xBD1BC000 ;
  error = (int)NVMErasePage(&add);
+ if(!error){
+ error = (int)NVMWriteRow(&add,buffA);
  }
-
-
-
- if(error){
-#line 351 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 305 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+ rst_coord_read_indicator();
  return error;
- }
-
- switch(recipe){
- case 0:break;
-
- case 1: add = (unsigned long) 0xBD1BC000 ;break;
- case 2: add = (unsigned long) 0xBD1BC010 ;break;
- case 3: add = (unsigned long) 0xBD1BC020 ;break;
- case 4: add = (unsigned long) 0xBD1BC030 ;break;
- case 5: add = (unsigned long) 0xBD1BC040 ;break;
- case 6: add = (unsigned long) 0xBD1BC050 ;break;
- case 7: add = (unsigned long) 0xBD1BC060 ;break;
- case 8: add = (unsigned long) 0xBD1BC070 ;break;
- case 9: add = (unsigned long) 0xBD1BC080 ;break;
-
- case 10: add = (unsigned long) 0xBD1BC090 ;break;
- case 11: add = (unsigned long) 0xBD1BC0A0 ;break;
- }
-
- j = i = 0;
- for (i=0;i<3;i++){
- wdata[i] = flt2ulong(coord[i]);
-#line 378 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- }
+}
 
 
- i = (recipe-1)*4 ;
 
 
- for(j = 0;j<4;j++){
- buffA[i] = wdata[j];
- i++;
- }
+unsigned int settings_write_coord_data(int coord_select,float *coord){
+int k;
+ if(coord_select < 1 || coord_select >  11 )
+ return  1 ;
+
+ settings_load_row();
 
 
- res = NVMWriteRow(&add,buffA);
- set_ram_loaded_indicator(res);
-#line 407 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- return res;
+ k = (coord_select-1)* 4 ;
+ buffA[k] = flt2ulong(coord[0]);
+ buffA[k+1] = flt2ulong(coord[1]);
+ buffA[k+2] = flt2ulong(coord[2]);
+ buffA[k+3] = 0;
+
+ return settings_save_row();
 }
 
 
@@ -1253,24 +1202,18 @@ unsigned long temp[4] = {0};
 
 void settings_read_coord_data(){
 
-
- if(!read_ram_loaded_indicator()){
- add = (unsigned long) 0xBD1BC000 ;
- read_row_from_flash(add);
- }
+ settings_load_row();
 
  if(!read_coord_data_indicator()){
  unsigned long temp = 0UL;
- float value = 0.00;
- for(i = 0; i < 9; i++){
+ for(i = 0; i <  11 ; i++){
  for(j = 0 ; j <  4 ; j++){
  temp = buffA[(i* 4 ) + j];
 
- if(temp == -1)
+ if(temp == 0xFFFFFFFF)
  temp = 0UL;
- value = ulong2flt(temp);
- coord_system[i].coord[j] = value;
-#line 441 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+ coord_system[i].coord[j] = ulong2flt(temp);
+#line 353 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  }
  }
 
@@ -1281,80 +1224,24 @@ void settings_read_coord_data(){
 
 
 
-
-
-unsigned int settings_write_one_coord(int coord_select,float *coord){
-float coord_data[ 4 ];
-int recipe;
-unsigned long temp[ 4 ];
-
-
- recipe = coord_select *  4 ;
-
-
- j=0;
- for(i = recipe;i< recipe+ 4 ;i++){
-
- coord_data[j] = *(coord+j);
- temp[j] = flt2ulong(coord_data[j]);
- buffA[i] = temp[j];
- j++;
-#line 473 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- }
-
- switch(coord_select){
-
- case 1: add = (unsigned long) 0xBD1BC000 ;break;
- case 2: add = (unsigned long) 0xBD1BC010 ;break;
- case 3: add = (unsigned long) 0xBD1BC020 ;break;
- case 4: add = (unsigned long) 0xBD1BC030 ;break;
- case 5: add = (unsigned long) 0xBD1BC040 ;break;
- case 6: add = (unsigned long) 0xBD1BC050 ;break;
- case 7: add = (unsigned long) 0xBD1BC060 ;break;
- case 8: add = (unsigned long) 0xBD1BC070 ;break;
- case 9: add = (unsigned long) 0xBD1BC080 ;break;
-
- case 10: add = (unsigned long) 0xBD1BC090 ;break;
- case 11: add = (unsigned long) 0xBD1BC0A0 ;break;
- }
-
- if(!read_ram_loaded_indicator()){
-
- set_ram_loaded_indicator(read_row_from_flash(add));
-
-
-
- error = (int)NVMErasePage(&add);
- }
-
-
-
- if(error){
-#line 507 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- return error;
- }
-
-
-
- if(!error)
- set_ram_loaded_indicator(NVMWriteQuad (&add, temp));
-
- return error;
-}
-
-
-
-
 int settings_read_startup_line(int n, char *line){
-char *char_add;
+char *src;
+int k;
 
  switch(n){
- case 0: char_add = (char*) 0xBD1BC600 ;break;
- case 1: char_add = (char*) 0xBD1BC640 ;break;
+ case 0: k =  0x180 ; break;
+ case 1: k =  0x190 ; break;
+ default: line[0] = 0; return  6 ;
  }
-
- memcpy(line,char_add,64);
-#line 537 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+ settings_load_row();
+ src = (char*)(buffA + k);
+ for(k = 0; k <  64 -1; k++){
+ if(src[k] == 0) break;
+ if(src[k] < 0x20 || src[k] > 0x7E){ k = 0; break; }
+ line[k] = src[k];
+ }
+ line[k] = 0;
+#line 387 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  return  0 ;
 }
 
@@ -1366,30 +1253,14 @@ int str_len;
 char temp_char;
 
  str_len = strlen(line);
-#line 556 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- add = (unsigned long) 0xBD1BC000 ;
-
-
+#line 406 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  switch(n){
  case 0: start_offset = (unsigned long) 0x180 ;break;
  case 1: start_offset = (unsigned long) 0x190 ;break;
+ default: return  6 ;
  }
 
- if(!read_ram_loaded_indicator()){
-
- set_ram_loaded_indicator(read_row_from_flash(add));
-
-
-
- error = (int)NVMErasePage(&add);
- }
-
-
-
- if(error){
-#line 580 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- return error;
- }
+ settings_load_row();
 
 
  for(i=start_offset;i<start_offset+16;i++)
@@ -1398,39 +1269,18 @@ char temp_char;
 
 
  memcpy(buffA+start_offset,line,str_len);
-#line 601 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
-
- return error;
+#line 430 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+ return settings_save_row();
 }
 
 
 
 
 int settings_store_global_setting(int parameter, float value) {
-unsigned long *ptr;
-volatile unsigned long has_data = 0;
 int val_temp = 0;
 
- add = (unsigned long) 0xBD1BC000 ;
- ptr = (unsigned long) 0xBD1BC5F0  ;
-
- if(!read_ram_loaded_indicator()){
-
- set_ram_loaded_indicator(read_row_from_flash(add));
- }
-
-
-
- error = (int)NVMErasePage(&add);
-
-
-
- if(error){
-#line 633 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- return( 6 );
- }
-#line 644 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+ settings_load_row();
+#line 449 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  switch(parameter) {
  case 0: case 1: case 2:
  if (value <= 0.0) { return( 8 ); }
@@ -1438,7 +1288,7 @@ int val_temp = 0;
  settings.steps_per_mm[parameter] = value;
 
  buffA[ 0x40 +parameter] = flt2ulong(value);
-#line 661 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 466 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  break;
  case 3:
  if (value < 3) { return( 9 ); }
@@ -1455,7 +1305,7 @@ int val_temp = 0;
  break;
  case 6:
  settings.invert_mask = floor(value);
- buffA[ 0x58 ] = flt2ulong(floor(value));
+ buffA[ 0x58 ] = (unsigned long)floor(value);
  break;
  case 7:
  val_temp = round(value);
@@ -1470,9 +1320,9 @@ int val_temp = 0;
  buffA[ 0x4E ] = flt2ulong(fabs(value));
  break;
  case 10:
- val_temp = round(value);
- settings.mm_per_arc_segment = val_temp;
- buffA[ 0x4C ] = (unsigned long)val_temp;
+ if (value <= 0.0) { return( 8 ); }
+ settings.mm_per_arc_segment = value;
+ buffA[ 0x4C ] = flt2ulong(value);
  break;
  case 11:
  val_temp = round(value);
@@ -1506,7 +1356,7 @@ int val_temp = 0;
  }else{
  settings.flags &= ~ (1 << 2) ;
  }
- buffA[ 0x50 ] |= (unsigned long)settings.flags;
+ buffA[ 0x50 ] = (unsigned long)settings.flags;
  break;
  case 16:
  if (round(value)){
@@ -1542,27 +1392,43 @@ int val_temp = 0;
  buffA[ 0x52 ] = (unsigned long)val_temp;
  break;
  case 22:
- val_temp = round(value);
- settings.homing_pulloff = val_temp;
- buffA[ 0x4B ] = (unsigned long)val_temp;
+ settings.homing_pulloff = fabs(value);
+ buffA[ 0x4B ] = flt2ulong(fabs(value));
  break;
  case 99:
- val_temp = round(value);
- if(val_temp == 1){
-
- buffA[ 0x17C ] = 0x7FFFFFFF;
-
-
-
-
-
-
- set_ram_loaded_indicator((int)NVMWriteRow(&add,buffA));
-#line 787 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
- }
  break;
  default:
  return( 6 );
  }
+ if(settings_save_row()){ return( 10 ); }
  return( 0 );
+}
+
+
+
+
+int settings_store_grbl_setting(int parameter, float value) {
+int internal;
+ switch(parameter) {
+ case 0: internal = 3; break;
+ case 1: internal = 7; break;
+ case 2: internal = 6; break;
+ case 4: internal = 15; break;
+ case 11: internal = 9; break;
+ case 12: internal = 10; break;
+ case 13: internal = 13; break;
+ case 21: internal = 16; break;
+ case 22: internal = 17; break;
+ case 23: internal = 18; break;
+ case 24: internal = 19; break;
+ case 25: internal = 20; break;
+ case 26: internal = 21; break;
+ case 27: internal = 22; break;
+ case 100: case 101: case 102: internal = parameter - 100; break;
+ case 110: case 111: case 112: internal = 5; break;
+ case 120: case 121: case 122: internal = 8; break;
+ case 99: internal = 99; break;
+ default: return( 6 );
+ }
+ return settings_store_global_setting(internal, value);
 }

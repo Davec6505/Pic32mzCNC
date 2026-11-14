@@ -50,11 +50,7 @@ typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
-
-
-
-
-
+#line 15 "c:/users/davec/git/pic32mzcnc/pins.h"
 extern sfr sbit LED1;
 extern sfr sbit LED1_Dir;
 extern sfr sbit LED2;
@@ -74,9 +70,12 @@ extern sfr sbit SW2_Dir;
 
 
 
+extern sfr sbit EN_Steppers;
+extern sfr sbit EN_Steppers_Dir;
 
-extern sfr sbit EN_StepX;
-extern sfr sbit EN_Step_PinDirX;
+
+
+
 extern sfr sbit DIR_StepX;
 extern sfr sbit DIR_Step_PinDirX;
 extern sfr sbit PLS_StepX;
@@ -88,8 +87,6 @@ extern sfr sbit SLP_FLT_Step_PinDirX;
 extern sfr sbit FLT_StepX;
 extern sfr sbit FLT_Step_PinDirX;
 
-extern sfr sbit EN_StepY;
-extern sfr sbit EN_Step_PinDirY;
 extern sfr sbit RST_StepY;
 extern sfr sbit RST_Step_PinDirY;
 extern sfr sbit SLP_FLT_StepY;
@@ -101,8 +98,6 @@ extern sfr sbit DIR_Step_PinDirY;
 extern sfr sbit FLT_StepY;
 extern sfr sbit FLT_Step_PinDirY;
 
-extern sfr sbit EN_StepZ;
-extern sfr sbit EN_Step_PinDirZ;
 extern sfr sbit RST_StepZ;
 extern sfr sbit RST_Step_PinDirZ;
 extern sfr sbit SLP_FLT_StepZ;
@@ -114,8 +109,6 @@ extern sfr sbit DIR_Step_PinDirZ;
 extern sfr sbit FLT_StepZ;
 extern sfr sbit FLT_Step_PinDirZ;
 
-extern sfr sbit EN_StepA;
-extern sfr sbit EN_Step_PinDirA;
 extern sfr sbit RST_StepA;
 extern sfr sbit RST_Step_PinDirA;
 extern sfr sbit SLP_FLT_StepA;
@@ -134,6 +127,14 @@ extern sfr sbit Y_Min_Limit;
 extern sfr sbit Y_Min_Limit_Dir;
 extern sfr sbit Z_Min_Limit;
 extern sfr sbit Z_Min_Limit_Dir;
+
+
+
+
+extern sfr sbit SPI_Ethernet_CS;
+extern sfr sbit SPI_Ethernet_CS_Direction;
+extern sfr sbit SPI_Ethernet_Rst;
+extern sfr sbit SPI_Ethernet_Rst_Direction;
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
@@ -150,7 +151,7 @@ extern sfr sbit Z_Min_Limit_Dir;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 173 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 181 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -250,65 +251,48 @@ int xtoi(char * s);
 typedef void * va_list[1];
 #line 1 "c:/users/davec/git/pic32mzcnc/config.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
-#line 14 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
-extern char txt[];
-extern char rxBuf[];
-extern char txBuf[];
-
+#line 31 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 typedef struct{
- char temp_buffer[500];
- int head;
- int tail;
- int diff;
- char has_data: 1;
-}Serial;
+ volatile char temp_buffer[ 1024 ];
+ volatile unsigned int head;
+ volatile unsigned int tail;
+} Serial;
 
 extern Serial serial;
+extern volatile char rxBuf[];
+extern char txBuf[];
 
+void Serial_Init(char mode);
 
+void Uart2InterruptSetup();
+#line 47 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
+unsigned int Serial_TakeRealtime();
+unsigned int Serial_PeekRealtime();
 
+char Serial_TakeStatusRequest();
 
+int Serial_ReadLine(char *line);
+void Reset_Ring();
+void Host_SetLink(char link);
+char Host_GetLink();
 
-
-void DMA_global();
-unsigned int DMA_Busy();
-unsigned int DMA_Suspend();
-unsigned int DMA_Resume();
-
-
-
-void DMA0();
-char DMA0_Flag();
-void DMA0_Enable();
-void DMA0_Disable();
-unsigned int DMA0_ReadDstPtr();
-void DMA0_RstDstPtr();
-
-
+void Host_ReceiveBytes(char *bytes, unsigned int n);
+int Get_Head_Value();
+int Get_Tail_Value();
+int Get_Difference();
 
 void DMA1();
 char DMA1_Flag();
 unsigned int DMA1_Enable();
 void DMA1_Disable();
-
-
-
-
 unsigned int DMA_IsOn(int channel);
-unsigned int DMA_CH_Busy(int channel);
-unsigned int DMA_Abort(int channel);
+unsigned int DMA_Busy();
+unsigned int DMA_Suspend();
+unsigned int DMA_Resume();
 
-
-void Reset_rxBuff(int dif);
-int Get_Head_Value();
-int Get_Tail_Value();
-int Get_Difference();
-void Get_Line(char *str,int dif);
-void Reset_Ring();
-int Loopback();
-int dma_printf(char* str,...);
-void lTrim(char* d,char* s);
-#line 151 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
+int dma_printf(const char *str,...);
+void lTrim(char *d,char *s);
+#line 155 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -346,8 +330,8 @@ int round(float val);
 
 
 long lround(float val);
-#line 106 "c:/users/davec/git/pic32mzcnc/globals.h"
-extern unsigned long volatile buffA[128];
+#line 107 "c:/users/davec/git/pic32mzcnc/globals.h"
+extern unsigned long volatile buffA[512];
 
 
 
@@ -371,13 +355,14 @@ typedef struct{
  float coord[ 4 ];
  float coord_offset[ 4 ];
 }coord_sys;
-extern volatile coord_sys coord_system[ 9 ];
+extern volatile coord_sys coord_system[ 11 ];
 
 
 
 
 
 void settings_init(short reset_all);
+int settings_restore(int restore_mask);
 
 
 static int set_ram_loaded_indicator(int val);
@@ -407,9 +392,6 @@ unsigned int settings_write_coord_data(int coord_select,float *coord);
 void settings_read_coord_data();
 
 
-unsigned int settings_write_one_coord(int coord_select,float *coord);
-
-
 int settings_read_startup_line(int n, char *line);
 
 
@@ -420,6 +402,7 @@ void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
+int settings_store_grbl_setting(int parameter, float value);
 #line 62 "c:/users/davec/git/pic32mzcnc/planner.h"
 typedef struct genVars{
  char running: 1;
@@ -597,7 +580,7 @@ extern axis_combination axis_xyz;
 
 
 extern long test;
-#line 52 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 53 "c:/users/davec/git/pic32mzcnc/stepper.h"
  typedef struct{
  uint32_t phase;
  uint32_t incrament;
@@ -612,25 +595,14 @@ void SetPinMode();
 void CycleStart();
 void CycleStop();
 
-void EnStepperX();
-void EnStepperY();
-void EnStepperZ();
-void EnStepperA();
-void EnStepperB();
-void EnStepperC();
-
-void EnStepperAll();
-
 void DisableStepperInterrupt(int stepper);
-void EnableSteppers(int steppers);
-void EnableStepper(int stepper);
-void DisableStepper();
+void EnableSteppers();
+void DisableSteppers();
 void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
-int Get_AxisStatus(int stepper);
-int Get_Axis_IEnable_States();
+int Steppers_Enabled();
 
 
 static void SingleStepAxis(int axis);
@@ -690,22 +662,18 @@ float toradians(float rev_per_min);
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
-#line 33 "c:/users/davec/git/pic32mzcnc/limits.h"
+#line 35 "c:/users/davec/git/pic32mzcnc/limits.h"
 struct limit {
 
 char Pin: 1;
 char Limit_Min: 1;
 char Limit_Max: 1;
-char T0: 1;
-char T1: 1;
-char T2: 1;
-char T4: 1;
 char new_val;
 char old_Pval;
 char old_Fval;
 
-unsigned int Min_DeBnc;
-unsigned int last_cnt_min;
+unsigned int trip_cnt;
+unsigned int release_cnt;
 
 
 long Soft_Limit_Min;
@@ -727,8 +695,10 @@ char Test_Min(int axis);
 void Reset_Min_Limit(int axis);
 void XOR_Min_Limit(int axis);
 void Invert_Min_Limit(int axis);
-void Debounce_Limits(int axis);
-void Reset_Min_Debounce(int axis);
+
+void Limits_Sample();
+
+char Limits_TakeEvent();
 
 char FP(int axis);
 void Rst_FP(int axis);
@@ -738,7 +708,7 @@ void Rst_FN(int axis);
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/print.h"
-#line 34 "c:/users/davec/git/pic32mzcnc/print.h"
+#line 36 "c:/users/davec/git/pic32mzcnc/print.h"
 void report_status_message(int status_code);
 
 void report_alarm_message(int alarm_code);
@@ -757,6 +727,7 @@ void report_grbl_settings();
 void report_gcode_parameters();
 
 void report_gcode_modes();
+void report_build_info();
 
 void protocol_execute_startup();
 
@@ -780,12 +751,6 @@ void Str_clear(char *str,int len);
 int Sample_Gocde_Line();
 
 
-static void Do_Startup_Msg(char *str_,int dif_);
-
-
-static void Do_Critical_Msg(char ch_);
-
-
 
 
 
@@ -795,6 +760,12 @@ static int Check_Query_Type(char *str_,int dif_);
 
 
 static int Do_Gcode(char *str_,int dif_);
+
+
+static int gcode_words(char *line);
+
+
+static int Machine_Busy();
 
 
 int Sample_Ringbuffer();
@@ -818,7 +789,17 @@ void protocol_system_check();
 
 void protocol_execute_runtime();
 #line 1 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
-#line 27 "c:/users/davec/git/pic32mzcnc/config.h"
+#line 1 "c:/users/davec/git/pic32mzcnc/tcp_ethernet.h"
+
+
+
+
+void Ethernet_Transport_Init();
+void Ethernet_Transport_Poll();
+char Ethernet_Ready();
+char *Ethernet_Address();
+int Ethernet_HostPut(char ch);
+#line 31 "c:/users/davec/git/pic32mzcnc/config.h"
 extern unsigned char LCD_01_ADDRESS;
 
 
@@ -828,9 +809,9 @@ extern unsigned char LCD_01_ADDRESS;
 
 
 void PinMode();
-void UartConfig();
+
 void set_performance_mode();
-void Uart2InterruptSetup();
+
 
 void OutPutPulseXYZ();
 
@@ -838,22 +819,22 @@ void OutPutPulseXYZ();
 static int Modal_Group_Actions0(int action);
 
 
-static int Modal_Group_Actions1(int action);
+static int Execute_Gcode_Line();
+static void Compute_Target(int axes,float *target);
+static void Motion_Line(int axes);
+static void Run_Move(float *target,int mode);
 
 
-static int Modal_Group_Actions4(int action);
+void Cycle_Complete();
 
 
-static int Modal_Group_Actions7(int action);
-
-
-static int Modal_Group_Actions12(int action);
+void Host_ServiceNow();
 #line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 49 "c:/users/davec/git/pic32mzcnc/gcode.h"
 extern volatile int status_code;
-#line 161 "c:/users/davec/git/pic32mzcnc/gcode.h"
+#line 162 "c:/users/davec/git/pic32mzcnc/gcode.h"
 typedef struct {
  char r: 1;
  char no_axis_interpolate;
@@ -888,9 +869,12 @@ typedef struct {
  float K;
  int P;
  int S;
+ float dwell;
  int DIR;
 } parser_state_t;
 extern parser_state_t gc;
+void G_Save_State();
+void G_Restore_State();
 
 
 
@@ -900,6 +884,8 @@ extern parser_state_t gc;
 
 
 void G_Initialise();
+void G_Begin_Block();
+void G_Program_End();
 
 void FAIL(int status);
 int GET_FAIL();
@@ -941,6 +927,7 @@ static int Set_Modal_Groups(int mode);
 static int Set_Motion_Mode(int mode);
 static int Set_M_Modal_Commands(int M_Val);
 static int Set_M_Commands(int M_Val);
+static void Load_Coord_System(int select);
 #line 28 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
 volatile float coord_data[ 4 ];
 
@@ -959,6 +946,12 @@ volatile float inverse_feed_rate;
 volatile float value;
 
 
+static parser_state_t gc_saved;
+static int motion_mode_saved;
+static axis_combination axis_xyz_saved;
+static char cir_saved;
+
+
 
 
 static float To_Millimeters(float value){
@@ -968,6 +961,17 @@ static float To_Millimeters(float value){
 
 static void Select_Plane(int axis_combo){
  axis_xyz = axis_combo;
+ switch(axis_combo){
+ case AXIS_XZ: gc.plane_axis_0 = X; gc.plane_axis_1 = Z; gc.plane_axis_2 = Y; break;
+ case AXIS_YZ: gc.plane_axis_0 = Y; gc.plane_axis_1 = Z; gc.plane_axis_2 = X; break;
+ default: gc.plane_axis_0 = X; gc.plane_axis_1 = Y; gc.plane_axis_2 = Z; break;
+ }
+}
+
+
+static void Load_Coord_System(int select){
+ settings_read_coord_data();
+ memcpy(gc.coord_system,coord_system[select-1].coord,sizeof(gc.coord_system));
 }
 
 
@@ -984,6 +988,55 @@ void G_Initialise(){
  gc.inverse_feed_rate_mode =  0 ;
  gc.absolute_override =  0 ;
  gc.absolute_mode = 1;
+ motion_mode = gc.motion_mode =  0 ;
+ Select_Plane(AXIS_XY);
+ gc.coord_select = 1;
+ Load_Coord_System(gc.coord_select);
+  memset(gc.coord_offset, 0, sizeof(gc.coord_offset)) ;
+}
+
+
+void G_Save_State(){
+ memcpy(&gc_saved,&gc,sizeof(parser_state_t));
+ motion_mode_saved = motion_mode;
+ axis_xyz_saved = axis_xyz;
+ cir_saved = SV.cir;
+}
+
+void G_Restore_State(){
+ memcpy(&gc,&gc_saved,sizeof(parser_state_t));
+ motion_mode = motion_mode_saved;
+ axis_xyz = axis_xyz_saved;
+ SV.cir = cir_saved;
+}
+
+
+void G_Begin_Block(){
+ Rst_modalgroup();
+ Rst_non_modalword();
+ Rst_Axisword();
+ non_modal_action =  0 ;
+ gc.absolute_override =  0 ;
+ gc.P = gc.S = gc.L = -1;
+ gc.R = gc.I = gc.J = gc.K = 0.0;
+ gc.dwell = -1.0;
+ gc.r = 0;
+ gc.program_flow =  0 ;
+ FAIL( 0 );
+}
+
+
+void G_Program_End(){
+ motion_mode = gc.motion_mode =  1 ;
+ Select_Plane(AXIS_XY);
+ gc.absolute_mode = 1;
+ gc.inverse_feed_rate_mode =  0 ;
+ gc.coord_select = 1;
+ Load_Coord_System(gc.coord_select);
+  memset(gc.coord_offset, 0, sizeof(gc.coord_offset)) ;
+ gc.spindle_direction = 0;
+ gc.coolant_mode =  0 ;
+ gc.program_flow =  0 ;
 }
 
 
@@ -1038,7 +1091,7 @@ int Rst_non_modalword(){
 void Set_Axisword(int value){
   (axis_words |= (1 << value) ) ;
 }
-#line 131 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 197 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
 int Get_Axisword(){
  return axis_words & 0x0fff;
 }
@@ -1061,17 +1114,37 @@ int Rst_motionmode(){
 
 
 int G_Mode(int mode){
- group_number = Set_Modal_Groups(mode);
- motion_mode = Set_Motion_Mode(mode);
+int grp;
+ non_modal_action =  0 ;
+ grp = Set_Modal_Groups(mode);
+ Set_Motion_Mode(mode);
+ if(status_code ==  0 ){
+ if( ((modal_group_words & (1 << grp) ) != 0) ){
+ FAIL( 5 );
+ }else{
+  (modal_group_words |= (1 << grp) ) ;
+ if(non_modal_action !=  0 )
+  (non_modal_words |= (1 << non_modal_action) ) ;
+ }
+ }
+ group_number = grp;
  return mode;
 }
 
 
 
 int M_Mode(int flow){
- group_number = Set_M_Modal_Commands(flow);
+int grp;
+ grp = Set_M_Modal_Commands(flow);
  m_flow = Set_M_Commands(flow);
-#line 167 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+ if(status_code ==  0  && grp !=  0 ){
+ if( ((modal_group_words & (1 << grp) ) != 0) )
+ FAIL( 5 );
+ else
+  (modal_group_words |= (1 << grp) ) ;
+ }
+ group_number = grp;
+#line 253 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
  return flow;
 }
 
@@ -1081,9 +1154,9 @@ int M_Mode(int flow){
 
 
 static int Set_Modal_Groups(int mode){
-int gp_num;
+int gp_num =  0 ;
  switch(mode) {
- case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 920:
+ case 4: case 10: case 280:case 281: case 300:case 301: case 53: case 920: case 921:
  gp_num =  1 ; break;
  case 0: case 1: case 2: case 3: case 80: gp_num =  2 ; break;
  case 17: case 18: case 19: gp_num =  3 ; break;
@@ -1097,64 +1170,49 @@ int gp_num;
 
 
 static int Set_Motion_Mode(int mode){
-int i,m_mode;
  FAIL( 0 );
 
  switch(mode){
- case 0: m_mode =  0 ;SV.cir = 0; break;
- case 1: m_mode =  1 ;SV.cir = 0; break;
- case 2: m_mode =  2 ;gc.DIR =  0 ;SV.cir = 1; break;
- case 3: m_mode =  3 ;gc.DIR =  1 ;SV.cir = 1; break;
+ case 0: motion_mode =  0 ;SV.cir = 0; break;
+ case 1: motion_mode =  1 ;SV.cir = 0; break;
+ case 2: motion_mode =  2 ;gc.DIR =  0 ;SV.cir = 1; break;
+ case 3: motion_mode =  3 ;gc.DIR =  1 ;SV.cir = 1; break;
+ case 80: motion_mode =  4 ; break;
  case 4: non_modal_action =  1 ; break;
  case 10: non_modal_action =  2 ; break;
- case 17: Select_Plane(AXIS_XY);m_mode =  6 ; break;
- case 18: Select_Plane(AXIS_XZ);m_mode =  6 ; break;
- case 19: Select_Plane(AXIS_YZ);m_mode =  6 ; break;
- case 20: gc.inches_mode = 1;m_mode =  6 ; break;
- case 21: gc.inches_mode = 0;m_mode =  6 ; break;
- case 53: gc.absolute_override =  1 ;m_mode =  6 ; break;
+ case 17: Select_Plane(AXIS_XY); break;
+ case 18: Select_Plane(AXIS_XZ); break;
+ case 19: Select_Plane(AXIS_YZ); break;
+ case 20: gc.inches_mode = 1; break;
+ case 21: gc.inches_mode = 0; break;
+ case 53: gc.absolute_override =  1 ; break;
  case 54: case 55: case 56: case 57: case 58: case 59:
  gc.coord_select = (mode - 53);
- m_mode =  6 ;break;
- case 80: motion_mode =  4 ; break;
- case 90: gc.absolute_mode = 1; m_mode =  6 ; break;
- case 91: gc.absolute_mode = 0; m_mode =  6 ; break;
- case 93: gc.inverse_feed_rate_mode =  1 ; m_mode =  6 ; break;
- case 94: gc.inverse_feed_rate_mode =  0 ;m_mode =  6 ; break;
+ Load_Coord_System(gc.coord_select);
+ break;
+ case 90: gc.absolute_mode = 1; break;
+ case 91: gc.absolute_mode = 0; break;
+
+ case 93: FAIL( 3 ); break;
+ case 94: gc.inverse_feed_rate_mode =  0 ; break;
  case 280: non_modal_action =  3 ; break;
  case 281: non_modal_action =  4 ; break;
  case 300: non_modal_action =  5 ; break;
  case 301: non_modal_action =  6 ; break;
  case 920: non_modal_action =  7 ; break;
  case 921: non_modal_action =  8 ; break;
- default: FAIL( 3 );return;break;
+ default: FAIL( 3 ); break;
  }
-
-
-
-
- if (  ((modal_group_words & (1 << 2 ) ) != 0)  || axis_words ) {
-
- if ( gc.inverse_feed_rate_mode ) {
- if (inverse_feed_rate < 0 && motion_mode !=  4 ) {
- FAIL( 6 );
- }
- }
-
- if ( gc.absolute_override && !(motion_mode ==  0  || motion_mode ==  1 )) {
- FAIL( 6 );
- }
-
- }
-#line 258 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
- return m_mode;
+ gc.motion_mode = motion_mode;
+#line 324 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+ return motion_mode;
 }
 
 
 
 
 static int Set_M_Modal_Commands(int flow){
-int m_num;
+int m_num =  0 ;
 
  switch(flow) {
  case 0: case 1: case 2: case 30: m_num =  5 ; break;
@@ -1172,11 +1230,11 @@ static int Set_M_Commands(int flow){
  case 1: break;
  case 2:
  case 30: gc.program_flow =  2 ; break;
- case 3: gc.spindle_direction = 1; break;
- case 4: gc.spindle_direction = -1; break;
+
+ case 3: case 4: FAIL( 3 ); break;
  case 5: gc.spindle_direction = 0; break;
-#line 289 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
- case 8: gc.coolant_mode =  1 ; break;
+
+ case 7: case 8: FAIL( 3 ); break;
  case 9: gc.coolant_mode =  0 ; break;
  default: FAIL( 3 );break;
  }
@@ -1188,121 +1246,20 @@ static int Set_M_Commands(int flow){
 
 
 
-
 int Check_group_multiple_violations(){
-static int last_group_number,last_non_modal_action;
-int i = 0;
-
-
-
-
- if(group_number ==  0 ){
- FAIL( 5 );
- return  5 ;
- }
-
- if(group_number > 0) {
-
- if(group_number != last_group_number)
- Rst_modalgroup();
-
-  (modal_group_words |= (1 << group_number) ) ;
-
- last_group_number = group_number;
-
-
-
- if (group_number ==  1 ){
-
-
- Rst_non_modalword();
-
- if(!gc.absolute_override)
-  (non_modal_words |= (1 << non_modal_action) ) ;
-
- last_non_modal_action = non_modal_action;
+ if(status_code !=  0 )
  return status_code;
- }
 
 
-
-
-
-
- if(group_number ==  2 ){
-
- switch (motion_mode) {
- case  0 :
- gc.feed_rate = settings.default_seek_rate;
- case  1 :
- FAIL( 0 );
- break;
- case  2 : case  3 :
- FAIL( 0 );
-
-
-
-
- for(i=0;i<=3;i++)
- Set_Axisword(i);
-#line 371 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
- break;
- case  4 :
- FAIL( 0 );
-
- if (axis_words) { FAIL( 6 ); }
- break;
- }
-
-
- for(i=0;i< 4 ;i++){
- gc.position[i] = gc.next_position[i];
- }
- }
-
-
- if (group_number ==  3 ){
- FAIL( 0 );
-
- if(axis_xyz >  4 ){
- status_code =  6 ;
+ if(motion_mode ==  4  && axis_words &&
+  ((modal_group_words & (1 << 2 ) ) != 0) )
  FAIL( 6 );
- }
-
- return status_code;
- }
 
 
- if (group_number ==  4 ){
- FAIL( 0 );
- return status_code;
- }
-
-
- if (group_number ==  6 ){
- FAIL( 0 );
- return status_code;
- }
-
-
- if (group_number ==  7 ){
- FAIL( 0 );
- return status_code;
- }
-
-
- if (group_number ==  9 ){
- FAIL( 0 );
-
- if(gc.coord_select < 0 || gc.coord_select > 7)
- FAIL( 1 );
-
- return status_code;
- }
- }
-
-
-
+ if( ((modal_group_words & (1 << 1 ) ) != 0)  &&
+  ((modal_group_words & (1 << 2 ) ) != 0)  && axis_words &&
+ (non_modal_words & ~ (1 << 1 ) ))
+ FAIL( 5 );
 
  return status_code;
 }
@@ -1348,17 +1305,17 @@ int F_Val,O_Val;
  gc.r = 0;
  gc.R = 0;
  XYZ_Val = *(float*)any;
- gc.I = XYZ_Val;
+ gc.I = To_Millimeters(XYZ_Val);
 
  break;
  case 'J':
  XYZ_Val = *(float*)any;
- gc.J = XYZ_Val;
+ gc.J = To_Millimeters(XYZ_Val);
 
  break;
  case 'K':
  XYZ_Val = *(float*)any;
- gc.K = XYZ_Val;
+ gc.K = To_Millimeters(XYZ_Val);
 
  break;
  case 'F':
@@ -1366,7 +1323,7 @@ int F_Val,O_Val;
  if(XYZ_Val < 0){FAIL( 13 );break;}
 
  gc.feed_rate = To_Millimeters(XYZ_Val);
-#line 496 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 447 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
  break;
  case 'P':
  O_Val = *(int*)any;
@@ -1393,6 +1350,6 @@ int F_Val,O_Val;
  break;
  default:FAIL( 3 );break;
  }
-#line 536 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
+#line 487 "c:/Users/davec/GIT/Pic32mzCNC/GCODE.c"
  return status_code;
 }

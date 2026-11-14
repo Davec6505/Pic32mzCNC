@@ -34,12 +34,13 @@ char startup  absolute 0xA0002600 ;
 // Initialize alllocal statics
 void Init_Protocol(){
    startup = 0;
+   report_init_message();
 }
 ////////////////////////////////////////////////////
 //reset the string array to zero                                               c
 void Str_Initialize(char arg[arr_size][str_size]){
 int i;
-  for(i = 0; i <= arr_size;i++){
+  for(i = 0; i < arr_size;i++){
     memset(arg[i],0,str_size);
   }
 }
@@ -161,6 +162,18 @@ int result = 0;
 // NOTE: The sys.execute variable flags are set by any process, step or serial interrupts, pinouts,
 // limit switches, or the main program.
 void protocol_execute_runtime(){
+  unsigned int pending = Serial_TakeRealtime();
+  if(pending & EXEC_RESET){
+    Reset_Ring();
+    mc_reset();
+    pending &= ~EXEC_RESET;
+  }
+  //the Timer1 ISR has already stopped the drivers
+  if(Limits_TakeEvent()){
+    mc_reset();
+    sys.execute |= EXEC_CRIT_EVENT;
+  }
+  sys.execute |= pending;
   if (sys.execute) { // Enter only if any bit flag is true
     int rt_exec = sys.execute; // Avoid calling volatile multiple times
 
@@ -176,9 +189,11 @@ void protocol_execute_runtime(){
         report_feedback_message(MESSAGE_CRITICAL_EVENT);
         bit_false(sys.execute,EXEC_RESET); // Disable any existing reset
         do {
-          // Nothing. Block EVERYTHING until user issues reset or power cycles. Hard limits
-          // typically occur while unattended or not paying attention. Gives the user time
-          // to do what is needed before resetting, like killing the incoming stream.
+          Ethernet_Transport_Poll(); // a TCP host's Ctrl-X arrives through here
+          if(Serial_TakeRealtime() & EXEC_RESET){
+            Reset_Ring();
+            mc_reset();
+          }
         } while (bit_isfalse(sys.execute,EXEC_RESET));
 
       // Standard alarm event. Only abort during motion qualifies.
@@ -205,7 +220,9 @@ void protocol_execute_runtime(){
 
     // Initiate stepper feed hold
     if (rt_exec & EXEC_FEED_HOLD) {
-      //st_feed_hold(); // Initiate feed hold.
+      //moves complete at once for now, so only an idle machine can be held
+      // TODO(DDS): in a cycle, decelerate to a stop and then report Hold:0.
+      if (sys.state == STATE_IDLE) sys.state = STATE_HOLD;
       bit_false(sys.execute,EXEC_FEED_HOLD);
     }
 
@@ -217,7 +234,9 @@ void protocol_execute_runtime(){
     }
 
     if (rt_exec & EXEC_CYCLE_START) {
-      //st_cycle_start(); // Issue cycle start command to stepper subsystem
+      //resume from M0 or '!'
+      // TODO(DDS): restart the held motion instead of going idle.
+      if (sys.state == STATE_HOLD) sys.state = STATE_IDLE;
       if (bit_istrue(settings.flags,FLAG_AUTO_START)) {
         sys.auto_start = true; // Re-enable auto start after feed hold.
       }
@@ -237,7 +256,7 @@ void protocol_system_check(){
     // reset to finish the initialization process.
   if (sys.abort) {
       // Reset system.
-      //serial_reset_read_buffer(); // Clear serial read buffer
+      Reset_Ring();
       //plan_init(); // Clear block buffer and planner variables
       //gc_init(); // Set g-code parser to default state
       //protocol_init(); // Clear incoming line data and execute startup lines
@@ -253,6 +272,8 @@ void protocol_system_check(){
       // Reset system variables.
       sys.abort = 0;
       sys.execute = 0;
+      startup = 0;
+      report_init_message();
       if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) { sys.auto_start = true; }
 
       // Check for power-up and set system alarm if homing is enabled to force homing cycle
@@ -281,97 +302,47 @@ void protocol_system_check(){
 //         NEW GCODE LINE INTERPRETER            //
 ///////////////////////////////////////////////////
 int Sample_Gocde_Line(){
-int dif,state;
-  //read head and tail pointer difference
-  //if there is a difference then process line
-  dif = 0;
-  dif = Get_Difference();
-  if(dif <= 0){
-     //check for '?' status reporting query DMA uses pattern match
-     //at startup the pattern match is set to ? for startup msg
-     //once startup msg has been sent pattern match changes to '\n'
-     //after which a test is needed on recieve buffer to indicate
-     //that a char has been recieved without a pattern, once the
-     //if the char '?' matches we condition the protocol report and
-     //reset the DMA pointers back to the start indices
-     if(DMA0_ReadDstPtr()){
-      char *ptr = (char*)RXBUFF;
-       if(*ptr == '?' || *ptr == '~' || *ptr == '!' || *ptr == 0x18){
-         Do_Critical_Msg(*ptr);
-         DMA_Abort(0);
-         //DCH0DAT  = '\n'; //to ensure this is not changed??
-       }
-     }
-  }else{
-   char str[64];
-   int msg_type= 0;
-   int modal_response = 0;
-    state = STATUS_OK;
-    
-    //reset the string to empty
-    Str_clear(str,64);
-    
-    //get the line sent from PC
-    Get_Line(str,dif);
-
-    //test is startupmsg has been sent
-    if(bit_isfalse(startup,bit(START_MSG))){
-        Do_Startup_Msg(str,dif);
-        return STATUS_OK;
-    }
-
-    //? cannot be used with '\n'
-    if(str[0] == '?')return state;
-     
-    //a messages after firmware query '?'
-    state = Check_Query_Type(str,dif);
-
-    //if msg_type == 20 then run gcode function
-    if(state == STATUS_COMMAND_EXECUTE_MOTION){
-      state = Do_Gcode(str,dif);
-      modal_response = Check_group_multiple_violations();
-      #if ProtoDebug == 26
-      while(DMA_IsOn(1));
-      dma_printf("state:= %d\n",state);
-      #endif
-    }
+  char str[LINE_BUFFER_SIZE];
+  int state, dif, result;
+  result = Serial_ReadLine(str);
+  if(result == SERIAL_LINE_NONE) return STATUS_OK;
+  if(result == SERIAL_LINE_TOO_LONG || result == SERIAL_LINE_RX_ERROR){
+    report_status_message(result == SERIAL_LINE_TOO_LONG ? STATUS_LINE_OVERFLOW : STATUS_SERIAL_RX_ERROR);
+    return STATUS_OK;
   }
-  return state;
+  if(sys.abort || (sys.execute & EXEC_RESET)) return STATUS_NO_REPORT;
+  dif = strlen(str);
+  if(dif == 0){
+    report_status_message(STATUS_OK);
+    return STATUS_OK;
+  }
+  if(str[0] == '$'){
+    Check_Query_Type(str,dif);
+    return STATUS_NO_REPORT;
+  }
+  if(sys.state == STATE_ALARM){
+    report_status_message(STATUS_ALARM_LOCK);
+    return STATUS_NO_REPORT;
+  }
 
-}
-
-////////////////////////////////////////////////////////
-//on startup look for a ? char to setup pattern match 
-//from ? to \n
-static void Do_Startup_Msg(char *str_,int dif_){
-char *temp_str = str_;//if more than 6 chars sent here ????
-int i;
- //find ? at startup if it exists set startup bit 0
- for(i = 0;i <= dif_;i++){
-    if(temp_str[i] == '?'){
-     bit_true(startup,bit(START_MSG));
-     report_init_message();
-     break;
-    }
- }
- DCH0DAT = '\n';
- SV.homed = false; //release homed
-}
-
-/////////////////////////////////////////////////////
-//critical execution messages
-static void Do_Critical_Msg(char ch_){
-  #if ProtoDebug == 21
+  //exactly one reply per line: errors and check mode reply here, accepted
+  //lines reply from main once they have been executed
+  state = Do_Gcode(str,dif);
+  #if ProtoDebug == 26
   while(DMA_IsOn(1));
-  dma_printf("%c\n",ch_);
+  dma_printf("state:= %d\n",state);
   #endif
-  switch(ch_){
-    case CMD_STATUS_REPORT: sys.execute |= EXEC_STATUS_REPORT; break; // Set as true
-    case CMD_CYCLE_START:   sys.execute |= EXEC_CYCLE_START; break; // Set as true
-    case CMD_FEED_HOLD:     sys.execute |= EXEC_FEED_HOLD; break; // Set as true
-    case CMD_RESET:         mc_reset(); break; // Call motion control reset routine.
-    default: break;
+  if(state != STATUS_OK || sys.state == STATE_CHECK_MODE){
+    report_status_message(state);
+    G_Begin_Block();
+    return STATUS_NO_REPORT;
   }
+  return STATUS_COMMAND_EXECUTE_MOTION;
+}
+
+static int Machine_Busy(){
+  return (sys.state == STATE_CYCLE || sys.state == STATE_HOLD ||
+          sys.state == STATE_HOMING || sys.state == STATE_JOG);
 }
 
 ///////////////////////////////////////////////////
@@ -379,14 +350,22 @@ static void Do_Critical_Msg(char ch_){
 static int Check_Query_Type(char *str_,int dif_){
 int query;
 int helper_var;
-int status;
+int status = STATUS_OK;
     #if ProtoDebug == 24
     while(DMA_IsOn(1));
     dma_printf("dif:=%d\n%s\n",dif_,str_);
     #endif
    if(str_[0] == '$'){
+       // single letter commands take nothing after the letter, as in Grbl
        switch(str_[1]){
-         case '\r' :case '\n' : 
+         case '$': case '#': case 'G': case 'C': case 'X': case 'H': case 'I':
+              if(str_[2] != 0){
+                 report_status_message(STATUS_INVALID_STATEMENT);
+                 return STATUS_INVALID_STATEMENT;
+              }
+       }
+       switch(str_[1]){
+         case '\0': case '\r' :case '\n' :
                report_grbl_help(); 
                status = STATUS_OK;
                break;
@@ -414,8 +393,9 @@ int status;
                 if ( sys.state == STATE_CHECK_MODE ) {
                   mc_reset();
                   report_feedback_message(MESSAGE_DISABLED);
+                } else if (sys.state) {
+                  status = STATUS_IDLE_ERROR;
                 } else {
-                  if (sys.state) { status = STATUS_IDLE_ERROR; }
                   sys.state = STATE_CHECK_MODE;
                   report_feedback_message(MESSAGE_ENABLED);
                 }
@@ -429,6 +409,11 @@ int status;
               status = STATUS_OK;
               break;
          case 'H' : // Perform homing cycle $H
+               #ifndef STEP_ENGINE_READY
+               // TODO(DDS): homing needs real motion, enable with STEP_ENGINE_READY.
+               status = STATUS_UNSUPPORTED_STATEMENT;
+               break;
+               #else
                status = STATUS_OK;
                if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
                 int axis_to_home = 0;
@@ -456,19 +441,19 @@ int status;
                   status = STATUS_SETTING_DISABLED;
                   break;
                }
-               //if we have made it this far we need to reset
-               //SV.Tog to prepare for ok response
-               SV.homed = true;
+               //ok is sent by main when the homing cycle completes
+               sys.state = STATE_HOMING;
+               status = STATUS_NO_REPORT;
                break;
+               #endif
          case 'N' : // Startup lines. $N
                if ( str_[2] < 0x20 ) { // Print startup lines
                   for (helper_var=0; helper_var < N_STARTUP_LINE; helper_var++) {
                     if ((settings_read_startup_line(helper_var, str_))) {
-                      report_status_message(STATUS_SETTING_READ_FAIL);
-                    } else {
-                      report_startup_line(helper_var,str_);
-                      status = STATUS_OK;
+                      status = STATUS_SETTING_READ_FAIL;
+                      break;
                     }
+                    report_startup_line(helper_var,str_);
                    #if ProtoDebug == 6
                    while(DMA_IsOn(1));
                    dma_printf("str[%d]:= %s\n",helper_var,str_);
@@ -482,7 +467,7 @@ int status;
                   //extract the value from the string if = is at [2]
                   //[        $  n  =  *value-str ]
                   //[$n=val [0][1][2] *[3]      ]
-                   if ( str_[2] >= '0'  &&  str_[2] <= '9' ) {
+                   if ( str_[2] >= '0'  &&  str_[2] < '0' + N_STARTUP_LINE ) {
                     char num[] = "0";
                       //extract num char into string
                       num[0] = str_[2];
@@ -494,7 +479,7 @@ int status;
                       #endif
 
                    }else {
-                      query = 2; //STATUS_BAD_NUMBER_FORMAT;
+                      status = STATUS_BAD_NUMBER_FORMAT;
                       break;
                    }
                    //$Nn\r\n leads to gocde execute startup line, providng it
@@ -502,6 +487,8 @@ int status;
                    if (helper_var) { // Store startup line
                      int str_len = 0;
                        if(str_[3] != '='){
+                         // TODO: $Nn alone could run startup line n; Grbl only accepts $Nn=line
+                         status = STATUS_INVALID_STATEMENT;
                          // Prepare sending gcode block back to gcode parser
                          // Set helper variable as counter to start of gcode block
                          helper_var = strlen((str_));
@@ -527,53 +514,67 @@ int status;
                          #endif
 
                          // Prepare saving gcode block to line number 0 | 1
-                         settings_store_startup_line(N_Val,str_+4);
+                         if(Machine_Busy())
+                            status = STATUS_IDLE_ERROR;
+                         else if(settings_store_startup_line(N_Val,str_+4))
+                            status = STATUS_SETTING_READ_FAIL;
                        }
 
                     }
                }
+               break;
+         case 'I' : // Print build info (Grbl 1.1)
+               report_build_info();
                status = STATUS_OK;
                break;
-         case '0': case '1': case '2': case'3':  case '4': case '5':
-         case '6': case '7': case '8': case '9':
-               //extract the value from the string if = is at [2]
-               //[        $  n  =  *value-str ]
-               //[$n=val [0][1][2] *[3]      ]
-               if((str_[2] == '=')||(str_[3] == '=')){
-                 char str_val[9]={0};
-                 int N_Val = 0;
-                 float value = 0.00;
-                 if(str_[2] == '='){
-                    //$n < 10
-                    strncpy(str_val,(str_+1),1);
-                    if(isdigit(str_val[0])){N_Val = atoi(str_val);}
-                    strncpy(str_val,(str_+3),strlen((str_+3)));
-                 }else if(str_[3] == '='){
-                    //$n >= 10
-                    strncpy(str_val,(str_+1),2);
-                    if(isdigit(str_val[0])){N_Val = atoi(str_val);}
-                    memset(str_val,0,9);
-                    strncpy(str_val,(str_+4),strlen((str_+4)));
-                 }
-                 //check if 1st char is a digit if not value extraction
-                 //failed and result will be 0.0 !!! report status bad number
-                 if((value < 0.0) || (!isdigit(str_val[0]))){
-                     status = STATUS_UNSUPPORTED_STATEMENT;
-                 }
-                 value = atof(str_val);
-                 #if ProtoDebug == 21
-                 while(DMA_IsOn(1));
-                 dma_printf("%d\t%s\t%f\n",N_Val,str_val,value);
-                 #endif
-                 settings_store_global_setting(N_Val,value);
-                 status = STATUS_OK;
+         case 'J' : // TODO: $J= jogging, parse as a G1 block and run it as STATE_JOG.
+               status = STATUS_UNSUPPORTED_STATEMENT;
+               break;
+         case 'R' : // $RST=$ defaults, $RST=# offsets, $RST=* everything
+               if(strncmp(str_+1,"RST=",4)){
+                  status = STATUS_INVALID_STATEMENT;
+                  break;
+               }
+               switch(str_[5]){
+                  case '$': helper_var = SETTINGS_RESTORE_DEFAULTS;   break;
+                  case '#': helper_var = SETTINGS_RESTORE_PARAMETERS; break;
+                  case '*': helper_var = SETTINGS_RESTORE_ALL;        break;
+                  default : helper_var = 0;                           break;
+               }
+               if(!helper_var){
+                  status = STATUS_INVALID_STATEMENT;
+               }else if(Machine_Busy()){
+                  status = STATUS_IDLE_ERROR;
+               }else if(settings_restore(helper_var)){
+                  status = STATUS_SETTING_READ_FAIL;
+               }else{
+                  status = STATUS_OK;
                }
                break;
-       }
-       //report on status messages
-      // if(status != STATUS_OK)
-      if(!SV.homed)
-          report_status_message(status);
+         case '0': case '1': case '2': case'3':  case '4': case '5':
+         case '6': case '7': case '8': case '9': {
+               // $n=value, n may be 1..3 digits (Grbl 1.1 numbering)
+               char *eq = strchr(str_,'=');
+               if((eq == 0) || (!isdigit(eq[1]) && eq[1] != '.' && eq[1] != '-')){
+                  status = STATUS_BAD_NUMBER_FORMAT;
+               }else if(Machine_Busy()){
+                  status = STATUS_IDLE_ERROR;
+               }else{
+                  int N_Val = atoi(str_+1);
+                  float value = atof(eq+1);
+                  #if ProtoDebug == 21
+                  while(DMA_IsOn(1));
+                  dma_printf("%d\t%f\n",N_Val,value);
+                  #endif
+                  status = settings_store_grbl_setting(N_Val,value);
+               }
+               break;
+         }
+         default:
+               status = STATUS_INVALID_STATEMENT;
+               break;
+       }       //report on status messages
+      report_status_message(status);
           
       return status;
    }else{
@@ -583,76 +584,108 @@ int status;
 }
 
 
-static int Do_Gcode(char str_[64],int dif_){
-char temp[9];
-float XYZ_Val = 0.0;
-int i,j,num_of_strings,mode,flow,status;
-int  Val = 0;
-//int axis_to_run = 0;
+// Splits a line into upper case words (letter + number) in gcode[], dropping
+// spaces, (comments) and ; comments. Returns the word count, -1 if malformed.
+static int gcode_words(char *line){
+int n = 0, k = 0, in_comment = 0;
+char ch;
+  Str_Initialize(gcode);
+  while((ch = *line++) != 0){
+    if(in_comment){
+      if(ch == ')') in_comment = 0;
+      continue;
+    }
+    if(ch == '(') { in_comment = 1; continue; }
+    if(ch == ';') break;
+    if(ch == ' ' || ch == '\t') continue;
+    ch = toupper(ch);
+    if(ch >= 'A' && ch <= 'Z'){
+      if(n >= arr_size) return -1;
+      k = 0;
+      gcode[n++][k++] = ch;
+    }else if(n && (isdigit(ch) || ch == '.' || ch == '-' || ch == '+')){
+      if(k >= str_size-1) return -1;
+      gcode[n-1][k++] = ch;
+    }else{
+      return -1;
+    }
+  }
+  return n;
+}
 
-   //split up the line into string array using SPC seperator
-   num_of_strings = strsplit2(gcode,str_,0x20);
+// Parses one block. G and M words are applied before the value words, so
+// G20/G21 converts the block's own values whatever the word order. The first
+// error is kept, and a rejected block restores the parser state it changed.
+static int Do_Gcode(char *str_,int dif_){
+float XYZ_Val;
+int i,pass,num_of_strings,Val,st,is_mode;
+int err = STATUS_OK;
+char *num;
+
+   G_Begin_Block();
+   G_Save_State();
+   num_of_strings = gcode_words(str_);
+   if(num_of_strings < 0) return STATUS_EXPECTED_COMMAND_LETTER;
    #if ProtoDebug == 27
    while(DMA_IsOn(1));
    dma_printf("no_of_strings:= %d\n",num_of_strings);
    #endif
+   for(pass=0; pass < 2; pass++)
    for(i=0; i < num_of_strings; i++){
-     j = cpy_val_from_str(temp,gcode[i],1,strlen(gcode[i]));
-     switch(gcode[i][0]){
-        case 'G':case'g':
-           if(j < 3){ //G00 - G99
-            Val = atoi(temp);
-             //Compensation for G28,G30 & G92 have other codes with
-             //decimal places, resulting in G280,G300 etc
-             if(Val == 28 || Val == 30 || Val == 92)
-                Val *= 10;
-           }else{
-            //G28.1,G30.1 & G92.1 resulting in G281,G301 etc
-             Val = (int)(atof(temp)*10.0);
-           }
-          mode = G_Mode(Val);
-          status = STATUS_OK;
-          #if ProtoDebug == 25
-          while(DMA_IsOn(1));
-          dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
-          #endif
+     is_mode = (gcode[i][0] == 'G' || gcode[i][0] == 'M');
+     if(is_mode != (pass == 0)) continue;
+     num = gcode[i]+1;
+     if(*num == 0){
+       st = STATUS_BAD_NUMBER_FORMAT;
+     }else{
+       st = STATUS_OK;
+       switch(gcode[i][0]){
+          case 'G':
+             //G28.1, G30.1 and G92.1 become 281, 301 and 921, whole codes
+             //G28, G30 and G92 become 280, 300 and 920
+             Val = (int)(atof(num)*10.0 + 0.5);
+             if(Val % 10 == 0){
+               Val /= 10;
+               if(Val == 28 || Val == 30 || Val == 92) Val *= 10;
+             }
+             G_Mode(Val);
+             st = GET_FAIL();
+             #if ProtoDebug == 25
+             while(DMA_IsOn(1));
+             dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
+             #endif
+             break;
+          case 'M':
+             M_Mode(atoi(num));
+             st = GET_FAIL();
+             break;
+          case 'X':case 'Y':case 'Z':case 'A':
+          case 'I':case 'J':case 'K':case 'R':case 'F':
+             XYZ_Val = atof(num);
+             st = Instruction_Values(gcode[i],&XYZ_Val);
+             #if ProtoDebug == 25
+             while(DMA_IsOn(1));
+             dma_printf("[%d][%s][%f][%d]\n",i,gcode[i],XYZ_Val,st);
+             #endif
+             break;
+          case 'P':case 'L':
+          case 'S': // TODO: S is also spindle speed, unused until the spindle is driven.
+             if(gcode[i][0] == 'P') gc.dwell = atof(num);
+             Val = atoi(num);
+             st = Instruction_Values(gcode[i],&Val);
+             break;
+          case 'N': // line numbers are accepted and ignored
+             break;
+          case 'T': // TODO: tool change needs a tool table and M6.
+          default:
+             st = STATUS_UNSUPPORTED_STATEMENT;
+             break;
+       }
+     }
+     if(err == STATUS_OK) err = st;
+   }
 
-           break;
-        case 'X':case 'x':case 'Y':case 'y':
-        case 'Z':case 'z':case 'A':case 'a':
-        case 'I':case 'i':case 'J':case 'j':
-        case 'K':case 'k':case 'F':case 'f':
-          status = STATUS_OK;
-          XYZ_Val = atof(temp);
-          status = Instruction_Values(gcode[i],&XYZ_Val);
-
-          if(gcode[i][0] == 'F' || gcode[i][0] == 'f')
-            status = STATUS_OK;
-          else
-            status = STATUS_COMMAND_EXECUTE_MOTION;
-            
-          #if ProtoDebug == 25
-          while(DMA_IsOn(1));
-          dma_printf("[%d][%s][%f][%d]\n",i,gcode[i],XYZ_Val,status);
-          #endif
-          break;
-        case 'P':case 'p':case 'L':case 'l':
-        case 'S':case 's':
-          Val = atoi(temp);
-          status = Instruction_Values(gcode[i],&Val);
-          break;
-       case 'M':case'm':
-          Val = atoi(temp);
-          flow = M_Mode(Val);
-          #if ProtoDebug == 25
-          while(DMA_IsOn(1));
-          dma_printf("%d [%s][%d]\n",i,gcode[i],Val);
-          #endif
-          status = STATUS_OK;
-          break;
-     }//switch
-   }//for
-
-  //return num of strings split for sanity checking
-  return status;
+  if(err == STATUS_OK) err = Check_group_multiple_violations();
+  if(err != STATUS_OK) G_Restore_State();
+  return err;
 }

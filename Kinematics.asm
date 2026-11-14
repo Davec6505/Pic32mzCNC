@@ -840,18 +840,18 @@ NOP
 ; end of _DualAxisStep
 _mc_arc:
 ;Kinematics.c,281 :: 		, float radius, char isclockwise){
-ADDIU	SP, SP, -84
+ADDIU	SP, SP, -88
 SW	RA, 0(SP)
 ; axis_1 start address is: 24 (R6)
-LH	R6, 84(SP)
+LH	R6, 88(SP)
 ; axis_linear start address is: 20 (R5)
-LH	R5, 86(SP)
+LH	R5, 90(SP)
 ; invert_feed_rate start address is: 32 (R8)
-LBU	R8, 88(SP)
+LBU	R8, 92(SP)
 ; isclockwise start address is: 36 (R9)
-LBU	R9, 89(SP)
+LBU	R9, 93(SP)
 ;Kinematics.c,282 :: 		float arc_target[3] = {0};
-ADDIU	R23, SP, 72
+ADDIU	R23, SP, 76
 ADDIU	R22, R23, 12
 LUI	R24, hi_addr(?ICSmc_arc_arc_target_L0+0)
 ORI	R24, R24, lo_addr(?ICSmc_arc_arc_target_L0+0)
@@ -916,7 +916,7 @@ SUB.S 	S0, S0, S1
 ; linear_travel start address is: 24 (R6)
 MOV.S 	S3, S0
 ;Kinematics.c,298 :: 		arc_target[axis_linear] = position[axis_linear];
-ADDIU	R2, SP, 72
+ADDIU	R2, SP, 76
 ADDU	R2, R2, R3
 SWC1	S1, 0(R2)
 ;Kinematics.c,305 :: 		x = r_axis0*rt_axis1-r_axis1*rt_axis0;
@@ -1110,7 +1110,7 @@ MOV.S 	S17, S0
 ; sin_T start address is: 128 (R32)
 MOV.S 	S16, S2
 ;Kinematics.c,366 :: 		nPx = arc_target[axis_0] = position[axis_0];
-ADDIU	R4, SP, 72
+ADDIU	R4, SP, 76
 SEH	R2, R28
 SLL	R2, R2, 2
 ADDU	R3, R4, R2
@@ -1221,8 +1221,7 @@ SWC1	S12, 8(SP)
 MOV.S 	S12, S0
 JAL	_cos+0
 NOP	
-; cos_Ti start address is: 40 (R10)
-MOV.S 	S5, S0
+SWC1	S0, 72(SP)
 ;Kinematics.c,396 :: 		sin_Ti = sin(i*theta_per_segment);
 MUL.S 	S0, S20, S19
 MOV.S 	S12, S0
@@ -1237,8 +1236,9 @@ ADDU	R2, R27, R2
 LWC1	S4, 0(R2)
 MOVZ	R2, R0, R0
 MTC1	R2, S1
-SUB.S 	S1, S1, S4
-MUL.S 	S3, S1, S5
+SUB.S 	S2, S1, S4
+LWC1	S1, 72(SP)
+MUL.S 	S3, S2, S1
 SEH	R2, R6
 SLL	R2, R2, 2
 ADDU	R2, R27, R2
@@ -1252,8 +1252,8 @@ MOVZ	R2, R0, R0
 MTC1	R2, S1
 SUB.S 	S1, S1, S4
 MUL.S 	S1, S1, S0
-MUL.S 	S0, S2, S5
-; cos_Ti end address is: 40 (R10)
+LWC1	S0, 72(SP)
+MUL.S 	S0, S2, S0
 SUB.S 	S0, S1, S0
 ; r_axis1 start address is: 192 (R48)
 MOV.S 	S24, S0
@@ -1269,7 +1269,7 @@ L_mc_arc40:
 ; count start address is: 28 (R7)
 ; r_axis1 start address is: 192 (R48)
 ; r_axis0 start address is: 200 (R50)
-ADDIU	R4, SP, 72
+ADDIU	R4, SP, 76
 SEH	R2, R28
 SLL	R2, R2, 2
 ADDU	R2, R4, R2
@@ -1662,7 +1662,7 @@ LH	R28, 4(SP)
 ;Kinematics.c,477 :: 		}
 L_end_mc_arc:
 LW	RA, 0(SP)
-ADDIU	SP, SP, 84
+ADDIU	SP, SP, 88
 JR	RA
 NOP	
 ; end of _mc_arc
@@ -1764,9 +1764,9 @@ ORI	R2, R2, lo_addr(Kinematics_homing+0)
 ADDU	R2, R2, R3
 ADDIU	R2, R2, 2
 SH	R0, 0(R2)
-;Kinematics.c,525 :: 		EnableStepper(axis);//sort this out
+;Kinematics.c,525 :: 		EnableSteppers();
 SH	R25, 4(SP)
-JAL	_EnableStepper+0
+JAL	_EnableSteppers+0
 NOP	
 LH	R25, 4(SP)
 ;Kinematics.c,528 :: 		sys.state = STATE_HOMING;
@@ -2216,8 +2216,8 @@ SH	R2, Offset(_sys+26)(GP)
 ;Kinematics.c,702 :: 		disableSpindleOCx(); // Execute alarm force kills steppers. Position likely lost.
 JAL	_disableSpindleOCx+0
 NOP	
-;Kinematics.c,703 :: 		DisableStepper();
-JAL	_DisableStepper+0
+;Kinematics.c,703 :: 		DisableSteppers();
+JAL	_DisableSteppers+0
 NOP	
 ;Kinematics.c,704 :: 		ResetHoming();
 JAL	Kinematics_ResetHoming+0

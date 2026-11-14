@@ -131,6 +131,10 @@
 
 //Errors form flash writes
 #define NVM_COORDINATE_WRITE_ERROR 1
+//WR still set after the bounded wait (WRERR/LVDERR use 1..3)
+#define NVM_WR_TIMEOUT_ERROR 4
+//WR poll limit, several hundred ms at 200MHz, well past the 20ms page erase
+#define NVM_WR_TIMEOUT 20000000UL
 
 
 

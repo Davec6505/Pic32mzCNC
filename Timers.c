@@ -14,18 +14,16 @@ void InitTimer1(){
   Clock = ClockPulse;
 //count 1sec pulses to a predefined value to reset steppers
   TMR.Reset = ResetSteppers;
-//TMR1 setup to 10ms clock
-  T1CON         = 0x8010;
-  //PRIORITY 6 SUB-PRIORTY 2
-  IPC1SET       = 0x1A;
-  //SET IE FLAG
-  IEC0       |= 1<<4;
-  //CLEAR IF FLAG
-  IFS0       |= ~(1<<4);
-
+//TMR1 setup to 10ms clock: PBCLK3 50MHz / 8 = 6.25MHz, PR1 62500
+  T1CON         = 0x0010;   //off, 1:8 prescaler
   PR1           = 62500;
   TMR1          = 0;
-  
+  //PRIORITY 6 SUB-PRIORTY 2
+  IPC1CLR       = 0x1F;
+  IPC1SET       = 0x1A;
+  IFS0CLR       = 1<<4;
+  IEC0SET       = 1<<4;
+  T1CONSET      = 0x8000;   //on
 }
 
 
@@ -33,9 +31,10 @@ void InitTimer1(){
 //interpolation no longer used to interpolate
 void InitTimer8(){
   T8CON            = 0x0000;
+  //PRIORITY 7, the highest: step timing comes before everything else
   T8IP0_bit        = 1;
   T8IP1_bit        = 1;
-  T8IP2_bit        = 0;
+  T8IP2_bit        = 1;
   T8IS0_bit        = 0;
   T8IS1_bit        = 1;
  // IEC0             = 1<<4;
@@ -63,16 +62,16 @@ void Timer8CallbackInitialize(void (*callback)()){
 /*
  * ISR for Timer interrupts
 */
-//TMR 1 as a 10ms clock pulse ???
+//TMR 1: 10 ms clock pulses and limit sampling, priority 6
 void Timer1Interrupt() iv IVT_TIMER_1 ilevel 6 ics ICS_SRS {
   T1IF_bit  = 0;
-  //Enter your code here
   Clock();
+  Limits_Sample();
 }
 
 
 // TMR 8 interrupts
-void Timer8Interrupt() iv IVT_TIMER_8 ilevel 3 ics ICS_SRS {
+void Timer8Interrupt() iv IVT_TIMER_8 ilevel 7 ics ICS_SRS {
 //Enter your code here
   T8IF_bit  = 0;
   if(DDS_Tick) DDS_Tick();
@@ -117,7 +116,7 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
       TMR.P2 = 1;
       TMR.disable_cnt++;
       if(TMR.disable_cnt > sec_to_disable){
-          DisableStepper();
+          DisableSteppers();
       }
    }else if(!TMR.P1 && TMR.P2)
       TMR.P2 = 0;

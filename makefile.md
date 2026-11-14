@@ -5,6 +5,14 @@ These findings are intended for the VS Code plugin that generated the
 GNU Make from MSYS2, Windows PowerShell, and MikroC PRO for PIC32. They are
 not a claim that the same quoting works with every shell or compiler version.
 
+## Local compiler help
+
+[MikroC PRO for PIC32 help](<file:///C:/Users/Public/Documents/Mikroelektronika/mikroC PRO for PIC32/mikroC_PRO_PIC32.chm>)
+
+The link points to the locally installed compiler documentation. VS Code does
+not render CHM files; use **Terminal > Run Task > Open MikroC PIC32 Help** to
+open it in Windows HTML Help.
+
 ## The slow-build problem
 
 The original generated Makefile took about 162 seconds to build this 16-file

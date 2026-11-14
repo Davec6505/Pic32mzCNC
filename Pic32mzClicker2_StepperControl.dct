@@ -23094,6 +23094,9 @@ ddrmode
 ddrmode
 ddrmode_bit
 ddrmode_sqi1con_bit
+dds_axes
+dds_tick
+dds_tick
 debounce_limits
 debug
 debug
@@ -36546,7 +36549,6 @@ incomptx_usbe6csr0_bit
 incomptx_usbe6csr1_bit
 incomptx_usbe7csr0_bit
 incomptx_usbe7csr1_bit
-incrament_x
 init_protocol
 init1cmd1
 init1cmd10
@@ -43176,7 +43178,6 @@ off210bits
 off213
 off213bits
 offset
-old_phase
 on
 on
 on
@@ -44422,7 +44423,6 @@ pgl1way_ubadevcfg3_bit
 pglock
 pglock
 pglock_bit
-phase_x
 phyaddr
 phyaddr
 phyaddr
@@ -63181,6 +63181,9 @@ thsbt2_bit
 thsbt3
 thsbt3_bit
 timer1interrupt
+timer8_start
+timer8_stop
+timer8callbackinitialize
 timer8interrupt
 tmr
 tmr1
