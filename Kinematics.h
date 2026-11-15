@@ -21,9 +21,6 @@
 #define zero 0
 
 #define Direction(a) (((a) < (0))? (CCW_) : (CW_))
-//Bresenhams differential calculation
-#define BresIncVal(a) ((2)*(a))
-#define BresDiffVal(a,b) ((2)*((a) - (b)))
 
 /////////////////////////////////////////////////////////
 //       Direction of stepper motor movement           //
@@ -55,12 +52,6 @@
 #define BIT_HOME_COMPLETE bit(5)
 
 /////////////////////////////////////////////////////////
-//sbits and bit types
-extern char stepper_state;
-extern sfr stp_stopped;
-extern sfr stp_run;
-extern sfr stp_pause;
-
 /////////////////////////////////////////////////////////
 //Structs enums consts etc
 
@@ -71,10 +62,6 @@ unsigned int home_cnt;
 
 
 typedef struct Steps{
-  //! the master axis indicator
-  char master: 1;
-  //! Direction stepper motor should move.
-  unsigned short PLS_Step_ : 1;
   //! axis to stop 1st
   unsigned short stopAxis: 1;
   //! Track the direction of the axis for absolute value tracking
@@ -91,7 +78,6 @@ typedef struct Steps{
   long min_delay;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long accel_count;
-  long deccl_count;
   //! aaceleration and decelleration constants
   long acc;
   long dec;
@@ -99,12 +85,8 @@ typedef struct Steps{
   long step_count;
   //! Distance calculated to travel
   long dist;
-  //! if a change of speed is required from dir change or any other
-  long psingle;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long new_step_delay;
-  //! Counter used when accelerateing/decelerateing to calculate step_delay.
-  long last_accel_delay;
  //! Limit accelleration
  long accel_lim;
  // Limit the number of steps
@@ -135,6 +117,7 @@ static void Set_Axisdirection(long temp,int axis);
 
 //Move inline
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);//,int xyza);
+void MultiAxisStep(float *target,int axes,float speed);
 void SingleAxisStep(float newxyz,float speed,int axis_No);
 static void SingleAxisStart(long dist,float speed,int axis_No);
 
@@ -145,16 +128,9 @@ void mc_arc(float *position, float *target, float *offset, int axis_0,
 
 float hypot(float angular_travel, float linear_travel);
 
-//Directional values
-int GetAxisDirection(long mm2move);
-
-
 //homing cycle
-void ResetHoming();
 int Home(int axis);
 static void Home_Axis(double distance,float speed,int axis);
-static void Inv_Home_Axis(double distance,float speed,int axis);
-void mc_dwell(float sec);
 void mc_reset();
 
 

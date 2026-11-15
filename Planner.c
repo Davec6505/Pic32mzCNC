@@ -26,7 +26,6 @@ void plan_init(float accel,float decel){
 long i = 0;
  for(i = 0; i < NoOfAxis; i++){
 
- //for(i = 0; i < NoOfAxis; i++){
   STPS[i].acc = lround(accel);
   STPS[i].dec = lround(decel);
  }
@@ -77,13 +76,11 @@ float Get_Step_Rate(float speed,int axis){
  *
  ***********************************************************************/
 void speed_cntr_Move(long mmSteps, float speed, int axis_No){
-int ii;
 float temp_speed,max_s_limit;
-static float last_speed;
 long abs_mmSteps = labs(mmSteps);
+long n_start = 0;
 
-  //set the bit that indicates when axis has stopped stopped
-  //this send UGS OK once all axis are stopped.
+  //Mark this axis active until the last step.
   bit_true(SV.mode_complete,bit(axis_No));
   
   // speed is in rpm ~ need to convert tp pps / steprate
@@ -93,22 +90,14 @@ long abs_mmSteps = labs(mmSteps);
   // If moving only 1 step then set accel counter
   // and run state to decellerate -ve acc count value
   // is for addition to step couter.
-  if(mmSteps == 1){
+  if(abs_mmSteps == 1){
     STPS[axis_No].accel_count = -1;        // Move one step...
     STPS[axis_No].run_state = DECEL;       // ...in DECEL state.
     STPS[axis_No].step_delay = 10000;      // Just a short delay so main() can act on 'running'.
-    SV.running = 1;                        // start running
-
   }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
-    //if the motor is still moving at time of recalculating then use difference
-    //still need to figure out if we should be doing this gcode is ususlly specific
-    //to finnishing a move before starting a next!!!!
-    
-    //dly = (Vlast - Vcur) / (2 . a)
-   if(STPS[axis_No].run_state != STOP)
-        temp_speed = last_speed - speed;
-    else
-        temp_speed = speed;
+    //every move starts from rest until the planner supplies entry speeds.
+    //the formulas below work in 0.01*rad/sec, Get_Step_Rate gives steps/sec
+    temp_speed = speed * alpha[axis_No] * 100.0;
         
     // Only move if number of steps to move is not zero.
     // Set max speed limit, by calc min_delay to use in timer.
@@ -119,11 +108,16 @@ long abs_mmSteps = labs(mmSteps);
     // Set accelration by calc the first (c0) step delay .
     // step_delay = 1/T_Freq*sqrt(2*alpha/accel)
     // step_delay = ( T_Freq*0.676/100 ) * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-    STPS[axis_No].step_delay = labs((long)T1_FREQ_148 * ((sqrt_(a_sq[axis_No] / acc))/100));
+    //multiply before dividing by 100, sqrt_() alone is only ~60 at acc=5000
+    STPS[axis_No].step_delay = labs((long)(T1_FREQ_148 * sqrt_(a_sq[axis_No] / acc)) / 100);
     
-    if(STPS[axis_No].step_delay > minSpeed)
+    //StartUp_delay is the start/stop speed floor; decel ends on it too
+    if(STPS[axis_No].step_delay > minSpeed){
        STPS[axis_No].StartUp_delay = minSpeed;
-    else
+       //start the Taylor index at the n of the floor speed, n = w^2/(2.alpha.acc)
+       max_s_limit = a_t_x100[axis_No] / (float)minSpeed;
+       n_start = (long)((max_s_limit*max_s_limit)/((alpha[axis_No]*x20000*(float)acc)/100.00));
+    }else
        STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
     // max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
@@ -151,7 +145,7 @@ long abs_mmSteps = labs(mmSteps);
 
     // Use the limit we hit first to calc decel.
     if(STPS[axis_No].accel_lim < STPS[axis_No].max_step_lim){
-         STPS[axis_No].decel_val = STPS[axis_No].accel_lim - mmSteps;//-(abs_mmSteps - STPS[axis_No].max_step_lim);
+         STPS[axis_No].decel_val = STPS[axis_No].accel_lim - abs_mmSteps;
     }else{
          STPS[axis_No].decel_val = -((STPS[axis_No].max_step_lim * acc)/dec);
     }
@@ -181,9 +175,8 @@ long abs_mmSteps = labs(mmSteps);
 
   STPS[axis_No].step_count  = 0;
   STPS[axis_No].rest        = 0;
-  STPS[axis_No].accel_count = 1;
-  SV.running                = 1;
-  last_speed                = speed;
+  //accel_count is the step index n of the current speed (v^2 = 2.a.n)
+  STPS[axis_No].accel_count = n_start;
   
 //Debug for stepper report if not connected to unit
 #if PlanDebug == 1
@@ -401,11 +394,10 @@ dma_printf("\n\
 
 // Syncs all internal position vectors to the current system position.
 void sys_sync_current_position(){
- // plan_set_current_position(sys.position[X],sys.position[Y],sys.position[Z]);
   plan_set_current_position();
 }
 
-// Reset the planner position vector (in steps). Called by the system abort routine.
+//Sync the parser position in mm from the actual step counters.
 void plan_set_current_position(){
 int i = 0;
   for(i=0;i<NoOfAxis;i++)
@@ -416,13 +408,6 @@ while(DMA_IsOn(1));
 dma_printf("x:= %f\ty:= %f\tz:= %f\n",gc.position[X],gc.position[Y],gc.position[Z]);
 #endif
 
-}
-
-// Reset the planner position vector (in steps). Called by the system abort routine.
-void plan_reset_absolute_position(){
- int i = 0;
- for(i=0;i<NoOfAxis;i++)
-     STPS[X].steps_abs_position = 0;
 }
 
 ////////////////////////////////////////////////

@@ -7,7 +7,7 @@ understandable steps. Pic32mzCNC_V3 with XC32 remains the go-to CNC solution
 and a reference for desired behaviour. This work is on the `dds-motion`
 branch.
 
-## Current checkpoint
+## Earlier timer experiment
 
 - The old step-generation output-compare mappings and interrupt-driven motion
   code are being removed. Spindle PWM is deferred; OC8 is currently reserved
@@ -19,49 +19,11 @@ branch.
   prescaler, Timer8 has a 50 MHz input. `PR8 = 500` gives 501 counts, or
   approximately 10.02 microseconds per tick. `PR8 = 499` would give 500
   counts, or 10 microseconds, under those clock assumptions.
-- The experiment now stores the unsigned 32-bit phase, increment and previous
-  phase in `dds_axes[0]`. `dds_tick()` updates X on each Timer8 interrupt and
-  detects wraparound by comparing the new phase with the previous value:
-
-  ```c
-  dds_axes[0].old_phase = dds_axes[0].phase;
-  dds_axes[0].phase += dds_axes[0].incrament;
-  if (dds_axes[0].phase < dds_axes[0].old_phase) {
-    LED2 = !LED2;
-  }
-  ```
-
 - In the earlier experiment, the user observed a faint flicker at an increment
   of `42949637`, and a visible change of LED state approximately once per
   second with `42950`. This was a visual check, not an instrumented frequency
-  measurement. The current callback still toggles LED2; it does not generate
-  motor STEP pulses. The new array is initially zero and Timer8 is not started,
-  so the refactored experiment needs initialization before it will run.
-
-## Next coding session: X increment setter
-
-Add a setter in `Stepper.c` and declare it in `Stepper.h`, keeping Timer8
-start/stop separate from the stepper's DDS settings. For the first X-only
-experiment, the proposed setter is:
-
-```c
-void Stepper_SetXIncrement(uint32_t increment) {
-  dds_axes[X].incrament = increment;
-}
-```
-
-Set the increment to `42950` for the previous approximately one-overflow-per-
-second LED test, then call `Timer8_Start()` after the callback has been
-registered. Perform the initial setup before global interrupts are enabled.
-Changing the increment does not itself start the timer. Verify the LED
-behavior after the refactor; it has not yet been confirmed on hardware.
-
-For later updates while the timer is running, agree on ownership and protect
-related shared-state changes from the ISR; `volatile` alone does not make
-multiple field updates atomic. `Timer8_Stop()` currently only stops the timer;
-it does not disable its interrupt or clear a pending interrupt flag.
-The previous phase could also become a local variable inside `dds_tick()`,
-because it is only needed during one tick.
+  measurement. That LED experiment has since been replaced by the STEP
+  engine described below.
 
 ## DDS concepts learned
 
@@ -84,19 +46,33 @@ Do not reset the phase after each overflow: unsigned wraparound retains the
 remainder and therefore preserves the intended average rate. Phase may be
 initialized once at the start of a test for a predictable initial state.
 
-## Next steps
+## Hardware checks
 
 1. Verify the timer tick and event rate with a scope or logic analyser if
    available.
-2. Design a single-axis STEP pulse with explicit high and low times. A DDS
-   overflow schedules a step; toggling a pin on each overflow alone is not a
-   complete STEP pulse.
-3. Keep the driver disabled or disconnected while checking the signal. Check
+2. Keep the driver disabled or disconnected while checking the signal. Check
    the driver's STEP pulse width and direction setup/hold requirements before
    connecting it. Ensure the STEP output starts low.
-4. Add exact step counts and stopping before exploring coordinated axes and
-   acceleration.
+3. Check step counts and coordinated motion, and measure worst-case ISR time.
 
-The old motion path has not yet been replaced by DDS. Do not treat this
-checkpoint as a working CNC controller; spindle control and motion safety
-remain to be developed and verified.
+## Interim engine (plumbed in, untested on hardware)
+
+Steps 2 and 4 are now in `Stepper.c`. `dds_tick()` runs every 10 us in the
+Timer8 interrupt:
+
+- `dds_master` holds the single phase accumulator; per-axis state is in
+  `STPS[]`, and per-follower Bresenham errors are in `eng_err[]`.
+- It clears all STEP pins, so each pulse is high for one tick (10 us). The
+  maximum rate is one step every two ticks, 50 kHz.
+- It adds the master axis increment to the phase accumulator. On overflow it
+  raises the master STEP pin and counts the step.
+- It steps up to three follower axes with separate Bresenham errors (`eng_err`).
+- It calls `Pulse()`, the Austin/AVR446 ramp, and converts the new
+  `step_delay` into the next increment (`Dds_Increment`, integer only).
+- When the master reaches its step count, it stops all moving axes.
+
+`Start_Interpolation()` starts a move, `Stepper_Abort()` stops it at once
+(reset or hard limit), and `Stepper_Busy()` reports a running move. The old
+motion path now uses this engine. Homing stays disabled behind `HOMING_READY`
+until it is reworked. Do not treat this as a working CNC controller; spindle
+control and motion safety remain to be developed and verified.

@@ -237,7 +237,7 @@ void protocol_execute_runtime(){
       //resume from M0 or '!'
       // TODO(DDS): restart the held motion instead of going idle.
       if (sys.state == STATE_HOLD) sys.state = STATE_IDLE;
-      if (bit_istrue(settings.flags,FLAG_AUTO_START)) {
+      if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) {
         sys.auto_start = true; // Re-enable auto start after feed hold.
       }
       bit_false(sys.execute,EXEC_CYCLE_START);
@@ -409,13 +409,13 @@ int status = STATUS_OK;
               status = STATUS_OK;
               break;
          case 'H' : // Perform homing cycle $H
-               #ifndef STEP_ENGINE_READY
-               // TODO(DDS): homing needs real motion, enable with STEP_ENGINE_READY.
+               #ifndef HOMING_READY
+               // TODO(DDS): rework homing for the DDS engine, then define HOMING_READY.
                status = STATUS_UNSUPPORTED_STATEMENT;
                break;
                #else
                status = STATUS_OK;
-               if (bit_istrue(settings.flags,FLAG_HOMING_ENABLE)) {
+               if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) {
                 int axis_to_home = 0;
 
                   // Only perform homing if Grbl is idle or lost.

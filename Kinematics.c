@@ -4,29 +4,9 @@ const code double max_sizes[]={X_MAX_SIZE,Y_MAX_SIZE,Z_MAX_SIZE,A_MAX_SIZE,B_MAX
 
 
 
-//////////////////////////////////
-//FUNCTION POINTERS
-volatile void (*AxisPulse[3])();
-
-/////////////////////////////////
-//globals
-//char MyVar located int Config.h
-sbit stp_stopped at stepper_state.B0;
-sbit stp_run at stepper_state.B1;
-sbit stp_pause at stepper_state.B2;
-
-//////////////////////////////////
-//static file vars
-char txtA[] = " : ";
-char txtC[] =  "\r";
-char txtB[200];
-
-static long d2;
-
 //homing data
-//static unsigned int home_state = 0;
-//static unsigned int home_cnt = 0;
 static homing_t homing[NoOfAxis];
+static void ResetHoming();
 ///////////////////////////////////////////////////////
 //         INITIALIZE THE AXIS AND PLATFROM          //
 ///////////////////////////////////////////////////////
@@ -63,21 +43,9 @@ static void Set_Axisdirection(long temp,int axis){
 }
 
 
-/*single axis step rate may needs to be "doubled"?? in order
- *to compensate for the speed increase [due to no 2nd axis
- *interpolation], a possible solution is to use a dummy
- *axis. Increaseing the speed of single axis is slightly
- *more complicated than just doubling the spped, code
- *execution time for the 2nd axis needs to be considered
- *[still to be decided as to whether a dummy axis or speed
- *calculation should be used????]*/
-///////////////////////////////////////////////////////////
-//                SINGLE AXIS MOVEMENT                   //
-///////////////////////////////////////////////////////////
+//Retained for the disabled homing path; normal moves use MultiAxisStep.
 void SingleAxisStep(float newxyz,float speed,int axis_No){
-long  absxyz = 0;
 long  tempA  = 0;
-int   dir    = 0;
 
   //get rps from mm/min
   speed = RPS_FROM_MMPMIN(speed);
@@ -107,141 +75,64 @@ int   dir    = 0;
 }
 
 static void SingleAxisStart(long dist,float speed,int axis_No){
-long speed_ = 0;
-
   STPS[axis_No].dist =labs(dist);
-  Single_Axis_Enable(axis_No);
+  EnableSteppers();
   speed_cntr_Move(dist , speed, axis_No);
 
-//static long dist;
-    /* if(STPS[axis].psingle != newxyz)
-             STPS[axis].psingle = newxyz; */
    Set_Axisdirection(dist,axis_No);
    STPS[axis_No].axis_dir = Direction(dist);
-   SV.Single_Dual = 0;
-   STPS[axis_No].psingle  = 0;
-   STPS[axis_No].dist = labs(dist) - STPS[axis_No].psingle;
    STPS[axis_No].step_count = 0;
    STPS[axis_No].mmToTravel = dist;
-   //Start output compare module
-  // Step_Cycle(axis_No);
+   //start the DDS step engine
+   Start_Interpolation(axis_No,bit(axis_No));
 }
 
 //////////////////////////////////////////////////////////
 //         DUAL AXIS INTERPOLATION SECTION              //
 //////////////////////////////////////////////////////////
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed){
-long tempA,tempB,tempC;
-//int dirA,dirB;
+float target[NoOfAxis];
+  target[axisA] = axis_a;
+  target[axisB] = axis_b;
+  MultiAxisStep(target,bit(axisA) | bit(axisB),speed);
+}
 
-  //get rps from mm/min
-  speed = RPS_FROM_MMPMIN(speed);
- 
- //if absolute mode ~ newxyz = new_position - current_position
- if(gc.absolute_mode == true){
-   //get current position
-   tempA = belt_steps(axis_a,axisA);
-   tempB = belt_steps(axis_b,axisB);
-   
-  #if KineDebug == 4
-  while(DMA_IsOn(1));
-  dma_printf("\
-  tempA:= %l\tabsA:= %l\n\
-  tempB:= %l\tabsB:= %l\n"
-  ,tempA,STPS[axisA].steps_abs_position
-  ,tempB,STPS[axisB].steps_abs_position);
-  #endif
-  
-  //subtract new from current
-  tempA = tempA - STPS[axisA].steps_abs_position;
-  tempB = tempB - STPS[axisB].steps_abs_position;
-  
-  #if KineDebug == 4
-  while(DMA_IsOn(1));
-  dma_printf("tempAa:= %l\ttempBb:= %l\n"
-  ,tempA,tempB);
-  #endif
+//Targets are absolute in G90 and relative in G91.
+void MultiAxisStep(float *target,int axes,float speed){
+long distance[NoOfAxis];
+int i, master = -1, moving = 0;
 
- }else{
-   tempA = belt_steps(axis_a,axisA);
-   tempB = belt_steps(axis_b,axisB);
- }
- SV.over = 0;
- SV.dif  = 0;
-
-//Enable the relevant axis in Stepper.c
- SV.Single_Dual = 1;
- Single_Axis_Enable(axisA);
- Single_Axis_Enable(axisB);
- // Multi_Axis_Enable(xyza);
-  
- //if in abs mode prev must be cur pos
- if (!gc.absolute_mode){
-     SV.prevA = 0;
-     SV.prevB = 0;
-     SV.prevC = 0;
- }else{
-     SV.prevA = 0;//tempA;
-     SV.prevB = 0;//tempB;
-     SV.prevC = 0;//tempC;
- }
-
-  //set the direction counter for absolute position
-  Set_Axisdirection(tempA,axisA);
-  STPS[axisA].axis_dir = Direction(tempA);
-  Set_Axisdirection(tempB,axisB);
-  STPS[axisB].axis_dir = Direction(tempB);
-
-  //Delta distance to move
-  SV.dA   = tempA;// - SV.prevA;
-  SV.dB   = tempB;// - SV.prevB;
-  SV.dC   = tempC;// - SV.prevC;
-
-  //Remove -ve values
-  SV.dA = labs(SV.dA);
-  SV.dB = labs(SV.dB);
-
-#if KineDebug == 4
-while(DMA_IsOn(1));
-dma_printf("SV.dA:= %l\tSV.dB:= %l\n",SV.dA,SV.dB);
-#endif
-
-  //Start values for Bresenhams
-  if(SV.dA == 0 && SV.dB == 0){
-    SV.mode_complete = 1; //set this to respond with ok
-    return;
+  for(i=0;i<NoOfAxis;i++){
+    distance[i] = 0;
+    if(bit_istrue(axes,bit(i))){
+      distance[i] = belt_steps(target[i],i);
+      if(gc.absolute_mode)
+        distance[i] -= STPS[i].steps_abs_position;
+      if(distance[i] != 0){
+        bit_true(moving,bit(i));
+        if(master < 0 || labs(distance[i]) > labs(distance[master]))
+          master = i;
+      }
+    }
   }
-  
-  //the distance need in Steps to completee move
-  STPS[axisA].dist =labs(tempA);
-  STPS[axisB].dist =labs(tempB);
-  
-  //don'tcalculate acc if arc is runnin use last min speed
-  //if(!SV.cir){
-    speed_cntr_Move(tempA,speed,axisA);
-    speed_cntr_Move(tempB,speed,axisB);
-  //}
-  if(SV.dA >= SV.dB){
-   //disabled this for trial purposes
-   // STPS[axisB].step_delay = STPS[axisA].step_delay;
-   // STPS[axisB].accel_count = STPS[axisA].accel_count;
-    SV.dif = BresDiffVal(SV.dB,SV.dA);//2*(SV.dy - SV.dx);
-    STPS[axisA].master = 1;
-    STPS[axisB].master = 0;
-  }else{
-  //  STPS[axisA].step_delay = STPS[axisB].step_delay;
-  //  STPS[axisA].accel_count = STPS[axisB].accel_count;
-    SV.dif = BresDiffVal(SV.dA,SV.dB);//2* (SV.dx - SV.dy);
-    STPS[axisA].master = 0;
-    STPS[axisB].master = 1;
-  }
-  
-   STPS[axisA].step_count = 0;
-   STPS[axisB].step_count = 0;
-   STPS[axisA].mmToTravel = tempA;
-   STPS[axisB].mmToTravel = tempB;
+  if(master < 0) return;
 
- //  Start_Interpolation(axisA,axisB);
+  EnableSteppers();
+  for(i=0;i<NoOfAxis;i++){
+    if(bit_istrue(moving,bit(i))){
+      STPS[i].dist = labs(distance[i]);
+      STPS[i].step_count = 0;
+      STPS[i].mmToTravel = distance[i];
+      STPS[i].axis_dir = Direction(distance[i]);
+      Set_Axisdirection(distance[i],i);
+      if(i != master){
+        STPS[i].run_state = RUN;
+        bit_true(SV.mode_complete,bit(i));
+      }
+    }
+  }
+  speed_cntr_Move(distance[master],RPS_FROM_MMPMIN(speed),master);
+  Start_Interpolation(master,moving);
 }
 
 
@@ -438,19 +329,13 @@ dma_printf("\
    //wait here while axis completes its move can posibly
    //check limits and estops as well as send out status report
    // will want ot unblockthis nce we have a complete working model
-   while(1){
-     /*
-     if(Test_Port_Pins(axis_0) || Test_Port_Pins(axis_1)){
-         disableOCx();
-         limit_error = 1;
-     }
-     */
-     //if(!Steppers_Enabled())
-       break;
+   while(Stepper_Busy()){
+     protocol_execute_runtime();
+     if(sys.abort) break;
    }
 
     // Bail mid-circle on system abort. Runtime command check already performed by mc_line.
-    // if (sys.abort) { return; }
+    if (sys.abort) { return; }
    /*if(limit_error)
       break; */
 #if KineDebug == 3
@@ -483,18 +368,7 @@ float hypot(float x, float y){
 }
 
 
-///////////////////////////////////////////////////////////////////
-//                       DIRECTION INDICATION                    //
-///////////////////////////////////////////////////////////////////
-
-//Return the direction counter for absolute counts +1 or -1
-int GetAxisDirection(long mm2move){
- return(mm2move < 0)? CCW_:CW_ ;
-}
-
-///////////////////////////////////////////////////////////////////
-//                       HOMING AXIS                             //
-///////////////////////////////////////////////////////////////////
+//Legacy homing is disabled until it is reworked for the DDS engine.
 
 //////////////////////////////////////////////////////////////////
 //Homing sequence =>
@@ -700,6 +574,7 @@ void mc_reset(){
       case STATE_CYCLE: case STATE_HOLD: case STATE_HOMING: // case STATE_JOG:
         sys.execute |= EXEC_ALARM; // Execute alarm state.
         disableSpindleOCx(); // Execute alarm force kills steppers. Position likely lost.
+        Stepper_Abort();
         DisableSteppers();
         ResetHoming();
     }

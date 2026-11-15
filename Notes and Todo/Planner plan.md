@@ -1,15 +1,15 @@
 # Motion planner plan
 
 This is the design plan for the lookahead planner that will sit between the
-G-code parser and the DDS step engine. Nothing in it is implemented yet.
+G-code parser and the DDS step engine. The lookahead planner is not implemented.
 Grbl 1.1 is the reference design, because UGS expects Grbl behaviour.
 
 ## Where the code is today
 
 - The main loop reads one line, parses it, executes it, then sends `ok`.
-- `Run_Move()` (Main.c) jumps straight to the target. The old kinematics under
-  `STEP_ENGINE_READY` ran one move at a time, from rest to rest, with no
-  junction speeds.
+- With `STEP_ENGINE_READY` enabled, `Run_Move()` starts an interim DDS move:
+  up to four axes at a time, with no junction speeds. It is not yet tested on
+  hardware.
 - While `sys.state` is `STATE_CYCLE`, no lines are read. The next move is not
   known before the current one ends, so every move must stop at its end.
 - Settings hold one `acceleration` and one `default_seek_rate` for all axes.
@@ -50,6 +50,8 @@ index. The ISR never touches the planner, and the parser never touches the ISR.
 ### The block
 
 One block is one straight line, already converted to steps:
+The mm-based planner fields below describe linear motion; mixed rotational
+motion needs the feed and path-unit decision in section 5.
 
 ```c
 typedef struct {
@@ -95,12 +97,12 @@ Status reports must show `sys.position`, not `gc.position`.
 
 ### Array of structs or one array per field?
 
-| | Array of structs (`plan_block_t block_buffer[N]`) | One array per field (`float entry_speed_sqr[N]; ...`) |
-|---|---|---|
-| Reading one block | All fields together, `&block_buffer[i]` | Same index into many arrays |
-| Passing a block around | One pointer | An index, then many arrays |
-| Adding a field | Edit the struct | A new array, and every user changes |
-| Cache (the PIC32MZ has one) | Fields of one block are adjacent | Good only for loops over one field |
+|  Array of structs (`plan_block_t block_buffer[N]`) | One array per field (`float entry_speed_sqr[N]; ...`) |
+|----------------------------------------------------|-------------------------------------------------------|-------------------------------------|
+| Reading one block                                  | All fields together, `&block_buffer[i]`               | Same index into many arrays         |
+| Passing a block around                             | One pointer                                           | An index, then many arrays          |
+| Adding a field                                     | Edit the struct                                       | A new array, and every user changes |
+| Cache (the PIC32MZ has one)                        | Fields of one block are adjacent                      | Good only for loops over one field  |
 
 **Recommendation: one static array of structs, used through indexes and a
 single level of pointer.**
@@ -206,7 +208,8 @@ needed:
   1024-byte ring, and UGS stops when its budget is used up.
 
 Realtime characters (`?`, `!`, `~`, Ctrl-X) are handled in the RX ISR, so they
-still work while the queue is full.
+still work while the queue is full, but for Ethernet realtime characters are
+
 
 ### Arcs
 
@@ -396,24 +399,53 @@ axis is the one with the most steps in the block. The DDS sets its rate; the
 other axes follow it with Bresenham counters:
 
 ```text
+at block start:
+  N = max(steps[X], steps[Y], steps[Z], steps[A])
+  if N == 0: complete the block without starting the engine
+  set each axis's direction and initialise its error counter
+
 every tick:
   phase += increment
   if phase wrapped:              // one dominant-axis step
-     for each axis: counter[axis] += steps[axis]
-        if counter[axis] >= step_event_count:
-           counter[axis] -= step_event_count; step this axis
+     for each axis:
+        counter[axis] += steps[axis]
+        if counter[axis] >= N:
+           counter[axis] -= N; step this axis
      n_step--; if 0: take the next segment
 ```
 
+For X, Y, Z and A, keep a separate step count, direction and error counter
+for every axis. For example, step counts `[8, 6, 3, 2]` give eight master
+events, distributed to produce exactly those four counts. A negative move
+uses the same positive step count with its direction bit set.
+
+Initialise the counters once per block, not per segment; preserve them across
+segment boundaries so changing speed does not change the path or final step
+counts. Count actual emitted steps in the machine position. Validate a move
+before accepting it: unsupported axis combinations must return an error
+without advancing the parser position or reporting a completed move.
+
+The interim engine supports three followers and four-axis linear dispatch.
+Host tests cover single-axis, four-axis, zero-distance, mixed-direction and
+uneven step-count moves. Hardware verification is still needed: measure
+worst-case Timer8 ISR execution with all four axes stepping and confirm it
+fits within the 10 us tick.
+
+The path and feed calculation for a rotational A axis mixed with linear
+XYZ axes is still an open design decision. Do not combine degrees and
+millimetres in a path-length calculation until the units and feed semantics
+are agreed. Per-axis rate and acceleration limits must use the corresponding
+axis units.
+
 Why this, rather than a DDS accumulator on every axis:
 
-| | DDS + Bresenham | DDS on every axis |
-|---|---|---|
-| Step counts at block end | Exact by construction | Drift from rounded increments; needs exact counts per slice to fix |
-| Axes in step with each other | Always within one step: a straight line | Within one slice (about 1 ms) |
-| ISR work per tick | One add and compare | One add and compare per axis |
-| Minor-axis step timing | Tied to dominant steps, so uneven by up to one dominant-step period | Even, to within one tick |
-| Prep work per slice | One increment | One increment and step count per axis |
+|                              | DDS + Bresenham                                                     | DDS on every axis                                              |
+|------------------------------|---------------------------------------------------------------------|----------------------------------------------------------------|
+| Step counts at block end     | Exact by construction                                               | Drift from rounded increments; needs exact counts perslice 2fix|
+| Axes in step with each other | Always within one step: a straight line                             | Within one slice (about 1 ms)                                  |
+| ISR work per tick            | One add and compare                                                 | One add and compar per axis                                    |
+| Minor-axis step timing       | Tied to dominant steps, so uneven by up to one dominant-step period | Even, to within one tick                                       |
+| Prep work per slice          | One increment                                                       | One increment and step count per axis                          |
 
 The only drawback of Bresenham is the uneven timing of the slower axes. With
 microstepping drivers this is not felt, and Grbl's AMASS shows it can be
@@ -427,10 +459,10 @@ The STEP pulse width, DIR setup time and STEP-starts-low points in
 
 The planner needs per-axis limits that `settings_t` does not have yet:
 
-- `$110`-`$113`: max rate per axis (mm/min), replacing the single
-  `default_seek_rate`.
+- `$110`-`$113`: max rate per axis (mm/min for linear axes), replacing the
+  single `default_seek_rate`.
 - `$120`-`$123`: acceleration per axis, replacing the single `acceleration`
-  (stored in mm/min^2, shown in mm/s^2).
+  (for linear axes, stored in mm/min^2 and shown in mm/s^2).
 - `$11` junction deviation already exists.
 - `$12`: in Grbl 1.1 this is **arc tolerance** (mm). The current setting is
   `mm_per_arc_segment`. Change it to a tolerance and work out the segment
@@ -450,25 +482,26 @@ reset to defaults on the first boot.
 4. Resumable `mc_arc` feeding the planner.
 5. Sync lines (G4, G92, `$` writes) waiting for an empty queue.
 6. Segment prep producing trapezoid slices.
-7. DDS step engine with Bresenham: one axis first, with the driver
-   disconnected, then all axes. `sys.position` is updated from the ISR.
+7. Integrate the four-axis DDS/Bresenham engine with segments; keep the
+   counters across segments and update `sys.position` from emitted steps.
 8. Feed hold (`!`) and resume (`~`): the prep slows to zero within the current
    block, then the planner replans from zero speed.
 9. S-curve ramps in the segment prep. The block fields for them are in place
    from step 2, so this does not change the data structures.
 
 ## Decisions
-
-| Topic | Choice |
-|---|---|
-| Planner size | 64 blocks (63 usable) |
-| Data layout | Static array of structs, accessed by index |
-| Step engine | DDS on the dominant axis, Bresenham on the others |
-| Arc feeding | Resumable feeder driven from the main loop |
-| Acceleration | Per-axis limits; the planner plans trapezoids |
-| Jerk | Designed in from the start: cubic time-preserving S-curve in the segment prep; plan with `a / 1.5` |
-
+____________________________________________________________________________________________________________________________
+|        Topic        | Choice                                                                                              |
+|---------------------|-----------------------------------------------------------------------------------------------------|
+| Planner size        | 64 blocks (63 usable)                                                                               |
+| Data layout         | Static array of structs, accessed by index                                                          |
+| Step engine         | DDS on the dominant axis, Bresenham on the others                                                   |
+| Arc feeding         | Resumable feeder driven from the main loop                                                          |
+| Acceleration        | Per-axis limits; the planner plans trapezoids                                                       |
+| Jerk                | Designed in from the start: cubic time-preserving S-curve in the segment prep; plan with `a / 1.5`  |
+----------------------------------------------------------------------------------------------------------------------------
 ### Still to discuss
 
 - Segment period (for example 1 ms) and the DDS tick (10 us now).
 - Feed hold in the middle of an S-curve ramp.
+- A-axis units and feed semantics for combined linear and rotational motion.

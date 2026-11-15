@@ -15,13 +15,17 @@ behaviour.
 | Grbl 1.1h protocol and UGS connection | Working: connects, polls and replies one line at a time |
 | G-code parser | G0–G3, G4, G10 L2/L20, G17–G21, G28/G30 (.1), G53–G59, G80, G90/G91, G92/G92.1, G94 |
 | Settings in flash | Working: `$n=`, `$RST=`, G10 and G28.1/G30.1 survive a power cycle |
-| Motion | **Simulated.** Moves update the position immediately; no step pulses yet |
-| DDS step engine | In progress on the `dds-motion` branch; see [DDS motion progress](./Notes%20and%20Todo/DDS%20motion%20progress.md) |
+| Motion | Interim, untested on hardware: up to four coordinated axes per linear move, from rest to rest, using the Austin/AVR446 ramp in `Pulse()`. No lookahead planner yet |
+| DDS step engine | Timer8 10 µs tick: one phase accumulator on the master axis, Bresenham for up to three followers, 10 µs step pulses, 50 kHz maximum. See [DDS motion progress](./Notes%20and%20Todo/DDS%20motion%20progress.md) |
 | Spindle, coolant, homing, jogging, overrides | Not yet. Commands reply `error:20` |
 | Ethernet (ENC28J60) | Answers ping at 10.0.0.200. Grbl over TCP port 23 (UGS `tcp://10.0.0.200:23`), untested on hardware |
 
-Do not connect motors or drivers expecting real motion. Moves are simulated,
-and the motion safety features have not been developed or verified.
+Step pulses are now generated but have not been tested on hardware. For initial
+signal checks, disable driver power or disconnect the motors; verify the STEP
+and DIR signals before attempting controlled motion. The motion safety features
+have not been developed or verified.
+Do not use radius-format (`R`) arcs yet: the compiler reports uninitialized
+axis indices in the radius calculation.
 
 ## Hardware
 
@@ -90,7 +94,7 @@ command-line quoting and the slow-build problem are in
 
 | File | Purpose |
 | --- | --- |
-| `Main.c` | Main loop, execution of accepted G-code lines, simulated motion, non-modal actions |
+| `Main.c` | Main loop, execution of accepted G-code lines, motion dispatch, non-modal actions |
 | `Protocol.c` | Line reader, `$` commands, G-code tokenizer, realtime command handling |
 | `GCODE.c` | Parser state, modal groups, G/M code decoding |
 | `Print.c` | All Grbl replies: `ok`/`error:n`, reports, settings and status |
@@ -99,10 +103,14 @@ command-line quoting and the slow-build problem are in
 | `Globals.c` | Settings in RAM and flash, defaults, `$n=` mapping, `$RST` |
 | `Flash_R_W.c` | NVM page erase, row and word write, unlock sequence |
 | `Config.c` | Pin, PPS, clock and peripheral setup at boot |
-| `Stepper.c`, `Timers.c` | Stepper pins, Timer8 DDS tick (priority 7), Timer1 10 ms clock and limit sampling (priority 6) |
-| `Kinematics.c`, `Planner.c`, `Steptodistance.c` | Legacy motion maths, used only when `STEP_ENGINE_READY` is defined |
+| `Stepper.c`, `Timers.c` | DDS step engine and `Pulse()` ramp in the Timer8 tick (priority 7), Timer1 10 ms clock and limit sampling (priority 6) |
+| `Kinematics.c`, `Planner.c`, `Steptodistance.c` | Coordinated linear moves, arcs, ramp setup (`speed_cntr_Move`), mm to steps |
 | `Limits.c` | Limit sampling and debouncing, hard-limit stop |
-| `Settings.h` | Firmware version, defaults, axis count, `STEP_ENGINE_READY` switch |
+| `Settings.h` | Firmware version, defaults, axis count, `STEP_ENGINE_READY` and `HOMING_READY` switches |
+
+`Planner.c` currently contains ramp setup and arc calculations, not a
+lookahead planner. The legacy homing code remains in `Kinematics.c` for
+reference but is disabled and needs reworking for DDS.
 
 ## Settings storage
 

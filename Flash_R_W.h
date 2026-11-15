@@ -100,6 +100,7 @@
 #define  FLASH_Settings_VAddr_DEC_PLACES    0xBD1BC158
 #define  FLASH_Settings_VAddr_HOME_DIR_MASK 0xBD1BC15C
 #define  FLASH_Settings_VAddr_INVERT_MASK   0xBD1BC160
+#define  FLASH_Settings_VAddr_DIR_INVERT_MASK 0xBD1BC164
 //Ram offsets of int variables
 #define  N_ARC_CORREC_OFFSET  0x4F
 #define  FLAGS_OFFSET         0x50
@@ -111,6 +112,7 @@
 #define  DEC_PLACES_OFFSET    0x56
 #define  HOME_DIR_MASK_OFFSET 0x57
 #define  INVERT_MASK_OFFSET   0x58
+#define  DIR_INVERT_MASK_OFFSET 0x59
 
 
 ////////////////////////////////////////////////////////

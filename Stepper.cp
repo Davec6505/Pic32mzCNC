@@ -59,7 +59,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 181 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 183 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -80,6 +80,7 @@ typedef struct {
  unsigned int decimal_places;
  unsigned int homing_dir_mask;
  unsigned int invert_mask;
+ unsigned int dir_invert_mask;
 
 } settings_t;
 
@@ -277,18 +278,10 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
-#line 58 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
-const float Dia;
-#line 70 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
-long calcSteps(float mmsToMove, float Dia);
-long leadscrew_sets(float move_distance,int axis);
+#line 23 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
 long belt_steps(float move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
-float mm2in(float mm);
-float in2mm(float inch);
 float fround(float var);
-float torpm(float mm_per_min);
-float toradians(float rev_per_min);
 #line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
@@ -585,6 +578,13 @@ void Cycle_Complete();
 
 
 void Host_ServiceNow();
+
+
+
+static int Modal_Group_Actions1(int action);
+static int Axes_Running();
+static void Wait_Motion();
+static void Run_Single_Axes(float *target);
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
 #line 31 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 typedef struct{
@@ -627,7 +627,7 @@ unsigned int DMA_Resume();
 
 int dma_printf(const char *str,...);
 void lTrim(char *d,char *s);
-#line 155 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
+#line 157 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -645,7 +645,7 @@ void NVMReadQuad(unsigned long addr,unsigned long *words);
 unsigned long NVMReadWord(void *addr);
 unsigned long Get_Address_Pval(int recipe);
 #line 1 "c:/users/davec/git/pic32mzcnc/nuts_bolts.h"
-#line 107 "c:/users/davec/git/pic32mzcnc/globals.h"
+#line 108 "c:/users/davec/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[512];
 
 
@@ -680,19 +680,7 @@ void settings_init(short reset_all);
 int settings_restore(int restore_mask);
 
 
-static int set_ram_loaded_indicator(int val);
-
-
-static void zero_ram_loaded_indicator();
-
-
 int read_ram_loaded_indicator();
-
-
-static void rst_single_coord_read_indicators(int flag);
-
-
-static void rst_coord_read_indicator();
 
 
 int read_coord_data_indicator();
@@ -713,35 +701,14 @@ int settings_read_startup_line(int n, char *line);
 int settings_store_startup_line(int n, char *line);
 
 
-void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
 int settings_store_grbl_setting(int parameter, float value);
-#line 62 "c:/users/davec/git/pic32mzcnc/planner.h"
+#line 51 "c:/users/davec/git/pic32mzcnc/planner.h"
 typedef struct genVars{
- char running: 1;
- char startPulses: 1;
- char homed: 1;
- char run_circle: 1;
  char cir: 1;
- char Single_Dual: 1;
  char mode_complete;
- int AxisNo;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- long dif;
- long dA;
- long dB;
- long dC;
- long prevA;
- long prevB;
- long prevC;
- long over;
 }sVars;
 extern sVars SV;
 
@@ -764,9 +731,6 @@ void sys_sync_current_position();
 void plan_set_current_position();
 
 
-void plan_reset_absolute_position();
-
-
 long sqrt_(long v);
 
 
@@ -776,15 +740,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
-#line 59 "c:/users/davec/git/pic32mzcnc/kinematics.h"
-extern char stepper_state;
-extern sfr stp_stopped;
-extern sfr stp_run;
-extern sfr stp_pause;
-
-
-
-
+#line 58 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -792,10 +748,6 @@ unsigned int home_cnt;
 
 
 typedef struct Steps{
-
- char master: 1;
-
- unsigned short PLS_Step_ : 1;
 
  unsigned short stopAxis: 1;
 
@@ -812,7 +764,6 @@ typedef struct Steps{
  long min_delay;
 
  long accel_count;
- long deccl_count;
 
  long acc;
  long dec;
@@ -821,11 +772,7 @@ typedef struct Steps{
 
  long dist;
 
- long psingle;
-
  long new_step_delay;
-
- long last_accel_delay;
 
  long accel_lim;
 
@@ -856,6 +803,7 @@ static void Set_Axisdirection(long temp,int axis);
 
 
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);
+void MultiAxisStep(float *target,int axes,float speed);
 void SingleAxisStep(float newxyz,float speed,int axis_No);
 static void SingleAxisStart(long dist,float speed,int axis_No);
 
@@ -867,15 +815,8 @@ void mc_arc(float *position, float *target, float *offset, int axis_0,
 float hypot(float angular_travel, float linear_travel);
 
 
-int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
 int Home(int axis);
 static void Home_Axis(double distance,float speed,int axis);
-static void Inv_Home_Axis(double distance,float speed,int axis);
-void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
@@ -884,62 +825,51 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 35 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 20 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
-extern _axis_ _axis;
 extern axis_combination axis_xyz;
 
 
 
 
-extern long test;
-#line 53 "c:/users/davec/git/pic32mzcnc/stepper.h"
- typedef struct{
- uint32_t phase;
- uint32_t incrament;
- uint32_t old_phase;
- } dds_axis_t;
 
- extern volatile dds_axis_t dds_axes[4];
+
 
 
 
 void SetPinMode();
-void CycleStart();
-void CycleStop();
-
-void DisableStepperInterrupt(int stepper);
 void EnableSteppers();
 void DisableSteppers();
 void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
-int Steppers_Enabled();
 
-
-static void SingleStepAxis(int axis);
-void Start_Interpolation(int axisA,int axisB);
-static void Axis_Interpolate(int axisA,int axisB);
+void Start_Interpolation(int master,int axes);
+void Stepper_Abort();
+int Stepper_Busy();
 void StopAxis(int axis);
 
 
-
-void Single_Axis_Enable(_axis_ axis_);
+int Pulse(int axis_No);
 #line 7 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
+typedef struct{
+ uint32_t phase;
+ uint32_t increment;
+ uint32_t old_phase;
+} dds_axis_t;
+
+
+static volatile dds_axis_t dds_master;
+static volatile int eng_master = -1;
+static volatile int eng_axes;
+static volatile unsigned long eng_err[ 4 ];
 void dds_tick();
-volatile dds_axis_t dds_axes[4];
-
-
-char txt_A[9];
-
-
-
-
-static int axis_running;
-
+static void Step_Cycle(int axis_No);
+static unsigned long Dds_Increment(long step_delay);
+static void AccDec(int axis_No);
 
 
 void SetPinMode(){
@@ -977,18 +907,100 @@ void SetPinMode(){
 
  PLS_Step_PinDirA = 0;
 
-
-dds_axes[0].incrament = 54540;
+ PLS_StepX = 0;
+ PLS_StepY = 0;
+ PLS_StepZ = 0;
+ PLS_StepA = 0;
 }
-#line 65 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
+#line 71 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
 void dds_tick(){
+int m, i;
+unsigned long gap;
 
- dds_axes[0].old_phase = dds_axes[0].phase;
- dds_axes[0].phase += dds_axes[0].incrament;
+ PLS_StepX = 0;
+ PLS_StepY = 0;
+ PLS_StepZ = 0;
+ PLS_StepA = 0;
 
- if(dds_axes[0].phase < dds_axes[0].old_phase){
- LED2 = !LED2;
+ m = eng_master;
+ if(m < 0) return;
+
+
+ dds_master.old_phase = dds_master.phase;
+ dds_master.phase += dds_master.increment;
+ if(dds_master.phase >= dds_master.old_phase) return;
+
+ Step_Cycle(m);
+ for(i=0;i< 4 ;i++){
+ if(i != m &&  ((eng_axes & (1 << i) ) != 0) ){
+
+ gap = (unsigned long)STPS[m].dist - (unsigned long)STPS[i].dist;
+ if(eng_err[i] >= gap){
+ eng_err[i] -= gap;
+ Step_Cycle(i);
+ }else{
+ eng_err[i] += (unsigned long)STPS[i].dist;
  }
+ }
+ }
+
+
+ Pulse(m);
+ if(STPS[m].run_state ==  0 ){
+ for(i=0;i< 4 ;i++){
+ if(i != m &&  ((eng_axes & (1 << i) ) != 0) ){
+ STPS[i].run_state =  0 ;
+  (SV.mode_complete &= ~ (1 << i) ) ;
+ }
+ }
+ eng_master = -1;
+ return;
+ }
+ dds_master.increment = Dds_Increment(STPS[m].step_delay);
+}
+
+
+
+static unsigned long Dds_Increment(long step_delay){
+unsigned long q;
+ if(step_delay <  125 ) step_delay =  125 ;
+ q = 0xFFFFFFFF / (unsigned long)step_delay;
+ return (q >> 1) *  125 ;
+}
+
+
+
+void Start_Interpolation(int m,int axes){
+int i;
+ eng_master = -1;
+ if(STPS[m].dist <= 0 || STPS[m].run_state ==  0 ){
+ for(i=0;i< 4 ;i++){
+ if( ((axes & (1 << i) ) != 0) ){
+ STPS[i].run_state =  0 ;
+  (SV.mode_complete &= ~ (1 << i) ) ;
+ }
+ }
+ return;
+ }
+ eng_axes = axes;
+ for(i=0;i< 4 ;i++)
+ eng_err[i] = (unsigned long)STPS[m].dist >> 1;
+ dds_master.phase = 0;
+ dds_master.increment = Dds_Increment(STPS[m].step_delay);
+ eng_master = m;
+}
+
+
+void Stepper_Abort(){
+int i;
+ eng_master = -1;
+ eng_axes = 0;
+ for(i=0;i< 4 ;i++)
+ STPS[i].run_state =  0 ;
+}
+
+int Stepper_Busy(){
+ return eng_master >= 0;
 }
 
 
@@ -1000,29 +1012,8 @@ void DisableSteppers(){
  EN_Steppers = 1;
 }
 
-void DisableSpindleInterrupt(int stepper){
- OC8IE_bit = 0;
- OC8CONbits.ON = 0;
-}
-
-
-
-
 int GET_RunState(int axis_No){
  return STPS[axis_No].run_state;
-}
-
-int Steppers_Enabled(){
- return EN_Steppers? 0:1;
-}
-
-
-
-
-void Single_Axis_Enable(_axis_ axis_){
-
- axis_running = 0;
- EnableSteppers();
 }
 
 
@@ -1033,4 +1024,88 @@ void StopAxis(int axis){
 
 void disableSpindleOCx(){
  OC7IE_bit = 0;OC7CONbits.ON = 0;
+}
+
+
+
+
+
+
+
+
+static void Step_Cycle(int axis_No){
+ switch(axis_No){
+ case X: PLS_StepX = 1; break;
+ case Y: PLS_StepY = 1; break;
+ case Z: PLS_StepZ = 1; break;
+ case A: PLS_StepA = 1; break;
+ default: break;
+ }
+
+ STPS[axis_No].step_count++;
+
+ STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
+}
+
+
+
+
+
+
+int Pulse(int axis_No){
+long remaining = STPS[axis_No].dist - STPS[axis_No].step_count;
+
+ if(STPS[axis_No].run_state !=  0  && remaining <= 0)
+ STPS[axis_No].run_state =  0 ;
+
+ switch(STPS[axis_No].run_state) {
+ case  0 :
+ StopAxis(axis_No);
+
+  (SV.mode_complete &= ~ (1 << axis_No) ) ;
+ break;
+ case  1 :
+
+ AccDec(axis_No);
+ if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
+ STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+ }
+ if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
+ STPS[axis_No].run_state =  3 ;
+ }
+
+
+ if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+ STPS[axis_No].accel_count = -remaining;
+ STPS[axis_No].rest = 0;
+ STPS[axis_No].run_state =  2 ;
+ }
+ break;
+ case  3 :
+ STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+
+
+ if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+ STPS[axis_No].accel_count = -remaining;
+ STPS[axis_No].rest = 0;
+ STPS[axis_No].run_state =  2 ;
+ }
+ break;
+ case  2 :
+
+ AccDec(axis_No);
+ if(STPS[axis_No].step_delay > STPS[axis_No].StartUp_delay)
+ STPS[axis_No].step_delay = STPS[axis_No].StartUp_delay;
+ break;
+ default:break;
+ }
+ return axis_No;
+}
+
+
+static void AccDec(int axis_No){
+ STPS[axis_No].accel_count++;
+ STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
+ STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
+ STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
 }

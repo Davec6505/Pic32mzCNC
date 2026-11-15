@@ -13,13 +13,8 @@
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-/*! \Brief Frequency of timer1 in [Hz].
- * Newtimer 50000000
- * Modify this according to frequency used. Because of the prescaler setting,
- * the timer1 frequency is the clock frequency divided by 8.
- */
-// Timer/Counter 1 running on 3,686MHz / 8 = 460,75kHz (2,17uS). (T1-FREQ 460750)
-// 1.28us/tick => timer pre-scaler at (1/64) * 50mhz pbclk3
+//The ramp delay is expressed in Timer1 ticks (50 MHz PBCLK3 / 8).
+//The DDS_T1_RATIO_X2 conversion in Stepper.h must agree with this frequency.
 //#define ONE_64
 #define ONE_8
 
@@ -31,12 +26,6 @@
 #endif
 
 #define minSpeed  30210
-#define maxSpeed  10
-#define cirSpeed  100
-
-#define MAX_ACC_LIM 5000
-#define MIN_ACC_LIN 10
-
 /************************************************************************
 * Maths constants. To simplify maths when calculating in speed_cntr_Move().
 * Alpha is stepangle in radians 2*pi/spr in rad  || (1.8 * Pi) / 180
@@ -60,28 +49,8 @@
 //  ****** INTERPOLATION SPECIFIC  ******         //
 ////////////////////////////////////////////////////
 typedef struct genVars{
-  char  running: 1;        //running bit
-  char  startPulses: 1;
-  char  homed: 1;         //busy homing
-  char  run_circle: 1;        //circle in motion indicator
   char  cir: 1;
-  char  Single_Dual: 1;
   char  mode_complete;
-  int   AxisNo;
-  int   dirx;
-  int   diry;
-  int   dirz;
-  int   dira;
-  int   dirb;
-  int   dirc;
-  long  dif;
-  long  dA;
-  long  dB;
-  long  dC;
-  long  prevA;
-  long  prevB;
-  long  prevC;
-  long  over;
 }sVars;
 extern sVars SV;
 
@@ -100,11 +69,8 @@ void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
 //sync the current position of axis
 void sys_sync_current_position();
 
-//set the current position to sys.position
+//sync parser position from the actual step counters
 void plan_set_current_position();
-
-//after homing set abs osition to 0
-void plan_reset_absolute_position();
 
 //efficient sqrt interger calculation
 long sqrt_(long v);

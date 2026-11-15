@@ -397,6 +397,7 @@ main
 										Reset_Ring
 										mc_reset
 											disableSpindleOCx
+											Stepper_Abort
 											DisableSteppers
 											ResetHoming
 										Limits_TakeEvent
@@ -422,10 +423,85 @@ main
 											rst_coord_read_indicator
 									memcpy
 									Compute_Target
-									Run_Move
-										belt_steps
-											lround
-										Cycle_Complete
+									Run_Single_Axes
+										Run_Move
+											EnableSteppers
+											Modal_Group_Actions1
+												sys_sync_current_position
+												r_or_ijk
+													__CC2DW
+													sqrt
+														frexp
+														ldexp
+													hypot
+														sqrt
+													Get_motionmode
+													Get_Step_Rate
+													mc_arc
+														__CC2DW
+														atan2
+															fabs
+															atan
+																fabs
+																eval_poly
+														fabs
+														hypot
+														floor
+														cos
+															sin
+																floor
+																eval_poly
+														sin
+														DualAxisStep
+															MultiAxisStep
+																belt_steps
+																	lround
+																labs
+																EnableSteppers
+																Set_Axisdirection
+																speed_cntr_Move
+																	labs
+																	Get_Step_Rate
+																	lround
+																	sqrt_
+																Start_Interpolation
+																	Dds_Increment
+														Stepper_Busy
+														protocol_execute_runtime
+												Home
+													Rst_FP
+													Rst_FN
+													EnableSteppers
+													Test_Port_Pins
+													Home_Axis
+														StopAxis
+														belt_steps
+														Get_Step_Rate
+														SingleAxisStep
+															belt_steps
+															SingleAxisStart
+																labs
+																EnableSteppers
+																speed_cntr_Move
+																Set_Axisdirection
+																Start_Interpolation
+													FN
+														Test_Min
+													VDelay_ms
+													StopAxis
+													FP
+														Test_Min
+												mc_reset
+												Rst_Axisword
+												report_status_message
+													DMA_IsOn
+													dma_printf
+											MultiAxisStep
+										Wait_Motion
+											Axes_Running
+												GET_RunState
+											protocol_execute_runtime
+											Cycle_Complete
 									memset
 								GET_FAIL
 								Motion_Line
@@ -438,8 +514,6 @@ main
 									Load_Coord_System
 									memset
 							report_status_message
-								DMA_IsOn
-								dma_printf
 							G_Begin_Block
 								Rst_modalgroup
 								Rst_non_modalword
@@ -514,6 +588,7 @@ main
 										settings_store_global_setting
 											settings_load_row
 											flt2ulong
+											set_calculation_constants
 											round
 												ceil
 												floor
@@ -563,6 +638,11 @@ main
 	Execute_Gcode_Line
 	report_status_message
 	G_Begin_Block
+	Get_modalgroup
+	Modal_Group_Actions1
+	Rst_modalgroup
+	Axes_Running
+	Cycle_Complete
 	protocol_system_check
 		Reset_Ring
 		sys_sync_current_position
@@ -589,6 +669,11 @@ Timer1Interrupt
 			DisableSteppers
 			disableSpindleOCx
 	dds_tick
+		Step_Cycle
+		Pulse
+			StopAxis
+			AccDec
+		Dds_Increment
 	ClockPulse
 Timer8Interrupt
 	dds_tick

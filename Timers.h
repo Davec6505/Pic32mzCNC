@@ -38,8 +38,8 @@ void InitTimer1();
 /*
  * void InitTimer8() initializes Timer 8 for DDS tick interrupts
  *Sets up Timer8 as 10us interrupt timer 
- *ISR Priority level 3
- *ISR Sub-priority 1
+ *ISR Priority level 7
+ *ISR Sub-priority 2
  *Clears the Timer8 interrupt flag before enabling the interrupt
  *returns nothing
 */
@@ -63,7 +63,7 @@ void Timer8_Start();
 void Timer8_Stop();
 
 /*
- * ClockPulse generates a clock pulse for the stepper motors
+ * ClockPulse updates the general-purpose clock flags
  * This function is typically called from the Timer 1 interrupt
  * returns nothing
  */

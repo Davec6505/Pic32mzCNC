@@ -4,11 +4,9 @@ void (*DDS_Tick)();
 void (*Clock)();
 struct Timer TMR;
 
-static unsigned int ms100, ms300, ms500, ms800, sec1, sec1_5, sec2;
+static unsigned int ms100, ms300, ms500, sec1;
 
- /////////////////////////////////////////////////////////////////
-//TMR 1 setup for 1us pusles as a dummy axis for single puls to
-//keep the seep equivilant to Bres algo dual axis.
+//Timer1 provides the 10 ms clock and limit sampling.
 void InitTimer1(){
 //Clock pulses 100ms 500ms 800ms 1sec
   Clock = ClockPulse;
@@ -27,8 +25,7 @@ void InitTimer1(){
 }
 
 
-//TMR 8  initialized to interrupt at 10us was used for early
-//interpolation no longer used to interpolate
+//Timer8 provides the fixed DDS tick.
 void InitTimer8(){
   T8CON            = 0x0000;
   //PRIORITY 7, the highest: step timing comes before everything else

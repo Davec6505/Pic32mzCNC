@@ -12,10 +12,13 @@ typedef __attribute__((aligned (32))) float afloat;
 #define GRBL_VERSION_BUILD "20190830"
 #define GRBL_HELP " ['$' for help]"
 
-//Uncomment once a step engine (DDS) drives the axes. While undefined, accepted
-//moves are simulated: the position jumps to the target and the cycle completes
-//immediately, and $H replies error:20 because homing needs real motion.
-// #define STEP_ENGINE_READY
+//The DDS step engine drives the axes. When undefined, accepted moves are
+//simulated: the position jumps to the target and the cycle completes at once.
+#define STEP_ENGINE_READY
+
+//Homing still uses the old OC-era sequence; until it is reworked $H replies
+//error:20. Needs STEP_ENGINE_READY.
+// #define HOMING_READY
 
 
 //G54, G55, G56, G57, G58 and G59 are datum shift G-Codes.
@@ -27,28 +30,23 @@ typedef __attribute__((aligned (32))) float afloat;
 #define NUMBER_OF_DATUMS 11
 
 /////////////////////////////////////////////////////////////////
-// Define bit flag masks for the boolean settings in settings.flag.
+// Bit masks for the boolean settings in settings.flags.
+#define BITFLAG_REPORT_INCHES         bit(0)  // $13
+#define BITFLAG_AUTO_START            bit(1)  // resume after hold
+#define BITFLAG_INVERT_ST_ENABLE      bit(2)  // $4 step enable invert
+#define BITFLAG_HARD_LIMIT_ENABLE     bit(3)  // $21
+#define BITFLAG_HOMING_ENABLE         bit(4)  // $22
+#define BITFLAG_INVERT_LIMIT_PINS     bit(5)  // $5 limit pin invert
 
-//indices of flags in word
-#define FLAG_REPORT_INCHES            1
-#define FLAG_AUTO_START               2
-#define FLAG_INVERT_ST_ENABLE         4
-#define FLAG_HARD_LIMIT_ENABLE        8
-#define FLAG_HOMING_ENABLE            16
-
-
-#define BITFLAG_REPORT_INCHES         bit(0)
-#define BITFLAG_AUTO_START            bit(1)
-#define BITFLAG_INVERT_ST_ENABLE      bit(2)
-#define BITFLAG_HARD_LIMIT_ENABLE     bit(3)
-#define BITFLAG_HOMING_ENABLE         bit(4)
-
-//flags
+//flag defaults
 #define DEFAULT_REPORT_INCHES          false
 #define DEFAULT_AUTO_START             true
-#define DEFAULT_INVERT_ST_ENABLE       true
+//$4=0 means EN pin low = drivers enabled (the current EnableSteppers level)
+#define DEFAULT_INVERT_ST_ENABLE       false
 #define DEFAULT_HARD_LIMIT_ENABLE      true
 #define DEFAULT_HOMING_ENABLE          true
+//$5=0 means limit pin low = pressed (the current active-low wiring)
+#define DEFAULT_INVERT_LIMIT_PINS      false
 
 //default acc/dec value for DEFAULT ACC
 #define acceleraton 1.3889
@@ -75,7 +73,11 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_DECIMAL_PLACES         3
 #define DEFAULT_N_ARC_CORRECTION       25
 #define DEFAULT_HOME_DIR_MASK          15      // move positive dir
-#define DEFAULT_INVERT_MASK            15      // move positive dir
+//$2 step port invert mask: 0 = pulses idle low and rise to step
+#define DEFAULT_INVERT_MASK            0
+//$3 direction port invert mask, bits X..A. 5 (X and Z set) matches the
+//compile-time X_DIR_DIR=1 Y=0 Z=1 A=0 polarity in Pins.h
+#define DEFAULT_DIR_INVERT_MASK        5
 
 
 
@@ -197,7 +199,8 @@ typedef struct {
   unsigned int p_usec;
   unsigned int decimal_places;
   unsigned int homing_dir_mask;
-  unsigned int invert_mask;
+  unsigned int invert_mask;      // $2 step port invert mask
+  unsigned int dir_invert_mask;  // $3 direction port invert mask
 //  uint8_t status_report_mask; // Mask to indicate desired report data.
 }  settings_t;
 

@@ -923,7 +923,7 @@ NOP
 L__protocol_execute_runtime330:
 SH	R0, Offset(_sys+2)(GP)
 L_protocol_execute_runtime48:
-;Protocol.c,240 :: 		if (bit_istrue(settings.flags,FLAG_AUTO_START)) {
+;Protocol.c,240 :: 		if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) {
 LHU	R2, Offset(_settings+50)(GP)
 ANDI	R2, R2, 2
 ANDI	R2, R2, 65535

@@ -92,18 +92,20 @@ void report_build_info(){
 void report_grbl_settings() {
 float acc = settings.acceleration / sec_sec;
   while(DMA_IsOn(1));
-  dma_printf("$0=%d\r\n$1=%d\r\n$2=%d\r\n$3=0\r\n$4=%d\r\n$5=0\r\n$6=0\r\n$10=1\r\n"
+  dma_printf("$0=%d\r\n$1=%d\r\n$2=%d\r\n$3=%d\r\n$4=%d\r\n$5=%d\r\n$6=0\r\n$10=1\r\n"
     ,(int)settings.p_usec
     ,(int)settings.stepper_idle_lock_time
     ,(int)settings.invert_mask
-    ,(int)bit_istrue(settings.flags,FLAG_INVERT_ST_ENABLE));
+    ,(int)settings.dir_invert_mask
+    ,(int)bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)
+    ,(int)bit_istrue(settings.flags,BITFLAG_INVERT_LIMIT_PINS));
   while(DMA_IsOn(1));
   dma_printf("$11=%f\r\n$12=%f\r\n$13=%d\r\n$20=0\r\n$21=%d\r\n$22=%d\r\n$23=%d\r\n"
     ,settings.junction_deviation
     ,settings.mm_per_arc_segment
-    ,(int)bit_istrue(settings.flags,FLAG_REPORT_INCHES)
-    ,(int)bit_istrue(settings.flags,FLAG_HARD_LIMIT_ENABLE)
-    ,(int)bit_istrue(settings.flags,FLAG_HOMING_ENABLE)
+    ,(int)bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)
+    ,(int)bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE)
+    ,(int)bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)
     ,(int)settings.homing_dir_mask);
   while(DMA_IsOn(1));
   dma_printf("$24=%f\r\n$25=%f\r\n$26=%d\r\n$27=%f\r\n$30=1000\r\n$31=0\r\n$32=0\r\n"
@@ -143,7 +145,7 @@ static void report_xyz(float *pos){
 
 static void report_to_units(float *pos){
   int i;
-  if (bit_istrue(settings.flags,FLAG_REPORT_INCHES)) {
+  if (bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)) {
     for (i=0; i<3; i++) { pos[i] *= INCH_PER_MM; }
   }
 }

@@ -4,17 +4,21 @@
 /*
  * DDS (Direct Digital Synthesis) tick function and axis control
 */
+typedef struct{
+  uint32_t phase;
+  uint32_t increment;
+  uint32_t old_phase;
+} dds_axis_t;
+
+//DDS step engine: one phase accumulator runs at the master axis step rate.
+static volatile dds_axis_t dds_master;
+static volatile int  eng_master = -1;   //-1 = idle, set last when a move starts
+static volatile int  eng_axes;
+static volatile unsigned long eng_err[NoOfAxis];
 void dds_tick();
-volatile dds_axis_t dds_axes[4];
-
-
-char txt_A[9];
-
-
-//unsigned int Toggle;
-//long test;
-static int axis_running;
-
+static void Step_Cycle(int axis_No);
+static unsigned long Dds_Increment(long step_delay);
+static void AccDec(int axis_No);
 
 //Set up pin outs
 void SetPinMode(){
@@ -52,8 +56,10 @@ void SetPinMode(){
 //  SLP_FLT_Step_PinDirA = 0;
   PLS_Step_PinDirA = 0;
 
-//stepper timeout counter
-dds_axes[0].incrament = 54540;
+  PLS_StepX = 0;
+  PLS_StepY = 0;
+  PLS_StepZ = 0;
+  PLS_StepA = 0;
 }
 
 
@@ -63,50 +69,109 @@ dds_axes[0].incrament = 54540;
  * Timer 8 must be started in code first.
  */
 void dds_tick(){
-  // Implement the DDS tick handling for each axis here
-  dds_axes[0].old_phase = dds_axes[0].phase;
-  dds_axes[0].phase += dds_axes[0].incrament;
+int m, i;
+unsigned long gap;
+  //end the pulse raised on the previous tick (10 us wide)
+  PLS_StepX = 0;
+  PLS_StepY = 0;
+  PLS_StepZ = 0;
+  PLS_StepA = 0;
 
-  if(dds_axes[0].phase < dds_axes[0].old_phase){
-    LED2 = !LED2;
+  m = eng_master;
+  if(m < 0) return;
+
+  //a step is due when the phase wraps
+  dds_master.old_phase = dds_master.phase;
+  dds_master.phase += dds_master.increment;
+  if(dds_master.phase >= dds_master.old_phase) return;
+
+  Step_Cycle(m);
+  for(i=0;i<NoOfAxis;i++){
+    if(i != m && bit_istrue(eng_axes,bit(i))){
+      //Subtract before adding to avoid overflow for long moves.
+      gap = (unsigned long)STPS[m].dist - (unsigned long)STPS[i].dist;
+      if(eng_err[i] >= gap){
+        eng_err[i] -= gap;
+        Step_Cycle(i);
+      }else{
+        eng_err[i] += (unsigned long)STPS[i].dist;
+      }
+    }
   }
+
+  //ramp: new step_delay for the next master step
+  Pulse(m);
+  if(STPS[m].run_state == STOP){
+    for(i=0;i<NoOfAxis;i++){
+      if(i != m && bit_istrue(eng_axes,bit(i))){
+        STPS[i].run_state = STOP;
+        bit_false(SV.mode_complete,bit(i));
+      }
+    }
+    eng_master = -1;
+    return;
+  }
+  dds_master.increment = Dds_Increment(STPS[m].step_delay);
+}
+
+//step_delay is in T1_FREQ ticks, the DDS runs at DDS_FREQ:
+//increment = 2^32 * T1_FREQ / (DDS_FREQ * step_delay), kept in 32 bits
+static unsigned long Dds_Increment(long step_delay){
+unsigned long q;
+  if(step_delay < DDS_MIN_DELAY) step_delay = DDS_MIN_DELAY;
+  q = 0xFFFFFFFF / (unsigned long)step_delay;
+  return (q >> 1) * DDS_T1_RATIO_X2;
+}
+
+//Start the engine with the chosen master and mask of moving axes.
+//All STPS[] fields and DIR pins must be set before this is called.
+void Start_Interpolation(int m,int axes){
+int i;
+  eng_master = -1;
+  if(STPS[m].dist <= 0 || STPS[m].run_state == STOP){
+    for(i=0;i<NoOfAxis;i++){
+      if(bit_istrue(axes,bit(i))){
+        STPS[i].run_state = STOP;
+        bit_false(SV.mode_complete,bit(i));
+      }
+    }
+    return;
+  }
+  eng_axes = axes;
+  for(i=0;i<NoOfAxis;i++)
+    eng_err[i] = (unsigned long)STPS[m].dist >> 1;
+  dds_master.phase     = 0;
+  dds_master.increment = Dds_Increment(STPS[m].step_delay);
+  eng_master = m;
+}
+
+//Stop stepping at once (reset, alarm); the position is what was stepped
+void Stepper_Abort(){
+int i;
+  eng_master = -1;
+  eng_axes = 0;
+  for(i=0;i<NoOfAxis;i++)
+    STPS[i].run_state = STOP;
+}
+
+int Stepper_Busy(){
+  return eng_master >= 0;
 }
 
 //Shared enable: all drivers switch together (active low)
 void EnableSteppers(){
-  EN_Steppers = 0;
+  EN_Steppers = bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE) ? 1 : 0;
 }
 
 void DisableSteppers(){
-  EN_Steppers = 1;
+  EN_Steppers = bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE) ? 0 : 1;
 }
 
-void DisableSpindleInterrupt(int stepper){
-  OC8IE_bit = 0;
-  OC8CONbits.ON = 0;
-}
-
-//////////////////////////////////////////////////////////
-//            POL THE AXIS BITS                      //
-//////////////////////////////////////////////////////////
 int GET_RunState(int axis_No){
   return STPS[axis_No].run_state;
 }
 
-int Steppers_Enabled(){
-  return EN_Steppers? 0:1;
-}
-
-//////////////////////////////////////////////////////////
-//      ENABLE / DISABLE  SINGLE AXIS  CONTROL          //
-//////////////////////////////////////////////////////////
-void Single_Axis_Enable(_axis_ axis_){
-//pre condition axis stop control for interpolate here??
- axis_running = 0;
- EnableSteppers();
-}
-
-//Stop one axis only; the shared enable stays on for the others
+//Legacy homing flag; the DDS engine does not use it to stop motion.
 void StopAxis(int axis){
   STPS[axis].stopAxis = 1;
 }
@@ -122,15 +187,80 @@ void disableSpindleOCx(){
 //       STEPS CYCLE CONTROL SECTION           //
 /////////////////////////////////////////////////
 
+//Raise the step pin and count the step, the pin drops on the next tick
+static void Step_Cycle(int axis_No){
+  switch(axis_No){
+    case X: PLS_StepX = 1; break;
+    case Y: PLS_StepY = 1; break;
+    case Z: PLS_StepZ = 1; break;
+    case A: PLS_StepA = 1; break;
+    default: break;
+  }
+  //keep track of relative position
+  STPS[axis_No].step_count++;
+  //keep track of absolute position
+  STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
+}
 
-////////////////////////////////////////////////////////
-//        SINGLE AXIS STEP FUNCTIONALITY              //
-////////////////////////////////////////////////////////
+//Call after each step pulse (step_count already incremented) to set
+//step_delay, in T1_FREQ ticks, for the next step.
+//Decel is indexed by the steps remaining (accel_count = -remaining), so it
+//always matches the position and ends on the last step; it never slows below
+//the StartUp_delay floor, and the move ends on step_count, not accel_count.
+int Pulse(int axis_No){
+long remaining = STPS[axis_No].dist - STPS[axis_No].step_count;
 
+  if(STPS[axis_No].run_state != STOP && remaining <= 0)
+     STPS[axis_No].run_state = STOP;
 
+  switch(STPS[axis_No].run_state) {
+    case STOP:
+        StopAxis(axis_No);
+        //Clear the master's running bit.
+        bit_false(SV.mode_complete,bit(axis_No));
+      break;
+    case ACCEL:
+      //taylor series calculation for acc
+      AccDec(axis_No);
+      if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
+         STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+      }
+      if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
+           STPS[axis_No].run_state  = RUN;
+      }
+      //if the peak of the triangle is before max_accel_limit
+      //then start to decel
+      if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+         STPS[axis_No].accel_count = -remaining;
+         STPS[axis_No].rest        = 0;
+         STPS[axis_No].run_state   = DECEL;
+      }
+      break;
+    case RUN:
+      STPS[axis_No].step_delay = STPS[axis_No].min_delay;
+      // Check for decelration start position.
+      // Start decelration with same delay as accel ended with.
+       if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
+           STPS[axis_No].accel_count = -remaining;
+           STPS[axis_No].rest        = 0;
+           STPS[axis_No].run_state =  DECEL;
+        }
+      break;
+    case DECEL:
+      //taylor series calculation for dec, accel_count runs -remaining .. -1
+      AccDec(axis_No);
+      if(STPS[axis_No].step_delay > STPS[axis_No].StartUp_delay)
+         STPS[axis_No].step_delay = STPS[axis_No].StartUp_delay;
+      break;
+    default:break;
+  }
+  return axis_No;
+}
 
-////////////////////////////////////////////////////////
-//   INTERPOLATE MULTI AXIS USING BRESENHAMS ALGO     //
-//       MASTER AXIS CONTROLS THE ACCELERATION        //
-////////////////////////////////////////////////////////
-//keep Axis_interpolation scope local
+//Accel Decel calculation and test
+static void AccDec(int axis_No){
+  STPS[axis_No].accel_count++;
+  STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
+  STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
+  STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
+}

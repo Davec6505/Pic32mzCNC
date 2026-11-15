@@ -33,7 +33,6 @@
 
 //////////////////////////////////////////
 //external scope variables
-_axis_ _axis;
 axis_combination axis_xyz;
 settings_t settings absolute 0xA0002800;
 parser_state_t gc   absolute 0xA0002900;
@@ -248,6 +247,11 @@ int mode = Get_motionmode();
     FAIL(STATUS_UNSUPPORTED_STATEMENT);
     return;
   }
+  if((mode == MOTION_MODE_CW_ARC || mode == MOTION_MODE_CCW_ARC) &&
+     (axes & (bit(Z) | bit(A)))){
+    FAIL(STATUS_UNSUPPORTED_STATEMENT);
+    return;
+  }
   Compute_Target(axes,target);
   Run_Move(target,mode);
 }
@@ -271,7 +275,10 @@ int arc = (mode == MOTION_MODE_CW_ARC || mode == MOTION_MODE_CCW_ARC);
       gc.next_position[i] = gc.absolute_mode ? target[i] : target[i] - gc.position[i];
   }
   EnableSteppers();
-  Modal_Group_Actions1(arc ? 15 : axes);
+  if(arc)
+    Modal_Group_Actions1(15);
+  else
+    MultiAxisStep(gc.next_position,axes,motion_rate);
 #else
   // TODO(DDS): hand target[] to the step engine instead of jumping there.
   for(i=0;i<NoOfAxis;i++)
@@ -308,17 +315,18 @@ static void Wait_Motion(){
   Cycle_Complete();
 }
 
-//legacy kinematics run at most two axes together, so go Z first then X, Y
+//G28/G30 intermediate moves run axes separately, Z first.
 static void Run_Single_Axes(float *target){
-int order[3];
+int order[NoOfAxis];
 int k,i;
 float step_target[NoOfAxis];
-  order[0] = Z; order[1] = X; order[2] = Y;
-  for(k=0;k<3;k++){
+  order[0] = Z; order[1] = X; order[2] = Y; order[3] = A;
+  for(k=0;k<NoOfAxis;k++){
     for(i=0;i<NoOfAxis;i++) step_target[i] = gc.position[i];
     step_target[order[k]] = target[order[k]];
     Run_Move(step_target,MOTION_MODE_SEEK);
     Wait_Motion();
+    if(sys.abort) return;
   }
 }
 #endif
@@ -437,7 +445,7 @@ float target[NoOfAxis];
 
 #ifdef STEP_ENGINE_READY
 ////////////////////////////////////////////////////////////////////////////////
-//               GROUP_1 MODAL ACTIONS [G0,G1,G2,G3,G80] MOTION               //
+//                       ARC AND LEGACY HOMING DISPATCH                       //
 ////////////////////////////////////////////////////////////////////////////////
 static int Modal_Group_Actions1(int action){
     #if MainDebug == 10
@@ -445,36 +453,6 @@ static int Modal_Group_Actions1(int action){
     dma_printf("action:= %d\tgc.frequency:= %l\n",action,gc.frequency);
     #endif
     switch(action){
-      case 1: //b0000 0001
-             SingleAxisStep(gc.next_position[X],motion_rate,X);
-             break;
-      case 2://b0000 0010
-             SingleAxisStep(gc.next_position[Y],motion_rate,Y);
-             break;
-       case 3://b0000 0011
-             DualAxisStep(gc.next_position[X], gc.next_position[Y],X,Y,motion_rate);
-             break;
-      case 4://b0000 0100
-            SingleAxisStep(gc.next_position[Z],motion_rate,Z);
-             break;
-       case 5://b0000 0101
-             DualAxisStep(gc.next_position[X], gc.next_position[Z],X,Z,motion_rate);
-             break;
-       case 6://b0000 0110
-             DualAxisStep(gc.next_position[Y], gc.next_position[Z],Y,Z,motion_rate);
-             break;
-       case 8://b0000 1000
-            SingleAxisStep(gc.next_position[A],motion_rate,A);
-             break;
-       case 9://b0000 1001
-            DualAxisStep(gc.next_position[X], gc.next_position[A],X,A,motion_rate);
-            break;
-       case 10://b0000 1010
-            DualAxisStep(gc.next_position[Y], gc.next_position[A],Y,A,motion_rate);
-            break;
-       case 12://b0000 1100
-            DualAxisStep(gc.next_position[Z], gc.next_position[A],Z,A,motion_rate);
-            break;
        case 15://Circle interpolation
             sys_sync_current_position();
             r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);

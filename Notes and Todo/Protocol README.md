@@ -128,7 +128,7 @@ The stored startup lines (`$N0`, `$N1`) are **not** run at boot yet.
 | `$n=value` | `ok` | Saves to flash. See the settings table |
 | `$C` | `[MSG:Enabled]` / `[MSG:Disabled]` | Check mode. Turning it off resets. `error:8` if not idle |
 | `$X` | `[MSG:Caution: Unlocked]` when in alarm | Clears the alarm |
-| `$H` | `error:20` | TODO: homing needs the step engine (`STEP_ENGINE_READY`) |
+| `$H` | `error:20` | TODO: rework homing for the DDS engine, then define `HOMING_READY` |
 | `$J=…` | `error:20` | TODO: jogging |
 | `$RST=$` | `ok` | Restores the default settings; offsets are kept |
 | `$RST=#` | `ok` | Clears G54–G59, G28 and G30; settings are kept |
@@ -149,10 +149,11 @@ settings in `settings_store_grbl_setting()` (`Globals.c`). The order printed by
 | --- | --- | --- |
 | 0 | Step pulse, µs (minimum 3) | Stored |
 | 1 | Step idle delay, ms | Stored |
-| 2 | Step port invert mask | Stored |
-| 3 | Direction invert mask | Fixed at 0 |
-| 4 | Step enable invert | Stored flag |
-| 5, 6 | Limit and probe pin invert | Fixed at 0 |
+| 2 | Step port invert mask | Stored, not yet applied to the pins |
+| 3 | Direction port invert mask | Stored, not yet applied to the pins |
+| 4 | Step enable invert | Stored flag, not yet applied to the pin |
+| 5 | Limit pin invert | Stored flag, not yet applied |
+| 6 | Probe pin invert | Fixed at 0 |
 | 10 | Status report mask | Fixed at 1 |
 | 11 | Junction deviation, mm | Stored |
 | 12 | Arc tolerance, mm (used as mm per arc segment) | Stored, must be > 0 |
@@ -171,8 +172,8 @@ settings in `settings_store_grbl_setting()` (`Globals.c`). The order printed by
 | 120–122 | X, Y, Z acceleration, mm/s² | **One shared value**, held internally as mm/min² |
 | 130–132 | X, Y, Z maximum travel, mm | Fixed from `Settings.h` |
 
-Writing a fixed setting replies `error:3`. `$99=` is accepted for
-compatibility with the old firmware; it saves the row again.
+Writing a fixed setting replies `error:3`. Changing `$100`–`$102` recalculates
+the ramp constants at once; no reset is needed.
 
 ## Status report (`?`)
 
@@ -207,8 +208,8 @@ example `G91`) is restored.
 
 | Code | Status |
 | --- | --- |
-| G0, G1 | Accepted. **Motion simulated** |
-| G2, G3 | Accepted in the G17 plane only (`R` or `I`/`J`). G18/G19 arcs give `error:20` (TODO) |
+| G0, G1 | Accepted. Up to four coordinated axes; untested on hardware |
+| G2, G3 | Accepted in the G17 plane only (`R` or `I`/`J`). G18/G19 arcs and arcs with Z or A give `error:20` (TODO) |
 | G4 | Dwell. `P` is in **seconds** (decimals allowed), as in Grbl 1.1. `S` in seconds is also accepted |
 | G10 L2 / L20 | Sets the G54–G59 offsets. `P0` means the active system, `P1`–`P6` mean G54–G59. Saved to flash. G10 L1 gives `error:20` (TODO: tool table) |
 | G17, G18, G19 | Plane select |
@@ -241,20 +242,24 @@ example `G91`) is restored.
 | N | Line numbers are accepted and ignored |
 | T | `error:20`. TODO: tool change |
 
-### Simulated motion
+### Motion (interim engine)
 
-Until `STEP_ENGINE_READY` is defined in `Settings.h`, `Run_Move()` (`Main.c`)
-does three things:
+With `STEP_ENGINE_READY` defined in `Settings.h`, `Run_Move()` (`Main.c`) sets
+`STATE_CYCLE` and starts a linear move through `MultiAxisStep()`. This sets up
+the master ramp (`speed_cntr_Move`) and starts the DDS
+engine (`Start_Interpolation`). The main loop calls `Cycle_Complete()` once no
+axis is running. The `MPos` DRO follows `steps_abs_position`, which the
+engine counts on each step.
 
-1. It sets `STATE_CYCLE`.
-2. It writes the target straight into the step counters.
-3. It calls `Cycle_Complete()`, which returns to `Idle`.
+Because the main loop stops reading lines while in `Run`, streaming waits for
+each move to finish. Each move starts and ends at rest, and each arc segment is
+a separate move, so arcs are slow until the planner exists. On a multi-axis
+move the feed rate is applied to the master axis, not the path. A currently
+uses the same linear conversion and G20/G21 units as XYZ; rotational A-axis
+units and combined feed semantics are not implemented.
 
-As a result, UGS sees each move finish instantly, and the position DRO jumps
-to the target. When the DDS step engine exists, it must call
-`Cycle_Complete()` when the last axis stops (TODO(DDS) in `Main.c`). Because
-the main loop stops reading lines while in `Run`, streaming then waits for each
-move to finish.
+Undefine `STEP_ENGINE_READY` to go back to simulated motion, where the
+position jumps to the target and the cycle completes at once.
 
 ## Error codes
 
@@ -290,7 +295,9 @@ Internal status codes are mapped onto Grbl 1.1 numbers in
 
 The settings row is held in one flash page, at virtual address `0xBD1BC000`
 (physical `0x1D1BC000`). It is copied into the RAM buffer `buffA` at
-`0xA0000000`. The word at index `0x17C` is the valid marker, `0x7FFF0101`.
+`0xA0000000`. The word at index `0x17C` is the valid marker, `0x7FFF0102`.
+The marker changes whenever the row layout changes (last: $3/$5 storage), so
+older rows are replaced by the defaults on the first save after an update.
 
 - **Boot:** flash is read only. If the marker is missing, the defaults from
   `Settings.h` are loaded into RAM, and flash is not touched.
@@ -305,12 +312,12 @@ The settings row is held in one flash page, at virtual address `0xBD1BC000`
 
 - Extended realtime bytes `0x84`–`0x9D`: safety door, jog cancel and
   overrides.
-- `$J=` jogging and `$H` homing. Homing is behind `STEP_ENGINE_READY`.
+- `$J=` jogging and `$H` homing. Homing is behind `HOMING_READY`.
 - Feed hold and cycle start acting on real motion; M0.
+- Feed rate along the path for multi-axis moves; rotational A-axis units.
 - Spindle (M3/M4, S), coolant (M7/M8), tool change (T, G10 L1).
 - G93 inverse time; arcs in G18/G19.
 - Run the `$N` startup lines at boot.
 - Report the A axis, and give each axis its own max rate and acceleration.
-- The DDS engine calling `Cycle_Complete()`.
 - Test Grbl over TCP port 23 with UGS; consider a lower latency than the
   `?` poll for delayed replies.

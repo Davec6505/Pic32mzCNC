@@ -149,7 +149,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 181 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 183 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -170,6 +170,7 @@ typedef struct {
  unsigned int decimal_places;
  unsigned int homing_dir_mask;
  unsigned int invert_mask;
+ unsigned int dir_invert_mask;
 
 } settings_t;
 
@@ -391,7 +392,7 @@ unsigned int DMA_Resume();
 
 int dma_printf(const char *str,...);
 void lTrim(char *d,char *s);
-#line 155 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
+#line 157 "c:/users/davec/git/pic32mzcnc/flash_r_w.h"
 unsigned int NVMWriteWord (const void *address, unsigned long _data);
 unsigned int NVMWriteQuad (const void *address, unsigned long *_data);
 unsigned int NVMWriteRow (const void* address, void* _data);
@@ -429,7 +430,7 @@ int round(float val);
 
 
 long lround(float val);
-#line 107 "c:/users/davec/git/pic32mzcnc/globals.h"
+#line 108 "c:/users/davec/git/pic32mzcnc/globals.h"
 extern unsigned long volatile buffA[512];
 
 
@@ -464,19 +465,7 @@ void settings_init(short reset_all);
 int settings_restore(int restore_mask);
 
 
-static int set_ram_loaded_indicator(int val);
-
-
-static void zero_ram_loaded_indicator();
-
-
 int read_ram_loaded_indicator();
-
-
-static void rst_single_coord_read_indicators(int flag);
-
-
-static void rst_coord_read_indicator();
 
 
 int read_coord_data_indicator();
@@ -497,35 +486,14 @@ int settings_read_startup_line(int n, char *line);
 int settings_store_startup_line(int n, char *line);
 
 
-void write_global_settings();
 
 
 int settings_store_global_setting(int parameter, float value);
 int settings_store_grbl_setting(int parameter, float value);
-#line 62 "c:/users/davec/git/pic32mzcnc/planner.h"
+#line 51 "c:/users/davec/git/pic32mzcnc/planner.h"
 typedef struct genVars{
- char running: 1;
- char startPulses: 1;
- char homed: 1;
- char run_circle: 1;
  char cir: 1;
- char Single_Dual: 1;
  char mode_complete;
- int AxisNo;
- int dirx;
- int diry;
- int dirz;
- int dira;
- int dirb;
- int dirc;
- long dif;
- long dA;
- long dB;
- long dC;
- long prevA;
- long prevB;
- long prevC;
- long over;
 }sVars;
 extern sVars SV;
 
@@ -548,9 +516,6 @@ void sys_sync_current_position();
 void plan_set_current_position();
 
 
-void plan_reset_absolute_position();
-
-
 long sqrt_(long v);
 
 
@@ -560,15 +525,7 @@ void r_or_ijk(float xCur,float yCur,float xFin,float yFin,
 #line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
-#line 59 "c:/users/davec/git/pic32mzcnc/kinematics.h"
-extern char stepper_state;
-extern sfr stp_stopped;
-extern sfr stp_run;
-extern sfr stp_pause;
-
-
-
-
+#line 58 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -576,10 +533,6 @@ unsigned int home_cnt;
 
 
 typedef struct Steps{
-
- char master: 1;
-
- unsigned short PLS_Step_ : 1;
 
  unsigned short stopAxis: 1;
 
@@ -596,7 +549,6 @@ typedef struct Steps{
  long min_delay;
 
  long accel_count;
- long deccl_count;
 
  long acc;
  long dec;
@@ -605,11 +557,7 @@ typedef struct Steps{
 
  long dist;
 
- long psingle;
-
  long new_step_delay;
-
- long last_accel_delay;
 
  long accel_lim;
 
@@ -640,6 +588,7 @@ static void Set_Axisdirection(long temp,int axis);
 
 
 void DualAxisStep(float axis_a,float axis_b,int axisA,int axisB,float speed);
+void MultiAxisStep(float *target,int axes,float speed);
 void SingleAxisStep(float newxyz,float speed,int axis_No);
 static void SingleAxisStart(long dist,float speed,int axis_No);
 
@@ -651,15 +600,8 @@ void mc_arc(float *position, float *target, float *offset, int axis_0,
 float hypot(float angular_travel, float linear_travel);
 
 
-int GetAxisDirection(long mm2move);
-
-
-
-void ResetHoming();
 int Home(int axis);
 static void Home_Axis(double distance,float speed,int axis);
-static void Inv_Home_Axis(double distance,float speed,int axis);
-void mc_dwell(float sec);
 void mc_reset();
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/timers.h"
@@ -668,50 +610,35 @@ void mc_reset();
 #line 1 "c:/users/davec/git/pic32mzcnc/globals.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/planner.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
-#line 35 "c:/users/davec/git/pic32mzcnc/stepper.h"
+#line 20 "c:/users/davec/git/pic32mzcnc/stepper.h"
 typedef enum _axis_{X,Y,Z,A,B,C,XY,XZ,XA,YZ,YA,XYZ,XYA,XZA,YZA}_axis_;
 typedef enum _axis_combination_{AXIS_XY,AXIS_XZ,AXIS_YZ,AXIS_XA,AXIS_YA,AXIS_ZA,AXIS_YX,AXIS_ZX,AXIS_AX,AXIS_ZY,AXIS_AY,AXIS_AZ} axis_combination;
 
-extern _axis_ _axis;
 extern axis_combination axis_xyz;
 
 
 
 
-extern long test;
-#line 53 "c:/users/davec/git/pic32mzcnc/stepper.h"
- typedef struct{
- uint32_t phase;
- uint32_t incrament;
- uint32_t old_phase;
- } dds_axis_t;
 
- extern volatile dds_axis_t dds_axes[4];
+
 
 
 
 void SetPinMode();
-void CycleStart();
-void CycleStop();
-
-void DisableStepperInterrupt(int stepper);
 void EnableSteppers();
 void DisableSteppers();
 void disableSpindleOCx();
 
 
 int GET_RunState(int axis_No);
-int Steppers_Enabled();
 
-
-static void SingleStepAxis(int axis);
-void Start_Interpolation(int axisA,int axisB);
-static void Axis_Interpolate(int axisA,int axisB);
+void Start_Interpolation(int master,int axes);
+void Stepper_Abort();
+int Stepper_Busy();
 void StopAxis(int axis);
 
 
-
-void Single_Axis_Enable(_axis_ axis_);
+int Pulse(int axis_No);
 #line 16 "c:/users/davec/git/pic32mzcnc/timers.h"
 struct Timer{
 char clock;
@@ -741,18 +668,10 @@ unsigned int ResetSteppers(unsigned int sec_to_disable,unsigned int last_sec_to_
 #line 1 "c:/users/davec/git/pic32mzcnc/stepper.h"
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/built_in.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/settings.h"
-#line 58 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
-const float Dia;
-#line 70 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
-long calcSteps(float mmsToMove, float Dia);
-long leadscrew_sets(float move_distance,int axis);
+#line 23 "c:/users/davec/git/pic32mzcnc/steptodistance.h"
 long belt_steps(float move_distance,int axis);
 float beltsteps2mm(long Steps,int axis);
-float mm2in(float mm);
-float in2mm(float inch);
 float fround(float var);
-float torpm(float mm_per_min);
-float toradians(float rev_per_min);
 #line 1 "c:/users/davec/git/pic32mzcnc/serial_dma.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/kinematics.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/gcode.h"
@@ -928,8 +847,14 @@ void Cycle_Complete();
 
 
 void Host_ServiceNow();
+
+
+
+static int Modal_Group_Actions1(int action);
+static int Axes_Running();
+static void Wait_Motion();
+static void Run_Single_Axes(float *target);
 #line 36 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
-_axis_ _axis;
 axis_combination axis_xyz;
 settings_t settings absolute 0xA0002800;
 parser_state_t gc absolute 0xA0002900;
@@ -996,7 +921,16 @@ char output[100] = "Hello!";
  G_Begin_Block();
  status_of_gcode =  0 ;
  }
-#line 133 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+
+ else if(Get_modalgroup() ==  (1 << 10 ) ){
+
+ modal_action = Modal_Group_Actions1( ((( 4 * 4 )*2)-1) );
+ if(modal_action == 0) Rst_modalgroup();
+ }
+
+ if(sys.state ==  3  && !Axes_Running())
+ Cycle_Complete();
+#line 132 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  Ethernet_Transport_Poll();
 
 
@@ -1115,6 +1049,11 @@ int mode = Get_motionmode();
  FAIL( 3 );
  return;
  }
+ if((mode ==  2  || mode ==  3 ) &&
+ (axes & ( (1 << Z)  |  (1 << A) ))){
+ FAIL( 3 );
+ return;
+ }
  Compute_Target(axes,target);
  Run_Move(target,mode);
 }
@@ -1130,15 +1069,22 @@ int arc = (mode ==  2  || mode ==  3 );
  if(!axes && !arc) return;
 
  sys.state =  3 ;
-#line 277 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
- for(i=0;i< 4 ;i++)
- STPS[i].steps_abs_position = belt_steps(target[i],i);
 
+
+ motion_rate = (mode ==  0 ) ? settings.default_seek_rate : gc.feed_rate;
+ for(i=0;i< 4 ;i++){
+ if( ((axes & (1 << i) ) != 0) )
+ gc.next_position[i] = gc.absolute_mode ? target[i] : target[i] - gc.position[i];
+ }
+ EnableSteppers();
+ if(arc)
+ Modal_Group_Actions1(15);
+ else
+ MultiAxisStep(gc.next_position,axes,motion_rate);
+#line 287 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  for(i=0;i< 4 ;i++)
  gc.position[i] = target[i];
-
- Cycle_Complete();
-
+#line 292 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
 }
 
 
@@ -1147,7 +1093,44 @@ void Cycle_Complete(){
  if(sys.state ==  3 )
  sys.state =  0 ;
 }
-#line 330 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+
+
+static int Axes_Running(){
+int i;
+ for(i=0;i< 4 ;i++){
+ if(GET_RunState(i)) return 1;
+ }
+ return 0;
+}
+
+static void Wait_Motion(){
+ while(Axes_Running()){
+ protocol_execute_runtime();
+ if(sys.abort) return;
+ }
+ Cycle_Complete();
+}
+
+
+static void Run_Single_Axes(float *target){
+int order[ 4 ];
+int k,i;
+float step_target[ 4 ];
+ order[0] = Z; order[1] = X; order[2] = Y; order[3] = A;
+ for(k=0;k< 4 ;k++){
+ for(i=0;i< 4 ;i++) step_target[i] = gc.position[i];
+ step_target[order[k]] = target[order[k]];
+ Run_Move(step_target, 0 );
+ Wait_Motion();
+ if(sys.abort) return;
+ }
+}
+
+
+
+
+
+
 static int Modal_Group_Actions0(int action){
 int i,temp,axis_words;
 unsigned long dly_time;
@@ -1212,10 +1195,8 @@ float target[ 4 ];
  if(axis_words){
  Compute_Target(axis_words,target);
 
-
-
- Run_Move(target, 0 );
-
+ Run_Single_Axes(target);
+#line 406 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  }
  settings_read_coord_data();
  for(i=0;i< 4 ;i++){
@@ -1224,10 +1205,8 @@ float target[ 4 ];
  target[i] = coord_system[temp-1].coord[i];
  }
 
-
-
- Run_Move(target, 0 );
-
+ Run_Single_Axes(target);
+#line 418 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  break;
  case 16:
  case 64:
@@ -1253,5 +1232,63 @@ float target[ 4 ];
  FAIL( 3 );
  break;
  }
+ return action;
+}
+
+
+
+
+
+static int Modal_Group_Actions1(int action){
+#line 455 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+ switch(action){
+ case 15:
+ sys_sync_current_position();
+ r_or_ijk(gc.position[X],gc.position[Y],gc.next_position[X],gc.next_position[Y],gc.R,gc.I,gc.J,gc.K,X,Y,gc.DIR);
+ break;
+ case  ((( 4 * 4 )*2)-1) :
+ axis_to_home = Home(axis_to_home);
+ LED2 = TMR.clock >> 3;
+#line 467 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+ if(axis_to_home < 3){
+
+
+ if (sys.abort) {
+ action =( -2 );
+ }
+ }else{
+ int l = 0;
+
+ LED2 =  0 ;
+ mc_reset();
+ action = 0;
+ for(l=0;l< 4 ;l++){
+
+
+ STPS[l].steps_abs_position = 0;
+ sys.position[l] = STPS[l].steps_abs_position;
+
+
+ if(STPS[l].run_state !=  0 )
+ STPS[l].run_state =  0 ;
+ }
+
+
+ sys_sync_current_position();
+
+
+ while(axis_to_home)
+ axis_to_home = Rst_Axisword();
+
+
+ sys.state =  0 ;
+ SV.mode_complete = 0;
+ report_status_message( 0 );
+ }
+ break;
+ default: return action = 0;
+ break;
+ }
+
  return action;
 }

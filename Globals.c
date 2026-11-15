@@ -26,6 +26,12 @@ static void settings_blank_row();
 static int  settings_save_row();
 static void settings_default_row();
 static void settings_apply_row();
+static int  set_ram_loaded_indicator(int val);
+static void zero_ram_loaded_indicator();
+static void rst_single_coord_read_indicators(int flag);
+static void rst_coord_read_indicator();
+//ramp constants depend on steps_per_mm (Planner.c)
+void set_calculation_constants();
 
 ////////////////////////////////////////////////////////////////////////////////
 //Initializes all settings and restores defaults if needed
@@ -102,12 +108,14 @@ unsigned long flags = 0;
   buffA[DEC_PLACES_OFFSET]    = (unsigned long)DEFAULT_DECIMAL_PLACES;
   buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)DEFAULT_HOME_DIR_MASK;
   buffA[INVERT_MASK_OFFSET]   = (unsigned long)DEFAULT_INVERT_MASK;
+  buffA[DIR_INVERT_MASK_OFFSET] = (unsigned long)DEFAULT_DIR_INVERT_MASK;
 
   if (DEFAULT_REPORT_INCHES)    { flags |= BITFLAG_REPORT_INCHES; }
   if (DEFAULT_AUTO_START)       { flags |= BITFLAG_AUTO_START; }
   if (DEFAULT_INVERT_ST_ENABLE) { flags |= BITFLAG_INVERT_ST_ENABLE; }
   if (DEFAULT_HARD_LIMIT_ENABLE){ flags |= BITFLAG_HARD_LIMIT_ENABLE; }
   if (DEFAULT_HOMING_ENABLE)    { flags |= BITFLAG_HOMING_ENABLE; }
+  if (DEFAULT_INVERT_LIMIT_PINS){ flags |= BITFLAG_INVERT_LIMIT_PINS; }
   buffA[FLAGS_OFFSET] = flags;
 }
 
@@ -137,6 +145,7 @@ static void settings_apply_row(){
   settings.homing_debounce_delay  = (unsigned int)buffA[H_DEBNC_DLY_OFFSET];
   settings.homing_dir_mask        = (unsigned int)buffA[HOME_DIR_MASK_OFFSET];
   settings.invert_mask            = (unsigned int)buffA[INVERT_MASK_OFFSET];
+  settings.dir_invert_mask        = (unsigned int)buffA[DIR_INVERT_MASK_OFFSET];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -447,12 +456,12 @@ int val_temp = 0;
   
 
   switch(parameter) {
-    case 0: case 1: case 2: //| X | Y | Z | ? | ? | ? |
+    case 0: case 1: case 2: //$100..$102 steps per revolution for X, Y, Z
       if (value <= 0.0) { return(STATUS_SETTING_VALUE_NEG); }
-      //set current values
       settings.steps_per_mm[parameter] = value;
-      //prepare flash values in case $=99 is sent
       buffA[SPMMX_OFFSET+parameter] = flt2ulong(value);
+      //the ramp constants (alpha, a_t_x100, a_sq, spr_x_mstep) follow steps_per_mm
+      set_calculation_constants();
 
      //test string argument for correctness
       #if GlobalsDebug == 2
@@ -468,11 +477,7 @@ int val_temp = 0;
        if (value < 3) { return(STATUS_SETTING_STEP_PULSE_MIN); }
        val_temp = round(value);
        settings.p_usec = val_temp;
-       //prepare flash values in case $=99 is sent
        buffA[P_USEC_OFFSET] = (unsigned long)val_temp;
-       break;
-    case 4: settings.default_feed_rate = value; 
-       buffA[D_FEED_RATE_OFFSET] = flt2ulong(value);
        break;
     case 5: settings.default_seek_rate = value; 
        buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
@@ -498,29 +503,11 @@ int val_temp = 0;
        settings.mm_per_arc_segment = value;
        buffA[MM_ARC_SEG_OFFSET] = flt2ulong(value);
        break;
-    case 11: 
-       val_temp = round(value);
-       settings.n_arc_correction = val_temp;
-       buffA[N_ARC_CORREC_OFFSET] = (int)val_temp;
-       break;
-    case 12: 
-       val_temp = round(value);
-       settings.decimal_places = val_temp;
-       buffA[DEC_PLACES_OFFSET] = (unsigned long)val_temp;
-       break;
     case 13:
       if (round(value)){
         settings.flags |= BITFLAG_REPORT_INCHES;
       }else{
         settings.flags &= ~BITFLAG_REPORT_INCHES;
-      }
-      buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
-      break;
-    case 14: // Reset to ensure change. Immediate re-init may cause problems.
-      if (round(value)){
-        settings.flags |= BITFLAG_AUTO_START;
-      }else{ 
-        settings.flags &= ~BITFLAG_AUTO_START;
       }
       buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
       break;
@@ -569,8 +556,19 @@ int val_temp = 0;
           settings.homing_pulloff = fabs(value);
           buffA[H_PULL_OFF_OFFSET] = flt2ulong(fabs(value));
       break;
-    case 99://kept for compatibility, every change is already saved
-       break;
+    case 23: //$3 direction port invert mask, bits X..A
+       val_temp = round(value);
+       settings.dir_invert_mask = val_temp;
+       buffA[DIR_INVERT_MASK_OFFSET] = (unsigned long)val_temp;
+      break;
+    case 24: //$5 invert the limit pins (active high switches)
+      if (round(value)){
+         settings.flags |= BITFLAG_INVERT_LIMIT_PINS;
+      }else{
+         settings.flags &= ~BITFLAG_INVERT_LIMIT_PINS;
+      }
+      buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
+      break;
     default:
       return(STATUS_INVALID_STATEMENT);
   }
@@ -587,7 +585,9 @@ int internal;
     case 0:   internal = 3;  break; // step pulse usec
     case 1:   internal = 7;  break; // step idle delay
     case 2:   internal = 6;  break; // step port invert mask
+    case 3:   internal = 23; break; // direction port invert mask
     case 4:   internal = 15; break; // step enable invert
+    case 5:   internal = 24; break; // limit pins invert
     case 11:  internal = 9;  break; // junction deviation
     case 12:  internal = 10; break; // arc tolerance (mm per arc segment)
     case 13:  internal = 13; break; // report inches
@@ -601,7 +601,6 @@ int internal;
     case 100: case 101: case 102: internal = parameter - 100; break; // steps/mm
     case 110: case 111: case 112: internal = 5;  break; // shared max rate
     case 120: case 121: case 122: internal = 8;  break; // shared acceleration
-    case 99:  internal = 99; break; // legacy save (no-op)
     default:  return(STATUS_INVALID_STATEMENT);
   }
   return settings_store_global_setting(internal, value);

@@ -199,7 +199,7 @@ LBU	R2, Offset(_axis_xyz+0)(GP)
 SB	R2, Offset(GCODE_axis_xyz_saved+0)(GP)
 ;GCODE.c,99 :: 		cir_saved = SV.cir;
 LBU	R2, Offset(_SV+0)(GP)
-EXT	R2, R2, 4, 1
+EXT	R2, R2, 0, 1
 SB	R2, Offset(GCODE_cir_saved+0)(GP)
 ;GCODE.c,100 :: 		}
 L_end_G_Save_State:
@@ -235,7 +235,7 @@ SB	R2, Offset(_axis_xyz+0)(GP)
 ;GCODE.c,106 :: 		SV.cir = cir_saved;
 LBU	R3, Offset(GCODE_cir_saved+0)(GP)
 LBU	R2, Offset(_SV+0)(GP)
-INS	R2, R3, 4, 1
+INS	R2, R3, 0, 1
 SB	R2, Offset(_SV+0)(GP)
 ;GCODE.c,107 :: 		}
 L_end_G_Restore_State:
@@ -975,7 +975,7 @@ NOP
 L_GCODE_Set_Motion_Mode49:
 SH	R0, Offset(-1610602990)(GP)
 LBU	R2, Offset(_SV+0)(GP)
-INS	R2, R0, 4, 1
+INS	R2, R0, 0, 1
 SB	R2, Offset(_SV+0)(GP)
 J	L_GCODE_Set_Motion_Mode48
 NOP	
@@ -984,7 +984,7 @@ L_GCODE_Set_Motion_Mode50:
 ORI	R2, R0, 1
 SH	R2, Offset(-1610602990)(GP)
 LBU	R2, Offset(_SV+0)(GP)
-INS	R2, R0, 4, 1
+INS	R2, R0, 0, 1
 SB	R2, Offset(_SV+0)(GP)
 J	L_GCODE_Set_Motion_Mode48
 NOP	
@@ -994,7 +994,7 @@ ORI	R2, R0, 2
 SH	R2, Offset(-1610602990)(GP)
 SH	R0, Offset(_gc+132)(GP)
 LBU	R2, Offset(_SV+0)(GP)
-ORI	R2, R2, 16
+ORI	R2, R2, 1
 SB	R2, Offset(_SV+0)(GP)
 J	L_GCODE_Set_Motion_Mode48
 NOP	
@@ -1005,7 +1005,7 @@ SH	R2, Offset(-1610602990)(GP)
 ORI	R2, R0, 1
 SH	R2, Offset(_gc+132)(GP)
 LBU	R2, Offset(_SV+0)(GP)
-ORI	R2, R2, 16
+ORI	R2, R2, 1
 SB	R2, Offset(_SV+0)(GP)
 J	L_GCODE_Set_Motion_Mode48
 NOP	

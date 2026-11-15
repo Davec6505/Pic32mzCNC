@@ -96,6 +96,9 @@ static char Enc28_Present() {
     return 0;
 }
 
+// Initialize the ethernet transport layer.
+// This function configures the ENC28J60, checks for its presence, and sets up the network parameters.
+// It must be called before any other ethernet functions.
 void Ethernet_Transport_Init() {
     ethernet_ready = 0;
     ethernet_tx_head = ethernet_tx_tail = 0;
@@ -107,6 +110,10 @@ void Ethernet_Transport_Init() {
     ethernet_ready = 1;
 }
 
+ // Set the current ethernet host and reset the transmit buffer.
+ // 'link' specifies the new host link type (e.g., HOST_LINK_ETHERNET or HOST_LINK_SERIAL).
+ // This function also resets the transmit buffer to ensure no stale data is sent to the new host.
+ // This ensures that the new host starts with a clean transmit buffer.
 static void Ethernet_SetHost(char link) {
     Host_SetLink(link);
     ethernet_tx_head = ethernet_tx_tail = 0;
@@ -145,6 +152,8 @@ int Ethernet_HostPut(char ch) {
     return 1;
 }
 
+// This function checks if the remote host matches the current ethernet host
+// It compares the 4-byte IP address of the remote host with the stored ethernet host IP address.
 static char Ethernet_IsHost(unsigned char *remoteHost) {
     return remoteHost[0] == ethernet_host[0] && remoteHost[1] == ethernet_host[1] &&
            remoteHost[2] == ethernet_host[2] && remoteHost[3] == ethernet_host[3];

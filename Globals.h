@@ -21,7 +21,8 @@
 
 //written to FLASH_LOADED_OFFSET with every save; change it whenever the
 //settings row layout changes so new firmware restores its defaults once
-#define SETTINGS_VALID_MARKER 0x7FFF0101
+//0x7FFF0102: added $3 dir invert mask and $5 limit invert, $2/$4 new defaults
+#define SETTINGS_VALID_MARKER 0x7FFF0102
 
 //$RST restore masks
 #define SETTINGS_RESTORE_DEFAULTS      0x01  // $RST=$
@@ -137,20 +138,8 @@ extern volatile coord_sys coord_system[NUMBER_OF_DATUMS];
 void settings_init(short reset_all);
 int settings_restore(int restore_mask);
 
-//set the ram_loaded indicator
-static int set_ram_loaded_indicator(int val);
-
-//force a zeroing of ram_loaded indicator
-static void zero_ram_loaded_indicator();
-
 //read the ram loaded indicator
 int read_ram_loaded_indicator();
-
-//reset individual flags back to false
-static void rst_single_coord_read_indicators(int flag);
-
-//reset all coord status flags back to false
-static void rst_coord_read_indicator();
 
 //get the status of the indicator flag
 int read_coord_data_indicator();
@@ -170,10 +159,9 @@ int settings_read_startup_line(int n, char *line);
 // Method to store startup lines into EEPROM
 int settings_store_startup_line(int n, char *line);
 
-// Method to store Grbl global settings struct and version number into EEPROM
-void write_global_settings();
-
-// A helper method to set settings from command line
+// Store one setting ($n=value): settings_store_grbl_setting maps the Grbl 1.1
+// number onto the internal index, settings_store_global_setting writes the
+// value and saves the row to flash
 int settings_store_global_setting(int parameter, float value);
 int settings_store_grbl_setting(int parameter, float value);
-#endif
+#endif//GLOBALS_H

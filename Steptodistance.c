@@ -10,20 +10,6 @@
 #include "Steptodistance.h"
 #include "Globals.h"
 
-////////////////////////////////////////////
-//Calculate the setp count to move for
-//a lead screw drivem axis
-// SPMM = 1/p * 1/uStep * SPR
-long leadscrew_steps(double move_distance,int axis){
-double temp = 0.00;
-#ifndef USE_LEADSCREW_PITCH
-   temp =  N * INVERSE_M_STEP * settings.steps_per_mm[axis];
-#else
-   temp =  INVERSE_LEADSCREW_PITCH * INVERSE_M_STEP * settings.steps_per_mm[axis];
-#endif
-  return temp;
-}
-
 ///////////////////////////////////////////
 //Calculate the setp count to move for
 //a belt driven axis
@@ -46,39 +32,4 @@ float beltsteps2mm(long Steps,int axis){
  #endif
  return temp;
 }
-
-///////////////////////////////////////////
-//mm to inches conversion arg in mm
-//returns inches
-double mm2in(double mm){
-  return mm * INCH_PER_MM;
-}
-
-//////////////////////////////////////////
-//Convert inches to mm arg in inches
-//returns mm
-double in2mm(double inch){
-  return inch * MM_PER_INCH;
-}
-
-
-///////////////////////////////////////////
-//Test system not to be used for future
-//production code
-long calcSteps(double mmsToMove,  double Dia,int axis){
-double circ,cirDivision,stepsToMove;
-
-///////////////////////////////////////////
-// calculate the circumfrence
-  circ = Dia*Pi;
-
-//////////////////////////////////////////
-//use the circumfrence and spr to get steps
-  cirDivision = mmsToMove / circ;
-  stepsToMove = cirDivision * settings.steps_per_mm[axis] * M_STEP;
-
-
-  return (long)stepsToMove;
-}
-
 
