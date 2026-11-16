@@ -59,7 +59,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 183 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 185 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -81,7 +81,8 @@ typedef struct {
  unsigned int homing_dir_mask;
  unsigned int invert_mask;
  unsigned int dir_invert_mask;
-
+ unsigned int enable_mask;
+ unsigned int status_report_mask;
 } settings_t;
 
 extern settings_t settings;
@@ -850,6 +851,8 @@ int GET_RunState(int axis_No);
 void Start_Interpolation(int master,int axes);
 void Stepper_Abort();
 int Stepper_Busy();
+
+void Stepper_ApplyInvertMasks();
 void StopAxis(int axis);
 
 
@@ -866,6 +869,9 @@ static volatile dds_axis_t dds_master;
 static volatile int eng_master = -1;
 static volatile int eng_axes;
 static volatile unsigned long eng_err[ 4 ];
+
+
+static volatile char step_idle[ 4 ];
 void dds_tick();
 static void Step_Cycle(int axis_No);
 static unsigned long Dds_Increment(long step_delay);
@@ -912,15 +918,15 @@ void SetPinMode(){
  PLS_StepZ = 0;
  PLS_StepA = 0;
 }
-#line 71 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
+#line 74 "c:/Users/davec/GIT/Pic32mzCNC/Stepper.c"
 void dds_tick(){
 int m, i;
 unsigned long gap;
 
- PLS_StepX = 0;
- PLS_StepY = 0;
- PLS_StepZ = 0;
- PLS_StepA = 0;
+ PLS_StepX = step_idle[X];
+ PLS_StepY = step_idle[Y];
+ PLS_StepZ = step_idle[Z];
+ PLS_StepA = step_idle[A];
 
  m = eng_master;
  if(m < 0) return;
@@ -1004,12 +1010,23 @@ int Stepper_Busy(){
 }
 
 
+
+
+
+void Stepper_ApplyInvertMasks(){
+int i;
+ for(i=0;i< 4 ;i++)
+ step_idle[i] =  ((settings.invert_mask & (1 << i) ) != 0)  ? 1 : 0;
+}
+
+
+
 void EnableSteppers(){
- EN_Steppers = 0;
+ EN_Steppers =  ((settings.flags & (1 << 2) ) != 0)  ? 1 : 0;
 }
 
 void DisableSteppers(){
- EN_Steppers = 1;
+ EN_Steppers =  ((settings.flags & (1 << 2) ) != 0)  ? 0 : 1;
 }
 
 int GET_RunState(int axis_No){
@@ -1033,12 +1050,13 @@ void disableSpindleOCx(){
 
 
 
+
 static void Step_Cycle(int axis_No){
  switch(axis_No){
- case X: PLS_StepX = 1; break;
- case Y: PLS_StepY = 1; break;
- case Z: PLS_StepZ = 1; break;
- case A: PLS_StepA = 1; break;
+ case X: PLS_StepX = !step_idle[X]; break;
+ case Y: PLS_StepY = !step_idle[Y]; break;
+ case Z: PLS_StepZ = !step_idle[Z]; break;
+ case A: PLS_StepA = !step_idle[A]; break;
  default: break;
  }
 

@@ -16,15 +16,15 @@
 // SPMM = 1/p * 1/uStep * 1/BTC * SPR
 long belt_steps(float move_distance,int axis){
  double temp = 0;
-  temp = ((M_STEP * settings.steps_per_mm[axis])/(BELT_PITCH * PULLEY_TOOTH_COUNT)) * move_distance; //mmtostep(move_distance);
+  temp = ((settings.steps_per_mm[axis])/(BELT_PITCH * PULLEY_TOOTH_COUNT)) * move_distance; //mmtostep(move_distance);
   return lround(temp);
 }
 
 ///////////////////////////////////////////
-//Calculate from Steps to mm
+//Calculate from Steps to mm eliminated M_STEP factor as it should be accounted for in steps_per_mm
 //SPMM = p^-1 * frq *
 float beltsteps2mm(long Steps,int axis){
- float temp = (BELT_PITCH*PULLEY_TOOTH_COUNT*(float)Steps)/(M_STEP * settings.steps_per_mm[axis]); //steptomm(steps);
+ float temp = (BELT_PITCH*PULLEY_TOOTH_COUNT*(float)Steps)/(settings.steps_per_mm[axis]); //steptomm(steps);
  temp = fround(temp);
  #if CalcsDebug == 1
  while(DMA_IsOn(1));

@@ -54,7 +54,7 @@ static int send_status_once = 0;
 static int status_of_gcode;
 /////////////////////////////////////////
 //condition externs
-void Conditin_Externs(){
+void Condition_Externs(){
   PinMode();
   Ethernet_Transport_Init();
   plan_init(5000.0,5000.0);//settings.acceleration,settings.acceleration);
@@ -76,18 +76,20 @@ int modal_group = 0;
 int modal_action = 0;
 int dif;
 static int cntr = 0,a = 0;
-char output[100] = "Hello!";
+
  //setup
- Conditin_Externs();
- //pre condition
+ Condition_Externs();
+
+ //pre condition states and variables related to the system and gcode
  cntr = a =  dif = status_of_gcode = modal_group = modal_action = 0;
 
- //start the timer8 to test isr timming
+ //start the dds timer8 for isr timming , this doesn't have to run continously.
  Timer8_Start();
+
+ //All limit switches are sampled in the Timer1 10 ms ISR (Limits_Sample)for asynchronous detection
 
  while(1){
 
-   //limits are sampled in the Timer1 10 ms ISR (Limits_Sample)
 
    //ENC28J60 is polled twice a scan, here and before the runtime checks
    Ethernet_Transport_Poll();

@@ -23,20 +23,23 @@ int i = 0;
 //////////////////////////////////////////////////////////
 //                 SET AXIS DIRECTION                   //
 //////////////////////////////////////////////////////////
+//$3 direction port invert: each axis's bit in settings.dir_invert_mask
+//flips its DIR level. Runs once per move, before any step pulse.
 static void Set_Axisdirection(long temp,int axis){
      int dir = (temp < 0)? CCW : CW;
+     int inv = bit_istrue(settings.dir_invert_mask,bit(axis)) ? 1 : 0;
      switch(axis){
        case X:
-            DIR_StepX = (X_DIR_DIR ^ dir) & 0x0001;//(X_DIR_DIR)?dir:~dir;
+            DIR_StepX = (inv ^ dir) & 0x0001;
             break;
        case Y:
-            DIR_StepY = (Y_DIR_DIR ^ dir) & 0x0001;
+            DIR_StepY = (inv ^ dir) & 0x0001;
             break;
        case Z:
-            DIR_StepZ = (Z_DIR_DIR ^ dir) & 0x0001;
+            DIR_StepZ = (inv ^ dir) & 0x0001;
             break;
        case A:
-            DIR_StepA = (A_DIR_DIR ^ dir) & 0x0001;
+            DIR_StepA = (inv ^ dir) & 0x0001;
             break;
        default: break;
      }

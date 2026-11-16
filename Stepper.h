@@ -41,6 +41,8 @@ int GET_RunState(int axis_No);
 void Start_Interpolation(int master,int axes);
 void Stepper_Abort();
 int Stepper_Busy();
+//refresh the $2 step-pin idle level cache from settings.invert_mask
+void Stepper_ApplyInvertMasks();
 void StopAxis(int axis);
 
 //Speed ramp, call after each step pulse (Austin / AVR446 Taylor series)

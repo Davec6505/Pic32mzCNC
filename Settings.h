@@ -75,8 +75,8 @@ typedef __attribute__((aligned (32))) float afloat;
 #define DEFAULT_HOME_DIR_MASK          15      // move positive dir
 //$2 step port invert mask: 0 = pulses idle low and rise to step
 #define DEFAULT_INVERT_MASK            0
-//$3 direction port invert mask, bits X..A. 5 (X and Z set) matches the
-//compile-time X_DIR_DIR=1 Y=0 Z=1 A=0 polarity in Pins.h
+//$3 direction port invert mask, bits X..A. 5 (X and Z set) preserves the
+//polarity the old compile-time Pins.h defines used (X=1 Y=0 Z=1 A=0)
 #define DEFAULT_DIR_INVERT_MASK        5
 
 
@@ -103,7 +103,9 @@ typedef __attribute__((aligned (32))) float afloat;
 //4 axis has 4 planes XY XZ YZ [XA YA ZA]
 #define NO_OF_PLANES 4
 
-//! Stepper drive micro steps setting.
+//! Stepper drive micro steps setting. 
+//! This should not be needed as steps/mm is used instead, was defined for legacy reasons.
+//! Globals.c useses M_STEP ln:109  buffA[MICROSTEPS_OFFSET]    = (unsigned long)M_STEP; steps_per_mm uses $100-$103.
 #define M_STEP   32.00
 
 //! Maximun mm/min needed for calculation
@@ -199,9 +201,10 @@ typedef struct {
   unsigned int p_usec;
   unsigned int decimal_places;
   unsigned int homing_dir_mask;
-  unsigned int invert_mask;      // $2 step port invert mask
-  unsigned int dir_invert_mask;  // $3 direction port invert mask
-//  uint8_t status_report_mask; // Mask to indicate desired report data.
+  unsigned int invert_mask;           // $2 step port invert mask
+  unsigned int dir_invert_mask;       // $3 direction port invert mask
+  unsigned int enable_mask;           //$4 Mask for shared enable inversion.
+  unsigned int status_report_mask;    //$10 Mask to indicate desired report data.
 }  settings_t;
 
 extern settings_t settings;

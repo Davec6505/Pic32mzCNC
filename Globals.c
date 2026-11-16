@@ -32,6 +32,8 @@ static void rst_single_coord_read_indicators(int flag);
 static void rst_coord_read_indicator();
 //ramp constants depend on steps_per_mm (Planner.c)
 void set_calculation_constants();
+//$2 step-pin idle level cache (Stepper.c)
+void Stepper_ApplyInvertMasks();
 
 ////////////////////////////////////////////////////////////////////////////////
 //Initializes all settings and restores defaults if needed
@@ -110,12 +112,12 @@ unsigned long flags = 0;
   buffA[INVERT_MASK_OFFSET]   = (unsigned long)DEFAULT_INVERT_MASK;
   buffA[DIR_INVERT_MASK_OFFSET] = (unsigned long)DEFAULT_DIR_INVERT_MASK;
 
-  if (DEFAULT_REPORT_INCHES)    { flags |= BITFLAG_REPORT_INCHES; }
-  if (DEFAULT_AUTO_START)       { flags |= BITFLAG_AUTO_START; }
-  if (DEFAULT_INVERT_ST_ENABLE) { flags |= BITFLAG_INVERT_ST_ENABLE; }
-  if (DEFAULT_HARD_LIMIT_ENABLE){ flags |= BITFLAG_HARD_LIMIT_ENABLE; }
-  if (DEFAULT_HOMING_ENABLE)    { flags |= BITFLAG_HOMING_ENABLE; }
-  if (DEFAULT_INVERT_LIMIT_PINS){ flags |= BITFLAG_INVERT_LIMIT_PINS; }
+  if (DEFAULT_REPORT_INCHES)    { flags |= BITFLAG_REPORT_INCHES; }       //bit 0
+  if (DEFAULT_AUTO_START)       { flags |= BITFLAG_AUTO_START; }          //bit 1
+  if (DEFAULT_INVERT_ST_ENABLE) { flags |= BITFLAG_INVERT_ST_ENABLE; }    //bit 2
+  if (DEFAULT_HARD_LIMIT_ENABLE){ flags |= BITFLAG_HARD_LIMIT_ENABLE; }   //bit 3
+  if (DEFAULT_HOMING_ENABLE)    { flags |= BITFLAG_HOMING_ENABLE; }       //bit 4
+  if (DEFAULT_INVERT_LIMIT_PINS){ flags |= BITFLAG_INVERT_LIMIT_PINS; }   //bit 5
   buffA[FLAGS_OFFSET] = flags;
 }
 
@@ -146,6 +148,8 @@ static void settings_apply_row(){
   settings.homing_dir_mask        = (unsigned int)buffA[HOME_DIR_MASK_OFFSET];
   settings.invert_mask            = (unsigned int)buffA[INVERT_MASK_OFFSET];
   settings.dir_invert_mask        = (unsigned int)buffA[DIR_INVERT_MASK_OFFSET];
+  //covers boot, $RST=$ and $RST=*
+  Stepper_ApplyInvertMasks();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -482,9 +486,10 @@ int val_temp = 0;
     case 5: settings.default_seek_rate = value; 
        buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
        break;
-    case 6:
+    case 6: //$2 step port invert mask, bits X..A
        settings.invert_mask = floor(value);
        buffA[INVERT_MASK_OFFSET] = (unsigned long)floor(value);
+       Stepper_ApplyInvertMasks();
        break;
     case 7: 
        val_temp = round(value);
@@ -560,6 +565,7 @@ int val_temp = 0;
        val_temp = round(value);
        settings.dir_invert_mask = val_temp;
        buffA[DIR_INVERT_MASK_OFFSET] = (unsigned long)val_temp;
+       Stepper_ApplyInvertMasks();
       break;
     case 24: //$5 invert the limit pins (active high switches)
       if (round(value)){

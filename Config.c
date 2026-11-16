@@ -68,10 +68,13 @@ void PinMode(){
      PPS_Mapping_NoLock(_RPE8, _OUTPUT, _U2TX);    // RE8 = UART2 TX
      PPS_Mapping_NoLock(_RPE9, _INPUT,  _U2RX);    // RE9 = UART2 RX
 #endif
-  //UART5 PIN MAPPING
+
+  //UART5 PIN MAPPING on the flipnClick this is used for communication but it asserts RTS/CTS lines which may need handling
+#if UART_BOOTLOADER == 1
      PPS_Mapping_NoLock(_RPD15, _OUTPUT, _U5TX);    // Sets pin PORTD.B15 to be Output and maps UART5 Transmit
      PPS_Mapping_NoLock(_RPD14, _INPUT,  _U5RX);    // Sets pin PORTD.B14 to be Input and maps UART5 Receive
-   
+#endif
+
      //SPI1 Pins for SDI and SDO for ENC28J60 Module
      PPS_Mapping_NoLock(_RPD2, _INPUT, _SDI1);
      PPS_Mapping_NoLock(_RPD3, _OUTPUT, _SDO1);

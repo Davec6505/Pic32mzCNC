@@ -101,11 +101,9 @@ extern sfr sbit SPI_Ethernet_Rst_Direction;
 
 
 /////////////////////////////////////////////////////
-//Direction pins  0 =ve 1 || = -ve
-#define X_DIR_DIR  1
-#define Y_DIR_DIR  0
-#define Z_DIR_DIR  1
-#define A_DIR_DIR  0
+//Direction polarity is runtime now: $3 (settings.dir_invert_mask).
+//DEFAULT_DIR_INVERT_MASK 5 in Settings.h preserves the old compile-time
+//X=1 Y=0 Z=1 A=0 polarity that used to be defined here.
 
 
 #endif

@@ -42,8 +42,8 @@ int i;
 //using settings instead of defines
     //alpha 2 x Pi / SPR
  for(i=0;i<NoOfAxis;i++){
- //2*3.14159)/SPR
-  alpha[i] = (PIx2 / (settings.steps_per_mm[i]*M_STEP));
+ //2*3.14159)/SPR  
+  alpha[i] = (PIx2 / (settings.steps_per_mm[i])); //step_per_mm will have M_STEP already accounted for.
   //(long)((ALPHA*T1_FREQ)*100)
   a_t_x100[i] = (alpha[i] * T1_FREQ * 100.00);
   //(long)(ALPHA*2*SQ_MASK) [ ALPHA*2*10000000000 ]

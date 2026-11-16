@@ -1,5 +1,5 @@
-_Conditin_Externs:
-;Main.c,57 :: 		void Conditin_Externs(){
+_Condition_Externs:
+;Main.c,57 :: 		void Condition_Externs(){
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
 ;Main.c,58 :: 		PinMode();
@@ -35,21 +35,20 @@ NOP
 ;Main.c,67 :: 		disable_steps = 0;
 SH	R0, Offset(Main_disable_steps+0)(GP)
 ;Main.c,68 :: 		}
-L_end_Conditin_Externs:
+L_end_Condition_Externs:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 4
 JR	RA
 NOP	
-; end of _Conditin_Externs
+; end of _Condition_Externs
 _main:
 ;Main.c,72 :: 		void main() {
 ;Main.c,73 :: 		int error = 0;
 ;Main.c,74 :: 		int has_flash = 0;
 ;Main.c,75 :: 		int modal_group = 0;
 ;Main.c,76 :: 		int modal_action = 0;
-;Main.c,79 :: 		char output[100] = "Hello!";
-;Main.c,81 :: 		Conditin_Externs();
-JAL	_Conditin_Externs+0
+;Main.c,81 :: 		Condition_Externs();
+JAL	_Condition_Externs+0
 NOP	
 ;Main.c,83 :: 		cntr = a =  dif = status_of_gcode = modal_group = modal_action = 0;
 SH	R0, Offset(Main_status_of_gcode+0)(GP)

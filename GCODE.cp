@@ -151,7 +151,7 @@ extern sfr sbit SPI_Ethernet_Rst_Direction;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 183 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 185 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -173,7 +173,8 @@ typedef struct {
  unsigned int homing_dir_mask;
  unsigned int invert_mask;
  unsigned int dir_invert_mask;
-
+ unsigned int enable_mask;
+ unsigned int status_report_mask;
 } settings_t;
 
 extern settings_t settings;
@@ -536,6 +537,8 @@ int GET_RunState(int axis_No);
 void Start_Interpolation(int master,int axes);
 void Stepper_Abort();
 int Stepper_Busy();
+
+void Stepper_ApplyInvertMasks();
 void StopAxis(int axis);
 
 

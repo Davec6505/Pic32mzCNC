@@ -149,9 +149,9 @@ settings in `settings_store_grbl_setting()` (`Globals.c`). The order printed by
 | --- | --- | --- |
 | 0 | Step pulse, µs (minimum 3) | Stored |
 | 1 | Step idle delay, ms | Stored |
-| 2 | Step port invert mask | Stored, not yet applied to the pins |
-| 3 | Direction port invert mask | Stored, not yet applied to the pins |
-| 4 | Step enable invert | Stored flag, not yet applied to the pin |
+| 2 | Step port invert mask | Stored and applied: bit set = pin idles high, pulses low |
+| 3 | Direction port invert mask | Stored and applied per move (default 5 = old board polarity) |
+| 4 | Step enable invert | Stored and applied: 1 = EN enables high |
 | 5 | Limit pin invert | Stored flag, not yet applied |
 | 6 | Probe pin invert | Fixed at 0 |
 | 10 | Status report mask | Fixed at 1 |

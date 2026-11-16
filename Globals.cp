@@ -9,7 +9,7 @@
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 183 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 185 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -31,7 +31,8 @@ typedef struct {
  unsigned int homing_dir_mask;
  unsigned int invert_mask;
  unsigned int dir_invert_mask;
-
+ unsigned int enable_mask;
+ unsigned int status_report_mask;
 } settings_t;
 
 extern settings_t settings;
@@ -495,6 +496,8 @@ int GET_RunState(int axis_No);
 void Start_Interpolation(int master,int axes);
 void Stepper_Abort();
 int Stepper_Busy();
+
+void Stepper_ApplyInvertMasks();
 void StopAxis(int axis);
 
 
@@ -880,6 +883,8 @@ static void rst_coord_read_indicator();
 
 void set_calculation_constants();
 
+void Stepper_ApplyInvertMasks();
+
 
 
 
@@ -896,7 +901,7 @@ unsigned long marker;
 
  add = (unsigned long) 0xBD1BC5F0 ;
  marker = NVMReadWord((void*)add);
-#line 59 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 61 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  if(marker !=  0x7FFF0102 ){
  settings_blank_row();
  settings_default_row();
@@ -987,6 +992,8 @@ static void settings_apply_row(){
  settings.homing_dir_mask = (unsigned int)buffA[ 0x57 ];
  settings.invert_mask = (unsigned int)buffA[ 0x58 ];
  settings.dir_invert_mask = (unsigned int)buffA[ 0x59 ];
+
+ Stepper_ApplyInvertMasks();
 }
 
 
@@ -1019,7 +1026,7 @@ int k;
  settings_apply_row();
  return k;
 }
-#line 192 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 196 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
 static int set_ram_loaded_indicator(int val){
  ram_loaded = val;
  return ram_loaded;
@@ -1075,7 +1082,7 @@ int data_count;
  for(j = 0;j < 512;j++){
  buffA[j] = *(ptr+j);
  if(buffA[j] != -1)data_count++;
-#line 251 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 255 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  }
 
 
@@ -1085,7 +1092,7 @@ int data_count;
 
  return data_count;
 }
-#line 289 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 293 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
 static void settings_load_row(){
  if(!read_ram_loaded_indicator()){
  add = (unsigned long) 0xBD1BC000 ;
@@ -1105,7 +1112,7 @@ static int settings_save_row(){
  if(!error){
  error = (int)NVMWriteRow(&add,buffA);
  }
-#line 314 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 318 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  rst_coord_read_indicator();
  return error;
 }
@@ -1148,7 +1155,7 @@ void settings_read_coord_data(){
  if(temp == 0xFFFFFFFF)
  temp = 0UL;
  coord_system[i].coord[j] = ulong2flt(temp);
-#line 362 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 366 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  }
  }
 
@@ -1176,7 +1183,7 @@ int k;
  line[k] = src[k];
  }
  line[k] = 0;
-#line 396 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 400 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  return  0 ;
 }
 
@@ -1188,7 +1195,7 @@ int str_len;
 char temp_char;
 
  str_len = strlen(line);
-#line 415 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 419 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  switch(n){
  case 0: start_offset = (unsigned long) 0x180 ;break;
  case 1: start_offset = (unsigned long) 0x190 ;break;
@@ -1204,7 +1211,7 @@ char temp_char;
 
 
  memcpy(buffA+start_offset,line,str_len);
-#line 439 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 443 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  return settings_save_row();
 }
 
@@ -1215,7 +1222,7 @@ int settings_store_global_setting(int parameter, float value) {
 int val_temp = 0;
 
  settings_load_row();
-#line 458 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 462 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  switch(parameter) {
  case 0: case 1: case 2:
  if (value <= 0.0) { return( 8 ); }
@@ -1223,7 +1230,7 @@ int val_temp = 0;
  buffA[ 0x40 +parameter] = flt2ulong(value);
 
  set_calculation_constants();
-#line 475 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
+#line 479 "c:/Users/davec/GIT/Pic32mzCNC/Globals.c"
  break;
  case 3:
  if (value < 3) { return( 9 ); }
@@ -1237,6 +1244,7 @@ int val_temp = 0;
  case 6:
  settings.invert_mask = floor(value);
  buffA[ 0x58 ] = (unsigned long)floor(value);
+ Stepper_ApplyInvertMasks();
  break;
  case 7:
  val_temp = round(value);
@@ -1312,6 +1320,7 @@ int val_temp = 0;
  val_temp = round(value);
  settings.dir_invert_mask = val_temp;
  buffA[ 0x59 ] = (unsigned long)val_temp;
+ Stepper_ApplyInvertMasks();
  break;
  case 24:
  if (round(value)){

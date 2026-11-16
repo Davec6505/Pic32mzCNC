@@ -1,7 +1,7 @@
 main
 	__CC2DW
 	__FillZeros
-	Conditin_Externs
+	Condition_Externs
 		PinMode
 			set_performance_mode
 			Unlock_IOLOCK
@@ -45,6 +45,7 @@ main
 				settings_apply_row
 					ulong2flt
 						memcpy
+					Stepper_ApplyInvertMasks
 		Ethernet_Transport_Init
 			Enc28_Config
 				SPI1_Init_Advanced
@@ -593,6 +594,7 @@ main
 												ceil
 												floor
 											floor
+											Stepper_ApplyInvertMasks
 											fabs
 											settings_save_row
 								Do_Gcode

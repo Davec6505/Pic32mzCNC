@@ -61,7 +61,7 @@ typedef unsigned long long uintmax_t;
 
 
 typedef __attribute__((aligned (32))) float afloat;
-#line 183 "c:/users/davec/git/pic32mzcnc/settings.h"
+#line 185 "c:/users/davec/git/pic32mzcnc/settings.h"
 typedef struct {
  float steps_per_mm[ 4 ];
  float default_feed_rate;
@@ -83,7 +83,8 @@ typedef struct {
  unsigned int homing_dir_mask;
  unsigned int invert_mask;
  unsigned int dir_invert_mask;
-
+ unsigned int enable_mask;
+ unsigned int status_report_mask;
 } settings_t;
 
 extern settings_t settings;
@@ -817,6 +818,8 @@ int GET_RunState(int axis_No);
 void Start_Interpolation(int master,int axes);
 void Stepper_Abort();
 int Stepper_Busy();
+
+void Stepper_ApplyInvertMasks();
 void StopAxis(int axis);
 
 
@@ -893,7 +896,7 @@ int i;
 
  for(i=0;i< 4 ;i++){
 
- alpha[i] = ( (2.00* 3.141592653589793238462643 )  / (settings.steps_per_mm[i]* 32.00 ));
+ alpha[i] = ( (2.00* 3.141592653589793238462643 )  / (settings.steps_per_mm[i]));
 
  a_t_x100[i] = (alpha[i] *  6250000  * 100.00);
 

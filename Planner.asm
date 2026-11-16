@@ -100,7 +100,7 @@ NOP
 J	L_set_calculation_constants4
 NOP	
 L__set_calculation_constants52:
-;Planner.c,46 :: 		alpha[i] = (PIx2 / (settings.steps_per_mm[i]*M_STEP));
+;Planner.c,46 :: 		alpha[i] = (PIx2 / (settings.steps_per_mm[i])); //step_per_mm will have M_STEP already accounted for.
 SEH	R2, R5
 SLL	R3, R2, 2
 LUI	R2, 40960
@@ -110,10 +110,6 @@ LUI	R2, hi_addr(_settings+0)
 ORI	R2, R2, lo_addr(_settings+0)
 ADDU	R2, R2, R3
 LWC1	S1, 0(R2)
-LUI	R2, 16896
-ORI	R2, R2, 0
-MTC1	R2, S0
-MUL.S 	S1, S1, S0
 LUI	R2, 16585
 ORI	R2, R2, 4059
 MTC1	R2, S0

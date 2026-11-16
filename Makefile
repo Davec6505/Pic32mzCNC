@@ -46,13 +46,13 @@ FLAGS = -MSF -DBG -pP32MZ2048EFH100 -HEAP 36000 -C  -Y -DL -SSA -EBASE 0x9FC0100
 
 all:
 	@echo Building $(PROJECT_NAME) for $(DEVICE)...
-	@powershell -Command "& $(MIKROC) $(FLAGS) $(SRCS) $(LIBS) $(PLDS)" 
+	@powershell -NoProfile -Command "& $(MIKROC) $(FLAGS) $(SRCS) $(LIBS) $(PLDS) 2>&1 | Foreach-Object { if (\$$_ -match '^\d+\s+\d+.*undeclared identifier|compilation failed|build failed') {Write-Host \$$_  -ForegroundColor Red } elseif (\$$_ -match '^\d+\s+\d+.*Variable\s+.*has been eliminated by optimizer') { Write-Host \$$_ -ForegroundColor DarkCyan } elseif (\$$_ -match 'warning') { Write-Host \$$_ -ForegroundColor Yellow } else { Write-Host \$$_ -ForegroundColor Green } }" 
 	@test -f $(PROJECT_NAME).hex && echo "Build complete! Output: $(PROJECT_NAME).hex" || (echo "Build FAILED - no hex file generated" && exit 1) 
 
 # Rebuild all files (forces recompilation)
 rebuild:
 	@echo Rebuilding all files for $(PROJECT_NAME)...
-	@powershell -Command "& $(MIKROC) $(FLAGS) -RA $(SRCS) $(LIBS) $(PLDS)"
+	@powershell -NoProfile -Command "& $(MIKROC) $(FLAGS) -RA $(SRCS) $(LIBS) $(PLDS) 2>&1 | Foreach-Object { if (\$$_ -match '^\d+\s+\d+.*undeclared identifier|compilation failed|build failed') {Write-Host \$$_  -ForegroundColor Red } elseif (\$$_ -match '^\d+\s+\d+.*Variable\s+.*has been eliminated by optimizer') { Write-Host \$$_ -ForegroundColor DarkCyan } elseif (\$$_ -match 'warning') { Write-Host \$$_ -ForegroundColor Yellow } else { Write-Host \$$_ -ForegroundColor Green } }" 
 	@test -f $(PROJECT_NAME).hex && echo "Build complete! Output: $(PROJECT_NAME).hex" || (echo "Build FAILED - no hex file generated" && exit 1)
 
 # Clean build artifacts
@@ -67,3 +67,37 @@ flash: all
 	@"bin/mikro_hb.exe" "$(PROJECT_NAME).hex"
 
 .PHONY: all rebuild clean flash
+
+
+########################################################################################
+# 	FILTER	 Regex	Meaning (used in build output highlighting)
+# 	.	     any one character
+# 	.*		 anything
+# 	.+		 one or more characters
+# 	\d		 digit
+# 	\d+		 one or more digits
+# 	\s		 whitespace
+# 	\s+		 one or more spaces/tabs
+# 	^	     start of line
+# 	$	     end of line
+#########################################################################################
+
+#########################################################################################
+# Colours for console output
+# Black
+# DarkBlue
+# DarkGreen
+# DarkCyan
+# DarkRed
+# DarkMagenta
+# DarkYellow
+# Gray
+# DarkGray
+# Blue
+# Green
+# Cyan
+# Red
+# Magenta
+# Yellow
+# White
+#########################################################################################

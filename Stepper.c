@@ -15,6 +15,9 @@ static volatile dds_axis_t dds_master;
 static volatile int  eng_master = -1;   //-1 = idle, set last when a move starts
 static volatile int  eng_axes;
 static volatile unsigned long eng_err[NoOfAxis];
+//$2 cache: idle level per step pin (0 normal, 1 inverted); the active level
+//is the opposite. Filled by Stepper_ApplyInvertMasks, read every tick.
+static volatile char step_idle[NoOfAxis];
 void dds_tick();
 static void Step_Cycle(int axis_No);
 static unsigned long Dds_Increment(long step_delay);
@@ -71,11 +74,11 @@ void SetPinMode(){
 void dds_tick(){
 int m, i;
 unsigned long gap;
-  //end the pulse raised on the previous tick (10 us wide)
-  PLS_StepX = 0;
-  PLS_StepY = 0;
-  PLS_StepZ = 0;
-  PLS_StepA = 0;
+  //end the pulse raised on the previous tick (10 us wide): back to idle level
+  PLS_StepX = step_idle[X];
+  PLS_StepY = step_idle[Y];
+  PLS_StepZ = step_idle[Z];
+  PLS_StepA = step_idle[A];
 
   m = eng_master;
   if(m < 0) return;
@@ -158,7 +161,18 @@ int Stepper_Busy(){
   return eng_master >= 0;
 }
 
-//Shared enable: all drivers switch together (active low)
+//$2 step port invert: refresh the cached idle levels from the setting.
+//Called at boot/$RST (settings_apply_row) and on a $2 or $3 write; $n= is
+//blocked while the machine is busy, and the tick re-drives the pins within
+//10 us of a change.
+void Stepper_ApplyInvertMasks(){
+int i;
+  for(i=0;i<NoOfAxis;i++)
+    step_idle[i] = bit_istrue(settings.invert_mask,bit(i)) ? 1 : 0;
+}
+
+//Shared enable, all drivers switch together. $4=0: enable low (Grbl shield
+//style); $4=1 inverts for drivers that enable high.
 void EnableSteppers(){
   EN_Steppers = bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE) ? 1 : 0;
 }
@@ -187,13 +201,14 @@ void disableSpindleOCx(){
 //       STEPS CYCLE CONTROL SECTION           //
 /////////////////////////////////////////////////
 
-//Raise the step pin and count the step, the pin drops on the next tick
+//Drive the step pin to its active level and count the step, the pin
+//returns to its idle level on the next tick
 static void Step_Cycle(int axis_No){
   switch(axis_No){
-    case X: PLS_StepX = 1; break;
-    case Y: PLS_StepY = 1; break;
-    case Z: PLS_StepZ = 1; break;
-    case A: PLS_StepA = 1; break;
+    case X: PLS_StepX = !step_idle[X]; break;
+    case Y: PLS_StepY = !step_idle[Y]; break;
+    case Z: PLS_StepZ = !step_idle[Z]; break;
+    case A: PLS_StepA = !step_idle[A]; break;
     default: break;
   }
   //keep track of relative position
