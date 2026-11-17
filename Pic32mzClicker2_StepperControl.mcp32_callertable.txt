@@ -30,6 +30,7 @@ main
 				DMA1
 				Uart2InterruptSetup
 			CORETIMER_Initialize
+				CORETIMER_CallbackSet
 			CORETIMER_Start
 			settings_init
 				NVMReadWord
@@ -657,6 +658,7 @@ main
 	ResetSteppers
 		DisableSteppers
 CORETIMER
+	LED4_Callback
 X_Min_Limit
 	Set_Min_Limit
 Y_Min_Limit

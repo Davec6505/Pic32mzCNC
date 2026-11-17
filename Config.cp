@@ -864,8 +864,32 @@ static void Run_Single_Axes(float *target);
 
 
  typedef char _Bool;
-#line 8 "c:/users/davec/git/pic32mzcnc/coretimer.h"
+#line 10 "c:/users/davec/git/pic32mzcnc/coretimer.h"
+typedef struct
+{
+ uint32_t start;
+ uint32_t count;
+}CORETIMER_TIMEOUT;
+
+
+
+
+
+
+typedef void (*CORETIMER_CALLBACK)(uint32_t status, uintptr_t context);
+
+typedef struct
+{
+ CORETIMER_CALLBACK callback;
+ uintptr_t context;
+ uint32_t tickCounter;
+ uint32_t period;
+} CORETIMER_OBJECT ;
+
+
+
 void CORETIMER_Initialize(void);
+void CORETIMER_CallbackSet ( CORETIMER_CALLBACK callback, uintptr_t context );
 void CORETIMER_Start(void);
 void CORETIMER_Stop(void);
 uint32_t CORETIMER_CounterGet(void);

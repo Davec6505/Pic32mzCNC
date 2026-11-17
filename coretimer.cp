@@ -53,8 +53,32 @@ typedef unsigned long long uintmax_t;
 
 
  typedef char _Bool;
-#line 8 "c:/users/davec/git/pic32mzcnc/coretimer.h"
+#line 10 "c:/users/davec/git/pic32mzcnc/coretimer.h"
+typedef struct
+{
+ uint32_t start;
+ uint32_t count;
+}CORETIMER_TIMEOUT;
+
+
+
+
+
+
+typedef void (*CORETIMER_CALLBACK)(uint32_t status, uintptr_t context);
+
+typedef struct
+{
+ CORETIMER_CALLBACK callback;
+ uintptr_t context;
+ uint32_t tickCounter;
+ uint32_t period;
+} CORETIMER_OBJECT ;
+
+
+
 void CORETIMER_Initialize(void);
+void CORETIMER_CallbackSet ( CORETIMER_CALLBACK callback, uintptr_t context );
 void CORETIMER_Start(void);
 void CORETIMER_Stop(void);
 uint32_t CORETIMER_CounterGet(void);
@@ -150,16 +174,21 @@ extern sfr sbit SPI_Ethernet_CS;
 extern sfr sbit SPI_Ethernet_CS_Direction;
 extern sfr sbit SPI_Ethernet_Rst;
 extern sfr sbit SPI_Ethernet_Rst_Direction;
-#line 18 "c:/Users/davec/GIT/Pic32mzCNC/coretimer.c"
-unsigned long compareValue = 10000000UL;
+#line 20 "c:/Users/davec/GIT/Pic32mzCNC/coretimer.c"
+volatile static CORETIMER_OBJECT coreTmr;
 
+
+void LED4_Callback(uint32_t status, uintptr_t context){
+ LED4 = !LED4;
+}
 
 void CORETIMER_Initialize(void)
 {
  uint32_t cp0_ = 0UL;
-
-
-
+ coreTmr.callback =  ((void*)0) ;
+ coreTmr.context = 0;
+ coreTmr.tickCounter = 0;
+ coreTmr.period =  10000000UL ;
  CP0_SET(CP0_CAUSE, CP0_GET(CP0_CAUSE) | CP0_CAUSE_DC_MASK);
 
 
@@ -168,7 +197,7 @@ void CORETIMER_Initialize(void)
 
  CP0_SET(CP0_COUNT, cp0_);
 
- CP0_SET(CP0_COMPARE, compareValue);
+ CP0_SET(CP0_COMPARE, coreTmr.period);
 
 
  cp0_ = CP0_GET(CP0_CAUSE) & ~CP0_CAUSE_DC_MASK;
@@ -181,6 +210,13 @@ void CORETIMER_Initialize(void)
  IEC0SET = 0x1;
 
  IFS0SET = 0;
+
+ CORETIMER_CallbackSet(LED4_Callback, 0);
+}
+
+void CORETIMER_CallbackSet ( CORETIMER_CALLBACK callback, uintptr_t context ){
+ coreTmr.callback = callback;
+ coreTmr.context = context;
 }
 
 
@@ -195,7 +231,7 @@ void CORETIMER_Start(void)
 
  CP0_SET(CP0_COUNT, 0UL);
 
- CP0_SET(CP0_COMPARE, compareValue);
+ CP0_SET(CP0_COMPARE, coreTmr.period);
 
  CP0_SET(CP0_CAUSE, CP0_GET(CP0_CAUSE) & ~CP0_CAUSE_DC_MASK);
 
@@ -218,7 +254,7 @@ void CORETIMER_CompareSet(uint32_t compare)
 {
  CP0_SET(CP0_COMPARE, compare);
 }
-#line 99 "c:/Users/davec/GIT/Pic32mzCNC/coretimer.c"
+#line 113 "c:/Users/davec/GIT/Pic32mzCNC/coretimer.c"
 void CORETIMER_DelayMs(uint32_t delay_ms)
 {
  uint32_t startCount;
@@ -233,16 +269,32 @@ void CORETIMER_DelayMs(uint32_t delay_ms)
  }
 }
 
+void CORETIMER_DelayUs(uint32_t delay_us)
+{
+ uint32_t startCount;
+ uint32_t endCount;
+
+ endCount = 100UL * delay_us;
+
+ startCount = CP0_GET(CP0_COUNT);
+
+ while((CP0_GET(CP0_COUNT) - startCount) < endCount)
+ {
+ }
+}
+
 
 void CORETIMER() iv IVT_CORE_TIMER ilevel 1 ics ICS_SRS {
 
  unsigned long count;
  unsigned long newCompare;
+ uint32_t status = IFS0bits.CTIF;
 
  IFS0CLR = 1;
+
  DI();
  count = CP0_GET(CP0_COUNT);
- newCompare = CP0_GET(CP0_COMPARE) + compareValue;
+ newCompare = CP0_GET(CP0_COMPARE) + coreTmr.period;
 
  if((newCompare - count) > 50UL)
  {
@@ -253,5 +305,13 @@ void CORETIMER() iv IVT_CORE_TIMER ilevel 1 ics ICS_SRS {
  CP0_SET(CP0_COMPARE, count + 50UL);
  }
  EI();
- LED4 = !LED4;
+
+
+ coreTmr.tickCounter++;
+ if(coreTmr.callback !=  ((void*)0) )
+ {
+ uintptr_t context = coreTmr.context;
+ coreTmr.callback(status, context);
+ }
+ LED3 = !LED3;
 }
