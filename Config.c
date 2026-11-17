@@ -6,9 +6,7 @@
 
 #include "Config.h"
 
-
-
-
+#include "coretimer.h"
 
 
 
@@ -122,8 +120,8 @@ void PinMode(){
  // Uart2InterruptSetup();
 
  // Core Timer interrupt will toggle LED4
- //CORETIMER_Initialize();
- // CORETIMER_Start();
+ CORETIMER_Initialize();
+ CORETIMER_Start();
 
 
 //Enable the interrupts here so uart can report back

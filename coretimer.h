@@ -1,6 +1,10 @@
 #ifndef CORETIMER_H
 #define CORETIMER_H
 
+   #include <stdint.h>
+   #include <stdbool.h>
+   
+
 void CORETIMER_Initialize(void);
 void CORETIMER_Start(void);
 void CORETIMER_Stop(void);

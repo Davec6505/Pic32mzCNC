@@ -663,10 +663,10 @@ Y_Min_Limit
 	Set_Min_Limit
 Z_Min_Limit
 	Set_Min_Limit
-DMA_CH1_ISR
 UART2
 	Serial_ReceiveFault
 	Serial_ReceiveByte
+DMA_CH1_ISR
 Timer1Interrupt
 	Limits_Sample
 		Sample_Limit

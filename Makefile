@@ -15,7 +15,7 @@ CLOCK = 200000000
 PROJECT_NAME = Pic32mzClicker2_StepperControl
 
 # Source files
-SRCS = \"Main.c\" \"Config.c\" \"Stepper.c\" \"Steptodistance.c\" \"Timers.c\" \"Kinematics.c\" \"Pins.c\" \"Serial_Dma.c\" \"Print.c\" \"GCODE.c\" \"Globals.c\" \"Limits.c\" \"Protocol.c\" \"Nut_Bolts.c\" \"Planner.c\" \"Flash_R_W.c\" \"Tcp_Ethernet.c\"
+SRCS = \"Main.c\" \"Config.c\" \"Stepper.c\" \"Steptodistance.c\" \"Timers.c\" \"Kinematics.c\" \"Pins.c\" \"Serial_Dma.c\" \"Print.c\" \"GCODE.c\" \"Globals.c\" \"Limits.c\" \"Protocol.c\" \"Nut_Bolts.c\" \"Planner.c\" \"Flash_R_W.c\" \"Tcp_Ethernet.c\" \"coretimer.c\"
 
 # Library files (MikroC compiled libraries)
 LIBS = \"__Lib_CStdlib_EF.emcl\" \"__Lib_CType.emcl\" \"__Lib_CString.emcl\" \"__Lib_System_MZ_EF.emcl\" \"__Lib_PPS_P32MZ_100CAN.emcl\" \"__Lib_UART_123456_MZ.emcl\" \"__Lib_SPI_123456.emcl\" \"__Lib_EthEnc28j60.emcl\" \"__Lib_Sprintf_EF.emcl\" \"__Lib_Sprinti.emcl\" \"__Lib_Sprintl.emcl\" \"__Lib_Conversions_EF.emcl\" \"__Lib_CMath_EF.emcl\" \"__Lib_MemManager.emcl\" \"__Lib_CP0.emcl\" \"__Lib_Delays.emcl\" \"__Lib_Math.emcl\" \"__Lib_MathDouble_MZ_EF.emcl\" \"__Lib_SoftResetDma.emcl\"

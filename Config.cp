@@ -857,7 +857,24 @@ static int Modal_Group_Actions1(int action);
 static int Axes_Running();
 static void Wait_Motion();
 static void Run_Single_Axes(float *target);
-#line 15 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 1 "c:/users/davec/git/pic32mzcnc/coretimer.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
+#line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdbool.h"
+
+
+
+ typedef char _Bool;
+#line 8 "c:/users/davec/git/pic32mzcnc/coretimer.h"
+void CORETIMER_Initialize(void);
+void CORETIMER_Start(void);
+void CORETIMER_Stop(void);
+uint32_t CORETIMER_CounterGet(void);
+void CORETIMER_CompareSet(uint32_t compare);
+void CORETIMER_DelayMs(uint32_t delay_ms);
+void CORETIMER_DelayUs(uint32_t delay_us);
+void CORETIMER_CompareHasExpired(void);
+void CORETIMER_InterruptHandler(void);
+#line 13 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
 void PinMode(){
 
 
@@ -914,7 +931,7 @@ void PinMode(){
 
  PPS_Mapping_NoLock(_RPC2, _OUTPUT, _U2TX);
  PPS_Mapping_NoLock(_RPC3, _INPUT, _U2RX);
-#line 83 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 81 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
  PPS_Mapping_NoLock(_RPD2, _INPUT, _SDI1);
  PPS_Mapping_NoLock(_RPD3, _OUTPUT, _SDO1);
 
@@ -1071,7 +1088,7 @@ void OutPutPulseXYZ(){
 
 
  OC8CON = 0x000C;
-#line 247 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 245 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
  OC7R = 0x5;
  OC7RS = 0x234;
 

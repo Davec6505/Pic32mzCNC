@@ -1,6 +1,6 @@
 #include "coretimer.h"
 #include <stdint.h>
-
+     #include "Pins.h"
 /*
 these are MikroC` CP0 register numbers for the PIC32 MIPS core
 CP0_COUNT            value 4
@@ -21,7 +21,8 @@ unsigned long compareValue = 10000000UL;
 void CORETIMER_Initialize(void)
 {
  uint32_t cp0_ = 0UL;
- 
+
+
     // disable the Timer by setting DC bit of cause reg
     CP0_SET(CP0_CAUSE, CP0_GET(CP0_CAUSE) | CP0_CAUSE_DC_MASK);
     
@@ -131,4 +132,3 @@ void CORETIMER() iv IVT_CORE_TIMER ilevel 1 ics ICS_SRS {
     EI();
     LED4 = !LED4;
 }
-
