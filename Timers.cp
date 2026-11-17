@@ -896,7 +896,7 @@ void InitTimer8(){
 
  T8IF_bit = 0;
  T8IE_bit = 1;
- PR8 = 500;
+ PR8 = 499;
  TMR8 = 0;
 }
 

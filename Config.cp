@@ -857,7 +857,7 @@ static int Modal_Group_Actions1(int action);
 static int Axes_Running();
 static void Wait_Motion();
 static void Run_Single_Axes(float *target);
-#line 11 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 15 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
 void PinMode(){
 
 
@@ -914,7 +914,7 @@ void PinMode(){
 
  PPS_Mapping_NoLock(_RPC2, _OUTPUT, _U2TX);
  PPS_Mapping_NoLock(_RPC3, _INPUT, _U2RX);
-#line 79 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 83 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
  PPS_Mapping_NoLock(_RPD2, _INPUT, _SDI1);
  PPS_Mapping_NoLock(_RPD3, _OUTPUT, _SDO1);
 
@@ -957,6 +957,10 @@ void PinMode(){
 
 
 
+ CORETIMER_Initialize();
+ CORETIMER_Start();
+
+
 
  EnableInterrupts();
 
@@ -964,7 +968,12 @@ void PinMode(){
  settings_init(0);
  settings_init(1);
 
+
+
+
 }
+
+
 
 
 void set_performance_mode(){
@@ -1062,7 +1071,7 @@ void OutPutPulseXYZ(){
 
 
  OC8CON = 0x000C;
-#line 234 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
+#line 247 "c:/Users/davec/GIT/Pic32mzCNC/Config.c"
  OC7R = 0x5;
  OC7RS = 0x234;
 

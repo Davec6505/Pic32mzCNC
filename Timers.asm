@@ -68,8 +68,8 @@ _SX
 LUI	R2, BitMask(T8IE_bit+0)
 ORI	R2, R2, BitMask(T8IE_bit+0)
 _SX	
-;Timers.c,41 :: 		PR8              = 500;
-ORI	R2, R0, 500
+;Timers.c,41 :: 		PR8              = 499;
+ORI	R2, R0, 499
 SW	R2, Offset(PR8+0)(GP)
 ;Timers.c,42 :: 		TMR8             = 0;
 SW	R0, Offset(TMR8+0)(GP)

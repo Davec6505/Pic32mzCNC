@@ -70,10 +70,8 @@ File0=Pic32mzClicker2_Pinout.png
 Count=1
 ActiveImageIndex=-1
 [OPENED_FILES]
-File0=Main.c
-File1=Config.c
-File2=Serial_Dma.c
-Count=3
+File0=Config.c
+Count=1
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -151,7 +149,4 @@ USE_SRS=7
 [EXPANDED_NODES]
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
-37=Project Level Defines
-39=Image Files
-42=Active Comments Files
-Count=5
+Count=2

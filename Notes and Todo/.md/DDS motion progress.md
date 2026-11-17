@@ -55,7 +55,7 @@ initialized once at the start of a test for a predictable initial state.
    connecting it. Ensure the STEP output starts low.
 3. Check step counts and coordinated motion, and measure worst-case ISR time.
 
-## Interim engine (plumbed in, untested on hardware)
+## Interim engine (plumbed in, and tested on hardware)
 
 Steps 2 and 4 are now in `Stepper.c`. `dds_tick()` runs every 10 us in the
 Timer8 interrupt:

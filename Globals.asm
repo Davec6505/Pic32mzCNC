@@ -300,21 +300,21 @@ SW	R0, Offset(-1610612384)(GP)
 ;Globals.c,113 :: 		buffA[DIR_INVERT_MASK_OFFSET] = (unsigned long)DEFAULT_DIR_INVERT_MASK;
 ORI	R2, R0, 5
 SW	R2, Offset(-1610612380)(GP)
-;Globals.c,115 :: 		if (DEFAULT_REPORT_INCHES)    { flags |= BITFLAG_REPORT_INCHES; }
+;Globals.c,115 :: 		if (DEFAULT_REPORT_INCHES)    { flags |= BITFLAG_REPORT_INCHES; }       //bit 0
 L_Globals_settings_default_row11:
-;Globals.c,116 :: 		if (DEFAULT_AUTO_START)       { flags |= BITFLAG_AUTO_START; }
+;Globals.c,116 :: 		if (DEFAULT_AUTO_START)       { flags |= BITFLAG_AUTO_START; }          //bit 1
 LW	R2, 4(SP)
 ORI	R2, R2, 2
 SW	R2, 4(SP)
-;Globals.c,117 :: 		if (DEFAULT_INVERT_ST_ENABLE) { flags |= BITFLAG_INVERT_ST_ENABLE; }
+;Globals.c,117 :: 		if (DEFAULT_INVERT_ST_ENABLE) { flags |= BITFLAG_INVERT_ST_ENABLE; }    //bit 2
 L_Globals_settings_default_row13:
-;Globals.c,118 :: 		if (DEFAULT_HARD_LIMIT_ENABLE){ flags |= BITFLAG_HARD_LIMIT_ENABLE; }
+;Globals.c,118 :: 		if (DEFAULT_HARD_LIMIT_ENABLE){ flags |= BITFLAG_HARD_LIMIT_ENABLE; }   //bit 3
 LW	R2, 4(SP)
 ORI	R2, R2, 8
-;Globals.c,119 :: 		if (DEFAULT_HOMING_ENABLE)    { flags |= BITFLAG_HOMING_ENABLE; }
+;Globals.c,119 :: 		if (DEFAULT_HOMING_ENABLE)    { flags |= BITFLAG_HOMING_ENABLE; }       //bit 4
 ORI	R2, R2, 16
 SW	R2, 4(SP)
-;Globals.c,120 :: 		if (DEFAULT_INVERT_LIMIT_PINS){ flags |= BITFLAG_INVERT_LIMIT_PINS; }
+;Globals.c,120 :: 		if (DEFAULT_INVERT_LIMIT_PINS){ flags |= BITFLAG_INVERT_LIMIT_PINS; }   //bit 5
 L_Globals_settings_default_row16:
 ;Globals.c,121 :: 		buffA[FLAGS_OFFSET] = flags;
 LW	R2, 4(SP)

@@ -8,6 +8,10 @@
 
 
 
+
+
+
+
 void PinMode(){
 
 //Start by disabling global interrupts
@@ -117,6 +121,10 @@ void PinMode(){
 //configure the uart the interrupts
  // Uart2InterruptSetup();
 
+ // Core Timer interrupt will toggle LED4
+ //CORETIMER_Initialize();
+ // CORETIMER_Start();
+
 
 //Enable the interrupts here so uart can report back
  EnableInterrupts();
@@ -125,7 +133,12 @@ void PinMode(){
  settings_init(0);
  settings_init(1);
  //settings_read_coord_data();
+ 
+
+
 }
+
+
 
 
 void set_performance_mode(){
@@ -253,4 +266,3 @@ void OutPutPulseXYZ(){
 //wait for usgage of these modules before enaBling them
  // OC8CONSET = 0x8000; // Enable OC8
 }
-

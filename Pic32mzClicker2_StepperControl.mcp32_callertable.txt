@@ -29,6 +29,8 @@ main
 					UART2_Write
 				DMA1
 				Uart2InterruptSetup
+			CORETIMER_Initialize
+			CORETIMER_Start
 			settings_init
 				NVMReadWord
 				settings_blank_row
@@ -654,6 +656,7 @@ main
 	Sample_Gocde_Line
 	ResetSteppers
 		DisableSteppers
+CORETIMER
 X_Min_Limit
 	Set_Min_Limit
 Y_Min_Limit

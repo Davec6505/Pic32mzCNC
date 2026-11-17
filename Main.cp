@@ -905,13 +905,15 @@ static int cntr = 0,a = 0;
 
  Condition_Externs();
 
+
  cntr = a = dif = status_of_gcode = modal_group = modal_action = 0;
 
 
  Timer8_Start();
 
- while(1){
 
+
+ while(1){
 
 
 
@@ -933,7 +935,7 @@ static int cntr = 0,a = 0;
 
  if(sys.state ==  3  && !Axes_Running())
  Cycle_Complete();
-#line 132 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 134 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  Ethernet_Transport_Poll();
 
 
@@ -1084,10 +1086,10 @@ int arc = (mode ==  2  || mode ==  3 );
  Modal_Group_Actions1(15);
  else
  MultiAxisStep(gc.next_position,axes,motion_rate);
-#line 287 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 289 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  for(i=0;i< 4 ;i++)
  gc.position[i] = target[i];
-#line 292 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 294 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
 }
 
 
@@ -1199,7 +1201,7 @@ float target[ 4 ];
  Compute_Target(axis_words,target);
 
  Run_Single_Axes(target);
-#line 406 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 408 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  }
  settings_read_coord_data();
  for(i=0;i< 4 ;i++){
@@ -1209,7 +1211,7 @@ float target[ 4 ];
  }
 
  Run_Single_Axes(target);
-#line 418 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 420 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  break;
  case 16:
  case 64:
@@ -1243,7 +1245,7 @@ float target[ 4 ];
 
 
 static int Modal_Group_Actions1(int action){
-#line 455 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 457 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  switch(action){
  case 15:
  sys_sync_current_position();
@@ -1252,7 +1254,7 @@ static int Modal_Group_Actions1(int action){
  case  ((( 4 * 4 )*2)-1) :
  axis_to_home = Home(axis_to_home);
  LED2 = TMR.clock >> 3;
-#line 467 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
+#line 469 "c:/Users/davec/GIT/Pic32mzCNC/Main.c"
  if(axis_to_home < 3){
 
 
