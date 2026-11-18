@@ -81,11 +81,22 @@ void CORETIMER_Initialize(void);
 void CORETIMER_CallbackSet ( CORETIMER_CALLBACK callback, uintptr_t context );
 void CORETIMER_Start(void);
 void CORETIMER_Stop(void);
+
 uint32_t CORETIMER_CounterGet(void);
 void CORETIMER_CompareSet(uint32_t compare);
+uint32_t CORETIMER_FrequencyGet (void);
+
+void CORETIMER_PeriodSet (uint32_t period);
+uint32_t CORETIMER_GetTickCounter(void);
+void CORETIMER_StartTimeOut (CORETIMER_TIMEOUT* timeout, uint32_t delay_ms);
+void CORETIMER_ResetTimeOut (CORETIMER_TIMEOUT* timeout);
+ _Bool  CORETIMER_IsTimeoutReached (CORETIMER_TIMEOUT* timeout);
+
 void CORETIMER_DelayMs(uint32_t delay_ms);
 void CORETIMER_DelayUs(uint32_t delay_us);
-void CORETIMER_CompareHasExpired(void);
+
+
+ _Bool  CORETIMER_CompareHasExpired(void);
 void CORETIMER_InterruptHandler(void);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic32/include/stdint.h"
 #line 1 "c:/users/davec/git/pic32mzcnc/pins.h"
@@ -182,6 +193,8 @@ void LED4_Callback(uint32_t status, uintptr_t context){
  LED4 = !LED4;
 }
 
+
+
 void CORETIMER_Initialize(void)
 {
  uint32_t cp0_ = 0UL;
@@ -214,10 +227,14 @@ void CORETIMER_Initialize(void)
  CORETIMER_CallbackSet(LED4_Callback, 0);
 }
 
+
+
+
 void CORETIMER_CallbackSet ( CORETIMER_CALLBACK callback, uintptr_t context ){
  coreTmr.callback = callback;
  coreTmr.context = context;
 }
+
 
 
 void CORETIMER_Start(void)
@@ -239,10 +256,13 @@ void CORETIMER_Start(void)
  IEC0SET = 0x1;
 }
 
+
 void CORETIMER_Stop(void)
 {
  CP0_SET( CP0_CAUSE, CP0_GET(CP0_CAUSE) | CP0_CAUSE_DC_MASK );
 }
+
+
 
 uint32_t CORETIMER_CounterGet(void)
 {
@@ -250,11 +270,84 @@ uint32_t CORETIMER_CounterGet(void)
 }
 
 
+
 void CORETIMER_CompareSet(uint32_t compare)
 {
  CP0_SET(CP0_COMPARE, compare);
 }
-#line 113 "c:/Users/davec/GIT/Pic32mzCNC/coretimer.c"
+
+
+
+uint32_t CORETIMER_FrequencyGet ( void )
+{
+ return ( (100000000U) );
+}
+
+
+
+
+uint32_t CORETIMER_GetTickCounter(void)
+{
+ return coreTmr.tickCounter;
+}
+
+
+
+void CORETIMER_PeriodSet (uint32_t period)
+{
+ coreTmr.period = period;
+}
+
+
+
+
+void CORETIMER_StartTimeOut (CORETIMER_TIMEOUT* timeout, uint32_t delay_ms)
+{
+ timeout->start = CORETIMER_GetTickCounter();
+ timeout->count = (delay_ms*1000U)/ 10000 ;
+}
+
+
+
+
+void CORETIMER_ResetTimeOut (CORETIMER_TIMEOUT* timeout)
+{
+ timeout->start = CORETIMER_GetTickCounter();
+}
+
+
+
+
+
+ _Bool  CORETIMER_IsTimeoutReached (CORETIMER_TIMEOUT* timeout)
+{
+  _Bool  valTimeout =  1 ;
+ if ((coreTmr.tickCounter - timeout->start) < timeout->count)
+ {
+ valTimeout =  0 ;
+ }
+ return valTimeout;
+}
+
+
+
+
+ _Bool  CORETIMER_CompareHasExpired( void )
+{
+  _Bool  flagStatus = 0;
+ if (IFS0bits.CTIF != 0U)
+ {
+
+ IFS0CLR = 0x1;
+ flagStatus = 1;
+ }
+ return flagStatus;
+}
+
+
+
+
+
 void CORETIMER_DelayMs(uint32_t delay_ms)
 {
  uint32_t startCount;
@@ -269,6 +362,8 @@ void CORETIMER_DelayMs(uint32_t delay_ms)
  }
 }
 
+
+
 void CORETIMER_DelayUs(uint32_t delay_us)
 {
  uint32_t startCount;
@@ -282,6 +377,8 @@ void CORETIMER_DelayUs(uint32_t delay_us)
  {
  }
 }
+
+
 
 
 void CORETIMER() iv IVT_CORE_TIMER ilevel 1 ics ICS_SRS {
@@ -313,5 +410,5 @@ void CORETIMER() iv IVT_CORE_TIMER ilevel 1 ics ICS_SRS {
  uintptr_t context = coreTmr.context;
  coreTmr.callback(status, context);
  }
- LED3 = !LED3;
+
 }

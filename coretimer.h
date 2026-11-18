@@ -34,11 +34,22 @@ void CORETIMER_Initialize(void);
 void CORETIMER_CallbackSet ( CORETIMER_CALLBACK callback, uintptr_t context );
 void CORETIMER_Start(void);
 void CORETIMER_Stop(void);
+
 uint32_t CORETIMER_CounterGet(void);
 void CORETIMER_CompareSet(uint32_t compare);
+uint32_t CORETIMER_FrequencyGet (void);
+
+void CORETIMER_PeriodSet (uint32_t period);
+uint32_t CORETIMER_GetTickCounter(void);
+void CORETIMER_StartTimeOut (CORETIMER_TIMEOUT* timeout, uint32_t delay_ms);
+void CORETIMER_ResetTimeOut (CORETIMER_TIMEOUT* timeout);
+bool CORETIMER_IsTimeoutReached (CORETIMER_TIMEOUT* timeout);
+
 void CORETIMER_DelayMs(uint32_t delay_ms);
 void CORETIMER_DelayUs(uint32_t delay_us);
-void CORETIMER_CompareHasExpired(void);
+
+
+bool CORETIMER_CompareHasExpired(void);
 void CORETIMER_InterruptHandler(void);
 
 #endif // CORETIMER_H
