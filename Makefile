@@ -4,6 +4,55 @@
 # Device: P32MZ2048EFH100
 # Compiler: MikroC PRO for PIC32
 
+# NOTE:
+# Using -O"output\" causes MikroC linker failures:
+#
+#   304 object file name [Main.emcl] does not match source file name []
+#   357 main function is not defined
+#
+# The compiler succeeds but the linker loses the source/object association.
+#
+# Therefore .emcl files are generated in the project directory and moved
+# to ./output after a successful build instead of using -O.
+
+################################################################################
+# -P <devicename> : MCU for which compilation will be done. 
+# -FO <oscillator> : Set oscillator [in MHz]. 
+# -SP <directory> : Add directory to the search path list. 
+# -N <filename> : Output files generated to file path specified by filename. 
+# -B <directory> : Save compiled binary files (*.emcl) to 'directory'. 
+# -O : Miscellaneous output options. 
+# -DBG : Generate debug info. 
+# -MSF : Short message format. 
+# -Y : Dynamic link for string literals. 
+# -RA : Rebuild all sources in project. 
+# -L : Check and rebuild new libraries. 
+# -DL : Build all files as libraries. 
+# -LHF : Generate Long hex format. 
+# -PF : Project file name. 
+# -EH <filename> : Full EEPROM HEX file name with path. 
+# -HEAP <size> : Heap size in bytes. 
+# -GC : Generate COFF file. 
+# -SSA : Enable SSA optimization. 
+# -UICD : ICD build type. 
+# -INTDEF : Interrupt settings. 
+# -EBASE : Exception base address.
+
+
+#-O11111114 : Miscellaneous output options : 
+# 	1. Generate ASM file, valid values 						0 or 1. 
+# 	2. Include HEX opcodes, valid values 					0 or 1. 
+# 	3. Include ROM constants, valid values 					0 or 1. 
+# 	4. Include ROM addresses, valid values 					0 or 1. 
+# 	5. Generate LST file, valid values 						0 or 1. 
+# 	6. Include Debug Info, valid values 					0 or 1. 
+# 	7. Include Source Lines in Output Files, valid values 	0 or 1. 
+# 	8. The optimization level, valid values from 			0 to 5. 
+#############################################################################
+
+
+
+
 # Compiler path (can be overridden with: make MIKROC_PATH="/custom/path")
 # "C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Defs\"
 MIKROC_PATH ?= \"C:\\Users\\Public\\Documents\\Mikroelektronika\\mikroC PRO for PIC32
@@ -12,7 +61,10 @@ MIKROC := $(MIKROC_PATH)\\mikroCPIC32.exe\"
 # Project settings
 DEVICE = P32MZ2048EFH100
 CLOCK = 200000000
-PROJECT_NAME = Pic32mzClicker2_StepperControl
+PROJECT_NAME = Pic32mzCNC
+
+# To keep .cp files set CP to 1, otherwise they will be removed after build
+CP ?= 0
 
 # Source files
 SRCS = \"Main.c\" \"Config.c\" \"Stepper.c\" \"Steptodistance.c\" \"Timers.c\" \"Kinematics.c\" \"Pins.c\" \"Serial_Dma.c\" \"Print.c\" \"GCODE.c\" \"Globals.c\" \"Limits.c\" \"Protocol.c\" \"Nut_Bolts.c\" \"Planner.c\" \"Flash_R_W.c\" \"Tcp_Ethernet.c\" \"coretimer.c\"
@@ -28,7 +80,7 @@ PLDS = \"DEFINES.pld\"
 # Leave the Uses -IP path without a trailing backslash: mikroC otherwise
 # misquotes it when launching mcpp, which waits for stdin instead of preprocessing.
 # Pass one trailing backslash for the project -SP path to preserve diagnostic filenames.
-FLAGS = -MSF -DBG -pP32MZ2048EFH100 -HEAP 36000 -C  -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111113 -fo200 -N\"Pic32mzClicker2_StepperControl.mcp32\" -SP$(MIKROC_PATH)\\Defs\\\" -SP$(MIKROC_PATH)\\Uses\\\" -SP\"c:\Users\davec\GIT\Pic32mzCNC\\\" -IP$(MIKROC_PATH)\\Uses\" -IP\"c:\Users\davec\GIT\Pic32mzCNC\" 
+FLAGS = -MSF -DBG -pP32MZ2048EFH100 -HEAP 36000 -C -Y -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111013 -fo200  -N\"bin\\Pic32mzCNC.mcp32\"  -SP$(MIKROC_PATH)\\Defs\\\" -SP$(MIKROC_PATH)\\Uses\\\" -SP\"c:\Users\davec\GIT\Pic32mzCNC\\\" -IP$(MIKROC_PATH)\\Uses\" -IP\"c:\Users\davec\GIT\Pic32mzCNC\bin\\\" 
 
 # 0 1 mikroCPIC32.exe 
 # -MSF -DBG -pP32MZ2048EFH100 -HEAP 36000 -RA -C -Y -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS512 -O11111113 -fo200 
@@ -44,30 +96,92 @@ FLAGS = -MSF -DBG -pP32MZ2048EFH100 -HEAP 36000 -C  -Y -DL -SSA -EBASE 0x9FC0100
 
 # Build target (incremental - fast when used after IDE build)
 
+#CP = 1
+
 all:
 	@echo Building $(PROJECT_NAME) for $(DEVICE)...
-	@powershell -NoProfile -Command "& $(MIKROC) $(FLAGS) $(SRCS) $(LIBS) $(PLDS) 2>&1 | Foreach-Object { if (\$$_ -match '^\d+\s+\d+.*undeclared identifier|compilation failed|build failed') {Write-Host \$$_  -ForegroundColor Red } elseif (\$$_ -match '^\d+\s+\d+.*Variable\s+.*has been eliminated by optimizer') { Write-Host \$$_ -ForegroundColor DarkCyan } elseif (\$$_ -match 'warning') { Write-Host \$$_ -ForegroundColor Yellow } else { Write-Host \$$_ -ForegroundColor Green } }" 
-	@test -f $(PROJECT_NAME).hex && echo "Build complete! Output: $(PROJECT_NAME).hex" || (echo "Build FAILED - no hex file generated" && exit 1) 
+	@powershell -NoProfile -Command "& $(MIKROC) $(FLAGS) $(SRCS) $(LIBS) $(PLDS) 2>&1 | \
+	Foreach-Object { \
+	 if (\$$_ -match '^(304|324|357|438)\s') {Write-Host \$$_  -ForegroundColor Red } \
+	 elseif (\$$_ -match '^(1354|1503|1505|1508|1163)\s') { Write-Host \$$_ -ForegroundColor Yellow } \
+	 elseif (\$$_ -match '^(1164)\s') { Write-Host \$$_ -ForegroundColor DarkCyan } \
+	 elseif (\$$_ -match '^(123)\s') { Write-Host \$$_ -ForegroundColor Green } \
+	 elseif (\$$_ -match '^(127)\s') { Write-Host \$$_ -ForegroundColor DarkBlue } \
+	 else { Write-Host \$$_ -ForegroundColor White } }" 
+	@test -f bin/$(PROJECT_NAME).hex;
+	@if [ $$? -eq 0 ]; then \
+		echo -e "\033[1;94m" "Build complete! Output: bin/$(PROJECT_NAME).hex" "\033[0m"; \
+		mv -f *.emcl ./output/ 2>/dev/null || true; \
+		mv -f *.asm ./asm/ 2>/dev/null || true; \
+		if [ "$(CP)" -eq "1" ]; then \
+			mv -f *.cp ./output/ 2>/dev/null || true; \
+		else \
+			echo "Removing .cp files..." && rm -f *.cp 2>/dev/null || true; \
+		fi; \
+	else \
+		echo -e "\033[1;91m" "Build FAILED - no hex file generated" "\033[0m" && exit 1; \
+		rm -rf *.emcl 2>/dev/null || true; \
+	fi
 
 # Rebuild all files (forces recompilation)
 rebuild:
 	@echo Rebuilding all files for $(PROJECT_NAME)...
 	@powershell -NoProfile -Command "& $(MIKROC) $(FLAGS) -RA $(SRCS) $(LIBS) $(PLDS) 2>&1 | Foreach-Object { if (\$$_ -match '^\d+\s+\d+.*undeclared identifier|compilation failed|build failed') {Write-Host \$$_  -ForegroundColor Red } elseif (\$$_ -match '^\d+\s+\d+.*Variable\s+.*has been eliminated by optimizer') { Write-Host \$$_ -ForegroundColor DarkCyan } elseif (\$$_ -match 'warning') { Write-Host \$$_ -ForegroundColor Yellow } else { Write-Host \$$_ -ForegroundColor Green } }" 
-	@test -f $(PROJECT_NAME).hex && echo "Build complete! Output: $(PROJECT_NAME).hex" || (echo "Build FAILED - no hex file generated" && exit 1)
+	@test -f bin/$(PROJECT_NAME).hex; \
+	@if [ $$? -eq 0 ]; then \
+		echo -e "\033[1;94m" "Build complete! Output: bin/$(PROJECT_NAME).hex" "\033[0m"; \
+		mv -f *.emcl ./output/ 2>/dev/null || true; \
+		mv -f *.asm ./asm/ 2>/dev/null || true; \
+		if [ "$(CP)" -eq "1" ]; then \
+			mv -f *.cp ./output/ 2>/dev/null || true; \
+		else \
+			echo "Removing .cp files..." && rm -f *.cp 2>/dev/null || true; \
+		fi; \
+	else \
+		echo -e "\033[1;91m" "Build FAILED - no hex file generated" "\033[0m" && exit 1; \
+		rm -rf *.emcl 2>/dev/null || true; \
+		rm -rf *.asm 2>/dev/null || true; \
+		rm -rf *.cp 2>/dev/null || true; \
+	fi
 
 # Clean build artifacts
 clean:
 	@echo Cleaning build artifacts...
-	@rm -f *.emcl *.asm *.lst *.log *.mcl *.user.dic *.hex 2>/dev/null || true
+	@rm -f *.emcl *.asm *.lst *.log *.mcl *.user.dic *.hex *.dlt *.dbg ./bin/* ./output/*  2>/dev/null || true
+	@echo Clean complete!
+
+clean_asm:
+	@echo Cleaning assembly files...
+	@rm -f *.asm ./asm/* 2>/dev/null || true
 	@echo Clean complete!
 
 # Flash using MikroC bootloader
 flash: all
 	@echo Flashing $(PROJECT_NAME).hex...
-	@"bin/mikro_hb.exe" "$(PROJECT_NAME).hex"
+	@"bin/mikro_hb.exe" "bin\\$(PROJECT_NAME).hex"
 
 .PHONY: all rebuild clean flash
 
+########################################################################################
+#Shell streams:
+#	0 = stdin  (input)
+#	1 = stdout (normal output)
+#	2 = stderr (errors)
+
+#example:
+#	0< file.txt   # redirect stdin from file.txt
+#	1> output.txt # redirect stdout to output.txt
+#	2> error.txt  # redirect stderr to error.txt
+
+# mv -f *.emcl output/ 2>/dev/null || true
+# 	2>/dev/null redirects stderr to /dev/null, effectively silencing error messages
+# 	&> redirects both stdout and stderr to a file or /dev/null
+# Example: mv -f *.emcl output/ &> /dev/null || true
+# /dev/null is a special file that discards all data written to it
+# Windows:
+# bat: 2>nul
+# PowerShell: 2>$null  or -ErrorAction SilentlyContinue
+#######################################################################################
 
 ########################################################################################
 # 	FILTER	 Regex	Meaning (used in build output highlighting)
@@ -83,6 +197,7 @@ flash: all
 #########################################################################################
 
 #########################################################################################
+# Powershell colours:
 # Colours for console output
 # Black
 # DarkBlue
@@ -100,4 +215,41 @@ flash: all
 # Magenta
 # Yellow
 # White
+#########################################################################################
+
+#########################################################################################
+# Shell Colours:
+# 	30 Black
+# 	31 Red
+# 	32 Green
+# 	33 Yellow
+# 	34 Blue
+# 	35 Magenta
+# 	36 Cyan
+# 	37 White
+#	90 Bright Black (Dark Gray)
+#	91 Bright Red
+#	92 Bright Green
+#	93 Bright Yellow
+#	94 Bright Blue
+#	95 Bright Magenta
+#	96 Bright Cyan
+#	97 Bright White
+# Usage examples:
+# 	echo -e "\e[31mThis is red text\e[0m"
+# 	\e[0m resets the colour to default
+# 	Example for green text:
+# 	echo -e "\e[32mThis is green text\e[0m"
+# 	Example for blue text:
+# 	echo -e "\e[34mThis is blue text\e[0m"
+# 	Example for yellow text:
+# 	echo -e "\e[33mThis is yellow text\e[0m"
+# 	Example for magenta text:
+# 	echo -e "\e[35mThis is magenta text\e[0m"
+# 	Example for cyan text:
+# 	echo -e "\e[36mThis is cyan text\e[0m"
+# 	Example for white text:
+# 	echo -e "\e[37mThis is white text\e[0m"
+# 	Example for black text:
+# 	echo -e "\e[30mThis is black text\e[0m"	
 #########################################################################################

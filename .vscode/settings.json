@@ -1,0 +1,20 @@
+{
+   "files.exclude": {
+        "**/*.ini": true,
+        "**/*.emcl": false,
+        "**/*.bmk": true,
+        "**/*.brk": true,
+        "**/*.xml": true,
+        "**/*.cfg": false,
+        "**/*.dct": true,
+        "**/*.mc32group": false,
+        "**/*.mcp32": false,
+        "**/*.asm": false,
+        "**/*.cp": false,
+        "*.pdf": true,
+        "Notes and Todo/**/*.pdf": false,
+        "*.png": true
+
+
+    }
+}

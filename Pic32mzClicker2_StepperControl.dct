@@ -18343,7 +18343,6 @@ coe
 coe
 coe_bit
 coe_cm2con_bit
-comparevalue
 conavail
 conavail0
 conavail0_bit
@@ -18413,11 +18412,20 @@ coord_select
 coord_system
 coord_system
 coretimer
+coretimer_callbackset
+coretimer_comparehasexpired
 coretimer_compareset
 coretimer_counterget
 coretimer_delayms
+coretimer_delayus
+coretimer_frequencyget
+coretimer_gettickcounter
 coretimer_initialize
+coretimer_istimeoutreached
+coretimer_periodset
+coretimer_resettimeout
 coretimer_start
+coretimer_starttimeout
 coretimer_stop
 cos
 cosc
@@ -38607,6 +38615,7 @@ led2_dir
 led3
 led3_dir
 led4
+led4_callback
 led4_dir
 lengthck
 lengthck
