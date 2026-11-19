@@ -53,3 +53,11 @@ bool CORETIMER_CompareHasExpired(void);
 void CORETIMER_InterruptHandler(void);
 
 #endif // CORETIMER_H
+
+/*
+uint32_t CORETIMER_GetTickCounter(void);
+void CORETIMER_StartTimeOut (CORETIMER_TIMEOUT* timeout, uint32_t delay_ms);
+void CORETIMER_ResetTimeOut (CORETIMER_TIMEOUT* timeout);
+bool CORETIMER_IsTimeoutReached (CORETIMER_TIMEOUT* timeout);
+
+*/

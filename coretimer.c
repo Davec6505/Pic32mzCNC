@@ -114,6 +114,7 @@ uint32_t CORETIMER_FrequencyGet ( void )
     return (CORE_TIMER_FREQUENCY);
 }
 
+
     
 /// @brief Gets the current tick counter value of the core timer
 /// @return The current tick counter value

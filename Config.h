@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "mikroc_intellisense.h"
+
 #include "Pins.h"
 #include "Timers.h"
 #include "built_in.h"

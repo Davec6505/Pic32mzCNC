@@ -1,14 +1,13 @@
 {
     "configurations": [
         {
-            "name": "Win32",
+            "name": "MikroC PIC32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/.vscode/mikroc"
             ],
             "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
+                "__INTELLISENSE__"
             ],
             "compilerPath": "cl.exe",
             "intelliSenseMode": "windows-msvc-x64"

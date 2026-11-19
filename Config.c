@@ -89,6 +89,7 @@ void PinMode(){
      // group before mapping INT1/INT2/INT4 to them (Flip&Click: RF2, RB8, RB10).
     Lock_IOLOCK();
     
+    
 
 //Memory manager initialize
    MM_Init();
@@ -132,7 +133,6 @@ void PinMode(){
  settings_init(1);
  //settings_read_coord_data();
  
-
 
 }
 

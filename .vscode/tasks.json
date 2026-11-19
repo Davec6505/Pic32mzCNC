@@ -25,6 +25,17 @@
             }
         },
         {
+            "label": "Search MikroC Defs",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "Select-String -Path \"C:\\Users\\Public\\Documents\\Mikroelektronika\\mikroC PRO for PIC32\\Defs\\P32MZ2048EFH100.cp\" -Pattern \"${input:searchTerm}\""
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Clean Build Artifacts",
             "type": "shell",
             "command": "make clean",
@@ -36,5 +47,12 @@
             "command": "make flash",
             "problemMatcher": []
         }
-    ]
+    ],
+    "inputs": [
+    {
+        "id": "searchTerm",
+        "type": "promptString",
+        "description": "Enter symbol to search for"
+    }
+]
 }
