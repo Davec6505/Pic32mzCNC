@@ -111,6 +111,7 @@ unsigned long flags = 0;
   buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)DEFAULT_HOME_DIR_MASK;
   buffA[INVERT_MASK_OFFSET]   = (unsigned long)DEFAULT_INVERT_MASK;
   buffA[DIR_INVERT_MASK_OFFSET] = (unsigned long)DEFAULT_DIR_INVERT_MASK;
+  buffA[S_CURVE_PERCENTAGE_OFFSET] = (unsigned long)DEFAULT_S_CURVE_PERCENTAGE;
 
   if (DEFAULT_REPORT_INCHES)    { flags |= BITFLAG_REPORT_INCHES; }       //bit 0
   if (DEFAULT_AUTO_START)       { flags |= BITFLAG_AUTO_START; }          //bit 1
@@ -148,6 +149,7 @@ static void settings_apply_row(){
   settings.homing_dir_mask        = (unsigned int)buffA[HOME_DIR_MASK_OFFSET];
   settings.invert_mask            = (unsigned int)buffA[INVERT_MASK_OFFSET];
   settings.dir_invert_mask        = (unsigned int)buffA[DIR_INVERT_MASK_OFFSET];
+  settings.s_curve_percentage     = (unsigned int)buffA[S_CURVE_PERCENTAGE_OFFSET];
   //covers boot, $RST=$ and $RST=*
   Stepper_ApplyInvertMasks();
 }

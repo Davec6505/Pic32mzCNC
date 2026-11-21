@@ -74,7 +74,7 @@ NOP
 ; end of _SetPinMode
 _dds_tick:
 ;Stepper.c,74 :: 		void dds_tick(){
-ADDIU	SP, SP, -8
+ADDIU	SP, SP, -12
 SW	RA, 0(SP)
 ;Stepper.c,78 :: 		PLS_StepX = step_idle[X];
 SW	R25, 4(SP)
@@ -194,8 +194,7 @@ ADDU	R2, R2, R3
 ADDIU	R2, R2, 40
 LW	R2, 0(R2)
 SUBU	R4, R4, R2
-; gap start address is: 24 (R6)
-MOVZ	R6, R4, R0
+SW	R4, 8(SP)
 ;Stepper.c,96 :: 		if(eng_err[i] >= gap){
 SEH	R2, R5
 SLL	R3, R2, 2
@@ -214,11 +213,11 @@ SEH	R2, R5
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Stepper_eng_err+0)
 ORI	R2, R2, lo_addr(Stepper_eng_err+0)
-ADDU	R3, R2, R3
-LW	R2, 0(R3)
-SUBU	R2, R2, R6
-; gap end address is: 24 (R6)
-SW	R2, 0(R3)
+ADDU	R4, R2, R3
+LW	R3, 0(R4)
+LW	R2, 8(SP)
+SUBU	R2, R3, R2
+SW	R2, 0(R4)
 ;Stepper.c,98 :: 		Step_Cycle(i);
 SEH	R25, R5
 JAL	Stepper_Step_Cycle+0
@@ -375,7 +374,7 @@ SW	R2, Offset(Stepper_dds_master+4)(GP)
 L_end_dds_tick:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 8
+ADDIU	SP, SP, 12
 JR	RA
 NOP	
 ; end of _dds_tick

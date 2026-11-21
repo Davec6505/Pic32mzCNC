@@ -9,15 +9,15 @@
 * motion, the interpolation is based on Bresenhams algo and the Circular is at
 * present using ac:grbl implimentation "thank you for this @K. Jeon & 
 * @Simen Svale Skogsrud.
-* The micro used is a pic32mz2048efh  ac:pic32mz , the 6 axis motion uses 6 of
-* the Output compare modules  ac:OUTPUT_COMPARE and no "for or while" loops
+* The micro used is a pic32mz2048efh  ac:pic32mz , the 6 axis motion uses dds
+* engine and as best as possible no "for or while" loops
 * blocking during interpolation.
 *
 *for limits the external interrupts  [ ac:Interrupts ] for origins x y z &
 * a b c* will most likely get polled without interrupts??
 *
-* Communication is Serial using the  ac:DMA_Pic32 DMA0 and DMA1 and is setup to
-* transfer and recieve to two seperate buffers.
+* Communication is Serial using the  ac:DMA_Pic32 DMA0 and DMA1 || EthernetSPI
+* setup to transfer and recieve to two seperate buffers.
 *
 * The development platform used for this application is MikroC Pro for pic32
 * using the Clicker2 for mz ac:Clicker2_Dwg :  ac:Clicker2_Pinouts , however
@@ -57,8 +57,13 @@ static int status_of_gcode;
 //condition externs
 void Condition_Externs(){
   PinMode();
+
+// ETHERNET_SPI defined in Config.h
+  #ifdef ETHERNET_SPI
   Ethernet_Transport_Init();
-  plan_init(5000.0,5000.0);//settings.acceleration,settings.acceleration);
+  #endif
+  
+  plan_init(settings.acceleration,settings.acceleration);
   Init_Protocol();
   G_Initialise();
   sys_sync_current_position();
@@ -93,8 +98,9 @@ static int cntr = 0,a = 0;
 
 
    //ENC28J60 is polled twice a scan, here and before the runtime checks
+   #ifdef ETHERNET_SPI
    Ethernet_Transport_Poll();
-   
+   #endif
    
    //execute a newly accepted gcode line, then send its single reply
    if(status_of_gcode == STATUS_COMMAND_EXECUTE_MOTION){
@@ -115,25 +121,26 @@ static int cntr = 0,a = 0;
    
 //Debug for stepper report if not connected to unit
 #if StepperDebug == 1
-if(SV.mode_complete){
-if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
-while(DMA_IsOn(1));
-dma_printf("\
-dif:= %l\t%l\t%l\t%l\t%l\t%l\t%d\n"
-,STPS[X].step_count
-,STPS[X].accel_count
-,STPS[X].step_delay
-,STPS[Y].step_count
-,STPS[Y].accel_count
-,STPS[Y].step_delay
-,SV.mode_complete);
-}
-}
+  if(SV.mode_complete){
+  if(STPS[X].run_state != STOP | STPS[Y].run_state != STOP){
+    while(DMA_IsOn(1));
+      dma_printf("\
+      dif:= %l\t%l\t%l\t%l\t%l\t%l\t%d\n"
+      ,STPS[X].step_count
+      ,STPS[X].accel_count
+      ,STPS[X].step_delay
+      ,STPS[Y].step_count
+      ,STPS[Y].accel_count
+      ,STPS[Y].step_delay
+      ,SV.mode_complete);
+    }
+  }
 #endif
 
   //second ENC28J60 poll of the scan
+#ifdef ETHERNET_SPI
   Ethernet_Transport_Poll();
-
+#endif
   //state check for resets
   protocol_system_check();
    

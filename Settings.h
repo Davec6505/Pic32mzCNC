@@ -78,6 +78,8 @@ typedef __attribute__((aligned (32))) float afloat;
 //$3 direction port invert mask, bits X..A. 5 (X and Z set) preserves the
 //polarity the old compile-time Pins.h defines used (X=1 Y=0 Z=1 A=0)
 #define DEFAULT_DIR_INVERT_MASK        5
+// s_curve_percentage for nested acceleration profiles
+#define DEFAULT_S_CURVE_PERCENTAGE     0
 
 
 
@@ -205,6 +207,7 @@ typedef struct {
   unsigned int dir_invert_mask;       // $3 direction port invert mask
   unsigned int enable_mask;           //$4 Mask for shared enable inversion.
   unsigned int status_report_mask;    //$10 Mask to indicate desired report data.
+  unsigned int s_curve_percentage;    //$ ??? Nested acceleration profile S-curve percentage
 }  settings_t;
 
 extern settings_t settings;

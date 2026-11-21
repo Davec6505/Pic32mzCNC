@@ -110,67 +110,67 @@ ORI	R26, R0, 1
 ORI	R25, R0, 44
 JAL	_PPS_Mapping_NoLock+0
 NOP	
-;Config.c,81 :: 		PPS_Mapping_NoLock(_RPD2, _INPUT, _SDI1);
+;Config.c,82 :: 		PPS_Mapping_NoLock(_RPD2, _INPUT, _SDI1);
 ORI	R27, R0, 9
 ORI	R26, R0, 1
 MOVZ	R25, R0, R0
 JAL	_PPS_Mapping_NoLock+0
 NOP	
-;Config.c,82 :: 		PPS_Mapping_NoLock(_RPD3, _OUTPUT, _SDO1);
+;Config.c,83 :: 		PPS_Mapping_NoLock(_RPD3, _OUTPUT, _SDO1);
 ORI	R27, R0, 5
 MOVZ	R26, R0, R0
 ORI	R25, R0, 16
 JAL	_PPS_Mapping_NoLock+0
 NOP	
-;Config.c,85 :: 		PPS_Mapping_NoLock(_RPE3, _OUTPUT, _OC8);     //Spindle TMR7
+;Config.c,86 :: 		PPS_Mapping_NoLock(_RPE3, _OUTPUT, _OC8);     //Spindle TMR7
 ORI	R27, R0, 12
 MOVZ	R26, R0, R0
 ORI	R25, R0, 38
 JAL	_PPS_Mapping_NoLock+0
 NOP	
-;Config.c,90 :: 		Lock_IOLOCK();
+;Config.c,91 :: 		Lock_IOLOCK();
 JAL	_Lock_IOLOCK+0
 NOP	
-;Config.c,94 :: 		MM_Init();
+;Config.c,96 :: 		MM_Init();
 JAL	_MM_Init+0
 NOP	
-;Config.c,98 :: 		InitTimer1();
+;Config.c,100 :: 		InitTimer1();
 JAL	_InitTimer1+0
 NOP	
-;Config.c,100 :: 		InitTimer8();
+;Config.c,102 :: 		InitTimer8();
 JAL	_InitTimer8+0
 NOP	
-;Config.c,104 :: 		Limit_Initialize();
+;Config.c,106 :: 		Limit_Initialize();
 JAL	_Limit_Initialize+0
 NOP	
-;Config.c,108 :: 		OutPutPulseXYZ();
+;Config.c,110 :: 		OutPutPulseXYZ();
 JAL	_OutPutPulseXYZ+0
 NOP	
-;Config.c,109 :: 		SetPinMode();
+;Config.c,111 :: 		SetPinMode();
 JAL	_SetPinMode+0
 NOP	
-;Config.c,113 :: 		SetInitialSizes(STPS);
+;Config.c,115 :: 		SetInitialSizes(STPS);
 LUI	R25, hi_addr(_STPS+0)
 ORI	R25, R25, lo_addr(_STPS+0)
 JAL	_SetInitialSizes+0
 NOP	
-;Config.c,117 :: 		Serial_Init(SERIAL_MODE_RX_IRQ_DMA_TX);
+;Config.c,119 :: 		Serial_Init(SERIAL_MODE_RX_IRQ_DMA_TX);
 ORI	R25, R0, 2
 JAL	_Serial_Init+0
 NOP	
-;Config.c,123 :: 		CORETIMER_Initialize();
+;Config.c,125 :: 		CORETIMER_Initialize();
 JAL	_CORETIMER_Initialize+0
 NOP	
-;Config.c,124 :: 		CORETIMER_Start();
+;Config.c,126 :: 		CORETIMER_Start();
 JAL	_CORETIMER_Start+0
 NOP	
-;Config.c,128 :: 		EnableInterrupts();
+;Config.c,130 :: 		EnableInterrupts();
 EI	R30
-;Config.c,131 :: 		settings_init(0);
+;Config.c,133 :: 		settings_init(0);
 MOVZ	R25, R0, R0
 JAL	_settings_init+0
 NOP	
-;Config.c,132 :: 		settings_init(1);
+;Config.c,134 :: 		settings_init(1);
 ORI	R25, R0, 1
 JAL	_settings_init+0
 NOP	

@@ -86,8 +86,11 @@ unsigned long gap;
   //a step is due when the phase wraps
   dds_master.old_phase = dds_master.phase;
   dds_master.phase += dds_master.increment;
+
+  //Roll over check: if phase did not wrap, no step is due.
   if(dds_master.phase >= dds_master.old_phase) return;
 
+  // Step is due, handle the master and slave axes accordingly.
   Step_Cycle(m);
   for(i=0;i<NoOfAxis;i++){
     if(i != m && bit_istrue(eng_axes,bit(i))){
@@ -218,7 +221,7 @@ static void Step_Cycle(int axis_No){
 }
 
 //Call after each step pulse (step_count already incremented) to set
-//step_delay, in T1_FREQ ticks, for the next step.
+//step_delay/phase calculation for the next step.
 //Decel is indexed by the steps remaining (accel_count = -remaining), so it
 //always matches the position and ends on the last step; it never slows below
 //the StartUp_delay floor, and the move ends on step_count, not accel_count.

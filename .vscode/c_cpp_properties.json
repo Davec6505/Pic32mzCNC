@@ -4,7 +4,8 @@
             "name": "MikroC PIC32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/.vscode/mikroc"
+                "${workspaceFolder}/.vscode/mikroc",
+                "C:/Users/Public/Documents/Mikroelektronika/mikroC PRO for PIC32/Uses"
             ],
             "defines": [
                 "__INTELLISENSE__"

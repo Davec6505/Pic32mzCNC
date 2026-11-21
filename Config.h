@@ -20,6 +20,8 @@
 ///////////////////////////////////////////////////
 //DEFINES
 
+#define ETHERNET_SPI
+
 #define false 0
 #define true 1
 

@@ -77,10 +77,11 @@ void PinMode(){
      PPS_Mapping_NoLock(_RPD14, _INPUT,  _U5RX);    // Sets pin PORTD.B14 to be Input and maps UART5 Receive
 #endif
 
+#ifdef ETHERNET_SPI
      //SPI1 Pins for SDI and SDO for ENC28J60 Module
      PPS_Mapping_NoLock(_RPD2, _INPUT, _SDI1);
      PPS_Mapping_NoLock(_RPD3, _OUTPUT, _SDO1);
-
+#endif
      //OUTPUT PULSE TO Spindle
      PPS_Mapping_NoLock(_RPE3, _OUTPUT, _OC8);     //Spindle TMR7
 
@@ -132,7 +133,6 @@ void PinMode(){
  settings_init(0);
  settings_init(1);
  //settings_read_coord_data();
- 
 
 }
 

@@ -24,14 +24,14 @@ long dec                         absolute 0xA0003904 ;
 
 void plan_init(float accel,float decel){
 long i = 0;
- for(i = 0; i < NoOfAxis; i++){
+  for(i = 0; i < NoOfAxis; i++){
 
-  STPS[i].acc = lround(accel);
-  STPS[i].dec = lround(decel);
- }
- acc = lround(accel);
- dec = lround(decel);
- set_calculation_constants();
+    STPS[i].acc = lround(accel);
+    STPS[i].dec = lround(decel);
+  }
+  acc = lround(accel);
+  dec = lround(decel);
+  set_calculation_constants();
 }
 
 //////////////////////////////////////////////////////////////////////////

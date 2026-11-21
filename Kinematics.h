@@ -64,6 +64,8 @@ unsigned int home_cnt;
 typedef struct Steps{
   //! axis to stop 1st
   unsigned short stopAxis: 1;
+  // dummy bits to make up a byte for packing purposes
+  unsigned short dummy: 6;
   //! Track the direction of the axis for absolute value tracking
   int  axis_dir;
   //! What part of the speed ramp we are in.

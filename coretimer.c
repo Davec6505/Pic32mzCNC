@@ -1,6 +1,8 @@
 #include "coretimer.h"
 #include <stdint.h>
      #include "Pins.h"
+
+    #include "mikroc_intellisense.h"
 /*
 these are MikroC` CP0 register numbers for the PIC32 MIPS core
 CP0_COUNT            value 4
@@ -46,6 +48,7 @@ void CORETIMER_Initialize(void)
     // enable the counter / timer
     cp0_ =  CP0_GET(CP0_CAUSE) & ~CP0_CAUSE_DC_MASK;
     CP0_SET(CP0_CAUSE, cp0_ );
+
 
     // set priority 1 sub 0
     IPC0bits.CTIP = 0x1;
