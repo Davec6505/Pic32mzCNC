@@ -122,8 +122,12 @@ unsigned long flags = 0;
   buffA[FLAGS_OFFSET] = flags;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//copy the settings held in buffA into the settings struct
+
+/**
+ * Applies the settings from the buffer array (buffA) to the settings structure.
+ * This function ensures that each setting is correctly converted and assigned to the appropriate field.
+ * It also applies the stepper invert masks to the hardware.
+ */
 static void settings_apply_row(){
   //one line per axis: mikroC mis-compiles ulong2flt(buffA[SPMMX_OFFSET+k]) in a
   //loop (it dereferences the loaded value as an address -> bus error at boot)
@@ -154,8 +158,19 @@ static void settings_apply_row(){
   Stepper_ApplyInvertMasks();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//$RST=$ / $RST=# / $RST=* : restore part (or all) of the settings row and save it
+
+/**
+ * Restores the settings row based on the specified restore mask.
+ * This function handles restoring default settings, parameters, and startup lines as needed.
+ * It ensures that the settings are correctly applied and saved.
+ * $RST=$ / $RST=# / $RST=* commands are used to restore settings.
+ * $RST=$ restores default settings.
+ * $RST=# restores the specified settings row.
+ * $RST=* restores all settings rows.
+ *
+ * @param restore_mask The mask indicating which parts of the settings to restore.
+ * @return The result of the settings save operation.
+ */
 int settings_restore(int restore_mask){
 int k;
   if(restore_mask == SETTINGS_RESTORE_ALL){
@@ -189,58 +204,112 @@ int k;
 //                    FLASH STATUS INDICATOR FUNCTIONS                        //
 ////////////////////////////////////////////////////////////////////////////////
 
-//sets the indicator of available data in flash "--EEPROM--"
-//call this function at every write to flash,if flash fails to
-//write an error indicator will will be sent 0f 1-3
-//1=low volt error | 2=write failed | 3=both erros | 0=success
-//if success on write a reset of this value indicating a new read of
-//the flash is needed to reload buffA / ram @ #A000000
+
+/** Need to try understand where this check can be implimented
+ * Writes an error indicator which will be sent 0f 1-3
+ * 1=low volt error | 2=write failed | 3=both errors | 0=success
+ * If success on write, a reset of this value indicates a new read of
+ * the flash is needed to reload buffA / ram @ #A000000
+ */
+
+
+
+
+/**
+ * Sets the RAM loaded indicator to the specified value in RAM.
+ * This function updates the status of the RAM buffer, indicating whether it has been loaded with valid data from flash.
+ * call this function whenever the RAM loaded indicator needs to be updated.
+ *
+ * @param val The value to set the RAM loaded indicator to.
+ * @return The updated state of the RAM loaded indicator.
+ */
 static int set_ram_loaded_indicator(int val){
  ram_loaded = val;
  return ram_loaded;
 }
 
-//force a zeroing of ram_loaded indicator
+
+/**
+ * Forces a zeroing of the RAM loaded indicator.
+ * This function marks the RAM buffer as not loaded, ensuring that it will be reloaded from flash when needed.
+ */
 static void zero_ram_loaded_indicator(){
  ram_loaded = 0;
 }
 
-//read the indicator to test for data
+
+/**
+ * Reads the status of the RAM loaded indicator.
+ * This function returns whether the RAM buffer has been loaded with valid data from flash.
+ *
+ * @return The current state of the RAM loaded indicator.
+ */
 int read_ram_loaded_indicator(){
  return ram_loaded;
 }
 
-//sets / resets the coordinate data read bit, the code should
-//test this bit so as not to waste time requering the flash every
-//time it needs to feed back to ugs, reset this flag once flash
-//has been updated
+
+/**
+ * Sets the coordinate data read indicator for the specified flag.
+ * This function marks the coordinate data as read to avoid unnecessary flash reads.
+ * 
+ * @param flag The specific coordinate data flag to set.
+ */
 static void set_coord_data_read_indicator(int flag){
    bit_true(coord_read,bit(flag));
 }
 
-//reset individual flags back to false
+
+/**
+ * Resets the coordinate data read indicator for the specified flag.
+ * This function marks the coordinate data as unread to ensure it will be re-read from flash when needed.
+ * 
+ * @param flag The specific coordinate data flag to reset.
+ */
 static void rst_single_coord_read_indicators(int flag){
   bit_false(coord_read,bit(flag));
 }
 
-//reset all coord status flags back to false
+
+/**
+ * Resets all coordinate data read indicators.
+ * This function marks all coordinate data as unread to ensure they will be re-read from flash when needed.
+ */
 static void rst_coord_read_indicator(){
   coord_read = 0;
 }
 
-//get the status of the indicator flag
+
+/**
+ * Reads the status of the coordinate data read indicator.
+ * This function returns the current state of the coordinate data read flags.
+ *
+ * @return The current coordinate data read indicator flags.
+ */
 int read_coord_data_indicator(){
  return coord_read;
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-//                          FLASH CONTROL FUNCTIONS                           //
-////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************************
+ * FLASH CONTROL FUNCTIONS
+ * These functions handle reading and writing rows of flash memory,
+ * managing RAM indicators, and ensuring data consistency between
+ * flash and RAM buffers.
+ ******************************************************************************************************/
 
-//Save current page to a temp buffer [ram @ #A0000000], this is to
-//push original setting back after a page errase and save time
-//reading flash to often, as well as save flash
+
+
+/**
+ * Reads a row of data from flash into buffA located at [ram @ #A0000000]
+ * This function reads a full row of flash memory starting at the specified address into the buffer buffA.
+ * This function also updates the RAM indicator to reflect the number of valid data entries read.
+ * This is a row-wise read operation, meaning it reads an entire row of flash memory at once to ensure data 
+ * consistency and minimize flash access.
+ * 
+ * @param addr The starting address of the flash row to read.
+ * @return The number of valid data entries read from flash.
+ */
 int read_row_from_flash(unsigned long addr){
 unsigned long *ptr;
 int data_count;
@@ -289,9 +358,11 @@ P      Value        Coordinate System        G code
  *from the X, Y, Z position to part of the datum.
 *******************************************************************/
 
-////////////////////////////////////////////////////////////////////////////////
-// Loads the settings row into buffA once. Later edits stay in buffA (RAM)
-// until settings_save_row() is called, so they are never overwritten by a re-read.
+
+/**
+ * Loads the settings row into buffA if it is not already loaded.
+ * This function ensures that the settings are read from flash into RAM only once.
+ */
 static void settings_load_row(){
   if(!read_ram_loaded_indicator()){
     add = (unsigned long)FLASH_Settings_VAddr_P1;
@@ -300,9 +371,13 @@ static void settings_load_row(){
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// The only place the settings page is erased: erase then immediately write the
-// whole row back from buffA, so flash is never left erased.
+
+/**
+ * Saves the current settings row from buffA to flash.
+ * This function erases the current flash page and writes the contents of buffA to it.
+ * 
+ * @return Returns the status of the operation, such as STATUS_OK or an error code.
+ */
 static int settings_save_row(){
   //mark flash as holding valid settings so settings_init() reads them back
   buffA[FLASH_LOADED_OFFSET] = SETTINGS_VALID_MARKER;
@@ -321,9 +396,15 @@ static int settings_save_row(){
   return error;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//here we want to write the new recipe to flash and set the coordinate
-//coord_select is the 1 based recipe: P1..P9 (G54..G59.3), 10 = G28, 11 = G30
+
+/**
+ * Stores coordinate data into the EEPROM for the specified recipe.
+ * coord select is the 1-based recipe number: P1..P9 (G54..G59.3), 10 = G28, 11 = G30.
+ * 
+ * @param coord_select The 1-based recipe number: P1..P9 (G54..G59.3), 10 = G28, 11 = G30.
+ * @param coord Pointer to an array of coordinate values for each axis.
+ * @return Returns the status of the operation, such as STATUS_OK or an error code.
+ */
 unsigned int settings_write_coord_data(int coord_select,float *coord){
 int k;
   if(coord_select < 1 || coord_select > NUMBER_OF_DATUMS)
@@ -342,10 +423,13 @@ int k;
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-//read back the coordinate data and place into coord
-//struct for processing, coord_system[recipe-1] holds P1..P9, G28, G30
-//indexed by number of axis
+
+/**
+ * Reads all coordinate data from the settings row (buffA mirrors flash) into the coord_system array.
+ * Non-printable or erased values are treated as zero.
+ * Structure of coord_system: coord_system[recipe-1].coord[axis] holds the coordinate value for each axis of each recipe.
+ * @return void
+ */
 void settings_read_coord_data(){
 
   settings_load_row();
@@ -372,38 +456,46 @@ void settings_read_coord_data(){
   }
 }
 
-//////////////////////////////////////////////////////
-// Reads startup line n from the settings row (buffA mirrors flash), into
-// line[LINE_BUFFER_SIZE]. Erased or non printable bytes read as an empty line.
+/**
+ * Reads a startup line from the EEPROM into the provided buffer.
+ * @param n The line number (0 or 1) to read.
+ * @param line The buffer to store the read line.
+ * @return Returns the status of the operation, such as STATUS_OK or an error code.
+ */
 int settings_read_startup_line(int n, char *line){
 char *src;
 int k;
 
- switch(n){
-  case 0: k = Line0_Offset; break;
-  case 1: k = Line1_Offset; break;
-  default: line[0] = 0; return STATUS_INVALID_STATEMENT;
- }
- settings_load_row();
- src = (char*)(buffA + k);
- for(k = 0; k < LINE_BUFFER_SIZE-1; k++){
-   if(src[k] == 0) break;
-   if(src[k] < 0x20 || src[k] > 0x7E){ k = 0; break; }
-   line[k] = src[k];
- }
- line[k] = 0;
+  switch(n){
+    case 0: k = Line0_Offset; break;
+    case 1: k = Line1_Offset; break;
+    default: line[0] = 0; return STATUS_INVALID_STATEMENT;
+  }
+  settings_load_row();
+  src = (char*)(buffA + k);
+  for(k = 0; k < LINE_BUFFER_SIZE-1; k++){
+    if(src[k] == 0) break;
+    if(src[k] < 0x20 || src[k] > 0x7E){ k = 0; break; }
+    line[k] = src[k];
+  }
+  line[k] = 0;
 
-  //test return string for correctness
- #if GlobalsDebug == 10
- while(DMA_IsOn(1));
- dma_printf("%s\n",line);
- #endif
-   
- return STATUS_OK;
+    // Debug information for the read startup line.
+  #if GlobalsDebug == 10
+  while(DMA_IsOn(1));
+  dma_printf("%s\n",line);
+  #endif
+    
+  return STATUS_OK;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Method to store startup lines into EEPROM
+
+/**
+ * Stores a startup line into the EEPROM.
+ * @param n The line number (0 or 1) to store.
+ * @param line The string content of the startup line.
+ * @return Returns the status of the operation, such as STATUS_OK or an error code.
+ */
 int settings_store_startup_line(int n, char *line){
 unsigned long start_offset;
 int  str_len;
@@ -445,9 +537,13 @@ char temp_char;
  return settings_save_row();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// A helper method to set settings from command line [ ac:grbl_settings ]
-// Each accepted change is saved to flash straight away (Grbl style)
+/**
+ * Stores a global setting based on the provided parameter and value.
+ * Each accepted change is saved to flash immediately.
+ * @param parameter The setting number to modify.
+ * @param value The value to assign to the setting.
+ * @return Returns the status of the operation, such as STATUS_OK or an error code.
+ */
 int settings_store_global_setting(int parameter, float value) {
 int val_temp = 0;
 
@@ -584,9 +680,15 @@ int val_temp = 0;
   return(STATUS_OK);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Maps Grbl 1.1 $n numbering onto the internal (0.8 style) setting indices.
-// NOTE: must correlate with report_grbl_settings() in Print.c
+
+/**
+ * Maps a Grbl 1.1 setting number to the internal setting index and stores the value.
+ * 
+ * @note The mapping must correlate with report_grbl_settings() in Print.c.
+ * @param parameter The Grbl 1.1 setting number ($n).
+ * @param value The value to store for the specified setting.
+ * @return Returns the status of the operation, such as STATUS_OK or STATUS_INVALID_STATEMENT.
+ */
 int settings_store_grbl_setting(int parameter, float value) {
 int internal;
   switch(parameter) {

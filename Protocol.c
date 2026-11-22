@@ -14,6 +14,7 @@
  *? (current status)
  *ctrl-x (reset Grbl)
 *******************************************************/
+
 /******************************************************
 **************** examples of GCODES *******************
 *G21G91G1X0.991F102
@@ -24,20 +25,30 @@
 
 #include "protocol.h"
 #include "Print.h"
-////////////////////////////////////////////////////
-//local variables
+
+/****************************************************
+ * Defines the startup line prefix for Grbl settings.
+ ****************************************************/
 const code char SL[] = "$N";
 volatile char gcode[arr_size][str_size];
 char startup  absolute 0xA0002600 ;
 
-////////////////////////////////////////////////////
-// Initialize alllocal statics
+
+/**
+ * Initializes the protocol by resetting the startup array and reporting the initial message.
+ * This function should be called at the beginning of the protocol setup to ensure a clean state.
+ */
 void Init_Protocol(){
    startup = 0;
    report_init_message();
 }
-////////////////////////////////////////////////////
-//reset the string array to zero                                               c
+
+/**
+ * Resets the string array to zero.
+ * This function initializes all elements of the provided 2D character array to zero.
+ *
+ * @param arg The 2D character array to be reset.
+ */                                             c
 void Str_Initialize(char arg[arr_size][str_size]){
 int i;
   for(i = 0; i < arr_size;i++){
@@ -45,13 +56,29 @@ int i;
   }
 }
 
+/**
+ * Clears the specified string by setting all its characters to zero.
+ *
+ * @param str The string to be cleared.
+ * @param len The length of the string to be cleared.
+ */
 void Str_clear(char *str,int len){
    memset(str,0,len);
 }
 
-///////////////////////////////////////////////////////
-// Split the string according to the char
-//G00X100.0Y100.0F1000
+
+/**
+ * Splits the input string into substrings based on the specified character.
+ * This function handles cases where substrings should not exceed 49 characters in length.
+ * Example:
+ *   Input: "G00X100.0Y100.0F1000", ' '
+ *   Output: ["G00X100.0", "Y100.0", "F1000"]
+ *
+ * @param arg The 2D array to store the resulting substrings.
+ * @param str The input string to be split.
+ * @param c The character used as the delimiter for splitting.
+ * @return The number of substrings generated.
+ */
 static int strsplit(char arg[arr_size][str_size],char *str, char c){
 int i,ii,kk,err,lasti,len;
     Str_Initialize(arg);
@@ -74,9 +101,26 @@ int i,ii,kk,err,lasti,len;
     return kk;
 }
 
-///////////////////////////////////////////////////////
-// Split the string according to the char or space
-//G00X100.0Y100.0F1000
+/**
+ * Splits the input string into substrings based on the specified character or space, 
+ * taking into account special cases for G-code strings.
+ * This function handles G-code strings and other special cases to ensure accurate splitting.
+ * This function is particularly useful for parsing G-code commands and other CNC-related strings where accurate splitting is crucial.
+ * example: 
+ *   Input: "G00X100.0Y100.0F1000", ' '
+ *   Output: ["G00X100.0", "Y100.0", "F1000"]
+ *   Input: "$N12345", ' '
+ *   Output: ["$","N12345"]
+ *   Input: "M03S1000", ' '
+ *   Output: ["M03","S1000"]
+ *   Input: "G1 X10.0 Y10.5 F1000", ' '
+ *   Output: ["G1", "X10.0", "Y10.5", "F1000"]
+ *
+ * @param arg: 2D array to store the resulting substrings.
+ * @param str: Input string to be split.
+ * @param c:   Character used as the delimiter for splitting.
+ * @return Returns the number of substrings generated.
+ */
 static int strsplit2(char arg[arr_size][str_size],char *str, char c){
 int i,ii,kk,err,lasti,len,track_char;
   Str_Initialize(arg);
@@ -85,39 +129,62 @@ int i,ii,kk,err,lasti,len,track_char;
   
   track_char=ii=kk=err=lasti=0;
   for (i = 0;i < len;i++){
-    err = i - lasti; //test if string in string is < 49
+    //calculate the length of the current substring, should be < 49 chars in length
+    err = i - lasti; 
+    // check if the current character is the split character, newline, or if the substring length exceeds 49 chars
     if(*(str+i) == c || *(str+i) == '\n'  || err > 49){
+      // terminate the current substring and prepare for the next one
       arg[kk++][ii] = 0;
       ii=err=0;
+      // update the last index to the current position and increment the character tracker
       lasti = i;
       track_char++;
       continue;
     }else{
+      // check if the first character is not '$' and the current character is not a digit/number
       if(i > 0 && (*(str+0) != '$') ){
-        if(!track_char && *(str+i) > 0x39){
-         arg[kk++][ii] = 0;
-         ii=err=0;
-         lasti = i;
+        // if the first character is not '$' and the current character is not a digit, split the string
+        if(!track_char && *(str+i) > 0x39){ //0x39 is ASSCI 0x30 ('0') to 0x39 ('9')
+          // split the string as the current character is not a digit and the first character is not '$'
+          arg[kk++][ii] = 0;
+          ii=err=0;
+          // update the last index to the current position
+          lasti = i;
         }
       }
+      // append the current character to the current substring
       arg[kk][ii++] = *(str+i);
    }
-   if(*(str+i)==0)
-      break;
   }
-  arg[kk][0] = 0;
+  // terminate the last substring to ensure it is properly null-terminated
+  arg[kk][ii] = 0;
+  // return the total number of substrings generated, kk++ has already been done when a new substring is started
   return kk;
 }
 
-/////////////////////////////////////////////////////
-//seperate the char and numerals from the string
-static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char){
+
+/**
+ * Obsolete function for copying a substring from strB to strA, temporarily null-terminating strB.
+ * This function is replaced by cpy_val_from_str() to avoid modifying the original string.
+ * @note MikroC does not strictly enforce modification of string literals, allowing this function to work without immediate errors. 
+ *       However, modifying string literals is generally unsafe and should be avoided.
+ *
+ * @param strA: Destination string where the substring will be copied.
+ * @param strB: Source string from which the substring will be taken.
+ * @param indx: Starting index in strB for the substring.
+ * @param num_of_char: Number of characters to copy from strB.
+ * @return Returns: The number of characters copied.
+ */
+static int cpy_val_from_str_(char *strA,const char *strB,int indx,int num_of_char){
 int i;
 char *tmp;// = strB;
+  // copy address of substring at indx from strB for num_of_char characters into strA
    tmp = strB+indx;
+   // temporarily null-terminate the substring at the desired length
   *(tmp+num_of_char)=0;
 
    i = 0;
+   // copy characters from the temporary substring to the destination string until the null terminator is reached
    while(*tmp != 0){
     *strA++ = *tmp++;
     i++;
@@ -128,17 +195,48 @@ char *tmp;// = strB;
 }
 
 
-/////////////////////////////////////////////////
-//Convert str to int
-static int str2int(char *str,int base){
+/**
+ * Copies a substring from strB starting at indx for num_of_char characters into strA without modifying strB.
+ * 
+ * @param  strA: Destination string where the substring will be copied.
+ * @param  strB: Source string from which the substring will be taken.
+ * @param  indx: Starting index in strB for the substring.
+ * @param  num_of_char: Number of characters to copy from strB.
+ * @return Returns: The number of characters copied.
+ */
+static int cpy_val_from_str(char *strA,const char *strB,int indx,int num_of_char)
+{
+    int i;
+
+    for (i = 0; i < num_of_char && strB[indx + i] != '\0'; i++)
+    {
+        strA[i] = strB[indx + i];
+    }
+
+    strA[i] = '\0';
+
+    return i;
+}
+
+
+/**
+ * Converts a string to an integer based on the specified base.
+ *
+ * @param  str: The string to be converted.
+ * @param  base: The numerical base for conversion (e.g., 10 for decimal, 16 for hexadecimal).
+ * @return Returns the integer value represented by the string.
+ */
+static int str2int(const char *str,int base){
 int  i, len;
 int result = 0;
-  
+  // Get the length of the string
   len = strlen(str);
-
+  // Iterate over each character in the string and convert it to an integer based on the base.
   for(i=0; i<len; i++){
      result = result * base + ( *(str+i) - 0x30 );
+     #ifndef ETHERNET_SPI
      while(DMA_IsOn(1));
+     #endif
   }
 
    return result;
@@ -161,6 +259,13 @@ int result = 0;
 // recalculating the buffer upon a feedhold or override.
 // NOTE: The sys.execute variable flags are set by any process, step or serial interrupts, pinouts,
 // limit switches, or the main program.
+/**
+ * Executes runtime commands based on the current system state and pending events.
+ * This function handles asynchronous tasks such as resets, critical events, and alarms.
+ * It should be called periodically from the main program loop to ensure timely execution of runtime commands.
+ * @note The sys.execute variable flags are set by any process, step or serial interrupts, pinouts,
+ * limit switches, or the main program.
+ */
 void protocol_execute_runtime(){
   unsigned int pending = Serial_TakeRealtime();
   if(pending & EXEC_RESET){
@@ -249,7 +354,12 @@ void protocol_execute_runtime(){
 }
 
 
-//check for errors or resets
+/**
+ * Checks for system errors or resets and performs necessary reinitialization.
+ * This function should be called periodically from the main program loop to handle
+ * system aborts and resets safely.
+ * @note This function should not be called from within interrupt service routines.
+ */
 void protocol_system_check(){
     // Execute system reset upon a system abort, where the main program will return to this loop.
     // Once here, it is safe to re-initialize the system. At startup, the system will automatically
@@ -298,12 +408,17 @@ void protocol_system_check(){
   }
 }
 
-///////////////////////////////////////////////////
-//         NEW GCODE LINE INTERPRETER            //
-///////////////////////////////////////////////////
+/**
+ * Interprets and executes a single line of G-code.
+ * This function reads a line from the serial input, checks for errors, and processes
+ * the line according to the current system state.
+ * @return Returns the status of the G-code execution, such as STATUS_OK, STATUS_NO_REPORT,
+ *         or STATUS_COMMAND_EXECUTE_MOTION.
+ */
 int Sample_Gocde_Line(){
   char str[LINE_BUFFER_SIZE];
   int state, dif, result;
+  // Read a line from the serial | Ethernet input and handle basic errors.
   result = Serial_ReadLine(str);
   if(result == SERIAL_LINE_NONE) return STATUS_OK;
   if(result == SERIAL_LINE_TOO_LONG || result == SERIAL_LINE_RX_ERROR){
@@ -328,10 +443,11 @@ int Sample_Gocde_Line(){
   //exactly one reply per line: errors and check mode reply here, accepted
   //lines reply from main once they have been executed
   state = Do_Gcode(str,dif);
-  #if ProtoDebug == 26
+#if ProtoDebug == 26
   while(DMA_IsOn(1));
   dma_printf("state:= %d\n",state);
-  #endif
+#endif
+
   if(state != STATUS_OK || sys.state == STATE_CHECK_MODE){
     report_status_message(state);
     G_Begin_Block();
@@ -345,16 +461,24 @@ static int Machine_Busy(){
           sys.state == STATE_HOMING || sys.state == STATE_JOG);
 }
 
-///////////////////////////////////////////////////
-//test string char 0 for instructions or gcode
+/**
+ * Checks the type of query command starting with '$' and executes the corresponding action.
+ * This function handles system queries, settings, and mode toggles.
+ * @param str_ The input string containing the query command.
+ * @param dif_ The length of the input string.
+ * @return Returns the status of the query execution, such as STATUS_OK or STATUS_INVALID_STATEMENT.
+ * @note This function should be called only when a line starting with '$' is received and should not be called from interrupt service routines.
+ */
 static int Check_Query_Type(char *str_,int dif_){
 int query;
 int helper_var;
 int status = STATUS_OK;
-    #if ProtoDebug == 24
+
+#if ProtoDebug == 24
     while(DMA_IsOn(1));
     dma_printf("dif:=%d\n%s\n",dif_,str_);
-    #endif
+#endif
+
    if(str_[0] == '$'){
        // single letter commands take nothing after the letter, as in Grbl
        switch(str_[1]){
@@ -383,10 +507,12 @@ int status = STATUS_OK;
                break;
          case 'C' : // Set check g-code mode
                 status = STATUS_OK;
+                // Debug information for checking system state before toggling check g-code mode.
                 #if ProtoDebug == 22
                 while(DMA_IsOn(1));
                 dma_printf("sys.state:=%d\n",sys.state);
                 #endif
+
                 // Perform reset when toggling off. Check g-code mode should only work if Grbl
                 // is idle and ready, regardless of alarm locks. This is mainly to keep things
                 // simple and consistent.
@@ -454,10 +580,13 @@ int status = STATUS_OK;
                       break;
                     }
                     report_startup_line(helper_var,str_);
+                
+                  // Debug information for the retrieved startup line.
                    #if ProtoDebug == 6
                    while(DMA_IsOn(1));
                    dma_printf("str[%d]:= %s\n",helper_var,str_);
                    #endif
+
                   }
                   break;
                }else { // Store startup line
@@ -473,6 +602,7 @@ int status = STATUS_OK;
                       num[0] = str_[2];
                       N_Val = atoi(num);
 
+                      // Debug information for the extracted startup line number.
                       #if ProtoDebug == 6
                       while(DMA_IsOn(1));
                       dma_printf("%s\t%d\n",num,N_Val);
@@ -493,10 +623,13 @@ int status = STATUS_OK;
                          // Set helper variable as counter to start of gcode block
                          helper_var = strlen((str_));
                          //strncpy(str_,(gcode[0]),helper_var);
+
+                         // Debug information for the invalid startup line format.
                          #if ProtoDebug == 6
                           while(DMA_IsOn(1));
                           dma_printf("%s\n",str_);
                          #endif
+
                          //use length to determine if startup line exists
                          //becareful not to put loop here as $Nn will repeat
                          //forever!!!!!!
@@ -505,9 +638,12 @@ int status = STATUS_OK;
                          //returning to the beginning of this function
                          /*if(!strncmp(SL,str,2))
                              goto START_LINE;  */
+
                        }else{
                         int str_length = 0;
                         // debug to check string argument of startup line
+
+                        // Debug information for the startup line argument before saving it.
                          #if ProtoDebug == 6
                           while(DMA_IsOn(1));
                           dma_printf("%s\n",str_);
@@ -553,8 +689,10 @@ int status = STATUS_OK;
                break;
          case '0': case '1': case '2': case'3':  case '4': case '5':
          case '6': case '7': case '8': case '9': {
-               // $n=value, n may be 1..3 digits (Grbl 1.1 numbering)
+               // $n=value, n may be 1..3 digits (Grbl 1.1 numbering) 
+               // Parse and store the Grbl setting corresponding to $n. after the '=' sign.
                char *eq = strchr(str_,'=');
+               // Check for a valid number format after the '=' sign, like a digit, decimal point, or sign.
                if((eq == 0) || (!isdigit(eq[1]) && eq[1] != '.' && eq[1] != '-')){
                   status = STATUS_BAD_NUMBER_FORMAT;
                }else if(Machine_Busy()){
@@ -562,10 +700,13 @@ int status = STATUS_OK;
                }else{
                   int N_Val = atoi(str_+1);
                   float value = atof(eq+1);
+
+                  // Debug information for the parsed setting number and value.
                   #if ProtoDebug == 21
                   while(DMA_IsOn(1));
                   dma_printf("%d\t%f\n",N_Val,value);
                   #endif
+
                   status = settings_store_grbl_setting(N_Val,value);
                }
                break;
@@ -613,9 +754,16 @@ char ch;
   return n;
 }
 
-// Parses one block. G and M words are applied before the value words, so
-// G20/G21 converts the block's own values whatever the word order. The first
-// error is kept, and a rejected block restores the parser state it changed.
+/**
+ * Parses and executes a single G-code block.
+ * This function processes the G-code line, handling G and M words first, followed by value words.
+ * It maintains the parser state, checks for errors, and restores the state if the block is rejected.
+ * errors encountered during parsing are stored and reported.
+ *
+ * @param str_ The G-code line to parse.
+ * @param dif_ Unused parameter, reserved for future use.
+ * @return The status of the G-code execution, indicating success or specific errors.
+ */
 static int Do_Gcode(char *str_,int dif_){
 float XYZ_Val;
 int i,pass,num_of_strings,Val,st,is_mode;
