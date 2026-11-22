@@ -48,7 +48,7 @@ void Init_Protocol(){
  * This function initializes all elements of the provided 2D character array to zero.
  *
  * @param arg The 2D character array to be reset.
- */                                             c
+ */                                             
 void Str_Initialize(char arg[arr_size][str_size]){
 int i;
   for(i = 0; i < arr_size;i++){

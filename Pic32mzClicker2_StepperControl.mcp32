@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=coretimer.h
+Value=Main.c
 Value=DEFINES.pld
 Value=Limits.c
 Value=Main.c
@@ -62,8 +62,8 @@ File13=Nut_Bolts.c
 File14=Planner.c
 File15=Flash_R_W.c
 File16=Tcp_Ethernet.c
-File18=coretimer.c
-Count=19
+File17=coretimer.c
+Count=18
 [BINARIES]
 Count=0
 [IMAGES]
@@ -153,5 +153,4 @@ USE_SRS=7
 [EXPANDED_NODES]
 0=Pic32mzClicker2_StepperControl.mcp32
 1=Sources
-21=Header Files
-Count=3
+Count=2

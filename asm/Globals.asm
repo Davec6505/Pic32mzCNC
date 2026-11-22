@@ -300,26 +300,28 @@ SW	R0, Offset(-1610612384)(GP)
 ;Globals.c,113 :: 		buffA[DIR_INVERT_MASK_OFFSET] = (unsigned long)DEFAULT_DIR_INVERT_MASK;
 ORI	R2, R0, 5
 SW	R2, Offset(-1610612380)(GP)
-;Globals.c,115 :: 		if (DEFAULT_REPORT_INCHES)    { flags |= BITFLAG_REPORT_INCHES; }       //bit 0
+;Globals.c,114 :: 		buffA[S_CURVE_PERCENTAGE_OFFSET] = (unsigned long)DEFAULT_S_CURVE_PERCENTAGE;
+SW	R0, Offset(-1610612376)(GP)
+;Globals.c,116 :: 		if (DEFAULT_REPORT_INCHES)    { flags |= BITFLAG_REPORT_INCHES; }       //bit 0
 L_Globals_settings_default_row11:
-;Globals.c,116 :: 		if (DEFAULT_AUTO_START)       { flags |= BITFLAG_AUTO_START; }          //bit 1
+;Globals.c,117 :: 		if (DEFAULT_AUTO_START)       { flags |= BITFLAG_AUTO_START; }          //bit 1
 LW	R2, 4(SP)
 ORI	R2, R2, 2
 SW	R2, 4(SP)
-;Globals.c,117 :: 		if (DEFAULT_INVERT_ST_ENABLE) { flags |= BITFLAG_INVERT_ST_ENABLE; }    //bit 2
+;Globals.c,118 :: 		if (DEFAULT_INVERT_ST_ENABLE) { flags |= BITFLAG_INVERT_ST_ENABLE; }    //bit 2
 L_Globals_settings_default_row13:
-;Globals.c,118 :: 		if (DEFAULT_HARD_LIMIT_ENABLE){ flags |= BITFLAG_HARD_LIMIT_ENABLE; }   //bit 3
+;Globals.c,119 :: 		if (DEFAULT_HARD_LIMIT_ENABLE){ flags |= BITFLAG_HARD_LIMIT_ENABLE; }   //bit 3
 LW	R2, 4(SP)
 ORI	R2, R2, 8
-;Globals.c,119 :: 		if (DEFAULT_HOMING_ENABLE)    { flags |= BITFLAG_HOMING_ENABLE; }       //bit 4
+;Globals.c,120 :: 		if (DEFAULT_HOMING_ENABLE)    { flags |= BITFLAG_HOMING_ENABLE; }       //bit 4
 ORI	R2, R2, 16
 SW	R2, 4(SP)
-;Globals.c,120 :: 		if (DEFAULT_INVERT_LIMIT_PINS){ flags |= BITFLAG_INVERT_LIMIT_PINS; }   //bit 5
+;Globals.c,121 :: 		if (DEFAULT_INVERT_LIMIT_PINS){ flags |= BITFLAG_INVERT_LIMIT_PINS; }   //bit 5
 L_Globals_settings_default_row16:
-;Globals.c,121 :: 		buffA[FLAGS_OFFSET] = flags;
+;Globals.c,122 :: 		buffA[FLAGS_OFFSET] = flags;
 LW	R2, 4(SP)
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,122 :: 		}
+;Globals.c,123 :: 		}
 L_end_settings_default_row:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -327,61 +329,61 @@ JR	RA
 NOP	
 ; end of Globals_settings_default_row
 Globals_settings_apply_row:
-;Globals.c,126 :: 		static void settings_apply_row(){
+;Globals.c,131 :: 		static void settings_apply_row(){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Globals.c,129 :: 		settings.steps_per_mm[X]        = ulong2flt(buffA[SPMMX_OFFSET]);
+;Globals.c,134 :: 		settings.steps_per_mm[X]        = ulong2flt(buffA[SPMMX_OFFSET]);
 SW	R25, 4(SP)
 LW	R25, Offset(-1610612480)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+0)(GP)
-;Globals.c,130 :: 		settings.steps_per_mm[Y]        = ulong2flt(buffA[SPMMY_OFFSET]);
+;Globals.c,135 :: 		settings.steps_per_mm[Y]        = ulong2flt(buffA[SPMMY_OFFSET]);
 LW	R25, Offset(-1610612476)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+4)(GP)
-;Globals.c,131 :: 		settings.steps_per_mm[Z]        = ulong2flt(buffA[SPMMZ_OFFSET]);
+;Globals.c,136 :: 		settings.steps_per_mm[Z]        = ulong2flt(buffA[SPMMZ_OFFSET]);
 LW	R25, Offset(-1610612472)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+8)(GP)
-;Globals.c,132 :: 		settings.steps_per_mm[A]        = ulong2flt(buffA[SPMMA_OFFSET]);
+;Globals.c,137 :: 		settings.steps_per_mm[A]        = ulong2flt(buffA[SPMMA_OFFSET]);
 LW	R25, Offset(-1610612468)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+12)(GP)
-;Globals.c,133 :: 		settings.default_feed_rate      = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
+;Globals.c,138 :: 		settings.default_feed_rate      = ulong2flt(buffA[D_FEED_RATE_OFFSET]);
 LW	R25, Offset(-1610612452)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+16)(GP)
-;Globals.c,134 :: 		settings.default_seek_rate      = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
+;Globals.c,139 :: 		settings.default_seek_rate      = ulong2flt(buffA[D_SEEK_RATE_OFFSET]);
 LW	R25, Offset(-1610612448)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+20)(GP)
-;Globals.c,135 :: 		settings.homing_feed_rate       = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
+;Globals.c,140 :: 		settings.homing_feed_rate       = ulong2flt(buffA[H_FEED_RATE_OFFSET]);
 LW	R25, Offset(-1610612444)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+24)(GP)
-;Globals.c,136 :: 		settings.homing_seek_rate       = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
+;Globals.c,141 :: 		settings.homing_seek_rate       = ulong2flt(buffA[H_SEEK_RATE_OFFSET]);
 LW	R25, Offset(-1610612440)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+28)(GP)
-;Globals.c,137 :: 		settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
+;Globals.c,142 :: 		settings.homing_pulloff         = ulong2flt(buffA[H_PULL_OFF_OFFSET]);
 LW	R25, Offset(-1610612436)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+32)(GP)
-;Globals.c,138 :: 		settings.mm_per_arc_segment     = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
+;Globals.c,143 :: 		settings.mm_per_arc_segment     = ulong2flt(buffA[MM_ARC_SEG_OFFSET]);
 LW	R25, Offset(-1610612432)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+36)(GP)
-;Globals.c,139 :: 		settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET])*sec_sec;
+;Globals.c,144 :: 		settings.acceleration           = ulong2flt(buffA[ACCELERATION_OFFSET])*sec_sec;
 LW	R25, Offset(-1610612428)(GP)
 JAL	_ulong2flt+0
 NOP	
@@ -390,45 +392,48 @@ ORI	R2, R2, 0
 MTC1	R2, S1
 MUL.S 	S0, S0, S1
 SWC1	S0, Offset(_settings+40)(GP)
-;Globals.c,140 :: 		settings.junction_deviation     = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
+;Globals.c,145 :: 		settings.junction_deviation     = ulong2flt(buffA[JUNCTION_DEV_OFFSET]);
 LW	R25, Offset(-1610612424)(GP)
 JAL	_ulong2flt+0
 NOP	
 SWC1	S0, Offset(_settings+44)(GP)
-;Globals.c,141 :: 		settings.n_arc_correction       = (unsigned int)buffA[N_ARC_CORREC_OFFSET];
+;Globals.c,146 :: 		settings.n_arc_correction       = (unsigned int)buffA[N_ARC_CORREC_OFFSET];
 LW	R2, Offset(-1610612420)(GP)
 SH	R2, Offset(_settings+48)(GP)
-;Globals.c,142 :: 		settings.flags                  = (unsigned int)buffA[FLAGS_OFFSET];
+;Globals.c,147 :: 		settings.flags                  = (unsigned int)buffA[FLAGS_OFFSET];
 LW	R2, Offset(-1610612416)(GP)
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,143 :: 		settings.stepper_idle_lock_time = (unsigned int)buffA[IDLE_LOCK_TMR_OFFSET];
+;Globals.c,148 :: 		settings.stepper_idle_lock_time = (unsigned int)buffA[IDLE_LOCK_TMR_OFFSET];
 LW	R2, Offset(-1610612404)(GP)
 SH	R2, Offset(_settings+56)(GP)
-;Globals.c,144 :: 		settings.microsteps             = (unsigned int)buffA[MICROSTEPS_OFFSET];
+;Globals.c,149 :: 		settings.microsteps             = (unsigned int)buffA[MICROSTEPS_OFFSET];
 LW	R2, Offset(-1610612400)(GP)
 SH	R2, Offset(_settings+58)(GP)
-;Globals.c,145 :: 		settings.p_usec                 = (unsigned int)buffA[P_USEC_OFFSET];
+;Globals.c,150 :: 		settings.p_usec                 = (unsigned int)buffA[P_USEC_OFFSET];
 LW	R2, Offset(-1610612456)(GP)
 SH	R2, Offset(_settings+60)(GP)
-;Globals.c,146 :: 		settings.decimal_places         = (unsigned int)buffA[DEC_PLACES_OFFSET];
+;Globals.c,151 :: 		settings.decimal_places         = (unsigned int)buffA[DEC_PLACES_OFFSET];
 LW	R2, Offset(-1610612392)(GP)
 SH	R2, Offset(_settings+62)(GP)
-;Globals.c,147 :: 		settings.homing_debounce_delay  = (unsigned int)buffA[H_DEBNC_DLY_OFFSET];
+;Globals.c,152 :: 		settings.homing_debounce_delay  = (unsigned int)buffA[H_DEBNC_DLY_OFFSET];
 LW	R2, Offset(-1610612408)(GP)
 SH	R2, Offset(_settings+54)(GP)
-;Globals.c,148 :: 		settings.homing_dir_mask        = (unsigned int)buffA[HOME_DIR_MASK_OFFSET];
+;Globals.c,153 :: 		settings.homing_dir_mask        = (unsigned int)buffA[HOME_DIR_MASK_OFFSET];
 LW	R2, Offset(-1610612388)(GP)
 SH	R2, Offset(_settings+64)(GP)
-;Globals.c,149 :: 		settings.invert_mask            = (unsigned int)buffA[INVERT_MASK_OFFSET];
+;Globals.c,154 :: 		settings.invert_mask            = (unsigned int)buffA[INVERT_MASK_OFFSET];
 LW	R2, Offset(-1610612384)(GP)
 SH	R2, Offset(_settings+66)(GP)
-;Globals.c,150 :: 		settings.dir_invert_mask        = (unsigned int)buffA[DIR_INVERT_MASK_OFFSET];
+;Globals.c,155 :: 		settings.dir_invert_mask        = (unsigned int)buffA[DIR_INVERT_MASK_OFFSET];
 LW	R2, Offset(-1610612380)(GP)
 SH	R2, Offset(_settings+68)(GP)
-;Globals.c,152 :: 		Stepper_ApplyInvertMasks();
+;Globals.c,156 :: 		settings.s_curve_percentage     = (unsigned int)buffA[S_CURVE_PERCENTAGE_OFFSET];
+LW	R2, Offset(-1610612376)(GP)
+SH	R2, Offset(_settings+74)(GP)
+;Globals.c,158 :: 		Stepper_ApplyInvertMasks();
 JAL	_Stepper_ApplyInvertMasks+0
 NOP	
-;Globals.c,153 :: 		}
+;Globals.c,159 :: 		}
 L_end_settings_apply_row:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -437,10 +442,10 @@ JR	RA
 NOP	
 ; end of Globals_settings_apply_row
 _settings_restore:
-;Globals.c,157 :: 		int settings_restore(int restore_mask){
+;Globals.c,174 :: 		int settings_restore(int restore_mask){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Globals.c,159 :: 		if(restore_mask == SETTINGS_RESTORE_ALL){
+;Globals.c,176 :: 		if(restore_mask == SETTINGS_RESTORE_ALL){
 SEH	R3, R25
 ORI	R2, R0, 255
 BEQ	R3, R2, L__settings_restore154
@@ -448,7 +453,7 @@ NOP
 J	L_settings_restore17
 NOP	
 L__settings_restore154:
-;Globals.c,161 :: 		for(k = 0; k < 512; k++)
+;Globals.c,178 :: 		for(k = 0; k < 512; k++)
 ; k start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; k end address is: 16 (R4)
@@ -461,7 +466,7 @@ NOP
 J	L_settings_restore19
 NOP	
 L__settings_restore155:
-;Globals.c,162 :: 		buffA[k] = 0xFFFFFFFF;
+;Globals.c,179 :: 		buffA[k] = 0xFFFFFFFF;
 SEH	R2, R4
 SLL	R3, R2, 2
 LUI	R2, 40960
@@ -470,50 +475,50 @@ ADDU	R3, R2, R3
 LUI	R2, 65535
 ORI	R2, R2, 65535
 SW	R2, 0(R3)
-;Globals.c,161 :: 		for(k = 0; k < 512; k++)
+;Globals.c,178 :: 		for(k = 0; k < 512; k++)
 ADDIU	R2, R4, 1
 SEH	R4, R2
-;Globals.c,162 :: 		buffA[k] = 0xFFFFFFFF;
+;Globals.c,179 :: 		buffA[k] = 0xFFFFFFFF;
 ; k end address is: 16 (R4)
 J	L_settings_restore18
 NOP	
 L_settings_restore19:
-;Globals.c,163 :: 		set_ram_loaded_indicator(1);
+;Globals.c,180 :: 		set_ram_loaded_indicator(1);
 SH	R25, 4(SP)
 ORI	R25, R0, 1
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
 LH	R25, 4(SP)
-;Globals.c,164 :: 		}else{
+;Globals.c,181 :: 		}else{
 J	L_settings_restore21
 NOP	
 L_settings_restore17:
-;Globals.c,165 :: 		settings_load_row();
+;Globals.c,182 :: 		settings_load_row();
 JAL	Globals_settings_load_row+0
 NOP	
-;Globals.c,166 :: 		}
+;Globals.c,183 :: 		}
 L_settings_restore21:
-;Globals.c,168 :: 		if(restore_mask & SETTINGS_RESTORE_DEFAULTS)
+;Globals.c,185 :: 		if(restore_mask & SETTINGS_RESTORE_DEFAULTS)
 ANDI	R2, R25, 1
 BNE	R2, R0, L__settings_restore157
 NOP	
 J	L_settings_restore22
 NOP	
 L__settings_restore157:
-;Globals.c,169 :: 		settings_default_row();
+;Globals.c,186 :: 		settings_default_row();
 SH	R25, 4(SP)
 JAL	Globals_settings_default_row+0
 NOP	
 LH	R25, 4(SP)
 L_settings_restore22:
-;Globals.c,171 :: 		if(restore_mask & SETTINGS_RESTORE_PARAMETERS){
+;Globals.c,188 :: 		if(restore_mask & SETTINGS_RESTORE_PARAMETERS){
 ANDI	R2, R25, 2
 BNE	R2, R0, L__settings_restore159
 NOP	
 J	L_settings_restore23
 NOP	
 L__settings_restore159:
-;Globals.c,172 :: 		for(k = 0; k < (NUMBER_OF_DATUMS*NoOfAxis); k++)
+;Globals.c,189 :: 		for(k = 0; k < (NUMBER_OF_DATUMS*NoOfAxis); k++)
 ; k start address is: 16 (R4)
 MOVZ	R4, R0, R0
 ; k end address is: 16 (R4)
@@ -526,31 +531,31 @@ NOP
 J	L_settings_restore25
 NOP	
 L__settings_restore160:
-;Globals.c,173 :: 		buffA[k] = 0;
+;Globals.c,190 :: 		buffA[k] = 0;
 SEH	R2, R4
 SLL	R3, R2, 2
 LUI	R2, 40960
 ORI	R2, R2, 0
 ADDU	R2, R2, R3
 SW	R0, 0(R2)
-;Globals.c,172 :: 		for(k = 0; k < (NUMBER_OF_DATUMS*NoOfAxis); k++)
+;Globals.c,189 :: 		for(k = 0; k < (NUMBER_OF_DATUMS*NoOfAxis); k++)
 ADDIU	R2, R4, 1
 SEH	R4, R2
-;Globals.c,173 :: 		buffA[k] = 0;
+;Globals.c,190 :: 		buffA[k] = 0;
 ; k end address is: 16 (R4)
 J	L_settings_restore24
 NOP	
 L_settings_restore25:
-;Globals.c,174 :: 		}
+;Globals.c,191 :: 		}
 L_settings_restore23:
-;Globals.c,176 :: 		if(restore_mask & SETTINGS_RESTORE_STARTUP_LINES){
+;Globals.c,193 :: 		if(restore_mask & SETTINGS_RESTORE_STARTUP_LINES){
 ANDI	R2, R25, 4
 BNE	R2, R0, L__settings_restore162
 NOP	
 J	L_settings_restore27
 NOP	
 L__settings_restore162:
-;Globals.c,177 :: 		for(k = Line0_Offset; k < (Line1_Offset+16); k++)
+;Globals.c,194 :: 		for(k = Line0_Offset; k < (Line1_Offset+16); k++)
 ; k start address is: 16 (R4)
 ORI	R4, R0, 384
 ; k end address is: 16 (R4)
@@ -563,39 +568,39 @@ NOP
 J	L_settings_restore29
 NOP	
 L__settings_restore163:
-;Globals.c,178 :: 		buffA[k] = 0;
+;Globals.c,195 :: 		buffA[k] = 0;
 SEH	R2, R4
 SLL	R3, R2, 2
 LUI	R2, 40960
 ORI	R2, R2, 0
 ADDU	R2, R2, R3
 SW	R0, 0(R2)
-;Globals.c,177 :: 		for(k = Line0_Offset; k < (Line1_Offset+16); k++)
+;Globals.c,194 :: 		for(k = Line0_Offset; k < (Line1_Offset+16); k++)
 ADDIU	R2, R4, 1
 SEH	R4, R2
-;Globals.c,178 :: 		buffA[k] = 0;
+;Globals.c,195 :: 		buffA[k] = 0;
 ; k end address is: 16 (R4)
 J	L_settings_restore28
 NOP	
 L_settings_restore29:
-;Globals.c,179 :: 		}
+;Globals.c,196 :: 		}
 L_settings_restore27:
-;Globals.c,181 :: 		k = settings_save_row();
+;Globals.c,198 :: 		k = settings_save_row();
 SH	R25, 4(SP)
 JAL	Globals_settings_save_row+0
 NOP	
 LH	R25, 4(SP)
 ; k start address is: 8 (R2)
-;Globals.c,182 :: 		settings_apply_row();
+;Globals.c,199 :: 		settings_apply_row();
 SH	R2, 4(SP)
 SH	R25, 6(SP)
 JAL	Globals_settings_apply_row+0
 NOP	
 LH	R25, 6(SP)
 LH	R2, 4(SP)
-;Globals.c,183 :: 		return k;
+;Globals.c,200 :: 		return k;
 ; k end address is: 8 (R2)
-;Globals.c,184 :: 		}
+;Globals.c,201 :: 		}
 L_end_settings_restore:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -603,51 +608,51 @@ JR	RA
 NOP	
 ; end of _settings_restore
 Globals_set_ram_loaded_indicator:
-;Globals.c,196 :: 		static int set_ram_loaded_indicator(int val){
-;Globals.c,197 :: 		ram_loaded = val;
+;Globals.c,226 :: 		static int set_ram_loaded_indicator(int val){
+;Globals.c,227 :: 		ram_loaded = val;
 SH	R25, Offset(Globals_ram_loaded+0)(GP)
-;Globals.c,198 :: 		return ram_loaded;
+;Globals.c,228 :: 		return ram_loaded;
 LH	R2, Offset(Globals_ram_loaded+0)(GP)
-;Globals.c,199 :: 		}
+;Globals.c,229 :: 		}
 L_end_set_ram_loaded_indicator:
 JR	RA
 NOP	
 ; end of Globals_set_ram_loaded_indicator
 Globals_zero_ram_loaded_indicator:
-;Globals.c,202 :: 		static void zero_ram_loaded_indicator(){
-;Globals.c,203 :: 		ram_loaded = 0;
+;Globals.c,236 :: 		static void zero_ram_loaded_indicator(){
+;Globals.c,237 :: 		ram_loaded = 0;
 SH	R0, Offset(Globals_ram_loaded+0)(GP)
-;Globals.c,204 :: 		}
+;Globals.c,238 :: 		}
 L_end_zero_ram_loaded_indicator:
 JR	RA
 NOP	
 ; end of Globals_zero_ram_loaded_indicator
 _read_ram_loaded_indicator:
-;Globals.c,207 :: 		int read_ram_loaded_indicator(){
-;Globals.c,208 :: 		return ram_loaded;
+;Globals.c,247 :: 		int read_ram_loaded_indicator(){
+;Globals.c,248 :: 		return ram_loaded;
 LH	R2, Offset(Globals_ram_loaded+0)(GP)
-;Globals.c,209 :: 		}
+;Globals.c,249 :: 		}
 L_end_read_ram_loaded_indicator:
 JR	RA
 NOP	
 ; end of _read_ram_loaded_indicator
 Globals_set_coord_data_read_indicator:
-;Globals.c,215 :: 		static void set_coord_data_read_indicator(int flag){
-;Globals.c,216 :: 		bit_true(coord_read,bit(flag));
+;Globals.c,258 :: 		static void set_coord_data_read_indicator(int flag){
+;Globals.c,259 :: 		bit_true(coord_read,bit(flag));
 SEH	R3, R25
 ORI	R2, R0, 1
 SLLV	R3, R2, R3
 LH	R2, Offset(Globals_coord_read+0)(GP)
 OR	R2, R2, R3
 SH	R2, Offset(Globals_coord_read+0)(GP)
-;Globals.c,217 :: 		}
+;Globals.c,260 :: 		}
 L_end_set_coord_data_read_indicator:
 JR	RA
 NOP	
 ; end of Globals_set_coord_data_read_indicator
 Globals_rst_single_coord_read_indicators:
-;Globals.c,220 :: 		static void rst_single_coord_read_indicators(int flag){
-;Globals.c,221 :: 		bit_false(coord_read,bit(flag));
+;Globals.c,269 :: 		static void rst_single_coord_read_indicators(int flag){
+;Globals.c,270 :: 		bit_false(coord_read,bit(flag));
 SEH	R3, R25
 ORI	R2, R0, 1
 SLLV	R2, R2, R3
@@ -655,40 +660,40 @@ NOR	R3, R2, R0
 LH	R2, Offset(Globals_coord_read+0)(GP)
 AND	R2, R2, R3
 SH	R2, Offset(Globals_coord_read+0)(GP)
-;Globals.c,222 :: 		}
+;Globals.c,271 :: 		}
 L_end_rst_single_coord_read_indicators:
 JR	RA
 NOP	
 ; end of Globals_rst_single_coord_read_indicators
 Globals_rst_coord_read_indicator:
-;Globals.c,225 :: 		static void rst_coord_read_indicator(){
-;Globals.c,226 :: 		coord_read = 0;
+;Globals.c,278 :: 		static void rst_coord_read_indicator(){
+;Globals.c,279 :: 		coord_read = 0;
 SH	R0, Offset(Globals_coord_read+0)(GP)
-;Globals.c,227 :: 		}
+;Globals.c,280 :: 		}
 L_end_rst_coord_read_indicator:
 JR	RA
 NOP	
 ; end of Globals_rst_coord_read_indicator
 _read_coord_data_indicator:
-;Globals.c,230 :: 		int read_coord_data_indicator(){
-;Globals.c,231 :: 		return coord_read;
+;Globals.c,289 :: 		int read_coord_data_indicator(){
+;Globals.c,290 :: 		return coord_read;
 LH	R2, Offset(Globals_coord_read+0)(GP)
-;Globals.c,232 :: 		}
+;Globals.c,291 :: 		}
 L_end_read_coord_data_indicator:
 JR	RA
 NOP	
 ; end of _read_coord_data_indicator
 _read_row_from_flash:
-;Globals.c,242 :: 		int read_row_from_flash(unsigned long addr){
+;Globals.c,313 :: 		int read_row_from_flash(unsigned long addr){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Globals.c,246 :: 		ptr = addr;
+;Globals.c,317 :: 		ptr = addr;
 ; ptr start address is: 16 (R4)
 MOVZ	R4, R25, R0
-;Globals.c,247 :: 		data_count = 0;
+;Globals.c,318 :: 		data_count = 0;
 ; data_count start address is: 20 (R5)
 MOVZ	R5, R0, R0
-;Globals.c,248 :: 		for(j = 0;j < 512;j++){
+;Globals.c,319 :: 		for(j = 0;j < 512;j++){
 SW	R0, Offset(_j+0)(GP)
 ; data_count end address is: 20 (R5)
 L_read_row_from_flash31:
@@ -703,7 +708,7 @@ J	L_read_row_from_flash32
 NOP	
 L__read_row_from_flash172:
 ; ptr end address is: 16 (R4)
-;Globals.c,249 :: 		buffA[j] = *(ptr+j);
+;Globals.c,320 :: 		buffA[j] = *(ptr+j);
 ; ptr start address is: 16 (R4)
 LW	R2, Offset(_j+0)(GP)
 SLL	R3, R2, 2
@@ -715,7 +720,7 @@ SLL	R2, R2, 2
 ADDU	R2, R4, R2
 LW	R2, 0(R2)
 SW	R2, 0(R3)
-;Globals.c,250 :: 		if(buffA[j] != -1)data_count++;
+;Globals.c,321 :: 		if(buffA[j] != -1)data_count++;
 LW	R2, Offset(_j+0)(GP)
 SLL	R3, R2, 2
 LUI	R2, 40960
@@ -736,26 +741,26 @@ J	L_read_row_from_flash34
 NOP	
 L__read_row_from_flash134:
 L_read_row_from_flash34:
-;Globals.c,248 :: 		for(j = 0;j < 512;j++){
+;Globals.c,319 :: 		for(j = 0;j < 512;j++){
 ; data_count start address is: 20 (R5)
 LW	R2, Offset(_j+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_j+0)(GP)
-;Globals.c,255 :: 		}
+;Globals.c,326 :: 		}
 ; ptr end address is: 16 (R4)
 J	L_read_row_from_flash31
 NOP	
 L_read_row_from_flash32:
-;Globals.c,259 :: 		set_ram_loaded_indicator(data_count);
+;Globals.c,330 :: 		set_ram_loaded_indicator(data_count);
 SW	R25, 4(SP)
 SEH	R25, R5
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
 LW	R25, 4(SP)
-;Globals.c,262 :: 		return data_count;
+;Globals.c,333 :: 		return data_count;
 SEH	R2, R5
 ; data_count end address is: 20 (R5)
-;Globals.c,263 :: 		}
+;Globals.c,334 :: 		}
 L_end_read_row_from_flash:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -763,10 +768,10 @@ JR	RA
 NOP	
 ; end of _read_row_from_flash
 Globals_settings_load_row:
-;Globals.c,293 :: 		static void settings_load_row(){
+;Globals.c,366 :: 		static void settings_load_row(){
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Globals.c,294 :: 		if(!read_ram_loaded_indicator()){
+;Globals.c,367 :: 		if(!read_ram_loaded_indicator()){
 SW	R25, 4(SP)
 JAL	_read_ram_loaded_indicator+0
 NOP	
@@ -775,21 +780,21 @@ NOP
 J	L_Globals_settings_load_row35
 NOP	
 L_Globals_settings_load_row176:
-;Globals.c,295 :: 		add = (unsigned long)FLASH_Settings_VAddr_P1;
+;Globals.c,368 :: 		add = (unsigned long)FLASH_Settings_VAddr_P1;
 LUI	R2, 48411
 ORI	R2, R2, 49152
 SW	R2, Offset(Globals_add+0)(GP)
-;Globals.c,296 :: 		read_row_from_flash(add);
+;Globals.c,369 :: 		read_row_from_flash(add);
 LW	R25, Offset(Globals_add+0)(GP)
 JAL	_read_row_from_flash+0
 NOP	
-;Globals.c,297 :: 		set_ram_loaded_indicator(1);
+;Globals.c,370 :: 		set_ram_loaded_indicator(1);
 ORI	R25, R0, 1
 JAL	Globals_set_ram_loaded_indicator+0
 NOP	
-;Globals.c,298 :: 		}
+;Globals.c,371 :: 		}
 L_Globals_settings_load_row35:
-;Globals.c,299 :: 		}
+;Globals.c,372 :: 		}
 L_end_settings_load_row:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -798,33 +803,33 @@ JR	RA
 NOP	
 ; end of Globals_settings_load_row
 Globals_settings_save_row:
-;Globals.c,304 :: 		static int settings_save_row(){
+;Globals.c,381 :: 		static int settings_save_row(){
 ADDIU	SP, SP, -12
 SW	RA, 0(SP)
-;Globals.c,306 :: 		buffA[FLASH_LOADED_OFFSET] = SETTINGS_VALID_MARKER;
+;Globals.c,383 :: 		buffA[FLASH_LOADED_OFFSET] = SETTINGS_VALID_MARKER;
 SW	R25, 4(SP)
 SW	R26, 8(SP)
 LUI	R2, 32767
 ORI	R2, R2, 258
 SW	R2, Offset(-1610611216)(GP)
-;Globals.c,307 :: 		add = (unsigned long)FLASH_Settings_VAddr_P1;
+;Globals.c,384 :: 		add = (unsigned long)FLASH_Settings_VAddr_P1;
 LUI	R2, 48411
 ORI	R2, R2, 49152
 SW	R2, Offset(Globals_add+0)(GP)
-;Globals.c,308 :: 		error = (int)NVMErasePage(&add);
+;Globals.c,385 :: 		error = (int)NVMErasePage(&add);
 LUI	R25, hi_addr(Globals_add+0)
 ORI	R25, R25, lo_addr(Globals_add+0)
 JAL	_NVMErasePage+0
 NOP	
 SH	R2, Offset(_error+0)(GP)
-;Globals.c,309 :: 		if(!error){
+;Globals.c,386 :: 		if(!error){
 LHU	R2, Offset(_error+0)(GP)
 BEQ	R2, R0, L_Globals_settings_save_row178
 NOP	
 J	L_Globals_settings_save_row36
 NOP	
 L_Globals_settings_save_row178:
-;Globals.c,310 :: 		error = (int)NVMWriteRow(&add,buffA);
+;Globals.c,387 :: 		error = (int)NVMWriteRow(&add,buffA);
 LUI	R26, 40960
 ORI	R26, R26, 0
 LUI	R25, hi_addr(Globals_add+0)
@@ -832,16 +837,16 @@ ORI	R25, R25, lo_addr(Globals_add+0)
 JAL	_NVMWriteRow+0
 NOP	
 SH	R2, Offset(_error+0)(GP)
-;Globals.c,311 :: 		}
+;Globals.c,388 :: 		}
 L_Globals_settings_save_row36:
-;Globals.c,318 :: 		rst_coord_read_indicator();
+;Globals.c,395 :: 		rst_coord_read_indicator();
 JAL	Globals_rst_coord_read_indicator+0
 NOP	
-;Globals.c,319 :: 		return error;
+;Globals.c,396 :: 		return error;
 LHU	R2, Offset(_error+0)(GP)
-;Globals.c,320 :: 		}
-;Globals.c,319 :: 		return error;
-;Globals.c,320 :: 		}
+;Globals.c,397 :: 		}
+;Globals.c,396 :: 		return error;
+;Globals.c,397 :: 		}
 L_end_settings_save_row:
 LW	R26, 8(SP)
 LW	R25, 4(SP)
@@ -851,10 +856,10 @@ JR	RA
 NOP	
 ; end of Globals_settings_save_row
 _settings_write_coord_data:
-;Globals.c,325 :: 		unsigned int settings_write_coord_data(int coord_select,float *coord){
+;Globals.c,408 :: 		unsigned int settings_write_coord_data(int coord_select,float *coord){
 ADDIU	SP, SP, -20
 SW	RA, 0(SP)
-;Globals.c,327 :: 		if(coord_select < 1 || coord_select > NUMBER_OF_DATUMS)
+;Globals.c,410 :: 		if(coord_select < 1 || coord_select > NUMBER_OF_DATUMS)
 SEH	R2, R25
 SLTI	R2, R2, 1
 BEQ	R2, R0, L__settings_write_coord_data180
@@ -873,20 +878,20 @@ J	L_settings_write_coord_data39
 NOP	
 L__settings_write_coord_data137:
 L__settings_write_coord_data136:
-;Globals.c,328 :: 		return NVM_COORDINATE_WRITE_ERROR;
+;Globals.c,411 :: 		return NVM_COORDINATE_WRITE_ERROR;
 ORI	R2, R0, 1
 J	L_end_settings_write_coord_data
 NOP	
 L_settings_write_coord_data39:
-;Globals.c,330 :: 		settings_load_row();
+;Globals.c,413 :: 		settings_load_row();
 JAL	Globals_settings_load_row+0
 NOP	
-;Globals.c,333 :: 		k = (coord_select-1)*NoOfAxis;
+;Globals.c,416 :: 		k = (coord_select-1)*NoOfAxis;
 ADDIU	R2, R25, -1
 SEH	R2, R2
 SLL	R2, R2, 2
 SH	R2, 8(SP)
-;Globals.c,334 :: 		buffA[k]   = flt2ulong(coord[0]);
+;Globals.c,417 :: 		buffA[k]   = flt2ulong(coord[0]);
 SEH	R2, R2
 SLL	R3, R2, 2
 LUI	R2, 40960
@@ -900,7 +905,7 @@ NOP
 LW	R26, 4(SP)
 LW	R3, 16(SP)
 SW	R2, 0(R3)
-;Globals.c,335 :: 		buffA[k+1] = flt2ulong(coord[1]);
+;Globals.c,418 :: 		buffA[k+1] = flt2ulong(coord[1]);
 LH	R2, 8(SP)
 ADDIU	R2, R2, 1
 SEH	R2, R2
@@ -917,7 +922,7 @@ NOP
 LW	R26, 4(SP)
 LW	R3, 16(SP)
 SW	R2, 0(R3)
-;Globals.c,336 :: 		buffA[k+2] = flt2ulong(coord[2]);
+;Globals.c,419 :: 		buffA[k+2] = flt2ulong(coord[2]);
 LH	R2, 8(SP)
 ADDIU	R2, R2, 2
 SEH	R2, R2
@@ -932,7 +937,7 @@ JAL	_flt2ulong+0
 NOP	
 LW	R3, 16(SP)
 SW	R2, 0(R3)
-;Globals.c,337 :: 		buffA[k+3] = 0;
+;Globals.c,420 :: 		buffA[k+3] = 0;
 LH	R2, 8(SP)
 ADDIU	R2, R2, 3
 SEH	R2, R2
@@ -941,10 +946,10 @@ LUI	R2, 40960
 ORI	R2, R2, 0
 ADDU	R2, R2, R3
 SW	R0, 0(R2)
-;Globals.c,339 :: 		return settings_save_row();
+;Globals.c,422 :: 		return settings_save_row();
 JAL	Globals_settings_save_row+0
 NOP	
-;Globals.c,340 :: 		}
+;Globals.c,423 :: 		}
 L_end_settings_write_coord_data:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 20
@@ -952,14 +957,14 @@ JR	RA
 NOP	
 ; end of _settings_write_coord_data
 _settings_read_coord_data:
-;Globals.c,347 :: 		void settings_read_coord_data(){
+;Globals.c,433 :: 		void settings_read_coord_data(){
 ADDIU	SP, SP, -12
 SW	RA, 0(SP)
-;Globals.c,349 :: 		settings_load_row();
+;Globals.c,435 :: 		settings_load_row();
 SW	R25, 4(SP)
 JAL	Globals_settings_load_row+0
 NOP	
-;Globals.c,351 :: 		if(!read_coord_data_indicator()){
+;Globals.c,437 :: 		if(!read_coord_data_indicator()){
 JAL	_read_coord_data_indicator+0
 NOP	
 BEQ	R2, R0, L__settings_read_coord_data183
@@ -967,8 +972,8 @@ NOP
 J	L_settings_read_coord_data40
 NOP	
 L__settings_read_coord_data183:
-;Globals.c,352 :: 		unsigned long temp = 0UL;
-;Globals.c,353 :: 		for(i = 0; i < NUMBER_OF_DATUMS; i++){
+;Globals.c,438 :: 		unsigned long temp = 0UL;
+;Globals.c,439 :: 		for(i = 0; i < NUMBER_OF_DATUMS; i++){
 SW	R0, Offset(_i+0)(GP)
 L_settings_read_coord_data41:
 LW	R2, Offset(_i+0)(GP)
@@ -978,7 +983,7 @@ NOP
 J	L_settings_read_coord_data42
 NOP	
 L__settings_read_coord_data184:
-;Globals.c,354 :: 		for(j = 0 ; j < NoOfAxis; j++){
+;Globals.c,440 :: 		for(j = 0 ; j < NoOfAxis; j++){
 SW	R0, Offset(_j+0)(GP)
 L_settings_read_coord_data44:
 LW	R2, Offset(_j+0)(GP)
@@ -988,7 +993,7 @@ NOP
 J	L_settings_read_coord_data45
 NOP	
 L__settings_read_coord_data185:
-;Globals.c,355 :: 		temp = buffA[(i*NoOfAxis) + j];
+;Globals.c,441 :: 		temp = buffA[(i*NoOfAxis) + j];
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 2
 LW	R2, Offset(_j+0)(GP)
@@ -1000,7 +1005,7 @@ ADDU	R2, R2, R3
 LW	R2, 0(R2)
 ; temp start address is: 16 (R4)
 MOVZ	R4, R2, R0
-;Globals.c,357 :: 		if(temp == 0xFFFFFFFF)
+;Globals.c,443 :: 		if(temp == 0xFFFFFFFF)
 LUI	R2, 65535
 ORI	R2, R2, 65535
 BEQ	R4, R2, L__settings_read_coord_data186
@@ -1008,16 +1013,16 @@ NOP
 J	L__settings_read_coord_data138
 NOP	
 L__settings_read_coord_data186:
-;Globals.c,358 :: 		temp = 0UL;
+;Globals.c,444 :: 		temp = 0UL;
 MOVZ	R4, R0, R0
 ; temp end address is: 16 (R4)
 J	L_settings_read_coord_data47
 NOP	
 L__settings_read_coord_data138:
-;Globals.c,357 :: 		if(temp == 0xFFFFFFFF)
-;Globals.c,358 :: 		temp = 0UL;
+;Globals.c,443 :: 		if(temp == 0xFFFFFFFF)
+;Globals.c,444 :: 		temp = 0UL;
 L_settings_read_coord_data47:
-;Globals.c,359 :: 		coord_system[i].coord[j] = ulong2flt(temp);
+;Globals.c,445 :: 		coord_system[i].coord[j] = ulong2flt(temp);
 ; temp start address is: 16 (R4)
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 5
@@ -1034,29 +1039,29 @@ JAL	_ulong2flt+0
 NOP	
 LW	R2, 8(SP)
 SWC1	S0, 0(R2)
-;Globals.c,354 :: 		for(j = 0 ; j < NoOfAxis; j++){
+;Globals.c,440 :: 		for(j = 0 ; j < NoOfAxis; j++){
 LW	R2, Offset(_j+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_j+0)(GP)
-;Globals.c,366 :: 		}
+;Globals.c,452 :: 		}
 J	L_settings_read_coord_data44
 NOP	
 L_settings_read_coord_data45:
-;Globals.c,353 :: 		for(i = 0; i < NUMBER_OF_DATUMS; i++){
+;Globals.c,439 :: 		for(i = 0; i < NUMBER_OF_DATUMS; i++){
 LW	R2, Offset(_i+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_i+0)(GP)
-;Globals.c,367 :: 		}
+;Globals.c,453 :: 		}
 J	L_settings_read_coord_data41
 NOP	
 L_settings_read_coord_data42:
-;Globals.c,369 :: 		set_coord_data_read_indicator(COORD_READ_FLAG);
+;Globals.c,455 :: 		set_coord_data_read_indicator(COORD_READ_FLAG);
 MOVZ	R25, R0, R0
 JAL	Globals_set_coord_data_read_indicator+0
 NOP	
-;Globals.c,370 :: 		}
+;Globals.c,456 :: 		}
 L_settings_read_coord_data40:
-;Globals.c,371 :: 		}
+;Globals.c,457 :: 		}
 L_end_settings_read_coord_data:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
@@ -1065,33 +1070,33 @@ JR	RA
 NOP	
 ; end of _settings_read_coord_data
 _settings_read_startup_line:
-;Globals.c,376 :: 		int settings_read_startup_line(int n, char *line){
+;Globals.c,465 :: 		int settings_read_startup_line(int n, char *line){
 ADDIU	SP, SP, -4
 SW	RA, 0(SP)
-;Globals.c,380 :: 		switch(n){
+;Globals.c,469 :: 		switch(n){
 J	L_settings_read_startup_line48
 NOP	
-;Globals.c,381 :: 		case 0: k = Line0_Offset; break;
+;Globals.c,470 :: 		case 0: k = Line0_Offset; break;
 L_settings_read_startup_line50:
 ; k start address is: 24 (R6)
 ORI	R6, R0, 384
 ; k end address is: 24 (R6)
 J	L_settings_read_startup_line49
 NOP	
-;Globals.c,382 :: 		case 1: k = Line1_Offset; break;
+;Globals.c,471 :: 		case 1: k = Line1_Offset; break;
 L_settings_read_startup_line51:
 ; k start address is: 24 (R6)
 ORI	R6, R0, 400
 ; k end address is: 24 (R6)
 J	L_settings_read_startup_line49
 NOP	
-;Globals.c,383 :: 		default: line[0] = 0; return STATUS_INVALID_STATEMENT;
+;Globals.c,472 :: 		default: line[0] = 0; return STATUS_INVALID_STATEMENT;
 L_settings_read_startup_line52:
 SB	R0, 0(R26)
 ORI	R2, R0, 6
 J	L_end_settings_read_startup_line
 NOP	
-;Globals.c,384 :: 		}
+;Globals.c,473 :: 		}
 L_settings_read_startup_line48:
 SEH	R2, R25
 BNE	R2, R0, L__settings_read_startup_line189
@@ -1109,11 +1114,11 @@ L__settings_read_startup_line191:
 J	L_settings_read_startup_line52
 NOP	
 L_settings_read_startup_line49:
-;Globals.c,385 :: 		settings_load_row();
+;Globals.c,474 :: 		settings_load_row();
 ; k start address is: 24 (R6)
 JAL	Globals_settings_load_row+0
 NOP	
-;Globals.c,386 :: 		src = (char*)(buffA + k);
+;Globals.c,475 :: 		src = (char*)(buffA + k);
 SEH	R2, R6
 ; k end address is: 24 (R6)
 SLL	R3, R2, 2
@@ -1122,7 +1127,7 @@ ORI	R2, R2, 0
 ADDU	R2, R2, R3
 ; src start address is: 16 (R4)
 MOVZ	R4, R2, R0
-;Globals.c,387 :: 		for(k = 0; k < LINE_BUFFER_SIZE-1; k++){
+;Globals.c,476 :: 		for(k = 0; k < LINE_BUFFER_SIZE-1; k++){
 ; k start address is: 20 (R5)
 MOVZ	R5, R0, R0
 ; k end address is: 20 (R5)
@@ -1138,7 +1143,7 @@ J	L__settings_read_startup_line142
 NOP	
 L__settings_read_startup_line192:
 ; src end address is: 16 (R4)
-;Globals.c,388 :: 		if(src[k] == 0) break;
+;Globals.c,477 :: 		if(src[k] == 0) break;
 ; src start address is: 16 (R4)
 SEH	R2, R5
 ADDU	R2, R4, R2
@@ -1154,7 +1159,7 @@ SEH	R3, R5
 J	L_settings_read_startup_line54
 NOP	
 L_settings_read_startup_line56:
-;Globals.c,389 :: 		if(src[k] < 0x20 || src[k] > 0x7E){ k = 0; break; }
+;Globals.c,478 :: 		if(src[k] < 0x20 || src[k] > 0x7E){ k = 0; break; }
 ; src start address is: 16 (R4)
 SEH	R2, R5
 ADDU	R2, R4, R2
@@ -1188,7 +1193,7 @@ MOVZ	R3, R0, R0
 J	L_settings_read_startup_line54
 NOP	
 L_settings_read_startup_line59:
-;Globals.c,390 :: 		line[k] = src[k];
+;Globals.c,479 :: 		line[k] = src[k];
 ; k start address is: 20 (R5)
 ; src start address is: 16 (R4)
 SEH	R2, R5
@@ -1197,28 +1202,28 @@ SEH	R2, R5
 ADDU	R2, R4, R2
 LBU	R2, 0(R2)
 SB	R2, 0(R3)
-;Globals.c,387 :: 		for(k = 0; k < LINE_BUFFER_SIZE-1; k++){
+;Globals.c,476 :: 		for(k = 0; k < LINE_BUFFER_SIZE-1; k++){
 ADDIU	R2, R5, 1
 SEH	R5, R2
-;Globals.c,391 :: 		}
+;Globals.c,480 :: 		}
 ; src end address is: 16 (R4)
 ; k end address is: 20 (R5)
 J	L_settings_read_startup_line53
 NOP	
 L__settings_read_startup_line142:
-;Globals.c,387 :: 		for(k = 0; k < LINE_BUFFER_SIZE-1; k++){
+;Globals.c,476 :: 		for(k = 0; k < LINE_BUFFER_SIZE-1; k++){
 SEH	R3, R5
-;Globals.c,391 :: 		}
+;Globals.c,480 :: 		}
 L_settings_read_startup_line54:
-;Globals.c,392 :: 		line[k] = 0;
+;Globals.c,481 :: 		line[k] = 0;
 ; k start address is: 12 (R3)
 SEH	R2, R3
 ; k end address is: 12 (R3)
 ADDU	R2, R26, R2
 SB	R0, 0(R2)
-;Globals.c,400 :: 		return STATUS_OK;
+;Globals.c,489 :: 		return STATUS_OK;
 MOVZ	R2, R0, R0
-;Globals.c,401 :: 		}
+;Globals.c,490 :: 		}
 L_end_settings_read_startup_line:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 4
@@ -1226,10 +1231,10 @@ JR	RA
 NOP	
 ; end of _settings_read_startup_line
 _settings_store_startup_line:
-;Globals.c,405 :: 		int settings_store_startup_line(int n, char *line){
+;Globals.c,499 :: 		int settings_store_startup_line(int n, char *line){
 ADDIU	SP, SP, -16
 SW	RA, 0(SP)
-;Globals.c,410 :: 		str_len = strlen(line);
+;Globals.c,504 :: 		str_len = strlen(line);
 SW	R27, 4(SP)
 SH	R25, 8(SP)
 MOVZ	R25, R26, R0
@@ -1238,10 +1243,10 @@ NOP
 LH	R25, 8(SP)
 ; str_len start address is: 24 (R6)
 SEH	R6, R2
-;Globals.c,419 :: 		switch(n){
+;Globals.c,513 :: 		switch(n){
 J	L_settings_store_startup_line60
 NOP	
-;Globals.c,420 :: 		case 0: start_offset = (unsigned long)Line0_Offset;break; //180
+;Globals.c,514 :: 		case 0: start_offset = (unsigned long)Line0_Offset;break; //180
 L_settings_store_startup_line62:
 ; start_offset start address is: 8 (R2)
 ORI	R2, R0, 384
@@ -1249,7 +1254,7 @@ MOVZ	R7, R2, R0
 ; start_offset end address is: 8 (R2)
 J	L_settings_store_startup_line61
 NOP	
-;Globals.c,421 :: 		case 1: start_offset = (unsigned long)Line1_Offset;break;
+;Globals.c,515 :: 		case 1: start_offset = (unsigned long)Line1_Offset;break;
 L_settings_store_startup_line63:
 ; start_offset start address is: 8 (R2)
 ORI	R2, R0, 400
@@ -1258,12 +1263,12 @@ MOVZ	R7, R2, R0
 ; start_offset end address is: 8 (R2)
 J	L_settings_store_startup_line61
 NOP	
-;Globals.c,422 :: 		default: return STATUS_INVALID_STATEMENT;
+;Globals.c,516 :: 		default: return STATUS_INVALID_STATEMENT;
 L_settings_store_startup_line64:
 ORI	R2, R0, 6
 J	L_end_settings_store_startup_line
 NOP	
-;Globals.c,423 :: 		}
+;Globals.c,517 :: 		}
 L_settings_store_startup_line60:
 ; str_len start address is: 24 (R6)
 SEH	R2, R25
@@ -1283,12 +1288,12 @@ L__settings_store_startup_line200:
 J	L_settings_store_startup_line64
 NOP	
 L_settings_store_startup_line61:
-;Globals.c,425 :: 		settings_load_row();
+;Globals.c,519 :: 		settings_load_row();
 ; start_offset start address is: 28 (R7)
 ; str_len start address is: 24 (R6)
 JAL	Globals_settings_load_row+0
 NOP	
-;Globals.c,428 :: 		for(i=start_offset;i<start_offset+16;i++)
+;Globals.c,522 :: 		for(i=start_offset;i<start_offset+16;i++)
 SW	R7, Offset(_i+0)(GP)
 ; str_len end address is: 24 (R6)
 ; start_offset end address is: 28 (R7)
@@ -1305,22 +1310,22 @@ NOP
 J	L_settings_store_startup_line66
 NOP	
 L__settings_store_startup_line201:
-;Globals.c,429 :: 		buffA[i] = 0;
+;Globals.c,523 :: 		buffA[i] = 0;
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 2
 LUI	R2, 40960
 ORI	R2, R2, 0
 ADDU	R2, R2, R3
 SW	R0, 0(R2)
-;Globals.c,428 :: 		for(i=start_offset;i<start_offset+16;i++)
+;Globals.c,522 :: 		for(i=start_offset;i<start_offset+16;i++)
 LW	R2, Offset(_i+0)(GP)
 ADDIU	R2, R2, 1
 SW	R2, Offset(_i+0)(GP)
-;Globals.c,429 :: 		buffA[i] = 0;
+;Globals.c,523 :: 		buffA[i] = 0;
 J	L_settings_store_startup_line65
 NOP	
 L_settings_store_startup_line66:
-;Globals.c,433 :: 		memcpy(buffA+start_offset,line,str_len);
+;Globals.c,527 :: 		memcpy(buffA+start_offset,line,str_len);
 SLL	R3, R4, 2
 ; start_offset end address is: 16 (R4)
 LUI	R2, 40960
@@ -1333,16 +1338,16 @@ MOVZ	R25, R2, R0
 JAL	_memcpy+0
 NOP	
 LH	R25, 8(SP)
-;Globals.c,443 :: 		return settings_save_row();
+;Globals.c,537 :: 		return settings_save_row();
 SW	R26, 8(SP)
 SH	R25, 12(SP)
 JAL	Globals_settings_save_row+0
 NOP	
 LH	R25, 12(SP)
 LW	R26, 8(SP)
-;Globals.c,444 :: 		}
-;Globals.c,443 :: 		return settings_save_row();
-;Globals.c,444 :: 		}
+;Globals.c,538 :: 		}
+;Globals.c,537 :: 		return settings_save_row();
+;Globals.c,538 :: 		}
 L_end_settings_store_startup_line:
 LW	R27, 4(SP)
 LW	RA, 0(SP)
@@ -1351,21 +1356,21 @@ JR	RA
 NOP	
 ; end of _settings_store_startup_line
 _settings_store_global_setting:
-;Globals.c,449 :: 		int settings_store_global_setting(int parameter, float value) {
+;Globals.c,547 :: 		int settings_store_global_setting(int parameter, float value) {
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Globals.c,450 :: 		int val_temp = 0;
-;Globals.c,452 :: 		settings_load_row();
+;Globals.c,548 :: 		int val_temp = 0;
+;Globals.c,550 :: 		settings_load_row();
 JAL	Globals_settings_load_row+0
 NOP	
-;Globals.c,462 :: 		switch(parameter) {
+;Globals.c,560 :: 		switch(parameter) {
 J	L_settings_store_global_setting68
 NOP	
-;Globals.c,463 :: 		case 0: case 1: case 2: //$100..$102 steps per revolution for X, Y, Z
+;Globals.c,561 :: 		case 0: case 1: case 2: //$100..$102 steps per revolution for X, Y, Z
 L_settings_store_global_setting70:
 L_settings_store_global_setting71:
 L_settings_store_global_setting72:
-;Globals.c,464 :: 		if (value <= 0.0) { return(STATUS_SETTING_VALUE_NEG); }
+;Globals.c,562 :: 		if (value <= 0.0) { return(STATUS_SETTING_VALUE_NEG); }
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 C.LT.S 	0, S0, S12
@@ -1378,14 +1383,14 @@ ORI	R2, R0, 8
 J	L_end_settings_store_global_setting
 NOP	
 L_settings_store_global_setting73:
-;Globals.c,465 :: 		settings.steps_per_mm[parameter] = value;
+;Globals.c,563 :: 		settings.steps_per_mm[parameter] = value;
 SEH	R2, R25
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_settings+0)
 ORI	R2, R2, lo_addr(_settings+0)
 ADDU	R2, R2, R3
 SWC1	S12, 0(R2)
-;Globals.c,466 :: 		buffA[SPMMX_OFFSET+parameter] = flt2ulong(value);
+;Globals.c,564 :: 		buffA[SPMMX_OFFSET+parameter] = flt2ulong(value);
 ADDIU	R2, R25, 64
 SEH	R2, R2
 SLL	R3, R2, 2
@@ -1397,15 +1402,15 @@ JAL	_flt2ulong+0
 NOP	
 LW	R3, 4(SP)
 SW	R2, 0(R3)
-;Globals.c,468 :: 		set_calculation_constants();
+;Globals.c,566 :: 		set_calculation_constants();
 JAL	_set_calculation_constants+0
 NOP	
-;Globals.c,479 :: 		break;
+;Globals.c,577 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,480 :: 		case 3:
+;Globals.c,578 :: 		case 3:
 L_settings_store_global_setting74:
-;Globals.c,481 :: 		if (value < 3) { return(STATUS_SETTING_STEP_PULSE_MIN); }
+;Globals.c,579 :: 		if (value < 3) { return(STATUS_SETTING_STEP_PULSE_MIN); }
 LUI	R2, 16448
 ORI	R2, R2, 0
 MTC1	R2, S0
@@ -1419,93 +1424,93 @@ ORI	R2, R0, 9
 J	L_end_settings_store_global_setting
 NOP	
 L_settings_store_global_setting75:
-;Globals.c,482 :: 		val_temp = round(value);
+;Globals.c,580 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,483 :: 		settings.p_usec = val_temp;
+;Globals.c,581 :: 		settings.p_usec = val_temp;
 SH	R2, Offset(_settings+60)(GP)
-;Globals.c,484 :: 		buffA[P_USEC_OFFSET] = (unsigned long)val_temp;
+;Globals.c,582 :: 		buffA[P_USEC_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612456)(GP)
-;Globals.c,485 :: 		break;
+;Globals.c,583 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,486 :: 		case 5: settings.default_seek_rate = value;
+;Globals.c,584 :: 		case 5: settings.default_seek_rate = value;
 L_settings_store_global_setting76:
 SWC1	S12, Offset(_settings+20)(GP)
-;Globals.c,487 :: 		buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
+;Globals.c,585 :: 		buffA[D_SEEK_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612448)(GP)
-;Globals.c,488 :: 		break;
+;Globals.c,586 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,489 :: 		case 6: //$2 step port invert mask, bits X..A
+;Globals.c,587 :: 		case 6: //$2 step port invert mask, bits X..A
 L_settings_store_global_setting77:
-;Globals.c,490 :: 		settings.invert_mask = floor(value);
+;Globals.c,588 :: 		settings.invert_mask = floor(value);
 JAL	_floor+0
 NOP	
 CVT36.S 	S0, S0
 MFC1	R2, S0
 SH	R2, Offset(_settings+66)(GP)
-;Globals.c,491 :: 		buffA[INVERT_MASK_OFFSET] = (unsigned long)floor(value);
+;Globals.c,589 :: 		buffA[INVERT_MASK_OFFSET] = (unsigned long)floor(value);
 JAL	_floor+0
 NOP	
 CVT36.S 	S0, S0
 MFC1	R2, S0
 SW	R2, Offset(-1610612384)(GP)
-;Globals.c,492 :: 		Stepper_ApplyInvertMasks();
+;Globals.c,590 :: 		Stepper_ApplyInvertMasks();
 JAL	_Stepper_ApplyInvertMasks+0
 NOP	
-;Globals.c,493 :: 		break;
+;Globals.c,591 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,494 :: 		case 7:
+;Globals.c,592 :: 		case 7:
 L_settings_store_global_setting78:
-;Globals.c,495 :: 		val_temp = round(value);
+;Globals.c,593 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,496 :: 		settings.stepper_idle_lock_time = val_temp;
+;Globals.c,594 :: 		settings.stepper_idle_lock_time = val_temp;
 SH	R2, Offset(_settings+56)(GP)
-;Globals.c,497 :: 		buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)val_temp;
+;Globals.c,595 :: 		buffA[IDLE_LOCK_TMR_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612404)(GP)
-;Globals.c,498 :: 		break;
+;Globals.c,596 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,499 :: 		case 8: // Convert to mm/min^2 for grbl internal use.
+;Globals.c,597 :: 		case 8: // Convert to mm/min^2 for grbl internal use.
 L_settings_store_global_setting79:
-;Globals.c,500 :: 		settings.acceleration = value*sec_sec ;
+;Globals.c,598 :: 		settings.acceleration = value*sec_sec ;
 LUI	R2, 17761
 ORI	R2, R2, 0
 MTC1	R2, S0
 MUL.S 	S0, S12, S0
 SWC1	S0, Offset(_settings+40)(GP)
-;Globals.c,501 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(value);
+;Globals.c,599 :: 		buffA[ACCELERATION_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612428)(GP)
-;Globals.c,502 :: 		break;
+;Globals.c,600 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,503 :: 		case 9: settings.junction_deviation = fabs(value);
+;Globals.c,601 :: 		case 9: settings.junction_deviation = fabs(value);
 L_settings_store_global_setting80:
 JAL	_fabs+0
 NOP	
 SWC1	S0, Offset(_settings+44)(GP)
-;Globals.c,504 :: 		buffA[JUNCTION_DEV_OFFSET] = flt2ulong(fabs(value));
+;Globals.c,602 :: 		buffA[JUNCTION_DEV_OFFSET] = flt2ulong(fabs(value));
 JAL	_fabs+0
 NOP	
 MOV.S 	S12, S0
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612424)(GP)
-;Globals.c,505 :: 		break;
+;Globals.c,603 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,506 :: 		case 10:
+;Globals.c,604 :: 		case 10:
 L_settings_store_global_setting81:
-;Globals.c,507 :: 		if (value <= 0.0) { return(STATUS_SETTING_VALUE_NEG); }
+;Globals.c,605 :: 		if (value <= 0.0) { return(STATUS_SETTING_VALUE_NEG); }
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 C.LT.S 	0, S0, S12
@@ -1518,18 +1523,18 @@ ORI	R2, R0, 8
 J	L_end_settings_store_global_setting
 NOP	
 L_settings_store_global_setting82:
-;Globals.c,508 :: 		settings.mm_per_arc_segment = value;
+;Globals.c,606 :: 		settings.mm_per_arc_segment = value;
 SWC1	S12, Offset(_settings+36)(GP)
-;Globals.c,509 :: 		buffA[MM_ARC_SEG_OFFSET] = flt2ulong(value);
+;Globals.c,607 :: 		buffA[MM_ARC_SEG_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612432)(GP)
-;Globals.c,510 :: 		break;
+;Globals.c,608 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,511 :: 		case 13:
+;Globals.c,609 :: 		case 13:
 L_settings_store_global_setting83:
-;Globals.c,512 :: 		if (round(value)){
+;Globals.c,610 :: 		if (round(value)){
 JAL	_round+0
 NOP	
 BNE	R2, R0, L__settings_store_global_setting207
@@ -1537,30 +1542,30 @@ NOP
 J	L_settings_store_global_setting84
 NOP	
 L__settings_store_global_setting207:
-;Globals.c,513 :: 		settings.flags |= BITFLAG_REPORT_INCHES;
+;Globals.c,611 :: 		settings.flags |= BITFLAG_REPORT_INCHES;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 1
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,514 :: 		}else{
+;Globals.c,612 :: 		}else{
 J	L_settings_store_global_setting85
 NOP	
 L_settings_store_global_setting84:
-;Globals.c,515 :: 		settings.flags &= ~BITFLAG_REPORT_INCHES;
+;Globals.c,613 :: 		settings.flags &= ~BITFLAG_REPORT_INCHES;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65534
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,516 :: 		}
+;Globals.c,614 :: 		}
 L_settings_store_global_setting85:
-;Globals.c,517 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
+;Globals.c,615 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
 LHU	R2, Offset(_settings+50)(GP)
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,518 :: 		break;
+;Globals.c,616 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,519 :: 		case 15: // Reset to ensure change. Immediate re-init may cause problems.
+;Globals.c,617 :: 		case 15: // Reset to ensure change. Immediate re-init may cause problems.
 L_settings_store_global_setting86:
-;Globals.c,520 :: 		if (round(value)){
+;Globals.c,618 :: 		if (round(value)){
 JAL	_round+0
 NOP	
 BNE	R2, R0, L__settings_store_global_setting209
@@ -1568,30 +1573,30 @@ NOP
 J	L_settings_store_global_setting87
 NOP	
 L__settings_store_global_setting209:
-;Globals.c,521 :: 		settings.flags |= BITFLAG_INVERT_ST_ENABLE;
+;Globals.c,619 :: 		settings.flags |= BITFLAG_INVERT_ST_ENABLE;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 4
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,522 :: 		}else{
+;Globals.c,620 :: 		}else{
 J	L_settings_store_global_setting88
 NOP	
 L_settings_store_global_setting87:
-;Globals.c,523 :: 		settings.flags &= ~BITFLAG_INVERT_ST_ENABLE;
+;Globals.c,621 :: 		settings.flags &= ~BITFLAG_INVERT_ST_ENABLE;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65531
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,524 :: 		}
+;Globals.c,622 :: 		}
 L_settings_store_global_setting88:
-;Globals.c,525 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
+;Globals.c,623 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
 LHU	R2, Offset(_settings+50)(GP)
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,526 :: 		break;
+;Globals.c,624 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,527 :: 		case 16:
+;Globals.c,625 :: 		case 16:
 L_settings_store_global_setting89:
-;Globals.c,528 :: 		if (round(value)){
+;Globals.c,626 :: 		if (round(value)){
 JAL	_round+0
 NOP	
 BNE	R2, R0, L__settings_store_global_setting211
@@ -1599,30 +1604,30 @@ NOP
 J	L_settings_store_global_setting90
 NOP	
 L__settings_store_global_setting211:
-;Globals.c,529 :: 		settings.flags |= BITFLAG_HARD_LIMIT_ENABLE;
+;Globals.c,627 :: 		settings.flags |= BITFLAG_HARD_LIMIT_ENABLE;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 8
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,530 :: 		}else{
+;Globals.c,628 :: 		}else{
 J	L_settings_store_global_setting91
 NOP	
 L_settings_store_global_setting90:
-;Globals.c,531 :: 		settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
+;Globals.c,629 :: 		settings.flags &= ~BITFLAG_HARD_LIMIT_ENABLE;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65527
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,532 :: 		}
+;Globals.c,630 :: 		}
 L_settings_store_global_setting91:
-;Globals.c,533 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
+;Globals.c,631 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
 LHU	R2, Offset(_settings+50)(GP)
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,535 :: 		break;
+;Globals.c,633 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,536 :: 		case 17:
+;Globals.c,634 :: 		case 17:
 L_settings_store_global_setting92:
-;Globals.c,537 :: 		if (round(value)){
+;Globals.c,635 :: 		if (round(value)){
 JAL	_round+0
 NOP	
 BNE	R2, R0, L__settings_store_global_setting213
@@ -1630,108 +1635,108 @@ NOP
 J	L_settings_store_global_setting93
 NOP	
 L__settings_store_global_setting213:
-;Globals.c,538 :: 		settings.flags |= BITFLAG_HOMING_ENABLE;
+;Globals.c,636 :: 		settings.flags |= BITFLAG_HOMING_ENABLE;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 16
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,539 :: 		}else{
+;Globals.c,637 :: 		}else{
 J	L_settings_store_global_setting94
 NOP	
 L_settings_store_global_setting93:
-;Globals.c,540 :: 		settings.flags &= ~BITFLAG_HOMING_ENABLE;
+;Globals.c,638 :: 		settings.flags &= ~BITFLAG_HOMING_ENABLE;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65519
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,541 :: 		}
+;Globals.c,639 :: 		}
 L_settings_store_global_setting94:
-;Globals.c,542 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
+;Globals.c,640 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
 LHU	R2, Offset(_settings+50)(GP)
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,543 :: 		break;
+;Globals.c,641 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,544 :: 		case 18:
+;Globals.c,642 :: 		case 18:
 L_settings_store_global_setting95:
-;Globals.c,545 :: 		val_temp = round(value);
+;Globals.c,643 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,546 :: 		settings.homing_dir_mask = val_temp;
+;Globals.c,644 :: 		settings.homing_dir_mask = val_temp;
 SH	R2, Offset(_settings+64)(GP)
-;Globals.c,547 :: 		buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)val_temp;
+;Globals.c,645 :: 		buffA[HOME_DIR_MASK_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612388)(GP)
-;Globals.c,548 :: 		break;
+;Globals.c,646 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,549 :: 		case 19: settings.homing_feed_rate = value;
+;Globals.c,647 :: 		case 19: settings.homing_feed_rate = value;
 L_settings_store_global_setting96:
 SWC1	S12, Offset(_settings+24)(GP)
-;Globals.c,550 :: 		buffA[H_FEED_RATE_OFFSET] = flt2ulong(value);
+;Globals.c,648 :: 		buffA[H_FEED_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612444)(GP)
-;Globals.c,551 :: 		break;
+;Globals.c,649 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,552 :: 		case 20: settings.homing_seek_rate = value;
+;Globals.c,650 :: 		case 20: settings.homing_seek_rate = value;
 L_settings_store_global_setting97:
 SWC1	S12, Offset(_settings+28)(GP)
-;Globals.c,553 :: 		buffA[H_SEEK_RATE_OFFSET] = flt2ulong(value);
+;Globals.c,651 :: 		buffA[H_SEEK_RATE_OFFSET] = flt2ulong(value);
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612440)(GP)
-;Globals.c,554 :: 		break;
+;Globals.c,652 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,555 :: 		case 21:
+;Globals.c,653 :: 		case 21:
 L_settings_store_global_setting98:
-;Globals.c,556 :: 		val_temp = round(value);
+;Globals.c,654 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,557 :: 		settings.homing_debounce_delay = val_temp;
+;Globals.c,655 :: 		settings.homing_debounce_delay = val_temp;
 SH	R2, Offset(_settings+54)(GP)
-;Globals.c,558 :: 		buffA[H_DEBNC_DLY_OFFSET] = (unsigned long)val_temp;
+;Globals.c,656 :: 		buffA[H_DEBNC_DLY_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612408)(GP)
-;Globals.c,559 :: 		break;
+;Globals.c,657 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,560 :: 		case 22:
+;Globals.c,658 :: 		case 22:
 L_settings_store_global_setting99:
-;Globals.c,561 :: 		settings.homing_pulloff = fabs(value);
+;Globals.c,659 :: 		settings.homing_pulloff = fabs(value);
 JAL	_fabs+0
 NOP	
 SWC1	S0, Offset(_settings+32)(GP)
-;Globals.c,562 :: 		buffA[H_PULL_OFF_OFFSET] = flt2ulong(fabs(value));
+;Globals.c,660 :: 		buffA[H_PULL_OFF_OFFSET] = flt2ulong(fabs(value));
 JAL	_fabs+0
 NOP	
 MOV.S 	S12, S0
 JAL	_flt2ulong+0
 NOP	
 SW	R2, Offset(-1610612436)(GP)
-;Globals.c,563 :: 		break;
+;Globals.c,661 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,564 :: 		case 23: //$3 direction port invert mask, bits X..A
+;Globals.c,662 :: 		case 23: //$3 direction port invert mask, bits X..A
 L_settings_store_global_setting100:
-;Globals.c,565 :: 		val_temp = round(value);
+;Globals.c,663 :: 		val_temp = round(value);
 JAL	_round+0
 NOP	
-;Globals.c,566 :: 		settings.dir_invert_mask = val_temp;
+;Globals.c,664 :: 		settings.dir_invert_mask = val_temp;
 SH	R2, Offset(_settings+68)(GP)
-;Globals.c,567 :: 		buffA[DIR_INVERT_MASK_OFFSET] = (unsigned long)val_temp;
+;Globals.c,665 :: 		buffA[DIR_INVERT_MASK_OFFSET] = (unsigned long)val_temp;
 SEH	R2, R2
 SW	R2, Offset(-1610612380)(GP)
-;Globals.c,568 :: 		Stepper_ApplyInvertMasks();
+;Globals.c,666 :: 		Stepper_ApplyInvertMasks();
 JAL	_Stepper_ApplyInvertMasks+0
 NOP	
-;Globals.c,569 :: 		break;
+;Globals.c,667 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,570 :: 		case 24: //$5 invert the limit pins (active high switches)
+;Globals.c,668 :: 		case 24: //$5 invert the limit pins (active high switches)
 L_settings_store_global_setting101:
-;Globals.c,571 :: 		if (round(value)){
+;Globals.c,669 :: 		if (round(value)){
 JAL	_round+0
 NOP	
 BNE	R2, R0, L__settings_store_global_setting215
@@ -1739,34 +1744,34 @@ NOP
 J	L_settings_store_global_setting102
 NOP	
 L__settings_store_global_setting215:
-;Globals.c,572 :: 		settings.flags |= BITFLAG_INVERT_LIMIT_PINS;
+;Globals.c,670 :: 		settings.flags |= BITFLAG_INVERT_LIMIT_PINS;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 32
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,573 :: 		}else{
+;Globals.c,671 :: 		}else{
 J	L_settings_store_global_setting103
 NOP	
 L_settings_store_global_setting102:
-;Globals.c,574 :: 		settings.flags &= ~BITFLAG_INVERT_LIMIT_PINS;
+;Globals.c,672 :: 		settings.flags &= ~BITFLAG_INVERT_LIMIT_PINS;
 LHU	R3, Offset(_settings+50)(GP)
 ORI	R2, R0, 65503
 AND	R2, R3, R2
 SH	R2, Offset(_settings+50)(GP)
-;Globals.c,575 :: 		}
+;Globals.c,673 :: 		}
 L_settings_store_global_setting103:
-;Globals.c,576 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
+;Globals.c,674 :: 		buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
 LHU	R2, Offset(_settings+50)(GP)
 SW	R2, Offset(-1610612416)(GP)
-;Globals.c,577 :: 		break;
+;Globals.c,675 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,578 :: 		default:
+;Globals.c,676 :: 		default:
 L_settings_store_global_setting104:
-;Globals.c,579 :: 		return(STATUS_INVALID_STATEMENT);
+;Globals.c,677 :: 		return(STATUS_INVALID_STATEMENT);
 ORI	R2, R0, 6
 J	L_end_settings_store_global_setting
 NOP	
-;Globals.c,580 :: 		}
+;Globals.c,678 :: 		}
 L_settings_store_global_setting68:
 SEH	R2, R25
 BNE	R2, R0, L__settings_store_global_setting217
@@ -1917,7 +1922,7 @@ L__settings_store_global_setting257:
 J	L_settings_store_global_setting104
 NOP	
 L_settings_store_global_setting69:
-;Globals.c,581 :: 		if(settings_save_row()){ return(STATUS_SETTING_READ_FAIL); }
+;Globals.c,679 :: 		if(settings_save_row()){ return(STATUS_SETTING_READ_FAIL); }
 JAL	Globals_settings_save_row+0
 NOP	
 BNE	R2, R0, L__settings_store_global_setting259
@@ -1929,9 +1934,9 @@ ORI	R2, R0, 10
 J	L_end_settings_store_global_setting
 NOP	
 L_settings_store_global_setting105:
-;Globals.c,582 :: 		return(STATUS_OK);
+;Globals.c,680 :: 		return(STATUS_OK);
 MOVZ	R2, R0, R0
-;Globals.c,583 :: 		}
+;Globals.c,681 :: 		}
 L_end_settings_store_global_setting:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -1939,126 +1944,126 @@ JR	RA
 NOP	
 ; end of _settings_store_global_setting
 _settings_store_grbl_setting:
-;Globals.c,588 :: 		int settings_store_grbl_setting(int parameter, float value) {
+;Globals.c,692 :: 		int settings_store_grbl_setting(int parameter, float value) {
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Globals.c,590 :: 		switch(parameter) {
+;Globals.c,694 :: 		switch(parameter) {
 SW	R25, 4(SP)
 J	L_settings_store_grbl_setting106
 NOP	
-;Globals.c,591 :: 		case 0:   internal = 3;  break; // step pulse usec
+;Globals.c,695 :: 		case 0:   internal = 3;  break; // step pulse usec
 L_settings_store_grbl_setting108:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 3
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,592 :: 		case 1:   internal = 7;  break; // step idle delay
+;Globals.c,696 :: 		case 1:   internal = 7;  break; // step idle delay
 L_settings_store_grbl_setting109:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 7
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,593 :: 		case 2:   internal = 6;  break; // step port invert mask
+;Globals.c,697 :: 		case 2:   internal = 6;  break; // step port invert mask
 L_settings_store_grbl_setting110:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 6
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,594 :: 		case 3:   internal = 23; break; // direction port invert mask
+;Globals.c,698 :: 		case 3:   internal = 23; break; // direction port invert mask
 L_settings_store_grbl_setting111:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 23
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,595 :: 		case 4:   internal = 15; break; // step enable invert
+;Globals.c,699 :: 		case 4:   internal = 15; break; // step enable invert
 L_settings_store_grbl_setting112:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 15
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,596 :: 		case 5:   internal = 24; break; // limit pins invert
+;Globals.c,700 :: 		case 5:   internal = 24; break; // limit pins invert
 L_settings_store_grbl_setting113:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 24
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,597 :: 		case 11:  internal = 9;  break; // junction deviation
+;Globals.c,701 :: 		case 11:  internal = 9;  break; // junction deviation
 L_settings_store_grbl_setting114:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 9
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,598 :: 		case 12:  internal = 10; break; // arc tolerance (mm per arc segment)
+;Globals.c,702 :: 		case 12:  internal = 10; break; // arc tolerance (mm per arc segment)
 L_settings_store_grbl_setting115:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 10
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,599 :: 		case 13:  internal = 13; break; // report inches
+;Globals.c,703 :: 		case 13:  internal = 13; break; // report inches
 L_settings_store_grbl_setting116:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 13
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,600 :: 		case 21:  internal = 16; break; // hard limits
+;Globals.c,704 :: 		case 21:  internal = 16; break; // hard limits
 L_settings_store_grbl_setting117:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 16
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,601 :: 		case 22:  internal = 17; break; // homing enable
+;Globals.c,705 :: 		case 22:  internal = 17; break; // homing enable
 L_settings_store_grbl_setting118:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 17
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,602 :: 		case 23:  internal = 18; break; // homing dir mask
+;Globals.c,706 :: 		case 23:  internal = 18; break; // homing dir mask
 L_settings_store_grbl_setting119:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 18
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,603 :: 		case 24:  internal = 19; break; // homing feed
+;Globals.c,707 :: 		case 24:  internal = 19; break; // homing feed
 L_settings_store_grbl_setting120:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 19
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,604 :: 		case 25:  internal = 20; break; // homing seek
+;Globals.c,708 :: 		case 25:  internal = 20; break; // homing seek
 L_settings_store_grbl_setting121:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 20
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,605 :: 		case 26:  internal = 21; break; // homing debounce
+;Globals.c,709 :: 		case 26:  internal = 21; break; // homing debounce
 L_settings_store_grbl_setting122:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 21
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,606 :: 		case 27:  internal = 22; break; // homing pull-off
+;Globals.c,710 :: 		case 27:  internal = 22; break; // homing pull-off
 L_settings_store_grbl_setting123:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 22
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,607 :: 		case 100: case 101: case 102: internal = parameter - 100; break; // steps/mm
+;Globals.c,711 :: 		case 100: case 101: case 102: internal = parameter - 100; break; // steps/mm
 L_settings_store_grbl_setting124:
 L_settings_store_grbl_setting125:
 L_settings_store_grbl_setting126:
@@ -2067,7 +2072,7 @@ ADDIU	R2, R25, -100
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,608 :: 		case 110: case 111: case 112: internal = 5;  break; // shared max rate
+;Globals.c,712 :: 		case 110: case 111: case 112: internal = 5;  break; // shared max rate
 L_settings_store_grbl_setting127:
 L_settings_store_grbl_setting128:
 L_settings_store_grbl_setting129:
@@ -2076,7 +2081,7 @@ ORI	R2, R0, 5
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,609 :: 		case 120: case 121: case 122: internal = 8;  break; // shared acceleration
+;Globals.c,713 :: 		case 120: case 121: case 122: internal = 8;  break; // shared acceleration
 L_settings_store_grbl_setting130:
 L_settings_store_grbl_setting131:
 L_settings_store_grbl_setting132:
@@ -2085,12 +2090,12 @@ ORI	R2, R0, 8
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,610 :: 		default:  return(STATUS_INVALID_STATEMENT);
+;Globals.c,714 :: 		default:  return(STATUS_INVALID_STATEMENT);
 L_settings_store_grbl_setting133:
 ORI	R2, R0, 6
 J	L_end_settings_store_grbl_setting
 NOP	
-;Globals.c,611 :: 		}
+;Globals.c,715 :: 		}
 L_settings_store_grbl_setting106:
 SEH	R2, R25
 BNE	R2, R0, L__settings_store_grbl_setting262
@@ -2269,15 +2274,15 @@ L__settings_store_grbl_setting310:
 J	L_settings_store_grbl_setting133
 NOP	
 L_settings_store_grbl_setting107:
-;Globals.c,612 :: 		return settings_store_global_setting(internal, value);
+;Globals.c,716 :: 		return settings_store_global_setting(internal, value);
 ; internal start address is: 8 (R2)
 SEH	R25, R2
 ; internal end address is: 8 (R2)
 JAL	_settings_store_global_setting+0
 NOP	
-;Globals.c,613 :: 		}
-;Globals.c,612 :: 		return settings_store_global_setting(internal, value);
-;Globals.c,613 :: 		}
+;Globals.c,717 :: 		}
+;Globals.c,716 :: 		return settings_store_global_setting(internal, value);
+;Globals.c,717 :: 		}
 L_end_settings_store_grbl_setting:
 LW	R25, 4(SP)
 LW	RA, 0(SP)

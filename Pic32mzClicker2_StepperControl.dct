@@ -32509,7 +32509,6 @@ gcen_i2c2con_bit
 gcen_i2c3con_bit
 gcen_i2c4con_bit
 gcen_i2c5con_bit
-gcode
 gcstat
 gcstat
 gcstat
@@ -36549,7 +36548,6 @@ incomptx_usbe6csr0_bit
 incomptx_usbe6csr1_bit
 incomptx_usbe7csr0_bit
 incomptx_usbe7csr1_bit
-init_protocol
 init1cmd1
 init1cmd10
 init1cmd10_bit
@@ -45825,8 +45823,6 @@ protocol
 protocol
 protocol
 protocol
-protocol_execute_runtime
-protocol_system_check
 protocol0
 protocol0_bit
 protocol0_usbe1csr2_bit
@@ -55418,6 +55414,7 @@ s
 s
 s
 s_bit
+s_curve_percentage
 s_i2c2stat_bit
 s_i2c3stat_bit
 s_i2c4stat_bit
@@ -55544,7 +55541,6 @@ samc9_bit
 samp
 samp
 samp_bit
-sample_gocde_line
 sbcde
 sbcde
 sbcde
@@ -58559,7 +58555,6 @@ sjw0_c2cfg_bit
 sjw1
 sjw1_bit
 sjw1_c2cfg_bit
-sl
 sleep
 sleep
 sleep
@@ -61128,7 +61123,6 @@ start
 start
 start_bit
 start_interpolation
-startup
 statbytes
 statbytes0
 statbytes0_bit
@@ -61397,8 +61391,6 @@ stnaddr67_bit
 stnaddr67_emacxsa0_bit
 stopaxis
 stps
-str_clear
-str_initialize
 strcat
 strchr
 strcmp

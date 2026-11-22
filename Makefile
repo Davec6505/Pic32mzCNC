@@ -98,16 +98,58 @@ FLAGS = -MSF -DBG -pP32MZ2048EFH100 -HEAP 36000 -C -Y -SSA -EBASE 0x9FC01000 -IN
 
 #CP = 1
 
-all:
+all: clean
 	@echo Building $(PROJECT_NAME) for $(DEVICE)...
-	@powershell -NoProfile -Command "& $(MIKROC) $(FLAGS) $(SRCS) $(LIBS) $(PLDS) 2>&1 | \
+	@powershell -NoProfile -Command "& $(MIKROC) $(FLAGS) $(SRCS) $(LIBS) $(PLDS)" 2>&1 | \
+	 powershell -NoProfile -ExecutionPolicy Bypass -File tools/mikroc_build.ps1
+	@if [ $$? -eq 0 ]; then \
+		echo -e "\033[1;94mBuild complete! Output: bin/$(PROJECT_NAME).hex\033[0m"; \
+		mv -f *.emcl ./output/ 2>/dev/null || true; \
+		mv -f *.asm ./asm/ 2>/dev/null || true; \
+		if [ "$(CP)" -eq "1" ]; then \
+			mv -f *.cp ./output/ 2>/dev/null || true; \
+		else \
+			echo "Removing .cp files..." && rm -f *.cp 2>/dev/null || true; \
+		fi; \
+	else \
+		echo -e "\033[1;91mBuild FAILED\033[0m"; \
+		exit 1; \
+	fi
+
+all_: clean	
+	@echo Building $(PROJECT_NAME) for $(DEVICE)...
+	@powershell -NoProfile -Command " \
+	\$$Colours = @{ \
+		402  = 'Red'; \
+		1503 = 'Yellow'; \
+		1505 = 'Yellow'; \
+		1508 = 'Yellow'; \
+		1512 = 'Yellow'; \
+		123  = 'Green'; \
+		1164 = 'DarkCyan'; \
+		127  = 'DarkBlue'; \
+	}; \
+	& $(MIKROC) $(FLAGS) $(SRCS) $(LIBS) $(PLDS) 2>&1 | \
 	Foreach-Object { \
-	 if (\$$_ -match '^(304|324|357|438)\s') {Write-Host \$$_  -ForegroundColor Red } \
-	 elseif (\$$_ -match '^(1354|1503|1505|1508|1163)\s') { Write-Host \$$_ -ForegroundColor Yellow } \
-	 elseif (\$$_ -match '^(1164)\s') { Write-Host \$$_ -ForegroundColor DarkCyan } \
-	 elseif (\$$_ -match '^(123)\s') { Write-Host \$$_ -ForegroundColor Green } \
-	 elseif (\$$_ -match '^(127)\s') { Write-Host \$$_ -ForegroundColor DarkBlue } \
-	 else { Write-Host \$$_ -ForegroundColor White } }" 
+		if (\$$_ -match '^(\d+)\s+(\d+)\s+(\S+)\s+(.*)$$') { \
+			\$$code = [int]\$$matches[1]; \
+			\$$line = \$$matches[2]; \
+			\$$file = \$$matches[3]; \
+			\$$msg = \$$matches[4]; \
+			if(\$$Colours.ContainsKey(\$$code)) { \
+				Write-Host \$$_ -ForegroundColor \$$Colours[\$$code]; \
+			} \
+			else { \
+				Write-Host \$$_ -ForegroundColor White; \
+			} \
+		} \
+		elseif (\$$_ -match '^(304|324|357|438)\s') {Write-Host \$$_  -ForegroundColor Red } \
+		elseif (\$$_ -match '^(1354|1503|1505|1508|1163)\s') { Write-Host \$$_ -ForegroundColor Yellow } \
+		elseif (\$$_ -match '^(1164)\s') { Write-Host \$$_ -ForegroundColor DarkCyan } \
+		elseif (\$$_ -match '^(123)\s') { Write-Host \$$_ -ForegroundColor Green } \
+		elseif (\$$_ -match '^(127)\s') { Write-Host \$$_ -ForegroundColor DarkBlue } \
+		else { Write-Host \$$_ -ForegroundColor White } \
+    }" 
 	@test -f bin/$(PROJECT_NAME).hex;
 	@if [ $$? -eq 0 ]; then \
 		echo -e "\033[1;94m" "Build complete! Output: bin/$(PROJECT_NAME).hex" "\033[0m"; \
@@ -123,26 +165,6 @@ all:
 		rm -rf *.emcl 2>/dev/null || true; \
 	fi
 
-# Rebuild all files (forces recompilation)
-rebuild:
-	@echo Rebuilding all files for $(PROJECT_NAME)...
-	@powershell -NoProfile -Command "& $(MIKROC) $(FLAGS) -RA $(SRCS) $(LIBS) $(PLDS) 2>&1 | Foreach-Object { if (\$$_ -match '^\d+\s+\d+.*undeclared identifier|compilation failed|build failed') {Write-Host \$$_  -ForegroundColor Red } elseif (\$$_ -match '^\d+\s+\d+.*Variable\s+.*has been eliminated by optimizer') { Write-Host \$$_ -ForegroundColor DarkCyan } elseif (\$$_ -match 'warning') { Write-Host \$$_ -ForegroundColor Yellow } else { Write-Host \$$_ -ForegroundColor Green } }" 
-	@test -f bin/$(PROJECT_NAME).hex; \
-	@if [ $$? -eq 0 ]; then \
-		echo -e "\033[1;94m" "Build complete! Output: bin/$(PROJECT_NAME).hex" "\033[0m"; \
-		mv -f *.emcl ./output/ 2>/dev/null || true; \
-		mv -f *.asm ./asm/ 2>/dev/null || true; \
-		if [ "$(CP)" -eq "1" ]; then \
-			mv -f *.cp ./output/ 2>/dev/null || true; \
-		else \
-			echo "Removing .cp files..." && rm -f *.cp 2>/dev/null || true; \
-		fi; \
-	else \
-		echo -e "\033[1;91m" "Build FAILED - no hex file generated" "\033[0m" && exit 1; \
-		rm -rf *.emcl 2>/dev/null || true; \
-		rm -rf *.asm 2>/dev/null || true; \
-		rm -rf *.cp 2>/dev/null || true; \
-	fi
 
 # Clean build artifacts
 clean:
@@ -161,6 +183,10 @@ flash: all
 	@"bin/mikro_hb.exe" "bin\\$(PROJECT_NAME).hex"
 
 .PHONY: all rebuild clean flash
+
+
+
+
 
 ########################################################################################
 #Shell streams:
