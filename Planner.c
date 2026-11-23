@@ -181,6 +181,14 @@ long n_start = 0;
         if(STPS[axis_No].scurve_steps < 2){
             STPS[axis_No].scurve_steps = 2;
         }
+
+        // clamp the number of S-curve steps to a maximum of half the acceleration limit
+        if(STPS[axis_No].scurve_steps > (STPS[axis_No].accel_lim / 2))
+        {
+            STPS[axis_No].scurve_steps =
+            STPS[axis_No].accel_lim / 2;
+        }
+
         // Set the end of the acceleration S-curve A+
         STPS[axis_No].accel_a_plus_end = STPS[axis_No].scurve_steps;
         // Set the start of the end of the acceleration S-curve A-
@@ -188,10 +196,10 @@ long n_start = 0;
 
         // The deceleration S-curve can be similarly calculated if needed.
         //Deceleration region is bounded by: decel_start to dist
-        //D- is the start of the deceleration S-curve
+        //D- is the end of the deceleration S-curve to stop.
         STPS[axis_No].decel_d_blendout = abs_mmSteps - STPS[axis_No].scurve_steps;
 
-        //D+ is the end of the deceleration S-curve
+        //D+ is the start of the deceleration S-curve
         STPS[axis_No].decel_d_blendin = STPS[axis_No].decel_start + STPS[axis_No].scurve_steps;
     }
 
@@ -242,13 +250,12 @@ SV.mode-complete:= %d\n\n"
 ,a_t_x100[axis_No]
 ,STPS[axis_No].max_step_lim
 ,abs_mmSteps
-,STPS[axis_No].accel_lim
 ,STPS[axis_No].accel_a_plus_end
 ,STPS[axis_No].accel_a_minus_start
+,STPS[axis_No].dec
+,STPS[axis_No].decel_start
 ,STPS[axis_No].decel_d_blendin
 ,STPS[axis_No].decel_d_blendout
-,STPS[axis_No].accel_a_plus_end
-,STPS[axis_No].accel_a_minus_start
 ,STPS[axis_No].step_delay
 ,STPS[axis_No].min_delay
 ,SV.mode_complete);
