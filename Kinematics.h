@@ -89,20 +89,28 @@ typedef struct Steps{
   long dist;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   long new_step_delay;
- //! Limit accelleration
- long accel_lim;
- // Limit the number of steps
- long max_step_lim;
- // calculation modulo value
- long rest;
- // Generate a startup delay to accellerate from
- long StartUp_delay;
- //!  the mm to travel
- long mmToTravel;
- //!  Real-time machine (aka home) abs position vector in steps.
- long steps_abs_position;
- //! Max axis size to travel from origin 0,0
- float max_travel;
+  //! Limit accelleration
+  long accel_lim;
+  //! S-curve steps for acceleration/deceleration
+  long scurve_steps;
+  //! Acceleration  S-curve limits
+  long accel_a_plus_end;
+  long accel_a_minus_start;
+  //! Deceleration S-curve limits
+  long decel_d_blendin;
+  long decel_d_blendout;
+  //! Limit the number of steps
+  long max_step_lim;
+  //! calculation modulo value
+  long rest;
+  //! Generate a startup delay to accellerate from
+  long StartUp_delay;
+  //!  the mm to travel for this move
+  long mmToTravel;
+  //!  Real-time machine (aka home) absolute position vector in steps.
+  long steps_abs_position;
+  //! Maximum axis size to travel from origin 0,0
+  float max_travel;
 }STP;
 extern STP STPS[NoOfAxis];
 

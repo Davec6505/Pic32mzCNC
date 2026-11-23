@@ -18,11 +18,11 @@ NOP
 L__SetInitialSizes90:
 ;Kinematics.c,19 :: 		axis[i].max_travel = max_sizes[i];//SIZE_LIST[i];
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R2
 ADDU	R2, R25, R2
-ADDIU	R4, R2, 72
+ADDIU	R4, R2, 92
 SEH	R2, R5
 SLL	R3, R2, 2
 LUI	R2, hi_addr(_max_sizes+0)
@@ -232,13 +232,13 @@ LWC1	S13, 16(SP)
 LH	R25, 12(SP)
 ;Kinematics.c,68 :: 		tempA = tempA - STPS[axis_No].steps_abs_position;
 SEH	R4, R25
-ORI	R3, R0, 76
+ORI	R3, R0, 96
 MULTU	R3, R4
 MFLO	R4
 LUI	R3, hi_addr(_STPS+0)
 ORI	R3, R3, lo_addr(_STPS+0)
 ADDU	R3, R3, R4
-ADDIU	R3, R3, 68
+ADDIU	R3, R3, 88
 LW	R3, 0(R3)
 SUBU	R2, R2, R3
 ; tempA start address is: 12 (R3)
@@ -300,7 +300,7 @@ SW	RA, 0(SP)
 SW	R25, 4(SP)
 SW	R26, 8(SP)
 SEH	R3, R26
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -333,7 +333,7 @@ JAL	Kinematics_Set_Axisdirection+0
 NOP	
 ;Kinematics.c,86 :: 		STPS[axis_No].axis_dir = Direction(dist);
 SEH	R3, R26
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -362,7 +362,7 @@ SEB	R2, R4
 SH	R2, 0(R3)
 ;Kinematics.c,87 :: 		STPS[axis_No].step_count = 0;
 SEH	R3, R26
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -372,13 +372,13 @@ ADDIU	R2, R2, 36
 SW	R0, 0(R2)
 ;Kinematics.c,88 :: 		STPS[axis_No].mmToTravel = dist;
 SEH	R3, R26
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 64
+ADDIU	R2, R2, 84
 SW	R25, 0(R2)
 ;Kinematics.c,90 :: 		Start_Interpolation(axis_No,bit(axis_No));
 SEH	R3, R26
@@ -518,13 +518,13 @@ SEH	R2, R5
 SLL	R2, R2, 2
 ADDU	R4, R3, R2
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 68
+ADDIU	R2, R2, 88
 LW	R3, 0(R2)
 LW	R2, 0(R4)
 SUBU	R2, R2, R3
@@ -685,7 +685,7 @@ NOP
 L__MultiAxisStep122:
 ;Kinematics.c,126 :: 		STPS[i].dist = labs(distance[i]);
 SEH	R3, R7
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -706,7 +706,7 @@ LW	R3, 40(SP)
 SW	R2, 0(R3)
 ;Kinematics.c,127 :: 		STPS[i].step_count = 0;
 SEH	R3, R7
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -716,13 +716,13 @@ ADDIU	R2, R2, 36
 SW	R0, 0(R2)
 ;Kinematics.c,128 :: 		STPS[i].mmToTravel = distance[i];
 SEH	R3, R7
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R3, R2, 64
+ADDIU	R3, R2, 84
 ADDIU	R4, SP, 24
 SEH	R2, R7
 SLL	R2, R2, 2
@@ -731,7 +731,7 @@ LW	R2, 0(R2)
 SW	R2, 0(R3)
 ;Kinematics.c,129 :: 		STPS[i].axis_dir = Direction(distance[i]);
 SEH	R3, R7
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -784,7 +784,7 @@ NOP
 L__MultiAxisStep125:
 ;Kinematics.c,132 :: 		STPS[i].run_state = RUN;
 SEH	R3, R7
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1299,7 +1299,7 @@ SWC1	S0, 68(SP)
 L_mc_arc47:
 ;Kinematics.c,309 :: 		STPS[axis_0].step_delay = feed_rate;
 SEH	R3, R28
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1311,7 +1311,7 @@ MFC1	R2, S0
 SW	R2, 0(R3)
 ;Kinematics.c,310 :: 		STPS[axis_1].step_delay = feed_rate;
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1974,7 +1974,7 @@ LWC1	S13, 8(SP)
 LH	R25, 4(SP)
 ;Kinematics.c,532 :: 		STPS[axis].run_state = STOP ;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1984,13 +1984,13 @@ ADDIU	R2, R2, 4
 SH	R0, 0(R2)
 ;Kinematics.c,542 :: 		STPS[axis].mmToTravel = belt_steps(distance,axis);
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 64
+ADDIU	R2, R2, 84
 SW	R2, 16(SP)
 SH	R25, 4(SP)
 SWC1	S13, 8(SP)
@@ -2019,13 +2019,13 @@ LH	R25, 4(SP)
 MOV.S 	S13, S0
 ;Kinematics.c,547 :: 		SingleAxisStep(STPS[axis].mmToTravel, speed,axis);
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 64
+ADDIU	R2, R2, 84
 LW	R2, 0(R2)
 MTC1	R2, S1
 CVT32.W 	S1, S1

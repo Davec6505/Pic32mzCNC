@@ -1964,133 +1964,133 @@ JR	RA
 NOP	
 ; end of _settings_store_global_setting
 _settings_store_grbl_setting:
-;Globals.c,697 :: 		int settings_store_grbl_setting(int parameter, float value) {
+;Globals.c,698 :: 		int settings_store_grbl_setting(int parameter, float value) {
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Globals.c,699 :: 		switch(parameter) {
+;Globals.c,700 :: 		switch(parameter) {
 SW	R25, 4(SP)
 J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,700 :: 		case 0:   internal = 3;  break; // step pulse usec
+;Globals.c,701 :: 		case 0:   internal = 3;  break; // step pulse usec
 L_settings_store_grbl_setting109:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 3
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,701 :: 		case 1:   internal = 7;  break; // step idle delay
+;Globals.c,702 :: 		case 1:   internal = 7;  break; // step idle delay
 L_settings_store_grbl_setting110:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 7
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,702 :: 		case 2:   internal = 6;  break; // step port invert mask
+;Globals.c,703 :: 		case 2:   internal = 6;  break; // step port invert mask
 L_settings_store_grbl_setting111:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 6
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,703 :: 		case 3:   internal = 23; break; // direction port invert mask
+;Globals.c,704 :: 		case 3:   internal = 23; break; // direction port invert mask
 L_settings_store_grbl_setting112:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 23
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,704 :: 		case 4:   internal = 15; break; // step enable invert
+;Globals.c,705 :: 		case 4:   internal = 15; break; // step enable invert
 L_settings_store_grbl_setting113:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 15
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,705 :: 		case 5:   internal = 24; break; // limit pins invert
+;Globals.c,706 :: 		case 5:   internal = 24; break; // limit pins invert
 L_settings_store_grbl_setting114:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 24
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,706 :: 		case 11:  internal = 9;  break; // junction deviation
+;Globals.c,707 :: 		case 11:  internal = 9;  break; // junction deviation
 L_settings_store_grbl_setting115:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 9
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,707 :: 		case 12:  internal = 10; break; // arc tolerance (mm per arc segment)
+;Globals.c,708 :: 		case 12:  internal = 10; break; // arc tolerance (mm per arc segment)
 L_settings_store_grbl_setting116:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 10
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,708 :: 		case 13:  internal = 13; break; // report inches
+;Globals.c,709 :: 		case 13:  internal = 13; break; // report inches
 L_settings_store_grbl_setting117:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 13
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,709 :: 		case 14:  internal = 25; break; // s_curve_percentage
+;Globals.c,710 :: 		case 14:  internal = 25; break; // s_curve_percentage
 L_settings_store_grbl_setting118:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 25
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,710 :: 		case 21:  internal = 16; break; // hard limits
+;Globals.c,711 :: 		case 21:  internal = 16; break; // hard limits
 L_settings_store_grbl_setting119:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 16
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,711 :: 		case 22:  internal = 17; break; // homing enable
+;Globals.c,712 :: 		case 22:  internal = 17; break; // homing enable
 L_settings_store_grbl_setting120:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 17
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,712 :: 		case 23:  internal = 18; break; // homing dir mask
+;Globals.c,713 :: 		case 23:  internal = 18; break; // homing dir mask
 L_settings_store_grbl_setting121:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 18
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,713 :: 		case 24:  internal = 19; break; // homing feed
+;Globals.c,714 :: 		case 24:  internal = 19; break; // homing feed
 L_settings_store_grbl_setting122:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 19
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,714 :: 		case 25:  internal = 20; break; // homing seek
+;Globals.c,715 :: 		case 25:  internal = 20; break; // homing seek
 L_settings_store_grbl_setting123:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 20
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,715 :: 		case 26:  internal = 21; break; // homing debounce
+;Globals.c,716 :: 		case 26:  internal = 21; break; // homing debounce
 L_settings_store_grbl_setting124:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 21
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,716 :: 		case 27:  internal = 22; break; // homing pull-off
+;Globals.c,717 :: 		case 27:  internal = 22; break; // homing pull-off
 L_settings_store_grbl_setting125:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 22
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,717 :: 		case 100: case 101: case 102: internal = parameter - 100; break; // steps/mm
+;Globals.c,718 :: 		case 100: case 101: case 102: internal = parameter - 100; break; // steps/mm
 L_settings_store_grbl_setting126:
 L_settings_store_grbl_setting127:
 L_settings_store_grbl_setting128:
@@ -2099,7 +2099,7 @@ ADDIU	R2, R25, -100
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,718 :: 		case 110: case 111: case 112: internal = 5;  break; // shared max rate
+;Globals.c,719 :: 		case 110: case 111: case 112: internal = 5;  break; // shared max rate
 L_settings_store_grbl_setting129:
 L_settings_store_grbl_setting130:
 L_settings_store_grbl_setting131:
@@ -2108,7 +2108,7 @@ ORI	R2, R0, 5
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,719 :: 		case 120: case 121: case 122: internal = 8;  break; // shared acceleration
+;Globals.c,720 :: 		case 120: case 121: case 122: internal = 8;  break; // shared acceleration
 L_settings_store_grbl_setting132:
 L_settings_store_grbl_setting133:
 L_settings_store_grbl_setting134:
@@ -2117,12 +2117,12 @@ ORI	R2, R0, 8
 ; internal end address is: 8 (R2)
 J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,720 :: 		default:  return(STATUS_INVALID_STATEMENT);
+;Globals.c,721 :: 		default:  return(STATUS_INVALID_STATEMENT);
 L_settings_store_grbl_setting135:
 ORI	R2, R0, 6
 J	L_end_settings_store_grbl_setting
 NOP	
-;Globals.c,721 :: 		}
+;Globals.c,722 :: 		}
 L_settings_store_grbl_setting107:
 SEH	R2, R25
 BNE	R2, R0, L__settings_store_grbl_setting266
@@ -2308,15 +2308,15 @@ L__settings_store_grbl_setting316:
 J	L_settings_store_grbl_setting135
 NOP	
 L_settings_store_grbl_setting108:
-;Globals.c,722 :: 		return settings_store_global_setting(internal, value);
+;Globals.c,723 :: 		return settings_store_global_setting(internal, value);
 ; internal start address is: 8 (R2)
 SEH	R25, R2
 ; internal end address is: 8 (R2)
 JAL	_settings_store_global_setting+0
 NOP	
-;Globals.c,723 :: 		}
-;Globals.c,722 :: 		return settings_store_global_setting(internal, value);
-;Globals.c,723 :: 		}
+;Globals.c,724 :: 		}
+;Globals.c,723 :: 		return settings_store_global_setting(internal, value);
+;Globals.c,724 :: 		}
 L_end_settings_store_grbl_setting:
 LW	R25, 4(SP)
 LW	RA, 0(SP)

@@ -688,6 +688,7 @@ int val_temp = 0;
 
 /**
  * Maps a Grbl 1.1 setting number to the internal setting index and stores the value.
+ * internal is the corrosponding buffA index for storing the value to flash.
  * 
  * @note The mapping must correlate with report_grbl_settings() in Print.c.
  * @param parameter The Grbl 1.1 setting number ($n).

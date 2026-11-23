@@ -117,6 +117,7 @@ long n_start = 0;
        //start the Taylor index at the n of the floor speed, n = w^2/(2.alpha.acc)
        max_s_limit = a_t_x100[axis_No] / (float)minSpeed;
        n_start = (long)((max_s_limit*max_s_limit)/((alpha[axis_No]*x20000*(float)acc)/100.00));
+
     }else
        STPS[axis_No].StartUp_delay = STPS[axis_No].step_delay ;
 
@@ -171,6 +172,29 @@ long n_start = 0;
        STPS[axis_No].run_state = ACCEL;
     }
 
+    // s curve shaping for acceleration and deceleration leave out if s_curve_percentage is 0
+    if(settings.s_curve_percentage > 0){
+        // A is the acceleration phase index
+        // Calculate the number of S-curve steps for acceleration/deceleration /200 not 100 for A+ and A-
+        STPS[axis_No].scurve_steps = (STPS[axis_No].accel_lim * settings.s_curve_percentage) / 200;
+        // clamp the number of S-curve steps to a minimum of 2
+        if(STPS[axis_No].scurve_steps < 2){
+            STPS[axis_No].scurve_steps = 2;
+        }
+        // Set the end of the acceleration S-curve A+
+        STPS[axis_No].accel_a_plus_end = STPS[axis_No].scurve_steps;
+        // Set the start of the end of the acceleration S-curve A-
+        STPS[axis_No].accel_a_minus_start = STPS[axis_No].accel_lim - STPS[axis_No].scurve_steps;
+
+        // The deceleration S-curve can be similarly calculated if needed.
+        //Deceleration region is bounded by: decel_start to dist
+        //D- is the start of the deceleration S-curve
+        STPS[axis_No].decel_d_blendout = abs_mmSteps - STPS[axis_No].scurve_steps;
+
+        //D+ is the end of the deceleration S-curve
+        STPS[axis_No].decel_d_blendin = STPS[axis_No].decel_start + STPS[axis_No].scurve_steps;
+    }
+
   }
 
   STPS[axis_No].step_count  = 0;
@@ -195,8 +219,12 @@ a_t_x100[%d]:= %f\n\
 STPS[axis_No].max_step_lim:= %l\n\
 abs_mmSteps:= %l\n\
 acc_lim:= %l\n\
-dec_val:= %l\n\
-dec_start:= %l\n\
+STPS[axis_No].accel_a_plus_end:= %l\n\
+STPS[axis_No].accel_a_minus_start:= %l\n\
+STPS[axis_No].dec:= %l\n\
+STPS[axis_No].decel_start:= %l\n\
+STPS[axis_No].decel_d_blendin:= %l\n\
+STPS[axis_No].decel_d_blendout:= %l\n\
 step_delay:= %l\n\
 min_dly:= %l\n\
 SV.mode-complete:= %d\n\n"
@@ -215,8 +243,12 @@ SV.mode-complete:= %d\n\n"
 ,STPS[axis_No].max_step_lim
 ,abs_mmSteps
 ,STPS[axis_No].accel_lim
-,STPS[axis_No].decel_val
-,STPS[axis_No].decel_start
+,STPS[axis_No].accel_a_plus_end
+,STPS[axis_No].accel_a_minus_start
+,STPS[axis_No].decel_d_blendin
+,STPS[axis_No].decel_d_blendout
+,STPS[axis_No].accel_a_plus_end
+,STPS[axis_No].accel_a_minus_start
 ,STPS[axis_No].step_delay
 ,STPS[axis_No].min_delay
 ,SV.mode_complete);

@@ -2230,13 +2230,13 @@ NOP
 L_Main_Modal_Group_Actions1409:
 ;Main.c,492 :: 		STPS[l].steps_abs_position = 0;
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, 40960
 ORI	R2, R2, 12544
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 68
+ADDIU	R2, R2, 88
 SW	R0, 0(R2)
 ;Main.c,493 :: 		sys.position[l] = STPS[l].steps_abs_position;
 SEH	R2, R5
@@ -2245,18 +2245,18 @@ LUI	R2, 40960
 ORI	R2, R2, 13576
 ADDU	R4, R2, R3
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, 40960
 ORI	R2, R2, 12544
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 68
+ADDIU	R2, R2, 88
 LW	R2, 0(R2)
 SW	R2, 0(R4)
 ;Main.c,496 :: 		if(STPS[l].run_state != STOP)
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, 40960
@@ -2272,7 +2272,7 @@ NOP
 L_Main_Modal_Group_Actions1411:
 ;Main.c,497 :: 		STPS[l].run_state = STOP;
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, 40960

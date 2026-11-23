@@ -74,7 +74,7 @@ NOP
 ; end of _SetPinMode
 _dds_tick:
 ;Stepper.c,74 :: 		void dds_tick(){
-ADDIU	SP, SP, -8
+ADDIU	SP, SP, -12
 SW	RA, 0(SP)
 ;Stepper.c,78 :: 		PLS_StepX = step_idle[X];
 SW	R25, 4(SP)
@@ -176,7 +176,7 @@ L__dds_tick82:
 L__dds_tick66:
 ;Stepper.c,98 :: 		gap = (unsigned long)STPS[m].dist - (unsigned long)STPS[i].dist;
 SEH	R3, R8
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -185,7 +185,7 @@ ADDU	R2, R2, R3
 ADDIU	R2, R2, 40
 LW	R4, 0(R2)
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -194,8 +194,7 @@ ADDU	R2, R2, R3
 ADDIU	R2, R2, 40
 LW	R2, 0(R2)
 SUBU	R4, R4, R2
-; gap start address is: 24 (R6)
-MOVZ	R6, R4, R0
+SW	R4, 8(SP)
 ;Stepper.c,99 :: 		if(eng_err[i] >= gap){
 SEH	R2, R5
 SLL	R3, R2, 2
@@ -214,11 +213,11 @@ SEH	R2, R5
 SLL	R3, R2, 2
 LUI	R2, hi_addr(Stepper_eng_err+0)
 ORI	R2, R2, lo_addr(Stepper_eng_err+0)
-ADDU	R3, R2, R3
-LW	R2, 0(R3)
-SUBU	R2, R2, R6
-; gap end address is: 24 (R6)
-SW	R2, 0(R3)
+ADDU	R4, R2, R3
+LW	R3, 0(R4)
+LW	R2, 8(SP)
+SUBU	R2, R3, R2
+SW	R2, 0(R4)
 ;Stepper.c,101 :: 		Step_Cycle(i);
 SEH	R25, R5
 JAL	Stepper_Step_Cycle+0
@@ -234,7 +233,7 @@ LUI	R2, hi_addr(Stepper_eng_err+0)
 ORI	R2, R2, lo_addr(Stepper_eng_err+0)
 ADDU	R4, R2, R3
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -264,7 +263,7 @@ JAL	_Pulse+0
 NOP	
 ;Stepper.c,110 :: 		if(STPS[m].run_state == STOP){
 SEH	R3, R8
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -320,7 +319,7 @@ L__dds_tick89:
 L__dds_tick65:
 ;Stepper.c,113 :: 		STPS[i].run_state = STOP;
 SEH	R3, R5
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -360,7 +359,7 @@ L_dds_tick10:
 ; m start address is: 32 (R8)
 SEH	R3, R8
 ; m end address is: 32 (R8)
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -375,7 +374,7 @@ SW	R2, Offset(Stepper_dds_master+4)(GP)
 L_end_dds_tick:
 LW	R25, 4(SP)
 LW	RA, 0(SP)
-ADDIU	SP, SP, 8
+ADDIU	SP, SP, 12
 JR	RA
 NOP	
 ; end of _dds_tick
@@ -414,7 +413,7 @@ ORI	R2, R0, 65535
 SH	R2, Offset(Stepper_eng_master+0)(GP)
 ;Stepper.c,137 :: 		if(STPS[m].dist <= 0 || STPS[m].run_state == STOP){
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -429,7 +428,7 @@ J	L__Start_Interpolation73
 NOP	
 L__Start_Interpolation93:
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -473,7 +472,7 @@ NOP
 L__Start_Interpolation98:
 ;Stepper.c,140 :: 		STPS[i].run_state = STOP;
 SEH	R3, R4
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -526,7 +525,7 @@ LUI	R2, hi_addr(Stepper_eng_err+0)
 ORI	R2, R2, lo_addr(Stepper_eng_err+0)
 ADDU	R4, R2, R3
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -548,7 +547,7 @@ L_Start_Interpolation26:
 SW	R0, Offset(Stepper_dds_master+0)(GP)
 ;Stepper.c,150 :: 		dds_master.increment = Dds_Increment(STPS[m].step_delay);
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -592,7 +591,7 @@ NOP
 L__Stepper_Abort101:
 ;Stepper.c,160 :: 		STPS[i].run_state = STOP;
 SEH	R3, R4
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -747,7 +746,7 @@ _GET_RunState:
 ;Stepper.c,187 :: 		int GET_RunState(int axis_No){
 ;Stepper.c,188 :: 		return STPS[axis_No].run_state;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -764,7 +763,7 @@ _StopAxis:
 ;Stepper.c,192 :: 		void StopAxis(int axis){
 ;Stepper.c,193 :: 		STPS[axis].stopAxis = 1;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -869,7 +868,7 @@ NOP
 L_Stepper_Step_Cycle41:
 ;Stepper.c,218 :: 		STPS[axis_No].step_count++;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -881,13 +880,13 @@ ADDIU	R2, R2, 1
 SW	R2, 0(R3)
 ;Stepper.c,220 :: 		STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R4, R2, 68
+ADDIU	R4, R2, 88
 ADDIU	R2, R2, 2
 LH	R2, 0(R2)
 LW	R3, 0(R4)
@@ -905,7 +904,7 @@ ADDIU	SP, SP, -8
 SW	RA, 0(SP)
 ;Stepper.c,229 :: 		long remaining = STPS[axis_No].dist - STPS[axis_No].step_count;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -936,7 +935,7 @@ L__Pulse133:
 L__Pulse62:
 ;Stepper.c,232 :: 		STPS[axis_No].run_state = STOP;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -949,7 +948,7 @@ L__Pulse64:
 L__Pulse63:
 ;Stepper.c,234 :: 		switch(STPS[axis_No].run_state) {
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -984,7 +983,7 @@ JAL	Stepper_AccDec+0
 NOP	
 ;Stepper.c,243 :: 		if(STPS[axis_No].step_delay <= STPS[axis_No].min_delay){
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1002,7 +1001,7 @@ NOP
 L__Pulse134:
 ;Stepper.c,244 :: 		STPS[axis_No].step_delay = STPS[axis_No].min_delay;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1016,7 +1015,7 @@ SW	R2, 0(R3)
 L_Pulse54:
 ;Stepper.c,246 :: 		if(STPS[axis_No].step_count > STPS[axis_No].max_step_lim){
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1024,7 +1023,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R4, R2, R3
 ADDIU	R2, R4, 36
 LW	R3, 0(R2)
-ADDIU	R2, R4, 52
+ADDIU	R2, R4, 72
 LW	R2, 0(R2)
 SLT	R2, R2, R3
 BNE	R2, R0, L__Pulse135
@@ -1034,7 +1033,7 @@ NOP
 L__Pulse135:
 ;Stepper.c,247 :: 		STPS[axis_No].run_state  = RUN;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1047,7 +1046,7 @@ SH	R2, 0(R3)
 L_Pulse55:
 ;Stepper.c,251 :: 		if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1065,7 +1064,7 @@ NOP
 L__Pulse136:
 ;Stepper.c,252 :: 		STPS[axis_No].accel_count = -remaining;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1078,17 +1077,17 @@ SUBU	R2, R2, R7
 SW	R2, 0(R3)
 ;Stepper.c,253 :: 		STPS[axis_No].rest        = 0;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 56
+ADDIU	R2, R2, 76
 SW	R0, 0(R2)
 ;Stepper.c,254 :: 		STPS[axis_No].run_state   = DECEL;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1107,7 +1106,7 @@ L_Pulse57:
 ;Stepper.c,258 :: 		STPS[axis_No].step_delay = STPS[axis_No].min_delay;
 ; remaining start address is: 28 (R7)
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1119,7 +1118,7 @@ LW	R2, 0(R2)
 SW	R2, 0(R3)
 ;Stepper.c,261 :: 		if(STPS[axis_No].step_count >= STPS[axis_No].decel_start) {
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1137,7 +1136,7 @@ NOP
 L__Pulse137:
 ;Stepper.c,262 :: 		STPS[axis_No].accel_count = -remaining;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1150,17 +1149,17 @@ SUBU	R2, R2, R7
 SW	R2, 0(R3)
 ;Stepper.c,263 :: 		STPS[axis_No].rest        = 0;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
-ADDIU	R2, R2, 56
+ADDIU	R2, R2, 76
 SW	R0, 0(R2)
 ;Stepper.c,264 :: 		STPS[axis_No].run_state =  DECEL;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1181,7 +1180,7 @@ JAL	Stepper_AccDec+0
 NOP	
 ;Stepper.c,270 :: 		if(STPS[axis_No].step_delay > STPS[axis_No].StartUp_delay)
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1189,7 +1188,7 @@ ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R4, R2, R3
 ADDIU	R2, R4, 8
 LW	R3, 0(R2)
-ADDIU	R2, R4, 60
+ADDIU	R2, R4, 80
 LW	R2, 0(R2)
 SLT	R2, R2, R3
 BNE	R2, R0, L__Pulse138
@@ -1199,14 +1198,14 @@ NOP
 L__Pulse138:
 ;Stepper.c,271 :: 		STPS[axis_No].step_delay = STPS[axis_No].StartUp_delay;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R2, R2, R3
 ADDIU	R3, R2, 8
-ADDIU	R2, R2, 60
+ADDIU	R2, R2, 80
 LW	R2, 0(R2)
 SW	R2, 0(R3)
 L_Pulse60:
@@ -1269,7 +1268,7 @@ Stepper_AccDec:
 ;Stepper.c,279 :: 		static void AccDec(int axis_No){
 ;Stepper.c,280 :: 		STPS[axis_No].accel_count++;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1281,7 +1280,7 @@ ADDIU	R2, R2, 1
 SW	R2, 0(R3)
 ;Stepper.c,281 :: 		STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
@@ -1291,7 +1290,7 @@ ADDIU	R5, R6, 44
 ADDIU	R2, R6, 8
 LW	R4, 0(R2)
 SLL	R3, R4, 1
-ADDIU	R2, R6, 56
+ADDIU	R2, R6, 76
 LW	R2, 0(R2)
 ADDU	R3, R3, R2
 ADDIU	R2, R6, 24
@@ -1304,13 +1303,13 @@ SUBU	R2, R4, R2
 SW	R2, 0(R5)
 ;Stepper.c,282 :: 		STPS[axis_No].rest = ((STPS[axis_No].step_delay << 1)+STPS[axis_No].rest)%((STPS[axis_No].accel_count << 2 ) + 1);
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
 ORI	R2, R2, lo_addr(_STPS+0)
 ADDU	R5, R2, R3
-ADDIU	R4, R5, 56
+ADDIU	R4, R5, 76
 ADDIU	R2, R5, 8
 LW	R2, 0(R2)
 SLL	R3, R2, 1
@@ -1325,7 +1324,7 @@ MFHI	R2
 SW	R2, 0(R4)
 ;Stepper.c,283 :: 		STPS[axis_No].step_delay = STPS[axis_No].new_step_delay;
 SEH	R3, R25
-ORI	R2, R0, 76
+ORI	R2, R0, 96
 MULTU	R2, R3
 MFLO	R3
 LUI	R2, hi_addr(_STPS+0)
