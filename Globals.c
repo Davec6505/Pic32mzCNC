@@ -673,6 +673,11 @@ int val_temp = 0;
       }
       buffA[FLAGS_OFFSET] = (unsigned long)settings.flags;
       break;
+    case 25: //  s_curve_percentage
+      val_temp = round(value);
+      settings.s_curve_percentage = val_temp;
+      buffA[S_CURVE_PERCENTAGE_OFFSET] = (unsigned long)val_temp;
+      break;  
     default:
       return(STATUS_INVALID_STATEMENT);
   }
@@ -701,6 +706,7 @@ int internal;
     case 11:  internal = 9;  break; // junction deviation
     case 12:  internal = 10; break; // arc tolerance (mm per arc segment)
     case 13:  internal = 13; break; // report inches
+    case 14:  internal = 25; break; // s_curve_percentage
     case 21:  internal = 16; break; // hard limits
     case 22:  internal = 17; break; // homing enable
     case 23:  internal = 18; break; // homing dir mask

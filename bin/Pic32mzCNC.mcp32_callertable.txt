@@ -383,7 +383,9 @@ main
 								dma_printf
 								beltsteps2mm
 								report_to_units
+								DMA_IsOn
 								report_xyz
+									DMA_IsOn
 									dma_printf
 							Serial_PeekRealtime
 							Execute_Gcode_Line
@@ -536,23 +538,28 @@ main
 										DMA_IsOn
 										dma_printf
 									report_grbl_settings
+										DMA_IsOn
 										dma_printf
 									report_gcode_parameters
 										settings_read_coord_data
 										report_coord_system
 											report_coord_line
 												report_to_units
+												DMA_IsOn
 												dma_printf
 												report_xyz
 										report_coord_line
+										DMA_IsOn
 										dma_printf
 									report_gcode_modes
+										DMA_IsOn
 										dma_printf
 									mc_reset
 									report_feedback_message
 									settings_read_startup_line
 										settings_load_row
 									report_startup_line
+										DMA_IsOn
 										dma_printf
 									atoi
 										isdigit

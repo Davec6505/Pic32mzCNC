@@ -4,11 +4,11 @@ ADDIU	SP, SP, -8
 SW	RA, 0(SP)
 ;Globals.c,43 :: 		if(!reset_all){
 SW	R25, 4(SP)
-BEQ	R25, R0, L__settings_init144
+BEQ	R25, R0, L__settings_init146
 NOP	
 J	L_settings_init0
 NOP	
-L__settings_init144:
+L__settings_init146:
 ;Globals.c,44 :: 		sys.abort           = 0;
 SH	R0, Offset(_sys+0)(GP)
 ;Globals.c,45 :: 		sys.state           = 0;
@@ -36,11 +36,11 @@ NOP
 ;Globals.c,61 :: 		if(marker != SETTINGS_VALID_MARKER){
 LUI	R3, 32767
 ORI	R3, R3, 258
-BNE	R2, R3, L__settings_init146
+BNE	R2, R3, L__settings_init148
 NOP	
 J	L_settings_init1
 NOP	
-L__settings_init146:
+L__settings_init148:
 ;Globals.c,62 :: 		settings_blank_row();
 JAL	Globals_settings_blank_row+0
 NOP	
@@ -76,11 +76,11 @@ L_Globals_settings_blank_row2:
 ; k start address is: 16 (R4)
 SEH	R2, R4
 SLTI	R2, R2, 512
-BNE	R2, R0, L_Globals_settings_blank_row148
+BNE	R2, R0, L_Globals_settings_blank_row150
 NOP	
 J	L_Globals_settings_blank_row3
 NOP	
-L_Globals_settings_blank_row148:
+L_Globals_settings_blank_row150:
 ;Globals.c,76 :: 		buffA[k] = 0xFFFFFFFF;
 SEH	R2, R4
 SLL	R3, R2, 2
@@ -106,11 +106,11 @@ L_Globals_settings_blank_row5:
 ; k start address is: 16 (R4)
 SEH	R2, R4
 SLTI	R2, R2, 44
-BNE	R2, R0, L_Globals_settings_blank_row149
+BNE	R2, R0, L_Globals_settings_blank_row151
 NOP	
 J	L_Globals_settings_blank_row6
 NOP	
-L_Globals_settings_blank_row149:
+L_Globals_settings_blank_row151:
 ;Globals.c,78 :: 		buffA[k] = 0;
 SEH	R2, R4
 SLL	R3, R2, 2
@@ -134,11 +134,11 @@ L_Globals_settings_blank_row8:
 ; k start address is: 16 (R4)
 SEH	R2, R4
 SLTI	R2, R2, 416
-BNE	R2, R0, L_Globals_settings_blank_row150
+BNE	R2, R0, L_Globals_settings_blank_row152
 NOP	
 J	L_Globals_settings_blank_row9
 NOP	
-L_Globals_settings_blank_row150:
+L_Globals_settings_blank_row152:
 ;Globals.c,80 :: 		buffA[k] = 0;
 SEH	R2, R4
 SLL	R3, R2, 2
@@ -448,11 +448,11 @@ SW	RA, 0(SP)
 ;Globals.c,176 :: 		if(restore_mask == SETTINGS_RESTORE_ALL){
 SEH	R3, R25
 ORI	R2, R0, 255
-BEQ	R3, R2, L__settings_restore154
+BEQ	R3, R2, L__settings_restore156
 NOP	
 J	L_settings_restore17
 NOP	
-L__settings_restore154:
+L__settings_restore156:
 ;Globals.c,178 :: 		for(k = 0; k < 512; k++)
 ; k start address is: 16 (R4)
 MOVZ	R4, R0, R0
@@ -461,11 +461,11 @@ L_settings_restore18:
 ; k start address is: 16 (R4)
 SEH	R2, R4
 SLTI	R2, R2, 512
-BNE	R2, R0, L__settings_restore155
+BNE	R2, R0, L__settings_restore157
 NOP	
 J	L_settings_restore19
 NOP	
-L__settings_restore155:
+L__settings_restore157:
 ;Globals.c,179 :: 		buffA[k] = 0xFFFFFFFF;
 SEH	R2, R4
 SLL	R3, R2, 2
@@ -500,11 +500,11 @@ NOP
 L_settings_restore21:
 ;Globals.c,185 :: 		if(restore_mask & SETTINGS_RESTORE_DEFAULTS)
 ANDI	R2, R25, 1
-BNE	R2, R0, L__settings_restore157
+BNE	R2, R0, L__settings_restore159
 NOP	
 J	L_settings_restore22
 NOP	
-L__settings_restore157:
+L__settings_restore159:
 ;Globals.c,186 :: 		settings_default_row();
 SH	R25, 4(SP)
 JAL	Globals_settings_default_row+0
@@ -513,11 +513,11 @@ LH	R25, 4(SP)
 L_settings_restore22:
 ;Globals.c,188 :: 		if(restore_mask & SETTINGS_RESTORE_PARAMETERS){
 ANDI	R2, R25, 2
-BNE	R2, R0, L__settings_restore159
+BNE	R2, R0, L__settings_restore161
 NOP	
 J	L_settings_restore23
 NOP	
-L__settings_restore159:
+L__settings_restore161:
 ;Globals.c,189 :: 		for(k = 0; k < (NUMBER_OF_DATUMS*NoOfAxis); k++)
 ; k start address is: 16 (R4)
 MOVZ	R4, R0, R0
@@ -526,11 +526,11 @@ L_settings_restore24:
 ; k start address is: 16 (R4)
 SEH	R2, R4
 SLTI	R2, R2, 44
-BNE	R2, R0, L__settings_restore160
+BNE	R2, R0, L__settings_restore162
 NOP	
 J	L_settings_restore25
 NOP	
-L__settings_restore160:
+L__settings_restore162:
 ;Globals.c,190 :: 		buffA[k] = 0;
 SEH	R2, R4
 SLL	R3, R2, 2
@@ -550,11 +550,11 @@ L_settings_restore25:
 L_settings_restore23:
 ;Globals.c,193 :: 		if(restore_mask & SETTINGS_RESTORE_STARTUP_LINES){
 ANDI	R2, R25, 4
-BNE	R2, R0, L__settings_restore162
+BNE	R2, R0, L__settings_restore164
 NOP	
 J	L_settings_restore27
 NOP	
-L__settings_restore162:
+L__settings_restore164:
 ;Globals.c,194 :: 		for(k = Line0_Offset; k < (Line1_Offset+16); k++)
 ; k start address is: 16 (R4)
 ORI	R4, R0, 384
@@ -563,11 +563,11 @@ L_settings_restore28:
 ; k start address is: 16 (R4)
 SEH	R2, R4
 SLTI	R2, R2, 416
-BNE	R2, R0, L__settings_restore163
+BNE	R2, R0, L__settings_restore165
 NOP	
 J	L_settings_restore29
 NOP	
-L__settings_restore163:
+L__settings_restore165:
 ;Globals.c,195 :: 		buffA[k] = 0;
 SEH	R2, R4
 SLL	R3, R2, 2
@@ -702,11 +702,11 @@ L_read_row_from_flash31:
 ; ptr end address is: 16 (R4)
 LW	R2, Offset(_j+0)(GP)
 SLTIU	R2, R2, 512
-BNE	R2, R0, L__read_row_from_flash172
+BNE	R2, R0, L__read_row_from_flash174
 NOP	
 J	L_read_row_from_flash32
 NOP	
-L__read_row_from_flash172:
+L__read_row_from_flash174:
 ; ptr end address is: 16 (R4)
 ;Globals.c,320 :: 		buffA[j] = *(ptr+j);
 ; ptr start address is: 16 (R4)
@@ -729,17 +729,17 @@ ADDU	R2, R2, R3
 LW	R3, 0(R2)
 LUI	R2, 65535
 ORI	R2, R2, 65535
-BNE	R3, R2, L__read_row_from_flash174
+BNE	R3, R2, L__read_row_from_flash176
 NOP	
-J	L__read_row_from_flash134
+J	L__read_row_from_flash136
 NOP	
-L__read_row_from_flash174:
+L__read_row_from_flash176:
 ADDIU	R2, R5, 1
 SEH	R5, R2
 ; data_count end address is: 20 (R5)
 J	L_read_row_from_flash34
 NOP	
-L__read_row_from_flash134:
+L__read_row_from_flash136:
 L_read_row_from_flash34:
 ;Globals.c,319 :: 		for(j = 0;j < 512;j++){
 ; data_count start address is: 20 (R5)
@@ -775,11 +775,11 @@ SW	RA, 0(SP)
 SW	R25, 4(SP)
 JAL	_read_ram_loaded_indicator+0
 NOP	
-BEQ	R2, R0, L_Globals_settings_load_row176
+BEQ	R2, R0, L_Globals_settings_load_row178
 NOP	
 J	L_Globals_settings_load_row35
 NOP	
-L_Globals_settings_load_row176:
+L_Globals_settings_load_row178:
 ;Globals.c,368 :: 		add = (unsigned long)FLASH_Settings_VAddr_P1;
 LUI	R2, 48411
 ORI	R2, R2, 49152
@@ -824,11 +824,11 @@ NOP
 SH	R2, Offset(_error+0)(GP)
 ;Globals.c,386 :: 		if(!error){
 LHU	R2, Offset(_error+0)(GP)
-BEQ	R2, R0, L_Globals_settings_save_row178
+BEQ	R2, R0, L_Globals_settings_save_row180
 NOP	
 J	L_Globals_settings_save_row36
 NOP	
-L_Globals_settings_save_row178:
+L_Globals_settings_save_row180:
 ;Globals.c,387 :: 		error = (int)NVMWriteRow(&add,buffA);
 LUI	R26, 40960
 ORI	R26, R26, 0
@@ -862,22 +862,22 @@ SW	RA, 0(SP)
 ;Globals.c,410 :: 		if(coord_select < 1 || coord_select > NUMBER_OF_DATUMS)
 SEH	R2, R25
 SLTI	R2, R2, 1
-BEQ	R2, R0, L__settings_write_coord_data180
+BEQ	R2, R0, L__settings_write_coord_data182
 NOP	
-J	L__settings_write_coord_data137
+J	L__settings_write_coord_data139
 NOP	
-L__settings_write_coord_data180:
+L__settings_write_coord_data182:
 SEH	R2, R25
 SLTI	R2, R2, 12
-BNE	R2, R0, L__settings_write_coord_data181
+BNE	R2, R0, L__settings_write_coord_data183
 NOP	
-J	L__settings_write_coord_data136
+J	L__settings_write_coord_data138
 NOP	
-L__settings_write_coord_data181:
+L__settings_write_coord_data183:
 J	L_settings_write_coord_data39
 NOP	
-L__settings_write_coord_data137:
-L__settings_write_coord_data136:
+L__settings_write_coord_data139:
+L__settings_write_coord_data138:
 ;Globals.c,411 :: 		return NVM_COORDINATE_WRITE_ERROR;
 ORI	R2, R0, 1
 J	L_end_settings_write_coord_data
@@ -967,32 +967,32 @@ NOP
 ;Globals.c,437 :: 		if(!read_coord_data_indicator()){
 JAL	_read_coord_data_indicator+0
 NOP	
-BEQ	R2, R0, L__settings_read_coord_data183
+BEQ	R2, R0, L__settings_read_coord_data185
 NOP	
 J	L_settings_read_coord_data40
 NOP	
-L__settings_read_coord_data183:
+L__settings_read_coord_data185:
 ;Globals.c,438 :: 		unsigned long temp = 0UL;
 ;Globals.c,439 :: 		for(i = 0; i < NUMBER_OF_DATUMS; i++){
 SW	R0, Offset(_i+0)(GP)
 L_settings_read_coord_data41:
 LW	R2, Offset(_i+0)(GP)
 SLTIU	R2, R2, 11
-BNE	R2, R0, L__settings_read_coord_data184
+BNE	R2, R0, L__settings_read_coord_data186
 NOP	
 J	L_settings_read_coord_data42
 NOP	
-L__settings_read_coord_data184:
+L__settings_read_coord_data186:
 ;Globals.c,440 :: 		for(j = 0 ; j < NoOfAxis; j++){
 SW	R0, Offset(_j+0)(GP)
 L_settings_read_coord_data44:
 LW	R2, Offset(_j+0)(GP)
 SLTIU	R2, R2, 4
-BNE	R2, R0, L__settings_read_coord_data185
+BNE	R2, R0, L__settings_read_coord_data187
 NOP	
 J	L_settings_read_coord_data45
 NOP	
-L__settings_read_coord_data185:
+L__settings_read_coord_data187:
 ;Globals.c,441 :: 		temp = buffA[(i*NoOfAxis) + j];
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 2
@@ -1008,17 +1008,17 @@ MOVZ	R4, R2, R0
 ;Globals.c,443 :: 		if(temp == 0xFFFFFFFF)
 LUI	R2, 65535
 ORI	R2, R2, 65535
-BEQ	R4, R2, L__settings_read_coord_data186
+BEQ	R4, R2, L__settings_read_coord_data188
 NOP	
-J	L__settings_read_coord_data138
+J	L__settings_read_coord_data140
 NOP	
-L__settings_read_coord_data186:
+L__settings_read_coord_data188:
 ;Globals.c,444 :: 		temp = 0UL;
 MOVZ	R4, R0, R0
 ; temp end address is: 16 (R4)
 J	L_settings_read_coord_data47
 NOP	
-L__settings_read_coord_data138:
+L__settings_read_coord_data140:
 ;Globals.c,443 :: 		if(temp == 0xFFFFFFFF)
 ;Globals.c,444 :: 		temp = 0UL;
 L_settings_read_coord_data47:
@@ -1099,18 +1099,18 @@ NOP
 ;Globals.c,473 :: 		}
 L_settings_read_startup_line48:
 SEH	R2, R25
-BNE	R2, R0, L__settings_read_startup_line189
+BNE	R2, R0, L__settings_read_startup_line191
 NOP	
 J	L_settings_read_startup_line50
 NOP	
-L__settings_read_startup_line189:
+L__settings_read_startup_line191:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L__settings_read_startup_line191
+BNE	R3, R2, L__settings_read_startup_line193
 NOP	
 J	L_settings_read_startup_line51
 NOP	
-L__settings_read_startup_line191:
+L__settings_read_startup_line193:
 J	L_settings_read_startup_line52
 NOP	
 L_settings_read_startup_line49:
@@ -1137,11 +1137,11 @@ L_settings_read_startup_line53:
 ; src end address is: 16 (R4)
 SEH	R2, R5
 SLTI	R2, R2, 63
-BNE	R2, R0, L__settings_read_startup_line192
+BNE	R2, R0, L__settings_read_startup_line194
 NOP	
-J	L__settings_read_startup_line142
+J	L__settings_read_startup_line144
 NOP	
-L__settings_read_startup_line192:
+L__settings_read_startup_line194:
 ; src end address is: 16 (R4)
 ;Globals.c,477 :: 		if(src[k] == 0) break;
 ; src start address is: 16 (R4)
@@ -1149,11 +1149,11 @@ SEH	R2, R5
 ADDU	R2, R4, R2
 LBU	R2, 0(R2)
 ANDI	R2, R2, 255
-BEQ	R2, R0, L__settings_read_startup_line193
+BEQ	R2, R0, L__settings_read_startup_line195
 NOP	
 J	L_settings_read_startup_line56
 NOP	
-L__settings_read_startup_line193:
+L__settings_read_startup_line195:
 ; src end address is: 16 (R4)
 SEH	R3, R5
 J	L_settings_read_startup_line54
@@ -1166,27 +1166,27 @@ ADDU	R2, R4, R2
 LBU	R2, 0(R2)
 ANDI	R2, R2, 255
 SLTIU	R2, R2, 32
-BEQ	R2, R0, L__settings_read_startup_line194
+BEQ	R2, R0, L__settings_read_startup_line196
 NOP	
-J	L__settings_read_startup_line141
+J	L__settings_read_startup_line143
 NOP	
-L__settings_read_startup_line194:
+L__settings_read_startup_line196:
 SEH	R2, R5
 ADDU	R2, R4, R2
 LBU	R2, 0(R2)
 ANDI	R2, R2, 255
 SLTIU	R2, R2, 127
-BNE	R2, R0, L__settings_read_startup_line195
+BNE	R2, R0, L__settings_read_startup_line197
 NOP	
-J	L__settings_read_startup_line140
+J	L__settings_read_startup_line142
 NOP	
-L__settings_read_startup_line195:
+L__settings_read_startup_line197:
 J	L_settings_read_startup_line59
 NOP	
 ; src end address is: 16 (R4)
 ; k end address is: 20 (R5)
-L__settings_read_startup_line141:
-L__settings_read_startup_line140:
+L__settings_read_startup_line143:
+L__settings_read_startup_line142:
 ; k start address is: 12 (R3)
 MOVZ	R3, R0, R0
 ; k end address is: 12 (R3)
@@ -1210,7 +1210,7 @@ SEH	R5, R2
 ; k end address is: 20 (R5)
 J	L_settings_read_startup_line53
 NOP	
-L__settings_read_startup_line142:
+L__settings_read_startup_line144:
 ;Globals.c,476 :: 		for(k = 0; k < LINE_BUFFER_SIZE-1; k++){
 SEH	R3, R5
 ;Globals.c,480 :: 		}
@@ -1272,18 +1272,18 @@ NOP
 L_settings_store_startup_line60:
 ; str_len start address is: 24 (R6)
 SEH	R2, R25
-BNE	R2, R0, L__settings_store_startup_line198
+BNE	R2, R0, L__settings_store_startup_line200
 NOP	
 J	L_settings_store_startup_line62
 NOP	
-L__settings_store_startup_line198:
+L__settings_store_startup_line200:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L__settings_store_startup_line200
+BNE	R3, R2, L__settings_store_startup_line202
 NOP	
 J	L_settings_store_startup_line63
 NOP	
-L__settings_store_startup_line200:
+L__settings_store_startup_line202:
 ; str_len end address is: 24 (R6)
 J	L_settings_store_startup_line64
 NOP	
@@ -1305,11 +1305,11 @@ L_settings_store_startup_line65:
 ADDIU	R3, R4, 16
 LW	R2, Offset(_i+0)(GP)
 SLTU	R2, R2, R3
-BNE	R2, R0, L__settings_store_startup_line201
+BNE	R2, R0, L__settings_store_startup_line203
 NOP	
 J	L_settings_store_startup_line66
 NOP	
-L__settings_store_startup_line201:
+L__settings_store_startup_line203:
 ;Globals.c,523 :: 		buffA[i] = 0;
 LW	R2, Offset(_i+0)(GP)
 SLL	R3, R2, 2
@@ -1374,11 +1374,11 @@ L_settings_store_global_setting72:
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 C.LT.S 	0, S0, S12
-BC1F	0, L__settings_store_global_setting203
+BC1F	0, L__settings_store_global_setting205
 NOP	
 J	L_settings_store_global_setting73
 NOP	
-L__settings_store_global_setting203:
+L__settings_store_global_setting205:
 ORI	R2, R0, 8
 J	L_end_settings_store_global_setting
 NOP	
@@ -1415,11 +1415,11 @@ LUI	R2, 16448
 ORI	R2, R2, 0
 MTC1	R2, S0
 C.LE.S 	0, S0, S12
-BC1F	0, L__settings_store_global_setting204
+BC1F	0, L__settings_store_global_setting206
 NOP	
 J	L_settings_store_global_setting75
 NOP	
-L__settings_store_global_setting204:
+L__settings_store_global_setting206:
 ORI	R2, R0, 9
 J	L_end_settings_store_global_setting
 NOP	
@@ -1514,11 +1514,11 @@ L_settings_store_global_setting81:
 MOVZ	R2, R0, R0
 MTC1	R2, S0
 C.LT.S 	0, S0, S12
-BC1F	0, L__settings_store_global_setting205
+BC1F	0, L__settings_store_global_setting207
 NOP	
 J	L_settings_store_global_setting82
 NOP	
-L__settings_store_global_setting205:
+L__settings_store_global_setting207:
 ORI	R2, R0, 8
 J	L_end_settings_store_global_setting
 NOP	
@@ -1537,11 +1537,11 @@ L_settings_store_global_setting83:
 ;Globals.c,610 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting207
+BNE	R2, R0, L__settings_store_global_setting209
 NOP	
 J	L_settings_store_global_setting84
 NOP	
-L__settings_store_global_setting207:
+L__settings_store_global_setting209:
 ;Globals.c,611 :: 		settings.flags |= BITFLAG_REPORT_INCHES;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 1
@@ -1568,11 +1568,11 @@ L_settings_store_global_setting86:
 ;Globals.c,618 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting209
+BNE	R2, R0, L__settings_store_global_setting211
 NOP	
 J	L_settings_store_global_setting87
 NOP	
-L__settings_store_global_setting209:
+L__settings_store_global_setting211:
 ;Globals.c,619 :: 		settings.flags |= BITFLAG_INVERT_ST_ENABLE;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 4
@@ -1599,11 +1599,11 @@ L_settings_store_global_setting89:
 ;Globals.c,626 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting211
+BNE	R2, R0, L__settings_store_global_setting213
 NOP	
 J	L_settings_store_global_setting90
 NOP	
-L__settings_store_global_setting211:
+L__settings_store_global_setting213:
 ;Globals.c,627 :: 		settings.flags |= BITFLAG_HARD_LIMIT_ENABLE;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 8
@@ -1630,11 +1630,11 @@ L_settings_store_global_setting92:
 ;Globals.c,635 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting213
+BNE	R2, R0, L__settings_store_global_setting215
 NOP	
 J	L_settings_store_global_setting93
 NOP	
-L__settings_store_global_setting213:
+L__settings_store_global_setting215:
 ;Globals.c,636 :: 		settings.flags |= BITFLAG_HOMING_ENABLE;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 16
@@ -1739,11 +1739,11 @@ L_settings_store_global_setting101:
 ;Globals.c,669 :: 		if (round(value)){
 JAL	_round+0
 NOP	
-BNE	R2, R0, L__settings_store_global_setting215
+BNE	R2, R0, L__settings_store_global_setting217
 NOP	
 J	L_settings_store_global_setting102
 NOP	
-L__settings_store_global_setting215:
+L__settings_store_global_setting217:
 ;Globals.c,670 :: 		settings.flags |= BITFLAG_INVERT_LIMIT_PINS;
 LHU	R2, Offset(_settings+50)(GP)
 ORI	R2, R2, 32
@@ -1765,178 +1765,198 @@ SW	R2, Offset(-1610612416)(GP)
 ;Globals.c,675 :: 		break;
 J	L_settings_store_global_setting69
 NOP	
-;Globals.c,676 :: 		default:
+;Globals.c,676 :: 		case 25: //  s_curve_percentage
 L_settings_store_global_setting104:
-;Globals.c,677 :: 		return(STATUS_INVALID_STATEMENT);
+;Globals.c,677 :: 		val_temp = round(value);
+JAL	_round+0
+NOP	
+;Globals.c,678 :: 		settings.s_curve_percentage = val_temp;
+SH	R2, Offset(_settings+74)(GP)
+;Globals.c,679 :: 		buffA[S_CURVE_PERCENTAGE_OFFSET] = (unsigned long)val_temp;
+SEH	R2, R2
+SW	R2, Offset(-1610612376)(GP)
+;Globals.c,680 :: 		break;
+J	L_settings_store_global_setting69
+NOP	
+;Globals.c,681 :: 		default:
+L_settings_store_global_setting105:
+;Globals.c,682 :: 		return(STATUS_INVALID_STATEMENT);
 ORI	R2, R0, 6
 J	L_end_settings_store_global_setting
 NOP	
-;Globals.c,678 :: 		}
+;Globals.c,683 :: 		}
 L_settings_store_global_setting68:
 SEH	R2, R25
-BNE	R2, R0, L__settings_store_global_setting217
+BNE	R2, R0, L__settings_store_global_setting219
 NOP	
 J	L_settings_store_global_setting70
 NOP	
-L__settings_store_global_setting217:
+L__settings_store_global_setting219:
 SEH	R3, R25
 ORI	R2, R0, 1
-BNE	R3, R2, L__settings_store_global_setting219
+BNE	R3, R2, L__settings_store_global_setting221
 NOP	
 J	L_settings_store_global_setting71
 NOP	
-L__settings_store_global_setting219:
+L__settings_store_global_setting221:
 SEH	R3, R25
 ORI	R2, R0, 2
-BNE	R3, R2, L__settings_store_global_setting221
+BNE	R3, R2, L__settings_store_global_setting223
 NOP	
 J	L_settings_store_global_setting72
 NOP	
-L__settings_store_global_setting221:
+L__settings_store_global_setting223:
 SEH	R3, R25
 ORI	R2, R0, 3
-BNE	R3, R2, L__settings_store_global_setting223
+BNE	R3, R2, L__settings_store_global_setting225
 NOP	
 J	L_settings_store_global_setting74
 NOP	
-L__settings_store_global_setting223:
+L__settings_store_global_setting225:
 SEH	R3, R25
 ORI	R2, R0, 5
-BNE	R3, R2, L__settings_store_global_setting225
+BNE	R3, R2, L__settings_store_global_setting227
 NOP	
 J	L_settings_store_global_setting76
 NOP	
-L__settings_store_global_setting225:
+L__settings_store_global_setting227:
 SEH	R3, R25
 ORI	R2, R0, 6
-BNE	R3, R2, L__settings_store_global_setting227
+BNE	R3, R2, L__settings_store_global_setting229
 NOP	
 J	L_settings_store_global_setting77
 NOP	
-L__settings_store_global_setting227:
+L__settings_store_global_setting229:
 SEH	R3, R25
 ORI	R2, R0, 7
-BNE	R3, R2, L__settings_store_global_setting229
+BNE	R3, R2, L__settings_store_global_setting231
 NOP	
 J	L_settings_store_global_setting78
 NOP	
-L__settings_store_global_setting229:
+L__settings_store_global_setting231:
 SEH	R3, R25
 ORI	R2, R0, 8
-BNE	R3, R2, L__settings_store_global_setting231
+BNE	R3, R2, L__settings_store_global_setting233
 NOP	
 J	L_settings_store_global_setting79
 NOP	
-L__settings_store_global_setting231:
+L__settings_store_global_setting233:
 SEH	R3, R25
 ORI	R2, R0, 9
-BNE	R3, R2, L__settings_store_global_setting233
+BNE	R3, R2, L__settings_store_global_setting235
 NOP	
 J	L_settings_store_global_setting80
 NOP	
-L__settings_store_global_setting233:
+L__settings_store_global_setting235:
 SEH	R3, R25
 ORI	R2, R0, 10
-BNE	R3, R2, L__settings_store_global_setting235
+BNE	R3, R2, L__settings_store_global_setting237
 NOP	
 J	L_settings_store_global_setting81
 NOP	
-L__settings_store_global_setting235:
+L__settings_store_global_setting237:
 SEH	R3, R25
 ORI	R2, R0, 13
-BNE	R3, R2, L__settings_store_global_setting237
+BNE	R3, R2, L__settings_store_global_setting239
 NOP	
 J	L_settings_store_global_setting83
 NOP	
-L__settings_store_global_setting237:
+L__settings_store_global_setting239:
 SEH	R3, R25
 ORI	R2, R0, 15
-BNE	R3, R2, L__settings_store_global_setting239
+BNE	R3, R2, L__settings_store_global_setting241
 NOP	
 J	L_settings_store_global_setting86
 NOP	
-L__settings_store_global_setting239:
+L__settings_store_global_setting241:
 SEH	R3, R25
 ORI	R2, R0, 16
-BNE	R3, R2, L__settings_store_global_setting241
+BNE	R3, R2, L__settings_store_global_setting243
 NOP	
 J	L_settings_store_global_setting89
 NOP	
-L__settings_store_global_setting241:
+L__settings_store_global_setting243:
 SEH	R3, R25
 ORI	R2, R0, 17
-BNE	R3, R2, L__settings_store_global_setting243
+BNE	R3, R2, L__settings_store_global_setting245
 NOP	
 J	L_settings_store_global_setting92
 NOP	
-L__settings_store_global_setting243:
+L__settings_store_global_setting245:
 SEH	R3, R25
 ORI	R2, R0, 18
-BNE	R3, R2, L__settings_store_global_setting245
+BNE	R3, R2, L__settings_store_global_setting247
 NOP	
 J	L_settings_store_global_setting95
 NOP	
-L__settings_store_global_setting245:
+L__settings_store_global_setting247:
 SEH	R3, R25
 ORI	R2, R0, 19
-BNE	R3, R2, L__settings_store_global_setting247
+BNE	R3, R2, L__settings_store_global_setting249
 NOP	
 J	L_settings_store_global_setting96
 NOP	
-L__settings_store_global_setting247:
+L__settings_store_global_setting249:
 SEH	R3, R25
 ORI	R2, R0, 20
-BNE	R3, R2, L__settings_store_global_setting249
+BNE	R3, R2, L__settings_store_global_setting251
 NOP	
 J	L_settings_store_global_setting97
 NOP	
-L__settings_store_global_setting249:
+L__settings_store_global_setting251:
 SEH	R3, R25
 ORI	R2, R0, 21
-BNE	R3, R2, L__settings_store_global_setting251
+BNE	R3, R2, L__settings_store_global_setting253
 NOP	
 J	L_settings_store_global_setting98
 NOP	
-L__settings_store_global_setting251:
+L__settings_store_global_setting253:
 SEH	R3, R25
 ORI	R2, R0, 22
-BNE	R3, R2, L__settings_store_global_setting253
+BNE	R3, R2, L__settings_store_global_setting255
 NOP	
 J	L_settings_store_global_setting99
 NOP	
-L__settings_store_global_setting253:
+L__settings_store_global_setting255:
 SEH	R3, R25
 ORI	R2, R0, 23
-BNE	R3, R2, L__settings_store_global_setting255
+BNE	R3, R2, L__settings_store_global_setting257
 NOP	
 J	L_settings_store_global_setting100
 NOP	
-L__settings_store_global_setting255:
+L__settings_store_global_setting257:
 SEH	R3, R25
 ORI	R2, R0, 24
-BNE	R3, R2, L__settings_store_global_setting257
+BNE	R3, R2, L__settings_store_global_setting259
 NOP	
 J	L_settings_store_global_setting101
 NOP	
-L__settings_store_global_setting257:
+L__settings_store_global_setting259:
+SEH	R3, R25
+ORI	R2, R0, 25
+BNE	R3, R2, L__settings_store_global_setting261
+NOP	
 J	L_settings_store_global_setting104
 NOP	
-L_settings_store_global_setting69:
-;Globals.c,679 :: 		if(settings_save_row()){ return(STATUS_SETTING_READ_FAIL); }
-JAL	Globals_settings_save_row+0
-NOP	
-BNE	R2, R0, L__settings_store_global_setting259
-NOP	
+L__settings_store_global_setting261:
 J	L_settings_store_global_setting105
 NOP	
-L__settings_store_global_setting259:
+L_settings_store_global_setting69:
+;Globals.c,684 :: 		if(settings_save_row()){ return(STATUS_SETTING_READ_FAIL); }
+JAL	Globals_settings_save_row+0
+NOP	
+BNE	R2, R0, L__settings_store_global_setting263
+NOP	
+J	L_settings_store_global_setting106
+NOP	
+L__settings_store_global_setting263:
 ORI	R2, R0, 10
 J	L_end_settings_store_global_setting
 NOP	
-L_settings_store_global_setting105:
-;Globals.c,680 :: 		return(STATUS_OK);
+L_settings_store_global_setting106:
+;Globals.c,685 :: 		return(STATUS_OK);
 MOVZ	R2, R0, R0
-;Globals.c,681 :: 		}
+;Globals.c,686 :: 		}
 L_end_settings_store_global_setting:
 LW	RA, 0(SP)
 ADDIU	SP, SP, 8
@@ -1944,345 +1964,359 @@ JR	RA
 NOP	
 ; end of _settings_store_global_setting
 _settings_store_grbl_setting:
-;Globals.c,692 :: 		int settings_store_grbl_setting(int parameter, float value) {
+;Globals.c,697 :: 		int settings_store_grbl_setting(int parameter, float value) {
 ADDIU	SP, SP, -8
 SW	RA, 0(SP)
-;Globals.c,694 :: 		switch(parameter) {
+;Globals.c,699 :: 		switch(parameter) {
 SW	R25, 4(SP)
-J	L_settings_store_grbl_setting106
+J	L_settings_store_grbl_setting107
 NOP	
-;Globals.c,695 :: 		case 0:   internal = 3;  break; // step pulse usec
-L_settings_store_grbl_setting108:
+;Globals.c,700 :: 		case 0:   internal = 3;  break; // step pulse usec
+L_settings_store_grbl_setting109:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 3
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,696 :: 		case 1:   internal = 7;  break; // step idle delay
-L_settings_store_grbl_setting109:
+;Globals.c,701 :: 		case 1:   internal = 7;  break; // step idle delay
+L_settings_store_grbl_setting110:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 7
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,697 :: 		case 2:   internal = 6;  break; // step port invert mask
-L_settings_store_grbl_setting110:
+;Globals.c,702 :: 		case 2:   internal = 6;  break; // step port invert mask
+L_settings_store_grbl_setting111:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 6
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,698 :: 		case 3:   internal = 23; break; // direction port invert mask
-L_settings_store_grbl_setting111:
+;Globals.c,703 :: 		case 3:   internal = 23; break; // direction port invert mask
+L_settings_store_grbl_setting112:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 23
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,699 :: 		case 4:   internal = 15; break; // step enable invert
-L_settings_store_grbl_setting112:
+;Globals.c,704 :: 		case 4:   internal = 15; break; // step enable invert
+L_settings_store_grbl_setting113:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 15
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,700 :: 		case 5:   internal = 24; break; // limit pins invert
-L_settings_store_grbl_setting113:
+;Globals.c,705 :: 		case 5:   internal = 24; break; // limit pins invert
+L_settings_store_grbl_setting114:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 24
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,701 :: 		case 11:  internal = 9;  break; // junction deviation
-L_settings_store_grbl_setting114:
+;Globals.c,706 :: 		case 11:  internal = 9;  break; // junction deviation
+L_settings_store_grbl_setting115:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 9
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,702 :: 		case 12:  internal = 10; break; // arc tolerance (mm per arc segment)
-L_settings_store_grbl_setting115:
+;Globals.c,707 :: 		case 12:  internal = 10; break; // arc tolerance (mm per arc segment)
+L_settings_store_grbl_setting116:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 10
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,703 :: 		case 13:  internal = 13; break; // report inches
-L_settings_store_grbl_setting116:
+;Globals.c,708 :: 		case 13:  internal = 13; break; // report inches
+L_settings_store_grbl_setting117:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 13
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,704 :: 		case 21:  internal = 16; break; // hard limits
-L_settings_store_grbl_setting117:
+;Globals.c,709 :: 		case 14:  internal = 25; break; // s_curve_percentage
+L_settings_store_grbl_setting118:
+; internal start address is: 8 (R2)
+ORI	R2, R0, 25
+; internal end address is: 8 (R2)
+J	L_settings_store_grbl_setting108
+NOP	
+;Globals.c,710 :: 		case 21:  internal = 16; break; // hard limits
+L_settings_store_grbl_setting119:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 16
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,705 :: 		case 22:  internal = 17; break; // homing enable
-L_settings_store_grbl_setting118:
+;Globals.c,711 :: 		case 22:  internal = 17; break; // homing enable
+L_settings_store_grbl_setting120:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 17
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,706 :: 		case 23:  internal = 18; break; // homing dir mask
-L_settings_store_grbl_setting119:
+;Globals.c,712 :: 		case 23:  internal = 18; break; // homing dir mask
+L_settings_store_grbl_setting121:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 18
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,707 :: 		case 24:  internal = 19; break; // homing feed
-L_settings_store_grbl_setting120:
+;Globals.c,713 :: 		case 24:  internal = 19; break; // homing feed
+L_settings_store_grbl_setting122:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 19
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,708 :: 		case 25:  internal = 20; break; // homing seek
-L_settings_store_grbl_setting121:
+;Globals.c,714 :: 		case 25:  internal = 20; break; // homing seek
+L_settings_store_grbl_setting123:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 20
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,709 :: 		case 26:  internal = 21; break; // homing debounce
-L_settings_store_grbl_setting122:
+;Globals.c,715 :: 		case 26:  internal = 21; break; // homing debounce
+L_settings_store_grbl_setting124:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 21
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,710 :: 		case 27:  internal = 22; break; // homing pull-off
-L_settings_store_grbl_setting123:
+;Globals.c,716 :: 		case 27:  internal = 22; break; // homing pull-off
+L_settings_store_grbl_setting125:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 22
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,711 :: 		case 100: case 101: case 102: internal = parameter - 100; break; // steps/mm
-L_settings_store_grbl_setting124:
-L_settings_store_grbl_setting125:
+;Globals.c,717 :: 		case 100: case 101: case 102: internal = parameter - 100; break; // steps/mm
 L_settings_store_grbl_setting126:
+L_settings_store_grbl_setting127:
+L_settings_store_grbl_setting128:
 ADDIU	R2, R25, -100
 ; internal start address is: 8 (R2)
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,712 :: 		case 110: case 111: case 112: internal = 5;  break; // shared max rate
-L_settings_store_grbl_setting127:
-L_settings_store_grbl_setting128:
+;Globals.c,718 :: 		case 110: case 111: case 112: internal = 5;  break; // shared max rate
 L_settings_store_grbl_setting129:
+L_settings_store_grbl_setting130:
+L_settings_store_grbl_setting131:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 5
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,713 :: 		case 120: case 121: case 122: internal = 8;  break; // shared acceleration
-L_settings_store_grbl_setting130:
-L_settings_store_grbl_setting131:
+;Globals.c,719 :: 		case 120: case 121: case 122: internal = 8;  break; // shared acceleration
 L_settings_store_grbl_setting132:
+L_settings_store_grbl_setting133:
+L_settings_store_grbl_setting134:
 ; internal start address is: 8 (R2)
 ORI	R2, R0, 8
 ; internal end address is: 8 (R2)
-J	L_settings_store_grbl_setting107
+J	L_settings_store_grbl_setting108
 NOP	
-;Globals.c,714 :: 		default:  return(STATUS_INVALID_STATEMENT);
-L_settings_store_grbl_setting133:
+;Globals.c,720 :: 		default:  return(STATUS_INVALID_STATEMENT);
+L_settings_store_grbl_setting135:
 ORI	R2, R0, 6
 J	L_end_settings_store_grbl_setting
 NOP	
-;Globals.c,715 :: 		}
-L_settings_store_grbl_setting106:
+;Globals.c,721 :: 		}
+L_settings_store_grbl_setting107:
 SEH	R2, R25
-BNE	R2, R0, L__settings_store_grbl_setting262
-NOP	
-J	L_settings_store_grbl_setting108
-NOP	
-L__settings_store_grbl_setting262:
-SEH	R3, R25
-ORI	R2, R0, 1
-BNE	R3, R2, L__settings_store_grbl_setting264
+BNE	R2, R0, L__settings_store_grbl_setting266
 NOP	
 J	L_settings_store_grbl_setting109
 NOP	
-L__settings_store_grbl_setting264:
+L__settings_store_grbl_setting266:
 SEH	R3, R25
-ORI	R2, R0, 2
-BNE	R3, R2, L__settings_store_grbl_setting266
+ORI	R2, R0, 1
+BNE	R3, R2, L__settings_store_grbl_setting268
 NOP	
 J	L_settings_store_grbl_setting110
 NOP	
-L__settings_store_grbl_setting266:
+L__settings_store_grbl_setting268:
 SEH	R3, R25
-ORI	R2, R0, 3
-BNE	R3, R2, L__settings_store_grbl_setting268
+ORI	R2, R0, 2
+BNE	R3, R2, L__settings_store_grbl_setting270
 NOP	
 J	L_settings_store_grbl_setting111
 NOP	
-L__settings_store_grbl_setting268:
+L__settings_store_grbl_setting270:
 SEH	R3, R25
-ORI	R2, R0, 4
-BNE	R3, R2, L__settings_store_grbl_setting270
+ORI	R2, R0, 3
+BNE	R3, R2, L__settings_store_grbl_setting272
 NOP	
 J	L_settings_store_grbl_setting112
 NOP	
-L__settings_store_grbl_setting270:
+L__settings_store_grbl_setting272:
 SEH	R3, R25
-ORI	R2, R0, 5
-BNE	R3, R2, L__settings_store_grbl_setting272
+ORI	R2, R0, 4
+BNE	R3, R2, L__settings_store_grbl_setting274
 NOP	
 J	L_settings_store_grbl_setting113
 NOP	
-L__settings_store_grbl_setting272:
+L__settings_store_grbl_setting274:
 SEH	R3, R25
-ORI	R2, R0, 11
-BNE	R3, R2, L__settings_store_grbl_setting274
+ORI	R2, R0, 5
+BNE	R3, R2, L__settings_store_grbl_setting276
 NOP	
 J	L_settings_store_grbl_setting114
 NOP	
-L__settings_store_grbl_setting274:
+L__settings_store_grbl_setting276:
 SEH	R3, R25
-ORI	R2, R0, 12
-BNE	R3, R2, L__settings_store_grbl_setting276
+ORI	R2, R0, 11
+BNE	R3, R2, L__settings_store_grbl_setting278
 NOP	
 J	L_settings_store_grbl_setting115
 NOP	
-L__settings_store_grbl_setting276:
+L__settings_store_grbl_setting278:
 SEH	R3, R25
-ORI	R2, R0, 13
-BNE	R3, R2, L__settings_store_grbl_setting278
+ORI	R2, R0, 12
+BNE	R3, R2, L__settings_store_grbl_setting280
 NOP	
 J	L_settings_store_grbl_setting116
 NOP	
-L__settings_store_grbl_setting278:
+L__settings_store_grbl_setting280:
 SEH	R3, R25
-ORI	R2, R0, 21
-BNE	R3, R2, L__settings_store_grbl_setting280
+ORI	R2, R0, 13
+BNE	R3, R2, L__settings_store_grbl_setting282
 NOP	
 J	L_settings_store_grbl_setting117
 NOP	
-L__settings_store_grbl_setting280:
+L__settings_store_grbl_setting282:
 SEH	R3, R25
-ORI	R2, R0, 22
-BNE	R3, R2, L__settings_store_grbl_setting282
+ORI	R2, R0, 14
+BNE	R3, R2, L__settings_store_grbl_setting284
 NOP	
 J	L_settings_store_grbl_setting118
 NOP	
-L__settings_store_grbl_setting282:
+L__settings_store_grbl_setting284:
 SEH	R3, R25
-ORI	R2, R0, 23
-BNE	R3, R2, L__settings_store_grbl_setting284
+ORI	R2, R0, 21
+BNE	R3, R2, L__settings_store_grbl_setting286
 NOP	
 J	L_settings_store_grbl_setting119
 NOP	
-L__settings_store_grbl_setting284:
+L__settings_store_grbl_setting286:
 SEH	R3, R25
-ORI	R2, R0, 24
-BNE	R3, R2, L__settings_store_grbl_setting286
+ORI	R2, R0, 22
+BNE	R3, R2, L__settings_store_grbl_setting288
 NOP	
 J	L_settings_store_grbl_setting120
 NOP	
-L__settings_store_grbl_setting286:
+L__settings_store_grbl_setting288:
 SEH	R3, R25
-ORI	R2, R0, 25
-BNE	R3, R2, L__settings_store_grbl_setting288
+ORI	R2, R0, 23
+BNE	R3, R2, L__settings_store_grbl_setting290
 NOP	
 J	L_settings_store_grbl_setting121
 NOP	
-L__settings_store_grbl_setting288:
+L__settings_store_grbl_setting290:
 SEH	R3, R25
-ORI	R2, R0, 26
-BNE	R3, R2, L__settings_store_grbl_setting290
+ORI	R2, R0, 24
+BNE	R3, R2, L__settings_store_grbl_setting292
 NOP	
 J	L_settings_store_grbl_setting122
 NOP	
-L__settings_store_grbl_setting290:
+L__settings_store_grbl_setting292:
 SEH	R3, R25
-ORI	R2, R0, 27
-BNE	R3, R2, L__settings_store_grbl_setting292
+ORI	R2, R0, 25
+BNE	R3, R2, L__settings_store_grbl_setting294
 NOP	
 J	L_settings_store_grbl_setting123
 NOP	
-L__settings_store_grbl_setting292:
+L__settings_store_grbl_setting294:
 SEH	R3, R25
-ORI	R2, R0, 100
-BNE	R3, R2, L__settings_store_grbl_setting294
+ORI	R2, R0, 26
+BNE	R3, R2, L__settings_store_grbl_setting296
 NOP	
 J	L_settings_store_grbl_setting124
 NOP	
-L__settings_store_grbl_setting294:
+L__settings_store_grbl_setting296:
 SEH	R3, R25
-ORI	R2, R0, 101
-BNE	R3, R2, L__settings_store_grbl_setting296
+ORI	R2, R0, 27
+BNE	R3, R2, L__settings_store_grbl_setting298
 NOP	
 J	L_settings_store_grbl_setting125
 NOP	
-L__settings_store_grbl_setting296:
+L__settings_store_grbl_setting298:
 SEH	R3, R25
-ORI	R2, R0, 102
-BNE	R3, R2, L__settings_store_grbl_setting298
+ORI	R2, R0, 100
+BNE	R3, R2, L__settings_store_grbl_setting300
 NOP	
 J	L_settings_store_grbl_setting126
 NOP	
-L__settings_store_grbl_setting298:
+L__settings_store_grbl_setting300:
 SEH	R3, R25
-ORI	R2, R0, 110
-BNE	R3, R2, L__settings_store_grbl_setting300
+ORI	R2, R0, 101
+BNE	R3, R2, L__settings_store_grbl_setting302
 NOP	
 J	L_settings_store_grbl_setting127
 NOP	
-L__settings_store_grbl_setting300:
+L__settings_store_grbl_setting302:
 SEH	R3, R25
-ORI	R2, R0, 111
-BNE	R3, R2, L__settings_store_grbl_setting302
+ORI	R2, R0, 102
+BNE	R3, R2, L__settings_store_grbl_setting304
 NOP	
 J	L_settings_store_grbl_setting128
 NOP	
-L__settings_store_grbl_setting302:
+L__settings_store_grbl_setting304:
 SEH	R3, R25
-ORI	R2, R0, 112
-BNE	R3, R2, L__settings_store_grbl_setting304
+ORI	R2, R0, 110
+BNE	R3, R2, L__settings_store_grbl_setting306
 NOP	
 J	L_settings_store_grbl_setting129
 NOP	
-L__settings_store_grbl_setting304:
+L__settings_store_grbl_setting306:
 SEH	R3, R25
-ORI	R2, R0, 120
-BNE	R3, R2, L__settings_store_grbl_setting306
+ORI	R2, R0, 111
+BNE	R3, R2, L__settings_store_grbl_setting308
 NOP	
 J	L_settings_store_grbl_setting130
 NOP	
-L__settings_store_grbl_setting306:
+L__settings_store_grbl_setting308:
 SEH	R3, R25
-ORI	R2, R0, 121
-BNE	R3, R2, L__settings_store_grbl_setting308
+ORI	R2, R0, 112
+BNE	R3, R2, L__settings_store_grbl_setting310
 NOP	
 J	L_settings_store_grbl_setting131
 NOP	
-L__settings_store_grbl_setting308:
+L__settings_store_grbl_setting310:
 SEH	R3, R25
-ORI	R2, R0, 122
-BNE	R3, R2, L__settings_store_grbl_setting310
+ORI	R2, R0, 120
+BNE	R3, R2, L__settings_store_grbl_setting312
 NOP	
 J	L_settings_store_grbl_setting132
 NOP	
-L__settings_store_grbl_setting310:
+L__settings_store_grbl_setting312:
+SEH	R3, R25
+ORI	R2, R0, 121
+BNE	R3, R2, L__settings_store_grbl_setting314
+NOP	
 J	L_settings_store_grbl_setting133
 NOP	
-L_settings_store_grbl_setting107:
-;Globals.c,716 :: 		return settings_store_global_setting(internal, value);
+L__settings_store_grbl_setting314:
+SEH	R3, R25
+ORI	R2, R0, 122
+BNE	R3, R2, L__settings_store_grbl_setting316
+NOP	
+J	L_settings_store_grbl_setting134
+NOP	
+L__settings_store_grbl_setting316:
+J	L_settings_store_grbl_setting135
+NOP	
+L_settings_store_grbl_setting108:
+;Globals.c,722 :: 		return settings_store_global_setting(internal, value);
 ; internal start address is: 8 (R2)
 SEH	R25, R2
 ; internal end address is: 8 (R2)
 JAL	_settings_store_global_setting+0
 NOP	
-;Globals.c,717 :: 		}
-;Globals.c,716 :: 		return settings_store_global_setting(internal, value);
-;Globals.c,717 :: 		}
+;Globals.c,723 :: 		}
+;Globals.c,722 :: 		return settings_store_global_setting(internal, value);
+;Globals.c,723 :: 		}
 L_end_settings_store_grbl_setting:
 LW	R25, 4(SP)
 LW	RA, 0(SP)

@@ -140,9 +140,7 @@ void report_build_info(){
 
 void report_grbl_settings() {
 float acc = settings.acceleration / sec_sec;
-#ifndef ETHERNET_SPI
   while(DMA_IsOn(1));
-#endif
   dma_printf("$0=%d\r\n$1=%d\r\n$2=%d\r\n$3=%d\r\n$4=%d\r\n$5=%d\r\n$6=0\r\n$10=1\r\n"
     ,(int)settings.p_usec
     ,(int)settings.stepper_idle_lock_time
@@ -151,42 +149,38 @@ float acc = settings.acceleration / sec_sec;
     ,(int)bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)
     ,(int)bit_istrue(settings.flags,BITFLAG_INVERT_LIMIT_PINS));
 
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
-  dma_printf("$11=%f\r\n$12=%f\r\n$13=%d\r\n$20=0\r\n$21=%d\r\n$22=%d\r\n$23=%d\r\n"
+  dma_printf("$11=%f\r\n$12=%f\r\n$13=%d\r\n$14=%d\r\n$20=0\r\n$21=%d\r\n$22=%d\r\n$23=%d\r\n"
     ,settings.junction_deviation
     ,settings.mm_per_arc_segment
     ,(int)bit_istrue(settings.flags,BITFLAG_REPORT_INCHES)
+    ,settings.s_curve_percentage
     ,(int)bit_istrue(settings.flags,BITFLAG_HARD_LIMIT_ENABLE)
     ,(int)bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)
     ,(int)settings.homing_dir_mask);
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("$24=%f\r\n$25=%f\r\n$26=%d\r\n$27=%f\r\n$30=1000\r\n$31=0\r\n$32=0\r\n"
     ,settings.homing_feed_rate
     ,settings.homing_seek_rate
     ,(int)settings.homing_debounce_delay
     ,settings.homing_pulloff);
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("$100=%f\r\n$101=%f\r\n$102=%f\r\n"
     ,settings.steps_per_mm[X]
     ,settings.steps_per_mm[Y]
     ,settings.steps_per_mm[Z]);
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("$110=%f\r\n$111=%f\r\n$112=%f\r\n$120=%f\r\n$121=%f\r\n$122=%f\r\n"
     ,settings.default_seek_rate
     ,settings.default_seek_rate
     ,settings.default_seek_rate
     ,acc,acc,acc);
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("$130=%f\r\n$131=%f\r\n$132=%f\r\n"
     ,(float)X_MAX_SIZE
     ,(float)Y_MAX_SIZE
@@ -200,9 +194,8 @@ float acc = settings.acceleration / sec_sec;
  * @param line The content of the startup line.
  */
 void report_startup_line(int n, char *line){
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("$N%d=%s\r\n",n,line);
 }
 
@@ -211,9 +204,7 @@ void report_startup_line(int n, char *line){
  * @param pos The position array containing X, Y, and Z coordinates.
  */
 static void report_xyz(float *pos){
-#ifndef ETHERNET_SPI
   while(DMA_IsOn(1));
-#endif
   dma_printf("%f,%f,%f",pos[X],pos[Y],pos[Z]);
 }
 
@@ -254,24 +245,20 @@ void report_realtime_status(){
     position[i] = beltsteps2mm(STPS[i].steps_abs_position,i);
   }
   report_to_units(position);
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("%s","|MPos:");
   report_xyz(position);
 
-#ifndef ETHERNET_SPI
   while(DMA_IsOn(1));
-#endif
   dma_printf("|FS:%d,0|WCO:",(sys.state == STATE_CYCLE) ? (int)gc.feed_rate : 0);
   for (i=0; i<3; i++) {
     position[i] = gc.coord_system[i] + gc.coord_offset[i];
   }
   report_to_units(position);
   report_xyz(position);
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("%s",">\r\n");
 }
 
@@ -284,14 +271,12 @@ void report_realtime_status(){
  */
 static void report_coord_line(char *name, float *pos){
   report_to_units(pos);
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("[%s:",name);
   report_xyz(pos);
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("%s","]\r\n");
 }
 
@@ -332,13 +317,11 @@ void report_gcode_parameters(){
   report_coord_system("G30",SETTING_INDEX_G30);
   for (i=0; i<3; i++) { position[i] = gc.coord_offset[i]; }
   report_coord_line("G92",position);
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("%s","[TLO:0.000]\r\n");
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("%s","[PRB:0.000,0.000,0.000:0]\r\n");
 }
 // Print current gcode parser mode state ($G) in the Grbl 1.1 format:
@@ -352,60 +335,49 @@ void report_gcode_modes(){
     case MOTION_MODE_CANCEL :  motion = 80; break;
     default:                   motion = 0; break;
   }
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("[GC:G%d G%d",motion,gc.coord_select+53);
 
-#ifndef ETHERNET_SPI
-  while(DMA_IsOn(1));
-#endif
   if (gc.plane_axis_0 == X) {
     if (gc.plane_axis_1 == Y) { dma_printf("%s"," G17"); }
     else { dma_printf("%s"," G18"); }
   } else { dma_printf("%s"," G19"); }
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("%s",gc.inches_mode ? " G20" : " G21");
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf("%s",gc.absolute_mode ? " G90" : " G91");
-#ifndef ETHERNET_SPI
   while(DMA_IsOn(1));
-#endif
   dma_printf("%s",gc.inverse_feed_rate_mode ? " G93" : " G94");
 
-#ifndef ETHERNET_SPI
   while(DMA_IsOn(1));
-#endif
   switch (gc.program_flow) {
     case PROGRAM_FLOW_PAUSED :    dma_printf("%s"," M0"); break;
     case PROGRAM_FLOW_COMPLETED : dma_printf("%s"," M2"); break;
   }
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   switch (gc.spindle_direction) {
     case 1 :  dma_printf("%s"," M3"); break;
     case -1 : dma_printf("%s"," M4"); break;
     default : dma_printf("%s"," M5"); break;
   }
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   switch (gc.coolant_mode) {
     case COOLANT_MIST_ENABLE :  dma_printf("%s"," M7"); break;
     case COOLANT_FLOOD_ENABLE : dma_printf("%s"," M8"); break;
     default :                   dma_printf("%s"," M9"); break;
   }
-#ifndef ETHERNET_SPI
+
   while(DMA_IsOn(1));
-#endif
   dma_printf(" T%d F%d S0]\r\n",(int)gc.tool,
              (int)(gc.inches_mode ? gc.feed_rate*INCH_PER_MM : gc.feed_rate));
-}/*
+}
+
+/*
 // Executes user startup script, if stored.
 void protocol_execute_startup(){
   uint8_t n;

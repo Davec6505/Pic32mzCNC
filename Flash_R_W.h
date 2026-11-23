@@ -102,6 +102,7 @@
 #define  FLASH_Settings_VAddr_INVERT_MASK   0xBD1BC160
 #define  FLASH_Settings_VAddr_DIR_INVERT_MASK 0xBD1BC164
 #define  FLASH_Settings_VAddr_S_CURVE_PERCENTAGE  0xBD1BC168
+
 //Ram offsets of int variables
 #define  N_ARC_CORREC_OFFSET  0x4F
 #define  FLAGS_OFFSET         0x50
