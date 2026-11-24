@@ -55,6 +55,20 @@
 /////////////////////////////////////////////////////////
 //Structs enums consts etc
 
+typedef enum
+{
+    SHAPE_NONE = 0,
+
+    SHAPE_A_PLUS,
+    SHAPE_A,
+    SHAPE_A_MINUS,
+    SHAPE_RUN,
+    SHAPE_D_MINUS,
+    SHAPE_D,
+    SHAPE_D_PLUS
+
+} SHAPE_STATE;
+
 typedef struct {
 unsigned int home_state;
 unsigned int home_cnt;
@@ -111,6 +125,7 @@ typedef struct Steps{
   long steps_abs_position;
   //! Maximum axis size to travel from origin 0,0
   float max_travel;
+
 }STP;
 extern STP STPS[NoOfAxis];
 

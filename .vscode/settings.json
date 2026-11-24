@@ -5,7 +5,7 @@
         "**/*.bmk": true,
         "**/*.brk": true,
         "**/*.xml": true,
-        "**/*.cfg": false,
+        "**/*.cfg": true,
         "**/*.dct": true,
         "**/*.mc32group": true,
         "**/*.mcp32": true,

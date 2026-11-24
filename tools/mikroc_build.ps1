@@ -82,12 +82,6 @@ $input | ForEach-Object {
     }
 }
 
-if($BuildFailed)
-{
-    Write-Host ""
-    Write-Host "*** BUILD FAILED ***" -ForegroundColor DarkRed
-    exit 1
-}
 
 Write-Host ""
 Write-Host "=============================================" -ForegroundColor White
@@ -136,9 +130,28 @@ if($ErrorCount -gt 0)
 {
     Write-Host ""
     Write-Host "Errors:" -ForegroundColor DarkRed
+    Write-Host "---------------------------------------------" -ForegroundColor DarkRed
 
     $ErrorList | Sort-Object -Unique | ForEach-Object {
-        Write-Host "  $_" -ForegroundColor DarkRed
+
+        if($_ -match '^(\d+)\s+(\d+)\s+(.*?)\s+(.*)$')
+        {
+            $code = $matches[1]
+            $line = $matches[2]
+            $file = $matches[3]
+            $msg  = $matches[4]
+
+            Write-Host "$($file):$($line): error $($code): $($msg)" -ForegroundColor Red
+
+            if($Descriptions.ContainsKey([int]$code))
+            {
+                Write-Host "    $($Descriptions[[int]$code])" -ForegroundColor DarkRed
+            }
+        }
+        else
+        {
+            Write-Host $_ -ForegroundColor Red
+        }
     }
 }
 

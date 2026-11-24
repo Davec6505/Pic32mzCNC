@@ -151,7 +151,12 @@ int i;
   eng_master = m;
 }
 
-//Stop stepping at once (reset, alarm); the position is what was stepped
+
+/**
+ *  Aborts all stepper motion immediately.
+ *  Resets the master and disables all axes.
+ *  The position is maintained as the last stepped position.
+ */
 void Stepper_Abort(){
 int i;
   eng_master = -1;
@@ -160,40 +165,70 @@ int i;
     STPS[i].run_state = STOP;
 }
 
+/**
+ *  Checks if any stepper motor is currently running.
+ *  \return 1 if any axis is active, 0 otherwise.
+ */
 int Stepper_Busy(){
   return eng_master >= 0;
 }
 
-//$2 step port invert: refresh the cached idle levels from the setting.
-//Called at boot/$RST (settings_apply_row) and on a $2 or $3 write; $n= is
-//blocked while the machine is busy, and the tick re-drives the pins within
-//10 us of a change.
+
+/**
+ * $2 step port invert: refresh the cached idle levels from the setting.
+ * Called at boot/$RST (settings_apply_row) and on a $2 or $3 write; $n= is
+ * blocked while the machine is busy, and the tick re-drives the pins within
+ * 10 us of a change.
+ *  Applies the step port invert masks based on the current settings.
+ *  This updates the cached idle levels for each axis.
+ */
 void Stepper_ApplyInvertMasks(){
 int i;
   for(i=0;i<NoOfAxis;i++)
     step_idle[i] = bit_istrue(settings.invert_mask,bit(i)) ? 1 : 0;
 }
 
-//Shared enable, all drivers switch together. $4=0: enable low (Grbl shield
-//style); $4=1 inverts for drivers that enable high.
+
+/**
+ *  Enables all stepper motors by setting the shared enable line.
+ *  The enable logic is determined by the $4 setting (invert flag).
+ */
 void EnableSteppers(){
   EN_Steppers = bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE) ? 1 : 0;
 }
 
+/**
+ *  Disables all stepper motors by clearing the shared enable line.
+ *  The enable logic is determined by the $4 setting (invert flag).
+ */ 
 void DisableSteppers(){
   EN_Steppers = bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE) ? 0 : 1;
 }
 
+/**
+ *  Gets the current run state of the specified axis.
+ *  \param axis_No  The axis number to query.
+ *  \return The run state of the axis.
+ */
 int GET_RunState(int axis_No){
   return STPS[axis_No].run_state;
 }
 
-//Legacy homing flag; the DDS engine does not use it to stop motion.
+
+/**
+ *  Stops the specified axis immediately.
+ *  This sets the stop flag for the axis, which will be acted upon in the next pulse cycle.
+ *  \param axis  The axis number to stop.
+ */
 void StopAxis(int axis){
   STPS[axis].stopAxis = 1;
 }
 
 
+/**
+ *  Disables the spindle output compare module OCx.
+ *  This stops the spindle from generating pulses.
+ */
 void disableSpindleOCx(){
    OC7IE_bit = 0;OC7CONbits.ON = 0; //Spindle
 }
@@ -204,8 +239,12 @@ void disableSpindleOCx(){
 //       STEPS CYCLE CONTROL SECTION           //
 /////////////////////////////////////////////////
 
-//Drive the step pin to its active level and count the step, the pin
-//returns to its idle level on the next tick
+
+/**
+ *  Drives the step pin for the specified axis to its active level and counts the step.
+ *  The pin returns to its idle level on the next tick.
+ *  \param axis_No  The axis number to step.
+ */
 static void Step_Cycle(int axis_No){
   switch(axis_No){
     case X: PLS_StepX = !step_idle[X]; break;
@@ -220,11 +259,13 @@ static void Step_Cycle(int axis_No){
   STPS[axis_No].steps_abs_position += STPS[axis_No].axis_dir;
 }
 
-//Call after each step pulse (step_count already incremented) to set
-//step_delay/phase calculation for the next step.
-//Decel is indexed by the steps remaining (accel_count = -remaining), so it
-//always matches the position and ends on the last step; it never slows below
-//the StartUp_delay floor, and the move ends on step_count, not accel_count.
+
+/**
+ *  Handles the pulse generation and state transitions for the specified axis.
+ *  This function should be called after each step pulse after the step count has been incremented.
+ *  \param axis_No  The axis number to process.
+ *  \return The axis number.
+ */
 int Pulse(int axis_No){
 long remaining = STPS[axis_No].dist - STPS[axis_No].step_count;
 
@@ -276,6 +317,11 @@ long remaining = STPS[axis_No].dist - STPS[axis_No].step_count;
 }
 
 //Accel Decel calculation and test
+/**
+ *  Performs the acceleration or deceleration calculation for the specified axis.
+ *  Updates the step delay based on the current acceleration count.
+ *  \param axis_No  The axis number to process.
+ */
 static void AccDec(int axis_No){
   STPS[axis_No].accel_count++;
   STPS[axis_No].new_step_delay = STPS[axis_No].step_delay - (( STPS[axis_No].step_delay << 1) + STPS[axis_No].rest)/((STPS[axis_No].accel_count << 2) + 1);

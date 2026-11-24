@@ -62,6 +62,7 @@ float Get_Step_Rate(float speed,int axis){
   return speed;
 }
 
+
 /************************************************************************
  *  Makes the stepper motor move the given number of steps.
  *  It accelrate with given accelration up to maximum speed and decelerate
@@ -91,10 +92,19 @@ long n_start = 0;
   // and run state to decellerate -ve acc count value
   // is for addition to step couter.
   if(abs_mmSteps == 1){
-    STPS[axis_No].accel_count = -1;        // Move one step...
-    STPS[axis_No].run_state = DECEL;       // ...in DECEL state.
-    STPS[axis_No].step_delay = 10000;      // Just a short delay so main() can act on 'running'.
-  }else if((mmSteps != 0)&&(abs_mmSteps != 1)){
+      STPS[axis_No].accel_count = -1;
+      STPS[axis_No].run_state = DECEL;
+      STPS[axis_No].step_delay = 10000;
+
+      STPS[axis_No].scurve_steps = 0;
+
+      STPS[axis_No].accel_a_plus_end = 0;
+      STPS[axis_No].accel_a_minus_start = 0;
+
+      STPS[axis_No].decel_d_blendin = 0;
+      STPS[axis_No].decel_d_blendout = 0;
+  }     // Just a short delay so main() can act on 'running'.
+  else if((mmSteps != 0)&&(abs_mmSteps != 1)){
     //every move starts from rest until the planner supplies entry speeds.
     //the formulas below work in 0.01*rad/sec, Get_Step_Rate gives steps/sec
     temp_speed = speed * alpha[axis_No] * 100.0;
@@ -210,57 +220,57 @@ long n_start = 0;
   //accel_count is the step index n of the current speed (v^2 = 2.a.n)
   STPS[axis_No].accel_count = n_start;
   
-//Debug for stepper report if not connected to unit
-#if PlanDebug == 1
 
-while(DMA_IsOn(1));
-dma_printf("\n\
-STPS[].acc %l\n\
-STPS[].dec %l\n\
-acc:= %l\n\
-dec:= %l\n\
-speed:= %f\n\
-abs_mmSteps:= %l\n\
-a_sq[%d]:= %l\n\
-alpha[%d]:= %f\n\
-a_t_x100[%d]:= %f\n\
-STPS[axis_No].max_step_lim:= %l\n\
-abs_mmSteps:= %l\n\
-acc_lim:= %l\n\
-STPS[axis_No].accel_a_plus_end:= %l\n\
-STPS[axis_No].accel_a_minus_start:= %l\n\
-STPS[axis_No].dec:= %l\n\
-STPS[axis_No].decel_start:= %l\n\
-STPS[axis_No].decel_d_blendin:= %l\n\
-STPS[axis_No].decel_d_blendout:= %l\n\
-step_delay:= %l\n\
-min_dly:= %l\n\
-SV.mode-complete:= %d\n\n"
-,STPS[axis_No].acc
-,STPS[axis_No].dec
-,acc
-,dec
-,temp_speed
-,abs_mmSteps
-,axis_No
-,a_sq[axis_No]
-,axis_No
-,alpha[axis_No]
-,axis_No
-,a_t_x100[axis_No]
-,STPS[axis_No].max_step_lim
-,abs_mmSteps
-,STPS[axis_No].accel_a_plus_end
-,STPS[axis_No].accel_a_minus_start
-,STPS[axis_No].dec
-,STPS[axis_No].decel_start
-,STPS[axis_No].decel_d_blendin
-,STPS[axis_No].decel_d_blendout
-,STPS[axis_No].step_delay
-,STPS[axis_No].min_delay
-,SV.mode_complete);
-
-#endif
+  //Debug for stepper report if not connected to unit
+  #if PlanDebug == 1
+  while(DMA_IsOn(1));
+  dma_printf("\n\
+  STPS[axis_No].acc %l\n\
+  STPS[axis_No].dec %l\n\
+  acc:= %l\n\
+  dec:= %l\n\
+  speed:= %f\n\
+  abs_mmSteps:= %l\n\
+  a_sq[%d]:= %l\n\
+  alpha[%d]:= %f\n\
+  a_t_x100[%d]:= %f\n\
+  STPS[axis_No].max_step_lim:= %l\n\
+  abs_mmSteps:= %l\n\
+  STPS[axis_No].accel_lim:= %l\n\
+  STPS[axis_No].accel_a_plus_end:= %l\n\
+  STPS[axis_No].accel_a_minus_start:= %l\n\
+  STPS[axis_No].dec:= %l\n\
+  STPS[axis_No].decel_start:= %l\n\
+  STPS[axis_No].decel_d_blendin:= %l\n\
+  STPS[axis_No].decel_d_blendout:= %l\n\
+  STPS[axis_No].step_delay:= %l\n\
+  STPS[axis_No].min_delay:= %l\n\
+  SV.mode-complete:= %d\n\n"
+  ,STPS[axis_No].acc
+  ,STPS[axis_No].dec
+  ,acc
+  ,dec
+  ,temp_speed
+  ,abs_mmSteps
+  ,axis_No
+  ,a_sq[axis_No]
+  ,axis_No
+  ,alpha[axis_No]
+  ,axis_No
+  ,a_t_x100[axis_No]
+  ,STPS[axis_No].max_step_lim
+  ,abs_mmSteps
+  ,STPS[axis_No].accel_lim
+  ,STPS[axis_No].accel_a_plus_end
+  ,STPS[axis_No].accel_a_minus_start
+  ,STPS[axis_No].dec
+  ,STPS[axis_No].decel_start
+  ,STPS[axis_No].decel_d_blendin
+  ,STPS[axis_No].decel_d_blendout
+  ,STPS[axis_No].step_delay
+  ,STPS[axis_No].min_delay
+  ,SV.mode_complete);
+  #endif
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -7,6 +7,7 @@
 #include "Globals.h"
 
 
+
 // Useful macros
 #define clear_vector(a) memset(a, 0, sizeof(a))
 #define clear_vector_float(a) memset(a, 0.0, sizeof(float)*N_AXIS)
@@ -62,6 +63,7 @@ void set_calculation_constants();
 
 //Speed in steprate for timers
 float Get_Step_Rate(float speed,int axis);
+
 
 //Acceleration, speed and Circ calcs
 void speed_cntr_Move(long mmSteps, float speed, int axis_combo);
